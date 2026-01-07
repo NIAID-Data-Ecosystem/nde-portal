@@ -75,6 +75,7 @@ export const SearchResultsController = ({
       filters: queryParams.filters,
       facets: ['@type'],
       facet_size: 100,
+      use_ai_search: queryParams.use_ai_search,
     },
     { initialData },
   );

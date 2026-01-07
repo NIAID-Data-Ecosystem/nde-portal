@@ -9,6 +9,19 @@ import { handlers } from 'src/__tests__/mocks/utils';
 // needed for next/router mock
 jest.mock('next/router', () => require('next-router-mock'));
 
+// Mock remark and related packages to avoid ES module import issues
+// Using virtual:true to avoid "Cannot find module" errors
+jest.mock(
+  'remark',
+  () => ({
+    remark: jest.fn(() => ({
+      use: jest.fn().mockReturnThis(),
+      process: jest.fn().mockResolvedValue({ value: '' }),
+    })),
+  }),
+  { virtual: true },
+);
+
 export const server = setupServer(...handlers);
 
 // Establish API mocking before all tests.

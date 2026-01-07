@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useCallback, useEffect } from 'react';
 import {
   ButtonProps,
   CloseButton,
@@ -10,6 +10,7 @@ import {
   InputProps,
   InputRightElement,
   Spinner,
+  Textarea,
   VisuallyHidden,
 } from '@chakra-ui/react';
 import { theme } from 'src/theme';
@@ -53,7 +54,8 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   onClose,
   onSubmit,
 }) => {
-  const inputRightRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
   const {
     colorScheme,
     cursor,
@@ -62,27 +64,101 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
     getInputProps,
     setIsOpen,
   } = useDropdownContext();
+
+  const inputRightRef = useRef<HTMLDivElement>(null);
+  const [rightElWidth, setRightElWidth] = React.useState(0);
+
+  useEffect(() => {
+    const inputRightEl = inputRightRef.current;
+    if (!inputRightEl) return;
+
+    if (typeof ResizeObserver === 'undefined') {
+      setRightElWidth(inputRightEl.clientWidth);
+      return;
+    }
+
+    const observer = new ResizeObserver(() => {
+      setRightElWidth(inputRightEl!.clientWidth);
+    });
+
+    observer.observe(inputRightEl);
+    return () => observer.disconnect();
+  }, []);
+
+  // Auto-resize logic: reset to 3rem, then expand to scrollHeight
+  const autoResize = useCallback(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+
+    // reset height to shrink if text is deleted
+    el.style.height = 'auto';
+
+    // compute line height
+    const lineHeight = parseFloat(
+      window.getComputedStyle(el).lineHeight || '20',
+    );
+    const maxHeight = lineHeight * 4; // cap at 4 rows
+
+    // adjust height up to max
+    el.style.height = `${Math.min(el.scrollHeight, maxHeight)}px`;
+
+    // show scroll if exceeding max
+    el.style.overflowY = el.scrollHeight > maxHeight ? 'auto' : 'hidden';
+  }, []);
+
+  // reset height to base size (used when clearing input)
+  const resetHeight = useCallback(() => {
+    const el = textareaRef.current;
+    if (el) el.style.height = '3rem';
+  }, []);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsOpen(false);
+    onSubmit(inputValue, cursor);
+  };
+
+  // Ensure correct height on initial render and whenever value changes externally
+  useEffect(() => {
+    const textareaEl = textareaRef.current;
+    if (!textareaEl) return;
+
+    if (typeof ResizeObserver === 'undefined') {
+      autoResize();
+      return;
+    }
+
+    const observer = new ResizeObserver(() => {
+      autoResize();
+    });
+
+    observer.observe(textareaEl);
+    autoResize();
+
+    return () => observer.disconnect();
+  }, [autoResize]);
+
   return (
-    <Flex
-      as='form'
-      flex={1}
-      onSubmit={e => {
-        e.preventDefault();
-        setIsOpen(false);
-        onSubmit(inputValue, cursor);
-      }}
-    >
+    <Flex as='form' flex={1} onSubmit={handleSubmit}>
       {/* Label for accessibility */}
       <VisuallyHidden>
         <label htmlFor={id}>{ariaLabel}</label>
       </VisuallyHidden>
 
       {/* Search input */}
-      <InputGroup size={size} zIndex='dropdown'>
-        {/* Loading spinner/Search icon */}
+      {/* Loading spinner/Search icon */}
+      <InputGroup
+        size={size}
+        zIndex='dropdown'
+        alignItems='flex-start'
+        border='1px solid'
+        borderColor='gray.200'
+        borderRadius='md'
+        bg='white'
+      >
         <InputLeftElement
           pointerEvents='none'
-          h='100%'
+          my={1}
           // eslint-disable-next-line react/no-children-prop
           children={
             isLoading ? (
@@ -98,31 +174,47 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
           }
         />
 
-        <Input
+        <Textarea
+          ref={textareaRef}
+          variant='unstyled'
+          resize='none'
+          overflow='hidden'
+          // optional, make growth feel smoother
+          onInput={autoResize}
           {...getInputProps({
             id,
             placeholder: placeholder || 'Search',
             tabIndex: 0,
             type,
-            pr: renderSubmitButton ? inputRightRef?.current?.clientWidth : 4,
+            flex: 1,
+            size,
+            mr: renderSubmitButton ? rightElWidth : 4,
             isDisabled,
             isInvalid,
             onKeyDown: (
-              _: React.KeyboardEvent<HTMLInputElement>,
+              e: React.KeyboardEvent<HTMLTextAreaElement>,
               index: number,
             ) => {
-              if (index > -1) {
+              if (index !== null && index > -1) {
                 const updatedInputValue = getInputValue(index);
                 updatedInputValue && setInputValue(updatedInputValue);
               }
+              if (e.key === 'Enter' && !e.shiftKey) {
+                handleSubmit(e);
+              }
             },
-            onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+            onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => {
               onChange ? onChange(e.currentTarget.value) : void 0;
             },
           })}
+          rows={1}
+          maxLength={2048}
+          minH='3rem'
+          pl='2.5rem'
+          py={3}
         />
-        {/* Optional submit button. */}
 
+        {/* Optional submit button. */}
         {(renderSubmitButton || onClose) && (
           <InputRightElement
             ref={inputRightRef}
@@ -130,17 +222,20 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
             w='unset'
             h='100%'
             zIndex={theme.zIndices['dropdown']}
+            alignItems='flex-start'
           >
             {onClose && inputValue.length > 0 && (
               <CloseButton
                 onClick={() => {
                   onClose();
                   setInputValue('');
+                  resetHeight(); // reset height when input is cleared
                 }}
                 mr={2}
                 size='md'
                 colorScheme='primary'
                 aria-label='Clear search input'
+                my={1}
               />
             )}
             {renderSubmitButton &&

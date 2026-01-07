@@ -9,7 +9,6 @@ import {
   Skeleton,
   Stack,
   StackDivider,
-  Text,
   UnorderedList,
   VStack,
 } from '@chakra-ui/react';
@@ -46,11 +45,12 @@ import { FaMagnifyingGlass } from 'react-icons/fa6';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { RelatedResources } from './components/related-resources';
-import { SamplesDisplay, SHOULD_HIDE_SAMPLES } from './components/samples';
-import { getAccessResourceURL } from '../source-logo/helpers';
-
-export const SHOW_CREDIT_TEXT_SECTION =
-  process.env.NEXT_PUBLIC_APP_ENV !== 'production';
+import { SamplesDisplay } from './components/samples';
+import { CreditText } from './components/sidebar/components/external/components/credit-text';
+import {
+  SHOW_CREDIT_TEXT_SECTION,
+  SHOULD_HIDE_SAMPLES,
+} from 'src/utils/feature-flags';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -283,34 +283,7 @@ const Sections = ({
                     my={4}
                     scrollContainerProps={{ maxHeight: 'unset' }}
                   >
-                    {/* If no credit section, visit the actual source */}
-                    <Text px={2}>
-                      {data?.creditText || (
-                        <>
-                          Please{' '}
-                          <Link
-                            href={
-                              data?.includedInDataCatalog &&
-                              getAccessResourceURL({
-                                recordType: data?.['@type'],
-                                source: Array.isArray(
-                                  data?.includedInDataCatalog,
-                                )
-                                  ? data?.includedInDataCatalog[0]
-                                  : data?.includedInDataCatalog,
-                                url: data?.url,
-                              })
-                            }
-                            isExternal
-                            target='_blank'
-                            rel='noopener noreferrer'
-                          >
-                            access the resource
-                          </Link>{' '}
-                          for complete citation guidance.
-                        </>
-                      )}
-                    </Text>
+                    <CreditText data={data} px={2} />
                   </OverviewSectionWrapper>
                 )}
               </>
