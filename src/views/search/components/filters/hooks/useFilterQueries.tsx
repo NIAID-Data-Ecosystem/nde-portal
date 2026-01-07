@@ -135,9 +135,11 @@ const transformResults = (
  * It fetches the initial results without any extra filters and then fetches the filtered results with selected filters.
  * The initial and filtered results are merged such that counts from filtered results replace those in initial results.
  * If an item is not present in filtered results, its count is set to 0. The results are sorted by count in descending order.
+ * If initialParams and updateParams have the same extra_filter,
+ * only the initial queries are run.
  *
  * @param config - The filter configuration array.
- * @param initialParams - The parameters used in the update query.
+ * @param initialParams - The parameters used in the initial query.
  * @param updateParams - The parameters used in the update query.
  * @returns The merged initial and filtered results.
  */
@@ -151,7 +153,6 @@ export const useFilterQueries = ({
   updateParams: Params;
 }) => {
   // Memoize the initial queries to avoid unnecessary recalculations
-  // ignore extra_filter and filters in the initial queries to get all the possible results (regardless of filter selection)
   const initialQueries = useMemo(() => {
     return config
       .flatMap(
@@ -284,9 +285,10 @@ export const useFilterQueries = ({
       Object.keys(updatedResults)?.length > 0
     ) {
       const merged = mergeResults(initialResults, updatedResults);
-
       setMergedResults(merged);
     } else if (!isLoading && !isUpdating && initialResults) {
+      // If update queries are disabled (because params are the same),
+      // just use initialResults directly
       setMergedResults(initialResults);
     }
   }, [
