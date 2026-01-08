@@ -262,11 +262,11 @@ export const SearchBar = ({
               Search Knowledge Center
             </Button>
             <Flex borderLeft='1px solid' borderLeftColor='gray.200' pl={1}>
-              <Tooltip label='Toggle search history.'>
+              <Tooltip label='View search history.'>
                 <IconButton
                   variant='ghost'
                   size={size}
-                  aria-label='Toggle search history.'
+                  aria-label='View search history.'
                   icon={
                     <Flex px={2}>
                       <Icon as={FaClockRotateLeft} />
