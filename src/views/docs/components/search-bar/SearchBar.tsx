@@ -53,6 +53,7 @@ export const SearchBar = ({
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [showHistory, setShowHistory] = useState<boolean>(false);
+  const [shouldAutoOpen, setShouldAutoOpen] = useState<boolean>(true);
 
   // Debounce search
   const debouncedUpdate = useRef(
@@ -66,6 +67,8 @@ export const SearchBar = ({
       setCurrentInputValue(value);
       setInputValue(value);
       debouncedUpdate.current(value);
+      // Enable auto-open when user types
+      setShouldAutoOpen(true);
     },
     [setInputValue, setCurrentInputValue],
   );
@@ -94,7 +97,7 @@ export const SearchBar = ({
   );
 
   useEffect(() => {
-    if (searchTerm.length > 0) {
+    if (searchTerm.length > 0 && shouldAutoOpen) {
       // If user is searching, show results and hide history
       setShowHistory(false);
       setIsOpen(true);
@@ -117,6 +120,7 @@ export const SearchBar = ({
     isOpen,
     setIsOpen,
     setCurrentCursorMax,
+    shouldAutoOpen,
   ]);
 
   const addToHistory = useCallback(
@@ -142,13 +146,15 @@ export const SearchBar = ({
     if (showHistory && idx >= 0 && idx < historyList.length) {
       const historyValue = historyList[idx];
       addToHistory(historyValue);
-      setIsOpen(false);
       setShowHistory(false);
-      setInputValue('');
-      setCurrentInputValue('');
-      setSearchTerm('');
-      setResults([]);
       setCursor(-1);
+      // Persist the history value in the input
+      setInputValue(historyValue);
+      setCurrentInputValue(historyValue);
+      setSearchTerm(historyValue);
+      // Close dropdown after navigation and prevent auto-open
+      setIsOpen(false);
+      setShouldAutoOpen(false);
       router.push(`/knowledge-center/${historyValue}`);
       return;
     }
@@ -156,12 +162,11 @@ export const SearchBar = ({
     if (!showHistory && idx >= 0 && idx < results.length) {
       const result = results[idx];
       addToHistory(searchTerm);
-      setIsOpen(false);
-      setInputValue('');
-      setCurrentInputValue('');
-      setSearchTerm('');
-      setResults([]);
       setCursor(-1);
+      // Keep the search term in the input
+      // Close dropdown after navigation and prevent auto-open
+      setIsOpen(false);
+      setShouldAutoOpen(false);
       router.push(`/knowledge-center/${result.slug}`);
       return;
     }
@@ -169,12 +174,11 @@ export const SearchBar = ({
     const trimmedValue = value.trim();
     if (trimmedValue) {
       addToHistory(trimmedValue);
-      setIsOpen(false);
-      setInputValue('');
-      setCurrentInputValue('');
-      setSearchTerm('');
-      setResults([]);
       setCursor(-1);
+      // Keep the search term in the input
+      // Close dropdown after navigation and prevent auto-open
+      setIsOpen(false);
+      setShouldAutoOpen(false);
       router.push(`/knowledge-center/${trimmedValue}`);
     } else {
       // If empty search, open dropdown to show "Start typing to search..." message
@@ -185,12 +189,11 @@ export const SearchBar = ({
 
   const handleResultClick = (slug: string) => {
     addToHistory(searchTerm);
-    setIsOpen(false);
-    setInputValue('');
-    setCurrentInputValue('');
-    setSearchTerm('');
-    setResults([]);
     setCursor(-1);
+    // Keep the search term in the input
+    // Close dropdown after navigation and prevent auto-open
+    setIsOpen(false);
+    setShouldAutoOpen(false);
     router.push(`/knowledge-center/${slug}`);
   };
 
@@ -228,6 +231,19 @@ export const SearchBar = ({
     }
   };
 
+  const handleClose = () => {
+    // Clear all input and search state
+    setInputValue('');
+    setCurrentInputValue('');
+    setSearchTerm('');
+    setResults([]);
+    setCursor(-1);
+    setShowHistory(false);
+    // Keep dropdown open to show "Start typing to search..." message
+    setShouldAutoOpen(true);
+    setIsOpen(true);
+  };
+
   return (
     <>
       <DropdownInput
@@ -243,13 +259,7 @@ export const SearchBar = ({
           // Return empty string to prevent keyboard navigation from changing the input
           return '';
         }}
-        onClose={() => {
-          setInputValue('');
-          setCurrentInputValue('');
-          setCursor(-1);
-          setIsOpen(false);
-          setShowHistory(false);
-        }}
+        onClose={handleClose}
         renderSubmitButton={() => (
           <HStack height='100%'>
             <Button
