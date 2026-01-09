@@ -173,6 +173,17 @@ export const SearchBar = ({
 
     const trimmedValue = value.trim();
     if (trimmedValue) {
+      // Don't navigate if:
+      // Still loading (results haven't come back yet) or
+      // No results found (empty results array)
+      if (isLoading) {
+        return;
+      }
+      if (results.length === 0) {
+        setIsOpen(true);
+        return;
+      }
+      // If there are results, proceed with navigation
       addToHistory(trimmedValue);
       setCursor(-1);
       // Keep the search term in the input
@@ -208,6 +219,8 @@ export const SearchBar = ({
       // Cancel any pending debounced updates
       debouncedUpdate.current.cancel();
       setShowHistory(false);
+      // Enable auto-open so results will be shown
+      setShouldAutoOpen(true);
     },
     [setInputValue, setCurrentInputValue, setCursor],
   );
