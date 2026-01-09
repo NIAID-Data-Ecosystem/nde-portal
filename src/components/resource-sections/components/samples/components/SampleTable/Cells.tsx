@@ -56,7 +56,7 @@ export type CellValue =
   | undefined;
 
 export const renderValue = (val: CellValue, key?: React.Key) => {
-  if (val == null) return null;
+  if (!val) return null;
 
   if (typeof val === 'string') {
     return <TextCell key={key}>{formatTerm(val)}</TextCell>;

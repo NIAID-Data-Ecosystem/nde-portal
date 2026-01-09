@@ -37,7 +37,7 @@ function renderTableWithConfig<T extends SampleAggregate | SampleCollection>(
 }
 
 export const SamplesDisplay = ({ sample }: SamplesDisplayProps) => {
-  if (!sample) return null;
+  if (!sample || !sample['@type']) return null;
 
   return (
     <Flex flexDirection='column' gap={8}>
