@@ -390,7 +390,7 @@ export interface QuantitativeValue {
 }
 
 export interface SampleAggregate {
-  '@type'?: 'Sample';
+  '@type': 'Sample';
   anatomicalStructure?: DefinedTerm[];
   anatomicalSystem?: DefinedTerm[];
   associatedGenotype?: (string | DefinedTerm)[];
