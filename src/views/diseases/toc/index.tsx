@@ -61,7 +61,7 @@ export const TableOfContents = () => {
         flex={3}
       >
         <Flex flexDirection='column' flex={1} pb={32} width='100%' m='0 auto'>
-          <SectionHeader title='Diseases' />
+          <SectionHeader title='Diseases and Conditions' />
           <div>Error loading diseases: {error.message}</div>
         </Flex>
       </PageContent>
@@ -93,7 +93,7 @@ export const TableOfContents = () => {
         flex={3}
       >
         <Flex flexDirection='column' flex={1} pb={32} width='100%' m='0 auto'>
-          <SectionHeader title='Diseases'></SectionHeader>
+          <SectionHeader title='Diseases and Conditions'></SectionHeader>
 
           {/* Search bar */}
           <Flex>

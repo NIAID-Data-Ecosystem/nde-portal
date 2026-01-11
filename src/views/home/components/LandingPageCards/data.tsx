@@ -14,7 +14,7 @@ export const CARDS_DATA: CardData[] = [
         id: 'diseases-paragraph',
         content: (
           <>
-            Explore datasets and computational tools for diseases such as{' '}
+            Explore datasets and computational tools for diseases and conditions such as{' '}
             <Link href='/diseases/asthma'>asthma</Link>,{' '}
             <Link href='/diseases/HIV-AIDS'>HIV/AIDS</Link>,{' '}
             <Link href='/diseases/influenza'>influenza</Link>,{' '}

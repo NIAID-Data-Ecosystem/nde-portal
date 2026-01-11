@@ -1,7 +1,7 @@
 {
   "showcase": {
     "title": "{{topic}} Resources in the NIAID Data Ecosystem",
-    "description": "This section provides a visual summary of the resources available within the NIAID Discovery Portal for {{topic}} research. [View all search results related to {{topic}}]({{query}})."
+    "description": "This section provides a visual summary of the resources available within the NIAID Discovery Portal for {{topic}} research. The graphics below highlight key metadata elements to help you find relevant data and refine your search for more targeted results. [View all search results related to {{topic}}]({{query}})."
   },
   "charts": {
     "title": "{{count}} {{topic}} Related Resources",
