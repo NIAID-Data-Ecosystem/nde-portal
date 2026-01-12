@@ -6,8 +6,36 @@
 import '@testing-library/jest-dom/extend-expect';
 import { setupServer } from 'msw/node';
 import { handlers } from 'src/__tests__/mocks/utils';
+
 // needed for next/router mock
 jest.mock('next/router', () => require('next-router-mock'));
+
+// Prevent Next <Link> from running intersection logic (fixes act warnings)
+jest.mock('next/link', () => ({
+  __esModule: true,
+  default: ({ href, children, ...props }) => (
+    <a href={typeof href === 'string' ? href : href?.pathname ?? ''} {...props}>
+      {children}
+    </a>
+  ),
+}));
+
+// Prevent IntersectionObserver-related async updates in jsdom
+class MockIntersectionObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+Object.defineProperty(window, 'IntersectionObserver', {
+  writable: true,
+  configurable: true,
+  value: MockIntersectionObserver,
+});
+Object.defineProperty(global, 'IntersectionObserver', {
+  writable: true,
+  configurable: true,
+  value: MockIntersectionObserver,
+});
 
 // Mock remark and related packages to avoid ES module import issues
 // Using virtual:true to avoid "Cannot find module" errors
