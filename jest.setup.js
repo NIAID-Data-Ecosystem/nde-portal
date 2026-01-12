@@ -13,8 +13,8 @@ jest.mock('next/router', () => require('next-router-mock'));
 // Prevent Next <Link> from running intersection logic (fixes act warnings)
 jest.mock('next/link', () => ({
   __esModule: true,
-  default: ({ href, children, ...props }) => (
-    <a href={typeof href === 'string' ? href : href?.pathname ?? ''} {...props}>
+  default: ({ href, children, passHref, prefetch, ...rest }) => (
+    <a href={typeof href === 'string' ? href : href?.pathname ?? ''} {...rest}>
       {children}
     </a>
   ),
