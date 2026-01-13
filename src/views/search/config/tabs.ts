@@ -23,10 +23,6 @@ export const tabs: TabType[] = [
         label: `${TAB_LABELS.DATASET}s`,
         type: 'Dataset',
       },
-      {
-        label: `${TAB_LABELS.DISEASE_OVERVIEW}s`,
-        type: 'Disease',
-      },
     ],
     isDefault: true,
   },
@@ -41,30 +37,12 @@ export const tabs: TabType[] = [
   },
 ];
 
-// Helper to check if a type is part of the "Other Resources" group
-export const isOtherResourceType = (type: string): boolean => {
-  return type === 'ResourceCatalog' || type === 'Disease';
-};
-
-// Generate an accordion title for the "Other Resources" group
-export const generateOtherResourcesTitle = (
+// Generate an accordion title for the "Resource Catalog" group
+export const generateResourceCatalogTitle = (
   sections: Array<{ type: string; count: number }>,
 ): string => {
   const resourceCatalog = sections.find(s => s.type === 'ResourceCatalog');
-  const disease = sections.find(s => s.type === 'Disease');
-
   const resourceCount = resourceCatalog?.count || 0;
-  const diseaseCount = disease?.count || 0;
-  const totalCount = resourceCount + diseaseCount;
 
-  const resourcePart = `${
-    TAB_LABELS.RESOURCE_CATALOG
-  }s (${resourceCount.toLocaleString()})`;
-  const diseasePart = `${
-    TAB_LABELS.DISEASE_OVERVIEW
-  }s (${diseaseCount.toLocaleString()})`;
-
-  return `${
-    TAB_LABELS.OTHER_RESOURCES
-  } (${totalCount.toLocaleString()}): ${resourcePart}, ${diseasePart}`;
+  return `${TAB_LABELS.RESOURCE_CATALOG}s (${resourceCount.toLocaleString()})`;
 };

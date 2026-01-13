@@ -10,13 +10,11 @@ import { usePaginationContext } from '../../context/pagination-context';
 import { SearchTabs } from '../layout/tabs';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { ResourceCatalogCard } from '../results-list/components/carousel-compact-card/resource-catalog-card';
-import { DiseaseOverviewCard } from '../results-list/components/carousel-compact-card/disease-overview-card';
 import { Carousel } from 'src/components/carousel';
 import { CarouselWrapper } from '../layout/carousel-wrapper';
 import { EmptyState } from '../results-list/components/empty';
 import { TabType } from '../../types';
-import { useDiseaseData } from '../../hooks/useDiseaseData';
-import { generateOtherResourcesTitle } from '../../config/tabs';
+import { generateResourceCatalogTitle } from '../../config/tabs';
 
 const CAROUSEL_RESULTS_FIELDS = [
   '_meta',
@@ -115,16 +113,6 @@ export const SearchResultsController = ({
     [carouselData?.results],
   );
 
-  const {
-    diseases: matchingDiseases,
-    isLoading: diseaseIsLoading,
-    hasMatchingDiseases,
-  } = useDiseaseData({
-    searchQuery: queryParams.q || '',
-    selectedFilters: queryParams.filters || {},
-    enabled: true,
-  });
-
   const carouselItems = useMemo(() => {
     const items: Array<{ type: 'resource' | 'disease'; data: any }> = [];
 
@@ -132,17 +120,12 @@ export const SearchResultsController = ({
       items.push({ type: 'resource', data: resource });
     });
 
-    matchingDiseases.forEach(disease => {
-      items.push({ type: 'disease', data: disease });
-    });
-
     return items;
-  }, [resourceCatalogData, matchingDiseases]);
+  }, [resourceCatalogData]);
 
-  const shouldShowCarousel = hasResourceCatalogRecords || hasMatchingDiseases;
+  const shouldShowCarousel = hasResourceCatalogRecords;
   const isCarouselLoading =
-    (hasResourceCatalogRecords && (carouselIsLoading || carouselIsPending)) ||
-    diseaseIsLoading;
+    hasResourceCatalogRecords && (carouselIsLoading || carouselIsPending);
 
   const tabsWithFacetCounts = useMemo(
     () =>
@@ -151,10 +134,6 @@ export const SearchResultsController = ({
           const terms = facetData?.facets?.['@type']?.terms ?? [];
           const facet = terms.find(t => t.term === type);
           let count = facet?.count || 0;
-
-          if (type === 'Disease') {
-            count = matchingDiseases.length;
-          }
 
           return {
             label,
@@ -168,7 +147,7 @@ export const SearchResultsController = ({
           types: tabTypesWithCount,
         };
       }),
-    [facetData?.facets, tabs, matchingDiseases.length],
+    [facetData?.facets, tabs],
   );
 
   const getAccordionDefaultIndices = (
@@ -176,7 +155,7 @@ export const SearchResultsController = ({
   ) =>
     sections.reduce((indices: number[], section, index) => {
       if (section.type === 'ResourceCatalog') {
-        if (section.count > 0 || hasMatchingDiseases) {
+        if (section.count > 0) {
           indices.push(index);
         }
       } else if (section.type === 'Dataset') {
@@ -208,20 +187,16 @@ export const SearchResultsController = ({
             return (
               <TabPanel key={tab.id}>
                 <AccordionWrapper
-                  key={`${tab.id}-${defaultIndices.join(
-                    '-',
-                  )}-${hasMatchingDiseases}-${matchingDiseases.length}`}
+                  key={`${tab.id}-${defaultIndices.join('-')}`}
                   defaultIndex={defaultIndices}
                 >
-                  {sections.map((section, idx) => {
-                    if (section.type === 'Disease') return null;
-
+                  {sections.map(section => {
                     // For ResourceCatalog, render "Other Resources" with carousel
                     if (section.type === 'ResourceCatalog') {
                       return (
                         <AccordionContent
-                          key='other-resources'
-                          title={generateOtherResourcesTitle(sections)}
+                          key='resource-catalog'
+                          title={generateResourceCatalogTitle(sections)}
                         >
                           {isCarouselLoading || shouldShowCarousel ? (
                             <CarouselWrapper>
@@ -238,18 +213,11 @@ export const SearchResultsController = ({
                                       carouselItem?.data?.id || `loading-${idx}`
                                     }
                                   >
-                                    {carouselItem.type === 'resource' ? (
-                                      <ResourceCatalogCard
-                                        data={carouselItem.data}
-                                        isLoading={isCarouselLoading}
-                                        referrerPath={router.asPath}
-                                      />
-                                    ) : (
-                                      <DiseaseOverviewCard
-                                        data={carouselItem.data}
-                                        isLoading={isCarouselLoading}
-                                      />
-                                    )}
+                                    <ResourceCatalogCard
+                                      data={carouselItem.data}
+                                      isLoading={isCarouselLoading}
+                                      referrerPath={router.asPath}
+                                    />
                                   </div>
                                 ))}
                               </Carousel>

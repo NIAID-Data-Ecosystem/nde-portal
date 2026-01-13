@@ -78,7 +78,6 @@ const TabLabels = ({
   const resourceCatalogType = types.find(
     type => type.type === 'ResourceCatalog',
   );
-  const diseaseType = types.find(type => type.type === 'Disease');
 
   const tagStyles = {
     borderRadius: 'full',
@@ -94,18 +93,16 @@ const TabLabels = ({
     noOfLines: 1,
   };
 
-  if (datasetType && resourceCatalogType && diseaseType) {
+  if (datasetType && resourceCatalogType) {
     const datasetCount = datasetType.count || 0;
     const resourceCatalogCount = resourceCatalogType.count || 0;
-    const diseaseCount = diseaseType.count || 0;
-    const otherResourcesCount = resourceCatalogCount + diseaseCount;
 
     return (
       <Text as='h2' {...textStyles}>
         {`${TAB_LABELS.DATASET}s`}
         <Tag {...tagStyles}>{datasetCount.toLocaleString()}</Tag>
-        {` and ${TAB_LABELS.OTHER_RESOURCES} `}
-        <Tag {...tagStyles}>{otherResourcesCount.toLocaleString()}</Tag>
+        {` and ${TAB_LABELS.RESOURCE_CATALOG}`}
+        <Tag {...tagStyles}>{resourceCatalogCount.toLocaleString()}</Tag>
       </Text>
     );
   }
