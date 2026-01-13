@@ -1,9 +1,8 @@
 import { Flex, Text, TextProps } from '@chakra-ui/react';
-import { formatTerm, formatUnitText, formatValue } from '../../helpers';
+import { formatTerm, formatUnitText, formatNumericValue } from '../../helpers';
 import { Link } from 'src/components/link';
 import { DefinedTerm, QuantitativeValue } from 'src/utils/api/types';
 import { Column } from 'src/components/table';
-import { SamplePropertyRow } from './config';
 
 const TextCell = ({ children, ...rest }: TextProps) => {
   return (
@@ -17,7 +16,9 @@ const DefinedTermCell = ({ identifier, name, url }: DefinedTerm) => {
   const label = formatTerm(name || identifier || '');
   if (label || url) {
     return url ? (
-      <Link href={url}>{label || url}</Link>
+      <Link href={url} isExternal>
+        {label || url}
+      </Link>
     ) : (
       <TextCell>{label}</TextCell>
     );
@@ -31,7 +32,7 @@ const QuantitativeValueCell = ({
   unitText,
   value,
 }: QuantitativeValue) => {
-  const valueStr = formatValue({
+  const valueStr = formatNumericValue({
     value,
     minValue,
     maxValue,
@@ -39,17 +40,7 @@ const QuantitativeValueCell = ({
 
   if (!unitText) return <TextCell>{valueStr}</TextCell>;
   const unitStr = formatUnitText(unitText);
-  return <TextCell>{`${valueStr} ${unitStr}(s)`}</TextCell>;
-};
-
-const renderLabelCell = ({
-  data,
-}: {
-  column: Column;
-  data: SamplePropertyRow;
-  isLoading?: boolean;
-}) => {
-  return <TextCell>{data.label}</TextCell>;
+  return <TextCell>{`${valueStr} ${unitStr}`}</TextCell>;
 };
 
 /**
@@ -65,7 +56,7 @@ export type CellValue =
   | undefined;
 
 export const renderValue = (val: CellValue, key?: React.Key) => {
-  if (val == null) return null;
+  if (!val) return null;
 
   if (typeof val === 'string') {
     return <TextCell key={key}>{formatTerm(val)}</TextCell>;
@@ -82,12 +73,13 @@ export const renderValue = (val: CellValue, key?: React.Key) => {
   return null;
 };
 
-const renderValuesCell = (props: {
+// Render cell data which can be a single value or an array of values.
+const renderCellData = (props: {
   column: Column;
-  data: SamplePropertyRow;
+  data: CellValue | CellValue[];
   isLoading?: boolean;
 }) => {
-  const cellValue = props.data.values;
+  const cellValue = props.data;
 
   // Array of values (e.g. strings, DefinedTerms, QuantitativeValues)
   if (Array.isArray(cellValue)) {
@@ -107,6 +99,5 @@ export const Cell = {
   Text: TextCell,
   DefinedTerm: DefinedTermCell,
   QuantitativeValue: QuantitativeValueCell,
-  renderLabel: renderLabelCell,
-  renderValues: renderValuesCell,
+  renderCellData,
 };
