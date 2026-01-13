@@ -19,6 +19,10 @@ export const DatePicker = ({
   const [selected, setSelected] = useState(selectedDates);
   const { allData } = useDateRangeContext();
 
+  // Separate state for the actual input values
+  const [startInputValue, setStartInputValue] = useState('');
+  const [endInputValue, setEndInputValue] = useState('');
+
   // Min is the first date in the complete dataset
   const min = formatISOString((allData && allData[0]?.term) || '');
 
@@ -38,7 +42,14 @@ export const DatePicker = ({
 
   useEffect(() => {
     setSelected(selectedDates);
-  }, [selectedDates]);
+    // Update input values when selectedDates changes externally
+    setStartInputValue(
+      selectedDates[0] === '-_exists_' ? '' : selectedDates[0] || min,
+    );
+    setEndInputValue(
+      selectedDates[0] === '-_exists_' ? '' : selectedDates[1] || max,
+    );
+  }, [selectedDates, min, max]);
 
   return (
     <Flex
@@ -49,7 +60,8 @@ export const DatePicker = ({
       flexDirection='column'
       onSubmit={e => {
         e.preventDefault();
-        const dates = selected;
+        // Use the input values directly
+        let dates = [startInputValue, endInputValue];
         // automatically set start date to min if none is provided
         if (!dates[0]) {
           dates[0] = min;
@@ -65,6 +77,9 @@ export const DatePicker = ({
           dates[1] = max;
         }
 
+        // Update selected state
+        setSelected(dates);
+        // Trigger the filter
         handleSelectedFilter(dates);
       }}
     >
@@ -80,11 +95,11 @@ export const DatePicker = ({
             colorScheme={colorScheme as string}
             bg='white'
             min={min}
-            max={max}
-            value={selected[0] === '-_exists_' ? '' : selected[0] || min}
+            max={endInputValue || max}
+            value={startInputValue}
             onChange={e => {
-              let newSelection = [e.target.value, selected[1] || max];
-              setSelected(newSelection);
+              // Update input value immediately for smooth typing
+              setStartInputValue(e.target.value);
             }}
             isDisabled={isDisabled}
           />
@@ -98,12 +113,11 @@ export const DatePicker = ({
             type='date'
             colorScheme={colorScheme as string}
             bg='white'
-            min={min}
+            min={startInputValue || min}
             max={max}
-            value={selected[0] === '-_exists_' ? '' : selected[1] || max}
+            value={endInputValue}
             onChange={e => {
-              let newSelection = [selected[0] || min, e.target.value];
-              setSelected(newSelection);
+              setEndInputValue(e.target.value);
             }}
             isDisabled={isDisabled}
           />
