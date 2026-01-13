@@ -40,14 +40,24 @@ const DesktopSubNavItem = ({
     >
       <Flex justifyContent='space-between'>
         <Box>
-          <Text
-            className='label'
-            transition='all .3s ease'
-            _groupHover={{ color: 'niaid.700' }}
-            fontWeight={600}
-          >
-            {label}
-          </Text>
+          <Flex alignItems='center' gap={2}>
+            <Text
+              className='label'
+              transition='all .3s ease'
+              _groupHover={{ color: 'niaid.700' }}
+              fontWeight={600}
+            >
+              {label}
+            </Text>
+            {isExternal && (
+              <Icon
+                as={FaArrowUpRightFromSquare}
+                w={3}
+                h={3}
+                color='niaid.700'
+              />
+            )}
+          </Flex>
           <Text fontSize='sm' color='text.body' lineHeight='short' pr={1}>
             {description}
           </Text>
@@ -67,7 +77,7 @@ const DesktopSubNavItem = ({
             }}
             w={3}
             h={3}
-            as={isExternal ? FaArrowUpRightFromSquare : FaAngleRight}
+            as={FaAngleRight}
           />
         </Flex>
       </Flex>
