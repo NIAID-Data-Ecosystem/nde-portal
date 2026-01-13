@@ -43,12 +43,12 @@ export const DatePicker = ({
   useEffect(() => {
     setSelected(selectedDates);
     // Update input values when selectedDates changes externally
-    setStartInputValue(
-      selectedDates[0] === '-_exists_' ? '' : selectedDates[0] || min,
+    // Check if there are date values
+    const actualDates = selectedDates.filter(
+      d => d !== '_exists_' && d !== '-_exists_',
     );
-    setEndInputValue(
-      selectedDates[0] === '-_exists_' ? '' : selectedDates[1] || max,
-    );
+    setStartInputValue(actualDates[0] || min);
+    setEndInputValue(actualDates[1] || max);
   }, [selectedDates, min, max]);
 
   return (
