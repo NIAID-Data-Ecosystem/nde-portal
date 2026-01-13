@@ -108,7 +108,8 @@ describe('TableWithSearch Component', () => {
       />,
     );
     const searchInput = screen.getByLabelText('Search table');
-    userEvent.type(searchInput, 'Sample');
+    const user = userEvent.setup();
+    await user.type(searchInput, 'Sample');
     await waitFor(() => {
       expect(screen.getByText('Sample Article')).toBeInTheDocument();
     });
@@ -141,41 +142,46 @@ describe('TableWithSearch Component', () => {
 
     expect(screen.getByText('Clear all')).toBeInTheDocument();
   });
+
   it('clears all filters when clear all is clicked', async () => {
-    const { rerender } = renderWithClient(
+    const user = userEvent.setup();
+
+    renderWithClient(
       <TableWithSearch
         data={mockData}
         columns={mockColumns}
         {...defaultProps}
       />,
     );
-    // Find the filter and simulate a click
-    const typeButton = screen.getByRole('button', { name: /type/i });
-    await userEvent.click(typeButton);
-    const checkboxInput = screen.getByRole('checkbox', {
-      name: 'Resource Catalog',
+
+    await user.click(screen.getByRole('button', { name: /type/i }));
+
+    // Prefer scoping inside the popover/dialog if possible
+    const dialog = await screen.findByRole('dialog'); // or findByRole('dialog', { name: /type/i }) if it has an accessible name
+
+    const checkbox = await within(dialog).findByRole('checkbox', {
+      name: /resource catalog/i,
     });
-    // Simulate the user clicking the checkbox
-    await userEvent.click(checkboxInput);
-    expect(screen.getByText('Clear all')).toBeInTheDocument();
 
-    rerender(
-      <TableWithSearch
-        data={mockData}
-        columns={mockColumns}
-        {...defaultProps}
-      />,
-    );
+    await user.click(checkbox);
 
-    const clearAllContainer = screen.getByText('Clear all').parentElement;
+    // "Clear all" should show up once filter applied
+    const clearAll = await screen.findByText(/clear all/i);
 
+    const clearAllContainer = clearAll.parentElement;
     if (!clearAllContainer) throw new Error('Clear all container not found');
+
     const closeButton = within(clearAllContainer).getByRole('button', {
-      name: 'close',
+      name: /close/i,
     });
 
-    await userEvent.click(closeButton);
+    await user.click(closeButton);
 
-    expect(closeButton).not.toBeInTheDocument();
-  }, 8000);
+    // Don't do `expect(closeButton).not.toBeInTheDocument()` on the same node reference
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('button', { name: /close/i }),
+      ).not.toBeInTheDocument();
+    });
+  });
 });
