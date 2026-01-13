@@ -101,7 +101,7 @@ const TabLabels = ({
       <Text as='h2' {...textStyles}>
         {`${TAB_LABELS.DATASET}s`}
         <Tag {...tagStyles}>{datasetCount.toLocaleString()}</Tag>
-        {` and ${TAB_LABELS.RESOURCE_CATALOG}`}
+        {` and ${TAB_LABELS.RESOURCE_CATALOG}s`}
         <Tag {...tagStyles}>{resourceCatalogCount.toLocaleString()}</Tag>
       </Text>
     );
