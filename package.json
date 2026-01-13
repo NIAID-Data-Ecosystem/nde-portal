@@ -12,7 +12,7 @@
     "generate-footer-content": "tsx scripts/generate-footer-content.ts",
     "generate-metadata-completeness-fields": "tsx scripts/generate-metadata-completeness-fields.ts",
     "generate-schema-definitions": "yarn with-prod-env tsx scripts/generate-schema-definitions/index.ts",
-    "generate-sitemaps": "yarn with-prod-env tsx scripts/generate-dataset-sitemaps.ts && yarn with-prod-env next-sitemap",
+    "generate-dataset-sitemaps": "yarn with-prod-env tsx scripts/generate-dataset-sitemaps.ts",
     "prepare": "husky install",
     "release": "standard-version",
     "release:minor": "standard-version --release-as minor",

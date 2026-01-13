@@ -35,14 +35,25 @@ jobs:
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
           GITHUB_BRANCH: production
 
-      # Generate sitemaps
-      - name: Generate sitemaps
-        run: yarn generate-sitemaps
+      # Generate sitemaps for select resources.
+      - name: Generate dataset sitemaps
+        run: yarn generate-dataset-sitemaps
         env:
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
           GITHUB_BRANCH: production
 
+      # Pre-build step to generate built pages needed for sitemap generation
       - name: Build website
+        run: yarn build
+        env:
+          GH_API_KEY: ${{ secrets.GH_API_KEY }}
+          GITHUB_BRANCH: production
+
+      #  Run next-sitemap to generate sitemaps based on built pages
+      - name: Run next-sitemap
+        run: yarn with-prod-env next-sitemap
+
+      - name: Build website again (to include next-sitemap output in out/)
         run: yarn build
         env:
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
