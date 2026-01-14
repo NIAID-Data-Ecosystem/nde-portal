@@ -148,6 +148,12 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
     [visibleData.length, xScale],
   );
 
+  // Ensure minimum width for message display
+  const effectiveSvgWidth = useMemo(
+    () => (hasDataInRange ? svgWidth : Math.max(svgWidth, 360)),
+    [svgWidth, hasDataInRange],
+  );
+
   // "Fill in" the data where years are missing
   const updatedCounts = useMemo(() => {
     const filled = addMissingYears([...sanitizedUpdatedData]);
@@ -210,7 +216,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
             <Box
               as='svg'
               id='filters-histogram'
-              width={svgWidth + 40}
+              width={effectiveSvgWidth + 40}
               height={height + 30}
               style={{ overflow: 'visible' }}
             >
@@ -299,7 +305,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
                   <>
                     {/* Show message when no data in range */}
                     <text
-                      x={svgWidth / 2}
+                      x={effectiveSvgWidth / 2}
                       y={height / 2}
                       dy='1rem'
                       textAnchor='middle'
