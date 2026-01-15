@@ -1,5 +1,6 @@
 import { SearchFilter, SearchState, VizConfig } from '../types';
 import { useAggregationQuery } from '../hooks/useAggregationQuery';
+import { normalizeAggregateData } from '../helpers';
 
 type VisualizationCardProps = {
   config: VizConfig;
@@ -15,11 +16,14 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
   const { config, searchState, isActive, onAddFilter } = props;
 
   // Fetch aggregation data based on the config and search state.
-  const agg = useAggregationQuery({
+  const aggData = useAggregationQuery({
     property: config.property,
     searchState,
     enabled: isActive,
   });
+
+  // Normalize the aggregation data for chart consumption.
+  const facets = normalizeAggregateData(aggData.data);
 
   return <div>Visualization Card</div>;
 };
