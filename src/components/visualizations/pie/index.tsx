@@ -1,13 +1,18 @@
-import React, { useMemo, useState } from 'react';
+import React, { use, useMemo, useState } from 'react';
 import NextLink from 'next/link';
 import { UrlObject } from 'url';
 import { Box, Checkbox, Flex, Text, VisuallyHidden } from '@chakra-ui/react';
 import { animated, useTransition, to } from '@react-spring/web';
-import { Annotation, HtmlLabel } from '@visx/annotation';
+import {
+  Annotation,
+  CircleSubject,
+  Connector,
+  HtmlLabel,
+} from '@visx/annotation';
 import { localPoint } from '@visx/event';
 import { Group } from '@visx/group';
 import { useParentSize } from '@visx/responsive';
-import { scaleLog } from '@visx/scale';
+import { scaleLog, scaleOrdinal } from '@visx/scale';
 import Pie, { ProvidedProps, PieArcDatum } from '@visx/shape/lib/shapes/Pie';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { InfoLabel } from 'src/components/info-label';
@@ -17,7 +22,12 @@ import {
   TooltipSubtitle,
   TooltipTitle,
   TooltipWrapper,
-} from '../components/tooltip';
+} from 'src/views/diseases/disease/components/tooltip';
+import { schemeObservable10, schemeSet1 } from 'd3-scale-chromatic';
+import { ChartDatum } from 'src/views/search/components/summary/types';
+import { d } from 'node_modules/msw/lib/glossary-2792c6da';
+import { MORE_ID } from 'src/views/search/components/summary/helpers';
+import { theme } from 'src/theme';
 
 interface Datum {
   count: number;
@@ -28,7 +38,7 @@ interface Datum {
 // accessor functions
 const usage = (d: Datum) => d.pieValue;
 
-const defaultMargin = { top: 50, right: 20, bottom: 50, left: 20 };
+const defaultMargin = { top: 100, right: 100, bottom: 100, left: 100 };
 
 type LabelProps = React.SVGProps<SVGTextElement> & {
   transformLabel?: (label: string) => string;
@@ -45,22 +55,7 @@ export interface DonutChartProps {
   height?: number;
 
   /** Array of data values used to generate the chart. */
-  data: FacetTerm[];
-
-  /** Thickness of the donut's inner radius. @default 50 */
-  donutThickness?: number;
-
-  /** Function to determine the fill color of each slice by term. */
-  getFillColor: (term: string) => string;
-
-  /** Function to handle slice click events. */
-  getRoute: (term: string) => UrlObject;
-
-  /** Callback for handling click events on a pie slice. */
-  handleGATracking: (event: { label: string; count: number }) => void;
-
-  /** Optional label style and transform function. */
-  labelStyles?: LabelProps;
+  data: ChartDatum[];
 
   /** @default "{ top: 20, right: 20, bottom: 20, left: 20 }" */
   margin?: typeof defaultMargin;
@@ -68,14 +63,14 @@ export interface DonutChartProps {
   /** Whether to animate the chart transitions. @default true */
   animate?: boolean;
 
-  /** Whether to apply logarithmic scaling to values. @default true */
-  useLogScale?: boolean;
-
   /** Accessibilty title for the chart. */
   title: string;
 
   /** Accessibility description for the chart. */
   description: string;
+
+  /** Callback when a slice is clicked. */
+  onSliceClick?: (id: string) => void;
 }
 
 /**
@@ -95,198 +90,76 @@ export interface DonutChartProps {
  * />
  * ```
  */
+const donutThickness = 20;
+
+const getTermColor = (data: ChartDatum[]) =>
+  scaleOrdinal({
+    domain: data.map(d => d.id),
+    range: schemeObservable10 as string[],
+  });
+
 export const PieChart = ({
-  title,
-  description,
-  width: defaultWidth = 400,
-  height: defaultHeight = 400,
-  data,
-  donutThickness = 50,
-  getFillColor,
-  getRoute,
-  handleGATracking,
-  labelStyles,
+  width: initialWidth = 400,
+  height: initialHeight = 400,
   margin = defaultMargin,
   animate = true,
-  useLogScale = true,
+  data,
+  onSliceClick,
 }: DonutChartProps) => {
-  const { parentRef, width, height } = useParentSize({
-    debounceTime: 150,
-    initialSize: { width: defaultWidth, height: defaultHeight },
-  });
-  // State: whether to apply log scale or raw counts
-  const [applyLogScale, setApplyLogScale] = useState<boolean>(useLogScale);
+  // Use parent div to measure size for responsive rendering.
+  const { parentRef, ...dimensions } = useParentSize({ debounceTime: 150 });
 
-  // State: currently selected slice (for filtering, interaction between the data visualizations)
-  // const [selection, setSelection] = useState<string | null>(null);
-  // State: currently hovered slice (for opacity highlighting)
-  const [hoveredTerm, setHoveredTerm] = useState<string | null>(null);
-
-  // Dimensions
+  // Dimensions accounting for margins.
+  const width = dimensions.width || initialWidth;
+  const height = dimensions.height || initialHeight;
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
   const radius = Math.min(innerWidth, innerHeight) / 2;
   const centerY = innerHeight / 2;
   const centerX = innerWidth / 2;
-
-  const logScale = useMemo(
-    () =>
-      scaleLog({
-        domain: [1, Math.max(...data.map(d => d.count))],
-        range: [1, 100],
-      }),
-    [data],
-  );
-
-  // Tooltip handling
-  const {
-    tooltipData,
-    tooltipLeft,
-    tooltipTop,
-    tooltipOpen,
-    showTooltip,
-    hideTooltip,
-  } = useTooltip<Datum>();
-
-  const { containerRef, TooltipInPortal } = useTooltipInPortal({
-    detectBounds: true,
-    scroll: true,
-  });
-
-  // Show tooltip and track hovered term on pointer move
-  const handleMouseOver = (
-    event:
-      | React.PointerEvent<SVGPathElement>
-      | React.FocusEvent<SVGGElement, Element>,
-    datum: Datum,
-  ) => {
-    const targetEl = (event.target as SVGPathElement)?.ownerSVGElement;
-    if (!targetEl) return;
-    const coords = localPoint(targetEl, event);
-    setHoveredTerm(datum.term);
-
-    if (!coords) return;
-    showTooltip({
-      tooltipLeft: coords.x,
-      tooltipTop: coords.y,
-      tooltipData: datum,
-    });
-  };
-
-  // Transform data to apply log scale if needed.
-  const transformedData = useMemo(
-    () =>
-      data.map(d => ({
-        ...d,
-        // count: applyLogScale ? logScale(d.count) : d.count,
-        label: labelStyles?.transformLabel
-          ? labelStyles.transformLabel(d.term)
-          : d.term,
-        pieValue: applyLogScale ? logScale(d.count) : d.count,
-      })),
-    [applyLogScale, data, logScale, labelStyles],
-  );
-
+  // Color scale for the pie slices.
+  const colorScale = useMemo(() => getTermColor(data), [data]);
+  const viewKey = useMemo(() => data.map(d => d.id).join('|'), [data]);
   return (
-    <Flex
-      flexDirection='column'
-      alignItems='center'
-      position='relative'
-      minWidth={250}
-      width={{ base: '100%', md: 'unset' }}
-    >
-      {/* Donut Chart */}
-      <div ref={parentRef} style={{ width: '100%', height: `${height}px` }}>
-        <Box ref={containerRef} width={width} height={height}>
-          <VisuallyHidden>
-            <p id='donut-chart-title'>{title}</p>
-            <p id='donut-chart-desc'>{description}</p>
-          </VisuallyHidden>
-          <svg
-            role='img'
-            width={width}
-            height={height}
-            aria-labelledby='donut-chart-title'
-            aria-describedby='donut-chart-desc'
+    <Flex ref={parentRef} w='100%' h='100%'>
+      <svg width={width} height={height}>
+        <Group top={centerY + margin.top} left={centerX + margin.left}>
+          <Pie
+            key={viewKey}
+            data={data}
+            pieValue={d => d.value}
+            cornerRadius={3}
+            // pieSortValues={() => -1}
+            outerRadius={radius}
+            innerRadius={donutThickness}
           >
-            <Group top={centerY + margin.top} left={centerX + margin.left}>
-              <Pie
-                cornerRadius={2}
-                data={
-                  transformedData
-                  // Uncomment to filter data based on selection
-                  //  selection
-                  //   ? transformedData.filter(({ term }) => term === selection)
-                  //   : transformedData
-                }
-                innerRadius={Math.max(1, radius - donutThickness)}
+            {pie => (
+              <AnimatedPie<ChartDatum>
+                {...pie}
+                viewKey={viewKey}
+                margin={margin}
                 outerRadius={radius}
-                padAngle={0.005}
-                pieValue={usage}
-              >
-                {pie => (
-                  <AnimatedPie<Datum>
-                    {...pie}
-                    animate={animate}
-                    getKey={arc => arc.data.term}
-                    getColor={arc => getFillColor(arc.data.term)}
-                    getRoute={getRoute}
-                    handleMouseOver={handleMouseOver}
-                    handleMouseOut={() => {
-                      hideTooltip();
-                      setHoveredTerm(null);
-                    }}
-                    outerRadius={radius}
-                    hoveredTerm={hoveredTerm}
-                    labelStyles={labelStyles}
-                    dimensions={{ width, height }}
-                    handleGATracking={handleGATracking}
-                    // onClickDatum={({ data: { term } }) => {
-                    //   animate &&
-                    //     setSelection(
-                    //       selection && selection === term ? null : term,
-                    //     );
-                    // }}
-                  />
-                )}
-              </Pie>
-            </Group>
-          </svg>
-        </Box>
-      </div>
-
-      {/* Tooltip */}
-      {tooltipOpen && tooltipData && (
-        <TooltipInPortal
-          data-testid='tooltip'
-          // set this to random so it correctly updates with parent bounds
-          key={Math.random()}
-          left={tooltipLeft}
-          top={tooltipTop}
-          style={{
-            ...customTooltipStyles,
-            borderTopColor: getFillColor(tooltipData.term),
-          }}
-          aria-live='polite'
-        >
-          <TooltipWrapper showsSearchHint>
-            <TooltipTitle>{tooltipData.label}</TooltipTitle>
-            <TooltipSubtitle>
-              {`${tooltipData.count.toLocaleString()} result${
-                tooltipData.count == 1 ? '' : 's'
-              }`}
-            </TooltipSubtitle>
-          </TooltipWrapper>
-        </TooltipInPortal>
-      )}
+                animate={animate}
+                getKey={({ data: { id } }) => id}
+                getLabel={({ data: { label, value } }) => {
+                  return label;
+                }}
+                onClickDatum={({ data: { id } }) => {
+                  onSliceClick?.(id);
+                }}
+                getColor={({ data: { id } }) => colorScale(id)}
+              />
+            )}
+          </Pie>
+        </Group>
+      </svg>
     </Flex>
   );
 };
 
-// Transition config for react-spring
+// react-spring transition definitions
 type AnimatedStyles = { startAngle: number; endAngle: number; opacity: number };
 
-// Initial state for leave/enter transition (from full or zero rotation)
 const fromLeaveTransition = ({ endAngle }: PieArcDatum<any>) => ({
   // enter from 360° if end angle is > 180°
   startAngle: endAngle > Math.PI ? 2 * Math.PI : 0,
@@ -299,183 +172,138 @@ const enterUpdateTransition = ({ startAngle, endAngle }: PieArcDatum<any>) => ({
   opacity: 1,
 });
 
-type AnimatedPieProps<Datum extends { count: number }> =
-  ProvidedProps<Datum> & {
-    /** Whether to animate the pie chart transitions. */
-    animate?: boolean;
+type AnimatedPieProps<Datum> = ProvidedProps<Datum> & {
+  animate?: boolean;
+  getKey: (d: PieArcDatum<Datum>) => string;
+  getLabel: (d: PieArcDatum<Datum>) => string;
+  getColor: (d: PieArcDatum<Datum>) => string;
+  onClickDatum: (d: PieArcDatum<Datum>) => void;
+  delay?: number;
+  outerRadius: number;
+  margin: typeof defaultMargin;
+  viewKey: string;
+};
 
-    /** Array of pie arc data. */
-    arcs: PieArcDatum<Datum>[];
-
-    /** Dimensions of the chart */
-    dimensions: {
-      width: number;
-      height: number;
-    };
-
-    /** The term currently being hovered over, or `null` if none. */
-    hoveredTerm: string | null;
-
-    /** Styles for the labels displayed on the pie chart. */
-    labelStyles: DonutChartProps['labelStyles'];
-
-    /** Number representing the outer radius of the pie chart. */
-    outerRadius: number;
-
-    /** Function to determine the color of each pie slice. */
-    getColor: (d: PieArcDatum<Datum>) => string;
-
-    /** Function to generate a unique key for each pie slice. */
-    getKey: (d: PieArcDatum<Datum>) => string;
-
-    /** Function to determine the route associated with a pie slice. */
-    getRoute: DonutChartProps['getRoute'];
-
-    /** Callback for handling mouse-over events on a pie slice. */
-    handleMouseOver: (
-      e:
-        | React.PointerEvent<SVGPathElement>
-        | React.FocusEvent<SVGGElement, Element>,
-      d: PieArcDatum<Datum>['data'],
-    ) => void;
-
-    /** Callback for handling mouse-out events from a pie slice. */
-    handleMouseOut: () => void;
-
-    /** Callback for handling GA tracking events. */
-    handleGATracking: (event: { label: string; count: number }) => void;
-
-    /** Callback for handling click events on a pie slice. */
-    // onClickDatum: (d: PieArcDatum<Datum>) => void;
+function midArcPoint(
+  startAngle: number,
+  endAngle: number,
+  outerRadius: number,
+  padding = 0,
+) {
+  // Calculate the middle angle of the arc.
+  const midAngle = (startAngle + endAngle) / 2;
+  // Add padding to position label outside the pie's outer edge
+  const r = outerRadius + padding;
+  return {
+    // Subtract PI/2 to convert from standard trig (0° = right) to pie orientation (0° = top)
+    x: Math.cos(midAngle - Math.PI / 2) * r,
+    y: Math.sin(midAngle - Math.PI / 2) * r,
+    angle: midAngle,
   };
-
-// Arc rendering with animated transitions
-function AnimatedPie<Datum extends { count: number }>({
+}
+function AnimatedPie<Datum>({
   animate,
   arcs,
-  dimensions,
-  hoveredTerm,
   path,
-  labelStyles,
-  getKey,
-  getColor,
-  getRoute,
-  handleGATracking,
-  handleMouseOver,
-  handleMouseOut,
+  margin,
   outerRadius,
+  viewKey,
+  getKey,
+  getLabel,
+  getColor,
+  onClickDatum,
 }: AnimatedPieProps<Datum>) {
   const transitions = useTransition<PieArcDatum<Datum>, AnimatedStyles>(arcs, {
     from: animate ? fromLeaveTransition : enterUpdateTransition,
     enter: enterUpdateTransition,
     update: enterUpdateTransition,
     leave: animate ? fromLeaveTransition : enterUpdateTransition,
-    keys: getKey,
+    keys: arc => `${viewKey}:${getKey(arc)}`,
   });
+
+  // tweak this:
+  const MIN_LABEL_ANGLE = 0.14; // ~8 degrees
+
   return transitions((props, arc, { key }) => {
-    // For label positioning
-    const displayLabel = labelStyles?.transformLabel
-      ? labelStyles.transformLabel(getKey(arc))
-      : getKey(arc);
+    const sliceAngle = arc.endAngle - arc.startAngle;
+    const showLabel = sliceAngle >= MIN_LABEL_ANGLE;
 
-    // Find mid-angle of arc for labeling
-    const angle = (arc.startAngle + arc.endAngle) / 2;
-    const labelPadding = { x: 5, y: 5 };
-    const centroidX = Math.cos(angle - Math.PI / 2) * outerRadius;
-    const centroidY = Math.sin(angle - Math.PI / 2) * outerRadius;
+    // Subject position
+    const { x: sx, y: sy } = midArcPoint(
+      arc.startAngle,
+      arc.endAngle,
+      outerRadius,
+      0,
+    );
 
-    // label width should fit within the chart area aroundt the donut
-    const labelWidth =
-      (dimensions.width - outerRadius * 2) / 2 -
-      Math.max(labelPadding.x, labelPadding.y);
+    // Label position
+    const { x: lx, y: ly } = midArcPoint(
+      arc.startAngle,
+      arc.endAngle,
+      outerRadius + 10,
+      0,
+    );
 
-    // Check if there is enough space for the label
-    // If the arc is too small, we won't show the label
-    // If the label is too long, we won't show it
-    const hasSpaceForLabel =
-      arc.endAngle - arc.startAngle >= 0.1 && labelWidth > 50;
+    const horizontalAnchor: 'start' | 'end' = sx < 0 ? 'end' : 'start';
 
+    // Truncate labels
+    const edgeRight = outerRadius + margin.right;
+    const edgeLeft = -(outerRadius + margin.left);
+    const edgePad = 2;
+
+    const maxWidthPx =
+      horizontalAnchor === 'start'
+        ? Math.max(20, edgeRight - lx - edgePad)
+        : Math.max(20, lx - edgeLeft - edgePad);
     return (
-      <g
-        key={key}
-        tabIndex={arc.index}
-        onFocus={e => {
-          handleMouseOver(e, arc.data);
-        }}
-        onBlur={() => {
-          handleMouseOut();
-        }}
-      >
-        <NextLink
-          onClick={() =>
-            handleGATracking({ label: displayLabel, count: arc.data.count })
-          }
-          href={getRoute(getKey(arc))}
-          passHref
-        >
-          <animated.path
-            data-testid={`${getKey(arc)}-path`}
-            style={{
-              cursor: 'pointer',
-              userSelect: 'none',
-              transition: 'fill 0.2s, opacity 0.2s',
-              opacity: !hoveredTerm || getKey(arc) === hoveredTerm ? 1 : 0.5, // dim non-hovered arcs
-            }}
-            // compute interpolated path d attribute from intermediate angle values
-            d={to([props.startAngle, props.endAngle], (startAngle, endAngle) =>
-              path({
-                ...arc,
-                startAngle,
-                endAngle,
-              }),
-            )}
-            fill={getColor(arc)}
-            onClick={() => {
-              handleMouseOut();
-              // onClickDatum(arc);
-            }}
-            onPointerMove={e => {
-              handleMouseOver(e, arc.data);
-            }}
-            onMouseOut={handleMouseOut}
-          />
-          {/* Optional labels */}
-          {hasSpaceForLabel && (
-            <Annotation
-              x={centroidX}
-              y={centroidY}
-              dx={centroidX > 0 ? labelPadding.x : 0 - labelPadding.x}
-              dy={centroidY > 0 ? labelPadding.y : 0 - labelPadding.y}
-            >
-              <HtmlLabel
-                horizontalAnchor={centroidX > 0 ? 'start' : 'end'}
-                verticalAnchor='end'
-                containerStyle={{
-                  maxWidth: `${labelWidth}px`,
-                  overflow: 'hidden',
-                  pointerEvents: 'none',
-                  width: `${labelWidth}px`,
-                  textAlign: centroidX > 0 ? 'start' : 'end',
-                }}
-                showAnchorLine={false}
-              >
-                <Text
-                  color='text.heading'
-                  fontSize='xs'
-                  fontWeight='semibold'
-                  lineHeight='normal'
-                  sx={{
-                    hyphens: 'auto',
-                    whiteSpace: 'normal',
-                  }}
-                  noOfLines={2}
-                >
-                  {displayLabel}
-                </Text>
-              </HtmlLabel>
-            </Annotation>
+      <g key={key}>
+        <animated.path
+          d={to([props.startAngle, props.endAngle], (startAngle, endAngle) =>
+            path({ ...arc, startAngle, endAngle }),
           )}
-        </NextLink>
+          fill={getColor(arc)}
+          stroke='white'
+          strokeLinejoin='round'
+          strokeWidth='0.4'
+          style={{ opacity: props.opacity, cursor: 'pointer' }}
+          onClick={() => onClickDatum(arc)}
+          onTouchStart={() => onClickDatum(arc)}
+        />
+
+        {showLabel && (
+          <Annotation x={sx} y={sy} dx={lx - sx} dy={ly - sy}>
+            <CircleSubject radius={3} fill='none' stroke='none' />
+            <Connector type='elbow' stroke={getColor(arc)} />
+            <HtmlLabel
+              showAnchorLine={false}
+              horizontalAnchor={horizontalAnchor}
+              containerStyle={{
+                fontSize: '10px',
+                fontWeight: 'bold',
+                maxWidth: `${maxWidthPx}px`,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                textDecoration: getKey(arc) === MORE_ID ? 'underline' : 'none',
+                color:
+                  getKey(arc) === MORE_ID
+                    ? theme.colors.link.color
+                    : theme.colors.heading,
+              }}
+            >
+              <title>{getLabel(arc)}</title>
+              <div
+                style={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {getLabel(arc)}
+              </div>
+            </HtmlLabel>
+          </Annotation>
+        )}
       </g>
     );
   });

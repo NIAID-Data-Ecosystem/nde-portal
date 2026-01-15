@@ -1,4 +1,4 @@
-import { SimpleGrid } from '@chakra-ui/react';
+import { Flex, SimpleGrid } from '@chakra-ui/react';
 import { SearchState, VizConfig } from './types';
 import { VisualizationCard } from './components/visualization-card';
 
@@ -8,15 +8,14 @@ interface SummaryGridProps {
   // Search parameters from URL
   searchParams: SearchState;
   // What happens on filter update from visualization interaction
-  onFilterUpdate?: (update: Record<string, any>) => void;
+  onFilterUpdate?: (values: string[], facet: string) => void;
   // All available visualization configs
   configs: VizConfig[];
 }
 const SummaryGrid = (props: SummaryGridProps) => {
   return (
-    <>
-      <div>Summary Grid</div>
-      <SimpleGrid columns={3} spacing={8}>
+    <Flex direction='column' width='100%' bg='white'>
+      <SimpleGrid minChildWidth='400px' spacing={8} px={8} py={6}>
         {/* Map over config to render visualizations.*/}
         {props.configs.map(config => (
           <VisualizationCard
@@ -24,11 +23,11 @@ const SummaryGrid = (props: SummaryGridProps) => {
             config={config}
             searchState={props.searchParams}
             isActive={props.activeVizIds.includes(config.id)}
-            onAddFilter={filter => {}}
+            onFilterUpdate={props.onFilterUpdate}
           />
         ))}
       </SimpleGrid>
-    </>
+    </Flex>
   );
 };
 

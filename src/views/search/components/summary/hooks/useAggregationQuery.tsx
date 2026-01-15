@@ -28,6 +28,7 @@ export const useAggregationQuery = ({
     ...searchState,
     from: '' + searchState.from,
     filters: queryFilterObject2String(searchState.filters) || '',
+    extra_filter: queryFilterObject2String(searchState.filters) || '',
     facet_size: 100,
     facets: property,
     size: 0,
