@@ -3,6 +3,7 @@ import { useAggregationQuery } from '../hooks/useAggregationQuery';
 import { normalizeAggregateData } from '../helpers';
 import { usePreferredChartType } from '../hooks/usePreferredChartType';
 import { useEffect, useMemo } from 'react';
+import { ChartTypePicker } from './chart-picker';
 
 type VisualizationCardProps = {
   config: VizConfig;
@@ -50,11 +51,15 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
 
   // Normalize the aggregation data for chart consumption.
   const facets = normalizeAggregateData(aggData.data);
-
   return (
     <div>
       <h2>Visualization Card</h2>
-      {/* Add chart type selector */}
+      <ChartTypePicker
+        value={chartType}
+        options={config.chart.availableOptions}
+        onChange={setPreferredChartType}
+        isDisabled={!isActive}
+      />
       {/* Add chart component */}
     </div>
   );
