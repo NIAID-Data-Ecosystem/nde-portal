@@ -19,12 +19,11 @@ const VIZ_CONFIG = [
 // Area to work on the visual summary components for the search page
 const VisualSummaryPage: NextPage = () => {
   const queryParams = useSearchQueryFromURL();
-
   return (
     <SummaryGrid
       searchParams={queryParams}
       onFilterUpdate={() => {}}
-      activeVizIds={[]}
+      activeVizIds={['sources']}
       configs={VIZ_CONFIG}
     />
   );
