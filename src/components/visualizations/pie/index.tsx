@@ -28,6 +28,7 @@ import { ChartDatum } from 'src/views/search/components/summary/types';
 import { d } from 'node_modules/msw/lib/glossary-2792c6da';
 import { MORE_ID } from 'src/views/search/components/summary/helpers';
 import { theme } from 'src/theme';
+import { getMaxLabelWidthPx } from './helpers';
 
 interface Datum {
   count: number;
@@ -35,10 +36,8 @@ interface Datum {
   pieValue: number;
   term: string;
 }
-// accessor functions
-const usage = (d: Datum) => d.pieValue;
 
-const defaultMargin = { top: 100, right: 100, bottom: 100, left: 100 };
+const defaultMargin = { top: 50, right: 50, bottom: 50, left: 50 };
 
 type LabelProps = React.SVGProps<SVGTextElement> & {
   transformLabel?: (label: string) => string;
@@ -90,7 +89,6 @@ export interface DonutChartProps {
  * />
  * ```
  */
-const donutThickness = 20;
 
 const getTermColor = (data: ChartDatum[]) =>
   scaleOrdinal({
@@ -106,6 +104,7 @@ export const PieChart = ({
   data,
   onSliceClick,
 }: DonutChartProps) => {
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
   // Use parent div to measure size for responsive rendering.
   const { parentRef, ...dimensions } = useParentSize({ debounceTime: 150 });
 
@@ -114,40 +113,41 @@ export const PieChart = ({
   const height = dimensions.height || initialHeight;
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
-  const radius = Math.min(innerWidth, innerHeight) / 2;
+  const outerRadius = Math.min(innerWidth, innerHeight) / 2;
+  const donutThickness = Math.max(24, Math.min(150, outerRadius * 0.75));
+  const innerRadius = Math.max(0, outerRadius - donutThickness);
   const centerY = innerHeight / 2;
   const centerX = innerWidth / 2;
+
   // Color scale for the pie slices.
   const colorScale = useMemo(() => getTermColor(data), [data]);
   const viewKey = useMemo(() => data.map(d => d.id).join('|'), [data]);
+
   return (
     <Flex ref={parentRef} w='100%' h='100%'>
-      <svg width={width} height={height}>
+      <svg width={width} height={height} onClick={() => setHoveredId(null)}>
         <Group top={centerY + margin.top} left={centerX + margin.left}>
           <Pie
             key={viewKey}
             data={data}
             pieValue={d => d.value}
             cornerRadius={3}
-            // pieSortValues={() => -1}
-            outerRadius={radius}
-            innerRadius={donutThickness}
+            outerRadius={outerRadius}
+            innerRadius={innerRadius}
           >
             {pie => (
               <AnimatedPie<ChartDatum>
                 {...pie}
                 viewKey={viewKey}
                 margin={margin}
-                outerRadius={radius}
+                outerRadius={outerRadius}
                 animate={animate}
                 getKey={({ data: { id } }) => id}
-                getLabel={({ data: { label, value } }) => {
-                  return label;
-                }}
-                onClickDatum={({ data: { id } }) => {
-                  onSliceClick?.(id);
-                }}
+                getLabel={({ data: { label } }) => label}
+                onClickDatum={({ data: { id } }) => onSliceClick?.(id)}
                 getColor={({ data: { id } }) => colorScale(id)}
+                hoveredId={hoveredId}
+                setHoveredId={setHoveredId}
               />
             )}
           </Pie>
@@ -174,14 +174,16 @@ const enterUpdateTransition = ({ startAngle, endAngle }: PieArcDatum<any>) => ({
 
 type AnimatedPieProps<Datum> = ProvidedProps<Datum> & {
   animate?: boolean;
+  delay?: number;
+  hoveredId: string | null;
+  margin: typeof defaultMargin;
+  outerRadius: number;
+  viewKey: string;
   getKey: (d: PieArcDatum<Datum>) => string;
   getLabel: (d: PieArcDatum<Datum>) => string;
   getColor: (d: PieArcDatum<Datum>) => string;
   onClickDatum: (d: PieArcDatum<Datum>) => void;
-  delay?: number;
-  outerRadius: number;
-  margin: typeof defaultMargin;
-  viewKey: string;
+  setHoveredId: (id: string | null) => void;
 };
 
 function midArcPoint(
@@ -201,18 +203,36 @@ function midArcPoint(
     angle: midAngle,
   };
 }
+
 function AnimatedPie<Datum>({
   animate,
   arcs,
-  path,
+  hoveredId,
   margin,
   outerRadius,
+  path,
   viewKey,
   getKey,
   getLabel,
   getColor,
   onClickDatum,
+  setHoveredId,
 }: AnimatedPieProps<Datum>) {
+  const MIN_LABEL_ANGLE = 0.14; // ~8 degrees; avoids overlapping labels on tiny slices
+  const DIM_OPACITY = 0.5; // opacity for non-hovered slices
+
+  // Handlers for hover state
+  const handleHoverOn = (id: string) => setHoveredId(id);
+  const handleHoverOff = () => setHoveredId(null);
+  const handleHoverReset = () => setHoveredId(null);
+
+  // Click handler for a slice and label
+  const handleClick = (arc: PieArcDatum<Datum>) => {
+    // Reset hover so the “dimmed” state doesn’t stick after interaction.
+    handleHoverReset();
+    onClickDatum(arc);
+  };
+
   const transitions = useTransition<PieArcDatum<Datum>, AnimatedStyles>(arcs, {
     from: animate ? fromLeaveTransition : enterUpdateTransition,
     enter: enterUpdateTransition,
@@ -221,14 +241,26 @@ function AnimatedPie<Datum>({
     keys: arc => `${viewKey}:${getKey(arc)}`,
   });
 
-  // tweak this:
-  const MIN_LABEL_ANGLE = 0.14; // ~8 degrees
+  return transitions((spring, arc, { key }) => {
+    const id = getKey(arc);
+    const label = getLabel(arc);
 
-  return transitions((props, arc, { key }) => {
+    // Determine if label should be shown based on slice angle
     const sliceAngle = arc.endAngle - arc.startAngle;
     const showLabel = sliceAngle >= MIN_LABEL_ANGLE;
 
-    // Subject position
+    // Determine if this slice is dimmed due to another slice being hovered
+    const isDimmed = hoveredId !== null && hoveredId !== id;
+
+    // Multiply your spring opacity by dimming
+    const sliceOpacity = to(
+      [spring.opacity],
+      o => o * (isDimmed ? DIM_OPACITY : 1),
+    );
+    const labelOpacity = isDimmed ? DIM_OPACITY : 1;
+
+    // Subject (dot) and label positions are based on the arc mid-angle.
+    // Subject position is at the outer edge of the pie.
     const { x: sx, y: sy } = midArcPoint(
       arc.startAngle,
       arc.endAngle,
@@ -236,7 +268,7 @@ function AnimatedPie<Datum>({
       0,
     );
 
-    // Label position
+    // Label position is outside the pie with some padding.
     const { x: lx, y: ly } = midArcPoint(
       arc.startAngle,
       arc.endAngle,
@@ -244,85 +276,124 @@ function AnimatedPie<Datum>({
       0,
     );
 
+    // Determine label anchor based on which side of the pie it is on.
     const horizontalAnchor: 'start' | 'end' = sx < 0 ? 'end' : 'start';
 
-    // Truncate labels
-    const edgeRight = outerRadius + margin.right;
-    const edgeLeft = -(outerRadius + margin.left);
-    const edgePad = 2;
+    // Determine max label width (for truncation) based on which side of the chart it's on.
+    const maxWidthPx = getMaxLabelWidthPx({
+      horizontalAnchor,
+      labelX: lx,
+      outerRadius,
+      margin,
+    });
 
-    const maxWidthPx =
-      horizontalAnchor === 'start'
-        ? Math.max(20, edgeRight - lx - edgePad)
-        : Math.max(20, lx - edgeLeft - edgePad);
+    // Some slices are grouped into a "More" category.
+    const isMore = id === MORE_ID;
+
     return (
       <g key={key}>
         <animated.path
-          d={to([props.startAngle, props.endAngle], (startAngle, endAngle) =>
+          d={to([spring.startAngle, spring.endAngle], (startAngle, endAngle) =>
             path({ ...arc, startAngle, endAngle }),
           )}
           fill={getColor(arc)}
           stroke='white'
           strokeLinejoin='round'
           strokeWidth='0.4'
-          style={{ opacity: props.opacity, cursor: 'pointer' }}
-          onClick={() => onClickDatum(arc)}
-          onTouchStart={() => onClickDatum(arc)}
+          style={{ opacity: sliceOpacity, cursor: 'pointer' }}
+          onClick={() => handleClick(arc)}
+          onTouchStart={() => handleClick(arc)}
+          onMouseEnter={() => handleHoverOn(id)}
+          onMouseLeave={handleHoverOff}
         />
 
         {showLabel && (
           <Annotation x={sx} y={sy} dx={lx - sx} dy={ly - sy}>
             <CircleSubject radius={3} fill='none' stroke='none' />
             <Connector type='elbow' stroke={getColor(arc)} />
-            <HtmlLabel
-              showAnchorLine={false}
+            <PieSliceLabel<Datum>
+              label={label}
+              maxWidthPx={maxWidthPx}
+              opacity={labelOpacity}
               horizontalAnchor={horizontalAnchor}
-              containerStyle={{
-                fontSize: '10px',
-                fontWeight: 'bold',
-                maxWidth: `${maxWidthPx}px`,
-
-                color:
-                  getKey(arc) === MORE_ID
-                    ? theme.colors.link.color
-                    : theme.colors.heading,
-              }}
-            >
-              <title>{getLabel(arc)}</title>
-
-              <div
-                role='button'
-                tabIndex={0}
-                onClick={e => {
-                  e.stopPropagation(); // prevent bubbling to the svg/group (optional)
-                  onClickDatum(arc);
-                }}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onClickDatum(arc);
-                  }
-                }}
-                style={{
-                  maxWidth: `${maxWidthPx}px`,
-
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  cursor: 'pointer',
-                  display: 'inline-block',
-                  pointerEvents: 'auto',
-                  textDecoration:
-                    getKey(arc) === MORE_ID ? 'underline' : 'none',
-                }}
-              >
-                {getLabel(arc)}
-              </div>
-            </HtmlLabel>
+              isMore={isMore}
+              handleClick={() => handleClick(arc)}
+              handleHoverOn={() => handleHoverOn(id)}
+              handleHoverOff={handleHoverOff}
+            />
           </Annotation>
         )}
       </g>
     );
   });
+}
+
+type PieSliceLabelProps<Datum> = {
+  label: string;
+  maxWidthPx: number;
+  opacity: number;
+  horizontalAnchor: 'start' | 'end';
+  isMore: boolean;
+  handleClick: () => void;
+  handleHoverOn: () => void;
+  handleHoverOff: () => void;
+};
+
+function PieSliceLabel<Datum>({
+  label,
+  maxWidthPx,
+  opacity,
+  horizontalAnchor,
+  isMore,
+  handleClick,
+  handleHoverOn,
+  handleHoverOff,
+}: PieSliceLabelProps<Datum>) {
+  return (
+    <HtmlLabel
+      showAnchorLine={false}
+      horizontalAnchor={horizontalAnchor}
+      containerStyle={{
+        fontSize: '10px',
+        fontWeight: 'bold',
+        maxWidth: `${maxWidthPx}px`,
+        opacity,
+        color: isMore ? theme.colors.link.color : theme.colors.heading,
+      }}
+    >
+      {/* native tooltip */}
+      <title>{label}</title>
+      <div
+        role='button'
+        tabIndex={0}
+        onBlur={handleHoverOff}
+        onFocus={handleHoverOn}
+        onMouseEnter={handleHoverOn}
+        onMouseLeave={handleHoverOff}
+        onClick={e => {
+          e.stopPropagation();
+          handleClick();
+        }}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            e.stopPropagation();
+            handleClick();
+          }
+        }}
+        style={{
+          maxWidth: `${maxWidthPx}px`,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          cursor: 'pointer',
+          display: 'inline-block',
+          pointerEvents: 'auto',
+          textDecoration: isMore ? 'underline' : 'none',
+        }}
+      >
+        {label}
+      </div>
+    </HtmlLabel>
+  );
 }
