@@ -14,6 +14,7 @@ import { Group } from '@visx/group';
 import { useParentSize } from '@visx/responsive';
 import { scaleLog, scaleOrdinal } from '@visx/scale';
 import Pie, { ProvidedProps, PieArcDatum } from '@visx/shape/lib/shapes/Pie';
+import { arc as d3Arc } from 'd3-shape';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { InfoLabel } from 'src/components/info-label';
 import { FacetTerm } from 'src/utils/api/types';
@@ -140,6 +141,7 @@ export const PieChart = ({
                 {...pie}
                 viewKey={viewKey}
                 margin={margin}
+                innerRadius={innerRadius}
                 outerRadius={outerRadius}
                 animate={animate}
                 getKey={({ data: { id } }) => id}
@@ -176,6 +178,7 @@ type AnimatedPieProps<Datum> = ProvidedProps<Datum> & {
   animate?: boolean;
   delay?: number;
   hoveredId: string | null;
+  innerRadius: number;
   margin: typeof defaultMargin;
   outerRadius: number;
   viewKey: string;
@@ -209,6 +212,7 @@ function AnimatedPie<Datum>({
   arcs,
   hoveredId,
   margin,
+  innerRadius,
   outerRadius,
   path,
   viewKey,
@@ -219,8 +223,9 @@ function AnimatedPie<Datum>({
   setHoveredId,
 }: AnimatedPieProps<Datum>) {
   const MIN_LABEL_ANGLE = 0.14; // ~8 degrees; avoids overlapping labels on tiny slices
+  const LABEL_PADDING = 16; // padding from outer edge of pie to label
   const DIM_OPACITY = 0.5; // opacity for non-hovered slices
-
+  const HOVER_RAISE = Math.max(6, Math.min(8, outerRadius * 0.08));
   // Handlers for hover state
   const handleHoverOn = (id: string) => setHoveredId(id);
   const handleHoverOff = () => setHoveredId(null);
@@ -244,15 +249,16 @@ function AnimatedPie<Datum>({
   return transitions((spring, arc, { key }) => {
     const id = getKey(arc);
     const label = getLabel(arc);
+    const isHovered = hoveredId === id;
 
     // Determine if label should be shown based on slice angle
     const sliceAngle = arc.endAngle - arc.startAngle;
     const showLabel = sliceAngle >= MIN_LABEL_ANGLE;
 
     // Determine if this slice is dimmed due to another slice being hovered
-    const isDimmed = hoveredId !== null && hoveredId !== id;
+    const isDimmed = hoveredId !== null && !isHovered;
 
-    // Multiply your spring opacity by dimming
+    // Multiply spring opacity by dimming
     const sliceOpacity = to(
       [spring.opacity],
       o => o * (isDimmed ? DIM_OPACITY : 1),
@@ -272,7 +278,7 @@ function AnimatedPie<Datum>({
     const { x: lx, y: ly } = midArcPoint(
       arc.startAngle,
       arc.endAngle,
-      outerRadius + 10,
+      outerRadius + LABEL_PADDING,
       0,
     );
 
@@ -290,8 +296,30 @@ function AnimatedPie<Datum>({
     // Some slices are grouped into a "More" category.
     const isMore = id === MORE_ID;
 
+    // For hover "raise" effect
+    const effectiveOuterRadius = outerRadius + (isHovered ? HOVER_RAISE : 0);
+
+    const arcPath = d3Arc<any>()
+      .innerRadius(innerRadius)
+      .outerRadius(effectiveOuterRadius)
+      .cornerRadius(5);
+
     return (
       <g key={key}>
+        <animated.path
+          d={to(
+            [spring.startAngle, spring.endAngle],
+            (startAngle, endAngle) =>
+              arcPath({ ...arc, startAngle, endAngle }) ?? '',
+          )}
+          fill={getColor(arc)}
+          style={{ opacity: 0.5, cursor: 'pointer' }}
+          onClick={() => onClickDatum(arc)}
+          onTouchStart={() => handleClick(arc)}
+          onMouseEnter={() => handleHoverOn(id)}
+          onMouseLeave={handleHoverOff}
+        />
+
         <animated.path
           d={to([spring.startAngle, spring.endAngle], (startAngle, endAngle) =>
             path({ ...arc, startAngle, endAngle }),
