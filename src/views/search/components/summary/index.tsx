@@ -15,7 +15,7 @@ interface SummaryGridProps {
 const SummaryGrid = (props: SummaryGridProps) => {
   return (
     <Flex direction='column' width='100%' bg='white'>
-      <SimpleGrid minChildWidth='400px' spacing={8} px={8} py={6}>
+      <SimpleGrid minChildWidth='200px' spacing={8} px={8} py={6}>
         {/* Map over config to render visualizations.*/}
         {props.configs.map(config => (
           <VisualizationCard

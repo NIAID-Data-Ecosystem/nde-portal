@@ -281,10 +281,7 @@ function AnimatedPie<Datum>({
                 fontSize: '10px',
                 fontWeight: 'bold',
                 maxWidth: `${maxWidthPx}px`,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                textDecoration: getKey(arc) === MORE_ID ? 'underline' : 'none',
+
                 color:
                   getKey(arc) === MORE_ID
                     ? theme.colors.link.color
@@ -292,11 +289,32 @@ function AnimatedPie<Datum>({
               }}
             >
               <title>{getLabel(arc)}</title>
+
               <div
+                role='button'
+                tabIndex={0}
+                onClick={e => {
+                  e.stopPropagation(); // prevent bubbling to the svg/group (optional)
+                  onClickDatum(arc);
+                }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onClickDatum(arc);
+                  }
+                }}
                 style={{
+                  maxWidth: `${maxWidthPx}px`,
+
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
+                  cursor: 'pointer',
+                  display: 'inline-block',
+                  pointerEvents: 'auto',
+                  textDecoration:
+                    getKey(arc) === MORE_ID ? 'underline' : 'none',
                 }}
               >
                 {getLabel(arc)}
