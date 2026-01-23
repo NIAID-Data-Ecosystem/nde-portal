@@ -26,22 +26,11 @@ import {
 } from 'src/views/diseases/disease/components/tooltip';
 import { schemeObservable10 } from 'd3-scale-chromatic';
 import { ChartDatum } from 'src/views/search/components/summary/types';
-import { MORE_ID } from 'src/views/search/components/summary/helpers';
+import { isMoreSlice } from 'src/views/search/components/summary/helpers';
 import { theme } from 'src/theme';
 import { getMaxLabelWidthPx } from './helpers';
 
-interface Datum {
-  count: number;
-  label: string;
-  pieValue: number;
-  term: string;
-}
-
-const defaultMargin = { top: 50, right: 50, bottom: 50, left: 50 };
-
-type LabelProps = React.SVGProps<SVGTextElement> & {
-  transformLabel?: (label: string) => string;
-};
+const defaultMargin = { top: 30, right: 100, bottom: 20, left: 100 };
 
 /**
  * Props for the DonutChart component.
@@ -96,6 +85,8 @@ const getTermColor = (data: ChartDatum[]) =>
     range: schemeObservable10 as string[],
   });
 
+const PIE_SCALE = 1;
+
 export const PieChart = ({
   width: initialWidth = 400,
   height: initialHeight = 400,
@@ -113,7 +104,7 @@ export const PieChart = ({
   const height = dimensions.height || initialHeight;
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
-  const outerRadius = Math.min(innerWidth, innerHeight) / 2;
+  const outerRadius = (Math.min(innerWidth, innerHeight) / 2) * PIE_SCALE;
   const donutThickness = Math.max(24, Math.min(150, outerRadius * 0.75));
   const innerRadius = Math.max(0, outerRadius - donutThickness);
   const centerY = innerHeight / 2;
@@ -293,7 +284,7 @@ function AnimatedPie<Datum>({
     });
 
     // Some slices are grouped into a "More" category.
-    const isMore = id === MORE_ID;
+    const isMore = isMoreSlice(id);
 
     // For hover "raise" effect
     const effectiveOuterRadius = outerRadius + (isHovered ? HOVER_RAISE : 0);
@@ -313,10 +304,6 @@ function AnimatedPie<Datum>({
           )}
           fill={getColor(arc)}
           style={{ opacity: 0.5, cursor: 'pointer' }}
-          onClick={() => onClickDatum(arc)}
-          onTouchStart={() => handleClick(arc)}
-          onMouseEnter={() => handleHoverOn(id)}
-          onMouseLeave={handleHoverOff}
         />
 
         <animated.path
@@ -417,6 +404,7 @@ function PieSliceLabel<Datum>({
           display: 'inline-block',
           pointerEvents: 'auto',
           textDecoration: isMore ? 'underline' : 'none',
+          paddingBottom: isMore ? '0.5rem' : 0,
         }}
       >
         {label}
