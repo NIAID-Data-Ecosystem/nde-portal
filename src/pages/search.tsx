@@ -1,9 +1,12 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
-import { SearchTabsProvider } from 'src/views/search/context/search-tabs-context';
+import {
+  SearchTabsProvider,
+  DEFAULT_TAB_ID,
+} from 'src/views/search/context/search-tabs-context';
 import { useSearchQueryFromURL } from 'src/views/search/hooks/useSearchQueryFromURL';
 import { Box, Flex, VStack } from '@chakra-ui/react';
 import { Filters } from 'src/views/search/components/filters';
@@ -22,7 +25,6 @@ import { SearchResultsHeader } from 'src/views/search/components/search-results-
 import { PaginationProvider } from 'src/views/search/context/pagination-context';
 import { SearchResultsController } from 'src/views/search/components/search-results-tabs-controller';
 import { fetchSearchResults } from 'src/utils/api';
-import { TabType } from 'src/views/search/types';
 import { tabs } from 'src/views/search/config/tabs';
 import { OntologyBrowserPopup } from 'src/views/ontology-browser/components/popup';
 import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
@@ -78,18 +80,6 @@ const Search: NextPage<{
     });
   }, [handleRouteUpdate]);
 
-  // Set the initial tab based on the router query
-  const [initialTab, setInitialTab] = useState<TabType['id'] | null>(null);
-
-  useEffect(() => {
-    if (!router.isReady) return;
-
-    const defaultTab = tabs.find(t => t.isDefault)?.id || tabs[0].id;
-    const tabParamId = router.query.tab as string;
-    const tab = tabs.find(t => t.id === tabParamId);
-    setInitialTab(tab?.id || defaultTab);
-  }, [router]);
-
   // Apply default date filter on first load only
   useEffect(() => {
     if (!router.isReady) return;
@@ -129,10 +119,12 @@ const Search: NextPage<{
     });
   }, [router.isReady, selectedFilters, handleRouteUpdate]);
 
-  // If the initial tab is not set, return a loading state.
-  if (!initialTab) {
-    return null;
-  }
+  // Get initial tab from URL or use default
+  const initialTab = useMemo(() => {
+    const tabFromUrl = router.query.tab as string;
+    const tab = tabs.find(t => t.id === tabFromUrl);
+    return tab?.id || DEFAULT_TAB_ID;
+  }, [router.query.tab]);
 
   return (
     <PageContainer
