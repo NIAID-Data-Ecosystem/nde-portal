@@ -1,8 +1,4 @@
-import {
-  Facet,
-  FacetTerm,
-  FetchSearchResultsResponse,
-} from 'src/utils/api/types';
+import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
 import { ChartDatum, ChartType } from './types';
 import { PieChart } from 'src/components/visualizations/pie';
 
@@ -16,67 +12,59 @@ export const normalizeAggregateData = (
 
 export const MORE_ID = '__more__';
 export const DEFAULT_MORE_PARAMS = {
-  maxSlices: 7,
-  minPercent: 0.03,
-  moreId: MORE_ID,
+  minPercent: 0.01,
   moreLabel: 'More',
 };
+export const isMoreSlice = (id: string) => id === MORE_ID;
 
 // Group small value buckets into a "More" category for better visualization.
 export const bucketSmallValues = (
   data: ChartDatum[],
-  opts?: {
-    maxSlices?: number;
-    minPercent?: number;
-    moreId?: string;
-    moreLabel?: string;
-  },
-): { chartData: ChartDatum[]; moreItems: ChartDatum[] } => {
-  const {
-    maxSlices = DEFAULT_MORE_PARAMS.maxSlices,
-    minPercent = DEFAULT_MORE_PARAMS.minPercent,
-    moreId = DEFAULT_MORE_PARAMS.moreId,
-    moreLabel = DEFAULT_MORE_PARAMS.moreLabel,
-  } = opts ?? {};
+  opts: { minPercent: number; moreLabel?: string } = DEFAULT_MORE_PARAMS,
+) => {
+  const minPercent = opts.minPercent ?? 0.01; // min percent to show individually
+  const moreLabel = opts.moreLabel ?? 'More';
 
-  const cleaned = data
-    .filter(d => Number.isFinite(d.value) && d.value > 0)
-    .slice()
-    .sort((a, b) => b.value - a.value);
+  // Sort descending so large slices are always rendered first
+  const sorted = [...data].sort((a, b) => b.value - a.value);
 
-  const total = cleaned.reduce((s, d) => s + d.value, 0);
-  if (total === 0) return { chartData: [], moreItems: [] };
+  // Total is used to compute percentage contribution
+  const total = sorted.reduce((s, d) => s + d.value, 0);
 
-  // keep = slices rendered directly
-  // more = slices grouped into "More"
-  const keep: ChartDatum[] = [];
-  const more: ChartDatum[] = [];
-
-  for (const d of cleaned) {
-    const pct = d.value / total;
-
-    // Keep the item if:
-    // - we haven't exceeded the slice limit AND
-    // - the item represents a meaningful portion of the total
-    if (keep.length < maxSlices && pct >= minPercent) keep.push(d);
-    else more.push(d);
+  // No data or invalid totals = skip bucketing
+  if (!sorted.length || total <= 0) {
+    return { data: sorted, tail: [] as ChartDatum[] };
   }
 
-  if (more.length === 0) return { chartData: keep, moreItems: [] };
+  const visible: ChartDatum[] = [];
+  const tail: ChartDatum[] = [];
 
-  // Aggregate all "more" values into a single slice
-  const moreValue = more.reduce((s, d) => s + d.value, 0);
+  // Partition data into visible slices vs. "More"
+  for (const d of sorted) {
+    const pct = d.value / total;
+    if (pct >= minPercent) visible.push(d);
+    else tail.push(d);
+  }
+
+  // If nothing to bucket, return original
+  if (tail.length === 0) {
+    return { data: visible, tail };
+  }
+
+  // Aggregate tail values into a single value
+  const moreValue = tail.reduce((s, d) => s + d.value, 0);
+  const moreItems = tail.length; // number of items in "More"
 
   return {
-    chartData: [
-      ...keep,
+    data: [
+      ...visible,
       {
-        id: moreId,
-        label: `${moreLabel}... (${more.length.toLocaleString()})`,
+        id: MORE_ID,
         value: moreValue,
+        label: `${moreLabel} (${moreItems})`,
       },
     ],
-    moreItems: more,
+    tail,
   };
 };
 

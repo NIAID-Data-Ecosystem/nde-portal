@@ -1,22 +1,17 @@
-import {
-  ChartDatum,
-  ChartType,
-  SearchFilter,
-  SearchState,
-  VizConfig,
-} from '../types';
+import { ChartDatum, ChartType, SearchState, VizConfig } from '../types';
 import { useAggregationQuery } from '../hooks/useAggregationQuery';
 import {
   bucketSmallValues,
   chartRegistry,
   DEFAULT_MORE_PARAMS,
-  MORE_ID,
+  isMoreSlice,
   normalizeAggregateData,
 } from '../helpers';
 import { usePreferredChartType } from '../hooks/usePreferredChartType';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChartTypePicker } from './chart-picker';
-import { Box, Button, Flex, HStack } from '@chakra-ui/react';
+import { Button, Flex, Icon } from '@chakra-ui/react';
+import { FaArrowLeft } from 'react-icons/fa6';
 
 type VisualizationCardProps = {
   config: VizConfig;
@@ -30,8 +25,8 @@ type VisualizationCardProps = {
 
 export const VisualizationCard = (props: VisualizationCardProps) => {
   const { config, searchState, isActive, onFilterUpdate } = props;
-  // State to manage drill-down mode for "More" category.
-  const [drillMode, setDrillMode] = useState<'all' | 'more'>('all');
+  // Drill stack to manage "More" drill-downs.
+  const [drillStack, setDrillStack] = useState<ChartDatum[][]>([]);
 
   // Use preferred chart type hook to manage user preference.
   const [preferredChartType, setPreferredChartType] = usePreferredChartType(
@@ -74,30 +69,28 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
     );
   }, [facetData, chartType, config.formatting]);
 
-  // [TO DO]: extend to other types of charts
-  const prepared = useMemo(() => {
-    const base = chartData ?? [];
+  // Minimum percent threshold for bucketing into "More"
+  const minPercent = config.chart?.pie?.minPercent ?? 0.01;
 
-    const maxSlices = config.chart?.pie?.maxSlices;
-    const minPercent = config.chart?.pie?.minPercent;
+  // Current level data based on drill stack.
+  const currentLevelData = useMemo(() => {
+    return drillStack.length ? drillStack[drillStack.length - 1] : chartData;
+  }, [chartData, drillStack]);
 
-    const { chartData: bucketedData, moreItems } = bucketSmallValues(base, {
-      maxSlices,
+  // Bucket small values into "More"
+  const { bucketedData, tail } = useMemo(() => {
+    const { data, tail } = bucketSmallValues(currentLevelData || [], {
       minPercent,
+      moreLabel: DEFAULT_MORE_PARAMS.moreLabel,
     });
 
-    // drill mode: show only the items inside "More"
-    if (drillMode === 'more') {
-      return { data: moreItems, moreItems: [] as ChartDatum[] };
-    }
-
-    return { data: bucketedData, moreItems };
-  }, [chartData, chartType, config.chart, drillMode]);
+    return { bucketedData: data, tail };
+  }, [currentLevelData, minPercent]);
 
   // If the query/config changes, reset drill mode
   useEffect(() => {
-    setDrillMode('all');
-  }, [config.id, chartType, facetData?.length]);
+    setDrillStack([]);
+  }, [config.id, config.property, chartType, facetData?.length, minPercent]);
 
   useEffect(() => {
     // If preferred chart type is no longer valid, reset to default.
@@ -105,6 +98,25 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
       setPreferredChartType(config.chart.defaultOption);
     }
   }, [config.chart.availableOptions.join('|')]);
+
+  // Handler for back navigation in drill stack.
+  const handleBack = useCallback(() => {
+    setDrillStack(stack => stack.slice(0, -1));
+  }, []);
+
+  // Handler for slice clicks in the chart.
+  const handleSliceClick = useCallback(
+    (id: string) => {
+      if (isMoreSlice(id)) {
+        if (tail.length > 0) {
+          setDrillStack(stack => [...stack, tail]);
+        }
+        return;
+      }
+      onFilterUpdate?.([id], config.property);
+    },
+    [tail, onFilterUpdate, config.property],
+  );
 
   // if (!isActive) {
   //   return <>Inactive State</>;
@@ -139,34 +151,28 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
           isDisabled={!isActive}
         />
       </Flex>
-      {drillMode === 'more' && (
+      {drillStack.length > 0 && (
         <Flex alignItems='center' fontSize='xs'>
           <Button
             size='xs'
             variant='ghost'
-            onClick={() => setDrillMode('all')}
+            onClick={handleBack}
             color='link.color'
             textDecoration='underline'
+            mr={2}
           >
-            {config.label}{' '}
-          </Button>{' '}
-          / {DEFAULT_MORE_PARAMS.moreLabel}...
+            <Icon as={FaArrowLeft} boxSize={3} mr={1} />
+            Back
+          </Button>
+          {config.label} / {DEFAULT_MORE_PARAMS.moreLabel}...
         </Flex>
       )}
-      <ChartComponent
-        data={prepared.data || []}
-        getRoute={() => {
-          return '';
-        }}
-        onSliceClick={(id: string) => {
-          if (drillMode === 'all' && id === MORE_ID) {
-            setDrillMode('more');
-            return;
-          } else {
-            onFilterUpdate && onFilterUpdate([id], config.property);
-          }
-        }}
-      />
+      <Flex h='clamp(180px, 30vh, 250px)'>
+        <ChartComponent
+          data={bucketedData || []}
+          onSliceClick={handleSliceClick}
+        />
+      </Flex>
     </Flex>
   );
 };

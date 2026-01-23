@@ -24,9 +24,8 @@ import {
   TooltipTitle,
   TooltipWrapper,
 } from 'src/views/diseases/disease/components/tooltip';
-import { schemeObservable10, schemeSet1 } from 'd3-scale-chromatic';
+import { schemeObservable10 } from 'd3-scale-chromatic';
 import { ChartDatum } from 'src/views/search/components/summary/types';
-import { d } from 'node_modules/msw/lib/glossary-2792c6da';
 import { MORE_ID } from 'src/views/search/components/summary/helpers';
 import { theme } from 'src/theme';
 import { getMaxLabelWidthPx } from './helpers';
