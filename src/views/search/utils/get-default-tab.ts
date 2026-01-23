@@ -1,4 +1,5 @@
 import { TabType } from '../types';
+import { DEFAULT_TAB_ID } from '../context/search-tabs-context';
 
 interface TypeCount {
   type: string;
@@ -21,7 +22,7 @@ const PRIORITY_ORDER = {
  *     a. If any selected type has results, show highest priority selected type with results
  *     b. If all selected types have 0 results, show highest priority selected type (even with 0)
  *   If no type filters are selected, show highest priority tab with results
- *   If there are no results at all, default to "d" tab
+ *   If there are no results at all, default to DEFAULT_TAB_ID
  */
 export const getDefaultTabId = (
   tabs: TabType[],
@@ -49,8 +50,7 @@ export const getDefaultTabId = (
     // Case 1a: Only one type selected -> always show that tab
     if (selectedTypes.length === 1) {
       const tab = findTabForType(selectedTypes[0]);
-      const result = tab?.id || tabs.find(t => t.isDefault)?.id || 'd';
-      return result;
+      return tab?.id || DEFAULT_TAB_ID;
     }
 
     // Case 1b: Multiple types selected
@@ -68,14 +68,12 @@ export const getDefaultTabId = (
       );
       if (typeWithResults) {
         const tab = findTabForType(typeWithResults);
-        const result = tab?.id || tabs.find(t => t.isDefault)?.id || 'd';
-        return result;
+        return tab?.id || DEFAULT_TAB_ID;
       }
     } else {
       // All selected types have 0 results -> use highest priority selected type
       const tab = findTabForType(sortedSelectedTypes[0]);
-      const result = tab?.id || tabs.find(t => t.isDefault)?.id || 'd';
-      return result;
+      return tab?.id || DEFAULT_TAB_ID;
     }
   }
 
@@ -95,6 +93,6 @@ export const getDefaultTabId = (
     }
   }
 
-  // Case 3: No results at all -> default to "d" tab
-  return tabs.find(t => t.isDefault)?.id || 'd';
+  // Case 3: No results at all -> default to DEFAULT_TAB_ID
+  return DEFAULT_TAB_ID;
 };

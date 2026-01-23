@@ -3,7 +3,10 @@ import { useRouter } from 'next/router';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
-import { SearchTabsProvider } from 'src/views/search/context/search-tabs-context';
+import {
+  SearchTabsProvider,
+  DEFAULT_TAB_ID,
+} from 'src/views/search/context/search-tabs-context';
 import { useSearchQueryFromURL } from 'src/views/search/hooks/useSearchQueryFromURL';
 import { Box, Flex, VStack } from '@chakra-ui/react';
 import { Filters } from 'src/views/search/components/filters';
@@ -120,7 +123,7 @@ const Search: NextPage<{
   const initialTab = useMemo(() => {
     const tabFromUrl = router.query.tab as string;
     const tab = tabs.find(t => t.id === tabFromUrl);
-    return tab?.id || tabs.find(t => t.isDefault)?.id || 'd';
+    return tab?.id || DEFAULT_TAB_ID;
   }, [router.query.tab]);
 
   return (
