@@ -1,24 +1,35 @@
+// Helper to calculate max label width in pixels based on available space.
 export const getMaxLabelWidthPx = ({
   horizontalAnchor,
   labelX,
-  outerRadius,
-  margin,
+  svgWidth,
+  groupLeft,
   minWidth = 20,
-  edgePadding = 2,
+  edgePadding = 8, // padding from edge of SVG
+  maxWidthCap,
 }: {
   horizontalAnchor: 'start' | 'end';
   labelX: number;
-  outerRadius: number;
-  margin: { top: number; right: number; bottom: number; left: number };
+  svgWidth: number;
+  groupLeft: number;
   minWidth?: number;
   edgePadding?: number;
+  maxWidthCap?: number;
 }) => {
-  const edgeRight = outerRadius + margin.right;
-  const edgeLeft = -(outerRadius + margin.left);
+  // Convert label position from group space to absolute SVG space
+  const labelAbsX = groupLeft + labelX;
 
-  if (horizontalAnchor === 'start') {
-    return Math.max(minWidth, edgeRight - labelX - edgePadding);
-  }
+  // SVG horizontal bounds
+  const leftEdge = 0;
+  const rightEdge = svgWidth;
 
-  return Math.max(minWidth, labelX - edgeLeft - edgePadding);
+  const available =
+    horizontalAnchor === 'start' ? rightEdge - labelAbsX : labelAbsX - leftEdge;
+
+  const raw = available - edgePadding;
+
+  // Subtract edge padding and cap overly wide labels
+  const capped = Math.min(raw, maxWidthCap ?? svgWidth * 0.45);
+
+  return Math.max(minWidth, capped);
 };
