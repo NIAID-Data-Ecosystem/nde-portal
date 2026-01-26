@@ -220,7 +220,11 @@ const Search: NextPage<{
               <SummaryGrid
                 searchParams={queryParams}
                 onFilterUpdate={handleSelectedFilters}
-                activeVizIds={['sources']}
+                activeVizIds={[
+                  'sources',
+                  'infectiousAgent.name',
+                  'species.name',
+                ]}
                 configs={VIZ_CONFIG}
               />
               {/* Search Results */}

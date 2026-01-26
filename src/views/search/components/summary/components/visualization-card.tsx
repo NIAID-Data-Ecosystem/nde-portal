@@ -118,9 +118,11 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
     [tail, onFilterUpdate, config.property],
   );
 
-  // if (!isActive) {
-  //   return <>Inactive State</>;
-  // }
+  if (!isActive) {
+    return <></>;
+  }
+
+  // [TO DO]: Add loading, error, and empty states.
   // if (aggData.isError) {
   //   // refetch option + error handling can be added here
   //   return <>Error State</>;
