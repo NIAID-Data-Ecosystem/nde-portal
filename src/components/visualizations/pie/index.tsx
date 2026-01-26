@@ -52,15 +52,6 @@ export interface PieChartProps {
   onSliceClick?: (id: string) => void;
 }
 
-/**
- * Renders a pie chart visualization with animations, labels, tooltips,
- * and slice selection/hovering.
- *
- * @param props - {@link PieChartProps} to configure the chart.
- * @returns A React pie chart component.
- *
- */
-
 const getTermColor = (data: ChartDatum[]) =>
   scaleOrdinal({
     domain: data.map(d => d.id),
@@ -74,6 +65,14 @@ type TooltipEvt =
   | React.PointerEvent<Element>
   | React.FocusEvent<Element>;
 
+/**
+ * Renders a pie chart visualization with animations, labels, tooltips,
+ * and slice selection/hovering.
+ *
+ * @param props - {@link PieChartProps} to configure the chart.
+ * @returns A React pie chart component.
+ *
+ */
 export const PieChart = ({
   width: initialWidth = 400,
   height: initialHeight = 400,
@@ -259,7 +258,7 @@ function AnimatedPie<ChartDatum>({
   handleMouseOver,
   handleMouseOut,
 }: AnimatedPieProps<ChartDatum>) {
-  const MIN_LABEL_ANGLE = 0.14; // ~8 degrees; avoids overlapping labels on tiny slices
+  const MIN_LABEL_ANGLE = 0.24; // avoids overlapping labels on tiny slices
   const MIN_LABEL_DISPLAY_WIDTH = 40; // cutoff width in px to show label
   const LABEL_PADDING = 16; // padding from outer edge of pie to label
   const DIM_OPACITY = 0.5; // opacity for non-hovered slices
