@@ -10,7 +10,7 @@ import {
 import { usePreferredChartType } from '../hooks/usePreferredChartType';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChartTypePicker } from './chart-picker';
-import { Button, Flex, Heading, Icon } from '@chakra-ui/react';
+import { Button, Flex, Heading, Icon, Text } from '@chakra-ui/react';
 import { FaArrowLeft } from 'react-icons/fa6';
 
 type VisualizationCardProps = {
@@ -168,7 +168,9 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
             <Icon as={FaArrowLeft} boxSize={3} mr={1} />
             Back
           </Button>
-          {config.label} / {DEFAULT_MORE_PARAMS.moreLabel}...
+          <Text noOfLines={1}>
+            {config.label} / {DEFAULT_MORE_PARAMS.moreLabel}...
+          </Text>
         </Flex>
       )}
       <Flex h='clamp(180px, 30vh, 250px)'>
