@@ -10,7 +10,7 @@ import {
 import { usePreferredChartType } from '../hooks/usePreferredChartType';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChartTypePicker } from './chart-picker';
-import { Button, Flex, Icon } from '@chakra-ui/react';
+import { Button, Flex, Heading, Icon } from '@chakra-ui/react';
 import { FaArrowLeft } from 'react-icons/fa6';
 
 type VisualizationCardProps = {
@@ -145,7 +145,9 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
       borderRadius='md'
     >
       <Flex mb={4} justify='space-between' align='center'>
-        <h2>{config.label}</h2>
+        <Heading as='h2' fontSize='xs' noOfLines={1}>
+          {config.label}
+        </Heading>
         <ChartTypePicker
           value={chartType}
           options={config.chart.availableOptions}

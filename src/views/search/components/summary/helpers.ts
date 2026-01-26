@@ -85,6 +85,7 @@ export const chartRegistry: Record<
       return data.map(b => ({
         id: b.term,
         value: b.count,
+        term: b.term,
         label: config.formatLabel(b.term, b.count),
       }));
     },

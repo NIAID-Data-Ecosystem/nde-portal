@@ -5,6 +5,7 @@ export type ChartType = 'pie' | 'bar';
 export interface ChartDatum {
   id: string;
   label: string;
+  term: string;
   value: number;
 }
 

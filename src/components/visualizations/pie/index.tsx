@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Flex } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import { animated, useTransition, to } from '@react-spring/web';
 import {
   Annotation,
@@ -17,6 +17,9 @@ import { ChartDatum } from 'src/views/search/components/summary/types';
 import { isMoreSlice } from 'src/views/search/components/summary/helpers';
 import { theme } from 'src/theme';
 import { getMaxLabelWidthPx } from './helpers';
+import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
+import { localPoint } from '@visx/event';
+import { TooltipBody, TooltipWrapper } from '../tooltip';
 
 const defaultMargin = { top: 50, right: 50, bottom: 50, left: 50 };
 
@@ -66,6 +69,11 @@ const getTermColor = (data: ChartDatum[]) =>
 
 const PIE_SCALE = 1;
 
+type TooltipEvt =
+  | React.MouseEvent<Element>
+  | React.PointerEvent<Element>
+  | React.FocusEvent<Element>;
+
 export const PieChart = ({
   width: initialWidth = 400,
   height: initialHeight = 400,
@@ -74,7 +82,21 @@ export const PieChart = ({
   data,
   onSliceClick,
 }: PieChartProps) => {
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  // Tooltip handling
+  const {
+    tooltipData,
+    tooltipLeft,
+    tooltipTop,
+    tooltipOpen,
+    showTooltip,
+    hideTooltip,
+  } = useTooltip<ChartDatum>();
+
+  const { containerRef, TooltipInPortal } = useTooltipInPortal({
+    detectBounds: true,
+    scroll: true,
+  });
+
   // Use parent div to measure size for responsive rendering.
   const { parentRef, ...dimensions } = useParentSize({ debounceTime: 150 });
 
@@ -95,38 +117,77 @@ export const PieChart = ({
   const colorScale = useMemo(() => getTermColor(data), [data]);
   const viewKey = useMemo(() => data.map(d => d.id).join('|'), [data]);
 
+  // Show tooltip and track hovered id on pointer move
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+
+  const handleMouseOver = (event: TooltipEvt, datum: ChartDatum) => {
+    const targetEl = (event.target as SVGPathElement)?.ownerSVGElement;
+    if (!targetEl) return;
+    const coords = localPoint(targetEl, event);
+    if (!coords) return;
+    setHoveredId(datum.id);
+    showTooltip({
+      tooltipLeft: coords.x,
+      tooltipTop: coords.y,
+      tooltipData: datum,
+    });
+  };
+
   return (
-    <Flex ref={parentRef} w='100%' h='100%'>
-      <svg width={width} height={height} onClick={() => setHoveredId(null)}>
-        <Group top={groupTop} left={groupLeft}>
-          <Pie
-            key={viewKey}
-            data={data}
-            pieValue={d => d.value}
-            cornerRadius={3}
-            outerRadius={outerRadius}
-            innerRadius={innerRadius}
-          >
-            {pie => (
-              <AnimatedPie<ChartDatum>
-                {...pie}
-                svgWidth={width}
-                groupLeft={groupLeft}
-                viewKey={viewKey}
-                innerRadius={innerRadius}
+    <Flex w='100%' h='100%'>
+      <Flex ref={parentRef} w='100%' h='100%'>
+        <Box ref={containerRef} width={width} height={height}>
+          <svg width={width} height={height} onClick={() => setHoveredId(null)}>
+            <Group top={groupTop} left={groupLeft}>
+              <Pie
+                key={viewKey}
+                data={data}
+                pieValue={d => d.value}
+                cornerRadius={3}
                 outerRadius={outerRadius}
-                animate={animate}
-                getKey={({ data: { id } }) => id}
-                getLabel={({ data: { label } }) => label}
-                onClickDatum={({ data: { id } }) => onSliceClick?.(id)}
-                getColor={({ data: { id } }) => colorScale(id)}
-                hoveredId={hoveredId}
-                setHoveredId={setHoveredId}
-              />
-            )}
-          </Pie>
-        </Group>
-      </svg>
+                innerRadius={innerRadius}
+              >
+                {pie => (
+                  <AnimatedPie<ChartDatum>
+                    {...pie}
+                    svgWidth={width}
+                    groupLeft={groupLeft}
+                    viewKey={viewKey}
+                    innerRadius={innerRadius}
+                    outerRadius={outerRadius}
+                    animate={animate}
+                    getKey={({ data: { id } }) => id}
+                    getLabel={({ data: { label } }) => label}
+                    onClickDatum={({ data: { id } }) => onSliceClick?.(id)}
+                    getColor={({ data: { id } }) => colorScale(id)}
+                    hoveredId={hoveredId}
+                    handleMouseOver={handleMouseOver}
+                    handleMouseOut={() => {
+                      setHoveredId(null);
+                      hideTooltip();
+                    }}
+                  />
+                )}
+              </Pie>
+            </Group>
+          </svg>
+        </Box>
+      </Flex>
+      {/* Tooltip */}
+      {tooltipOpen && tooltipData && (
+        <TooltipInPortal
+          data-testid='tooltip'
+          // set this to random so it correctly updates with parent bounds
+          key={Math.random()}
+          left={tooltipLeft}
+          top={tooltipTop}
+          aria-live='polite'
+        >
+          <TooltipWrapper>
+            <TooltipBody fontSize='xs'>{tooltipData.label}</TooltipBody>
+          </TooltipWrapper>
+        </TooltipInPortal>
+      )}
     </Flex>
   );
 };
@@ -159,7 +220,8 @@ type AnimatedPieProps<Datum> = ProvidedProps<Datum> & {
   getLabel: (d: PieArcDatum<Datum>) => string;
   getColor: (d: PieArcDatum<Datum>) => string;
   onClickDatum: (d: PieArcDatum<Datum>) => void;
-  setHoveredId: (id: string | null) => void;
+  handleMouseOut: () => void;
+  handleMouseOver: (event: TooltipEvt, datum: Datum) => void;
 };
 
 function midArcPoint(
@@ -180,7 +242,7 @@ function midArcPoint(
   };
 }
 
-function AnimatedPie<Datum>({
+function AnimatedPie<ChartDatum>({
   animate,
   arcs,
   hoveredId,
@@ -194,33 +256,32 @@ function AnimatedPie<Datum>({
   getLabel,
   getColor,
   onClickDatum,
-  setHoveredId,
-}: AnimatedPieProps<Datum>) {
+  handleMouseOver,
+  handleMouseOut,
+}: AnimatedPieProps<ChartDatum>) {
   const MIN_LABEL_ANGLE = 0.14; // ~8 degrees; avoids overlapping labels on tiny slices
   const MIN_LABEL_DISPLAY_WIDTH = 40; // cutoff width in px to show label
   const LABEL_PADDING = 16; // padding from outer edge of pie to label
   const DIM_OPACITY = 0.5; // opacity for non-hovered slices
   const HOVER_RAISE = Math.max(6, Math.min(8, outerRadius * 0.08));
 
-  // Handlers for hover state
-  const handleHoverOn = (id: string) => setHoveredId(id);
-  const handleHoverOff = () => setHoveredId(null);
-  const handleHoverReset = () => setHoveredId(null);
-
   // Click handler for a slice and label
-  const handleClick = (arc: PieArcDatum<Datum>) => {
+  const handleClick = (arc: PieArcDatum<ChartDatum>) => {
     // Reset hover so the “dimmed” state doesn’t stick after interaction.
-    handleHoverReset();
+    handleMouseOut();
     onClickDatum(arc);
   };
 
-  const transitions = useTransition<PieArcDatum<Datum>, AnimatedStyles>(arcs, {
-    from: animate ? fromLeaveTransition : enterUpdateTransition,
-    enter: enterUpdateTransition,
-    update: enterUpdateTransition,
-    leave: animate ? fromLeaveTransition : enterUpdateTransition,
-    keys: arc => `${viewKey}:${getKey(arc)}`,
-  });
+  const transitions = useTransition<PieArcDatum<ChartDatum>, AnimatedStyles>(
+    arcs,
+    {
+      from: animate ? fromLeaveTransition : enterUpdateTransition,
+      enter: enterUpdateTransition,
+      update: enterUpdateTransition,
+      leave: animate ? fromLeaveTransition : enterUpdateTransition,
+      keys: arc => `${viewKey}:${getKey(arc)}`,
+    },
+  );
 
   return transitions((spring, arc, { key }) => {
     const id = getKey(arc);
@@ -309,23 +370,23 @@ function AnimatedPie<Datum>({
           style={{ opacity: sliceOpacity, cursor: 'pointer' }}
           onClick={() => handleClick(arc)}
           onTouchStart={() => handleClick(arc)}
-          onMouseEnter={() => handleHoverOn(id)}
-          onMouseLeave={handleHoverOff}
+          onMouseEnter={event => handleMouseOver(event, arc.data)}
+          onMouseLeave={() => handleMouseOut()}
         />
 
         {(showLabel || isMore) && (
           <Annotation x={sx} y={sy} dx={lx - sx} dy={ly - sy}>
             <CircleSubject radius={3} fill='none' stroke='none' />
             <Connector type='elbow' stroke={getColor(arc)} />
-            <PieSliceLabel<Datum>
-              label={label}
+            <PieSliceLabel<ChartDatum>
+              label={`${label}`}
               maxWidthPx={maxWidthPx}
               opacity={labelOpacity}
               horizontalAnchor={horizontalAnchor}
               isMore={isMore}
               handleClick={() => handleClick(arc)}
-              handleHoverOn={() => handleHoverOn(id)}
-              handleHoverOff={handleHoverOff}
+              handleMouseOver={e => handleMouseOver(e, arc.data)}
+              handleMouseOut={() => handleMouseOut()}
             />
           </Annotation>
         )}
@@ -334,27 +395,27 @@ function AnimatedPie<Datum>({
   });
 }
 
-type PieSliceLabelProps<Datum> = {
+type PieSliceLabelProps<ChartDatum> = {
   label: string;
   maxWidthPx: number;
   opacity: number;
   horizontalAnchor: 'start' | 'end';
   isMore: boolean;
   handleClick: () => void;
-  handleHoverOn: () => void;
-  handleHoverOff: () => void;
+  handleMouseOut: () => void;
+  handleMouseOver: (event: TooltipEvt) => void;
 };
 
-function PieSliceLabel<Datum>({
+function PieSliceLabel<ChartDatum>({
   label,
   maxWidthPx,
   opacity,
   horizontalAnchor,
   isMore,
   handleClick,
-  handleHoverOn,
-  handleHoverOff,
-}: PieSliceLabelProps<Datum>) {
+  handleMouseOver,
+  handleMouseOut,
+}: PieSliceLabelProps<ChartDatum>) {
   return (
     <HtmlLabel
       showAnchorLine={false}
@@ -373,10 +434,10 @@ function PieSliceLabel<Datum>({
         role='button'
         aria-label={label}
         tabIndex={0}
-        onBlur={handleHoverOff}
-        onFocus={handleHoverOn}
-        onMouseEnter={handleHoverOn}
-        onMouseLeave={handleHoverOff}
+        onBlur={handleMouseOut}
+        onFocus={handleMouseOver}
+        onMouseEnter={handleMouseOver}
+        onMouseLeave={handleMouseOut}
         onClick={e => {
           e.stopPropagation();
           handleClick();
