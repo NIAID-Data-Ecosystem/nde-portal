@@ -1,7 +1,5 @@
-import React, { use, useMemo, useState } from 'react';
-import NextLink from 'next/link';
-import { UrlObject } from 'url';
-import { Box, Checkbox, Flex, Text, VisuallyHidden } from '@chakra-ui/react';
+import React, { useMemo, useState } from 'react';
+import { Flex } from '@chakra-ui/react';
 import { animated, useTransition, to } from '@react-spring/web';
 import {
   Annotation,
@@ -9,21 +7,11 @@ import {
   Connector,
   HtmlLabel,
 } from '@visx/annotation';
-import { localPoint } from '@visx/event';
 import { Group } from '@visx/group';
 import { useParentSize } from '@visx/responsive';
-import { scaleLog, scaleOrdinal } from '@visx/scale';
+import { scaleOrdinal } from '@visx/scale';
 import Pie, { ProvidedProps, PieArcDatum } from '@visx/shape/lib/shapes/Pie';
 import { arc as d3Arc } from 'd3-shape';
-import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
-import { InfoLabel } from 'src/components/info-label';
-import { FacetTerm } from 'src/utils/api/types';
-import {
-  customTooltipStyles,
-  TooltipSubtitle,
-  TooltipTitle,
-  TooltipWrapper,
-} from 'src/views/diseases/disease/components/tooltip';
 import { schemeObservable10 } from 'd3-scale-chromatic';
 import { ChartDatum } from 'src/views/search/components/summary/types';
 import { isMoreSlice } from 'src/views/search/components/summary/helpers';
