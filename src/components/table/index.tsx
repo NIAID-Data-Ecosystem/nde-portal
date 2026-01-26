@@ -28,7 +28,7 @@ export interface Column {
   }) => React.ReactNode;
 }
 
-interface TableProps<TData extends Record<string, string | number>> {
+export interface TableProps<TData extends Record<string, string | number>> {
   ariaLabel: string;
   caption: string;
   columns: Column[];

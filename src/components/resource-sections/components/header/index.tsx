@@ -52,7 +52,7 @@ const Header: React.FC<HeaderProps> = ({
         </Heading>
 
         {(nctid || doi) && (
-          <Flex mt={2}>
+          <Flex mt={2} gap={2}>
             {nctid && <TagWithUrl label='NCTID |'>{nctid}</TagWithUrl>}
             {doi && (
               <TagWithUrl
