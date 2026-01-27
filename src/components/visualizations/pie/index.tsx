@@ -258,7 +258,7 @@ function AnimatedPie<ChartDatum>({
   handleMouseOver,
   handleMouseOut,
 }: AnimatedPieProps<ChartDatum>) {
-  const MIN_LABEL_ANGLE = 0.24; // avoids overlapping labels on tiny slices
+  const MIN_LABEL_ANGLE = 0.22; // avoids overlapping labels on tiny slices
   const MIN_LABEL_DISPLAY_WIDTH = 40; // cutoff width in px to show label
   const LABEL_PADDING = 16; // padding from outer edge of pie to label
   const DIM_OPACITY = 0.5; // opacity for non-hovered slices
@@ -282,7 +282,7 @@ function AnimatedPie<ChartDatum>({
     },
   );
 
-  return transitions((spring, arc, { key }) => {
+  return transitions((spring, arc, { key }, i) => {
     const id = getKey(arc);
     const label = getLabel(arc);
     const isHovered = hoveredId === id;
@@ -450,7 +450,8 @@ function PieSliceLabel<ChartDatum>({
         }}
         style={{
           cursor: 'pointer',
-          display: 'inline-block',
+          display: 'block',
+          lineHeight: 1.5,
           maxWidth: `${maxWidthPx}px`,
           overflow: 'hidden',
           paddingBottom: isMore ? '0.5rem' : 0,
