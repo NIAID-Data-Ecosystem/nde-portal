@@ -26,6 +26,7 @@ import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
 import SummaryGrid from 'src/views/search/components/summary';
 import { ChartType } from 'src/views/search/components/summary/types';
 import { updateRoute } from 'src/views/search/utils/update-route';
+import { useActiveVizIds } from 'src/views/search/components/summary/hooks/useActiveVizIds';
 
 // initial testing with strings, definedTerm, number, date.
 const VIZ_CONFIG = [
@@ -39,9 +40,27 @@ const VIZ_CONFIG = [
     },
   },
   {
+    id: 'sourceOrganization.name',
+    label: 'Program Collection',
+    property: 'sourceOrganization.name',
+    chart: {
+      availableOptions: ['bar', 'pie'] as ChartType[],
+      defaultOption: 'pie' as const,
+    },
+  },
+  {
+    id: 'healthCondition.name.raw',
+    label: 'Health Condition',
+    property: 'healthCondition.name.raw',
+    chart: {
+      availableOptions: ['bar', 'pie'] as ChartType[],
+      defaultOption: 'pie' as const,
+    },
+  },
+  {
     id: 'infectiousAgent.name',
     label: 'Pathogen Species',
-    property: 'infectiousAgent.name',
+    property: 'infectiousAgent.displayName.raw',
     chart: {
       availableOptions: ['bar', 'pie'] as ChartType[],
       defaultOption: 'pie' as const,
@@ -50,12 +69,18 @@ const VIZ_CONFIG = [
   {
     id: 'species.name',
     label: 'Host Species',
-    property: 'species.name',
+    property: 'species.displayName.raw',
     chart: {
       availableOptions: ['bar', 'pie'] as ChartType[],
       defaultOption: 'pie' as const,
     },
   },
+];
+
+const DEFAULT_ACTIVE_VIZ_IDS = [
+  'sources',
+  'infectiousAgent.name',
+  'species.name',
 ];
 
 // Default filters list.
@@ -68,6 +93,10 @@ const Search: NextPage<{
   initialData: FetchSearchResultsResponse;
 }> = ({ initialData }) => {
   const router = useRouter();
+
+  const { activeVizIds, toggleViz, isVizActive } = useActiveVizIds(
+    DEFAULT_ACTIVE_VIZ_IDS,
+  );
 
   const queryParams = useSearchQueryFromURL();
 
@@ -175,6 +204,8 @@ const Search: NextPage<{
                 selectedFilters={selectedFilters}
                 isDisabled={appliedFilters.length === 0}
                 removeAllFilters={removeAllFilters}
+                onToggleViz={toggleViz}
+                isVizActive={isVizActive}
               />
             </Flex>
 
@@ -220,11 +251,7 @@ const Search: NextPage<{
               <SummaryGrid
                 searchParams={queryParams}
                 onFilterUpdate={handleSelectedFilters}
-                activeVizIds={[
-                  'sources',
-                  'infectiousAgent.name',
-                  'species.name',
-                ]}
+                activeVizIds={activeVizIds}
                 configs={VIZ_CONFIG}
               />
               {/* Search Results */}

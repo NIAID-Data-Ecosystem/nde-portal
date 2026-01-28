@@ -69,6 +69,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
   },
   {
     _id: 'includedInDataCatalog',
+    vizId: 'sources',
     name: 'Sources',
     property: 'includedInDataCatalog.name',
     tabIds: ['d', 'ct'],
@@ -87,6 +88,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
   },
   {
     _id: 'sourceOrganization.name',
+    vizId: 'sourceOrganization.name',
     name: 'Program Collection',
     property: 'sourceOrganization.name',
     tabIds: ['d', 'ct'],
@@ -118,6 +120,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
   },
   {
     _id: 'healthCondition.name.raw',
+    vizId: 'healthCondition.name.raw',
     name: 'Health Condition',
     property: 'healthCondition.name.raw',
     tabIds: ['d'],
@@ -126,6 +129,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
   },
   {
     _id: 'infectiousAgent.displayName.raw',
+    vizId: 'infectiousAgent.name',
     name: 'Pathogen Species',
     property: 'infectiousAgent.displayName.raw',
     tabIds: ['d'],
@@ -134,6 +138,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
   },
   {
     _id: 'species.displayName.raw',
+    vizId: 'species.name',
     name: 'Host Species',
     property: 'species.displayName.raw',
     tabIds: ['d'],
