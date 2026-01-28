@@ -1,13 +1,15 @@
 import React from 'react';
-import { Flex, Heading, Skeleton } from '@chakra-ui/react';
+import { Flex, Heading, Skeleton, Text } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import { DisplayHTMLString } from 'src/components/html-content';
 import { TagWithUrl } from 'src/components/tag-with-url';
+import { CopyResourceId } from 'src/components/copy-resource-id';
 
 interface HeaderProps {
   isLoading: boolean;
   name?: FormattedResource['name'];
   alternateName?: FormattedResource['alternateName'];
+  id?: FormattedResource['id'];
   doi?: FormattedResource['doi'];
   nctid?: FormattedResource['nctid'];
 }
@@ -16,6 +18,7 @@ const Header: React.FC<HeaderProps> = ({
   isLoading,
   name,
   alternateName,
+  id,
   doi,
   nctid,
 }) => {
@@ -50,6 +53,23 @@ const Header: React.FC<HeaderProps> = ({
             </Heading>
           )}
         </Heading>
+
+        {id && (
+          <Flex
+            mt={2}
+            gap={3}
+            alignItems={{ base: 'flex-start', md: 'center' }}
+            flexDirection={{ base: 'column', md: 'row' }}
+          >
+            <Flex gap={2} alignItems='center'>
+              <Text fontWeight='semibold' whiteSpace='nowrap'>
+                Resource ID
+              </Text>
+              <Text wordBreak='break-all'>{id}</Text>
+            </Flex>
+            <CopyResourceId resourceId={id} buttonProps={{ flexShrink: 0 }} />
+          </Flex>
+        )}
 
         {(nctid || doi) && (
           <Flex mt={2} gap={2}>
