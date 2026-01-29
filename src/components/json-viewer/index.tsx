@@ -1,8 +1,8 @@
-import { Box, Flex, FlexProps, Heading } from '@chakra-ui/react';
+import { Box, FlexProps, Heading } from '@chakra-ui/react';
 import theme from './theme';
 import { JSONTree } from 'react-json-tree';
-import { CopyMetadata } from './components/copy-metadata';
 import { ScrollContainer } from '../scroll-container';
+import { CopyButton } from 'src/components/copy-button';
 
 /*
  [COMPONENT INFO]: Code block to display and copy JSON content.
@@ -28,9 +28,12 @@ export const JsonViewer = ({ data, ...props }: JsonViewerProps) => {
       >
         JSON Metadata
       </Heading>
-      <CopyMetadata
-        metadataObject={JSON.stringify(data, null, 2)}
+      <CopyButton
+        textToCopy={JSON.stringify(data, null, 2)}
+        buttonText='Copy'
+        copiedText='Metadata copied!'
         buttonProps={{
+          size: 'sm',
           position: 'absolute',
           top: 2,
           right: 6,
