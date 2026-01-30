@@ -6,8 +6,17 @@ import {
   Button,
   Text,
   IconButton,
+  Icon,
 } from '@chakra-ui/react';
-import { FaChartPie, FaMinus, FaPlus } from 'react-icons/fa6';
+import {
+  FaCaretDown,
+  FaCaretUp,
+  FaChartPie,
+  FaChevronDown,
+  FaChevronUp,
+  FaMinus,
+  FaPlus,
+} from 'react-icons/fa6';
 import Tooltip from 'src/components/tooltip';
 
 interface FiltersSectionProps {
@@ -34,6 +43,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
               <h2>
                 <AccordionButton
                   p={4}
+                  gap={2}
                   py={isExpanded ? 1.5 : 2}
                   bg={isExpanded ? 'secondary.50' : 'transparent'}
                   borderLeft='4px solid'
@@ -46,6 +56,20 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                     bg: isExpanded ? 'secondary.50' : 'gray.50',
                   }}
                 >
+                  <Icon
+                    as={FaChevronDown}
+                    color='gray.800'
+                    data-testid='minus-icon'
+                    fontSize='12px'
+                    transform={isExpanded ? 'rotate(180deg)' : undefined}
+                    transition='transform 0.2s ease-in-out'
+                  />
+
+                  {/* {isExpanded ? (
+                    <FaChevronUp data-testid='minus-icon' fontSize='12px' _/>
+                  ) : (
+                    <FaChevronDown data-testid='plus-icon' fontSize='12px' />
+                  )} */}
                   <Tooltip
                     label={
                       description.charAt(0).toUpperCase() + description.slice(1)
@@ -80,13 +104,17 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                         variant='ghost'
                         size='xs'
                         colorScheme={isVizActive ? 'secondary' : 'gray'}
-                        mr={2}
                         onClick={e => {
                           e.stopPropagation();
                           if (vizId && onToggleViz) onToggleViz(vizId);
                         }}
                         color={isVizActive ? 'secondary.500' : 'gray.500'}
                         _hover={{
+                          backgroundColor: isVizActive
+                            ? 'secondary.50'
+                            : 'gray.50',
+                        }}
+                        sx={{
                           '>svg': {
                             color: isVizActive ? 'secondary.400' : 'gray.400',
                           },
@@ -95,11 +123,6 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                         <FaChartPie />
                       </IconButton>
                     </Tooltip>
-                  )}
-                  {isExpanded ? (
-                    <FaMinus data-testid='minus-icon' fontSize='12px' />
-                  ) : (
-                    <FaPlus data-testid='plus-icon' fontSize='12px' />
                   )}
                 </AccordionButton>
               </h2>
