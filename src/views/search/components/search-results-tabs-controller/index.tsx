@@ -10,6 +10,7 @@ import { usePaginationContext } from '../../context/pagination-context';
 import { SearchTabs } from '../layout/tabs';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { ResourceCatalogCard } from '../results-list/components/carousel-compact-card/resource-catalog-card';
+import { DiseaseOverviewCard } from '../results-list/components/carousel-compact-card/disease-overview-card';
 import { Carousel } from 'src/components/carousel';
 import { CarouselWrapper } from '../layout/carousel-wrapper';
 import { EmptyState } from '../results-list/components/empty';
@@ -17,6 +18,7 @@ import { TabType } from '../../types';
 import { generateResourceCatalogTitle } from '../../config/tabs';
 import { getDefaultTabId } from '../../utils/get-default-tab';
 import { tabs } from '../../config/tabs';
+import { useDiseaseData } from '../../hooks/useDiseaseData';
 
 const CAROUSEL_RESULTS_FIELDS = [
   '_meta',
@@ -158,6 +160,16 @@ export const SearchResultsController = ({
     [carouselData?.results],
   );
 
+  const {
+    diseases: matchingDiseases,
+    isLoading: diseaseIsLoading,
+    hasMatchingDiseases,
+  } = useDiseaseData({
+    searchQuery: queryParams.q || '',
+    selectedFilters: queryParams.filters || {},
+    enabled: true,
+  });
+
   const carouselItems = useMemo(() => {
     const items: Array<{ type: 'resource' | 'disease'; data: any }> = [];
 
@@ -165,8 +177,12 @@ export const SearchResultsController = ({
       items.push({ type: 'resource', data: resource });
     });
 
+    matchingDiseases.forEach(disease => {
+      items.push({ type: 'disease', data: disease });
+    });
+
     return items;
-  }, [resourceCatalogData]);
+  }, [resourceCatalogData, matchingDiseases]);
 
   const shouldShowCarousel = hasResourceCatalogRecords;
   const isCarouselLoading =
@@ -258,11 +274,18 @@ export const SearchResultsController = ({
                                       carouselItem?.data?.id || `loading-${idx}`
                                     }
                                   >
-                                    <ResourceCatalogCard
-                                      data={carouselItem.data}
-                                      isLoading={isCarouselLoading}
-                                      referrerPath={router.asPath}
-                                    />
+                                    {carouselItem.type === 'resource' ? (
+                                      <ResourceCatalogCard
+                                        data={carouselItem.data}
+                                        isLoading={isCarouselLoading}
+                                        referrerPath={router.asPath}
+                                      />
+                                    ) : (
+                                      <DiseaseOverviewCard
+                                        data={carouselItem.data}
+                                        isLoading={isCarouselLoading}
+                                      />
+                                    )}
                                   </div>
                                 ))}
                               </Carousel>
