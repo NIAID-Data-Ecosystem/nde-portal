@@ -252,6 +252,7 @@ const Search: NextPage<{
                 searchParams={queryParams}
                 onFilterUpdate={handleSelectedFilters}
                 activeVizIds={activeVizIds}
+                removeActiveVizId={toggleViz}
                 configs={VIZ_CONFIG}
               />
               {/* Search Results */}

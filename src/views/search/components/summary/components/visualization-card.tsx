@@ -10,8 +10,16 @@ import {
 import { usePreferredChartType } from '../hooks/usePreferredChartType';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChartTypePicker } from './chart-picker';
-import { Button, Flex, Heading, Icon, Text } from '@chakra-ui/react';
-import { FaArrowLeft } from 'react-icons/fa6';
+import {
+  Button,
+  Flex,
+  Heading,
+  HStack,
+  Icon,
+  IconButton,
+  Text,
+} from '@chakra-ui/react';
+import { FaArrowLeft, FaXmark } from 'react-icons/fa6';
 
 type VisualizationCardProps = {
   config: VizConfig;
@@ -20,11 +28,14 @@ type VisualizationCardProps = {
 
   isActive: boolean;
 
+  removeActiveVizId: (vizId: string) => void;
+
   onFilterUpdate?: (values: string[], facet: string) => void;
 };
 
 export const VisualizationCard = (props: VisualizationCardProps) => {
-  const { config, searchState, isActive, onFilterUpdate } = props;
+  const { config, searchState, isActive, onFilterUpdate, removeActiveVizId } =
+    props;
   // Drill stack to manage "More" drill-downs.
   const [drillStack, setDrillStack] = useState<ChartDatum[][]>([]);
 
@@ -148,12 +159,21 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
         <Heading as='h2' fontSize='xs' noOfLines={1}>
           {config.label}
         </Heading>
-        <ChartTypePicker
-          value={chartType}
-          options={config.chart.availableOptions}
-          onChange={setPreferredChartType}
-          isDisabled={!isActive}
-        />
+        <HStack gap={2}>
+          <ChartTypePicker
+            value={chartType}
+            options={config.chart.availableOptions}
+            onChange={setPreferredChartType}
+            isDisabled={!isActive}
+          />
+          <IconButton
+            as={FaXmark}
+            variant='ghost'
+            aria-label='Remove chart from display.'
+            cursor='pointer'
+            onClick={() => removeActiveVizId(config.id)}
+          />
+        </HStack>
       </Flex>
       {drillStack.length > 0 && (
         <Flex alignItems='center' fontSize='xs'>

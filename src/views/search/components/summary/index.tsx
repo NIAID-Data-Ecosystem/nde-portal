@@ -5,6 +5,8 @@ import { VisualizationCard } from './components/visualization-card';
 interface SummaryGridProps {
   // Ids of visualizations are currently enabled / visible
   activeVizIds: string[];
+  // Id of visualizations to be removed from display
+  removeActiveVizId: (vizId: string) => void;
   // Search parameters from URL
   searchParams: SearchState;
   // What happens on filter update from visualization interaction
@@ -23,6 +25,7 @@ const SummaryGrid = (props: SummaryGridProps) => {
             config={config}
             searchState={props.searchParams}
             isActive={props.activeVizIds.includes(config.id)}
+            removeActiveVizId={props.removeActiveVizId}
             onFilterUpdate={props.onFilterUpdate}
           />
         ))}
