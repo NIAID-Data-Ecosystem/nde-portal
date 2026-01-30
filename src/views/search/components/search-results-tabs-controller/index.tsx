@@ -184,9 +184,11 @@ export const SearchResultsController = ({
     return items;
   }, [resourceCatalogData, matchingDiseases]);
 
-  const shouldShowCarousel = hasResourceCatalogRecords;
+  const shouldShowCarousel = hasResourceCatalogRecords || hasMatchingDiseases;
+
   const isCarouselLoading =
-    hasResourceCatalogRecords && (carouselIsLoading || carouselIsPending);
+    (hasResourceCatalogRecords && (carouselIsLoading || carouselIsPending)) ||
+    diseaseIsLoading;
 
   const tabsWithFacetCounts = useMemo(
     () =>
@@ -216,7 +218,7 @@ export const SearchResultsController = ({
   ) =>
     sections.reduce((indices: number[], section, index) => {
       if (section.type === 'ResourceCatalog') {
-        if (section.count > 0) {
+        if (section.count > 0 || hasMatchingDiseases) {
           indices.push(index);
         }
       } else if (section.type === 'Dataset') {
