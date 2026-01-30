@@ -75,6 +75,105 @@ const VIZ_CONFIG = [
       defaultOption: 'pie' as const,
     },
   },
+  {
+    id: 'funding.funder.name.raw',
+    label: 'Funding',
+    property: 'funding.funder.name.raw',
+    chart: {
+      availableOptions: ['bar', 'pie'] as ChartType[],
+      defaultOption: 'pie' as const,
+    },
+  },
+  {
+    id: 'conditionsOfAccess',
+    label: 'Conditions of Access',
+    property: 'conditionsOfAccess',
+    chart: {
+      availableOptions: ['bar', 'pie'] as ChartType[],
+      defaultOption: 'pie' as const,
+    },
+  },
+  {
+    id: 'variableMeasured.name.raw',
+    label: 'Variable Measured',
+    property: 'variableMeasured.name.raw',
+    chart: {
+      availableOptions: ['bar', 'pie'] as ChartType[],
+      defaultOption: 'pie' as const,
+    },
+  },
+  {
+    id: 'measurementTechnique.name.raw',
+    label: 'Measurement Technique',
+    property: 'measurementTechnique.name.raw',
+    chart: {
+      availableOptions: ['bar', 'pie'] as ChartType[],
+      defaultOption: 'pie' as const,
+    },
+  },
+  {
+    id: 'topicCategory.name.raw',
+    label: 'Topic Category',
+    property: 'topicCategory.name.raw',
+    chart: {
+      availableOptions: ['bar', 'pie'] as ChartType[],
+      defaultOption: 'pie' as const,
+    },
+  },
+  {
+    id: 'applicationCategory.raw',
+    label: 'Application Category',
+    property: 'applicationCategory.raw',
+    chart: {
+      availableOptions: ['bar', 'pie'] as ChartType[],
+      defaultOption: 'pie' as const,
+    },
+  },
+  {
+    id: 'operatingSystem.raw',
+    label: 'Operating System',
+    property: 'operatingSystem.raw',
+    chart: {
+      availableOptions: ['bar', 'pie'] as ChartType[],
+      defaultOption: 'pie' as const,
+    },
+  },
+  {
+    id: 'programmingLanguage.raw',
+    label: 'Programming Language',
+    property: 'programmingLanguage.raw',
+    chart: {
+      availableOptions: ['bar', 'pie'] as ChartType[],
+      defaultOption: 'pie' as const,
+    },
+  },
+  {
+    id: 'featureList.name.raw',
+    label: 'Feature List',
+    property: 'featureList.name.raw',
+    chart: {
+      availableOptions: ['bar', 'pie'] as ChartType[],
+      defaultOption: 'pie' as const,
+    },
+  },
+  {
+    id: 'input.name.raw',
+    label: 'Input',
+    property: 'input.name.raw',
+    chart: {
+      availableOptions: ['bar', 'pie'] as ChartType[],
+      defaultOption: 'pie' as const,
+    },
+  },
+  {
+    id: 'output.name.raw',
+    label: 'Output',
+    property: 'output.name.raw',
+    chart: {
+      availableOptions: ['bar', 'pie'] as ChartType[],
+      defaultOption: 'pie' as const,
+    },
+  },
 ];
 
 const DEFAULT_ACTIVE_VIZ_IDS = [

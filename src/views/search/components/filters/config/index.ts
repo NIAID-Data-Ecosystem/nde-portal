@@ -147,6 +147,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
   },
   {
     _id: 'funding.funder.name.raw',
+    vizId: 'funding.funder.name.raw',
     name: 'Funding',
     property: 'funding.funder.name.raw',
     tabIds: ['d', 'ct'],
@@ -155,6 +156,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
   },
   {
     _id: 'conditionsOfAccess',
+    vizId: 'conditionsOfAccess',
     name: 'Conditions of Access',
     property: 'conditionsOfAccess',
     tabIds: ['d', 'ct'],
@@ -176,6 +178,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
   },
   {
     _id: 'variableMeasured.name.raw',
+    vizId: 'variableMeasured.name.raw',
     name: 'Variable Measured',
     property: 'variableMeasured.name.raw',
     tabIds: ['d'],
@@ -184,6 +187,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
   },
   {
     _id: 'measurementTechnique.name.raw',
+    vizId: 'measurementTechnique.name.raw',
     name: 'Measurement Technique',
     property: 'measurementTechnique.name.raw',
     tabIds: ['d'],
@@ -192,6 +196,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
   },
   {
     _id: 'topicCategory.name.raw',
+    vizId: 'topicCategory.name.raw',
     name: 'Topic Category',
     property: 'topicCategory.name.raw',
     tabIds: ['d', 'ct'],
@@ -200,6 +205,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
   },
   {
     _id: 'applicationCategory.raw',
+    vizId: 'applicationCategory.raw',
     name: 'Application Category',
     property: 'applicationCategory.raw',
     tabIds: ['ct'],
@@ -208,6 +214,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
   },
   {
     _id: 'operatingSystem.raw',
+    vizId: 'operatingSystem.raw',
     name: 'Operating System',
     property: 'operatingSystem.raw',
     tabIds: ['ct'],
@@ -216,6 +223,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
   },
   {
     _id: 'programmingLanguage.raw',
+    vizId: 'programmingLanguage.raw',
     name: 'Programming Language',
     property: 'programmingLanguage.raw',
     tabIds: ['ct'],
@@ -224,6 +232,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
   },
   {
     _id: 'featureList.name.raw',
+    vizId: 'featureList.name.raw',
     name: 'Feature List',
     property: 'featureList.name.raw',
     tabIds: ['ct'],
@@ -232,6 +241,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
   },
   {
     _id: 'input.name.raw',
+    vizId: 'input.name.raw',
     name: 'Input',
     property: 'input.name.raw',
     tabIds: ['ct'],
@@ -240,6 +250,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
   },
   {
     _id: 'output.name.raw',
+    vizId: 'output.name.raw',
     name: 'Output',
     property: 'output.name.raw',
     tabIds: ['ct'],
