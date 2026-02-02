@@ -11,15 +11,22 @@ import { usePreferredChartType } from '../hooks/usePreferredChartType';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChartTypePicker } from './chart-picker';
 import {
+  Box,
   Button,
   Flex,
   Heading,
+  HeadingProps,
   HStack,
   Icon,
   IconButton,
+  IconButtonProps,
+  IconProps,
   Text,
+  useDisclosure,
 } from '@chakra-ui/react';
-import { FaArrowLeft, FaXmark } from 'react-icons/fa6';
+import { FaArrowLeft, FaExpand, FaXmark } from 'react-icons/fa6';
+import { ModalViewer } from './modal-viewer';
+import Tooltip from 'src/components/tooltip';
 
 type VisualizationCardProps = {
   config: VizConfig;
@@ -33,9 +40,55 @@ type VisualizationCardProps = {
   onFilterUpdate?: (values: string[], facet: string) => void;
 };
 
+export const VisualizationCardHeader = ({
+  label,
+}: HeadingProps & { label: string }) => {
+  return (
+    <Heading as='h2' fontSize='xs' noOfLines={1}>
+      {label}
+    </Heading>
+  );
+};
+
+export const VisualizationCardIconButton = ({
+  icon,
+  ariaLabel,
+  tooltipContent,
+  onClick,
+}: Omit<IconButtonProps, 'aria-label' | 'as' | 'icon'> & {
+  ariaLabel: string;
+  tooltipContent: string;
+  icon: IconButtonProps['as'];
+}) => {
+  return (
+    <Tooltip label={tooltipContent} hasArrow>
+      <Box>
+        <IconButton
+          as={icon}
+          aria-label={ariaLabel}
+          onClick={onClick}
+          variant='ghost'
+          cursor='pointer'
+          colorScheme='gray'
+          boxSize={5}
+          p={0.5}
+        />
+      </Box>
+    </Tooltip>
+  );
+};
+
 export const VisualizationCard = (props: VisualizationCardProps) => {
+  // Sets display to modal/expand view.
+  const {
+    isOpen: isModalView,
+    onOpen: openModalView,
+    onClose: closeModalView,
+  } = useDisclosure();
+
   const { config, searchState, isActive, onFilterUpdate, removeActiveVizId } =
     props;
+
   // Drill stack to manage "More" drill-downs.
   const [drillStack, setDrillStack] = useState<ChartDatum[][]>([]);
 
@@ -156,9 +209,8 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
       borderRadius='md'
     >
       <Flex mb={4} justify='space-between' align='center'>
-        <Heading as='h2' fontSize='xs' noOfLines={1}>
-          {config.label}
-        </Heading>
+        <VisualizationCardHeader label={config.label} />
+
         <HStack gap={2}>
           <ChartTypePicker
             value={chartType}
@@ -166,39 +218,58 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
             onChange={setPreferredChartType}
             isDisabled={!isActive}
           />
-          <IconButton
-            as={FaXmark}
-            variant='ghost'
-            aria-label='Remove chart from display.'
-            cursor='pointer'
+          <VisualizationCardIconButton
+            ariaLabel='Expand chart to modal view'
+            tooltipContent='Expand chart to modal view.'
+            icon={FaExpand}
+            onClick={openModalView}
+            isDisabled={!isActive}
+          />
+          <VisualizationCardIconButton
+            ariaLabel='Remove chart from display.'
+            tooltipContent='Remove chart from display.'
+            icon={FaXmark}
             onClick={() => removeActiveVizId(config.id)}
+            isDisabled={!isActive}
           />
         </HStack>
       </Flex>
-      {drillStack.length > 0 && (
-        <Flex alignItems='center' fontSize='xs'>
-          <Button
-            size='xs'
-            variant='ghost'
-            onClick={handleBack}
-            color='link.color'
-            textDecoration='underline'
-            mr={2}
-          >
-            <Icon as={FaArrowLeft} boxSize={3} mr={1} />
-            Back
-          </Button>
-          <Text noOfLines={1}>
-            {config.label} / {DEFAULT_MORE_PARAMS.moreLabel}...
-          </Text>
+      <ModalViewer
+        label={config.label}
+        isOpen={isModalView}
+        onClose={closeModalView}
+      >
+        {drillStack.length > 0 && (
+          <Flex alignItems='center' fontSize='xs'>
+            <Button
+              size='xs'
+              variant='ghost'
+              onClick={handleBack}
+              color='link.color'
+              textDecoration='underline'
+              mr={2}
+            >
+              <Icon as={FaArrowLeft} boxSize={3} mr={1} />
+              Back
+            </Button>
+            <Text noOfLines={1}>
+              {config.label} / {DEFAULT_MORE_PARAMS.moreLabel}...
+            </Text>
+          </Flex>
+        )}
+        <Flex
+          h={
+            isModalView
+              ? 'clamp(180px, 50vh, 450px)'
+              : 'clamp(180px, 30vh, 250px)'
+          }
+        >
+          <ChartComponent
+            data={bucketedData || []}
+            onSliceClick={handleSliceClick}
+          />
         </Flex>
-      )}
-      <Flex h='clamp(180px, 30vh, 250px)'>
-        <ChartComponent
-          data={bucketedData || []}
-          onSliceClick={handleSliceClick}
-        />
-      </Flex>
+      </ModalViewer>
     </Flex>
   );
 };
