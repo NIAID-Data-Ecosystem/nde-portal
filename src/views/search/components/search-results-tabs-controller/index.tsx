@@ -15,9 +15,8 @@ import { Carousel } from 'src/components/carousel';
 import { CarouselWrapper } from '../layout/carousel-wrapper';
 import { EmptyState } from '../results-list/components/empty';
 import { TabType } from '../../types';
-import { generateResourceCatalogTitle } from '../../config/tabs';
+import { generateOtherResourcesTitle, tabs } from '../../config/tabs';
 import { getDefaultTabId } from '../../utils/get-default-tab';
-import { tabs } from '../../config/tabs';
 import { useDiseaseData } from '../../hooks/useDiseaseData';
 
 const CAROUSEL_RESULTS_FIELDS = [
@@ -198,6 +197,10 @@ export const SearchResultsController = ({
           const facet = terms.find(t => t.term === type);
           let count = facet?.count || 0;
 
+          if (type === 'Disease') {
+            count = matchingDiseases.length;
+          }
+
           return {
             label,
             type,
@@ -210,7 +213,7 @@ export const SearchResultsController = ({
           types: tabTypesWithCount,
         };
       }),
-    [facetData?.facets, tabs],
+    [facetData?.facets, tabs, matchingDiseases.length],
   );
 
   const getAccordionDefaultIndices = (
@@ -254,12 +257,14 @@ export const SearchResultsController = ({
                   defaultIndex={defaultIndices}
                 >
                   {sections.map(section => {
+                    if (section.type === 'Disease') return null;
+
                     // For ResourceCatalog, render "Other Resources" with carousel
                     if (section.type === 'ResourceCatalog') {
                       return (
                         <AccordionContent
                           key='resource-catalog'
-                          title={generateResourceCatalogTitle(sections)}
+                          title={generateOtherResourcesTitle(sections)}
                         >
                           {isCarouselLoading || shouldShowCarousel ? (
                             <CarouselWrapper>
