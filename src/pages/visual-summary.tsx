@@ -37,6 +37,8 @@ const VIZ_CONFIG = [
     chart: {
       availableOptions: ['bar', 'pie'] as ChartType[],
       defaultOption: 'pie' as const,
+      bar: { minPercent: 0.0001, maxItems: 10 },
+      pie: { minPercent: 0.01 },
     },
   },
   {
@@ -46,6 +48,8 @@ const VIZ_CONFIG = [
     chart: {
       availableOptions: ['bar', 'pie'] as ChartType[],
       defaultOption: 'pie' as const,
+      bar: { minPercent: 0.0001, maxItems: 10 },
+      pie: { minPercent: 0.01 },
     },
   },
   {
@@ -55,6 +59,8 @@ const VIZ_CONFIG = [
     chart: {
       availableOptions: ['bar', 'pie'] as ChartType[],
       defaultOption: 'pie' as const,
+      bar: { minPercent: 0.0001, maxItems: 10 },
+      pie: { minPercent: 0.01 },
     },
   },
   {
@@ -64,6 +70,8 @@ const VIZ_CONFIG = [
     chart: {
       availableOptions: ['bar', 'pie'] as ChartType[],
       defaultOption: 'pie' as const,
+      bar: { minPercent: 0.0001, maxItems: 10 },
+      pie: { minPercent: 0.01 },
     },
   },
   {
@@ -73,6 +81,8 @@ const VIZ_CONFIG = [
     chart: {
       availableOptions: ['bar', 'pie'] as ChartType[],
       defaultOption: 'pie' as const,
+      bar: { minPercent: 0.0001, maxItems: 10 },
+      pie: { minPercent: 0.01 },
     },
   },
   {
@@ -82,6 +92,8 @@ const VIZ_CONFIG = [
     chart: {
       availableOptions: ['bar', 'pie'] as ChartType[],
       defaultOption: 'pie' as const,
+      bar: { minPercent: 0.0001, maxItems: 10 },
+      pie: { minPercent: 0.01 },
     },
   },
   {
@@ -91,6 +103,8 @@ const VIZ_CONFIG = [
     chart: {
       availableOptions: ['bar', 'pie'] as ChartType[],
       defaultOption: 'pie' as const,
+      bar: { minPercent: 0.0001, maxItems: 10 },
+      pie: { minPercent: 0.01 },
     },
   },
   {
@@ -100,6 +114,8 @@ const VIZ_CONFIG = [
     chart: {
       availableOptions: ['bar', 'pie'] as ChartType[],
       defaultOption: 'pie' as const,
+      bar: { minPercent: 0.0001, maxItems: 10 },
+      pie: { minPercent: 0.01 },
     },
   },
   {
@@ -109,6 +125,8 @@ const VIZ_CONFIG = [
     chart: {
       availableOptions: ['bar', 'pie'] as ChartType[],
       defaultOption: 'pie' as const,
+      bar: { minPercent: 0.0001, maxItems: 10 },
+      pie: { minPercent: 0.01 },
     },
   },
   {
@@ -118,6 +136,8 @@ const VIZ_CONFIG = [
     chart: {
       availableOptions: ['bar', 'pie'] as ChartType[],
       defaultOption: 'pie' as const,
+      bar: { minPercent: 0.0001, maxItems: 10 },
+      pie: { minPercent: 0.01 },
     },
   },
   {
@@ -127,6 +147,8 @@ const VIZ_CONFIG = [
     chart: {
       availableOptions: ['bar', 'pie'] as ChartType[],
       defaultOption: 'pie' as const,
+      bar: { minPercent: 0.0001, maxItems: 10 },
+      pie: { minPercent: 0.01 },
     },
   },
   {
@@ -136,6 +158,8 @@ const VIZ_CONFIG = [
     chart: {
       availableOptions: ['bar', 'pie'] as ChartType[],
       defaultOption: 'pie' as const,
+      bar: { minPercent: 0.0001, maxItems: 10 },
+      pie: { minPercent: 0.01 },
     },
   },
   {
@@ -145,6 +169,8 @@ const VIZ_CONFIG = [
     chart: {
       availableOptions: ['bar', 'pie'] as ChartType[],
       defaultOption: 'pie' as const,
+      bar: { minPercent: 0.0001, maxItems: 10 },
+      pie: { minPercent: 0.01 },
     },
   },
   {
@@ -154,6 +180,8 @@ const VIZ_CONFIG = [
     chart: {
       availableOptions: ['bar', 'pie'] as ChartType[],
       defaultOption: 'pie' as const,
+      bar: { minPercent: 0.0001, maxItems: 10 },
+      pie: { minPercent: 0.01 },
     },
   },
   {
@@ -163,6 +191,8 @@ const VIZ_CONFIG = [
     chart: {
       availableOptions: ['bar', 'pie'] as ChartType[],
       defaultOption: 'pie' as const,
+      bar: { minPercent: 0.0001, maxItems: 10 },
+      pie: { minPercent: 0.01 },
     },
   },
   {
@@ -172,6 +202,8 @@ const VIZ_CONFIG = [
     chart: {
       availableOptions: ['bar', 'pie'] as ChartType[],
       defaultOption: 'pie' as const,
+      bar: { minPercent: 0.0001, maxItems: 10 },
+      pie: { minPercent: 0.01 },
     },
   },
 ];

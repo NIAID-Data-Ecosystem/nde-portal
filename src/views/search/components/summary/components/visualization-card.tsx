@@ -133,9 +133,6 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
     );
   }, [facetData, chartType, config.formatting]);
 
-  // Minimum percent threshold for bucketing into "More"
-  const minPercent = config.chart?.pie?.minPercent ?? 0.01;
-
   // Current level data based on drill stack.
   const currentLevelData = useMemo(() => {
     return drillStack.length ? drillStack[drillStack.length - 1] : chartData;
@@ -144,17 +141,17 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
   // Bucket small values into "More"
   const { bucketedData, tail } = useMemo(() => {
     const { data, tail } = bucketSmallValues(currentLevelData || [], {
-      minPercent,
+      ...config.chart?.[chartType],
       moreLabel: DEFAULT_MORE_PARAMS.moreLabel,
     });
 
     return { bucketedData: data, tail };
-  }, [currentLevelData, minPercent]);
+  }, [currentLevelData, config]);
 
   // If the query/config changes, reset drill mode
   useEffect(() => {
     setDrillStack([]);
-  }, [config.id, config.property, chartType, facetData?.length, minPercent]);
+  }, [config.id, config.property, chartType, facetData?.length, config.chart]);
 
   useEffect(() => {
     // If preferred chart type is no longer valid, reset to default.
@@ -267,6 +264,7 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
           <ChartComponent
             data={bucketedData || []}
             onSliceClick={handleSliceClick}
+            isExpanded={isModalView}
           />
         </Flex>
       </ModalViewer>

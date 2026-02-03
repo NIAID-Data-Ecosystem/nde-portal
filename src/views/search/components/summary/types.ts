@@ -7,6 +7,8 @@ export interface ChartDatum {
   label: string;
   term: string;
   value: number;
+  countItems?: number;
+  tooltip?: string;
 }
 
 export type SearchFilter = {
@@ -26,13 +28,18 @@ export type VizConfig = {
     availableOptions: ChartType[];
     defaultOption: ChartType;
     pie?: {
-      maxSlices?: number;
+      maxItems?: number;
+      minPercent?: number;
+    };
+    bar?: {
+      maxItems?: number;
       minPercent?: number;
     };
   };
 
   formatting?: {
     label?: (bucketKey: string) => string;
+    tooltip?: (bucketKey: string) => string;
   };
 
   behavior?: {

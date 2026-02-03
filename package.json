@@ -64,6 +64,7 @@
     "@visx/brush": "^3.12.0",
     "@visx/event": "^3.12.0",
     "@visx/gradient": "^3.0.0",
+    "@visx/grid": "^3.12.0",
     "@visx/group": "^3.0.0",
     "@visx/heatmap": "^3.3.0",
     "@visx/hierarchy": "^3.12.0",
