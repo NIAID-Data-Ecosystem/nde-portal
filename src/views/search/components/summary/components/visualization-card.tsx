@@ -191,10 +191,9 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
   // if (aggData.isLoading || !facetData) {
   //   return <>Loading State</>;
   // }
-  // if (facetData?.length === 0) {
-  //   // No data available for the given aggregation. Empty state
-  //   return <>No Data State</>;
-  // }
+
+  // No data available for the given aggregation. Empty state
+  const hasEmptyData = facetData?.length === 0;
   const ChartComponent = chartAdapter.Component;
 
   return (
@@ -208,28 +207,30 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
       <Flex mb={4} justify='space-between' align='center'>
         <VisualizationCardHeader label={config.label} />
 
-        <HStack gap={2}>
-          <ChartTypePicker
-            value={chartType}
-            options={config.chart.availableOptions}
-            onChange={setPreferredChartType}
-            isDisabled={!isActive}
-          />
-          <VisualizationCardIconButton
-            ariaLabel='Expand chart to modal view'
-            tooltipContent='Expand chart to modal view.'
-            icon={FaExpand}
-            onClick={openModalView}
-            isDisabled={!isActive}
-          />
-          <VisualizationCardIconButton
-            ariaLabel='Remove chart from display.'
-            tooltipContent='Remove chart from display.'
-            icon={FaXmark}
-            onClick={() => removeActiveVizId(config.id)}
-            isDisabled={!isActive}
-          />
-        </HStack>
+        {!hasEmptyData && (
+          <HStack gap={2}>
+            <ChartTypePicker
+              value={chartType}
+              options={config.chart.availableOptions}
+              onChange={setPreferredChartType}
+              isDisabled={!isActive}
+            />
+            <VisualizationCardIconButton
+              ariaLabel='Expand chart to modal view'
+              tooltipContent='Expand chart to modal view.'
+              icon={FaExpand}
+              onClick={openModalView}
+              isDisabled={!isActive}
+            />
+            <VisualizationCardIconButton
+              ariaLabel='Remove chart from display.'
+              tooltipContent='Remove chart from display.'
+              icon={FaXmark}
+              onClick={() => removeActiveVizId(config.id)}
+              isDisabled={!isActive}
+            />
+          </HStack>
+        )}
       </Flex>
       <ModalViewer
         label={config.label}
@@ -261,11 +262,22 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
               : 'clamp(180px, 30vh, 250px)'
           }
         >
-          <ChartComponent
-            data={bucketedData || []}
-            onSliceClick={handleSliceClick}
-            isExpanded={isModalView}
-          />
+          {hasEmptyData ? (
+            <Text
+              color='page.placeholder'
+              fontStyle='italic'
+              textAlign='center'
+              w='100%'
+            >
+              No data available for the selected aggregation.
+            </Text>
+          ) : (
+            <ChartComponent
+              data={bucketedData || []}
+              onSliceClick={handleSliceClick}
+              isExpanded={isModalView}
+            />
+          )}
         </Flex>
       </ModalViewer>
     </Flex>
