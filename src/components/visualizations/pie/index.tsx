@@ -282,6 +282,58 @@ function AnimatedPie<ChartDatum>({
     },
   );
 
+  // If none (excluding "More") would show, we will force-show one fallback label so that the chart isn't empty of labels.
+  const fallbackLabelId = useMemo(() => {
+    const candidates = arcs
+      .map(a => {
+        const id = getKey(a);
+        const isMore = isMoreSlice(id);
+        const sliceAngle = a.endAngle - a.startAngle;
+
+        // positions for width calculation (same as render)
+        const { x: sx } = midArcPoint(a.startAngle, a.endAngle, outerRadius, 0);
+        const { x: lx } = midArcPoint(
+          a.startAngle,
+          a.endAngle,
+          outerRadius,
+          LABEL_PADDING,
+        );
+
+        const horizontalAnchor: 'start' | 'end' = sx < 0 ? 'end' : 'start';
+        const maxWidthPx = getMaxLabelWidthPx({
+          horizontalAnchor,
+          labelX: lx,
+          svgWidth,
+          groupLeft,
+        });
+
+        const qualifies =
+          sliceAngle >= MIN_LABEL_ANGLE && maxWidthPx > MIN_LABEL_DISPLAY_WIDTH;
+
+        return {
+          id,
+          isMore,
+          sliceAngle,
+          maxWidthPx,
+          qualifies,
+        };
+      })
+      .filter(c => !c.isMore); // only consider non-"More" for fallback
+
+    // If at least one non-"More" qualifies, no fallback needed.
+    if (candidates.some(c => c.qualifies)) return null;
+
+    // Otherwise pick the "best" label to force-show:
+    // largest angle first; tie-breaker by available label width.
+    const best = candidates
+      .filter(c => c.maxWidthPx > 10)
+      .sort(
+        (a, b) => b.sliceAngle - a.sliceAngle || b.maxWidthPx - a.maxWidthPx,
+      )[0];
+
+    return best?.id ?? null;
+  }, [arcs, getKey, outerRadius, svgWidth, groupLeft]);
+
   return transitions((spring, arc, { key }, i) => {
     const id = getKey(arc);
     const label = getLabel(arc);
@@ -333,9 +385,12 @@ function AnimatedPie<ChartDatum>({
     });
 
     //  Always show label for "More" slice
-    const showLabel =
-      (sliceAngle >= MIN_LABEL_ANGLE && maxWidthPx > MIN_LABEL_DISPLAY_WIDTH) ||
-      isMore;
+    const qualifies =
+      sliceAngle >= MIN_LABEL_ANGLE && maxWidthPx > MIN_LABEL_DISPLAY_WIDTH;
+
+    const forceShowFallback = fallbackLabelId != null && id === fallbackLabelId;
+
+    const showLabel = qualifies || isMore || forceShowFallback;
 
     // ---- Render the hover effect pie slice ----
     const effectiveOuterRadius = outerRadius + (isHovered ? HOVER_RAISE : 0);
@@ -373,7 +428,7 @@ function AnimatedPie<ChartDatum>({
           onMouseLeave={() => handleMouseOut()}
         />
 
-        {(showLabel || isMore) && (
+        {showLabel && (
           <Annotation x={sx} y={sy} dx={lx - sx} dy={ly - sy}>
             <CircleSubject radius={3} fill='none' stroke='none' />
             <Connector type='elbow' stroke={getColor(arc)} />
