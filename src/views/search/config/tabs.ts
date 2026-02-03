@@ -57,6 +57,14 @@ export const generateOtherResourcesTitle = (
   const diseaseCount = disease?.count || 0;
   const totalCount = resourceCount + diseaseCount;
 
+  // If there are no diseases, show only Resource Catalogs
+  if (diseaseCount === 0) {
+    return `${
+      TAB_LABELS.RESOURCE_CATALOG
+    }s (${resourceCount.toLocaleString()})`;
+  }
+
+  // If there are diseases, show the full "Other Resources" breakdown
   const resourcePart = `${
     TAB_LABELS.RESOURCE_CATALOG
   }s (${resourceCount.toLocaleString()})`;
