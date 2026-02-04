@@ -18,6 +18,7 @@ import {
   FaPlus,
 } from 'react-icons/fa6';
 import Tooltip from 'src/components/tooltip';
+import { SHOW_VISUAL_SUMMARY } from 'src/utils/feature-flags';
 
 interface FiltersSectionProps {
   name: string;
@@ -55,6 +56,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                   _hover={{
                     bg: isExpanded ? 'secondary.50' : 'gray.50',
                   }}
+                  flexDirection={SHOW_VISUAL_SUMMARY ? 'row' : 'row-reverse'}
                 >
                   <Icon
                     as={FaChevronDown}
@@ -65,11 +67,6 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                     transition='transform 0.2s ease-in-out'
                   />
 
-                  {/* {isExpanded ? (
-                    <FaChevronUp data-testid='minus-icon' fontSize='12px' _/>
-                  ) : (
-                    <FaChevronDown data-testid='plus-icon' fontSize='12px' />
-                  )} */}
                   <Tooltip
                     label={
                       description.charAt(0).toUpperCase() + description.slice(1)
@@ -87,7 +84,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                       {name}
                     </Text>
                   </Tooltip>
-                  {vizId && (
+                  {vizId && SHOW_VISUAL_SUMMARY && (
                     <Tooltip
                       label={
                         isVizActive

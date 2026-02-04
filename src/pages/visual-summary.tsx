@@ -22,7 +22,10 @@ import { fetchSearchResults } from 'src/utils/api';
 import { TabType } from 'src/views/search/types';
 import { tabs } from 'src/views/search/config/tabs';
 import { OntologyBrowserPopup } from 'src/views/ontology-browser/components/popup';
-import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
+import {
+  SHOW_AI_ASSISTED_SEARCH,
+  SHOW_VISUAL_SUMMARY,
+} from 'src/utils/feature-flags';
 import SummaryGrid from 'src/views/search/components/summary';
 import { ChartType } from 'src/views/search/components/summary/types';
 import { updateRoute } from 'src/views/search/utils/update-route';
@@ -386,15 +389,17 @@ const Search: NextPage<{
                   />
                 )}
               </VStack>
-              <SummaryGrid
-                searchParams={queryParams}
-                onFilterUpdate={(values, facet) => {
-                  handleSelectedFilters(values, facet);
-                }}
-                activeVizIds={activeVizIds}
-                removeActiveVizId={toggleViz}
-                configs={VIZ_CONFIG}
-              />
+              {SHOW_VISUAL_SUMMARY && (
+                <SummaryGrid
+                  searchParams={queryParams}
+                  onFilterUpdate={(values, facet) => {
+                    handleSelectedFilters(values, facet);
+                  }}
+                  activeVizIds={activeVizIds}
+                  removeActiveVizId={toggleViz}
+                  configs={VIZ_CONFIG}
+                />
+              )}
               {/* Search Results */}
               <SearchResultsController initialData={initialData} />
             </Box>
