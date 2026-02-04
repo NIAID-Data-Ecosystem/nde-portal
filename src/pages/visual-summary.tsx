@@ -288,17 +288,23 @@ const Search: NextPage<{
 
   const handleSelectedFilters = useCallback(
     (values: string[], facet: string) => {
-      const updatedValues = values.map(value => {
-        // return object with inverted facet + key for exists values
-        if (value === '-_exists_' || value === '_exists_') {
-          return { [value]: [facet] };
-        }
-        return value;
-      });
-      let updatedFilterString = queryFilterObject2String({
+      const existing = selectedFilters[facet] || [];
+
+      // Merge + de-dupe
+      const mergedValues = Array.from(new Set([...existing, ...values]));
+
+      // Normalize _exists_ filters into object form
+      const normalizedValues = mergedValues.map(value =>
+        value === '_exists_' || value === '-_exists_'
+          ? { [value]: [facet] }
+          : value,
+      );
+
+      const updatedFilterString = queryFilterObject2String({
         ...selectedFilters,
-        ...{ [facet]: updatedValues },
+        [facet]: normalizedValues,
       });
+
       handleUpdate({
         from: 1,
         filters: updatedFilterString,
@@ -306,6 +312,7 @@ const Search: NextPage<{
     },
     [selectedFilters, handleUpdate],
   );
+
   // If the initial tab is not set, return a loading state.
   if (!initialTab) {
     return null;
@@ -381,7 +388,9 @@ const Search: NextPage<{
               </VStack>
               <SummaryGrid
                 searchParams={queryParams}
-                onFilterUpdate={handleSelectedFilters}
+                onFilterUpdate={(values, facet) => {
+                  handleSelectedFilters(values, facet);
+                }}
                 activeVizIds={activeVizIds}
                 removeActiveVizId={toggleViz}
                 configs={VIZ_CONFIG}
