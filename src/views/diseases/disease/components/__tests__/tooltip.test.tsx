@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen } from '@testing-library/react';
-import { TooltipWrapper } from '../tooltip';
+import { TooltipWrapper } from 'src/components/visualizations/tooltip/index';
 
 describe('TooltipWrapper', () => {
   const renderWithChakra = (ui: React.ReactElement) => {

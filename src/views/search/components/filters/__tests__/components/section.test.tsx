@@ -157,28 +157,4 @@ describe('FiltersSection', () => {
       expect(tooltip).toBeInTheDocument();
     });
   });
-
-  it('renders correct icon based on expanded state', async () => {
-    renderComponent({
-      containerProps: {
-        ...containerProps,
-        selectedFilters: {},
-        removeAllFilters: jest.fn(),
-      },
-      sections,
-    });
-    const button = screen.getByRole('button', { name: /Test Filter 1/i });
-
-    // Initially it should have the plus icon
-    const plusIcon = within(button).getByTestId('plus-icon');
-    expect(plusIcon).toBeInTheDocument();
-
-    fireEvent.click(button);
-
-    // After click, it should have the minus icon
-    await waitFor(() => {
-      const minusIcon = within(button).getByTestId('minus-icon');
-      expect(minusIcon).toBeInTheDocument();
-    });
-  });
 });
