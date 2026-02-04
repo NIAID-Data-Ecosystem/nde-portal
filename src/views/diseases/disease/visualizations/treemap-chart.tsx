@@ -18,7 +18,7 @@ import {
   TooltipSubtitle,
   TooltipTitle,
   TooltipWrapper,
-} from '../components/tooltip';
+} from 'src/components/visualizations/tooltip/index';
 import { FacetProps } from '../../types';
 
 interface TreemapChartProps {

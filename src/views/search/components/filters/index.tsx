@@ -22,6 +22,8 @@ interface FiltersProps {
   isDisabled?: boolean;
   selectedFilters: SelectedFilterType;
   removeAllFilters: () => void;
+  onToggleViz?: (vizId: string) => void;
+  isVizActive?: (vizId: string) => boolean;
 }
 
 // Filters component
@@ -29,8 +31,10 @@ export const Filters = React.memo(
   ({
     colorScheme = 'primary',
     isDisabled,
-    removeAllFilters,
     selectedFilters,
+    removeAllFilters,
+    onToggleViz,
+    isVizActive,
   }: FiltersProps) => {
     const router = useRouter();
     const queryParams = useSearchQueryFromURL();
@@ -167,6 +171,11 @@ export const Filters = React.memo(
               key={config.name}
               name={config.name}
               description={config.description}
+              vizId={config.vizId}
+              isVizActive={
+                config.vizId && isVizActive ? isVizActive(config.vizId) : false
+              }
+              onToggleViz={onToggleViz}
             >
               <FiltersList
                 config={config}
