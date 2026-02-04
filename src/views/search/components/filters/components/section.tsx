@@ -18,7 +18,8 @@ import {
   FaPlus,
 } from 'react-icons/fa6';
 import Tooltip from 'src/components/tooltip';
-import { SHOW_VISUAL_SUMMARY } from 'src/utils/feature-flags';
+import { SHOW_VISUAL_SUMMARY as SHOW_VISUAL_SUMMARY_FLAG } from 'src/utils/feature-flags';
+import { useRouter } from 'next/router';
 
 interface FiltersSectionProps {
   name: string;
@@ -36,6 +37,10 @@ Filter drawer corresponding to a filter facet.
 */
 export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
   ({ name, description, children, vizId, isVizActive, onToggleViz }) => {
+    const router = useRouter();
+    // Determine if visual summary section should be shown based on feature flag and current route since this component is shared with /search page.
+    const SHOW_VISUAL_SUMMARY =
+      SHOW_VISUAL_SUMMARY_FLAG && router.pathname === '/visual-summary';
     return (
       <AccordionItem border='none'>
         {({ isExpanded }) => {
@@ -43,6 +48,8 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
             <>
               <h2>
                 <AccordionButton
+                  as='span'
+                  role='button'
                   p={4}
                   gap={2}
                   py={isExpanded ? 1.5 : 2}
