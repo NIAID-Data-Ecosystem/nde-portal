@@ -317,7 +317,7 @@ const Search: NextPage<{
   );
 
   // If the initial tab is not set, return a loading state.
-  if (!initialTab) {
+  if (!initialTab || !SHOW_VISUAL_SUMMARY) {
     return null;
   }
   return (
