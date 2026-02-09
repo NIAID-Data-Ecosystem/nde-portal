@@ -19,7 +19,7 @@ import { theme } from 'src/theme';
 import { getMaxLabelWidthPx } from './helpers';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
-import { TooltipBody, TooltipWrapper } from '../tooltip';
+import { TooltipBody, TooltipTitle, TooltipWrapper } from '../tooltip';
 
 const defaultMargin = { top: 50, right: 50, bottom: 50, left: 50 };
 
@@ -122,12 +122,15 @@ export const PieChart = ({
 
   // Show tooltip and track hovered id on pointer move
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const svgRef = React.useRef<SVGSVGElement | null>(null);
 
   const handleMouseOver = (event: TooltipEvt, datum: ChartDatum) => {
-    const targetEl = (event.target as SVGPathElement)?.ownerSVGElement;
-    if (!targetEl) return;
-    const coords = localPoint(targetEl, event);
+    const svgEl = svgRef.current;
+    if (!svgEl) return;
+
+    const coords = localPoint(svgEl, event.nativeEvent || event);
     if (!coords) return;
+
     setHoveredId(datum.id);
     showTooltip({
       tooltipLeft: coords.x,
@@ -140,7 +143,12 @@ export const PieChart = ({
     <Flex w='100%' h='100%'>
       <Flex ref={parentRef} w='100%' h='100%'>
         <Box ref={containerRef} width={width} height={height}>
-          <svg width={width} height={height} onClick={() => setHoveredId(null)}>
+          <svg
+            ref={svgRef}
+            width={width}
+            height={height}
+            onClick={() => setHoveredId(null)}
+          >
             <Group top={groupTop} left={groupLeft}>
               <Pie
                 key={viewKey}
@@ -188,7 +196,7 @@ export const PieChart = ({
           aria-live='polite'
         >
           <TooltipWrapper>
-            <TooltipBody fontSize='xs'>{tooltipData.label}</TooltipBody>
+            <TooltipTitle fontSize='xs'>{tooltipData.label}</TooltipTitle>
           </TooltipWrapper>
         </TooltipInPortal>
       )}
