@@ -47,7 +47,7 @@ export const VisualizationCardHeader = ({
   label,
 }: HeadingProps & { label: string }) => {
   return (
-    <Heading as='h2' fontSize='xs' noOfLines={1}>
+    <Heading as='h2' fontSize='xs' fontWeight='semibold' noOfLines={1}>
       {label}
     </Heading>
   );

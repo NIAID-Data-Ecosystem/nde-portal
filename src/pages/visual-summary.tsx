@@ -390,7 +390,7 @@ const Search: NextPage<{
                   />
                 )}
               </VStack>
-              {SHOW_VISUAL_SUMMARY && (
+              {SHOW_VISUAL_SUMMARY && activeVizIds.length > 0 && (
                 <SummaryGrid
                   searchParams={queryParams}
                   onFilterUpdate={(values, facet) => {
