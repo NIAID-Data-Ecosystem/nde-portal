@@ -1,4 +1,4 @@
-import { Flex, SimpleGrid } from '@chakra-ui/react';
+import { Flex, SimpleGrid, Text } from '@chakra-ui/react';
 import { SearchState, VizConfig } from './types';
 import { VisualizationCard } from './components/visualization-card';
 import { SelectedFilterType } from '../filters/types';
@@ -25,7 +25,23 @@ const SummaryGrid = (props: SummaryGridProps) => {
       <Flex>
         <InfoLabel
           title='Visual Summary'
-          tooltipText='A visual summary of your search results. Interact with the charts and/or the filters list on the left to filter your results.'
+          tooltipText={
+            <Flex direction='column' gap={1}>
+              <Text>
+                A visual summary of your search results. Interact with the
+                charts and/or the filters list on the left to filter your
+                results.
+              </Text>
+              <Text>
+                The visual summary charts are based on the{' '}
+                <Text as='span' fontWeight='bold'>
+                  top 100 facet values
+                </Text>{' '}
+                (e.g., sources, pathogen species) in your search and may not
+                reflect the full distribution of your search results.
+              </Text>
+            </Flex>
+          }
           textProps={{ fontSize: 'sm', fontWeight: 'semibold' }}
           tooltipProps={{ hasArrow: true }}
         />
