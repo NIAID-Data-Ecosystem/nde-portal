@@ -27,6 +27,7 @@ import {
 import { FaArrowLeft, FaExpand, FaXmark } from 'react-icons/fa6';
 import { ModalViewer } from './modal-viewer';
 import Tooltip from 'src/components/tooltip';
+import { SelectedFilterTypeValue } from '../../filters/types';
 
 type VisualizationCardProps = {
   config: VizConfig;
@@ -38,6 +39,8 @@ type VisualizationCardProps = {
   removeActiveVizId: (vizId: string) => void;
 
   onFilterUpdate?: (values: string[], facet: string) => void;
+
+  selectedFilters: SelectedFilterTypeValue[];
 };
 
 export const VisualizationCardHeader = ({
@@ -86,8 +89,14 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
     onClose: closeModalView,
   } = useDisclosure();
 
-  const { config, searchState, isActive, onFilterUpdate, removeActiveVizId } =
-    props;
+  const {
+    config,
+    searchState,
+    isActive,
+    onFilterUpdate,
+    removeActiveVizId,
+    selectedFilters,
+  } = props;
 
   // Drill stack to manage "More" drill-downs.
   const [drillStack, setDrillStack] = useState<ChartDatum[][]>([]);
@@ -165,6 +174,19 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
     setDrillStack(stack => stack.slice(0, -1));
   }, []);
 
+  // Helper function to check if a slice is selected
+  const isSliceSelected = useCallback(
+    (id: string) => {
+      return selectedFilters.some(filter => {
+        if (typeof filter === 'string') {
+          return filter === id;
+        }
+        return false;
+      });
+    },
+    [selectedFilters],
+  );
+
   // Handler for slice clicks in the chart.
   const handleSliceClick = useCallback(
     (id: string) => {
@@ -174,9 +196,26 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
         }
         return;
       }
-      onFilterUpdate?.([id], config.property);
+
+      // If slice is already selected, remove it; otherwise add it
+      const isSelected = isSliceSelected(id);
+      if (isSelected) {
+        // Remove the filter - filter out this id from the existing filters
+        const newFilters = selectedFilters
+          .filter(filter => (typeof filter === 'string' ? filter !== id : true))
+          .map(filter =>
+            typeof filter === 'string' ? filter : Object.keys(filter)[0],
+          );
+        onFilterUpdate?.(newFilters, config.property);
+      } else {
+        // Add the filter
+        const newFilters = Array.from(new Set([...selectedFilters, id])).filter(
+          filter => typeof filter === 'string',
+        );
+        onFilterUpdate?.(newFilters, config.property);
+      }
     },
-    [tail, onFilterUpdate, config.property],
+    [tail, onFilterUpdate, config.property, isSliceSelected, selectedFilters],
   );
 
   if (!isActive) {
@@ -276,6 +315,9 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
               data={bucketedData || []}
               onSliceClick={handleSliceClick}
               isExpanded={isModalView}
+              isSliceSelected={
+                chartType === 'pie' ? isSliceSelected : undefined
+              }
             />
           )}
         </Flex>

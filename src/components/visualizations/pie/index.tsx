@@ -50,6 +50,9 @@ export interface PieChartProps {
 
   /** Callback when a slice is clicked. */
   onSliceClick?: (id: string) => void;
+
+  /** Function to determine if a slice is selected. */
+  isSliceSelected?: (id: string) => boolean;
 }
 
 const getTermColor = (data: ChartDatum[]) =>
@@ -80,6 +83,7 @@ export const PieChart = ({
   animate = true,
   data,
   onSliceClick,
+  isSliceSelected,
 }: PieChartProps) => {
   // Tooltip handling
   const {
@@ -160,6 +164,7 @@ export const PieChart = ({
                     onClickDatum={({ data: { id } }) => onSliceClick?.(id)}
                     getColor={({ data: { id } }) => colorScale(id)}
                     hoveredId={hoveredId}
+                    isSliceSelected={isSliceSelected}
                     handleMouseOver={handleMouseOver}
                     handleMouseOut={() => {
                       setHoveredId(null);
@@ -219,6 +224,7 @@ type AnimatedPieProps<Datum> = ProvidedProps<Datum> & {
   getLabel: (d: PieArcDatum<Datum>) => string;
   getColor: (d: PieArcDatum<Datum>) => string;
   onClickDatum: (d: PieArcDatum<Datum>) => void;
+  isSliceSelected?: (id: string) => boolean;
   handleMouseOut: () => void;
   handleMouseOver: (event: TooltipEvt, datum: Datum) => void;
 };
@@ -255,6 +261,7 @@ function AnimatedPie<ChartDatum>({
   getLabel,
   getColor,
   onClickDatum,
+  isSliceSelected,
   handleMouseOver,
   handleMouseOut,
 }: AnimatedPieProps<ChartDatum>) {
@@ -338,6 +345,7 @@ function AnimatedPie<ChartDatum>({
     const id = getKey(arc);
     const label = getLabel(arc);
     const isHovered = hoveredId === id;
+    const isSelected = isSliceSelected?.(id) ?? false;
 
     // Determine if this slice is dimmed due to another slice being hovered
     const isDimmed = hoveredId !== null && !isHovered;
@@ -392,8 +400,9 @@ function AnimatedPie<ChartDatum>({
 
     const showLabel = qualifies || isMore || forceShowFallback;
 
-    // ---- Render the hover effect pie slice ----
-    const effectiveOuterRadius = outerRadius + (isHovered ? HOVER_RAISE : 0);
+    // ---- Render the hover/selection effect pie slice ----
+    const effectiveOuterRadius =
+      outerRadius + (isHovered || isSelected ? HOVER_RAISE : 0);
 
     // Arc generator for the hover slice path
     const arcPath = d3Arc<any>()

@@ -291,21 +291,22 @@ const Search: NextPage<{
 
   const handleSelectedFilters = useCallback(
     (values: string[], facet: string) => {
+      console.log('values', values);
       const existing = selectedFilters[facet] || [];
 
       // Merge + de-dupe
-      const mergedValues = Array.from(new Set([...existing, ...values]));
+      const uniq_values = Array.from(new Set(values));
 
       // Normalize _exists_ filters into object form
-      const normalizedValues = mergedValues.map(value =>
-        value === '_exists_' || value === '-_exists_'
-          ? { [value]: [facet] }
-          : value,
-      );
+      // const normalizedValues = mergedValues.map(value =>
+      //   value === '_exists_' || value === '-_exists_'
+      //     ? { [value]: [facet] }
+      //     : value,
+      // );
 
       const updatedFilterString = queryFilterObject2String({
         ...selectedFilters,
-        [facet]: normalizedValues,
+        [facet]: uniq_values,
       });
 
       handleUpdate({
@@ -398,6 +399,7 @@ const Search: NextPage<{
                   activeVizIds={activeVizIds}
                   removeActiveVizId={toggleViz}
                   configs={VIZ_CONFIG}
+                  selectedFilters={selectedFilters}
                 />
               )}
               {/* Search Results */}

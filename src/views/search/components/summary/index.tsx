@@ -1,6 +1,7 @@
 import { Flex, SimpleGrid } from '@chakra-ui/react';
 import { SearchState, VizConfig } from './types';
 import { VisualizationCard } from './components/visualization-card';
+import { SelectedFilterType } from '../filters/types';
 
 interface SummaryGridProps {
   // Ids of visualizations are currently enabled / visible
@@ -13,6 +14,8 @@ interface SummaryGridProps {
   onFilterUpdate?: (values: string[], facet: string) => void;
   // All available visualization configs
   configs: VizConfig[];
+  // Currently selected filters
+  selectedFilters: SelectedFilterType;
 }
 const SummaryGrid = (props: SummaryGridProps) => {
   return (
@@ -27,6 +30,7 @@ const SummaryGrid = (props: SummaryGridProps) => {
             isActive={props.activeVizIds.includes(config.id)}
             removeActiveVizId={props.removeActiveVizId}
             onFilterUpdate={props.onFilterUpdate}
+            selectedFilters={props.selectedFilters[config.property] || []}
           />
         ))}
       </SimpleGrid>
