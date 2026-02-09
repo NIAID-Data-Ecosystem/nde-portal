@@ -34,6 +34,9 @@ export interface BarChartProps {
   /** Callback when a slice is clicked. */
   onSliceClick?: (id: string) => void;
 
+  /** Function to determine if a slice is selected. */
+  isSliceSelected?: (id: string) => boolean;
+
   useLogScale?: boolean;
   isExpanded?: boolean;
 }

@@ -315,9 +315,7 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
               data={bucketedData || []}
               onSliceClick={handleSliceClick}
               isExpanded={isModalView}
-              isSliceSelected={
-                chartType === 'pie' ? isSliceSelected : undefined
-              }
+              isSliceSelected={isSliceSelected}
             />
           )}
         </Flex>
