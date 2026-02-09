@@ -61,13 +61,13 @@ export const VisualizationCardIconButton = ({
 }: Omit<IconButtonProps, 'aria-label' | 'as' | 'icon'> & {
   ariaLabel: string;
   tooltipContent: string;
-  icon: IconButtonProps['as'];
+  icon: React.ReactElement<IconProps>;
 }) => {
   return (
     <Tooltip label={tooltipContent} hasArrow>
       <Box>
         <IconButton
-          as={icon}
+          icon={icon}
           aria-label={ariaLabel}
           onClick={onClick}
           variant='ghost'
@@ -257,14 +257,14 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
             <VisualizationCardIconButton
               ariaLabel='Expand chart to modal view'
               tooltipContent='Expand chart to modal view.'
-              icon={FaExpand}
+              icon={<Icon as={FaExpand} />}
               onClick={openModalView}
               isDisabled={!isActive}
             />
             <VisualizationCardIconButton
               ariaLabel='Remove chart from display.'
               tooltipContent='Remove chart from display.'
-              icon={FaXmark}
+              icon={<Icon as={FaXmark} />}
               onClick={() => removeActiveVizId(config.id)}
               isDisabled={!isActive}
             />
