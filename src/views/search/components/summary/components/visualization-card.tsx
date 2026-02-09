@@ -38,7 +38,7 @@ type VisualizationCardProps = {
 
   removeActiveVizId: (vizId: string) => void;
 
-  onFilterUpdate?: (values: string[], facet: string) => void;
+  onFilterUpdate?: (values: SelectedFilterTypeValue[], facet: string) => void;
 
   selectedFilters: SelectedFilterTypeValue[];
 };
@@ -201,17 +201,14 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
       const isSelected = isSliceSelected(id);
       if (isSelected) {
         // Remove the filter - filter out this id from the existing filters
-        const newFilters = selectedFilters
-          .filter(filter => (typeof filter === 'string' ? filter !== id : true))
-          .map(filter =>
-            typeof filter === 'string' ? filter : Object.keys(filter)[0],
-          );
+        const newFilters = selectedFilters.filter(filter =>
+          typeof filter === 'string' ? filter !== id : true,
+        );
+
         onFilterUpdate?.(newFilters, config.property);
       } else {
         // Add the filter
-        const newFilters = Array.from(new Set([...selectedFilters, id])).filter(
-          filter => typeof filter === 'string',
-        );
+        const newFilters = Array.from(new Set([...selectedFilters, id]));
         onFilterUpdate?.(newFilters, config.property);
       }
     },

@@ -3,6 +3,7 @@ import { SearchState, VizConfig } from './types';
 import { VisualizationCard } from './components/visualization-card';
 import { SelectedFilterType } from '../filters/types';
 import { InfoLabel } from 'src/components/info-label';
+import { SelectedFilterTypeValue } from '../filters/types';
 
 interface SummaryGridProps {
   // Ids of visualizations are currently enabled / visible
@@ -12,7 +13,7 @@ interface SummaryGridProps {
   // Search parameters from URL
   searchParams: SearchState;
   // What happens on filter update from visualization interaction
-  onFilterUpdate?: (values: string[], facet: string) => void;
+  onFilterUpdate?: (values: SelectedFilterTypeValue[], facet: string) => void;
   // All available visualization configs
   configs: VizConfig[];
   // Currently selected filters

@@ -7,7 +7,10 @@ import { SearchTabsProvider } from 'src/views/search/context/search-tabs-context
 import { useSearchQueryFromURL } from 'src/views/search/hooks/useSearchQueryFromURL';
 import { Box, Flex, VStack } from '@chakra-ui/react';
 import { Filters } from 'src/views/search/components/filters';
-import { SelectedFilterType } from 'src/views/search/components/filters/types';
+import {
+  SelectedFilterType,
+  SelectedFilterTypeValue,
+} from 'src/views/search/components/filters/types';
 import { FILTER_CONFIGS } from 'src/views/search/components/filters/config';
 import {
   queryFilterObject2String,
@@ -290,13 +293,8 @@ const Search: NextPage<{
   );
 
   const handleSelectedFilters = useCallback(
-    (values: string[], facet: string) => {
-      console.log('values', values);
-      const existing = selectedFilters[facet] || [];
-
+    (values: SelectedFilterTypeValue[], facet: string) => {
       // Merge + de-dupe
-      const uniq_values = Array.from(new Set(values));
-
       // Normalize _exists_ filters into object form
       // const normalizedValues = mergedValues.map(value =>
       //   value === '_exists_' || value === '-_exists_'
@@ -306,7 +304,7 @@ const Search: NextPage<{
 
       const updatedFilterString = queryFilterObject2String({
         ...selectedFilters,
-        [facet]: uniq_values,
+        [facet]: values,
       });
 
       handleUpdate({
