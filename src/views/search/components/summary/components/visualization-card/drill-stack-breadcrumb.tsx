@@ -19,7 +19,7 @@ export const DrillStackBreadcrumb = ({
       onClick={onBack}
       color='link.color'
       textDecoration='underline'
-      mr={2}
+      mr={1}
     >
       <Icon as={FaArrowLeft} boxSize={3} mr={1} />
       Back
