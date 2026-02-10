@@ -1,7 +1,7 @@
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { SearchState } from '../types';
 import { fetchSearchResults } from 'src/utils/api';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { queryFilterObject2String } from '../../filters/utils/query-builders';
 
 type UseAggregationQueryArgs = {
@@ -14,6 +14,7 @@ type UseAggregationQueryResult = {
   data?: FetchSearchResultsResponse;
   isLoading: boolean;
   isFetching: boolean;
+  isPlaceholderData: boolean;
   isError: boolean;
   refetch: () => void;
 };
@@ -29,20 +30,23 @@ export const useAggregationQuery = ({
     from: '' + searchState.from,
     filters: queryFilterObject2String(searchState.filters) || '',
     extra_filter: queryFilterObject2String(searchState.filters) || '',
-    facet_size: 100,
+    facet_size: searchState?.facet_size || 100,
     facets: property,
     size: 0,
   };
 
-  const { data, isLoading, error, isFetching, refetch } = useQuery({
-    queryKey: ['search-results-facets', params],
-    queryFn: async () => await fetchSearchResults(params),
-    enabled,
-  });
+  const { data, isLoading, error, isFetching, isPlaceholderData, refetch } =
+    useQuery({
+      queryKey: ['search-results-facets', params],
+      queryFn: async () => await fetchSearchResults(params),
+      enabled,
+      placeholderData: keepPreviousData,
+    });
   return {
     data,
     isLoading,
     isFetching,
+    isPlaceholderData,
     isError: !!error,
     refetch,
   };

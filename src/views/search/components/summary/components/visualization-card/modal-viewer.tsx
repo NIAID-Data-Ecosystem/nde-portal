@@ -8,7 +8,7 @@ import {
   ModalBody,
   ModalCloseButton,
 } from '@chakra-ui/react';
-import { VisualizationCardHeader } from './visualization-card';
+import { VisualizationCardHeading } from './card-header';
 
 interface ModalViewerProps extends ModalProps {
   children: React.ReactNode;
@@ -23,14 +23,14 @@ export const ModalViewer: React.FC<ModalViewerProps> = ({
   ...props
 }) => {
   if (!isOpen) {
-    return children;
+    return null;
   }
   return (
     <Modal isOpen={isOpen} onClose={onClose} size='xl' {...props}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          <VisualizationCardHeader label={label} />
+          <VisualizationCardHeading label={label} />
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>{children}</ModalBody>

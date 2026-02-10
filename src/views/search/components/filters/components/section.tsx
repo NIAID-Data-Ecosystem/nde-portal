@@ -3,23 +3,15 @@ import {
   AccordionItem,
   AccordionButton,
   AccordionPanel,
-  Button,
+  Box,
   Text,
-  IconButton,
   Icon,
 } from '@chakra-ui/react';
-import {
-  FaCaretDown,
-  FaCaretUp,
-  FaChartPie,
-  FaChevronDown,
-  FaChevronUp,
-  FaMinus,
-  FaPlus,
-} from 'react-icons/fa6';
+import { FaChevronDown } from 'react-icons/fa6';
 import Tooltip from 'src/components/tooltip';
 import { SHOW_VISUAL_SUMMARY as SHOW_VISUAL_SUMMARY_FLAG } from 'src/utils/feature-flags';
 import { useRouter } from 'next/router';
+import { FiltersChartToggle } from '../../summary/components/filters-chart-toggle';
 
 interface FiltersSectionProps {
   name: string;
@@ -99,33 +91,13 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                           : `Add ${name} visualisation chart`
                       }
                     >
-                      <IconButton
-                        aria-label={
-                          isVizActive
-                            ? `Remove ${name} visualisation chart`
-                            : `Add ${name} visualisation chart`
-                        }
-                        variant='ghost'
-                        size='xs'
-                        colorScheme={isVizActive ? 'secondary' : 'gray'}
-                        onClick={e => {
-                          e.stopPropagation();
-                          if (vizId && onToggleViz) onToggleViz(vizId);
-                        }}
-                        color={isVizActive ? 'secondary.500' : 'gray.500'}
-                        _hover={{
-                          backgroundColor: isVizActive
-                            ? 'secondary.50'
-                            : 'gray.50',
-                        }}
-                        sx={{
-                          '>svg': {
-                            color: isVizActive ? 'secondary.400' : 'gray.400',
-                          },
-                        }}
-                      >
-                        <FaChartPie />
-                      </IconButton>
+                      <Box>
+                        <FiltersChartToggle
+                          isActive={!!isVizActive}
+                          name={name}
+                          onClick={() => onToggleViz && onToggleViz(vizId)}
+                        />
+                      </Box>
                     </Tooltip>
                   )}
                 </AccordionButton>

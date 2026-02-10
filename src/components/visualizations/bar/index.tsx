@@ -36,6 +36,13 @@ const barStyles = {
       max: 22,
     },
   },
+  selected: {
+    fillOpacity: 0.3,
+    padding: {
+      x: 2,
+      y: 6,
+    },
+  },
   padding: { y: 8 },
   rx: 2.5,
   fill: theme.colors.gray[200],
@@ -60,6 +67,7 @@ export const BarChart = ({
   margin = { top: 10, right: 20, bottom: 0, left: 0 },
   data,
   onSliceClick,
+  isSliceSelected,
   useLogScale = false,
   isExpanded = false,
 }: BarChartProps) => {
@@ -219,6 +227,11 @@ export const BarChart = ({
                 const barY = rowY;
 
                 const fill = colorScale(id);
+                const isHovered = hoveredId === id;
+                const isSelected = isSliceSelected?.(id) ?? false;
+
+                // Determine if this bar is dimmed due to another bar being hovered
+                const isDimmed = hoveredId !== null && !isHovered;
 
                 // Label is anchored just before the bars
                 const labelX = barX - labelStyles.padding;
@@ -243,7 +256,7 @@ export const BarChart = ({
                     onBlur={handlePointerLeave}
                     style={{
                       cursor: 'pointer',
-                      opacity: hoveredId && hoveredId !== id ? 0.6 : 1,
+                      opacity: isDimmed ? 0.6 : 1,
                     }}
                   >
                     {/* filled default bar (rendered to fill the full width for hover purposes) */}
@@ -256,14 +269,33 @@ export const BarChart = ({
                       fillOpacity={barStyles.fillOpacity}
                       rx={barStyles.rx}
                     />
+
+                    {/* if selected, add bar to mark selection */}
+                    {isSelected && (
+                      <AnimatedRect
+                        bar={{
+                          x: barX,
+                          y: barY - barStyles.selected.padding.y / 2,
+                          width:
+                            barWidth +
+                            barStyles.selected.padding.x +
+                            (isHovered ? 4 : 0),
+                          height: barHeight + barStyles.selected.padding.y,
+                          data: datum,
+                          fill,
+                          fillOpacity: barStyles.selected.fillOpacity,
+                          rx: barStyles.rx,
+                        }}
+                      />
+                    )}
                     {/* bar filled with color matching type */}
                     <AnimatedRect
                       bar={{
-                        data: datum,
                         x: barX,
                         y: barY,
+                        width: barWidth + (isHovered ? 4 : 0),
                         height: barHeight,
-                        width: barWidth,
+                        data: datum,
                         fill,
                         rx: barStyles.rx,
                       }}
@@ -349,6 +381,7 @@ export const AnimatedRect = ({
     height: number;
     width: number;
     fill: string;
+    fillOpacity?: number;
     rx: number;
   };
 }) => {
@@ -362,6 +395,7 @@ export const AnimatedRect = ({
       width={spring.width}
       height={bar.height}
       fill={bar.fill}
+      fillOpacity={bar.fillOpacity}
       rx={bar.rx}
     />
   );

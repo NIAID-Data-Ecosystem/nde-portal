@@ -19,7 +19,7 @@ import { theme } from 'src/theme';
 import { getMaxLabelWidthPx } from './helpers';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
-import { TooltipBody, TooltipWrapper } from '../tooltip';
+import { TooltipBody, TooltipTitle, TooltipWrapper } from '../tooltip';
 
 const defaultMargin = { top: 50, right: 50, bottom: 50, left: 50 };
 
@@ -50,6 +50,9 @@ export interface PieChartProps {
 
   /** Callback when a slice is clicked. */
   onSliceClick?: (id: string) => void;
+
+  /** Function to determine if a slice is selected. */
+  isSliceSelected?: (id: string) => boolean;
 }
 
 const getTermColor = (data: ChartDatum[]) =>
@@ -80,6 +83,7 @@ export const PieChart = ({
   animate = true,
   data,
   onSliceClick,
+  isSliceSelected,
 }: PieChartProps) => {
   // Tooltip handling
   const {
@@ -118,12 +122,15 @@ export const PieChart = ({
 
   // Show tooltip and track hovered id on pointer move
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const svgRef = React.useRef<SVGSVGElement | null>(null);
 
   const handleMouseOver = (event: TooltipEvt, datum: ChartDatum) => {
-    const targetEl = (event.target as SVGPathElement)?.ownerSVGElement;
-    if (!targetEl) return;
-    const coords = localPoint(targetEl, event);
+    const svgEl = svgRef.current;
+    if (!svgEl) return;
+
+    const coords = localPoint(svgEl, event.nativeEvent || event);
     if (!coords) return;
+
     setHoveredId(datum.id);
     showTooltip({
       tooltipLeft: coords.x,
@@ -136,7 +143,12 @@ export const PieChart = ({
     <Flex w='100%' h='100%'>
       <Flex ref={parentRef} w='100%' h='100%'>
         <Box ref={containerRef} width={width} height={height}>
-          <svg width={width} height={height} onClick={() => setHoveredId(null)}>
+          <svg
+            ref={svgRef}
+            width={width}
+            height={height}
+            onClick={() => setHoveredId(null)}
+          >
             <Group top={groupTop} left={groupLeft}>
               <Pie
                 key={viewKey}
@@ -160,6 +172,7 @@ export const PieChart = ({
                     onClickDatum={({ data: { id } }) => onSliceClick?.(id)}
                     getColor={({ data: { id } }) => colorScale(id)}
                     hoveredId={hoveredId}
+                    isSliceSelected={isSliceSelected}
                     handleMouseOver={handleMouseOver}
                     handleMouseOut={() => {
                       setHoveredId(null);
@@ -183,7 +196,7 @@ export const PieChart = ({
           aria-live='polite'
         >
           <TooltipWrapper>
-            <TooltipBody fontSize='xs'>{tooltipData.label}</TooltipBody>
+            <TooltipTitle fontSize='xs'>{tooltipData.label}</TooltipTitle>
           </TooltipWrapper>
         </TooltipInPortal>
       )}
@@ -219,6 +232,7 @@ type AnimatedPieProps<Datum> = ProvidedProps<Datum> & {
   getLabel: (d: PieArcDatum<Datum>) => string;
   getColor: (d: PieArcDatum<Datum>) => string;
   onClickDatum: (d: PieArcDatum<Datum>) => void;
+  isSliceSelected?: (id: string) => boolean;
   handleMouseOut: () => void;
   handleMouseOver: (event: TooltipEvt, datum: Datum) => void;
 };
@@ -255,6 +269,7 @@ function AnimatedPie<ChartDatum>({
   getLabel,
   getColor,
   onClickDatum,
+  isSliceSelected,
   handleMouseOver,
   handleMouseOut,
 }: AnimatedPieProps<ChartDatum>) {
@@ -338,6 +353,7 @@ function AnimatedPie<ChartDatum>({
     const id = getKey(arc);
     const label = getLabel(arc);
     const isHovered = hoveredId === id;
+    const isSelected = isSliceSelected?.(id) ?? false;
 
     // Determine if this slice is dimmed due to another slice being hovered
     const isDimmed = hoveredId !== null && !isHovered;
@@ -392,8 +408,9 @@ function AnimatedPie<ChartDatum>({
 
     const showLabel = qualifies || isMore || forceShowFallback;
 
-    // ---- Render the hover effect pie slice ----
-    const effectiveOuterRadius = outerRadius + (isHovered ? HOVER_RAISE : 0);
+    // ---- Render the hover/selection effect pie slice ----
+    const effectiveOuterRadius =
+      outerRadius + (isHovered || isSelected ? HOVER_RAISE : 0);
 
     // Arc generator for the hover slice path
     const arcPath = d3Arc<any>()
