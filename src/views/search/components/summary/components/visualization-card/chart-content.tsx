@@ -46,7 +46,7 @@ export const ChartContent = ({
 }: ChartContentProps) => {
   const height = isExpanded
     ? 'clamp(180px, 50vh, 450px)'
-    : 'clamp(180px, 30vh, 300px)';
+    : 'clamp(180px, 30vh, 250px)';
 
   // No data is provided for the chart.
   if (isEmpty) {
@@ -59,7 +59,12 @@ export const ChartContent = ({
 
   return (
     <Flex h={height} opacity={isPlaceholderData ? 0.7 : 1} direction='column'>
-      <Flex alignItems='center' justifyContent='flex-end' flexWrap='wrap'>
+      <Flex
+        alignItems='center'
+        justifyContent='flex-end'
+        flexWrap='wrap'
+        flexShrink={0}
+      >
         {children}
         <ChartTypePicker
           value={chartType}
@@ -68,12 +73,14 @@ export const ChartContent = ({
           isDisabled={!isActive}
         />
       </Flex>
-      <ChartComponent
-        data={bucketedData}
-        onSliceClick={onSliceClick}
-        isExpanded={isExpanded}
-        isSliceSelected={isSliceSelected}
-      />
+      <Flex flex={1} minH={0}>
+        <ChartComponent
+          data={bucketedData}
+          onSliceClick={onSliceClick}
+          isExpanded={isExpanded}
+          isSliceSelected={isSliceSelected}
+        />
+      </Flex>
     </Flex>
   );
 };
