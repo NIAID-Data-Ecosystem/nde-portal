@@ -224,9 +224,6 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
   //   // refetch option + error handling can be added here
   //   return <>Error State</>;
   // }
-  // if (aggData.isLoading || !facetData) {
-  //   return <>Loading State</>;
-  // }
 
   // No data available for the given aggregation. Empty state
   const hasEmptyData = facetData?.length === 0;
@@ -297,6 +294,7 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
               ? 'clamp(180px, 50vh, 450px)'
               : 'clamp(180px, 30vh, 250px)'
           }
+          opacity={aggData.isPlaceholderData ? 0.7 : 1}
         >
           {hasEmptyData ? (
             <Text
