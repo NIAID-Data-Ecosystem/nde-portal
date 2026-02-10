@@ -46,7 +46,7 @@ export const ChartContent = ({
 }: ChartContentProps) => {
   const height = isExpanded
     ? 'clamp(180px, 50vh, 450px)'
-    : 'clamp(180px, 30vh, 250px)';
+    : 'clamp(180px, 30vh, 300px)';
 
   // No data is provided for the chart.
   if (isEmpty) {
