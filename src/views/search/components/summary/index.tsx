@@ -47,7 +47,7 @@ const SummaryGrid = (props: SummaryGridProps) => {
           tooltipProps={{ hasArrow: true }}
         />
       </Flex>
-      <SimpleGrid minChildWidth='300px' spacing={4}>
+      <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing={4}>
         {/* Map over config to render visualizations.*/}
         {props.configs.map(config => (
           <VisualizationCard
