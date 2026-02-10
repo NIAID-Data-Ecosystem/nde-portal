@@ -3,6 +3,7 @@ import {
   AccordionItem,
   AccordionButton,
   AccordionPanel,
+  Box,
   Text,
   Icon,
 } from '@chakra-ui/react';
@@ -90,11 +91,13 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                           : `Add ${name} visualisation chart`
                       }
                     >
-                      <FiltersChartToggle
-                        isActive={!!isVizActive}
-                        name={name}
-                        onClick={() => onToggleViz && onToggleViz(vizId)}
-                      />
+                      <Box>
+                        <FiltersChartToggle
+                          isActive={!!isVizActive}
+                          name={name}
+                          onClick={() => onToggleViz && onToggleViz(vizId)}
+                        />
+                      </Box>
                     </Tooltip>
                   )}
                 </AccordionButton>
