@@ -1,6 +1,5 @@
 import { SearchState, VizConfig } from '../../types';
 import { useDisclosure, Flex } from '@chakra-ui/react';
-import { ModalViewer } from './modal-viewer';
 import { SelectedFilterTypeValue } from '../../../filters/types';
 import { DEFAULT_MORE_PARAMS } from '../../helpers';
 import { CardHeader } from './card-header';
@@ -76,35 +75,31 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
         onRemove={() => removeActiveVizId(config.id)}
       />
 
-      <ModalViewer
+      <ChartContent
         label={config.label}
-        isOpen={isModalView}
-        onClose={closeModalView}
+        bucketedData={bucketedData || []}
+        ChartComponent={ChartComponent}
+        chartType={chartType}
+        chartOptions={config.chart.availableOptions}
+        onChartTypeChange={setPreferredChartType}
+        onSliceClick={handleSliceClick}
+        isSliceSelected={isSliceSelected}
+        isActive={isActive}
+        isEmpty={hasEmptyData}
+        isError={aggData.isError}
+        onRetry={() => aggData.refetch()}
+        isPlaceholderData={aggData.isPlaceholderData}
+        isModalOpen={isModalView}
+        onModalClose={closeModalView}
       >
-        <ChartContent
-          bucketedData={bucketedData || []}
-          ChartComponent={ChartComponent}
-          chartType={chartType}
-          chartOptions={config.chart.availableOptions}
-          onChartTypeChange={setPreferredChartType}
-          onSliceClick={handleSliceClick}
-          isSliceSelected={isSliceSelected}
-          isExpanded={isModalView}
-          isActive={isActive}
-          isEmpty={hasEmptyData}
-          isError={aggData.isError}
-          onRetry={() => aggData.refetch()}
-          isPlaceholderData={aggData.isPlaceholderData}
-        >
-          {drillStack.length > 0 && (
-            <DrillStackBreadcrumb
-              label={config.label}
-              moreLabel={DEFAULT_MORE_PARAMS.moreLabel}
-              onBack={handleBack}
-            />
-          )}
-        </ChartContent>
-      </ModalViewer>
+        {drillStack.length > 0 && (
+          <DrillStackBreadcrumb
+            label={config.label}
+            moreLabel={DEFAULT_MORE_PARAMS.moreLabel}
+            onBack={handleBack}
+          />
+        )}
+      </ChartContent>
     </Flex>
   );
 };

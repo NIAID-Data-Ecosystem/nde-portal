@@ -23,7 +23,7 @@ export const ModalViewer: React.FC<ModalViewerProps> = ({
   ...props
 }) => {
   if (!isOpen) {
-    return children;
+    return null;
   }
   return (
     <Modal isOpen={isOpen} onClose={onClose} size='xl' {...props}>
