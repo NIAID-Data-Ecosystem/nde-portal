@@ -23,6 +23,7 @@ export type VizConfig = {
   id: string;
   label: string;
   property: string;
+  filterProperty?: string; // Optional: property to use for filtering (defaults to property if not specified)
 
   chart: {
     availableOptions: ChartType[];

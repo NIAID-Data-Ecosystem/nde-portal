@@ -50,7 +50,8 @@ const VIZ_CONFIG = [
   {
     id: 'sourceOrganization.name',
     label: 'Program Collection',
-    property: 'sourceOrganization.name',
+    property: 'sourceOrganization.name.raw',
+    filterProperty: 'sourceOrganization.name',
     chart: {
       availableOptions: ['bar', 'pie'] as ChartType[],
       defaultOption: 'pie' as const,

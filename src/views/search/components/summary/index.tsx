@@ -49,17 +49,20 @@ const SummaryGrid = (props: SummaryGridProps) => {
       </Flex>
       <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing={4}>
         {/* Map over config to render visualizations.*/}
-        {props.configs.map(config => (
-          <VisualizationCard
-            key={config.id}
-            config={config}
-            searchState={props.searchParams}
-            isActive={props.activeVizIds.includes(config.id)}
-            removeActiveVizId={props.removeActiveVizId}
-            onFilterUpdate={props.onFilterUpdate}
-            selectedFilters={props.selectedFilters[config.property] || []}
-          />
-        ))}
+        {props.configs.map(config => {
+          const filterProperty = config.filterProperty || config.property;
+          return (
+            <VisualizationCard
+              key={config.id}
+              config={config}
+              searchState={props.searchParams}
+              isActive={props.activeVizIds.includes(config.id)}
+              removeActiveVizId={props.removeActiveVizId}
+              onFilterUpdate={props.onFilterUpdate}
+              selectedFilters={props.selectedFilters[filterProperty] || []}
+            />
+          );
+        })}
       </SimpleGrid>
     </Flex>
   );

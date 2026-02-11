@@ -131,20 +131,29 @@ export const useVisualizationData = ({
 
       // If slice is already selected, remove it; otherwise add it
       const isSelected = isSliceSelected(id);
+      const filterProperty = config.filterProperty || config.property;
+
       if (isSelected) {
         // Remove the filter - filter out this id from the existing filters
         const newFilters = selectedFilters.filter(filter =>
           typeof filter === 'string' ? filter !== id : true,
         );
 
-        onFilterUpdate?.(newFilters, config.property);
+        onFilterUpdate?.(newFilters, filterProperty);
       } else {
         // Add the filter
         const newFilters = Array.from(new Set([...selectedFilters, id]));
-        onFilterUpdate?.(newFilters, config.property);
+        onFilterUpdate?.(newFilters, filterProperty);
       }
     },
-    [tail, onFilterUpdate, config.property, isSliceSelected, selectedFilters],
+    [
+      tail,
+      onFilterUpdate,
+      config.property,
+      config.filterProperty,
+      isSliceSelected,
+      selectedFilters,
+    ],
   );
 
   return {
