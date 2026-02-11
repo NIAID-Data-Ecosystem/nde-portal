@@ -95,7 +95,10 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                         <FiltersChartToggle
                           isActive={!!isVizActive}
                           name={name}
-                          onClick={() => onToggleViz && onToggleViz(vizId)}
+                          onClick={e => {
+                            e.stopPropagation(); // Prevent accordion toggle
+                            onToggleViz && onToggleViz(vizId);
+                          }}
                         />
                       </Box>
                     </Tooltip>

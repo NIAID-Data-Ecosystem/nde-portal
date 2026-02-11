@@ -26,7 +26,7 @@ export const FiltersChartToggle = ({
 }: {
   isActive: boolean;
   name: string;
-  onClick: () => void;
+  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }) => {
   return (
     <IconButton
