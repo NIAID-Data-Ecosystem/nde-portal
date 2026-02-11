@@ -33,6 +33,10 @@ import SummaryGrid from 'src/views/search/components/summary';
 import { ChartType } from 'src/views/search/components/summary/types';
 import { updateRoute } from 'src/views/search/utils/update-route';
 import { useActiveVizIds } from 'src/views/search/components/summary/hooks/useActiveVizIds';
+import {
+  formatConditionsOfAccess,
+  transformConditionsOfAccessLabel,
+} from 'src/utils/formatting/formatConditionsOfAccess';
 
 // initial testing with strings, definedTerm, number, date.
 const VIZ_CONFIG = [
@@ -112,6 +116,16 @@ const VIZ_CONFIG = [
       defaultOption: 'pie' as const,
       bar: { minPercent: 0.0001, maxItems: 10 },
       pie: { minPercent: 0.01 },
+    },
+    transformData: (item: { count: number; term: string; label?: string }) => {
+      let term = item.label || item.term;
+
+      return {
+        ...item,
+        label:
+          transformConditionsOfAccessLabel(formatConditionsOfAccess(term)) ||
+          '',
+      };
     },
   },
   {

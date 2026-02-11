@@ -159,17 +159,33 @@ export const bucketSmallValues = (
 // Mapping chart types to their respective components and data mappers.
 const mapFacetsToChartData = (
   data: FacetTerm[],
-  config: { formatLabel: (term: string, count: number) => string },
+  config: {
+    formatLabel: (term: string, count: number) => string;
+    transformData?: (item: { count: number; term: string; label?: string }) => {
+      count: number;
+      term: string;
+      label: string;
+    };
+  },
 ): ChartDatum[] => {
-  return data.map(b => ({
-    id: b.term,
-    value: b.count,
-    term: b.term,
-    label: config.formatLabel(b.term, b.count),
-    tooltip: `${b.term} (${b.count.toLocaleString()} resource${
-      b.count > 1 ? 's' : ''
-    })`,
-  }));
+  return data.map(b => {
+    // Apply transformData if provided
+    const transformed = config.transformData
+      ? config.transformData({ count: b.count, term: b.term })
+      : { count: b.count, term: b.term, label: b.term };
+
+    return {
+      id: transformed.term,
+      value: transformed.count,
+      term: transformed.term,
+      label: config.formatLabel(transformed.label, transformed.count),
+      tooltip: `${
+        transformed.label
+      } (${transformed.count.toLocaleString()} resource${
+        transformed.count > 1 ? 's' : ''
+      })`,
+    };
+  });
 };
 
 export const chartRegistry: Record<
@@ -178,7 +194,18 @@ export const chartRegistry: Record<
     Component: React.ComponentType<any>;
     mapFacetsToChartData: (
       buckets: FacetTerm[],
-      opts: { formatLabel: (term: string, count: number) => string }, //type VizConfig formatting tbd
+      opts: {
+        formatLabel: (term: string, count: number) => string;
+        transformData?: (item: {
+          count: number;
+          term: string;
+          label?: string;
+        }) => {
+          count: number;
+          term: string;
+          label: string;
+        };
+      },
     ) => ChartDatum[];
     getFacetKey: (datum: any) => string;
   }

@@ -46,4 +46,11 @@ export type VizConfig = {
   behavior?: {
     bucketToFilter?: (bucketKey: string) => SearchFilter;
   };
+
+  // Optional: Function to transform facet data (e.g., format labels)
+  transformData?: (item: { count: number; term: string; label?: string }) => {
+    count: number;
+    term: string;
+    label: string;
+  };
 };

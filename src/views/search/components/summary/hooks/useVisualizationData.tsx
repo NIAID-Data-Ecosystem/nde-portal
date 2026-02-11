@@ -66,9 +66,10 @@ export const useVisualizationData = ({
         formatLabel:
           config.formatting?.label ??
           ((term, count) => `${term} (${count.toLocaleString()})`),
+        transformData: config.transformData,
       })
     );
-  }, [facetData, chartType, config.formatting]);
+  }, [facetData, chartType, config.formatting, config.transformData]);
 
   // Current level data based on drill stack.
   const currentLevelData = useMemo(() => {
