@@ -85,12 +85,7 @@ const DateFilterContent: React.FC<DateFilterProps> = ({
   }
 
   return (
-    <Box
-      w='100%'
-      borderRadius='base'
-      border='1px solid'
-      borderColor='primary.100'
-    >
+    <Box w='100%'>
       {showHistogram && (
         <HistogramSection
           data={selectedData || []}

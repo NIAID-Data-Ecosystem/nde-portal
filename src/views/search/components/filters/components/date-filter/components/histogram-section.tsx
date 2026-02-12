@@ -2,6 +2,8 @@ import React from 'react';
 import dynamic from 'next/dynamic';
 import { Flex, Spinner, Text } from '@chakra-ui/react';
 import { FacetTermWithDetails } from '../../../types';
+import { shouldEnableInVisualSummaryPage } from 'src/utils/feature-flags';
+import { useRouter } from 'next/router';
 
 const Histogram = dynamic(() => import('./histogram'), {
   ssr: false,
@@ -22,14 +24,20 @@ export const HistogramSection: React.FC<HistogramSectionProps> = ({
   isUpdating,
   onDateSelect,
 }) => {
+  const router = useRouter();
+
+  const isEnabledInVisualSummaryPage = shouldEnableInVisualSummaryPage(
+    router.pathname,
+  );
+
   return (
     <Flex
       w='100%'
       flexDirection='column'
       alignItems='center'
-      p={4}
+      p={isEnabledInVisualSummaryPage ? undefined : 4}
       px={10}
-      mt={-1.5}
+      mt={isEnabledInVisualSummaryPage ? undefined : -1.5}
       position='relative'
       minHeight='180px'
     >
