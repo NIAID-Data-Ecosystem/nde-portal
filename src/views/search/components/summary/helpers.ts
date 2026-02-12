@@ -2,6 +2,8 @@ import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
 import { ChartDatum, ChartType } from './types';
 import { PieChart } from 'src/components/visualizations/pie';
 import { BarChart } from 'src/components/visualizations/bar';
+import { DateFilter } from '../filters/components/date-filter';
+import { DateHistogram } from 'src/components/visualizations/histogram';
 
 // Helper functions for processing aggregate data for chart visualizations.
 export const normalizeAggregateData = (
@@ -218,6 +220,11 @@ export const chartRegistry: Record<
   bar: {
     mapFacetsToChartData,
     Component: BarChart,
+    getFacetKey: d => d.id,
+  },
+  histogram: {
+    mapFacetsToChartData,
+    Component: DateHistogram,
     getFacetKey: d => d.id,
   },
 };
