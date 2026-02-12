@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { SearchTabsProvider } from 'src/views/search/context/search-tabs-context';
 import { useSearchQueryFromURL } from 'src/views/search/hooks/useSearchQueryFromURL';
@@ -16,7 +16,10 @@ import {
   queryFilterObject2String,
   queryFilterString2Object,
 } from 'src/views/search/components/filters/utils/query-builders';
-import { defaultQuery } from 'src/views/search/config/defaultQuery';
+import {
+  defaultQuery,
+  getDefaultDateRange,
+} from 'src/views/search/config/defaultQuery';
 import { FilterTags } from 'src/views/search/components/filters/components/tag';
 import { SearchResultsHeader } from 'src/views/search/components/search-results-header';
 import { PaginationProvider } from 'src/views/search/context/pagination-context';
@@ -254,6 +257,7 @@ const Search: NextPage<{
   initialData: FetchSearchResultsResponse;
 }> = ({ initialData }) => {
   const router = useRouter();
+  const hasInitialized = useRef(false);
 
   const { activeVizIds, toggleViz, isVizActive } = useActiveVizIds(
     DEFAULT_ACTIVE_VIZ_IDS,
@@ -338,6 +342,50 @@ const Search: NextPage<{
     },
     [selectedFilters, handleUpdate],
   );
+
+  // Apply default date filter on first load only
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    const hasDateFilter = selectedFilters.date?.length > 0;
+    if (hasDateFilter) {
+      hasInitialized.current = true;
+      return;
+    }
+
+    handleUpdate({
+      filters: queryFilterObject2String({
+        ...selectedFilters,
+        date: getDefaultDateRange(),
+      }),
+    });
+
+    hasInitialized.current = true;
+  }, [router.isReady]);
+
+  // Validate and cap date filter at current year if it exceeds (runtime validation)
+  useEffect(() => {
+    if (!router.isReady || !hasInitialized.current) return;
+
+    const hasDateFilter =
+      selectedFilters.date && selectedFilters.date.length > 0;
+    if (!hasDateFilter) return;
+
+    const [start, end] = selectedFilters.date;
+    if (!end || typeof end !== 'string') return;
+
+    const endYear = parseInt(end.slice(0, 4), 10);
+    const currentYear = new Date().getFullYear();
+
+    if (endYear <= currentYear) return;
+
+    handleUpdate({
+      filters: queryFilterObject2String({
+        ...selectedFilters,
+        date: [start, `${currentYear}-12-31`],
+      }),
+    });
+  }, [router.isReady, selectedFilters, handleUpdate]);
 
   // If the initial tab is not set, return a loading state.
   if (!initialTab || !SHOW_VISUAL_SUMMARY) {
