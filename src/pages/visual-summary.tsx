@@ -41,6 +41,15 @@ import {
 // initial testing with strings, definedTerm, number, date.
 const VIZ_CONFIG = [
   {
+    id: 'date',
+    label: 'Date',
+    property: 'date',
+    chart: {
+      availableOptions: ['histogram'] as ChartType[],
+      defaultOption: 'histogram' as const,
+    },
+  },
+  {
     id: 'sources',
     label: 'Sources',
     property: 'includedInDataCatalog.name',

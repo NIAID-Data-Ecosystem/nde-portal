@@ -152,6 +152,13 @@ export const Filters = React.memo(
                 key={config.name}
                 name={config.name}
                 description={config.description}
+                vizId={config.vizId}
+                isVizActive={
+                  config.vizId && isVizActive
+                    ? isVizActive(config.vizId)
+                    : false
+                }
+                onToggleViz={onToggleViz}
               >
                 <DateFilter
                   colorScheme={colorScheme}

@@ -1,6 +1,6 @@
 import { SearchQueryParams } from 'src/views/search/types';
 
-export type ChartType = 'pie' | 'bar';
+export type ChartType = 'pie' | 'bar' | 'histogram';
 
 export interface ChartDatum {
   id: string;
