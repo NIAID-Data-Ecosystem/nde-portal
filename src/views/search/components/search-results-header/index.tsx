@@ -43,17 +43,18 @@ export const SearchResultsHeader = ({
     <VStack alignItems='flex-start' spacing={1} fontSize='sm' flex={1}>
       {showAIBanner && (
         <AIBanner>
-          AI-assisted search is active. Results are capped at 1,000 highly
-          relevant matches for optimal performance.
-          <Link
-            href={AI_ASSISTED_SEARCH_KC_LINK}
-            color='inherit'
-            mx={1}
-            _hover={{ color: 'inherit' }}
-            _visited={{ color: 'inherit' }}
-          >
-            See documentation to learn more.
-          </Link>
+          <Text lineHeight='short'>
+            AI-assisted search is active. Results are capped at 1,000 highly
+            relevant matches for optimal performance.{' '}
+            <Link
+              href={AI_ASSISTED_SEARCH_KC_LINK}
+              color='inherit'
+              _hover={{ color: 'inherit' }}
+              _visited={{ color: 'inherit' }}
+            >
+              See documentation to learn more.
+            </Link>
+          </Text>
         </AIBanner>
       )}
       {/* Heading: Showing results for... */}
