@@ -241,11 +241,7 @@ const VIZ_CONFIG = [
   },
 ];
 
-const DEFAULT_ACTIVE_VIZ_IDS = [
-  'sources',
-  'infectiousAgent.name',
-  'species.name',
-];
+const DEFAULT_ACTIVE_VIZ_IDS = ['date'];
 
 // Default filters list.
 const defaultFilters = FILTER_CONFIGS.reduce(
