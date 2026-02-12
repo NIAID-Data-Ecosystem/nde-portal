@@ -44,15 +44,15 @@ export const SearchResultsHeader = ({
       {showAIBanner && (
         <AIBanner>
           <Text lineHeight='short'>
-            AI-assisted search is active. Results are capped at 1,000 highly
-            relevant matches for optimal performance.{' '}
+            AI-assisted search is active. Results are limited to the top 1,000
+            most relevant matches.{' '}
             <Link
               href={AI_ASSISTED_SEARCH_KC_LINK}
               color='inherit'
               _hover={{ color: 'inherit' }}
               _visited={{ color: 'inherit' }}
             >
-              See documentation to learn more.
+              See documentation for more details.
             </Link>
           </Text>
         </AIBanner>
