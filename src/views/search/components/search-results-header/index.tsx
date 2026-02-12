@@ -43,7 +43,8 @@ export const SearchResultsHeader = ({
     <VStack alignItems='flex-start' spacing={1} fontSize='sm' flex={1}>
       {showAIBanner && (
         <AIBanner>
-          AI-assisted search is active.{' '}
+          AI-assisted search is active. Results are capped at 1,000 highly
+          relevant matches for optimal performance.
           <Link
             href={AI_ASSISTED_SEARCH_KC_LINK}
             color='inherit'
@@ -51,7 +52,7 @@ export const SearchResultsHeader = ({
             _hover={{ color: 'inherit' }}
             _visited={{ color: 'inherit' }}
           >
-            See documentation for more details.
+            See documentation to learn more.
           </Link>
         </AIBanner>
       )}
