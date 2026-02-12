@@ -11,6 +11,7 @@ import { addMissingYears } from '../helpers';
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
 import { FacetTermWithDetails } from '../../../types';
 import { DateBrush } from './date-brush';
+import { useParentSize } from '@visx/responsive';
 
 interface HistogramProps {
   updatedData: FacetTermWithDetails[];
@@ -48,6 +49,11 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
     [],
   );
 
+  const { parentRef, height } = useParentSize({
+    debounceTime: 150,
+    initialSize: { height: params.height },
+  });
+
   const range_min = useMemo(() => dates[0], [dates]);
   const range_max = useMemo(() => dates[1], [dates]);
 
@@ -72,15 +78,13 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
     },
   );
 
-  // Type-cast to fix React 18+ type compatibility issue
-  const TooltipComponent = TooltipInPortal as any;
-
   const width = useMemo(
     () => containerBounds?.width || 0,
     [containerBounds?.width],
   );
 
-  const height = params.height;
+  // Type-cast to fix React 18+ type compatibility issue
+  const TooltipComponent = TooltipInPortal as any;
 
   // Show tooltip when user mouses over histogram bars.
   const handleMouseOver = useCallback(
@@ -186,6 +190,8 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
       style={{
         position: 'relative',
         width: '100%',
+        height: '100%',
+        minHeight: params.height,
       }}
     >
       {/* Show tooltip when hovering in any vertical space to bar. */}
@@ -210,14 +216,20 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
       )}
 
       {/* Bars */}
-      <Flex ref={containerRef} justifyContent='center'>
-        <Box position='relative'>
-          <Flex justifyContent='center'>
+      <Flex ref={containerRef} justifyContent='center' h='100%'>
+        <Flex position='relative' w='100%' h='100%' flexDirection='column'>
+          <Flex
+            ref={parentRef}
+            justifyContent='center'
+            width='100%'
+            flex={1}
+            minH={0}
+          >
             <Box
               as='svg'
               id='filters-histogram'
-              width={effectiveSvgWidth + 40}
-              height={height + 30}
+              width={effectiveSvgWidth}
+              height={height}
               style={{ overflow: 'visible' }}
             >
               <defs>
@@ -233,7 +245,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
                   <stop offset='1' stopColor='#241683'></stop>
                 </linearGradient>
               </defs>
-              <Group left={20}>
+              <Group>
                 {hasDataInRange ? (
                   <>
                     {/* Render bars when there's data */}
@@ -320,7 +332,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
 
               {/* Invisible bars for tooltip triggers */}
               {hasDataInRange && (
-                <Group left={20}>
+                <Group>
                   {visibleData.map((d, i) => {
                     const { term } = d;
                     /* Updated counts when date has changed */
@@ -361,7 +373,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
 
               {/* x-axis */}
               {hasDataInRange && (
-                <Group left={20}>
+                <Group>
                   <AxisBottom
                     top={height}
                     scale={xScale}
@@ -379,12 +391,11 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
               )}
             </Box>
           </Flex>
-
           {/* brush */}
-          <Flex w='100%' justifyContent='center' mt={1}>
+          <Flex w='100%' justifyContent='center' mt={8} flexShrink={0}>
             <DateBrush containerWidth={width} />
           </Flex>
-        </Box>
+        </Flex>
       </Flex>
     </div>
   );

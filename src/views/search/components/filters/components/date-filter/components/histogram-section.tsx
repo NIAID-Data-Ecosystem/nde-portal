@@ -35,11 +35,12 @@ export const HistogramSection: React.FC<HistogramSectionProps> = ({
       w='100%'
       flexDirection='column'
       alignItems='center'
-      p={isEnabledInVisualSummaryPage ? undefined : 4}
-      px={10}
+      p={4}
+      px={isEnabledInVisualSummaryPage ? undefined : 10}
       mt={isEnabledInVisualSummaryPage ? undefined : -1.5}
       position='relative'
       minHeight='180px'
+      height='100%'
     >
       {(isLoading || isUpdating) && (
         <Flex
