@@ -19,6 +19,8 @@ interface DateFilterProps {
   selectedDates: string[];
   handleSelectedFilter: (dates: string[]) => void;
   resetFilter: () => void;
+  showHistogram?: boolean;
+  showDateControls?: boolean;
 }
 
 /**
@@ -48,6 +50,8 @@ const DateFilterContent: React.FC<DateFilterProps> = ({
   selectedDates,
   handleSelectedFilter,
   resetFilter,
+  showHistogram = true,
+  showDateControls = true,
 }) => {
   const initialParams = useMemo(
     () => prepareInitialParams(queryParams),
@@ -87,21 +91,25 @@ const DateFilterContent: React.FC<DateFilterProps> = ({
       border='1px solid'
       borderColor='primary.100'
     >
-      <HistogramSection
-        data={selectedData || []}
-        hasData={hasAnyDateData}
-        isLoading={isLoading}
-        isUpdating={isUpdating}
-        onDateSelect={handleSelectedFilter}
-      />
+      {showHistogram && (
+        <HistogramSection
+          data={selectedData || []}
+          hasData={hasAnyDateData}
+          isLoading={isLoading}
+          isUpdating={isUpdating}
+          onDateSelect={handleSelectedFilter}
+        />
+      )}
 
-      <DateControls
-        colorScheme={colorScheme}
-        selectedDates={selectedDates}
-        resourcesWithNoDate={resourcesWithNoDate}
-        onDateSelect={handleSelectedFilter}
-        onResetFilter={resetFilter}
-      />
+      {showDateControls && (
+        <DateControls
+          colorScheme={colorScheme}
+          selectedDates={selectedDates}
+          resourcesWithNoDate={resourcesWithNoDate}
+          onDateSelect={handleSelectedFilter}
+          onResetFilter={resetFilter}
+        />
+      )}
     </Box>
   );
 };

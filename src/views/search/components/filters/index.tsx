@@ -147,6 +147,14 @@ export const Filters = React.memo(
           });
 
           if (property === 'date') {
+            // Determine visibility based on route
+            // On search page: show both histogram and controls when visual summary is enabled
+            // On visual-summary page: show only controls (histogram is in the grid)
+            const isSearchPage = router.pathname === '/search';
+            const showBothOnSearch = SHOW_VISUAL_SUMMARY && isSearchPage;
+            const showHistogram = showBothOnSearch;
+            const showDateControls = true; // Always show controls in filters (in search or visual summary)
+
             return (
               <FiltersSection
                 key={config.name}
@@ -172,6 +180,8 @@ export const Filters = React.memo(
                     extra_filter:
                       queryFilterObject2String(queryParams.filters) || '',
                   }}
+                  showHistogram={showHistogram}
+                  showDateControls={showDateControls}
                 />
               </FiltersSection>
             );

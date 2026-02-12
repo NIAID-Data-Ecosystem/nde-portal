@@ -83,15 +83,11 @@ export const DateHistogram = (props: DateHistogramProps) => {
         q: queryParams.q,
         extra_filter: queryFilterObject2String(queryParams.filters) || '',
       }}
-      // handleSelectedFilter={values => {
-      //   console.log(values, props);
-      // }}
-      // resetFilter={() => {
-      //   console.log('reset date filter');
-      // }}
       selectedDates={selected || []}
       handleSelectedFilter={values => handleSelectedFilters(values, property)}
       resetFilter={() => handleSelectedFilters([], property)}
+      showHistogram={true}
+      showDateControls={false}
     />
   );
 };
