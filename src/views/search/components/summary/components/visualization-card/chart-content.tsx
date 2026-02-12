@@ -73,12 +73,15 @@ export const ChartContent = ({
           flexShrink={0}
         >
           {children}
-          <ChartTypePicker
-            value={chartType}
-            options={chartOptions}
-            onChange={onChartTypeChange}
-            isDisabled={!isActive}
-          />
+          {/* Only show chart type picker if there are multiple options */}
+          {chartOptions.length > 1 && (
+            <ChartTypePicker
+              value={chartType}
+              options={chartOptions}
+              onChange={onChartTypeChange}
+              isDisabled={!isActive}
+            />
+          )}
         </Flex>
         <Flex flex={1} minH={0}>
           <ChartComponent
