@@ -388,6 +388,12 @@ const Sections = ({
                   )}
                 </>
               )}
+
+            {/* Show smaples */}
+            {section.hash === 'samples' && !SHOULD_HIDE_SAMPLES('samples') && (
+              <SamplesDisplay sample={data?.sample} />
+            )}
+
             {/* Show provenance */}
             {section.hash === 'provenance' && (
               <ResourceProvenance isLoading={isLoading} {...data} />
@@ -458,11 +464,6 @@ const Sections = ({
                   }
                 }
               />
-            )}
-
-            {/* Show provenance */}
-            {section.hash === 'samples' && !SHOULD_HIDE_SAMPLES('samples') && (
-              <SamplesDisplay sample={data?.sample} />
             )}
 
             {/* Show raw metadata */}
