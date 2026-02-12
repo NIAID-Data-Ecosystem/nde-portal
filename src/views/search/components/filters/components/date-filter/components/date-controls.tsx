@@ -19,7 +19,7 @@ export const DateControls: React.FC<DateControlsProps> = ({
   onDateSelect,
   onResetFilter,
 }) => {
-  const handleToggleNoDateResources = (isChecked: boolean) => {
+  const handleToggleNoDateResources = () => {
     let updatedDates = [...selectedDates];
 
     // If toggled when no selection is made, show only resources with dates
@@ -51,7 +51,7 @@ export const DateControls: React.FC<DateControlsProps> = ({
     selectedDates.length === 0 || selectedDates.includes('-_exists_');
 
   return (
-    <Flex bg='blackAlpha.50' flexDirection='column' px={4} py={2}>
+    <Flex bg='secondary.50' flexDirection='column' px={4} py={2}>
       <DatePicker
         colorScheme={colorScheme}
         selectedDates={selectedDates}
@@ -63,7 +63,7 @@ export const DateControls: React.FC<DateControlsProps> = ({
       <Checkbox
         mt={4}
         isChecked={isNoDateCheckboxChecked}
-        onChange={e => handleToggleNoDateResources(e.target.checked)}
+        onChange={handleToggleNoDateResources}
         isDisabled={!resourcesWithNoDate.length}
       >
         <Text fontSize='sm' fontWeight='medium' lineHeight='shorter'>

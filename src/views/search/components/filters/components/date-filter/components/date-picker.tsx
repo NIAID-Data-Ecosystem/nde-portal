@@ -88,8 +88,8 @@ export const DatePicker = ({
       flexDirection='column'
       onSubmit={handleSubmit}
     >
-      <Flex flexWrap='wrap'>
-        <Box maxW='200px' mr={1}>
+      <Flex flexWrap='wrap' justifyContent='space-between' gap={2} maxW='500px'>
+        <Box flex={1}>
           <Text fontSize='xs'>
             <label htmlFor='start'>Start date:</label>
           </Text>
@@ -102,7 +102,7 @@ export const DatePicker = ({
             onChange={e => setStartInputValue(e.target.value)}
           />
         </Box>
-        <Box maxW='200px'>
+        <Box flex={1}>
           <Text fontSize='xs'>
             <label htmlFor='end'>End date:</label>
           </Text>
