@@ -44,26 +44,21 @@ const DATE_FILTER_CONFIG = FILTER_CONFIGS.filter(
   facet => facet.property === 'date',
 );
 
-const DateFilterContent: React.FC<DateFilterProps> = ({
+const DateFilterContent: React.FC<
+  DateFilterProps & {
+    initialQueryData: ReturnType<typeof useFilterQueries>;
+  }
+> = ({
   colorScheme,
-  queryParams,
+  initialQueryData,
   selectedDates,
   handleSelectedFilter,
   resetFilter,
   showHistogram = true,
   showDateControls = true,
 }) => {
-  const initialParams = useMemo(
-    () => prepareInitialParams(queryParams),
-    [queryParams],
-  );
-
   const { results, initialResults, error, isLoading, isUpdating } =
-    useFilterQueries({
-      initialParams,
-      updateParams: queryParams,
-      config: DATE_FILTER_CONFIG,
-    });
+    initialQueryData;
 
   const { selectedData, resourcesWithNoDate, hasAnyDateData } =
     useDateFilterData(
@@ -123,25 +118,26 @@ export const DateFilter: React.FC<DateFilterProps> = props => {
     [queryParams],
   );
 
-  const { initialResults, isLoading } = useFilterQueries({
+  const initialQueryData = useFilterQueries({
     initialParams,
     updateParams: queryParams,
     config: DATE_FILTER_CONFIG,
   });
 
-  const initialData = useMemo(
+  const { initialResults, isLoading } = initialQueryData;
+  const data = useMemo(
     () => initialResults?.[DATE_FILTER_CONFIG[0]._id]?.['data'] || [],
     [initialResults],
   );
 
   return (
     <DateRange
-      data={initialData}
+      data={data}
       isLoading={isLoading}
       selectedDates={selectedDates}
       colorScheme='secondary'
     >
-      <DateFilterContent {...props} />
+      <DateFilterContent initialQueryData={initialQueryData} {...props} />
     </DateRange>
   );
 };

@@ -25,6 +25,13 @@ export const HistogramSection: React.FC<HistogramSectionProps> = ({
   onDateSelect,
 }) => {
   const router = useRouter();
+  const [hasLoadedOnce, setHasLoadedOnce] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!isLoading && !isUpdating) {
+      setHasLoadedOnce(true);
+    }
+  }, [isLoading, isUpdating]);
 
   const isEnabledInVisualSummaryPage = shouldEnableInVisualSummaryPage(
     router.pathname,
@@ -66,6 +73,7 @@ export const HistogramSection: React.FC<HistogramSectionProps> = ({
       {hasData ? (
         <Histogram updatedData={data || []} handleClick={onDateSelect} />
       ) : (
+        hasLoadedOnce &&
         !isLoading &&
         !isUpdating && (
           <Text fontStyle='italic' color='gray.800' mt={1}>
