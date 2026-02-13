@@ -15,11 +15,7 @@ import { useSearchTabsContext } from '../../context/search-tabs-context';
 import { getTabFilterProperties } from './utils/tab-filter-utils';
 import { TabType } from '../../types';
 import { getDefaultDateRange } from '../../config/defaultQuery';
-import {
-  SHOW_VISUAL_SUMMARY,
-  shouldEnableInVisualSummaryPage,
-} from 'src/utils/feature-flags';
-import { FiltersDisclaimer } from '../summary/components/filters-chart-toggle';
+import { shouldEnableInVisualSummaryPage } from 'src/utils/feature-flags';
 
 // Interface for Filters component props
 interface FiltersProps {
@@ -138,7 +134,6 @@ export const Filters = React.memo(
           removeAllFilters();
         }}
       >
-        {SHOW_VISUAL_SUMMARY && <FiltersDisclaimer />}
         {filtersForTab.map(config => {
           const { _id, name, property } = config;
           const selected = selectedFilters?.[property]?.map(filter => {

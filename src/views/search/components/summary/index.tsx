@@ -4,6 +4,7 @@ import { VisualizationCard } from './components/visualization-card';
 import { SelectedFilterType } from '../filters/types';
 import { InfoLabel } from 'src/components/info-label';
 import { SelectedFilterTypeValue } from '../filters/types';
+import { FiltersDisclaimer } from './components/filters-chart-toggle';
 
 interface SummaryGridProps {
   // Ids of visualizations are currently enabled / visible
@@ -21,13 +22,13 @@ interface SummaryGridProps {
 }
 const SummaryGrid = (props: SummaryGridProps) => {
   return (
-    <Flex direction='column' width='100%' bg='white' p={4}>
+    <Flex direction='column' width='100%' bg='white' p={4} gap={1}>
       {/* Section header with tooltip */}
       <Flex>
         <InfoLabel
           title='Visual Summary'
           tooltipText={
-            <Flex direction='column' gap={1}>
+            <Flex direction='column' gap={2}>
               <Text>
                 A visual summary of your search results. Interact with the
                 charts and/or the filters list on the left to filter your
@@ -47,23 +48,27 @@ const SummaryGrid = (props: SummaryGridProps) => {
           tooltipProps={{ hasArrow: true }}
         />
       </Flex>
-      <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing={4}>
-        {/* Map over config to render visualizations.*/}
-        {props.configs.map(config => {
-          const filterProperty = config.filterProperty || config.property;
-          return (
-            <VisualizationCard
-              key={config.id}
-              config={config}
-              searchState={props.searchParams}
-              isActive={props.activeVizIds.includes(config.id)}
-              removeActiveVizId={props.removeActiveVizId}
-              onFilterUpdate={props.onFilterUpdate}
-              selectedFilters={props.selectedFilters[filterProperty] || []}
-            />
-          );
-        })}
-      </SimpleGrid>
+      <FiltersDisclaimer />
+
+      {props.activeVizIds.length > 0 && (
+        <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing={4} mt={2}>
+          {/* Map over config to render visualizations.*/}
+          {props.configs.map(config => {
+            const filterProperty = config.filterProperty || config.property;
+            return (
+              <VisualizationCard
+                key={config.id}
+                config={config}
+                searchState={props.searchParams}
+                isActive={props.activeVizIds.includes(config.id)}
+                removeActiveVizId={props.removeActiveVizId}
+                onFilterUpdate={props.onFilterUpdate}
+                selectedFilters={props.selectedFilters[filterProperty] || []}
+              />
+            );
+          })}
+        </SimpleGrid>
+      )}
     </Flex>
   );
 };

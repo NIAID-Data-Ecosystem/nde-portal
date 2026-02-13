@@ -3,14 +3,7 @@ import { FaChartPie } from 'react-icons/fa6';
 
 export const FiltersDisclaimer = () => {
   return (
-    <Text
-      fontSize='sm'
-      borderBottom='0.5px solid'
-      borderBottomColor='gray.100'
-      px={4}
-      py={2}
-      lineHeight='short'
-    >
+    <Text fontSize='sm' lineHeight='short'>
       Click the icon <Icon as={FaChartPie} color='gray.500' mx={1} /> next to a
       filter to show or hide the display of its chart. A filled icon
       <Icon as={FaChartPie} color='secondary.500' mx={1} /> indicates the chart
