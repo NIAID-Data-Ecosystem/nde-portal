@@ -5,7 +5,7 @@ import { Group } from '@visx/group';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { Bar } from '@visx/shape';
 import { AxisBottom } from '@visx/axis';
-import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
+import { useTooltip, useTooltipInPortal, defaultStyles } from '@visx/tooltip';
 import { formatNumber } from 'src/utils/helpers';
 import { addMissingYears } from '../helpers';
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
@@ -201,6 +201,10 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
           key={Math.random()}
           top={tooltipTop}
           left={tooltipLeft}
+          style={{
+            ...defaultStyles,
+            zIndex: 2000, // needed for when housed in a modal.
+          }}
         >
           {tooltipData.label}:{' '}
           {/* Show the updated count and initial count when they differ and the bar is selected. */}
