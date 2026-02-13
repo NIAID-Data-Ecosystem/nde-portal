@@ -19,6 +19,11 @@ export type SearchFilter = {
 export type SearchState = Omit<SearchQueryParams, 'from' | 'size' | 'sort'> &
   Required<Pick<SearchQueryParams, 'from' | 'size' | 'sort'>>;
 
+export type ChartTypeConfig = {
+  maxItems?: number;
+  minPercent?: number;
+};
+
 export type VizConfig = {
   id: string;
   label: string;
@@ -28,15 +33,7 @@ export type VizConfig = {
   chart: {
     availableOptions: ChartType[];
     defaultOption: ChartType;
-    pie?: {
-      maxItems?: number;
-      minPercent?: number;
-    };
-    bar?: {
-      maxItems?: number;
-      minPercent?: number;
-    };
-  };
+  } & Partial<Record<ChartType, ChartTypeConfig>>;
 
   formatting?: {
     label?: (bucketKey: string) => string;
