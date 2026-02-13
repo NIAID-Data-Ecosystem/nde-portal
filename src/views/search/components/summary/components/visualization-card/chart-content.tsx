@@ -54,7 +54,7 @@ export const ChartContent = ({
     const height = isExpanded
       ? 'clamp(180px, 50vh, 450px)'
       : 'clamp(180px, 30vh, 300px)';
-
+    const minHeight = '250px';
     // No data is provided for the chart.
     if (isEmpty) {
       return <EmptyState height={height} />;
@@ -65,7 +65,12 @@ export const ChartContent = ({
     }
 
     return (
-      <Flex h={height} opacity={isPlaceholderData ? 0.7 : 1} direction='column'>
+      <Flex
+        h={height}
+        minHeight={minHeight}
+        opacity={isPlaceholderData ? 0.7 : 1}
+        direction='column'
+      >
         <Flex
           alignItems='center'
           justifyContent='flex-end'
@@ -73,12 +78,15 @@ export const ChartContent = ({
           flexShrink={0}
         >
           {children}
-          <ChartTypePicker
-            value={chartType}
-            options={chartOptions}
-            onChange={onChartTypeChange}
-            isDisabled={!isActive}
-          />
+          {/* Only show chart type picker if there are multiple options */}
+          {chartOptions.length > 1 && (
+            <ChartTypePicker
+              value={chartType}
+              options={chartOptions}
+              onChange={onChartTypeChange}
+              isDisabled={!isActive}
+            />
+          )}
         </Flex>
         <Flex flex={1} minH={0}>
           <ChartComponent

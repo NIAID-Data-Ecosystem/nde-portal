@@ -20,6 +20,7 @@ import { getMetadataDescription } from 'src/components/metadata';
 export const FILTER_CONFIGS: FilterConfig[] = [
   {
     _id: 'date',
+    vizId: 'date',
     name: 'Date',
     property: 'date',
     isDefaultOpen: true,

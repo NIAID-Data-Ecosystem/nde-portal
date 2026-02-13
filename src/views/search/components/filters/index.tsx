@@ -15,7 +15,10 @@ import { useSearchTabsContext } from '../../context/search-tabs-context';
 import { getTabFilterProperties } from './utils/tab-filter-utils';
 import { TabType } from '../../types';
 import { getDefaultDateRange } from '../../config/defaultQuery';
-import { SHOW_VISUAL_SUMMARY } from 'src/utils/feature-flags';
+import {
+  SHOW_VISUAL_SUMMARY,
+  shouldEnableInVisualSummaryPage,
+} from 'src/utils/feature-flags';
 import { FiltersDisclaimer } from '../summary/components/filters-chart-toggle';
 
 // Interface for Filters component props
@@ -147,11 +150,26 @@ export const Filters = React.memo(
           });
 
           if (property === 'date') {
+            // Determine visibility based on route (pending approval)
+            // On search page: show both histogram and controls when visual summary is enabled
+            // On visual-summary page: show only controls (histogram is in the grid)
+            const showHistogram = !shouldEnableInVisualSummaryPage(
+              router.pathname,
+            );
+            const showDateControls = true; // Always show controls in filters
+
             return (
               <FiltersSection
                 key={config.name}
                 name={config.name}
                 description={config.description}
+                vizId={config.vizId}
+                isVizActive={
+                  config.vizId && isVizActive
+                    ? isVizActive(config.vizId)
+                    : false
+                }
+                onToggleViz={onToggleViz}
               >
                 <DateFilter
                   colorScheme={colorScheme}
@@ -165,6 +183,8 @@ export const Filters = React.memo(
                     extra_filter:
                       queryFilterObject2String(queryParams.filters) || '',
                   }}
+                  showHistogram={showHistogram}
+                  showDateControls={showDateControls}
                 />
               </FiltersSection>
             );
