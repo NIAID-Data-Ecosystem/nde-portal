@@ -102,3 +102,101 @@ export const getAvailableSamplePropertyColumns = (
     ];
   });
 };
+
+/**
+ * Produce a key for a DefinedTerm-like value used for
+ * sameness comparison. Use identifier
+ * when present, fall back to name.
+ */
+const termKey = (
+  term: { identifier?: string; name?: string } | string,
+): string => {
+  if (typeof term === 'string') return term.trim().toLowerCase();
+  return (term.identifier ?? term.name ?? '').trim().toLowerCase();
+};
+
+/**
+ * Produce a string representing the full value of a field on one sample.
+ * Arrays are sorted so element-order differences don't count as "different".
+ */
+const fieldSignature = (value: unknown): string => {
+  if (value == null) return '';
+  if (typeof value === 'string') return value.trim().toLowerCase();
+  if (Array.isArray(value)) {
+    return value
+      .map(v => termKey(v as { identifier?: string; name?: string } | string))
+      .sort()
+      .join('|');
+  }
+  if (typeof value === 'object') {
+    return termKey(value as { identifier?: string; name?: string });
+  }
+  return String(value).trim().toLowerCase();
+};
+
+/**
+ * Fields that should be hidden when every sample in the collection shares
+ * the same value.
+ */
+const UNIFORM_HIDE_PROPS = new Set<string>([
+  'healthCondition',
+  'infectiousAgent',
+  'species',
+]);
+
+/**
+ * Builds the columns array for the fetched SampleCollection items table.
+ * The identifier column is always first and always shown.
+ * Remaining columns follow the order defined in SAMPLE_AGGREGATE_COLUMNS.
+ */
+export const getSampleCollectionItemsColumns = (
+  samples: SampleAggregate[],
+): Array<{ title: string; property: string; isSortable?: boolean }> => {
+  const columns: Array<{
+    title: string;
+    property: string;
+    isSortable?: boolean;
+  }> = [{ title: 'Sample ID', property: 'identifier', isSortable: true }];
+
+  for (const { key } of SAMPLE_AGGREGATE_COLUMNS) {
+    // Skip columns where no sample has a non-empty value.
+    const anyHasValue = samples.some(sample =>
+      hasNonEmptyValue(getValueByPath(sample, key)),
+    );
+    if (!anyHasValue) continue;
+
+    // Skip if all values are identical.
+    if (UNIFORM_HIDE_PROPS.has(key)) {
+      const first = fieldSignature(getValueByPath(samples[0], key));
+      const uniform = samples.every(
+        sample => fieldSignature(getValueByPath(sample, key)) === first,
+      );
+      if (uniform) continue;
+    }
+
+    columns.push({
+      title: formatSampleLabelFromProperty(key),
+      property: key,
+      isSortable: false,
+    });
+  }
+
+  return columns;
+};
+
+/**
+ * Builds the rows array for the fetched SampleCollection items table.
+ * The `identifier` field is shaped as `{ identifier, url }` so the existing
+ * DefinedTermCell renderer can display it as an external link.
+ */
+export const getSampleCollectionItemsRows = (
+  samples: SampleAggregate[],
+): Record<string, unknown>[] => {
+  return samples.map(sample => ({
+    ...sample,
+    identifier: {
+      identifier: sample.identifier ?? (sample as any)._id,
+      url: (sample as any).url ?? '',
+    },
+  }));
+};

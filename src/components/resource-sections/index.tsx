@@ -391,7 +391,10 @@ const Sections = ({
 
             {/* Show smaples */}
             {section.hash === 'samples' && !SHOULD_HIDE_SAMPLES('samples') && (
-              <SamplesDisplay sample={data?.sample} />
+              <SamplesDisplay
+                sample={data?.sample}
+                resourceIdentifier={data?.identifier ?? undefined}
+              />
             )}
 
             {/* Show provenance */}
