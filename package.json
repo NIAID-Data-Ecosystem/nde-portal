@@ -112,5 +112,5 @@
     "strip-ansi": "6.0.1",
     "micromatch": "^4.0.8"
   },
-  "version": "5.1.2"
+  "version": "5.2.0"
 }
