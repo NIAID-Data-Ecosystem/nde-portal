@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { TabPanel } from '@chakra-ui/react';
 import { useSearchTabsContext } from '../../context/search-tabs-context';
@@ -15,8 +15,9 @@ import { Carousel } from 'src/components/carousel';
 import { CarouselWrapper } from '../layout/carousel-wrapper';
 import { EmptyState } from '../results-list/components/empty';
 import { TabType } from '../../types';
+import { generateOtherResourcesTitle, tabs } from '../../config/tabs';
+import { getDefaultTabId } from '../../utils/get-default-tab';
 import { useDiseaseData } from '../../hooks/useDiseaseData';
-import { generateOtherResourcesTitle } from '../../config/tabs';
 
 const CAROUSEL_RESULTS_FIELDS = [
   '_meta',
@@ -42,7 +43,7 @@ export const SearchResultsController = ({
   initialData,
 }: SearchResultsControllerProps) => {
   const router = useRouter();
-  const { selectedIndex, setSelectedIndex, tabs } = useSearchTabsContext();
+  const { selectedIndex, setSelectedIndex } = useSearchTabsContext();
   const { getPagination, setPagination } = usePaginationContext();
 
   const handleTabChange = (index: number) => {
@@ -81,6 +82,49 @@ export const SearchResultsController = ({
   );
 
   const { data: facetData } = searchResultsData.response;
+
+  // Determine the correct tab based on actual search results
+  useEffect(() => {
+    if (!facetData?.facets || !router.isReady) return;
+    const facetCounts =
+      facetData?.facets?.['@type']?.terms?.map(term => ({
+        type: term.term,
+        count: term.count,
+      })) || [];
+
+    // Get selected resource types from filters
+    const typeFilter = queryParams.filters?.['@type'];
+    const selectedTypes: string[] = Array.isArray(typeFilter)
+      ? typeFilter.filter((item): item is string => typeof item === 'string')
+      : [];
+
+    // Determine the correct tab
+    const calculatedTabId = getDefaultTabId(tabs, facetCounts, selectedTypes);
+
+    // Find the index for the tab
+    const calculatedIndex = tabs.findIndex(t => t.id === calculatedTabId);
+
+    // Only update if different from current
+    if (calculatedIndex !== -1 && calculatedIndex !== selectedIndex) {
+      setSelectedIndex(calculatedIndex);
+
+      // Update URL if needed
+      if (router.query.tab !== calculatedTabId) {
+        router.replace(
+          {
+            query: {
+              ...router.query,
+              tab: calculatedTabId,
+            },
+          },
+          undefined,
+          {
+            shallow: true,
+          },
+        );
+      }
+    }
+  }, [facetData?.facets, queryParams.filters, router.isReady, router.query.q]);
 
   const hasResourceCatalogRecords = useMemo(() => {
     const terms = facetData?.facets?.['@type']?.terms ?? [];
@@ -140,6 +184,7 @@ export const SearchResultsController = ({
   }, [resourceCatalogData, matchingDiseases]);
 
   const shouldShowCarousel = hasResourceCatalogRecords || hasMatchingDiseases;
+
   const isCarouselLoading =
     (hasResourceCatalogRecords && (carouselIsLoading || carouselIsPending)) ||
     diseaseIsLoading;
@@ -208,19 +253,17 @@ export const SearchResultsController = ({
             return (
               <TabPanel key={tab.id}>
                 <AccordionWrapper
-                  key={`${tab.id}-${defaultIndices.join(
-                    '-',
-                  )}-${hasMatchingDiseases}-${matchingDiseases.length}`}
+                  key={`${tab.id}-${defaultIndices.join('-')}`}
                   defaultIndex={defaultIndices}
                 >
-                  {sections.map((section, idx) => {
+                  {sections.map(section => {
                     if (section.type === 'Disease') return null;
 
                     // For ResourceCatalog, render "Other Resources" with carousel
                     if (section.type === 'ResourceCatalog') {
                       return (
                         <AccordionContent
-                          key='other-resources'
+                          key='resource-catalog'
                           title={generateOtherResourcesTitle(sections)}
                         >
                           {isCarouselLoading || shouldShowCarousel ? (

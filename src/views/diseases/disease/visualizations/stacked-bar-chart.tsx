@@ -19,7 +19,7 @@ import {
   TooltipSubtitle,
   TooltipTitle,
   TooltipWrapper,
-} from '../components/tooltip';
+} from 'src/components/visualizations/tooltip/index';
 
 export interface FacetTermsWithDetails
   extends Pick<FacetTerm, 'term' | 'count'> {

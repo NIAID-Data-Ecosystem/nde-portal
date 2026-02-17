@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { FiltersSection } from './components/section';
 import { FiltersList } from './components/list';
 import { FiltersContainer } from './components/container';
-import { FiltersDateSlider } from './components/date-slider';
+import { DateFilter } from './components/date-filter';
 import { SelectedFilterType } from './types';
 import { queryFilterObject2String } from './utils/query-builders';
 import { updateRoute } from '../../utils/update-route';
@@ -14,6 +14,8 @@ import { usePaginationContext } from '../../context/pagination-context';
 import { useSearchTabsContext } from '../../context/search-tabs-context';
 import { getTabFilterProperties } from './utils/tab-filter-utils';
 import { TabType } from '../../types';
+import { getDefaultDateRange } from '../../config/defaultQuery';
+import { shouldEnableInVisualSummaryPage } from 'src/utils/feature-flags';
 
 // Interface for Filters component props
 interface FiltersProps {
@@ -21,16 +23,20 @@ interface FiltersProps {
   isDisabled?: boolean;
   selectedFilters: SelectedFilterType;
   removeAllFilters: () => void;
+  onToggleViz?: (vizId: string) => void;
+  isVizActive?: (vizId: string) => boolean;
 }
 
 // Filters component
-export const Filters: React.FC<FiltersProps> = React.memo(
+export const Filters = React.memo(
   ({
     colorScheme = 'primary',
     isDisabled,
-    removeAllFilters,
     selectedFilters,
-  }) => {
+    removeAllFilters,
+    onToggleViz,
+    isVizActive,
+  }: FiltersProps) => {
     const router = useRouter();
     const queryParams = useSearchQueryFromURL();
     const { resetPagination } = usePaginationContext();
@@ -52,14 +58,36 @@ export const Filters: React.FC<FiltersProps> = React.memo(
       [filtersForTab],
     );
 
+    // Build the extra_filter that includes the date filter
+    const extraFilterWithDate = useMemo(() => {
+      // Get current filters
+      const currentFilters = queryParams.filters || {};
+
+      // Check if user has selected a date filter
+      const hasDateFilter =
+        selectedFilters.date && selectedFilters.date.length > 0;
+
+      // If no date filter, apply default
+      const filtersToUse = hasDateFilter
+        ? currentFilters
+        : {
+            ...currentFilters,
+            date: getDefaultDateRange(),
+          };
+
+      return queryFilterObject2String(filtersToUse) || '';
+    }, [queryParams.filters, selectedFilters.date]);
+
     // Use custom hook to get filter query results
+    // Both initialParams and updateParams now include the date filter
     const { results, error, isLoading, isUpdating } = useFilterQueries({
       initialParams: {
         q: queryParams.q,
+        extra_filter: extraFilterWithDate,
       },
       updateParams: {
         q: queryParams.q,
-        extra_filter: queryFilterObject2String(queryParams.filters) || '',
+        extra_filter: extraFilterWithDate,
         use_ai_search: queryParams.use_ai_search,
       },
       config,
@@ -117,13 +145,28 @@ export const Filters: React.FC<FiltersProps> = React.memo(
           });
 
           if (property === 'date') {
+            // Determine visibility based on route (pending approval)
+            // On search page: show both histogram and controls when visual summary is enabled
+            // On visual-summary page: show only controls (histogram is in the grid)
+            const showHistogram = !shouldEnableInVisualSummaryPage(
+              router.pathname,
+            );
+            const showDateControls = true; // Always show controls in filters
+
             return (
               <FiltersSection
                 key={config.name}
                 name={config.name}
                 description={config.description}
+                vizId={config.vizId}
+                isVizActive={
+                  config.vizId && isVizActive
+                    ? isVizActive(config.vizId)
+                    : false
+                }
+                onToggleViz={onToggleViz}
               >
-                <FiltersDateSlider
+                <DateFilter
                   colorScheme={colorScheme}
                   handleSelectedFilter={values =>
                     handleSelectedFilters(values, property)
@@ -135,6 +178,8 @@ export const Filters: React.FC<FiltersProps> = React.memo(
                     extra_filter:
                       queryFilterObject2String(queryParams.filters) || '',
                   }}
+                  showHistogram={showHistogram}
+                  showDateControls={showDateControls}
                 />
               </FiltersSection>
             );
@@ -144,6 +189,11 @@ export const Filters: React.FC<FiltersProps> = React.memo(
               key={config.name}
               name={config.name}
               description={config.description}
+              vizId={config.vizId}
+              isVizActive={
+                config.vizId && isVizActive ? isVizActive(config.vizId) : false
+              }
+              onToggleViz={onToggleViz}
             >
               <FiltersList
                 config={config}

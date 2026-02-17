@@ -72,6 +72,7 @@ const Sections = ({
         isLoading={isLoading}
         name={data?.name}
         alternateName={data?.alternateName}
+        id={data?.id}
         doi={data?.doi}
         nctid={data?.nctid}
       />
