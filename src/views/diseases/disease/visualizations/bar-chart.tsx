@@ -32,7 +32,7 @@ import {
   TooltipBody,
   TooltipSubtitle,
   TooltipTitle,
-} from '../components/tooltip';
+} from 'src/components/visualizations/tooltip/index';
 import { getFillColor } from '../../helpers';
 
 export interface SourceFacet {

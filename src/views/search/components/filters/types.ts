@@ -43,6 +43,7 @@ export interface QueryData {
  * Interface for filter configuration.
  *
  * @property _id - The unique identifier for the filter.
+ * @property vizId - The associated visualization ID for the filter (if applicable).
  * @property name - The name used for display the filter.
  * @property property - The schema property to filter on, used in selected filters.
  * @property description - The description of the filter, used for the tooltip.
@@ -54,6 +55,7 @@ export interface QueryData {
  */
 export interface FilterConfig {
   _id: string;
+  vizId?: string;
   name: string;
   property: string;
   description: string;

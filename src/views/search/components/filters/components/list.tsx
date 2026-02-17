@@ -25,7 +25,7 @@ const VirtualizedList = React.memo(
     const listRef = useRef<any>();
     const itemRefs = useRef<number[]>(Array(items.length).fill(DEFAULT_SIZE));
     const setItemSize = useCallback((index: number, size: number) => {
-      listRef?.current?.resetAfterIndex(0);
+      listRef?.current?.resetAfterIndex?.(0);
 
       itemRefs.current[index] = size;
     }, []);

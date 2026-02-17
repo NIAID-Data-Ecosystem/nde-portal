@@ -65,7 +65,8 @@ const DiseasePage: NextPage<{
     enabled: params.q !== undefined && hasSlug,
   });
 
-  const pageTitle = data?.title || 'Diseases';
+  const pageTitle =
+    data?.title || siteConfig.pages['/diseases'].nav?.label || 'Diseases';
 
   return (
     <PageContainer

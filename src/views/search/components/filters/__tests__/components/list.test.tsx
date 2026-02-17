@@ -3,36 +3,71 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { FilterConfig, FacetTermWithDetails, FilterItem } from '../../types';
 import { FiltersList, groupTerms } from '../../components/list';
+import { SearchInputProps } from 'src/components/search-input';
 
-jest.mock('react-window', () => ({
-  VariableSizeList: ({ children, itemCount }: any) => (
-    <div>
-      {Array.from({ length: itemCount }, (_, index) => (
-        <div key={index} style={{}}>
-          {children({ index, style: {} })}
+jest.mock('react-window', () => {
+  const React = require('react');
+
+  const VariableSizeList = React.forwardRef(
+    ({ children, itemCount, itemData }: any, ref: any) => {
+      React.useImperativeHandle(ref, () => ({
+        resetAfterIndex: jest.fn(),
+      }));
+
+      return (
+        <div data-testid='virtualized-list'>
+          {Array.from({ length: itemCount }, (_, index) => (
+            <div key={index}>
+              {children({ index, style: {}, data: itemData })}
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
-  ),
-}));
+      );
+    },
+  );
 
-jest.mock('src/components/search-input', () => ({
-  SearchInput: jest.fn(({ value, handleChange, onClose, ...props }) => {
-    return (
+  VariableSizeList.displayName = 'VariableSizeList';
+
+  return { VariableSizeList };
+});
+
+jest.mock('src/components/search-input', () => {
+  const React = require('react');
+
+  const SearchInput = React.forwardRef(
+    (
+      {
+        value,
+        handleChange,
+        onClose,
+        ariaLabel,
+        maxW,
+        colorScheme,
+        placeholder,
+        ...props
+      }: SearchInputProps,
+      ref: React.Ref<HTMLInputElement>,
+    ) => (
       <>
         <input
+          ref={ref}
           data-testid='search-input'
           value={value}
           onChange={handleChange}
-          {...props}
+          aria-label={ariaLabel}
+          placeholder={placeholder}
         />
         <button data-testid='close-button' onClick={onClose}>
           Clear
         </button>
       </>
-    );
-  }),
-}));
+    ),
+  );
+
+  SearchInput.displayName = 'SearchInput';
+
+  return { SearchInput };
+});
 
 const mockTerms: FilterItem[] = [
   { term: 'term1', label: 'Term 1', count: 5 },

@@ -174,8 +174,8 @@
     },
     "/diseases": {
       "seo": {
-        "title": "Diseases",
-        "description": "Explore datasets and research resources for diseases, including clinical, molecular, and experimental data.",
+        "title": "Diseases and Conditions",
+        "description": "Explore datasets and research resources for diseases and conditions, including clinical, molecular, and experimental data.",
         "keywords": [
           "disease",
           "clinical data",
@@ -186,7 +186,7 @@
         ]
       },
       "nav": {
-        "label": "Diseases",
+        "label": "Diseases and Conditions",
         "description": "Explore resources for NIAID priority health conditions"
       }
     },
