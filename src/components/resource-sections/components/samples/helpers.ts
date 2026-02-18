@@ -116,21 +116,81 @@ const termKey = (
 };
 
 /**
- * Produce a string representing the full value of a field on one sample.
+ * Produce a stable string representing the full value of a field on one sample.
  * Arrays are sorted so element-order differences don't count as "different".
+ * Return a special marker for null/undefined to distinguish from empty strings.
  */
 const fieldSignature = (value: unknown): string => {
-  if (value == null) return '';
+  if (value == null) return '__NULL__';
   if (typeof value === 'string') return value.trim().toLowerCase();
+  if (typeof value === 'number') return String(value);
+  if (typeof value === 'boolean') return String(value);
+
   if (Array.isArray(value)) {
-    return value
-      .map(v => termKey(v as { identifier?: string; name?: string } | string))
-      .sort()
-      .join('|');
+    if (value.length === 0) return '__EMPTY_ARRAY__';
+
+    // Check if array contains DefinedTerm objects
+    const allAreDefinedTerms = value.every(
+      item =>
+        item != null &&
+        typeof item === 'object' &&
+        ('identifier' in item || 'name' in item) &&
+        (!('@type' in item) || (item as any)['@type'] !== 'QuantitativeValue'),
+    );
+
+    if (allAreDefinedTerms) {
+      // Use termKey for DefinedTerm-like objects
+      return value
+        .map(v => termKey(v as { identifier?: string; name?: string }))
+        .sort()
+        .join('|');
+    }
+
+    // For other arrays, use full JSON comparison
+    try {
+      return JSON.stringify(
+        value.map(item => {
+          if (item != null && typeof item === 'object') {
+            // Sort keys for stable comparison
+            const sorted: any = {};
+            Object.keys(item)
+              .sort()
+              .forEach(key => {
+                sorted[key] = (item as any)[key];
+              });
+            return sorted;
+          }
+          return item;
+        }),
+      );
+    } catch {
+      return JSON.stringify(value);
+    }
   }
+
   if (typeof value === 'object') {
-    return termKey(value as { identifier?: string; name?: string });
+    // Check if it's a DefinedTerm-like object
+    if (
+      ('identifier' in value || 'name' in value) &&
+      (!('@type' in value) || (value as any)['@type'] !== 'QuantitativeValue')
+    ) {
+      return termKey(value as { identifier?: string; name?: string });
+    }
+
+    // For complex objects, use full JSON comparison
+    try {
+      const sorted: any = {};
+      Object.keys(value)
+        .sort()
+        .forEach(key => {
+          sorted[key] = (value as any)[key];
+        });
+      return JSON.stringify(sorted);
+    } catch {
+      return String(value);
+    }
   }
+
   return String(value).trim().toLowerCase();
 };
 
@@ -145,47 +205,77 @@ const UNIFORM_HIDE_PROPS = new Set<string>([
 ]);
 
 /**
- * Builds the columns array for the fetched SampleCollection items table.
- * The identifier column is always first and always shown.
- * Remaining columns follow the order defined in SAMPLE_AGGREGATE_COLUMNS.
+ * Build the columns array for the fetched SampleCollection items table.
+ *
+ * Rules applied:
+ *   R1. Omit any column where no sample has a value
+ *   R2. Omit healthCondition / infectiousAgent / species when all values
+ *       are identical across samples
+ *
+ * Column ordering:
+ *   1. Sample ID
+ *   2. Columns with non-uniform values (sorted alphabetically by display title)
+ *   3. Columns with uniform values (sorted alphabetically by display title)
+ *
  */
 export const getSampleCollectionItemsColumns = (
   samples: SampleAggregate[],
 ): Array<{ title: string; property: string; isSortable?: boolean }> => {
-  const columns: Array<{
-    title: string;
-    property: string;
-    isSortable?: boolean;
-  }> = [{ title: 'Sample ID', property: 'identifier', isSortable: true }];
+  const nonUniformColumns: Array<{ title: string; property: string }> = [];
+  const uniformColumns: Array<{ title: string; property: string }> = [];
 
-  for (const { key } of SAMPLE_AGGREGATE_COLUMNS) {
+  for (const config of SAMPLE_AGGREGATE_COLUMNS) {
+    const { key, includedProperties, transform } = config;
+
     // Skip columns where no sample has a non-empty value.
-    const anyHasValue = samples.some(sample =>
-      hasNonEmptyValue(getValueByPath(sample, key)),
-    );
+    const anyHasValue = samples.some(sample => {
+      const valuesForProps = includedProperties.map(path =>
+        getValueByPath(sample, path),
+      );
+      return valuesForProps.some(v => hasNonEmptyValue(v));
+    });
     if (!anyHasValue) continue;
 
-    // Skip if all values are identical.
-    if (UNIFORM_HIDE_PROPS.has(key)) {
-      const first = fieldSignature(getValueByPath(samples[0], key));
-      const uniform = samples.every(
-        sample => fieldSignature(getValueByPath(sample, key)) === first,
+    // Check if all values are uniform (identical across samples).
+    const signatures = samples.map(sample => {
+      const valuesForProps = includedProperties.map(path =>
+        getValueByPath(sample, path),
       );
-      if (uniform) continue;
-    }
-
-    columns.push({
-      title: formatSampleLabelFromProperty(key),
-      property: key,
-      isSortable: false,
+      const values =
+        valuesForProps.length === 1 ? valuesForProps[0] : valuesForProps;
+      const finalValue = transform ? transform(values) : values;
+      return fieldSignature(finalValue);
     });
+
+    const first = signatures[0];
+    const uniform = signatures.every(sig => sig === first);
+
+    // For the three special fields, skip entirely if uniform.
+    if (UNIFORM_HIDE_PROPS.has(key) && uniform) continue;
+
+    const title = formatSampleLabelFromProperty(key);
+
+    if (uniform) {
+      uniformColumns.push({ title, property: key });
+    } else {
+      nonUniformColumns.push({ title, property: key });
+    }
   }
 
-  return columns;
+  // Sort each group alphabetically by display title.
+  nonUniformColumns.sort((a, b) => a.title.localeCompare(b.title));
+  uniformColumns.sort((a, b) => a.title.localeCompare(b.title));
+
+  // Assemble final columns: Sample ID, then non-uniform, then uniform.
+  return [
+    { title: 'Sample ID', property: 'identifier', isSortable: true },
+    ...nonUniformColumns.map(col => ({ ...col, isSortable: false })),
+    ...uniformColumns.map(col => ({ ...col, isSortable: false })),
+  ];
 };
 
 /**
- * Builds the rows array for the fetched SampleCollection items table.
+ * Build the rows array for the fetched SampleCollection items table.
  * The `identifier` field is shaped as `{ identifier, url }` so the existing
  * DefinedTermCell renderer can display it as an external link.
  */
