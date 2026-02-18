@@ -119,6 +119,18 @@
         "description": "Log of updates to the NIAID Data Ecosystem Discovery Portal"
       }
     },
+    "/knowledge-center/how-to-cite-the-niaid-data-ecosystem": {
+      "seo": {
+        "title": "How to Cite",
+        "description": "How to cite the NIAID Data Ecosystem Discovery Portal and its resources",
+        "keywords": ["how to cite", "citation", "reference", "publication"],
+        "preventIndexing": true
+      },
+      "nav": {
+        "label": "How to Cite",
+        "description": "How to cite the NIAID Data Ecosystem Discovery Portal and its resources"
+      }
+    },
     "/knowledge-center": {
       "seo": {
         "title": "Knowledge Center",
@@ -303,6 +315,9 @@
           },
           {
             "page": "/changelog"
+          },
+          {
+            "page": "/knowledge-center/how-to-cite-the-niaid-data-ecosystem"
           }
         ]
       },
