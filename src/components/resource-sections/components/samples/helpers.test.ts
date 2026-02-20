@@ -3,6 +3,8 @@ import {
   formatNumericValue,
   formatTerm,
   getAvailableSamplePropertyColumns,
+  getSampleCollectionItemsColumns,
+  getSampleCollectionItemsRows,
 } from './helpers';
 
 import {
@@ -43,6 +45,10 @@ jest.mock('./config', () => ({
       key: 'titledProp',
       title: 'Explicit Title',
       includedProperties: ['titleVal'],
+    },
+    {
+      key: 'species',
+      includedProperties: ['species'],
     },
   ],
 }));
@@ -191,6 +197,153 @@ describe('helpers', () => {
       const cols = getAvailableSamplePropertyColumns({} as any);
       expect(cols.find(c => c.key === 'identifier')!.isSortable).toBe(true);
       expect(cols.find(c => c.key === 'titledProp')!.isSortable).toBe(false);
+    });
+  });
+
+  describe('getSampleCollectionItemsRows', () => {
+    it('maps each sample to a row with identifier shaped as { identifier, url }', () => {
+      // Two samples are used: one with a real URL to verify it is
+      // preserved, and one with an empty string to verify that case is handled
+      // without errors.
+      const samples = [
+        { identifier: 'S1', url: 'https://example.com', species: 'human' },
+        { identifier: 'S2', url: '', species: 'mouse' },
+      ] as any[];
+
+      const rows = getSampleCollectionItemsRows(samples);
+
+      expect(rows[0].identifier).toEqual({
+        identifier: 'S1',
+        url: 'https://example.com',
+      });
+      expect(rows[1].identifier).toEqual({ identifier: 'S2', url: '' });
+    });
+
+    it('falls back to _id when identifier is missing', () => {
+      const samples = [{ _id: 'fallback-id' }] as any[];
+
+      const rows = getSampleCollectionItemsRows(samples);
+
+      expect(rows[0].identifier).toEqual({
+        identifier: 'fallback-id',
+        url: '',
+      });
+    });
+
+    it('preserves other sample fields on the row', () => {
+      const samples = [
+        { identifier: 'S1', species: 'human', cellType: 'neuron' },
+      ] as any[];
+
+      const rows = getSampleCollectionItemsRows(samples);
+
+      // toMatchObject is used so the test only asserts that these
+      // fields are present with the correct values.
+      expect(rows[0]).toMatchObject({ species: 'human', cellType: 'neuron' });
+    });
+  });
+
+  describe('getSampleCollectionItemsColumns', () => {
+    beforeEach(() => {
+      const actual = jest.requireActual(
+        'src/components/resource-sections/helpers',
+      );
+      (getValueByPath as jest.Mock).mockImplementation(actual.getValueByPath);
+      (hasNonEmptyValue as jest.Mock).mockImplementation(
+        actual.hasNonEmptyValue,
+      );
+    });
+
+    it('always includes Sample ID as the first column', () => {
+      const samples = [{ identifier: 'S1' }] as any[];
+
+      const cols = getSampleCollectionItemsColumns(samples);
+
+      expect(cols[0]).toEqual({
+        title: 'Sample ID',
+        property: 'identifier',
+        isSortable: true,
+      });
+    });
+
+    it('excludes columns where no sample has a value', () => {
+      // 'emptyProp' is in the mocked SAMPLE_AGGREGATE_COLUMNS with
+      // includedProperties: ['empty']. Neither sample has an 'empty' field,
+      // so the column should be excluded entirely (rule R1).
+      const samples = [
+        { identifier: 'S1', species: [{ name: 'human' }], emptyProp: null },
+        { identifier: 'S2', species: [{ name: 'human' }], emptyProp: null },
+      ] as any[];
+
+      const cols = getSampleCollectionItemsColumns(samples);
+      const props = cols.map(c => c.property);
+
+      expect(props).not.toContain('emptyProp');
+    });
+
+    it('excludes species when all values are uniform', () => {
+      // 'species' is one of the UNIFORM_HIDE_PROPS special fields. When every
+      // sample shares the same value it should be hidden entirely (rule R2).
+      const samples = [
+        { identifier: 'S1', species: [{ name: 'Human' }] },
+        { identifier: 'S2', species: [{ name: 'Human' }] },
+      ] as any[];
+
+      const cols = getSampleCollectionItemsColumns(samples);
+      const props = cols.map(c => c.property);
+
+      expect(props).not.toContain('species');
+    });
+
+    it('includes species when values differ across samples', () => {
+      // When species values differ across samples it is no longer
+      // uniform and should appear as a column.
+      const samples = [
+        { identifier: 'S1', species: [{ name: 'human' }] },
+        { identifier: 'S2', species: [{ name: 'mouse' }] },
+      ] as any[];
+
+      const cols = getSampleCollectionItemsColumns(samples);
+      const props = cols.map(c => c.property);
+
+      expect(props).toContain('species');
+    });
+
+    it('places non-uniform columns before uniform ones (after Sample ID)', () => {
+      // 'rangeProp' maps to includedProperties ['min', 'max'] in the mock
+      // config. 'titledProp' maps to includedProperties ['titleVal'].
+      // min/max differ across samples (1-10 vs 2-20) so rangeProp is
+      // non-uniform. titleVal is identical ('X') so titledProp is uniform.
+      // Non-uniform columns should appear before uniform ones.
+      const samples = [
+        { identifier: 'S1', min: 1, max: 10, titleVal: 'X' },
+        { identifier: 'S2', min: 2, max: 20, titleVal: 'X' },
+      ] as any[];
+
+      const cols = getSampleCollectionItemsColumns(samples);
+      const props = cols.map(c => c.property);
+
+      const rangePropIdx = props.indexOf('rangeProp'); // non-uniform
+      const titledPropIdx = props.indexOf('titledProp'); // uniform
+
+      expect(rangePropIdx).toBeGreaterThan(0);
+      expect(rangePropIdx).toBeLessThan(titledPropIdx);
+    });
+
+    it('sorts non-uniform and uniform groups alphabetically by title', () => {
+      // Both groups (non-uniform and uniform) should
+      // be sorted alphabetically by display title within their group.
+      const samples = [
+        { identifier: 'S1', min: 1, max: 10, titleVal: 'X' },
+        { identifier: 'S2', min: 2, max: 20, titleVal: 'X' },
+      ] as any[];
+
+      const cols = getSampleCollectionItemsColumns(samples);
+      const nonIdCols = cols.slice(1).map(c => c.title);
+
+      expect(nonIdCols).toEqual(
+        [...nonIdCols].sort((a, b) => a.localeCompare(b)),
+      );
     });
   });
 });
