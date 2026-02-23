@@ -8,7 +8,7 @@ export const fetchSamplesByParentIdentifier = async (
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   if (!apiUrl) throw new Error('API URL is undefined');
 
-  const q = `isPartOf.identifier:"${parentIdentifier}" AND @type:"Sample"`;
+  const q = `isBasisFor.identifier:"${parentIdentifier}" AND @type:"Sample"`;
   const response = await axios.get(`${apiUrl}/query`, {
     params: { q, size: 1000 },
   });

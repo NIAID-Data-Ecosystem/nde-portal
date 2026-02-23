@@ -54,7 +54,7 @@ describe('fetchSamplesByParentIdentifier', () => {
       'http://localhost:3000/query',
       {
         params: {
-          q: 'isPartOf.identifier:"parent-123" AND @type:"Sample"',
+          q: 'isBasisFor.identifier:"parent-123" AND @type:"Sample"',
           size: 1000,
         },
       },
