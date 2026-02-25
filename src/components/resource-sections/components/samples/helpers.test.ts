@@ -262,6 +262,51 @@ describe('helpers', () => {
       // fields are present with the correct values.
       expect(rows[0]).toMatchObject({ species: 'human', cellType: 'neuron' });
     });
+
+    it('flattens additionalProperty array into namespaced keys', () => {
+      const samples = [
+        {
+          identifier: 'S1',
+          additionalProperty: [
+            { propertyID: 'cell_type', value: 'CD138+ plasma' },
+            { propertyID: 'disease_state', value: 'tumor' },
+          ],
+        },
+      ] as any[];
+
+      const rows = getSampleCollectionItemsRows(samples);
+
+      expect(rows[0]['additionalProperty__cell_type']).toBe('CD138+ plasma');
+      expect(rows[0]['additionalProperty__disease_state']).toBe('tumor');
+    });
+
+    it('normalizes a single additionalProperty object (non-array) into a namespaced key', () => {
+      // The API can return a single object instead of an array.
+      const samples = [
+        {
+          identifier: 'S1',
+          additionalProperty: {
+            propertyID: 'cell_type',
+            value: 'CD138+ plasma',
+          },
+        },
+      ] as any[];
+
+      const rows = getSampleCollectionItemsRows(samples);
+
+      expect(rows[0]['additionalProperty__cell_type']).toBe('CD138+ plasma');
+    });
+
+    it('adds no additionalProperty keys when additionalProperty is absent', () => {
+      const samples = [{ identifier: 'S1' }] as any[];
+
+      const rows = getSampleCollectionItemsRows(samples);
+
+      const additionalKeys = Object.keys(rows[0]).filter(k =>
+        k.startsWith('additionalProperty__'),
+      );
+      expect(additionalKeys).toHaveLength(0);
+    });
   });
 
   describe('getSampleCollectionItemsColumns', () => {
