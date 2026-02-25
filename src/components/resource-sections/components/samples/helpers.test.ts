@@ -51,6 +51,14 @@ jest.mock('./config', () => ({
       key: 'species',
       includedProperties: ['species'],
     },
+    {
+      key: 'infectiousAgent',
+      includedProperties: ['infectiousAgent'],
+    },
+    {
+      key: 'healthCondition',
+      includedProperties: ['healthCondition'],
+    },
   ],
 }));
 
@@ -373,6 +381,54 @@ describe('helpers', () => {
       const props = cols.map(c => c.property);
 
       expect(props).toContain('species');
+    });
+
+    it('excludes infectiousAgent when all values are uniform', () => {
+      const samples = [
+        { identifier: 'S1', infectiousAgent: [{ name: 'SARS-CoV-2' }] },
+        { identifier: 'S2', infectiousAgent: [{ name: 'SARS-CoV-2' }] },
+      ] as any[];
+
+      const cols = getSampleCollectionItemsColumns(samples);
+      const props = cols.map(c => c.property);
+
+      expect(props).not.toContain('infectiousAgent');
+    });
+
+    it('includes infectiousAgent when values differ across samples', () => {
+      const samples = [
+        { identifier: 'S1', infectiousAgent: [{ name: 'SARS-CoV-2' }] },
+        { identifier: 'S2', infectiousAgent: [{ name: 'Influenza A' }] },
+      ] as any[];
+
+      const cols = getSampleCollectionItemsColumns(samples);
+      const props = cols.map(c => c.property);
+
+      expect(props).toContain('infectiousAgent');
+    });
+
+    it('excludes healthCondition when all values are uniform', () => {
+      const samples = [
+        { identifier: 'S1', healthCondition: [{ name: 'Healthy' }] },
+        { identifier: 'S2', healthCondition: [{ name: 'Healthy' }] },
+      ] as any[];
+
+      const cols = getSampleCollectionItemsColumns(samples);
+      const props = cols.map(c => c.property);
+
+      expect(props).not.toContain('healthCondition');
+    });
+
+    it('includes healthCondition when values differ across samples', () => {
+      const samples = [
+        { identifier: 'S1', healthCondition: [{ name: 'Healthy' }] },
+        { identifier: 'S2', healthCondition: [{ name: 'Tumor' }] },
+      ] as any[];
+
+      const cols = getSampleCollectionItemsColumns(samples);
+      const props = cols.map(c => c.property);
+
+      expect(props).toContain('healthCondition');
     });
 
     it('places non-uniform columns before uniform ones (after Sample ID)', () => {
