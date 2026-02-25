@@ -2,6 +2,7 @@ import {
   formatUnitText,
   formatNumericValue,
   formatTerm,
+  formatPropertyId,
   getAvailableSamplePropertyColumns,
   getSampleCollectionItemsColumns,
   getSampleCollectionItemsRows,
@@ -109,6 +110,26 @@ describe('helpers', () => {
 
     it('returns empty string for empty input', () => {
       expect(formatTerm('')).toBe('');
+    });
+  });
+
+  describe('formatPropertyId', () => {
+    it('capitalizes each word and joins with spaces', () => {
+      expect(formatPropertyId('cell_type')).toBe('Cell Type');
+      expect(formatPropertyId('disease_state')).toBe('Disease State');
+    });
+
+    it('handles a single word with no underscores', () => {
+      expect(formatPropertyId('genomic')).toBe('Genomic');
+    });
+
+    it('normalizes mixed-case input — each word is title-cased', () => {
+      expect(formatPropertyId('CELL_TYPE')).toBe('Cell Type');
+      expect(formatPropertyId('cElL_tYpE')).toBe('Cell Type');
+    });
+
+    it('handles an empty string without throwing', () => {
+      expect(formatPropertyId('')).toBe('');
     });
   });
 
