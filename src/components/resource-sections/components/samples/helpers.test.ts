@@ -467,5 +467,218 @@ describe('helpers', () => {
         [...nonIdCols].sort((a, b) => a.localeCompare(b)),
       );
     });
+
+    it('adds a column for a non-uniform additionalProperty (rule R3)', () => {
+      const samples = [
+        {
+          identifier: 'S1',
+          additionalProperty: [{ propertyID: 'cell_type', value: 'plasma' }],
+        },
+        {
+          identifier: 'S2',
+          additionalProperty: [{ propertyID: 'cell_type', value: 'neuron' }],
+        },
+      ] as any[];
+
+      const cols = getSampleCollectionItemsColumns(samples);
+      const col = cols.find(
+        c => c.property === 'additionalProperty__cell_type',
+      );
+
+      expect(col).toBeDefined();
+      expect(col!.title).toBe('Cell Type');
+    });
+
+    it('hides an additionalProperty column when all values are uniform', () => {
+      const samples = [
+        {
+          identifier: 'S1',
+          additionalProperty: [{ propertyID: 'cell_type', value: 'plasma' }],
+        },
+        {
+          identifier: 'S2',
+          additionalProperty: [{ propertyID: 'cell_type', value: 'plasma' }],
+        },
+      ] as any[];
+
+      const cols = getSampleCollectionItemsColumns(samples);
+      const props = cols.map(c => c.property);
+
+      expect(props).not.toContain('additionalProperty__cell_type');
+    });
+
+    it('treats a missing additionalProperty on one sample as non-uniform', () => {
+      // S1 has cell_type; S2 does not. The absent value is treated as __NULL__,
+      // which differs from 'plasma', so the column should appear.
+      const samples = [
+        {
+          identifier: 'S1',
+          additionalProperty: [{ propertyID: 'cell_type', value: 'plasma' }],
+        },
+        {
+          identifier: 'S2',
+          // no additionalProperty at all
+        },
+      ] as any[];
+
+      const cols = getSampleCollectionItemsColumns(samples);
+      const props = cols.map(c => c.property);
+
+      expect(props).toContain('additionalProperty__cell_type');
+    });
+
+    it('does not crash when additionalProperty is a single object instead of an array', () => {
+      // Regression test for the runtime TypeError: .map is not a function.
+      const samples = [
+        {
+          identifier: 'S1',
+          additionalProperty: { propertyID: 'cell_type', value: 'plasma' },
+        },
+        {
+          identifier: 'S2',
+          additionalProperty: { propertyID: 'cell_type', value: 'neuron' },
+        },
+      ] as any[];
+
+      expect(() => getSampleCollectionItemsColumns(samples)).not.toThrow();
+
+      const cols = getSampleCollectionItemsColumns(samples);
+      const props = cols.map(c => c.property);
+      expect(props).toContain('additionalProperty__cell_type');
+    });
+
+    it('uses formatPropertyId to title-case the column header', () => {
+      const samples = [
+        {
+          identifier: 'S1',
+          additionalProperty: [{ propertyID: 'disease_state', value: 'tumor' }],
+        },
+        {
+          identifier: 'S2',
+          additionalProperty: [
+            { propertyID: 'disease_state', value: 'healthy' },
+          ],
+        },
+      ] as any[];
+
+      const cols = getSampleCollectionItemsColumns(samples);
+      const col = cols.find(
+        c => c.property === 'additionalProperty__disease_state',
+      );
+
+      expect(col!.title).toBe('Disease State');
+    });
+
+    it('places additionalProperty columns after all standard columns', () => {
+      // Give samples both a standard varying field (min/max) and a varying
+      // additionalProperty so both kinds appear in the output.
+      const samples = [
+        {
+          identifier: 'S1',
+          min: 1,
+          max: 5,
+          additionalProperty: [{ propertyID: 'cell_type', value: 'plasma' }],
+        },
+        {
+          identifier: 'S2',
+          min: 2,
+          max: 10,
+          additionalProperty: [{ propertyID: 'cell_type', value: 'neuron' }],
+        },
+      ] as any[];
+
+      const cols = getSampleCollectionItemsColumns(samples);
+      const props = cols.map(c => c.property);
+
+      const rangePropIdx = props.indexOf('rangeProp');
+      const additionalPropIdx = props.indexOf('additionalProperty__cell_type');
+
+      // additionalProperty columns must come after all standard columns.
+      expect(additionalPropIdx).toBeGreaterThan(rangePropIdx);
+    });
+
+    it('sorts multiple additionalProperty columns alphabetically', () => {
+      // Three non-uniform properties whose titles, when sorted, should be:
+      // "Cell Type", "Disease State", "Sample Type"
+      const samples = [
+        {
+          identifier: 'S1',
+          additionalProperty: [
+            { propertyID: 'sample_type', value: 'reference' },
+            { propertyID: 'cell_type', value: 'plasma' },
+            { propertyID: 'disease_state', value: 'tumor' },
+          ],
+        },
+        {
+          identifier: 'S2',
+          additionalProperty: [
+            { propertyID: 'sample_type', value: 'control' },
+            { propertyID: 'cell_type', value: 'neuron' },
+            { propertyID: 'disease_state', value: 'healthy' },
+          ],
+        },
+      ] as any[];
+
+      const cols = getSampleCollectionItemsColumns(samples);
+      const additionalCols = cols
+        .filter(c => c.property.startsWith('additionalProperty__'))
+        .map(c => c.title);
+
+      expect(additionalCols).toEqual(
+        [...additionalCols].sort((a, b) => a.localeCompare(b)),
+      );
+      expect(additionalCols).toEqual([
+        'Cell Type',
+        'Disease State',
+        'Sample Type',
+      ]);
+    });
+
+    it('handles a mix of uniform and non-uniform additionalProperty fields', () => {
+      // cell_type differs: should appear;
+      // sample_type is the same: should be hidden
+      const samples = [
+        {
+          identifier: 'S1',
+          additionalProperty: [
+            { propertyID: 'cell_type', value: 'plasma' },
+            { propertyID: 'sample_type', value: 'reference' },
+          ],
+        },
+        {
+          identifier: 'S2',
+          additionalProperty: [
+            { propertyID: 'cell_type', value: 'neuron' },
+            { propertyID: 'sample_type', value: 'reference' },
+          ],
+        },
+      ] as any[];
+
+      const cols = getSampleCollectionItemsColumns(samples);
+      const props = cols.map(c => c.property);
+
+      expect(props).toContain('additionalProperty__cell_type');
+      expect(props).not.toContain('additionalProperty__sample_type');
+    });
+
+    it('produces isSortable: false for all additionalProperty columns', () => {
+      const samples = [
+        {
+          identifier: 'S1',
+          additionalProperty: [{ propertyID: 'cell_type', value: 'plasma' }],
+        },
+        {
+          identifier: 'S2',
+          additionalProperty: [{ propertyID: 'cell_type', value: 'neuron' }],
+        },
+      ] as any[];
+
+      const cols = getSampleCollectionItemsColumns(samples);
+      const additionalCols = cols.filter(c =>
+        c.property.startsWith('additionalProperty__'),
+      );
+
+      additionalCols.forEach(col => expect(col.isSortable).toBe(false));
+    });
   });
 });
