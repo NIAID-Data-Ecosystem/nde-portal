@@ -257,6 +257,7 @@ describe('helpers', () => {
         identifier: 'fallback-id',
         url: '',
       });
+      expect(rows[0]._identifierSort).toBe('fallback-id');
     });
 
     it('preserves other sample fields on the row', () => {
@@ -315,6 +316,18 @@ describe('helpers', () => {
       );
       expect(additionalKeys).toHaveLength(0);
     });
+
+    it('adds _identifierSort as a plain string matching the identifier', () => {
+      const samples = [
+        { identifier: 'S1', url: 'https://example.com' },
+        { identifier: 'S2', url: '' },
+      ] as any[];
+
+      const rows = getSampleCollectionItemsRows(samples);
+
+      expect(rows[0]._identifierSort).toBe('S1');
+      expect(rows[1]._identifierSort).toBe('S2');
+    });
   });
 
   describe('getSampleCollectionItemsColumns', () => {
@@ -329,13 +342,18 @@ describe('helpers', () => {
     });
 
     it('always includes Sample ID as the first column', () => {
+      // The Sample ID column uses '_identifierSort' (a plain string field on
+      // each row) as its property so that useTableSort compares strings rather
+      // than the { identifier, url } object used for rendering. The
+      // SampleCollectionItemsTable getCells callback remaps '_identifierSort'
+      // back to 'identifier' when reading the row for display.
       const samples = [{ identifier: 'S1' }] as any[];
 
       const cols = getSampleCollectionItemsColumns(samples);
 
       expect(cols[0]).toEqual({
         title: 'Sample ID',
-        property: 'identifier',
+        property: '_identifierSort',
         isSortable: true,
       });
     });
