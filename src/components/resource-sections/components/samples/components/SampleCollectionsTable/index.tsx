@@ -49,7 +49,14 @@ export const SampleCollectionItemsTable = ({
         columns,
         data: rows,
         getCells: props => {
-          const data = props.data?.[props.column.property];
+          // The Sample ID column sorts by '_identifierSort' (a plain string)
+          // but must render using 'identifier' (the { identifier, url }
+          // object) so that the link cell displays correctly.
+          const property =
+            props.column.property === '_identifierSort'
+              ? 'identifier'
+              : props.column.property;
+          const data = props.data?.[property];
           return Cell.renderCellData?.({ ...props, data });
         },
         hasPagination: true,
