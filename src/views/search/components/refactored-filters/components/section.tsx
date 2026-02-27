@@ -11,16 +11,16 @@ import { FaChevronDown } from 'react-icons/fa6';
 import Tooltip from 'src/components/tooltip';
 import { shouldEnableInVisualSummaryPage } from 'src/utils/feature-flags';
 import { useRouter } from 'next/router';
-import { FiltersChartToggle } from 'src/views/search/components/refactored-filters/components/filters-chart-toggle';
+import { FiltersChartToggle } from './filters-chart-toggle';
 
 interface FiltersSectionProps {
   name: string;
   description: string;
   children: React.ReactNode;
   // Optional visualization properties
-  vizId?: string;
+  filterId?: string;
   isVizActive?: boolean;
-  onToggleViz?: (vizId: string) => void;
+  onToggleViz?: (filterId: string) => void;
 }
 
 /*
@@ -28,7 +28,7 @@ interface FiltersSectionProps {
 Filter drawer corresponding to a filter facet.
 */
 export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
-  ({ name, description, children, vizId, isVizActive, onToggleViz }) => {
+  ({ name, description, children, filterId, isVizActive, onToggleViz }) => {
     const router = useRouter();
     // Determine if visual summary section should be shown based on feature flag and current route since this component is shared with /search page.
     const SHOW_VISUAL_SUMMARY = shouldEnableInVisualSummaryPage(
@@ -46,18 +46,18 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                   role='button'
                   p={4}
                   gap={2}
-                  py={isExpanded ? 1.5 : 2}
-                  bg={isExpanded ? 'secondary.50' : 'transparent'}
                   borderLeft='4px solid'
                   borderBottom='0.5px solid'
                   borderRadius='sm'
+                  flexDirection={SHOW_VISUAL_SUMMARY ? 'row' : 'row-reverse'}
+                  py={isExpanded ? 1.5 : 2}
+                  bg={isExpanded ? 'secondary.50' : 'transparent'}
                   borderTopColor={isExpanded ? 'secondary.100' : 'gray.100'}
                   borderBottomColor={isExpanded ? 'transparent' : 'gray.100'}
                   borderLeftColor={isExpanded ? 'secondary.300' : 'transparent'}
                   _hover={{
                     bg: isExpanded ? 'secondary.50' : 'gray.50',
                   }}
-                  flexDirection={SHOW_VISUAL_SUMMARY ? 'row' : 'row-reverse'}
                 >
                   <Icon
                     as={FaChevronDown}
@@ -85,7 +85,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                       {name}
                     </Text>
                   </Tooltip>
-                  {vizId && SHOW_VISUAL_SUMMARY && (
+                  {filterId && SHOW_VISUAL_SUMMARY && (
                     <Tooltip
                       label={
                         isVizActive
@@ -99,7 +99,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                           name={name}
                           onClick={e => {
                             e.stopPropagation(); // Prevent accordion toggle
-                            onToggleViz && onToggleViz(vizId);
+                            onToggleViz && onToggleViz(filterId);
                           }}
                         />
                       </Box>

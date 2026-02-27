@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ChartDatum, ChartType, SearchState, VizConfig } from '../types';
+import { ChartDatum, ChartType, SearchState } from '../types';
+import { FilterConfig } from '../../refactored-filters';
 import { useAggregationQuery } from './useAggregationQuery';
 import { usePreferredChartType } from './usePreferredChartType';
 import {
@@ -12,7 +13,7 @@ import {
 import { SelectedFilterTypeValue } from '../../filters/types';
 
 interface UseVisualizationDataParams {
-  config: VizConfig;
+  config: FilterConfig;
   searchState: SearchState;
   isActive: boolean;
   selectedFilters: SelectedFilterTypeValue[];
@@ -29,28 +30,34 @@ export const useVisualizationData = ({
   // Drill stack to manage "More" drill-downs.
   const [drillStack, setDrillStack] = useState<ChartDatum[][]>([]);
 
+  // If no chart config, return early with empty state
+  const hasChartConfig = !!config.chart;
+
   // Use preferred chart type hook to manage user preference.
   const [preferredChartType, setPreferredChartType] = usePreferredChartType(
     config.id,
-    config.chart.defaultOption,
+    config.chart?.defaultOption,
   );
 
   // Clamp preference to what's allowed (in case options changed)
-  const chartType = useMemo<ChartType>(() => {
-    return config.chart.availableOptions.includes(preferredChartType)
+  const chartType = useMemo<ChartType | undefined>(() => {
+    if (!config.chart || !preferredChartType)
+      return config.chart?.defaultOption;
+    const availableOptions = config.chart.availableOptions;
+    return availableOptions.includes(preferredChartType)
       ? preferredChartType
       : config.chart.defaultOption;
   }, [
     preferredChartType,
-    config.chart.availableOptions,
-    config.chart.defaultOption,
+    config.chart?.availableOptions,
+    config.chart?.defaultOption,
   ]);
 
   // Fetch aggregation data based on the config and search state.
   const aggData = useAggregationQuery({
     property: config.property,
     searchState,
-    enabled: isActive,
+    enabled: isActive && hasChartConfig,
   });
 
   // Normalize the aggregated data.
@@ -58,18 +65,14 @@ export const useVisualizationData = ({
     aggData.data && normalizeAggregateData(aggData.data, config.property);
 
   // Format chart data.
-  const chartAdapter = chartRegistry[chartType];
+  const chartAdapter = chartType ? chartRegistry[chartType] : null;
   const chartData = useMemo(() => {
-    return (
-      facetData &&
-      chartAdapter.mapFacetsToChartData(facetData, {
-        formatLabel:
-          config.formatting?.label ??
-          ((term, count) => `${term} (${count.toLocaleString()})`),
-        transformData: config.transformData,
-      })
-    );
-  }, [facetData, chartType, config.formatting, config.transformData]);
+    if (!chartAdapter || !facetData) return null;
+    return chartAdapter.mapFacetsToChartData(facetData, {
+      formatLabel: (term, count) => `${term} (${count.toLocaleString()})`,
+      transformData: config.transformData,
+    });
+  }, [facetData, chartAdapter, config.transformData]);
 
   // Current level data based on drill stack.
   const currentLevelData = useMemo(() => {
@@ -78,13 +81,15 @@ export const useVisualizationData = ({
 
   // Bucket small values into "More"
   const { bucketedData, tail } = useMemo(() => {
+    if (!chartType || !config.chart) return { bucketedData: [], tail: [] };
+    const chartTypeConfig = config.chart[chartType] || {};
     const { data, tail } = bucketSmallValues(currentLevelData || [], {
-      ...config.chart?.[chartType],
+      ...chartTypeConfig,
       moreLabel: DEFAULT_MORE_PARAMS.moreLabel,
     });
 
     return { bucketedData: data, tail };
-  }, [currentLevelData, config, chartType]);
+  }, [currentLevelData, config.chart, chartType]);
 
   // If the query/config changes, reset drill mode
   useEffect(() => {
@@ -93,11 +98,13 @@ export const useVisualizationData = ({
 
   useEffect(() => {
     // If preferred chart type is no longer valid, reset to default.
-    if (!config.chart.availableOptions.includes(preferredChartType)) {
+    if (!config.chart || !preferredChartType) return;
+    const availableOptions = config.chart.availableOptions;
+    if (!availableOptions.includes(preferredChartType)) {
       setPreferredChartType(config.chart.defaultOption);
     }
   }, [
-    config.chart.availableOptions.join('|'),
+    config.chart?.availableOptions?.join('|'),
     preferredChartType,
     setPreferredChartType,
   ]);
@@ -132,6 +139,7 @@ export const useVisualizationData = ({
 
       // If slice is already selected, remove it; otherwise add it
       const isSelected = isSliceSelected(id);
+      // Use filterProperty if provided, otherwise fall back to property
       const filterProperty = config.filterProperty || config.property;
 
       if (isSelected) {
@@ -147,14 +155,7 @@ export const useVisualizationData = ({
         onFilterUpdate?.(newFilters, filterProperty);
       }
     },
-    [
-      tail,
-      onFilterUpdate,
-      config.property,
-      config.filterProperty,
-      isSliceSelected,
-      selectedFilters,
-    ],
+    [tail, onFilterUpdate, config.property, isSliceSelected, selectedFilters],
   );
 
   return {
