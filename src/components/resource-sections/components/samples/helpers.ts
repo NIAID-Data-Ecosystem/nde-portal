@@ -345,9 +345,15 @@ export const getSampleCollectionItemsColumns = (
       }))
       .sort((a, b) => a.title.localeCompare(b.title));
 
-  // Assemble final columns: Sample ID, non-uniform, uniform, additionalProperty.
+  // Assemble final columns: Sample ID, non-uniform, uniform,
+  // additionalProperty. property points at '_identifierSort'
+  // (a plain string field added to each row) so that useTableSort
+  // can compare strings instead of the { identifier, url }
+  // object that is used for rendering. The SampleCollectionItemsTable
+  // getCells callback remaps '_identifierSort' back to 'identifier'
+  // when reading the row.
   return [
-    { title: 'Sample ID', property: 'identifier', isSortable: true },
+    { title: 'Sample ID', property: '_identifierSort', isSortable: true },
     ...nonUniformColumns.map(col => ({ ...col, isSortable: false })),
     ...uniformColumns.map(col => ({ ...col, isSortable: false })),
     ...additionalPropertyColumns.map(col => ({ ...col, isSortable: false })),
@@ -362,6 +368,10 @@ export const getSampleCollectionItemsColumns = (
  * Each `additionalProperty` entry is flattened into the row under the
  * namespaced key `additionalProperty__<propertyID>` so the column renderer
  * can pick it up via `props.data?.[props.column.property]`.
+ *
+ * `_identifierSort` is a plain string copy of the identifier used exclusively
+ * for sorting (avoids comparing { identifier, url } objects as
+ * "[object Object]").
  */
 export const getSampleCollectionItemsRows = (
   samples: SampleAggregate[],
@@ -380,6 +390,7 @@ export const getSampleCollectionItemsRows = (
         identifier: sample.identifier ?? (sample as any)._id,
         url: sample.url ?? '',
       },
+      _identifierSort: sample.identifier ?? (sample as any)._id ?? '',
       ...additionalPropertyEntries,
     };
   });
