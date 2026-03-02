@@ -36,6 +36,7 @@ export const CustomizeFiltersPopover: React.FC<
 > = ({ filtersList, onVisibleFiltersChange }) => {
   const [visibleFilterIds, setVisibleFilterIds] = useState<string[]>([]);
   const [isReady, setIsReady] = useState(false);
+  const selectedCount = visibleFilterIds.length;
 
   const allFilterIds = useMemo(
     () => filtersList.map(filter => filter.id),
@@ -95,7 +96,7 @@ export const CustomizeFiltersPopover: React.FC<
 
   return (
     <Popover placement='bottom-end'>
-      <Flex>
+      <Flex justifyContent='flex-end'>
         <PopoverTrigger>
           <Button colorScheme='gray' variant='outline' size='xs'>
             <Icon as={FaSliders} boxSize={4} mr={2} />
@@ -114,6 +115,22 @@ export const CustomizeFiltersPopover: React.FC<
         </PopoverHeader>
 
         <PopoverBody>
+          <Flex justifyContent='flex-end' flex={1} mb={0.5}>
+            <Button
+              size='xs'
+              variant='link'
+              colorScheme='black'
+              onClick={() =>
+                handleVisibleFiltersChange(
+                  selectedCount === allFilterIds.length ? [] : allFilterIds,
+                )
+              }
+            >
+              {selectedCount === allFilterIds.length
+                ? `Clear All`
+                : `Select All (${allFilterIds.length})`}
+            </Button>
+          </Flex>
           <CheckboxGroup
             size='md'
             value={visibleFilterIds}
