@@ -53,11 +53,17 @@ const fetchStandardFacet = async (
 
   const facetData = Object.values(data.facets)[0] as Facet[keyof Facet];
   const terms: FilterTerm[] =
-    facetData?.terms?.map((t: FacetTerm) => ({
-      term: t.term,
-      label: config.transformLabel ? config.transformLabel(t.term) : t.term,
-      count: t.count,
-    })) || [];
+    facetData?.terms?.map((t: FacetTerm) => {
+      const transformed = config.transformData
+        ? config.transformData({ term: t.term, count: t.count, label: t.term })
+        : { term: t.term, count: t.count, label: t.term };
+
+      return {
+        term: transformed.term,
+        label: transformed.label,
+        count: transformed.count,
+      };
+    }) || [];
 
   // Add "Any" (_exists_) option with total count
   const allTerms: FilterTerm[] = [

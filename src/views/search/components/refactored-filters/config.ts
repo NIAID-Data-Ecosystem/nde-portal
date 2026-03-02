@@ -91,8 +91,6 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     property: 'conditionsOfAccess',
     queryType: 'facet',
     description: getMetadataDescription('conditionsOfAccess') || '',
-    transformLabel: (term: string) =>
-      transformConditionsOfAccessLabel(formatConditionsOfAccess(term)) || term,
     chart: DEFAULT_BAR_PIE_CHART,
     transformData: (item: { count: number; term: string; label?: string }) => ({
       ...item,

@@ -81,8 +81,6 @@ export interface FilterConfig {
   isDefaultOpen?: boolean;
   /** Optional: Grouping configuration for terms */
   groupBy?: { property: string; label: string }[];
-  /** Optional: Transform function for display labels */
-  transformLabel?: (term: string) => string;
   /** Optional: Chart configuration for visualizations */
   chart?: ChartConfig;
   /** Optional: Transform function for visualization data */
