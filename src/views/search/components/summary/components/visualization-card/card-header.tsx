@@ -79,15 +79,15 @@ export const CardHeader = ({
             onClick={onExpand}
             isDisabled={!isActive}
           />
-          <VisualizationCardIconButton
-            ariaLabel='Remove chart from display.'
-            tooltipContent='Remove chart from display.'
-            icon={<Icon as={FaXmark} />}
-            onClick={onRemove}
-            isDisabled={!isActive}
-          />
         </HStack>
       )}
+      <VisualizationCardIconButton
+        ariaLabel='Remove chart from display.'
+        tooltipContent='Remove chart from display.'
+        icon={<Icon as={FaXmark} />}
+        onClick={onRemove}
+        isDisabled={!isActive}
+      />
     </Flex>
   );
 };
