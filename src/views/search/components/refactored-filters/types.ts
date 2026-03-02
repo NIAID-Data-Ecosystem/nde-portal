@@ -42,6 +42,15 @@ export type FilterQueryType = 'facet' | 'source' | 'histogram';
 export type ChartType = 'pie' | 'bar' | 'histogram';
 
 /**
+ * Filter category types available for grouping filters in the UI
+ */
+export type FilterCategory =
+  | 'Shared'
+  | 'Dataset'
+  | 'Computational Tool'
+  | 'Sample';
+
+/**
  * Configuration for individual chart types (e.g., bar, pie)
  */
 export interface ChartTypeConfig {
@@ -71,6 +80,8 @@ export interface FilterConfig {
   name: string;
   /** The API property to query/aggregate data (e.g., 'sourceOrganization.name.raw') */
   property: string;
+  /** Property to categorize filters in the UI */
+  category: FilterCategory;
   /** Optional: The property to use for filtering, if different from property (e.g., 'sourceOrganization.name') */
   filterProperty?: string;
   /** Tooltip description */

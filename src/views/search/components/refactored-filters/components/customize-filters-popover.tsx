@@ -43,6 +43,21 @@ export const CustomizeFiltersPopover: React.FC<
     [filtersList],
   );
 
+  const groupedFilters = useMemo(() => {
+    const groups = new Map<string, FilterConfig[]>();
+
+    filtersList.forEach(filter => {
+      const group = groups.get(filter.category) || [];
+      group.push(filter);
+      groups.set(filter.category, group);
+    });
+
+    return Array.from(groups.entries()).map(([category, filters]) => ({
+      category,
+      filters,
+    }));
+  }, [filtersList]);
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -112,10 +127,7 @@ export const CustomizeFiltersPopover: React.FC<
           <Text fontSize='sm' fontWeight='normal'>
             {CUSTOMIZE_FILTERS_COPY.description}
           </Text>
-        </PopoverHeader>
-
-        <PopoverBody>
-          <Flex justifyContent='flex-end' flex={1} mb={0.5}>
+          <Flex justifyContent='flex-end' flex={1}>
             <Button
               size='xs'
               variant='link'
@@ -131,18 +143,48 @@ export const CustomizeFiltersPopover: React.FC<
                 : `Select All (${allFilterIds.length})`}
             </Button>
           </Flex>
+        </PopoverHeader>
+
+        <PopoverBody p={0} py={1}>
           <CheckboxGroup
             size='md'
             value={visibleFilterIds}
             onChange={values => handleVisibleFiltersChange(values as string[])}
           >
-            <Stack spacing={2} maxH='16rem' overflowY='auto'>
-              {filtersList.map(filter => (
-                <Checkbox key={filter.id} value={filter.id}>
-                  <Text fontSize='sm'> {filter.name}</Text>
-                </Checkbox>
+            <Flex flexDirection='column' maxHeight='16rem' overflowY='auto'>
+              {groupedFilters.map(group => (
+                <Stack
+                  key={group.category}
+                  gap={0.5}
+                  borderBottom='1px solid'
+                  borderColor='gray.100'
+                  px={2}
+                  py={1}
+                >
+                  <Text
+                    fontSize='xs'
+                    fontWeight='semibold'
+                    color='gray.800'
+                    px={1}
+                  >
+                    {group.category}
+                  </Text>
+                  {group.filters.map(filter => (
+                    <Checkbox
+                      key={filter.id}
+                      value={filter.id}
+                      px={2}
+                      _hover={{ bg: 'secondary.50' }}
+                      borderRadius='sm'
+                    >
+                      <Text ml={1} fontSize='xs'>
+                        {filter.name}
+                      </Text>
+                    </Checkbox>
+                  ))}
+                </Stack>
               ))}
-            </Stack>
+            </Flex>
           </CheckboxGroup>
         </PopoverBody>
       </PopoverContent>

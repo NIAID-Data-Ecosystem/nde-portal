@@ -31,6 +31,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
       availableOptions: ['histogram'],
       defaultOption: 'histogram',
     },
+    category: 'Shared',
   },
   {
     id: 'includedInDataCatalog',
@@ -43,6 +44,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
       { property: 'Generalist', label: 'Generalist Repositories' },
     ],
     chart: DEFAULT_BAR_PIE_CHART,
+    category: 'Shared',
   },
   {
     id: 'sourceOrganization.name',
@@ -52,6 +54,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     queryType: 'facet',
     description: getMetadataDescription('sourceOrganization') || '',
     chart: DEFAULT_BAR_PIE_CHART,
+    category: 'Shared',
   },
   {
     id: 'healthCondition.name.raw',
@@ -60,6 +63,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     queryType: 'facet',
     description: getMetadataDescription('healthCondition') || '',
     chart: DEFAULT_BAR_PIE_CHART,
+    category: 'Dataset',
   },
   {
     id: 'infectiousAgent.displayName.raw',
@@ -68,6 +72,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     queryType: 'facet',
     description: getMetadataDescription('infectiousAgent') || '',
     chart: DEFAULT_BAR_PIE_CHART,
+    category: 'Dataset',
   },
   {
     id: 'species.displayName.raw',
@@ -76,6 +81,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     queryType: 'facet',
     description: getMetadataDescription('species') || '',
     chart: DEFAULT_BAR_PIE_CHART,
+    category: 'Dataset',
   },
   {
     id: 'funding.funder.name.raw',
@@ -84,6 +90,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     queryType: 'facet',
     description: getMetadataDescription('funding') || '',
     chart: DEFAULT_BAR_PIE_CHART,
+    category: 'Shared',
   },
   {
     id: 'conditionsOfAccess',
@@ -99,6 +106,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
           formatConditionsOfAccess(item.label || item.term),
         ) || '',
     }),
+    category: 'Shared',
   },
   {
     id: 'variableMeasured.name.raw',
@@ -107,6 +115,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     queryType: 'facet',
     description: getMetadataDescription('variableMeasured') || '',
     chart: DEFAULT_BAR_PIE_CHART,
+    category: 'Dataset',
   },
   {
     id: 'measurementTechnique.name.raw',
@@ -115,6 +124,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     queryType: 'facet',
     description: getMetadataDescription('measurementTechnique') || '',
     chart: DEFAULT_BAR_PIE_CHART,
+    category: 'Dataset',
   },
   {
     id: 'topicCategory.name.raw',
@@ -123,6 +133,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     queryType: 'facet',
     description: getMetadataDescription('topicCategory') || '',
     chart: DEFAULT_BAR_PIE_CHART,
+    category: 'Shared',
   },
   {
     id: 'applicationCategory.raw',
@@ -131,6 +142,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     queryType: 'facet',
     description: getMetadataDescription('applicationCategory') || '',
     chart: DEFAULT_BAR_PIE_CHART,
+    category: 'Computational Tool',
   },
   {
     id: 'operatingSystem.raw',
@@ -139,6 +151,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     queryType: 'facet',
     description: getMetadataDescription('operatingSystem') || '',
     chart: DEFAULT_BAR_PIE_CHART,
+    category: 'Computational Tool',
   },
   {
     id: 'programmingLanguage.raw',
@@ -147,6 +160,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     queryType: 'facet',
     description: getMetadataDescription('programmingLanguage') || '',
     chart: DEFAULT_BAR_PIE_CHART,
+    category: 'Computational Tool',
   },
   {
     id: 'featureList.name.raw',
@@ -155,6 +169,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     queryType: 'facet',
     description: getMetadataDescription('featureList') || '',
     chart: DEFAULT_BAR_PIE_CHART,
+    category: 'Computational Tool',
   },
   {
     id: 'input.name.raw',
@@ -163,6 +178,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     queryType: 'facet',
     description: getMetadataDescription('input') || '',
     chart: DEFAULT_BAR_PIE_CHART,
+    category: 'Computational Tool',
   },
   {
     id: 'output.name.raw',
@@ -171,6 +187,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     queryType: 'facet',
     description: getMetadataDescription('output') || '',
     chart: DEFAULT_BAR_PIE_CHART,
+    category: 'Computational Tool',
   },
 ];
 
