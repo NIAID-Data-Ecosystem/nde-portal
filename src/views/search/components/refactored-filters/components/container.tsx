@@ -19,6 +19,7 @@ import {
 import { FaFilter } from 'react-icons/fa6';
 import { FilterConfig, SelectedFilters } from '../types';
 import { ScrollContainer } from 'src/components/scroll-container';
+import { CustomizeFiltersPopover } from './customize-filters-popover';
 
 export interface FiltersContainerProps {
   title?: string;
@@ -27,6 +28,7 @@ export interface FiltersContainerProps {
   removeAllFilters: () => void;
   error: Error | null;
   filtersList: FilterConfig[];
+  onVisibleFiltersChange?: (visibleFilterIds: string[]) => void;
   children: React.ReactNode;
 }
 
@@ -56,6 +58,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   filtersList,
   isDisabled = false,
   removeAllFilters,
+  onVisibleFiltersChange,
 }) => {
   // State for managing which accordion sections are open
   const [openSections, setOpenSections] = useState<Set<string>>(new Set());
@@ -132,27 +135,33 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   const content = (
     <>
       <Flex
-        justifyContent='space-between'
         px={{ base: 0, md: 4 }}
-        py={{ base: 2, md: 4 }}
-        alignItems='center'
+        py={2}
+        gap={4}
+        flexDirection='column'
         borderBottom='0.5px solid'
         borderBottomColor='gray.100'
       >
-        {title && (
-          <Heading size='sm' fontWeight='medium' lineHeight='short'>
-            {title}
-          </Heading>
-        )}
-        <Button
-          colorScheme='secondary'
-          variant='outline'
-          size='xs'
-          onClick={removeAllFilters}
-          isDisabled={isDisabled}
-        >
-          Clear All
-        </Button>
+        <CustomizeFiltersPopover
+          filtersList={filtersList}
+          onVisibleFiltersChange={onVisibleFiltersChange}
+        />
+        <Flex gap={2} justifyContent='space-between'>
+          {title && (
+            <Heading size='sm' fontWeight='medium' lineHeight='short'>
+              {title}
+            </Heading>
+          )}
+          <Button
+            colorScheme='secondary'
+            variant='link'
+            size='xs'
+            onClick={removeAllFilters}
+            isDisabled={isDisabled}
+          >
+            Clear All
+          </Button>
+        </Flex>
       </Flex>
       {error ? (
         <Flex p={4} bg='status.error_lt'>

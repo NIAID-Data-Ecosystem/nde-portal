@@ -61,6 +61,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                 >
                   <Icon
                     as={FaChevronDown}
+                    mr={2}
                     color='gray.800'
                     data-testid='minus-icon'
                     fontSize='12px'

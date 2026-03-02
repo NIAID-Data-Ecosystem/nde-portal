@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useFilterQueries } from '../hooks/useFilterQueries';
 import { filtersToQueryString } from '../utils/query-string';
 import { SelectedFilters } from '../types';
@@ -35,6 +35,9 @@ export const Filters = React.memo(
     const router = useRouter();
     const queryParams = useSearchQueryFromURL();
     const { resetPagination } = usePaginationContext();
+    const [visibleFilterIds, setVisibleFilterIds] = useState<string[]>(
+      FILTER_CONFIGS.map(config => config.id),
+    );
 
     // Omits date filter from filter config since date is handled differently (as a histogram)
     const configWithoutDate = useMemo(
@@ -105,6 +108,14 @@ export const Filters = React.memo(
       [selectedFilters, handleUpdate],
     );
 
+    const visibleFilterConfigs = useMemo(
+      () =>
+        FILTER_CONFIGS.filter(filterConfig =>
+          visibleFilterIds.includes(filterConfig.id),
+        ),
+      [visibleFilterIds],
+    );
+
     return (
       <FiltersContainer
         title='Search Filters'
@@ -112,12 +123,13 @@ export const Filters = React.memo(
         filtersList={FILTER_CONFIGS}
         isDisabled={isDisabled}
         selectedFilters={selectedFilters}
+        onVisibleFiltersChange={setVisibleFilterIds}
         removeAllFilters={() => {
           resetPagination();
           removeAllFilters();
         }}
       >
-        {FILTER_CONFIGS.map(filterConfig => {
+        {visibleFilterConfigs.map(filterConfig => {
           const { id, name, property, description } = filterConfig;
           const selected = selectedFilters?.[property]?.map(filter => {
             if (typeof filter === 'object') {
