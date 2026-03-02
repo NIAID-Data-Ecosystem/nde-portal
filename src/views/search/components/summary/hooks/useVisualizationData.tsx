@@ -69,10 +69,11 @@ export const useVisualizationData = ({
   const chartData = useMemo(() => {
     if (!chartAdapter || !facetData) return null;
     return chartAdapter.mapFacetsToChartData(facetData, {
-      formatLabel: (term, count) => `${term} (${count.toLocaleString()})`,
+      formatLabel: (term, count) =>
+        chartType === 'bar' ? term : `${term} (${count.toLocaleString()})`,
       transformData: config.transformData,
     });
-  }, [facetData, chartAdapter, config.transformData]);
+  }, [facetData, chartAdapter, chartType, config.transformData]);
 
   // Current level data based on drill stack.
   const currentLevelData = useMemo(() => {
