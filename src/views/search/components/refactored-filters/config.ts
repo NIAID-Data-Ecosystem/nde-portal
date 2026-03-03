@@ -31,7 +31,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
       availableOptions: ['histogram'],
       defaultOption: 'histogram',
     },
-    category: 'Shared',
+    category: 'Shared / Dataset',
   },
   {
     id: 'includedInDataCatalog',
@@ -44,7 +44,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
       { property: 'Generalist', label: 'Generalist Repositories' },
     ],
     chart: DEFAULT_BAR_PIE_CHART,
-    category: 'Shared',
+    category: 'Shared / Dataset',
   },
   {
     id: 'sourceOrganization.name',
@@ -54,7 +54,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     queryType: 'facet',
     description: getMetadataDescription('sourceOrganization') || '',
     chart: DEFAULT_BAR_PIE_CHART,
-    category: 'Shared',
+    category: 'Shared / Dataset',
   },
   {
     id: 'healthCondition.name.raw',
@@ -63,7 +63,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     queryType: 'facet',
     description: getMetadataDescription('healthCondition') || '',
     chart: DEFAULT_BAR_PIE_CHART,
-    category: 'Dataset',
+    category: 'Shared / Dataset',
   },
   {
     id: 'infectiousAgent.displayName.raw',
@@ -72,7 +72,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     queryType: 'facet',
     description: getMetadataDescription('infectiousAgent') || '',
     chart: DEFAULT_BAR_PIE_CHART,
-    category: 'Dataset',
+    category: 'Shared / Dataset',
   },
   {
     id: 'species.displayName.raw',
@@ -81,7 +81,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     queryType: 'facet',
     description: getMetadataDescription('species') || '',
     chart: DEFAULT_BAR_PIE_CHART,
-    category: 'Dataset',
+    category: 'Shared / Dataset',
   },
   {
     id: 'funding.funder.name.raw',
@@ -90,7 +90,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     queryType: 'facet',
     description: getMetadataDescription('funding') || '',
     chart: DEFAULT_BAR_PIE_CHART,
-    category: 'Shared',
+    category: 'Shared / Dataset',
   },
   {
     id: 'conditionsOfAccess',
@@ -106,7 +106,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
           formatConditionsOfAccess(item.label || item.term),
         ) || '',
     }),
-    category: 'Shared',
+    category: 'Shared / Dataset',
   },
   {
     id: 'variableMeasured.name.raw',
@@ -115,7 +115,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     queryType: 'facet',
     description: getMetadataDescription('variableMeasured') || '',
     chart: DEFAULT_BAR_PIE_CHART,
-    category: 'Dataset',
+    category: 'Shared / Dataset',
   },
   {
     id: 'measurementTechnique.name.raw',
@@ -124,7 +124,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     queryType: 'facet',
     description: getMetadataDescription('measurementTechnique') || '',
     chart: DEFAULT_BAR_PIE_CHART,
-    category: 'Dataset',
+    category: 'Shared / Dataset',
   },
   {
     id: 'topicCategory.name.raw',
@@ -133,7 +133,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     queryType: 'facet',
     description: getMetadataDescription('topicCategory') || '',
     chart: DEFAULT_BAR_PIE_CHART,
-    category: 'Shared',
+    category: 'Shared / Dataset',
   },
   {
     id: 'applicationCategory.raw',

@@ -45,7 +45,7 @@ export type ChartType = 'pie' | 'bar' | 'histogram';
  * Filter category types available for grouping filters in the UI
  */
 export type FilterCategory =
-  | 'Shared'
+  | 'Shared / Dataset'
   | 'Dataset'
   | 'Computational Tool'
   | 'Sample';
