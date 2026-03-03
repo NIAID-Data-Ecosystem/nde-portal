@@ -13,10 +13,11 @@ export interface SearchQueryParams {
   facet_size?: number;
   fields?: string[];
   filters?: Record<string, string[]>;
-  extra_filters?: Record<string, string[]>;
+  extra_filter?: string;
   from?: number;
   size?: number;
   sort?: string;
   shouldUseMetadataScore?: boolean;
   use_ai_search?: string;
+  advancedSearch?: string;
 }
