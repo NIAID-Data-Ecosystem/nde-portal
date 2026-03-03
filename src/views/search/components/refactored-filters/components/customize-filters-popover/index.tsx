@@ -5,6 +5,7 @@ import {
   CheckboxGroup,
   Flex,
   Icon,
+  Input,
   Popover,
   PopoverArrow,
   PopoverBody,
@@ -15,8 +16,9 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
-import { FilterConfig } from '../types';
+import { FilterConfig } from '../../types';
 import { FaSliders } from 'react-icons/fa6';
+import { filterGroupsBySearchTerm, groupFiltersByCategory } from './utils';
 
 const CUSTOM_VISIBLE_FILTERS_STORAGE_KEY = 'search-visible-filters';
 
@@ -24,6 +26,10 @@ const CUSTOMIZE_FILTERS_COPY = {
   button: 'Customize Filters',
   header: 'Customize Filters',
   description: 'Select which filters to display.',
+  searchPlaceholder: 'Search filters',
+  noFiltersFound: 'No filters found',
+  selectAll: 'Select All',
+  clearAll: 'Clear All',
 };
 
 interface CustomizeFiltersPopoverProps {
@@ -36,6 +42,7 @@ export const CustomizeFiltersPopover: React.FC<
 > = ({ filtersList, onVisibleFiltersChange }) => {
   const [visibleFilterIds, setVisibleFilterIds] = useState<string[]>([]);
   const [isReady, setIsReady] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const selectedCount = visibleFilterIds.length;
 
   const allFilterIds = useMemo(
@@ -43,20 +50,15 @@ export const CustomizeFiltersPopover: React.FC<
     [filtersList],
   );
 
-  const groupedFilters = useMemo(() => {
-    const groups = new Map<string, FilterConfig[]>();
+  const filterGroups = useMemo(
+    () => groupFiltersByCategory(filtersList),
+    [filtersList],
+  );
 
-    filtersList.forEach(filter => {
-      const group = groups.get(filter.category) || [];
-      group.push(filter);
-      groups.set(filter.category, group);
-    });
-
-    return Array.from(groups.entries()).map(([category, filters]) => ({
-      category,
-      filters,
-    }));
-  }, [filtersList]);
+  const filteredGroups = useMemo(
+    () => filterGroupsBySearchTerm(filterGroups, searchTerm),
+    [filterGroups, searchTerm],
+  );
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -139,20 +141,28 @@ export const CustomizeFiltersPopover: React.FC<
               }
             >
               {selectedCount === allFilterIds.length
-                ? `Clear All`
-                : `Select All (${allFilterIds.length})`}
+                ? CUSTOMIZE_FILTERS_COPY.clearAll
+                : `${CUSTOMIZE_FILTERS_COPY.selectAll} (${allFilterIds.length})`}
             </Button>
           </Flex>
         </PopoverHeader>
 
         <PopoverBody p={0} py={1}>
+          <Flex px={2} py={1}>
+            <Input
+              size='sm'
+              placeholder={CUSTOMIZE_FILTERS_COPY.searchPlaceholder}
+              value={searchTerm}
+              onChange={event => setSearchTerm(event.target.value)}
+            />
+          </Flex>
           <CheckboxGroup
             size='md'
             value={visibleFilterIds}
             onChange={values => handleVisibleFiltersChange(values as string[])}
           >
             <Flex flexDirection='column' maxHeight='16rem' overflowY='auto'>
-              {groupedFilters.map(group => (
+              {filteredGroups.map(group => (
                 <Stack
                   key={group.category}
                   gap={0.5}
@@ -184,6 +194,11 @@ export const CustomizeFiltersPopover: React.FC<
                   ))}
                 </Stack>
               ))}
+              {filteredGroups.length === 0 && (
+                <Text fontSize='sm' color='gray.600' px={3} py={2}>
+                  {CUSTOMIZE_FILTERS_COPY.noFiltersFound}
+                </Text>
+              )}
             </Flex>
           </CheckboxGroup>
         </PopoverBody>
