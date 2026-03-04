@@ -73,7 +73,7 @@
     "@visx/scale": "^3.0.0",
     "@visx/shape": "^3.0.0",
     "@visx/tooltip": "^3.1.2",
-    "axios": "^1.12.0",
+    "axios": "^1.13.5",
     "d3-scale-chromatic": "^3.0.0",
     "env-cmd": "^10.1.0",
     "eslint": "^9.0.0",
@@ -85,9 +85,9 @@
     "jest-environment-jsdom": "^30.0.5",
     "json5": "^2.2.3",
     "lint-staged": "^13.1.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "msw": "^1.2.1",
-    "next-mdx-remote": "^4.4.1",
+    "next-mdx-remote": "^6.0.0",
     "next-router-mock": "^0.9.3",
     "prettier": "^2.8.3",
     "puppeteer": "^24.8.1",
@@ -109,8 +109,9 @@
     "cookie": "^0.7.0",
     "glob": "^10.5.0",
     "js-yaml": "^4.1.1",
-    "strip-ansi": "6.0.1",
-    "micromatch": "^4.0.8"
+    "lodash": "^4.17.23",
+    "micromatch": "^4.0.8",
+    "minimatch": "^9.0.7"
   },
   "version": "5.1.2"
 }
