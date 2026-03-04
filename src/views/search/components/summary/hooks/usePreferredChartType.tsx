@@ -12,13 +12,14 @@ import { ChartType } from '../types';
  */
 export const usePreferredChartType = (
   vizId: string,
-  defaultChartType: ChartType,
-): [ChartType, (next: ChartType) => void] => {
+  defaultChartType: ChartType | undefined,
+): [ChartType | undefined, (next: ChartType) => void] => {
   const key = `vizPref.chartType.${vizId}`;
 
   // If no stored value for prefered chart type for given property, use default
-  const [value, setValue] = useState<ChartType>(() => {
+  const [value, setValue] = useState<ChartType | undefined>(() => {
     if (typeof window === 'undefined') return defaultChartType;
+    if (!defaultChartType) return undefined;
     const stored = window.localStorage.getItem(key) as ChartType | null;
     return stored ?? defaultChartType;
   });

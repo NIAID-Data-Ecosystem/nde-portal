@@ -70,8 +70,8 @@ export const CardHeader = ({
     <Flex mb={2} justify='space-between' align='center' lineHeight='shorter'>
       <VisualizationCardHeading label={label} />
 
-      {!hasEmptyData && (
-        <HStack gap={2}>
+      <HStack gap={2}>
+        {!hasEmptyData && (
           <VisualizationCardIconButton
             ariaLabel='Expand chart to modal view'
             tooltipContent='Expand chart to modal view.'
@@ -79,15 +79,15 @@ export const CardHeader = ({
             onClick={onExpand}
             isDisabled={!isActive}
           />
-          <VisualizationCardIconButton
-            ariaLabel='Remove chart from display.'
-            tooltipContent='Remove chart from display.'
-            icon={<Icon as={FaXmark} />}
-            onClick={onRemove}
-            isDisabled={!isActive}
-          />
-        </HStack>
-      )}
+        )}
+        <VisualizationCardIconButton
+          ariaLabel='Remove chart from display.'
+          tooltipContent='Remove chart from display.'
+          icon={<Icon as={FaXmark} />}
+          onClick={onRemove}
+          isDisabled={!isActive}
+        />
+      </HStack>
     </Flex>
   );
 };

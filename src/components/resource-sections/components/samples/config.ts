@@ -12,8 +12,16 @@ export type SamplePropertyConfig = {
 
 export const SAMPLE_AGGREGATE_COLUMNS: SamplePropertyConfig[] = [
   {
+    key: 'alternateIdentifier',
+    includedProperties: ['alternateIdentifier'],
+  },
+  {
     key: 'anatomicalStructure',
     includedProperties: ['anatomicalStructure'],
+  },
+  {
+    key: 'anatomicalSystem',
+    includedProperties: ['anatomicalSystem'],
   },
   {
     key: 'associatedGenotype',
@@ -23,11 +31,17 @@ export const SAMPLE_AGGREGATE_COLUMNS: SamplePropertyConfig[] = [
     key: 'associatedPhenotype',
     includedProperties: ['associatedPhenotype'],
   },
-  { key: 'cellType', includedProperties: ['cellType'] },
-
+  {
+    key: 'cellType',
+    includedProperties: ['cellType'],
+  },
   {
     key: 'developmentalStage',
     includedProperties: ['developmentalStage'],
+  },
+  {
+    key: 'environmentalSystem',
+    includedProperties: ['environmentalSystem'],
   },
   {
     key: 'sampleAvailability',
@@ -38,10 +52,29 @@ export const SAMPLE_AGGREGATE_COLUMNS: SamplePropertyConfig[] = [
     includedProperties: ['sampleQuantity'],
   },
   {
+    key: 'sampleState',
+    includedProperties: ['sampleState'],
+  },
+  {
     key: 'sampleType',
     includedProperties: ['sampleType'],
   },
-  { key: 'sex', includedProperties: ['sex'] },
+  {
+    key: 'sex',
+    includedProperties: ['sex'],
+  },
+  {
+    key: 'healthCondition',
+    includedProperties: ['healthCondition'],
+  },
+  {
+    key: 'infectiousAgent',
+    includedProperties: ['infectiousAgent'],
+  },
+  {
+    key: 'species',
+    includedProperties: ['species'],
+  },
 ];
 
 export const SAMPLE_COLLECTION_COLUMNS: SamplePropertyConfig[] = [

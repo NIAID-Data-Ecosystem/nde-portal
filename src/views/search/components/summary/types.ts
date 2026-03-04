@@ -1,6 +1,7 @@
 import { SearchQueryParams } from 'src/views/search/types';
 
-export type ChartType = 'pie' | 'bar' | 'histogram';
+// Re-export chart types from refactored-filters for consistency
+export type { ChartType, ChartTypeConfig } from '../refactored-filters/types';
 
 export interface ChartDatum {
   id: string;
@@ -18,36 +19,3 @@ export type SearchFilter = {
 
 export type SearchState = Omit<SearchQueryParams, 'from' | 'size' | 'sort'> &
   Required<Pick<SearchQueryParams, 'from' | 'size' | 'sort'>>;
-
-export type ChartTypeConfig = {
-  maxItems?: number;
-  minPercent?: number;
-};
-
-export type VizConfig = {
-  id: string;
-  label: string;
-  property: string;
-  filterProperty?: string; // Optional: property to use for filtering (defaults to property if not specified)
-
-  chart: {
-    availableOptions: ChartType[];
-    defaultOption: ChartType;
-  } & Partial<Record<ChartType, ChartTypeConfig>>;
-
-  formatting?: {
-    label?: (bucketKey: string) => string;
-    tooltip?: (bucketKey: string) => string;
-  };
-
-  behavior?: {
-    bucketToFilter?: (bucketKey: string) => SearchFilter;
-  };
-
-  // Optional: Function to transform facet data (e.g., format labels)
-  transformData?: (item: { count: number; term: string; label?: string }) => {
-    count: number;
-    term: string;
-    label: string;
-  };
-};
