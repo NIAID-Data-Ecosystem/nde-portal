@@ -13,7 +13,10 @@ import {
 import { FaAngleRight, FaArrowUpRightFromSquare } from 'react-icons/fa6';
 import { TransformedNavigationMenu } from '../types';
 
-// Desktop Navigation sub menu for nested links
+const submenuIconStyles = {
+  '> *': { color: 'niaid.700' },
+} as const;
+
 const DesktopSubNavItem = ({
   label,
   href,
@@ -32,7 +35,7 @@ const DesktopSubNavItem = ({
         bg: 'niaid.50',
         color: 'niaid.600',
         '.label': { color: 'niaid.500' },
-        '.icon': { opacity: '100%', transform: 'translateX(0)' },
+        '.icon': { opacity: 1, transform: 'translateX(0)' },
       }}
       _visited={{ color: 'niaid.800' }}
       target={isExternal ? '_blank' : '_self'}
@@ -58,27 +61,22 @@ const DesktopSubNavItem = ({
               />
             )}
           </Flex>
-          <Text fontSize='sm' color='text.body' lineHeight='short' pr={1}>
-            {description}
-          </Text>
+          {description && (
+            <Text fontSize='sm' color='text.body' lineHeight='short' pr={1}>
+              {description}
+            </Text>
+          )}
         </Box>
         <Flex
           className='icon'
           ml='10px'
           transition='all .3s ease'
           transform='translateX(-10px)'
-          opacity={1}
+          opacity={0}
           justify='flex-end'
           align='center'
         >
-          <Icon
-            sx={{
-              '> *': { color: 'niaid.700' },
-            }}
-            w={3}
-            h={3}
-            as={FaAngleRight}
-          />
+          <Icon sx={submenuIconStyles} w={3} h={3} as={FaAngleRight} />
         </Flex>
       </Flex>
     </Link>
@@ -90,7 +88,8 @@ export const DesktopSubNav = ({
 }: {
   routes: TransformedNavigationMenu[];
 }) => {
-  if (!routes) return <></>;
+  if (!routes?.length) return null;
+
   return (
     <PopoverContent
       border={0}
@@ -104,7 +103,10 @@ export const DesktopSubNav = ({
       <PopoverBody>
         <Stack role='tablist'>
           {routes.map(route => (
-            <DesktopSubNavItem key={route.label} {...route} />
+            <DesktopSubNavItem
+              key={`${route.href ?? route.label}`}
+              {...route}
+            />
           ))}
         </Stack>
       </PopoverBody>

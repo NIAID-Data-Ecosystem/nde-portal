@@ -1,9 +1,3 @@
-export interface TransformedNavigationMenu extends NavigationItem {
-  env?: string[];
-  href?: string;
-  routes?: Array<TransformedNavigationMenu>;
-}
-
 export interface NavigationItem {
   label: string;
   description?: string;
@@ -23,4 +17,10 @@ export interface NavigationSection {
 
 export interface Navigation {
   primary: NavigationSection[];
+}
+
+export interface TransformedNavigationMenu extends NavigationItem {
+  env?: string[];
+  href?: string;
+  routes?: TransformedNavigationMenu[];
 }

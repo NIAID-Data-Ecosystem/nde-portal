@@ -7,7 +7,6 @@ import {
   Stack,
   Icon,
   useDisclosure,
-  useMediaQuery,
 } from '@chakra-ui/react';
 import { FaBars, FaXmark } from 'react-icons/fa6';
 import dynamic from 'next/dynamic';
@@ -21,25 +20,26 @@ import { SiteConfig } from '../page-container/types';
 const MobileSubMenu = dynamic(
   () => import('./components/menu-mobile').then(mod => mod.MobileSubMenu),
   {
-    loading: () => <p></p>,
+    loading: () => null,
   },
 );
 
 export const Navigation: React.FC<FlexProps> = props => {
   const { isOpen, onToggle } = useDisclosure();
-  const [isLargerThanMd] = useMediaQuery('(min-width: 54rem)', {
-    ssr: true,
-    fallback: false,
-  });
   const router = useRouter();
+  const appEnvironment = process.env.NEXT_PUBLIC_APP_ENV || '';
 
-  // Build navigation from config
-  const navigationData = buildNavigationFromConfig(SITE_CONFIG as SiteConfig);
-
-  const navigationFilteredByEnvironment = filterRoutesByEnv(
-    navigationData,
-    process.env.NEXT_PUBLIC_APP_ENV || '',
+  const navigation = React.useMemo(
+    () =>
+      filterRoutesByEnv(
+        buildNavigationFromConfig(SITE_CONFIG as SiteConfig),
+        appEnvironment,
+      ),
+    [appEnvironment],
   );
+
+  const isRouteActive = (href?: string) =>
+    Boolean(href && (router.asPath === href || router.pathname === href));
 
   return (
     <Box
@@ -67,60 +67,46 @@ export const Navigation: React.FC<FlexProps> = props => {
           <Logo href='/' />
         </Flex>
         {/* For desktop */}
-        {isLargerThanMd && (
-          <Stack
-            direction='row'
-            spacing={{ base: 0 }}
-            display={{ base: 'none', md: 'flex' }}
-            ml={{ base: 6, lg: 10 }}
-            flex={1}
-            justifyContent='flex-end'
-            sx={{ '>a,>button': { px: 4, py: 2 } }}
-          >
-            {navigationFilteredByEnvironment?.map(navItem => (
-              <DesktopNavItem
-                key={navItem.label}
-                isActive={
-                  router.asPath === navItem.href ||
-                  router.pathname === navItem.href
-                }
-                {...navItem}
-              />
-            ))}
-          </Stack>
-        )}
+        <Stack
+          direction='row'
+          spacing={{ base: 0 }}
+          display={{ base: 'none', md: 'flex' }}
+          ml={{ base: 6, lg: 10 }}
+          flex={1}
+          justifyContent='flex-end'
+          sx={{ '>a,>button': { px: 4, py: 2 } }}
+        >
+          {navigation.map(navItem => (
+            <DesktopNavItem
+              key={navItem.label}
+              isActive={isRouteActive(navItem.href)}
+              {...navItem}
+            />
+          ))}
+        </Stack>
 
         {/* For mobile / tablet */}
-        {navigationFilteredByEnvironment && (
-          <IconButton
-            display={isLargerThanMd ? 'none' : 'flex'}
-            aria-label={
-              isOpen ? 'Toggle Navigation closed.' : 'Toggle Navigation open.'
-            }
-            icon={
-              isOpen ? (
-                <Icon as={FaXmark} w={5} h={5} />
-              ) : (
-                <Icon as={FaBars} w={4} h={4} />
-              )
-            }
-            onClick={onToggle}
-            colorScheme='niaid'
-            color='#fff'
-            _hover={{ bg: 'whiteAlpha.500' }}
-            variant='ghost'
-            size='md'
-          />
-        )}
+        <IconButton
+          display={{ base: 'flex', md: 'none' }}
+          aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          icon={
+            isOpen ? (
+              <Icon as={FaXmark} w={5} h={5} />
+            ) : (
+              <Icon as={FaBars} w={4} h={4} />
+            )
+          }
+          onClick={onToggle}
+          colorScheme='niaid'
+          color='white'
+          _hover={{ bg: 'whiteAlpha.500' }}
+          variant='ghost'
+          size='md'
+        />
       </Flex>
 
       {/* Popout navigation in mobile mode */}
-      {isOpen && (
-        <MobileSubMenu
-          isOpen={isOpen}
-          navigation={navigationFilteredByEnvironment}
-        />
-      )}
+      {isOpen && <MobileSubMenu isOpen={isOpen} navigation={navigation} />}
     </Box>
   );
 };

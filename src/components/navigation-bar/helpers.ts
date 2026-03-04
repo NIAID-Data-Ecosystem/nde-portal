@@ -1,48 +1,46 @@
 import { SiteConfig } from '../page-container/types';
 import { TransformedNavigationMenu } from './types';
 
+// Helper function to filter navigation routes display based on the current environment (development, staging, production).
 export function filterRoutesByEnv(
   navigation: TransformedNavigationMenu[],
   environment: string,
 ): TransformedNavigationMenu[] {
-  // If no environment is provided, return the original navigation
   if (!environment) {
     return navigation;
   }
-  function filter(
+
+  const filter = (
     routes: TransformedNavigationMenu[],
-  ): TransformedNavigationMenu[] {
+  ): TransformedNavigationMenu[] => {
     return routes
       .filter(route => {
-        // Remove routes with an env array that doesn't include the current env
         if (route.env && !route.env.includes(environment)) {
           return false;
         }
         return true;
       })
       .map(route => {
-        // If nested routes exist, filter them too
         if (route.routes) {
-          const filteredNestedRoutes = filter(route.routes);
-          return { ...route, routes: filteredNestedRoutes };
+          return { ...route, routes: filter(route.routes) };
         }
         return route;
       });
-  }
+  };
 
-  return navigation && filter(navigation);
+  return filter(navigation);
 }
-// Helper function to build navigation structure from config
-export const buildNavigationFromConfig = (config: SiteConfig) => {
+
+export const buildNavigationFromConfig = (
+  config: SiteConfig,
+): TransformedNavigationMenu[] => {
   const navigationRoutes = config.navigation.primary.reduce(
     (navRoutes, item) => {
       if (item.routes) {
-        // This is a parent with children
         navRoutes.push({
           label: item.label,
           routes: item.routes.map(route => {
             const pageConfig = config.pages[route.page];
-            // For external links, use the href from nav config, otherwise use the page path
             const itemHref = pageConfig?.nav?.href || route.page;
 
             return {
@@ -53,15 +51,15 @@ export const buildNavigationFromConfig = (config: SiteConfig) => {
           }),
         });
       } else if (item.page) {
-        // This is a direct route
         const pageData = {
           ...config.pages[item.page]?.nav,
           label: item.label,
           href: item.page,
         } as TransformedNavigationMenu;
 
-        pageData && navRoutes.push(pageData);
+        navRoutes.push(pageData);
       }
+
       return navRoutes;
     },
     [] as TransformedNavigationMenu[],

@@ -16,7 +16,17 @@ import {
 } from 'react-icons/fa6';
 import { TransformedNavigationMenu } from '../types';
 
-// Mobile Navigation link styles
+const navLinkHoverStyles = {
+  bg: 'niaid.50',
+  color: 'niaid.600',
+  '.label': { color: 'niaid.500' },
+  '.icon': { opacity: 1, transform: 'translateX(0)' },
+} as const;
+
+const rightIconStyles = {
+  '> *': { color: 'niaid.700' },
+} as const;
+
 export const MobileNavItem = ({
   label,
   routes,
@@ -24,8 +34,14 @@ export const MobileNavItem = ({
   isExternal,
 }: TransformedNavigationMenu) => {
   const { isOpen, onToggle } = useDisclosure();
+
   return (
-    <Stack w='100%' spacing={2} onClick={routes && onToggle} cursor='pointer'>
+    <Stack
+      w='100%'
+      spacing={2}
+      onClick={routes ? onToggle : undefined}
+      cursor={routes ? 'pointer' : 'default'}
+    >
       {href ? (
         <Link
           px={4}
@@ -35,12 +51,7 @@ export const MobileNavItem = ({
           color='niaid.800'
           variant='unstyled'
           rounded='md'
-          _hover={{
-            bg: 'niaid.50',
-            color: 'niaid.600',
-            '.label': { color: 'niaid.500' },
-            '.icon': { opacity: '100%', transform: 'translateX(0)' },
-          }}
+          _hover={navLinkHoverStyles}
           _visited={{ color: 'niaid.800' }}
           target={isExternal ? '_blank' : '_self'}
           rel={isExternal ? 'noopener noreferrer' : undefined}
@@ -64,10 +75,9 @@ export const MobileNavItem = ({
               className='icon'
               ml='10px'
               transform='translateX(-10px)'
+              opacity={0}
               transition='all .3s ease'
-              sx={{
-                '> *': { color: 'niaid.700' },
-              }}
+              sx={rightIconStyles}
               w={3}
               h={3}
             />
@@ -95,9 +105,7 @@ export const MobileNavItem = ({
           </Flex>
           {routes && (
             <Icon
-              sx={{
-                '> *': { color: 'niaid.700' },
-              }}
+              sx={rightIconStyles}
               as={FaAngleDown}
               transition={'all .25s ease-in-out'}
               transform={
@@ -112,7 +120,7 @@ export const MobileNavItem = ({
         </Flex>
       )}
 
-      <Box>
+      {routes?.length ? (
         <Collapse in={isOpen} animateOpacity>
           <Stack
             mt={0}
@@ -123,13 +131,12 @@ export const MobileNavItem = ({
             borderColor='gray.200'
             align='start'
           >
-            {routes &&
-              routes.map(route => {
-                return <MobileNavItem key={route.href} {...route} />;
-              })}
+            {routes.map(route => (
+              <MobileNavItem key={`${route.href ?? route.label}`} {...route} />
+            ))}
           </Stack>
         </Collapse>
-      </Box>
+      ) : null}
     </Stack>
   );
 };

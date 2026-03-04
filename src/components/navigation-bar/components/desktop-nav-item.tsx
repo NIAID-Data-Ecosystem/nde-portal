@@ -15,7 +15,17 @@ interface DesktopNavItemProps extends TransformedNavigationMenu {
   isActive?: boolean;
 }
 
-// Desktop Navigation link styles
+const baseLinkStyles = {
+  color: 'white',
+  fontSize: 'md',
+  fontWeight: 500,
+  _visited: { color: 'white', _hover: { color: 'white' } },
+  _hover: {
+    bg: 'whiteAlpha.300',
+    color: 'white',
+  },
+} as const;
+
 export const DesktopNavItem = ({
   label,
   routes,
@@ -27,14 +37,7 @@ export const DesktopNavItem = ({
     return (
       <Link
         href={href ?? '#'}
-        color='white'
-        fontSize='md'
-        fontWeight={500}
-        _visited={{ color: 'white', _hover: { color: 'white' } }}
-        _hover={{
-          bg: 'whiteAlpha.300',
-          color: 'white',
-        }}
+        {...baseLinkStyles}
         variant='unstyled'
         cursor='pointer'
         whiteSpace='nowrap'
@@ -46,6 +49,7 @@ export const DesktopNavItem = ({
         alignItems='center'
         textAlign='center'
         target={isExternal ? '_blank' : '_self'}
+        rel={isExternal ? 'noopener noreferrer' : undefined}
       >
         {label}
         {isActive && <Box bg='white' width={8} height={0.5} />}
@@ -55,48 +59,46 @@ export const DesktopNavItem = ({
 
   const linkProps = {
     href,
+    target: isExternal ? '_blank' : '_self',
+    rel: isExternal ? 'noopener noreferrer' : undefined,
     _visited: { color: 'white' },
-
     variant: 'unstyled',
   };
 
   return (
-    <>
-      <Popover
-        trigger='click'
-        placement='bottom-start'
-        autoFocus
-        closeOnEsc
-        isLazy
-      >
-        {({ isOpen }) => (
-          <>
-            <PopoverTrigger>
-              <Button
-                as={href ? 'a' : 'button'}
-                __css={{ padding: 0 }}
-                display='flex'
-                fontSize='md'
-                fontWeight={500}
-                color='white'
-                cursor='pointer'
-                alignItems='center'
-                justifyContent='center'
-                h='100%'
-                _hover={{
-                  bg: 'whiteAlpha.300',
-                }}
-                {...(href ? linkProps : {})}
-              >
-                {label}
-
-                {routes && <Icon as={FaCaretDown} ml={1} w={4} h={4} />}
-              </Button>
-            </PopoverTrigger>
-            {isOpen && <DesktopSubNav routes={routes} />}
-          </>
-        )}
-      </Popover>
-    </>
+    <Popover
+      trigger='click'
+      placement='bottom-start'
+      autoFocus
+      closeOnEsc
+      isLazy
+    >
+      {({ isOpen }) => (
+        <>
+          <PopoverTrigger>
+            <Button
+              as={href ? 'a' : 'button'}
+              __css={{ padding: 0 }}
+              display='flex'
+              fontSize='md'
+              fontWeight={500}
+              color='white'
+              cursor='pointer'
+              alignItems='center'
+              justifyContent='center'
+              h='100%'
+              _hover={{
+                bg: 'whiteAlpha.300',
+              }}
+              {...(href ? linkProps : {})}
+            >
+              {label}
+              <Icon as={FaCaretDown} ml={1} w={4} h={4} />
+            </Button>
+          </PopoverTrigger>
+          {isOpen && <DesktopSubNav routes={routes} />}
+        </>
+      )}
+    </Popover>
   );
 };
