@@ -35,7 +35,6 @@ function App({ Component, pageProps }: AppProps) {
       <QueryClientProvider client={queryClient}>
         <ChakraProvider theme={theme}>
           <AuthProvider>
-            {/* @ts-ignore */}
             <Component {...pageProps} />
           </AuthProvider>
         </ChakraProvider>
