@@ -14,6 +14,7 @@ import React, {
 } from 'react';
 import { AuthState, AuthContextValue, User } from 'src/utils/auth/types';
 import { getAuthConfig } from 'src/utils/auth/config';
+import { devMockAuth } from './mock';
 
 const initialState: AuthState = {
   user: null,
@@ -33,6 +34,11 @@ interface AuthProviderProps {
  * The API uses session cookies set after OAuth login
  */
 async function fetchUserInfo(endpoint: string): Promise<User | null> {
+  const mockUser = await devMockAuth.resolveUserInfo();
+  if (mockUser) {
+    return mockUser;
+  }
+
   try {
     const response = await fetch(endpoint, {
       credentials: 'include',
@@ -134,6 +140,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
         return;
       }
 
+      // Mock auth only when provider is explicitly selected
+      const mockState = devMockAuth.loginState(providerId);
+      if (mockState) {
+        setState(mockState);
+        return;
+      }
+
       const returnTo = sessionStorage.getItem('auth_return_to') || '/';
       window.location.href = config.getLoginUrl(providerId, returnTo);
     },
@@ -144,6 +157,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
    * Redirect to API's logout endpoint
    */
   const logout = useCallback(() => {
+    const mockState = devMockAuth.logoutState();
+    if (mockState) {
+      setState(mockState);
+      return;
+    }
+
     setState({
       user: null,
       isAuthenticated: false,

@@ -35,7 +35,7 @@ const providerLabelOverrides: Record<string, string> = {
   orcid: 'ORCID',
 };
 
-const getProviderLabel = (providerId: string) =>
+export const getProviderLabel = (providerId: string) =>
   providerLabelOverrides[providerId] || toProviderLabel(providerId);
 
 const normalizeNextPath = (nextPath: string) => {
