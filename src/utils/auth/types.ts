@@ -1,7 +1,12 @@
 /**
  * Auth types for the NDE Portal
- * OAuth flow is managed by the API backend (GitHub OAuth → API session cookie)
+ * OAuth flow is managed by the API backend (provider OAuth -> API session cookie)
  */
+
+export interface AuthLoginProvider {
+  id: string;
+  label: string;
+}
 
 export interface User {
   username: string;
@@ -20,7 +25,8 @@ export interface AuthState {
 }
 
 export interface AuthContextValue extends AuthState {
-  login: () => void;
+  loginProviders: AuthLoginProvider[];
+  login: (providerId?: string) => void;
   logout: () => void;
   checkAuth: () => Promise<void>;
 }

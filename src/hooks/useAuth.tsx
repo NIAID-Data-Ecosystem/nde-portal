@@ -30,7 +30,7 @@ interface AuthProviderProps {
 
 /**
  * Fetch user info from the API
- * The API uses session cookies set after GitHub OAuth
+ * The API uses session cookies set after OAuth login
  */
 async function fetchUserInfo(endpoint: string): Promise<User | null> {
   try {
@@ -111,15 +111,34 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [checkAuth]);
 
   /**
-   * Redirect to API's GitHub login endpoint
+   * Login entrypoint:
+   * - no provider: redirect to local login page
+   * - provider selected: redirect to API provider login endpoint
    */
-  const login = useCallback(() => {
-    // Store current path to redirect back after login (optional)
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('auth_return_to', window.location.pathname);
-    }
-    window.location.href = config.loginUrl;
-  }, [config.loginUrl]);
+  const login = useCallback(
+    (providerId?: string) => {
+      if (typeof window === 'undefined') return;
+
+      const currentPath =
+        window.location.pathname +
+        window.location.search +
+        window.location.hash;
+
+      // Preserve where the user started login from.
+      if (window.location.pathname !== '/login') {
+        sessionStorage.setItem('auth_return_to', currentPath || '/');
+      }
+
+      if (!providerId) {
+        window.location.href = '/login';
+        return;
+      }
+
+      const returnTo = sessionStorage.getItem('auth_return_to') || '/';
+      window.location.href = config.getLoginUrl(providerId, returnTo);
+    },
+    [config],
+  );
 
   /**
    * Redirect to API's logout endpoint
@@ -137,11 +156,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const contextValue: AuthContextValue = useMemo(
     () => ({
       ...state,
+      loginProviders: config.loginProviders,
       login,
       logout,
       checkAuth,
     }),
-    [state, login, logout, checkAuth],
+    [state, config.loginProviders, login, logout, checkAuth],
   );
 
   return (

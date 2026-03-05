@@ -13,6 +13,7 @@ import dynamic from 'next/dynamic';
 import SITE_CONFIG from 'configs/site.config.json';
 import { Logo } from 'src/components/logos';
 import { DesktopNavItem } from './components/desktop-nav-item';
+import { DesktopAuthAction } from './components/nav-auth-action';
 import { useRouter } from 'next/router';
 import { buildNavigationFromConfig, filterRoutesByEnv } from './helpers';
 import { SiteConfig } from '../page-container/types';
@@ -84,6 +85,15 @@ export const Navigation: React.FC<FlexProps> = props => {
             />
           ))}
         </Stack>
+
+        <Flex
+          display={{ base: 'none', md: 'flex' }}
+          alignItems='center'
+          ml={4}
+          flexShrink={0}
+        >
+          <DesktopAuthAction />
+        </Flex>
 
         {/* For mobile / tablet */}
         <IconButton

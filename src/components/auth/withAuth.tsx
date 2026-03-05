@@ -102,7 +102,7 @@ export function withAuth<P extends object>(
               login();
             }}
           >
-            Log In with ORCID
+            Log In
           </Box>
         </Box>
       );

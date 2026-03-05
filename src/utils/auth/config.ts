@@ -1,18 +1,50 @@
 /**
  * OAuth configuration for NDE Portal
- * The API handles OAuth flow with GitHub - we just redirect to the API's login endpoint
+ * The API handles OAuth flow - we just redirect to provider-specific login endpoints
  */
+
+export interface LoginProviderConfig {
+  id: string;
+  label: string;
+}
 
 export interface AuthConfig {
   /** API base URL (without /v1) */
   apiBaseUrl: string;
-  /** Login endpoint - redirects to GitHub OAuth */
+  /** Default login endpoint (first configured provider) */
   loginUrl: string;
+  /** Available login providers for login page UI */
+  loginProviders: LoginProviderConfig[];
+  /** Build login URL for a specific provider */
+  getLoginUrl: (providerId: string, nextPath?: string) => string;
   /** Logout endpoint */
   logoutUrl: string;
   /** User info endpoint */
   userInfoEndpoint: string;
 }
+
+const toProviderLabel = (providerId: string) =>
+  providerId
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+
+const providerLabelOverrides: Record<string, string> = {
+  github: 'GitHub',
+  orcid: 'ORCID',
+};
+
+const getProviderLabel = (providerId: string) =>
+  providerLabelOverrides[providerId] || toProviderLabel(providerId);
+
+const normalizeNextPath = (nextPath: string) => {
+  if (!nextPath) return '/';
+  if (nextPath.startsWith('http://') || nextPath.startsWith('https://')) {
+    return '/';
+  }
+  return nextPath.startsWith('/') ? nextPath : `/${nextPath}`;
+};
 
 /**
  * Get auth configuration
@@ -33,11 +65,33 @@ export function getAuthConfig(): AuthConfig {
       : process.env.NEXT_PUBLIC_BASE_URL ||
         'https://data-staging.niaid.nih.gov';
 
+  const configuredProvidersRaw =
+    process.env.NEXT_PUBLIC_AUTH_PROVIDERS || 'github,orcid';
+
+  const configuredProviders = configuredProvidersRaw
+    .split(',')
+    .map(provider => provider.trim().toLowerCase())
+    .filter(Boolean);
+
+  const loginProviders = configuredProviders.map(providerId => ({
+    id: providerId,
+    label: getProviderLabel(providerId),
+  }));
+
+  const fallbackProvider = loginProviders[0]?.id || 'github';
+
+  const getLoginUrl = (providerId: string, nextPath = '/') => {
+    const nextUrl = `${frontendUrl}${normalizeNextPath(nextPath)}`;
+    return `${apiBaseUrl}/login/${providerId}?next=${encodeURIComponent(
+      nextUrl,
+    )}`;
+  };
+
   return {
     apiBaseUrl,
-    loginUrl: `${apiBaseUrl}/login/github?next=${encodeURIComponent(
-      frontendUrl + '/',
-    )}`,
+    loginUrl: getLoginUrl(fallbackProvider),
+    loginProviders,
+    getLoginUrl,
     logoutUrl: `${apiBaseUrl}/logout?next=${encodeURIComponent(
       frontendUrl + '/',
     )}`,

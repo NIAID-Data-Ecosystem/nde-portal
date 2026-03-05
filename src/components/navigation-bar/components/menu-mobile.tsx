@@ -15,6 +15,7 @@ import {
   FaArrowUpRightFromSquare,
 } from 'react-icons/fa6';
 import { TransformedNavigationMenu } from '../types';
+import { MobileAuthAction } from './nav-auth-action';
 
 const navLinkHoverStyles = {
   bg: 'niaid.50',
@@ -156,6 +157,7 @@ export const MobileSubMenu = ({
             navigation.map(navItem => (
               <MobileNavItem key={navItem.label} {...navItem} />
             ))}
+          <MobileAuthAction />
         </Stack>
       </Collapse>
     </Box>
