@@ -32,16 +32,16 @@ function LoginPage() {
         p={{ base: 6, md: 8 }}
       >
         <Heading as='h1' size='lg' mb={3}>
-          Log in
+          Log in to your account
         </Heading>
-        <Text color='gray.600' mb={6}>
+        <Text color='gray.700' mb={6}>
           Choose a provider to continue.
         </Text>
 
         {isLoading ? (
           <Stack align='center' py={4}>
             <Spinner color='niaid.500' />
-            <Text color='gray.600'>Checking authentication status...</Text>
+            <Text color='gray.700'>Checking authentication status...</Text>
           </Stack>
         ) : (
           <Stack spacing={3}>
@@ -49,7 +49,7 @@ function LoginPage() {
               <Button
                 key={provider.id}
                 w='100%'
-                colorScheme='niaid'
+                colorScheme='gray'
                 variant='outline'
                 onClick={() => login(provider.id)}
               >
