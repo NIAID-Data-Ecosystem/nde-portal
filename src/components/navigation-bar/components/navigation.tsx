@@ -47,13 +47,10 @@ const Bar: React.FC<FlexProps> = ({ children }) => {
 };
 
 // Used to toggle the mobile menu
-const Toggle = ({
-  isOpen,
-  onToggle,
-}: {
+const Toggle: React.FC<{
   isOpen: boolean;
   onToggle: () => void;
-}) => {
+}> = ({ isOpen, onToggle }) => {
   return (
     <IconButton
       display={{ base: 'flex', md: 'none' }}

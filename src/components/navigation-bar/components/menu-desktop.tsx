@@ -13,9 +13,49 @@ import {
 import { FaAngleRight, FaArrowUpRightFromSquare } from 'react-icons/fa6';
 import { TransformedNavigationMenu } from '../types';
 
-const submenuIconStyles = {
-  '> *': { color: 'niaid.700' },
-} as const;
+const DesktopSubNavLabel = ({
+  label,
+  isExternal,
+}: {
+  label: string;
+  isExternal?: boolean;
+}) => {
+  return (
+    <Flex alignItems='center' gap={2}>
+      <Text
+        className='label'
+        transition='all .3s ease'
+        _groupHover={{ color: 'niaid.700' }}
+        fontWeight={600}
+      >
+        {label}
+      </Text>
+      {isExternal && (
+        <Icon as={FaArrowUpRightFromSquare} w={3} h={3} color='niaid.700' />
+      )}
+    </Flex>
+  );
+};
+
+const DesktopSubNavRightIcon = () => {
+  return (
+    <Flex
+      className='icon'
+      ml='10px'
+      transition='all .3s ease'
+      transform='translateX(-10px)'
+      justify='flex-end'
+      align='center'
+    >
+      <Icon
+        sx={{ '> *': { color: 'niaid.700' } }}
+        w={3}
+        h={3}
+        as={FaAngleRight}
+      />
+    </Flex>
+  );
+};
 
 const DesktopSubNavItem = ({
   label,
@@ -43,41 +83,14 @@ const DesktopSubNavItem = ({
     >
       <Flex justifyContent='space-between'>
         <Box>
-          <Flex alignItems='center' gap={2}>
-            <Text
-              className='label'
-              transition='all .3s ease'
-              _groupHover={{ color: 'niaid.700' }}
-              fontWeight={600}
-            >
-              {label}
-            </Text>
-            {isExternal && (
-              <Icon
-                as={FaArrowUpRightFromSquare}
-                w={3}
-                h={3}
-                color='niaid.700'
-              />
-            )}
-          </Flex>
+          <DesktopSubNavLabel label={label} isExternal={isExternal} />
           {description && (
             <Text fontSize='sm' color='text.body' lineHeight='short' pr={1}>
               {description}
             </Text>
           )}
         </Box>
-        <Flex
-          className='icon'
-          ml='10px'
-          transition='all .3s ease'
-          transform='translateX(-10px)'
-          opacity={0}
-          justify='flex-end'
-          align='center'
-        >
-          <Icon sx={submenuIconStyles} w={3} h={3} as={FaAngleRight} />
-        </Flex>
+        <DesktopSubNavRightIcon />
       </Flex>
     </Link>
   );

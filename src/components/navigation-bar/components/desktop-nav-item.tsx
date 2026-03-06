@@ -15,55 +15,64 @@ interface DesktopNavItemProps extends TransformedNavigationMenu {
   isActive?: boolean;
 }
 
-const baseLinkStyles = {
-  color: 'white',
-  fontSize: 'md',
-  fontWeight: 500,
-  _visited: { color: 'white', _hover: { color: 'white' } },
-  _hover: {
-    bg: 'whiteAlpha.300',
-    color: 'white',
-  },
-} as const;
+const DesktopSimpleNavItem = ({
+  label,
+  href,
+  isExternal,
+  isActive,
+}: {
+  label: string;
+  href?: string;
+  isExternal?: boolean;
+  isActive?: boolean;
+}) => {
+  return (
+    <Link
+      href={href ?? '#'}
+      variant='unstyled'
+      color='white'
+      fontSize='md'
+      fontWeight={500}
+      cursor='pointer'
+      whiteSpace='nowrap'
+      w='auto'
+      h='100%'
+      display='flex'
+      flexDirection='column'
+      justifyContent='center'
+      alignItems='center'
+      textAlign='center'
+      _visited={{ color: 'white', _hover: { color: 'white' } }}
+      _hover={{ bg: 'whiteAlpha.300', color: 'white' }}
+      target={isExternal ? '_blank' : '_self'}
+      rel={isExternal ? 'noopener noreferrer' : undefined}
+    >
+      {label}
+      {isActive && <Box bg='white' width={8} height={0.5} />}
+    </Link>
+  );
+};
 
-export const DesktopNavItem = ({
+const DesktopPopoverNavItem = ({
   label,
   routes,
   href,
   isExternal,
-  isActive,
-}: DesktopNavItemProps) => {
-  if (!routes) {
-    return (
-      <Link
-        href={href ?? '#'}
-        {...baseLinkStyles}
-        variant='unstyled'
-        cursor='pointer'
-        whiteSpace='nowrap'
-        w='auto'
-        h='100%'
-        display='flex'
-        flexDirection='column'
-        justifyContent='center'
-        alignItems='center'
-        textAlign='center'
-        target={isExternal ? '_blank' : '_self'}
-        rel={isExternal ? 'noopener noreferrer' : undefined}
-      >
-        {label}
-        {isActive && <Box bg='white' width={8} height={0.5} />}
-      </Link>
-    );
-  }
-
-  const linkProps = {
-    href,
-    target: isExternal ? '_blank' : '_self',
-    rel: isExternal ? 'noopener noreferrer' : undefined,
-    _visited: { color: 'white' },
-    variant: 'unstyled',
-  };
+}: {
+  label: string;
+  routes: TransformedNavigationMenu[];
+  href?: string;
+  isExternal?: boolean;
+}) => {
+  const linkProps = href
+    ? {
+        href,
+        target: isExternal ? '_blank' : '_self',
+        rel: isExternal ? 'noopener noreferrer' : undefined,
+        _visited: { color: 'white' },
+        variant: 'unstyled' as const,
+      }
+    : {};
 
   return (
     <Popover
@@ -87,10 +96,8 @@ export const DesktopNavItem = ({
               alignItems='center'
               justifyContent='center'
               h='100%'
-              _hover={{
-                bg: 'whiteAlpha.300',
-              }}
-              {...(href ? linkProps : {})}
+              _hover={{ bg: 'whiteAlpha.300' }}
+              {...linkProps}
             >
               {label}
               <Icon as={FaCaretDown} ml={1} w={4} h={4} />
@@ -100,5 +107,33 @@ export const DesktopNavItem = ({
         </>
       )}
     </Popover>
+  );
+};
+
+export const DesktopNavItem = ({
+  label,
+  routes,
+  href,
+  isExternal,
+  isActive,
+}: DesktopNavItemProps) => {
+  if (!routes) {
+    return (
+      <DesktopSimpleNavItem
+        label={label}
+        href={href}
+        isExternal={isExternal}
+        isActive={isActive}
+      />
+    );
+  }
+
+  return (
+    <DesktopPopoverNavItem
+      label={label}
+      routes={routes}
+      href={href}
+      isExternal={isExternal}
+    />
   );
 };
