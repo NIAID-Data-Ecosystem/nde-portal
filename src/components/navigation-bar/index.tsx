@@ -1,30 +1,11 @@
 import React from 'react';
-import {
-  Box,
-  Flex,
-  IconButton,
-  FlexProps,
-  Stack,
-  Icon,
-  useDisclosure,
-} from '@chakra-ui/react';
-import { FaBars, FaXmark } from 'react-icons/fa6';
-import dynamic from 'next/dynamic';
+import { FlexProps, Stack, useDisclosure } from '@chakra-ui/react';
 import SITE_CONFIG from 'configs/site.config.json';
-import { Logo } from 'src/components/logos';
-import { DesktopNavItem } from './components/desktop-nav-item';
 import { DesktopAuthAction } from './components/nav-auth-action';
 import { useRouter } from 'next/router';
-import { buildNavigationFromConfig, filterRoutesByEnv } from './helpers';
 import { SiteConfig } from '../page-container/types';
-import { Nav } from './components/navigation';
-
-const MobileSubMenu = dynamic(
-  () => import('./components/menu-mobile').then(mod => mod.MobileSubMenu),
-  {
-    loading: () => null,
-  },
-);
+import { Nav } from './components/index';
+import { buildNavigationFromConfig, filterRoutesByEnv } from './utils';
 
 export const Navigation: React.FC<FlexProps> = props => {
   const { isOpen, onToggle } = useDisclosure();
@@ -57,29 +38,21 @@ export const Navigation: React.FC<FlexProps> = props => {
           sx={{ '>a,>button': { px: 4, py: 2 } }}
         >
           {navigation.map(navItem => (
-            <DesktopNavItem
+            <Nav.DesktopNavItem
               key={navItem.label}
               isActive={isRouteActive(navItem.href)}
               {...navItem}
             />
           ))}
-        </Stack>
-
-        <Flex
-          display={{ base: 'none', md: 'flex' }}
-          alignItems='center'
-          ml={4}
-          flexShrink={0}
-        >
           <DesktopAuthAction />
-        </Flex>
+        </Stack>
 
         {/* For mobile / tablet */}
         <Nav.Toggle isOpen={isOpen} onToggle={onToggle} />
       </Nav.Bar>
 
       {/* Popout navigation in mobile mode */}
-      {isOpen && <MobileSubMenu isOpen={isOpen} navigation={navigation} />}
+      {isOpen && <Nav.MobileMenu isOpen={isOpen} routes={navigation} />}
     </Nav.Wrapper>
   );
 };

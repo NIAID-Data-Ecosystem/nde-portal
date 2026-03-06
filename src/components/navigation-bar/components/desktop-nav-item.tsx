@@ -7,15 +7,19 @@ import {
   Link,
   Popover,
   PopoverTrigger,
+  PopoverArrow,
+  PopoverContent,
+  PopoverBody,
+  Stack,
 } from '@chakra-ui/react';
-import { DesktopSubNav } from './menu-desktop';
 import { TransformedNavigationMenu } from '../types';
+import { NavMenuItem } from './nav-menu-item';
 
 interface DesktopNavItemProps extends TransformedNavigationMenu {
   isActive?: boolean;
 }
 
-const DesktopSimpleNavItem = ({
+const NavSimpleButton = ({
   label,
   href,
   isExternal,
@@ -53,7 +57,7 @@ const DesktopSimpleNavItem = ({
   );
 };
 
-const DesktopPopoverNavItem = ({
+const NavMenuButton = ({
   label,
   routes,
   href,
@@ -96,6 +100,7 @@ const DesktopPopoverNavItem = ({
               alignItems='center'
               justifyContent='center'
               h='100%'
+              whiteSpace='nowrap'
               _hover={{ bg: 'whiteAlpha.300' }}
               {...linkProps}
             >
@@ -103,7 +108,7 @@ const DesktopPopoverNavItem = ({
               <Icon as={FaCaretDown} ml={1} w={4} h={4} />
             </Button>
           </PopoverTrigger>
-          {isOpen && <DesktopSubNav routes={routes} />}
+          {isOpen && <DesktopNavMenu routes={routes} />}
         </>
       )}
     </Popover>
@@ -119,7 +124,7 @@ export const DesktopNavItem = ({
 }: DesktopNavItemProps) => {
   if (!routes) {
     return (
-      <DesktopSimpleNavItem
+      <NavSimpleButton
         label={label}
         href={href}
         isExternal={isExternal}
@@ -129,11 +134,39 @@ export const DesktopNavItem = ({
   }
 
   return (
-    <DesktopPopoverNavItem
+    <NavMenuButton
       label={label}
       routes={routes}
       href={href}
       isExternal={isExternal}
     />
+  );
+};
+
+export const DesktopNavMenu = ({
+  routes,
+}: {
+  routes: TransformedNavigationMenu[];
+}): JSX.Element | null => {
+  if (!routes || routes.length === 0) return null;
+
+  return (
+    <PopoverContent
+      border={0}
+      boxShadow='xl'
+      bg='white'
+      py={2}
+      rounded='xl'
+      minW='sm'
+    >
+      <PopoverArrow />
+      <PopoverBody>
+        <Stack>
+          {routes.map(route => (
+            <NavMenuItem key={`${route.href ?? route.label}`} {...route} />
+          ))}
+        </Stack>
+      </PopoverBody>
+    </PopoverContent>
   );
 };

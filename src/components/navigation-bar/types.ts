@@ -3,6 +3,8 @@ export interface NavigationItem {
   description?: string;
   isExternal?: boolean;
   href?: string;
+  onClick?: () => void;
+  isOpen?: boolean;
 }
 
 export interface NavigationRoute {

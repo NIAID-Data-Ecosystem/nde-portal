@@ -32,7 +32,6 @@ const Bar: React.FC<FlexProps> = ({ children }) => {
       bg='niaid.500'
       color='white'
       minH='60px'
-      // h={['105px', '77px', '89px']}
       pl={6}
       pr={4}
       borderBottom={1}
@@ -72,7 +71,7 @@ const Toggle: React.FC<{
   );
 };
 
-export const Nav = {
+export const Layout = {
   Wrapper,
   Bar,
   Toggle,
