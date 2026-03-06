@@ -17,6 +17,7 @@ import { DesktopAuthAction } from './components/nav-auth-action';
 import { useRouter } from 'next/router';
 import { buildNavigationFromConfig, filterRoutesByEnv } from './helpers';
 import { SiteConfig } from '../page-container/types';
+import { Nav } from './components/navigation';
 
 const MobileSubMenu = dynamic(
   () => import('./components/menu-mobile').then(mod => mod.MobileSubMenu),
@@ -43,30 +44,8 @@ export const Navigation: React.FC<FlexProps> = props => {
     Boolean(href && (router.asPath === href || router.pathname === href));
 
   return (
-    <Box
-      id='nde-navigation'
-      as='nav'
-      w='100%'
-      minW={300}
-      zIndex='modal'
-      aria-label='Main navigation'
-      {...props}
-    >
-      <Flex
-        bg='niaid.500'
-        color='white'
-        minH='60px'
-        // h={['105px', '77px', '89px']}
-        pl={6}
-        pr={4}
-        borderBottom={1}
-        borderStyle='solid'
-        borderColor='gray.200'
-        alignItems={{ base: 'center', md: 'center' }}
-      >
-        <Flex alignItems='center' py={4} flex={{ base: 1, md: 'auto' }}>
-          <Logo href='/' />
-        </Flex>
+    <Nav.Wrapper {...props}>
+      <Nav.Bar>
         {/* For desktop */}
         <Stack
           direction='row'
@@ -96,27 +75,11 @@ export const Navigation: React.FC<FlexProps> = props => {
         </Flex>
 
         {/* For mobile / tablet */}
-        <IconButton
-          display={{ base: 'flex', md: 'none' }}
-          aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
-          icon={
-            isOpen ? (
-              <Icon as={FaXmark} w={5} h={5} />
-            ) : (
-              <Icon as={FaBars} w={4} h={4} />
-            )
-          }
-          onClick={onToggle}
-          colorScheme='niaid'
-          color='white'
-          _hover={{ bg: 'whiteAlpha.500' }}
-          variant='ghost'
-          size='md'
-        />
-      </Flex>
+        <Nav.Toggle isOpen={isOpen} onToggle={onToggle} />
+      </Nav.Bar>
 
       {/* Popout navigation in mobile mode */}
       {isOpen && <MobileSubMenu isOpen={isOpen} navigation={navigation} />}
-    </Box>
+    </Nav.Wrapper>
   );
 };
