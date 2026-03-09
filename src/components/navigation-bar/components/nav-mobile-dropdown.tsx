@@ -12,7 +12,12 @@ export const MobileNavDropdown = ({
   routes: TransformedNavigationDropdown[];
 }) => {
   return (
-    <Box borderRadius='semi' boxShadow='base' overflow='hidden'>
+    <Box
+      borderRadius='semi'
+      boxShadow='base'
+      overflow='hidden'
+      display={{ base: 'block', md: 'none' }}
+    >
       <Collapse in={isOpen} animateOpacity>
         <Stack bg='white' p={2} alignItems='end'>
           {routes &&
