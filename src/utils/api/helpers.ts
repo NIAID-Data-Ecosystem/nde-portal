@@ -157,10 +157,25 @@ export const formatDate = (date?: string | Date) => {
   if (!date) {
     return null;
   }
-  // @ts-ignore
-  return new Date(date.replace(/-/g, '/').replace(/T.+/, ''))
-    .toISOString()
-    .split('T')[0];
+
+  if (date instanceof Date) {
+    return date.toISOString().split('T')[0];
+  }
+
+  // Keep calendar dates stable across environments (SSR/client) by preferring
+  // the explicit YYYY-MM-DD portion over local timezone date parsing.
+  const isoDateMatch = date.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (isoDateMatch) {
+    const [, year, month, day] = isoDateMatch;
+    return `${year}-${month}-${day}`;
+  }
+
+  const parsedDate = new Date(date);
+  if (Number.isNaN(parsedDate.getTime())) {
+    return null;
+  }
+
+  return parsedDate.toISOString().split('T')[0];
 };
 
 // Standardizes value to be an array.
