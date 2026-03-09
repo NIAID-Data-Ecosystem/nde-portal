@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, ButtonProps } from '@chakra-ui/react';
+import { Button, ButtonProps, Flex } from '@chakra-ui/react';
 import { useAuth } from 'src/hooks/useAuth';
 import { NavDropdownItem } from './nav-dropdown-item';
 import { NavDropdown, NavDropdownTrigger } from './nav-desktop-dropdown';
@@ -94,23 +94,31 @@ const DesktopAccountAction = ({
 }) => {
   return (
     <NavDropdownTrigger
-      label={displayName}
+      label={isLoading ? ACCOUNTS_CONFIG.default : displayName}
       icon={FaCircleUser}
-      isLoading={isLoading}
+      isDisabled={isLoading}
     >
-      <NavDropdown>
-        {ACCOUNTS_CONFIG['routes'].map(route => (
-          <NavDropdownItem key={`${route.href ?? route.label}`} {...route} />
-        ))}
-        <LogoutButton onLogout={onLogout} />
-      </NavDropdown>
+      {!isLoading && (
+        <NavDropdown>
+          {ACCOUNTS_CONFIG['routes'].map(route => (
+            <NavDropdownItem key={`${route.href ?? route.label}`} {...route} />
+          ))}
+          <LogoutButton onLogout={onLogout} />
+        </NavDropdown>
+      )}
     </NavDropdownTrigger>
   );
 };
 
 const MobileLoadingAction = () => {
   return (
-    <Button isLoading size='sm' w='100%' colorScheme='niaid' variant='ghost'>
+    <Button
+      isLoading={true}
+      size='sm'
+      w='100%'
+      colorScheme='niaid'
+      variant='ghost'
+    >
       Loading
     </Button>
   );
@@ -150,23 +158,36 @@ export const DesktopAuthAction = () => {
 
   if (!ENABLE_AUTH) return null;
 
-  if (!isAuthenticated) {
-    return <DesktopLoginAction isLoading={isLoading} onLogin={() => login()} />;
+  if (isLoading) {
+    return (
+      <Flex opacity={0}>
+        <DesktopAccountAction
+          isLoading={isLoading}
+          displayName={displayName ?? ACCOUNTS_CONFIG.default}
+          onLogout={logout}
+        />
+      </Flex>
+    );
   }
 
-  return (
-    <DesktopAccountAction
-      isLoading={isLoading}
-      displayName={displayName}
-      onLogout={logout}
-    />
-  );
+  if (isAuthenticated) {
+    return (
+      <DesktopAccountAction
+        isLoading={isLoading}
+        displayName={displayName ?? ACCOUNTS_CONFIG.default}
+        onLogout={logout}
+      />
+    );
+  }
+
+  return <DesktopLoginAction isLoading={isLoading} onLogin={login} />;
 };
 
 export const MobileAuthAction = () => {
   const { displayName, isAuthenticated, isLoading, login, logout } =
     useAuthActionData();
   if (!ENABLE_AUTH) return null;
+
   if (isLoading) {
     return <MobileLoadingAction />;
   }

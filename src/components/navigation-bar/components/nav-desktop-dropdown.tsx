@@ -2,6 +2,7 @@ import React from 'react';
 import { FaCaretDown } from 'react-icons/fa6';
 import {
   Button,
+  ButtonProps,
   Icon,
   Popover,
   PopoverTrigger,
@@ -22,14 +23,13 @@ This file contains the components for the desktop dropdown menu in the navigatio
 */
 
 export const NavDropdownTrigger = ({
-  isLoading,
   label,
   icon,
   children,
-}: {
+  ...buttonProps
+}: ButtonProps & {
   label: TransformedNavigationDropdown['label'];
   icon?: TransformedNavigationDropdown['icon'];
-  isLoading?: boolean;
   children: React.ReactNode;
 }) => {
   return (
@@ -44,9 +44,9 @@ export const NavDropdownTrigger = ({
         <>
           <PopoverTrigger>
             <Button
-              isLoading={isLoading}
               __css={SHARED_DESKTOP_ACTION_STYLES}
               _hover={{ bg: 'whiteAlpha.300', color: 'white' }}
+              {...buttonProps}
             >
               {icon && <Icon as={icon} mr={2} />}
               {label}
