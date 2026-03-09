@@ -1,18 +1,18 @@
 import { SiteConfig } from '../page-container/types';
-import { TransformedNavigationMenu } from './types';
+import { TransformedNavigationDropdown } from './types';
 
 // Helper function to filter navigation routes display based on the current environment (development, staging, production).
 export function filterRoutesByEnv(
-  navigation: TransformedNavigationMenu[],
+  navigation: TransformedNavigationDropdown[],
   environment: string,
-): TransformedNavigationMenu[] {
+): TransformedNavigationDropdown[] {
   if (!environment) {
     return navigation;
   }
 
   const filter = (
-    routes: TransformedNavigationMenu[],
-  ): TransformedNavigationMenu[] => {
+    routes: TransformedNavigationDropdown[],
+  ): TransformedNavigationDropdown[] => {
     return routes
       .filter(route => {
         if (route.env && !route.env.includes(environment)) {
@@ -33,7 +33,7 @@ export function filterRoutesByEnv(
 
 export const buildNavigationFromConfig = (
   config: SiteConfig,
-): TransformedNavigationMenu[] => {
+): TransformedNavigationDropdown[] => {
   const navigationRoutes = config.navigation.primary.reduce(
     (navRoutes, item) => {
       if (item.routes) {
@@ -47,7 +47,7 @@ export const buildNavigationFromConfig = (
               ...pageConfig?.nav,
               href: itemHref,
               env: pageConfig?.env,
-            } as TransformedNavigationMenu;
+            } as TransformedNavigationDropdown;
           }),
         });
       } else if (item.page) {
@@ -55,14 +55,14 @@ export const buildNavigationFromConfig = (
           ...config.pages[item.page]?.nav,
           label: item.label,
           href: item.page,
-        } as TransformedNavigationMenu;
+        } as TransformedNavigationDropdown;
 
         navRoutes.push(pageData);
       }
 
       return navRoutes;
     },
-    [] as TransformedNavigationMenu[],
+    [] as TransformedNavigationDropdown[],
   );
 
   return navigationRoutes;

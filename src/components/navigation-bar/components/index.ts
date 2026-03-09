@@ -1,24 +1,19 @@
 import dynamic from 'next/dynamic';
-import { Layout } from './layout';
+import { Layout } from './nav-layout';
 
 export const Nav = {
   Wrapper: Layout.Wrapper,
   Bar: Layout.Bar,
   Toggle: Layout.Toggle,
   MobileMenu: dynamic(
-    () => import('./mobile-nav-menu').then(mod => mod.MobileNavMenu),
+    () => import('./nav-mobile-dropdown').then(mod => mod.MobileNavDropdown),
     {
       loading: () => null,
     },
   ),
-  DesktopMenu: dynamic(
-    () => import('./desktop-nav-item').then(mod => mod.DesktopNavMenu),
-    {
-      loading: () => null,
-    },
-  ),
+
   DesktopNavItem: dynamic(
-    () => import('./desktop-nav-item').then(mod => mod.DesktopNavItem),
+    () => import('./nav-desktop-item').then(mod => mod.NavBarItem),
     {
       loading: () => null,
     },

@@ -1,19 +1,10 @@
 import React from 'react';
-import {
-  Box,
-  Button,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverContent,
-  PopoverTrigger,
-  Stack,
-  Text,
-} from '@chakra-ui/react';
+import { Box, Button, Stack, Text } from '@chakra-ui/react';
 import { useAuth } from 'src/hooks/useAuth';
-import { DesktopNavItem } from 'src/components/navigation-bar/components/desktop-nav-item';
+import { NavDropdownItem } from './nav-dropdown-item';
+import { NavDropdown, NavDropdownTrigger } from './nav-desktop-dropdown';
 
-const ACCOUNTS_COPY = {
+const ACCOUNTS_CONFIG = {
   default: 'Account',
   login: 'Log In',
   logout: 'Log Out',
@@ -29,7 +20,7 @@ const ACCOUNTS_COPY = {
 const getDisplayName = (name?: string, username?: string) => {
   if (name && name.trim()) return name;
   if (username && username.trim()) return username;
-  return ACCOUNTS_COPY.default;
+  return ACCOUNTS_CONFIG.default;
 };
 
 const useAuthActionData = () => {
@@ -44,69 +35,65 @@ const useAuthActionData = () => {
   };
 };
 
-const DesktopLoadingAction = () => {
+const DesktopLoginAction = ({
+  isLoading,
+  onLogin,
+}: {
+  isLoading?: boolean;
+  onLogin: () => void;
+}) => {
   return (
-    <Button isLoading size='sm' variant='outline' colorScheme='whiteAlpha'>
-      Loading
+    <Button
+      isLoading={isLoading}
+      variant='outline'
+      colorScheme='white'
+      bg='transparent'
+      alignSelf='center'
+      _hover={{ bg: 'whiteAlpha.300' }}
+      onClick={onLogin}
+      size='sm'
+      ml={2}
+    >
+      {ACCOUNTS_CONFIG.login}
     </Button>
   );
 };
 
-const DesktopLoginAction = ({ onLogin }: { onLogin: () => void }) => {
+const DesktopLogoutAction = ({ onLogout }: { onLogout: () => void }) => {
   return (
     <Button
-      variant='outline'
-      borderColor='whiteAlpha.700'
-      color='white'
-      _hover={{ bg: 'whiteAlpha.300' }}
-      onClick={onLogin}
       size='sm'
+      colorScheme='red'
+      color='red.500'
+      variant='ghost'
+      px={2}
+      onClick={onLogout}
+      justifyContent='flex-start'
+      fontWeight='semibold'
     >
-      {ACCOUNTS_COPY.login}
+      {ACCOUNTS_CONFIG.logout}
     </Button>
   );
 };
 
 const DesktopAccountAction = ({
   displayName,
+  isLoading,
   onLogout,
 }: {
   displayName: string;
+  isLoading: boolean;
   onLogout: () => void;
 }) => {
-  return <DesktopNavItem label={displayName} routes={ACCOUNTS_COPY.routes} />;
   return (
-    <Popover trigger='click' placement='bottom-end' closeOnEsc>
-      <PopoverTrigger>
-        <Button
-          variant='outline'
-          borderColor='whiteAlpha.700'
-          color='white'
-          _hover={{ bg: 'whiteAlpha.300' }}
-          size='sm'
-        >
-          {displayName}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent w='xs'>
-        <PopoverArrow />
-        <PopoverBody>
-          <Stack spacing={2}>
-            <Text fontWeight={600} color='niaid.700'>
-              {displayName}
-            </Text>
-            <Button
-              size='sm'
-              colorScheme='red'
-              variant='outline'
-              onClick={onLogout}
-            >
-              Logout
-            </Button>
-          </Stack>
-        </PopoverBody>
-      </PopoverContent>
-    </Popover>
+    <NavDropdownTrigger label={displayName} isLoading={isLoading}>
+      <NavDropdown>
+        {ACCOUNTS_CONFIG['routes'].map(route => (
+          <NavDropdownItem key={`${route.href ?? route.label}`} {...route} />
+        ))}
+        <DesktopLogoutAction onLogout={onLogout} />
+      </NavDropdown>
+    </NavDropdownTrigger>
   );
 };
 
@@ -134,7 +121,7 @@ const MobileLoginAction = ({ onLogin }: { onLogin: () => void }) => {
   return (
     <MobileActionContainer>
       <Button size='sm' w='100%' colorScheme='niaid' onClick={onLogin}>
-        {ACCOUNTS_COPY.login}
+        {ACCOUNTS_CONFIG.login}
       </Button>
     </MobileActionContainer>
   );
@@ -160,7 +147,7 @@ const MobileAccountAction = ({
           variant='outline'
           onClick={onLogout}
         >
-          {ACCOUNTS_COPY.logout}
+          {ACCOUNTS_CONFIG.logout}
         </Button>
       </Stack>
     </MobileActionContainer>
@@ -171,15 +158,17 @@ export const DesktopAuthAction = () => {
   const { displayName, isAuthenticated, isLoading, login, logout } =
     useAuthActionData();
 
-  if (isLoading) {
-    return <DesktopLoadingAction />;
-  }
-
   if (!isAuthenticated) {
-    return <DesktopLoginAction onLogin={() => login()} />;
+    return <DesktopLoginAction isLoading={isLoading} onLogin={() => login()} />;
   }
 
-  return <DesktopAccountAction displayName={displayName} onLogout={logout} />;
+  return (
+    <DesktopAccountAction
+      isLoading={isLoading}
+      displayName={displayName}
+      onLogout={logout}
+    />
+  );
 };
 
 export const MobileAuthAction = () => {

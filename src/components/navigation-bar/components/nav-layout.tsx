@@ -10,6 +10,13 @@ import {
 import { FaBars, FaXmark } from 'react-icons/fa6';
 import { Logo } from 'src/components/logos';
 
+/*
+This file contains the layout components for the navigation bar, including:
+- Wrapper: The main container for the navigation bar, which is a <nav> element with appropriate ARIA attributes for accessibility.
+- Bar: The horizontal bar that contains the logo and navigation items. It has a background color, padding, and border styling.
+- Toggle: A button that appears on mobile view to toggle the visibility of the mobile navigation menu. It changes its icon based on whether the menu is open or closed.
+*/
+
 const Wrapper: React.FC<BoxProps> = ({ children, ...props }) => {
   return (
     <Box

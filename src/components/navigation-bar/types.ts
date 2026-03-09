@@ -21,8 +21,8 @@ export interface Navigation {
   primary: NavigationSection[];
 }
 
-export interface TransformedNavigationMenu extends NavigationItem {
+export interface TransformedNavigationDropdown extends NavigationItem {
   env?: string[];
   href?: string;
-  routes?: TransformedNavigationMenu[];
+  routes?: TransformedNavigationDropdown[];
 }
