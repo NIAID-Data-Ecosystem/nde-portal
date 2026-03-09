@@ -24,10 +24,12 @@ This file contains the components for the desktop dropdown menu in the navigatio
 export const NavDropdownTrigger = ({
   isLoading,
   label,
+  icon,
   children,
 }: {
+  label: TransformedNavigationDropdown['label'];
+  icon?: TransformedNavigationDropdown['icon'];
   isLoading?: boolean;
-  label: string;
   children: React.ReactNode;
 }) => {
   return (
@@ -46,6 +48,7 @@ export const NavDropdownTrigger = ({
               __css={SHARED_DESKTOP_ACTION_STYLES}
               _hover={{ bg: 'whiteAlpha.300', color: 'white' }}
             >
+              {icon && <Icon as={icon} mr={2} />}
               {label}
               <Icon as={FaCaretDown} ml={1} w={4} h={4} />
             </Button>

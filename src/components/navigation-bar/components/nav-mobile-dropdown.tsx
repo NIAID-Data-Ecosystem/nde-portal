@@ -16,9 +16,7 @@ export const MobileNavDropdown = ({
       <Collapse in={isOpen} animateOpacity>
         <Stack bg='white' p={2} alignItems='end'>
           {routes &&
-            routes.map(navItem => (
-              <MobileNavItem key={navItem.label} {...navItem} />
-            ))}
+            routes.map(route => <MobileNavItem key={route.label} {...route} />)}
           <MobileAuthAction />
         </Stack>
       </Collapse>

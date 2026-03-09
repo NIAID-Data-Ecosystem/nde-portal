@@ -1,6 +1,7 @@
 export interface NavigationItem {
   label: string;
   description?: string;
+  icon?: React.ElementType;
   isExternal?: boolean;
   href?: string;
   onClick?: () => void;

@@ -1,9 +1,11 @@
 import React from 'react';
-import { Box, Button, Stack, Text } from '@chakra-ui/react';
+import { Button, ButtonProps } from '@chakra-ui/react';
 import { useAuth } from 'src/hooks/useAuth';
 import { NavDropdownItem } from './nav-dropdown-item';
 import { NavDropdown, NavDropdownTrigger } from './nav-desktop-dropdown';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
+import { MobileNavItem } from './nav-mobile-item';
+import { FaCircleUser } from 'react-icons/fa6';
 
 const ACCOUNTS_CONFIG = {
   default: 'Account',
@@ -60,17 +62,21 @@ const DesktopLoginAction = ({
   );
 };
 
-const DesktopLogoutAction = ({ onLogout }: { onLogout: () => void }) => {
+const LogoutButton = ({
+  onLogout,
+  ...buttonProps
+}: ButtonProps & { onLogout: () => void }) => {
   return (
     <Button
       size='sm'
       colorScheme='red'
       color='red.500'
-      variant='ghost'
-      px={2}
       onClick={onLogout}
+      variant='ghost'
       justifyContent='flex-start'
       fontWeight='semibold'
+      px={2}
+      {...buttonProps}
     >
       {ACCOUNTS_CONFIG.logout}
     </Button>
@@ -87,44 +93,34 @@ const DesktopAccountAction = ({
   onLogout: () => void;
 }) => {
   return (
-    <NavDropdownTrigger label={displayName} isLoading={isLoading}>
+    <NavDropdownTrigger
+      label={displayName}
+      icon={FaCircleUser}
+      isLoading={isLoading}
+    >
       <NavDropdown>
         {ACCOUNTS_CONFIG['routes'].map(route => (
           <NavDropdownItem key={`${route.href ?? route.label}`} {...route} />
         ))}
-        <DesktopLogoutAction onLogout={onLogout} />
+        <LogoutButton onLogout={onLogout} />
       </NavDropdown>
     </NavDropdownTrigger>
   );
 };
 
-const MobileActionContainer: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  return (
-    <Box w='100%' px={4} py={2}>
-      {children}
-    </Box>
-  );
-};
-
 const MobileLoadingAction = () => {
   return (
-    <MobileActionContainer>
-      <Button isLoading size='sm' w='100%' colorScheme='niaid' variant='ghost'>
-        Loading
-      </Button>
-    </MobileActionContainer>
+    <Button isLoading size='sm' w='100%' colorScheme='niaid' variant='ghost'>
+      Loading
+    </Button>
   );
 };
 
 const MobileLoginAction = ({ onLogin }: { onLogin: () => void }) => {
   return (
-    <MobileActionContainer>
-      <Button size='sm' w='100%' colorScheme='niaid' onClick={onLogin}>
-        {ACCOUNTS_CONFIG.login}
-      </Button>
-    </MobileActionContainer>
+    <Button size='sm' w='100%' colorScheme='niaid' onClick={onLogin}>
+      {ACCOUNTS_CONFIG.login}
+    </Button>
   );
 };
 
@@ -136,22 +132,15 @@ const MobileAccountAction = ({
   onLogout: () => void;
 }) => {
   return (
-    <MobileActionContainer>
-      <Stack spacing={2}>
-        <Text fontWeight={600} color='niaid.700'>
-          {displayName}
-        </Text>
-        <Button
-          size='sm'
-          w='100%'
-          colorScheme='red'
-          variant='outline'
-          onClick={onLogout}
-        >
-          {ACCOUNTS_CONFIG.logout}
-        </Button>
-      </Stack>
-    </MobileActionContainer>
+    <>
+      <MobileNavItem
+        label={displayName}
+        icon={FaCircleUser}
+        routes={ACCOUNTS_CONFIG['routes']}
+      />
+
+      <LogoutButton onLogout={onLogout} width='100%' />
+    </>
   );
 };
 

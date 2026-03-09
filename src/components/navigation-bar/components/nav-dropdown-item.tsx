@@ -41,12 +41,16 @@ const DropdownItemContent = ({
   label,
   description,
   isExternal,
+  icon,
 }: Pick<
   TransformedNavigationDropdown,
-  'label' | 'description' | 'isExternal'
+  'label' | 'description' | 'isExternal' | 'icon'
 >): JSX.Element => (
   <Box flex={1}>
     <Flex alignItems='center' gap={2}>
+      {icon && (
+        <Icon as={icon} w={5} h={5} color='niaid.700' aria-hidden='true' />
+      )}
       <Text className='label' transition='all .3s ease' fontWeight={600}>
         {label}
       </Text>
@@ -109,6 +113,7 @@ const DropdownItemToggleIcon = ({
 export const NavDropdownItem = ({
   label,
   href,
+  icon,
   description,
   isExternal,
   onClick,
@@ -129,6 +134,7 @@ export const NavDropdownItem = ({
       >
         <DropdownItemContent
           label={label}
+          icon={icon}
           description={description}
           isExternal={isExternal}
         />
@@ -159,6 +165,7 @@ export const NavDropdownItem = ({
         label={label}
         description={description}
         isExternal={isExternal}
+        icon={icon}
       />
       <DropdownItemArrowIcon />
     </Link>

@@ -5,6 +5,7 @@ import { NavDropdownItem } from './nav-dropdown-item';
 
 export const MobileNavItem = ({
   label,
+  icon,
   routes,
   href,
   isExternal,
@@ -14,9 +15,19 @@ export const MobileNavItem = ({
   return (
     <Stack w='100%' spacing={2} cursor={routes ? 'pointer' : 'default'}>
       {Boolean(routes) ? (
-        <NavDropdownItem label={label} isOpen={isOpen} onClick={onToggle} />
+        <NavDropdownItem
+          label={label}
+          icon={icon}
+          isOpen={isOpen}
+          onClick={onToggle}
+        />
       ) : (
-        <NavDropdownItem label={label} href={href} isExternal={isExternal} />
+        <NavDropdownItem
+          label={label}
+          icon={icon}
+          href={href}
+          isExternal={isExternal}
+        />
       )}
 
       {routes?.length ? (
