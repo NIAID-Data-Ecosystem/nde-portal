@@ -11,9 +11,9 @@ const ACCOUNTS_CONFIG = {
   logout: 'Log Out',
   routes: [
     {
-      label: 'Settings',
+      label: 'Account Settings',
       description: 'Set site preferences',
-      href: '/user-settings',
+      href: '/settings',
     },
   ],
 };
