@@ -31,3 +31,6 @@ export const shouldEnableInVisualSummaryPage = (pathname: string): boolean => {
 
 // Show filter menu so that user can customize the filter display in the search page. To enable in production, set this flag to `true`.
 export const SHOW_CUSTOMIZABLE_FILTERS = !isProd;
+
+// Enable account creation and login features in non-production environments for testing/review. To enable in production, set this flag to `true`.
+export const ENABLE_AUTH = !isProd;

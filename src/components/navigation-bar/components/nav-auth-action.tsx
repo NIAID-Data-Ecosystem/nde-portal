@@ -3,6 +3,7 @@ import { Box, Button, Stack, Text } from '@chakra-ui/react';
 import { useAuth } from 'src/hooks/useAuth';
 import { NavDropdownItem } from './nav-dropdown-item';
 import { NavDropdown, NavDropdownTrigger } from './nav-desktop-dropdown';
+import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
 const ACCOUNTS_CONFIG = {
   default: 'Account',
@@ -158,6 +159,8 @@ export const DesktopAuthAction = () => {
   const { displayName, isAuthenticated, isLoading, login, logout } =
     useAuthActionData();
 
+  if (!ENABLE_AUTH) return null;
+
   if (!isAuthenticated) {
     return <DesktopLoginAction isLoading={isLoading} onLogin={() => login()} />;
   }
@@ -174,7 +177,7 @@ export const DesktopAuthAction = () => {
 export const MobileAuthAction = () => {
   const { displayName, isAuthenticated, isLoading, login, logout } =
     useAuthActionData();
-
+  if (!ENABLE_AUTH) return null;
   if (isLoading) {
     return <MobileLoadingAction />;
   }

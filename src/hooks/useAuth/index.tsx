@@ -15,6 +15,7 @@ import React, {
 import { AuthState, AuthContextValue, User } from 'src/utils/auth/types';
 import { getAuthConfig } from 'src/utils/auth/config';
 import { devMockAuth } from './mock';
+import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
 const initialState: AuthState = {
   user: null,
@@ -77,6 +78,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
+      if (!ENABLE_AUTH) {
+        setState({
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+          error: null,
+        });
+        return;
+      }
+
       const user = await fetchUserInfo(config.userInfoEndpoint);
 
       if (user) {

@@ -11,7 +11,7 @@ import { useAuth } from 'src/hooks/useAuth';
 interface WithAuthOptions {
   /**
    * Where to redirect if not authenticated
-   * Defaults to showing login prompt on page
+   * Defaults to '/login'
    */
   redirectTo?: string;
   /**
@@ -24,7 +24,7 @@ interface WithAuthOptions {
  * HOC to protect pages requiring authentication
  *
  * @example
- * // Basic usage - shows login prompt if not authenticated
+ * // Basic usage - redirects to /login if not authenticated
  * export default withAuth(DashboardPage);
  *
  * @example
@@ -33,13 +33,15 @@ interface WithAuthOptions {
  */
 export function withAuth<P extends object>(
   WrappedComponent: ComponentType<P>,
-  options: WithAuthOptions = {},
+  options: WithAuthOptions = {
+    redirectTo: '/login',
+  },
 ): ComponentType<P> {
   const { redirectTo, LoadingComponent } = options;
 
   function AuthenticatedComponent(props: P) {
     const router = useRouter();
-    const { isAuthenticated, isLoading, login } = useAuth();
+    const { isAuthenticated, isLoading } = useAuth();
 
     useEffect(() => {
       if (!isLoading && !isAuthenticated && redirectTo) {
@@ -47,7 +49,7 @@ export function withAuth<P extends object>(
         sessionStorage.setItem('auth_return_to', router.asPath);
         router.replace(redirectTo);
       }
-    }, [isLoading, isAuthenticated, router]);
+    }, [isLoading, isAuthenticated, redirectTo, router]);
 
     // Show loading state
     if (isLoading) {
@@ -66,44 +68,6 @@ export function withAuth<P extends object>(
           <Text mt={4} color='gray.600'>
             Loading...
           </Text>
-        </Box>
-      );
-    }
-
-    // If not authenticated and no redirect, show login prompt
-    if (!isAuthenticated && !redirectTo) {
-      return (
-        <Box
-          display='flex'
-          flexDirection='column'
-          alignItems='center'
-          justifyContent='center'
-          minHeight='50vh'
-          textAlign='center'
-          p={8}
-        >
-          <Text fontSize='xl' fontWeight='bold' mb={2}>
-            Authentication Required
-          </Text>
-          <Text color='gray.600' mb={4}>
-            Please log in to access this page.
-          </Text>
-          <Box
-            as='button'
-            px={6}
-            py={3}
-            bg='blue.500'
-            color='white'
-            borderRadius='md'
-            fontWeight='semibold'
-            _hover={{ bg: 'blue.600' }}
-            onClick={() => {
-              sessionStorage.setItem('auth_return_to', router.asPath);
-              login();
-            }}
-          >
-            Log In
-          </Box>
         </Box>
       );
     }

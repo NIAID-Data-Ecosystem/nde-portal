@@ -3,6 +3,7 @@ import { Box, Button, Heading, Spinner, Stack, Text } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { useAuth } from 'src/hooks/useAuth';
+import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
 function LoginPage() {
   const router = useRouter();
@@ -17,6 +18,17 @@ function LoginPage() {
       router.replace(returnTo);
     }
   }, [isAuthenticated, isLoading, router]);
+
+  // If auth is disabled via feature flag, redirect to home page
+  React.useEffect(() => {
+    if (!ENABLE_AUTH) {
+      router.replace('/');
+    }
+  }, [router]);
+
+  if (!ENABLE_AUTH) {
+    return null;
+  }
 
   return (
     <PageContainer meta={getPageSeoConfig('/login')} px={0} py={0}>
