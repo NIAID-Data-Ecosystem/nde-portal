@@ -62,7 +62,7 @@ function UserSettingsPage() {
           )}
           <Button
             colorScheme='red'
-            variant='outline'
+            variant='solid'
             size='sm'
             onClick={logout}
             mt={4}

@@ -33,20 +33,21 @@ export const Button = {
       colorScheme: string;
       color?: string;
     }) => {
-      let bg;
-      let hoverBg;
-      const color = props.color || 'white';
+      const colorMap = {
+        negative: { bg: 'status.error', hoverBg: 'red.700' },
+      };
 
-      if (colorScheme === 'negative') {
-        bg = 'status.error';
-        hoverBg = 'red.700';
-      }
+      const config = colorMap[colorScheme as keyof typeof colorMap];
+
+      if (!config) return {};
+      const bg = config?.bg;
+      const hoverBg = config?.hoverBg;
+      const color = props.color || 'white';
 
       return {
         bg,
         color,
         border: '1px solid',
-
         borderColor: bg ? bg : 'transparent',
         _hover: {
           color,
@@ -68,37 +69,40 @@ export const Button = {
       colorScheme?: string;
       color: string;
     }) => {
-      let color = 'inherit';
-      let borderColor = 'inherit';
-      let hoverBg;
+      const colorMap = {
+        negative: {
+          color: 'status.error',
+          hoverBg: 'red.600',
+          borderColor: 'status.error',
+        },
+        primary: {
+          color: 'primary.500',
+          hoverBg: 'primary.600',
+          borderColor: 'primary.500',
+        },
+        secondary: {
+          color: 'secondary.500',
+          hoverBg: 'secondary.600',
+          borderColor: 'secondary.500',
+        },
+        gray: {
+          color: 'gray.900',
+          hoverBg: 'gray.800',
+          borderColor: 'gray.200',
+        },
+      };
+
+      const config = colorMap[colorScheme as keyof typeof colorMap];
+      if (!config) return {};
+
+      const color = config.color || props.color;
+      const borderColor = config.borderColor || props.color;
       const hoverColor = 'white';
       const bg = 'white';
 
-      if (colorScheme === 'negative') {
-        color = props.color || 'status.error';
-        borderColor = color;
-        hoverBg = 'red.600';
-      }
-      if (colorScheme === 'primary') {
-        color = props.color || 'primary.500';
-        borderColor = color;
-        hoverBg = 'primary.600';
-      }
-      if (colorScheme === 'secondary') {
-        color = props.color || 'secondary.500';
-        borderColor = color;
-        hoverBg = 'secondary.600';
-      }
-
-      if (colorScheme === 'gray') {
-        color = 'gray.900';
-        borderColor = 'gray.200';
-        hoverBg = 'gray.800';
-      }
-
       const hoverAndActive = {
-        borderColor: hoverBg,
-        bg: hoverBg,
+        borderColor: config.hoverBg,
+        bg: config.hoverBg,
         color: hoverColor,
         '.child-string, .child-node, .child-node p, svg': {
           color: hoverColor,
@@ -117,7 +121,6 @@ export const Button = {
         borderColor,
         color,
         bg,
-
         _hover: hoverAndActive,
         _active: hoverAndActive,
         _visited: {
@@ -141,23 +144,20 @@ export const Button = {
       colorScheme: string;
       color?: string;
     }) => {
-      let bg;
-      let hoverBg;
-      let color = props.color || 'inherit';
-      if (colorScheme === 'negative') {
-        hoverBg = 'red.50';
-        color = props.color || 'red.700';
-      }
-      if (colorScheme === 'primary') {
-        hoverBg = 'primary.50';
-        color = props.color || 'primary.700';
-      }
-      if (colorScheme === 'secondary') {
-        hoverBg = 'secondary.50';
-        color = props.color || 'secondary.700';
-      }
+      const colorMap = {
+        negative: { color: 'red.700', hoverBg: 'red.50' },
+        primary: { color: 'primary.700', hoverBg: 'primary.50' },
+        secondary: { color: 'secondary.700', hoverBg: 'secondary.50' },
+      };
+
+      const config = colorMap[colorScheme as keyof typeof colorMap];
+
+      if (!config) return {};
+
+      const color = config?.color || props.color || 'inherit';
+      const hoverBg = config?.hoverBg;
+
       return {
-        bg,
         color,
         '.child-string, .child-node, .child-node p, svg': {
           color,
@@ -165,7 +165,7 @@ export const Button = {
         _hover: {
           bg: hoverBg,
           _disabled: {
-            bg,
+            bg: undefined,
           },
         },
         _visited: {
