@@ -232,6 +232,10 @@ export const SearchResultsController = ({
         if (section.count > 0 || section.count === 0) {
           indices.push(index);
         }
+      } else if (section.type === 'Sample') {
+        if (section.count > 0 || section.count === 0) {
+          indices.push(index);
+        }
       } else if (section.count > 0) {
         indices.push(index);
       }
@@ -300,6 +304,20 @@ export const SearchResultsController = ({
                           ) : (
                             <EmptyState />
                           )}
+                        </AccordionContent>
+                      );
+                    }
+
+                    // For Sample, render a table instead of result cards
+                    if (section.type === 'Sample') {
+                      return (
+                        <AccordionContent
+                          key='sample'
+                          title={`${
+                            section.label
+                          } (${section.count.toLocaleString()})`}
+                        >
+                          <h1>table</h1>
                         </AccordionContent>
                       );
                     }

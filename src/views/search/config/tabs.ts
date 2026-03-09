@@ -8,6 +8,7 @@ export const TAB_LABELS = {
   COMPUTATIONAL_TOOL: formatAPIResourceTypeForDisplay('ComputationalTool'),
   DISEASE_OVERVIEW: 'Disease Overview',
   OTHER_RESOURCES: 'Other Resources',
+  SAMPLE: 'Sample',
 } as const;
 
 // Tab configuration
@@ -36,6 +37,15 @@ export const tabs: TabType[] = [
       {
         label: `${TAB_LABELS.COMPUTATIONAL_TOOL}s`,
         type: 'ComputationalTool',
+      },
+    ],
+  },
+  {
+    id: 's',
+    types: [
+      {
+        label: `${TAB_LABELS.SAMPLE}s`,
+        type: 'Sample',
       },
     ],
   },
