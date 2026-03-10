@@ -26,8 +26,8 @@ describe('IntroSection', () => {
     expect(screen.getByText('Test Subtitle')).toBeInTheDocument();
   });
 
-  it('renders the description when provided', () => {
-    renderComponent({ description: 'Test Description' });
+  it('renders the processed description when provided', () => {
+    renderComponent({ topicEmphasizedDescription: 'Test Description' });
 
     expect(screen.getByText('Test Description')).toBeInTheDocument();
   });
