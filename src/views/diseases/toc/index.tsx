@@ -17,6 +17,7 @@ import {
   Sidebar,
   SidebarItem,
 } from 'src/components/table-of-contents/layouts/sidebar';
+import { normalizeSearchText } from '../helpers';
 
 export const TableOfContents = () => {
   const [searchValue, setSearchValue] = useState('');
@@ -32,13 +33,19 @@ export const TableOfContents = () => {
   const diseasePages = useMemo(() => {
     if (!data) return [];
 
+    const normalizedSearchTerm = normalizeSearchText(searchValue);
+
     return data
       .filter(page => {
-        const title = page.title.toLowerCase();
-        const description = page.description?.toLowerCase() || '';
-        const searchTerm = searchValue.toLowerCase();
+        const normalizedTitle = normalizeSearchText(page.title);
+        const normalizedDescription = normalizeSearchText(
+          page.description || '',
+        );
 
-        return title.includes(searchTerm) || description.includes(searchTerm);
+        return (
+          normalizedTitle.includes(normalizedSearchTerm) ||
+          normalizedDescription.includes(normalizedSearchTerm)
+        );
       })
       .sort((a, b) =>
         a.title.localeCompare(b.title, undefined, {

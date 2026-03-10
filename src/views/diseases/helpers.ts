@@ -18,6 +18,15 @@ export const getFillColor = scaleOrdinal({
   range: ['#e8c543', '#ff8359', '#6e95fc'],
 });
 
+export const normalizeSearchText = (value: string = '') => {
+  return value
+    .toLowerCase()
+    .normalize('NFD') // separates accents from letters
+    .replace(/[\u0300-\u036f]/g, '') // removes accents
+    .replace(/[^\p{L}\p{N}]+/gu, '') // removes spaces + punctuation
+    .trim();
+};
+
 export const trackDiseasesEvent = (event: {
   label: string; // e.g., "Dataset"
   category: string; // e.g., "Data Types Chart"
