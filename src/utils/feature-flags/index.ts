@@ -28,3 +28,6 @@ export const SHOW_VISUAL_SUMMARY = !isProd;
 export const shouldEnableInVisualSummaryPage = (pathname: string): boolean => {
   return SHOW_VISUAL_SUMMARY && pathname === '/visual-summary';
 };
+
+// Show filter menu so that user can customize the filter display in the search page. To enable in production, set this flag to `true`.
+export const SHOW_CUSTOMIZABLE_FILTERS = !isProd;
