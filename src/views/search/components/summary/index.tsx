@@ -1,10 +1,11 @@
 import { Flex, SimpleGrid, Text } from '@chakra-ui/react';
-import { SearchState, VizConfig } from './types';
+import { SearchState } from './types';
+import { FilterConfig } from '../refactored-filters';
 import { VisualizationCard } from './components/visualization-card';
 import { SelectedFilterType } from '../filters/types';
 import { InfoLabel } from 'src/components/info-label';
 import { SelectedFilterTypeValue } from '../filters/types';
-import { FiltersDisclaimer } from './components/filters-chart-toggle';
+import { FiltersDisclaimer } from 'src/views/search/components/refactored-filters/components/filters-chart-toggle';
 
 interface SummaryGridProps {
   // Ids of visualizations are currently enabled / visible
@@ -16,7 +17,7 @@ interface SummaryGridProps {
   // What happens on filter update from visualization interaction
   onFilterUpdate?: (values: SelectedFilterTypeValue[], facet: string) => void;
   // All available visualization configs
-  configs: VizConfig[];
+  configs: FilterConfig[];
   // Currently selected filters
   selectedFilters: SelectedFilterType;
 }
@@ -52,21 +53,24 @@ const SummaryGrid = (props: SummaryGridProps) => {
 
       {props.activeVizIds.length > 0 && (
         <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing={4} mt={2}>
-          {/* Map over config to render visualizations.*/}
-          {props.configs.map(config => {
-            const filterProperty = config.filterProperty || config.property;
-            return (
-              <VisualizationCard
-                key={config.id}
-                config={config}
-                searchState={props.searchParams}
-                isActive={props.activeVizIds.includes(config.id)}
-                removeActiveVizId={props.removeActiveVizId}
-                onFilterUpdate={props.onFilterUpdate}
-                selectedFilters={props.selectedFilters[filterProperty] || []}
-              />
-            );
-          })}
+          {/* Map over config to render visualizations - only for configs with chart config */}
+          {props.configs
+            .filter(config => !!config.chart)
+            .map(config => {
+              // Use filterProperty if provided, otherwise fall back to property
+              const filterKey = config.filterProperty || config.property;
+              return (
+                <VisualizationCard
+                  key={config.id}
+                  config={config}
+                  searchState={props.searchParams}
+                  isActive={props.activeVizIds.includes(config.id)}
+                  removeActiveVizId={props.removeActiveVizId}
+                  onFilterUpdate={props.onFilterUpdate}
+                  selectedFilters={props.selectedFilters[filterKey] || []}
+                />
+              );
+            })}
         </SimpleGrid>
       )}
     </Flex>

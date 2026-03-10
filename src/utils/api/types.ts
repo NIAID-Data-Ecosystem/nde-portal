@@ -46,6 +46,12 @@ export type AccessTypes =
   | 'Varied'
   | 'Unknown';
 
+export interface AdditionalProperty {
+  '@type'?: 'PropertyValue';
+  propertyID: string;
+  value: string;
+}
+
 export interface AdditionalType {
   name?: string;
   url?: string;
@@ -391,6 +397,7 @@ export interface QuantitativeValue {
 
 export interface SampleAggregate {
   '@type': 'Sample';
+  additionalProperty?: AdditionalProperty | AdditionalProperty[];
   anatomicalStructure?: DefinedTerm[];
   anatomicalSystem?: DefinedTerm[];
   associatedGenotype?: (string | DefinedTerm)[];

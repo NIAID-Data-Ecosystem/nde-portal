@@ -11,7 +11,7 @@ import { FaChevronDown } from 'react-icons/fa6';
 import Tooltip from 'src/components/tooltip';
 import { shouldEnableInVisualSummaryPage } from 'src/utils/feature-flags';
 import { useRouter } from 'next/router';
-import { FiltersChartToggle } from '../../summary/components/filters-chart-toggle';
+import { FiltersChartToggle } from 'src/views/search/components/refactored-filters/components/filters-chart-toggle';
 
 interface FiltersSectionProps {
   name: string;

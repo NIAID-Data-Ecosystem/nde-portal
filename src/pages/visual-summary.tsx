@@ -6,21 +6,18 @@ import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { SearchTabsProvider } from 'src/views/search/context/search-tabs-context';
 import { useSearchQueryFromURL } from 'src/views/search/hooks/useSearchQueryFromURL';
 import { Box, Flex, VStack } from '@chakra-ui/react';
-import { Filters } from 'src/views/search/components/filters';
+import {
+  Filters,
+  FILTER_CONFIGS,
+} from 'src/views/search/components/refactored-filters';
 import {
   SelectedFilterType,
   SelectedFilterTypeValue,
 } from 'src/views/search/components/filters/types';
-import { FILTER_CONFIGS } from 'src/views/search/components/filters/config';
-import {
-  queryFilterObject2String,
-  queryFilterString2Object,
-} from 'src/views/search/components/filters/utils/query-builders';
 import {
   defaultQuery,
   getDefaultDateRange,
 } from 'src/views/search/config/defaultQuery';
-import { FilterTags } from 'src/views/search/components/filters/components/tag';
 import { SearchResultsHeader } from 'src/views/search/components/search-results-header';
 import { PaginationProvider } from 'src/views/search/context/pagination-context';
 import { SearchResultsController } from 'src/views/search/components/search-results-tabs-controller';
@@ -33,213 +30,13 @@ import {
   SHOW_VISUAL_SUMMARY,
 } from 'src/utils/feature-flags';
 import SummaryGrid from 'src/views/search/components/summary';
-import { ChartType } from 'src/views/search/components/summary/types';
 import { updateRoute } from 'src/views/search/utils/update-route';
 import { useActiveVizIds } from 'src/views/search/components/summary/hooks/useActiveVizIds';
 import {
-  formatConditionsOfAccess,
-  transformConditionsOfAccessLabel,
-} from 'src/utils/formatting/formatConditionsOfAccess';
-
-// initial testing with strings, definedTerm, number, date.
-const VIZ_CONFIG = [
-  {
-    id: 'date',
-    label: 'Date',
-    property: 'date',
-    chart: {
-      availableOptions: ['histogram'] as ChartType[],
-      defaultOption: 'histogram' as const,
-    },
-  },
-  {
-    id: 'sources',
-    label: 'Sources',
-    property: 'includedInDataCatalog.name',
-    chart: {
-      availableOptions: ['bar', 'pie'] as ChartType[],
-      defaultOption: 'pie' as const,
-      bar: { minPercent: 0.0001, maxItems: 10 },
-      pie: { minPercent: 0.01 },
-    },
-  },
-  {
-    id: 'sourceOrganization.name',
-    label: 'Program Collection',
-    property: 'sourceOrganization.name.raw',
-    filterProperty: 'sourceOrganization.name',
-    chart: {
-      availableOptions: ['bar', 'pie'] as ChartType[],
-      defaultOption: 'pie' as const,
-      bar: { minPercent: 0.0001, maxItems: 10 },
-      pie: { minPercent: 0.01 },
-    },
-  },
-  {
-    id: 'healthCondition.name.raw',
-    label: 'Health Condition',
-    property: 'healthCondition.name.raw',
-    chart: {
-      availableOptions: ['bar', 'pie'] as ChartType[],
-      defaultOption: 'pie' as const,
-      bar: { minPercent: 0.0001, maxItems: 10 },
-      pie: { minPercent: 0.01 },
-    },
-  },
-  {
-    id: 'infectiousAgent.name',
-    label: 'Pathogen Species',
-    property: 'infectiousAgent.displayName.raw',
-    chart: {
-      availableOptions: ['bar', 'pie'] as ChartType[],
-      defaultOption: 'pie' as const,
-      bar: { minPercent: 0.0001, maxItems: 10 },
-      pie: { minPercent: 0.01 },
-    },
-  },
-  {
-    id: 'species.name',
-    label: 'Host Species',
-    property: 'species.displayName.raw',
-    chart: {
-      availableOptions: ['bar', 'pie'] as ChartType[],
-      defaultOption: 'pie' as const,
-      bar: { minPercent: 0.0001, maxItems: 10 },
-      pie: { minPercent: 0.01 },
-    },
-  },
-  {
-    id: 'funding.funder.name.raw',
-    label: 'Funding',
-    property: 'funding.funder.name.raw',
-    chart: {
-      availableOptions: ['bar', 'pie'] as ChartType[],
-      defaultOption: 'pie' as const,
-      bar: { minPercent: 0.0001, maxItems: 10 },
-      pie: { minPercent: 0.01 },
-    },
-  },
-  {
-    id: 'conditionsOfAccess',
-    label: 'Conditions of Access',
-    property: 'conditionsOfAccess',
-    chart: {
-      availableOptions: ['bar', 'pie'] as ChartType[],
-      defaultOption: 'pie' as const,
-      bar: { minPercent: 0.0001, maxItems: 10 },
-      pie: { minPercent: 0.01 },
-    },
-    transformData: (item: { count: number; term: string; label?: string }) => {
-      let term = item.label || item.term;
-
-      return {
-        ...item,
-        label:
-          transformConditionsOfAccessLabel(formatConditionsOfAccess(term)) ||
-          '',
-      };
-    },
-  },
-  {
-    id: 'variableMeasured.name.raw',
-    label: 'Variable Measured',
-    property: 'variableMeasured.name.raw',
-    chart: {
-      availableOptions: ['bar', 'pie'] as ChartType[],
-      defaultOption: 'pie' as const,
-      bar: { minPercent: 0.0001, maxItems: 10 },
-      pie: { minPercent: 0.01 },
-    },
-  },
-  {
-    id: 'measurementTechnique.name.raw',
-    label: 'Measurement Technique',
-    property: 'measurementTechnique.name.raw',
-    chart: {
-      availableOptions: ['bar', 'pie'] as ChartType[],
-      defaultOption: 'pie' as const,
-      bar: { minPercent: 0.0001, maxItems: 10 },
-      pie: { minPercent: 0.01 },
-    },
-  },
-  {
-    id: 'topicCategory.name.raw',
-    label: 'Topic Category',
-    property: 'topicCategory.name.raw',
-    chart: {
-      availableOptions: ['bar', 'pie'] as ChartType[],
-      defaultOption: 'pie' as const,
-      bar: { minPercent: 0.0001, maxItems: 10 },
-      pie: { minPercent: 0.01 },
-    },
-  },
-  {
-    id: 'applicationCategory.raw',
-    label: 'Application Category',
-    property: 'applicationCategory.raw',
-    chart: {
-      availableOptions: ['bar', 'pie'] as ChartType[],
-      defaultOption: 'pie' as const,
-      bar: { minPercent: 0.0001, maxItems: 10 },
-      pie: { minPercent: 0.01 },
-    },
-  },
-  {
-    id: 'operatingSystem.raw',
-    label: 'Operating System',
-    property: 'operatingSystem.raw',
-    chart: {
-      availableOptions: ['bar', 'pie'] as ChartType[],
-      defaultOption: 'pie' as const,
-      bar: { minPercent: 0.0001, maxItems: 10 },
-      pie: { minPercent: 0.01 },
-    },
-  },
-  {
-    id: 'programmingLanguage.raw',
-    label: 'Programming Language',
-    property: 'programmingLanguage.raw',
-    chart: {
-      availableOptions: ['bar', 'pie'] as ChartType[],
-      defaultOption: 'pie' as const,
-      bar: { minPercent: 0.0001, maxItems: 10 },
-      pie: { minPercent: 0.01 },
-    },
-  },
-  {
-    id: 'featureList.name.raw',
-    label: 'Feature List',
-    property: 'featureList.name.raw',
-    chart: {
-      availableOptions: ['bar', 'pie'] as ChartType[],
-      defaultOption: 'pie' as const,
-      bar: { minPercent: 0.0001, maxItems: 10 },
-      pie: { minPercent: 0.01 },
-    },
-  },
-  {
-    id: 'input.name.raw',
-    label: 'Input',
-    property: 'input.name.raw',
-    chart: {
-      availableOptions: ['bar', 'pie'] as ChartType[],
-      defaultOption: 'pie' as const,
-      bar: { minPercent: 0.0001, maxItems: 10 },
-      pie: { minPercent: 0.01 },
-    },
-  },
-  {
-    id: 'output.name.raw',
-    label: 'Output',
-    property: 'output.name.raw',
-    chart: {
-      availableOptions: ['bar', 'pie'] as ChartType[],
-      defaultOption: 'pie' as const,
-      bar: { minPercent: 0.0001, maxItems: 10 },
-      pie: { minPercent: 0.01 },
-    },
-  },
-];
+  queryFilterObject2String,
+  queryFilterString2Object,
+} from 'src/views/search/components/filters/utils/query-builders';
+import { FilterTags } from 'src/views/search/components/refactored-filters/components/tag';
 
 const DEFAULT_ACTIVE_VIZ_IDS = ['date'];
 
@@ -464,7 +261,7 @@ const Search: NextPage<{
                   }}
                   activeVizIds={activeVizIds}
                   removeActiveVizId={toggleViz}
-                  configs={VIZ_CONFIG}
+                  configs={FILTER_CONFIGS}
                   selectedFilters={selectedFilters}
                 />
               )}

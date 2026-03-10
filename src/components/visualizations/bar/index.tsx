@@ -218,7 +218,7 @@ export const BarChart = ({
               />
 
               {data.map(datum => {
-                const { id, term, value } = datum;
+                const { id, term, label, value } = datum;
 
                 const barX = labelStyles.width;
                 const barWidth = xScale(value) || 0;
@@ -329,7 +329,7 @@ export const BarChart = ({
                           onPointerMove={e => handlePointerMove(e, datum)}
                           onPointerLeave={handlePointerLeave}
                         >
-                          {term}
+                          {label}
                         </Text>
                       </HtmlLabel>
                     </Annotation>

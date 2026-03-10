@@ -1,4 +1,5 @@
-import { SearchState, VizConfig } from '../../types';
+import { SearchState } from '../../types';
+import { FilterConfig } from '../../../refactored-filters';
 import { useDisclosure, Flex } from '@chakra-ui/react';
 import { SelectedFilterTypeValue } from '../../../filters/types';
 import { DEFAULT_MORE_PARAMS } from '../../helpers';
@@ -8,7 +9,7 @@ import { DrillStackBreadcrumb } from './drill-stack-breadcrumb';
 import { useVisualizationData } from '../../hooks/useVisualizationData';
 
 type VisualizationCardProps = {
-  config: VizConfig;
+  config: FilterConfig;
   searchState: SearchState;
   isActive: boolean;
   removeActiveVizId: (vizId: string) => void;
@@ -57,6 +58,11 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
     return <></>;
   }
 
+  // If no chart config or no chartAdapter, don't render
+  if (!config.chart || !chartAdapter || !chartType) {
+    return <></>;
+  }
+
   const ChartComponent = chartAdapter.Component;
 
   return (
@@ -68,7 +74,7 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
       borderRadius='md'
     >
       <CardHeader
-        label={config.label}
+        label={config.name}
         hasEmptyData={hasEmptyData}
         isActive={isActive}
         onExpand={openModalView}
@@ -76,7 +82,7 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
       />
 
       <ChartContent
-        label={config.label}
+        label={config.name}
         bucketedData={bucketedData || []}
         ChartComponent={ChartComponent}
         chartType={chartType}
@@ -94,7 +100,7 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
       >
         {drillStack.length > 0 && (
           <DrillStackBreadcrumb
-            label={config.label}
+            label={config.name}
             moreLabel={DEFAULT_MORE_PARAMS.moreLabel}
             onBack={handleBack}
           />

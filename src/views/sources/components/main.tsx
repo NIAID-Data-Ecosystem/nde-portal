@@ -181,14 +181,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                     Latest Release:{' '}
                     <Text as='span' fontWeight='normal'>
                       {sourceObj.dateModified
-                        ? new Date(sourceObj.dateModified).toLocaleDateString(
-                            'en-US',
-                            {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                            },
-                          )
+                        ? formatDate(sourceObj.dateModified)
                         : 'N/A'}
                     </Text>
                   </Text>
@@ -196,14 +189,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                     First Released:{' '}
                     <Text as='span' fontWeight='normal'>
                       {sourceObj.dateCreated
-                        ? new Date(sourceObj.dateCreated).toLocaleDateString(
-                            'en-US',
-                            {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                            },
-                          )
+                        ? formatDate(sourceObj.dateCreated)
                         : 'N/A'}
                     </Text>
                   </Text>
