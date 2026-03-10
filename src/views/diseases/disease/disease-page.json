@@ -6,7 +6,7 @@
   "charts": {
     "title": "{{count}} {{Topic}} Related Resources",
     "treemaplist": {
-      "title": "Resources mentioning _{{topic}}_ also mentioned the following:",
+      "title": "Resources mentioning {{topic}} also mentioned the following:",
       "description": "_{{Topic}}_ datasets, computational tools, and resource catalogs also encompass different Health Conditions, Pathogens, and Measurement Techniques. Use the interactive figures below to help identify resources that advance your research needs."
     },
     "types": {
