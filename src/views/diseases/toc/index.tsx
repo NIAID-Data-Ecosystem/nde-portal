@@ -139,10 +139,10 @@ export const TableOfContents = () => {
                           <StyleCardLabel>{label}</StyleCardLabel>
 
                           {/* Description */}
-                          {page.description && (
+                          {page.topicEmphasizedDescription && (
                             <Flex flex={1}>
                               <StyledCardDescription>
-                                {page.description}
+                                {page.topicEmphasizedDescription}
                               </StyledCardDescription>
                             </Flex>
                           )}

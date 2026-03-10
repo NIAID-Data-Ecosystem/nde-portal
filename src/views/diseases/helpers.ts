@@ -83,6 +83,33 @@ const getContentStatus = (): string => {
   return isProd ? 'published' : 'draft';
 };
 
+export const processDiseaseDescription = (
+  description?: string,
+  topic?: string,
+): string | undefined => {
+  if (!description || !topic) {
+    return description;
+  }
+
+  const escapedTopic = topic.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(
+    String.raw`(?<!\*|_)\b${escapedTopic}\b(?!\*|_)`,
+    'gi',
+  );
+
+  return description.replace(regex, match => `*${match}*`);
+};
+
+const withtopicEmphasizedDescription = (
+  page: DiseasePageProps,
+): DiseasePageProps => ({
+  ...page,
+  topicEmphasizedDescription: processDiseaseDescription(
+    page.description,
+    page.topic,
+  ),
+});
+
 // Fetch all disease pages
 export const fetchAllDiseasePages = async (): Promise<DiseasePageProps[]> => {
   try {
@@ -100,7 +127,7 @@ export const fetchAllDiseasePages = async (): Promise<DiseasePageProps[]> => {
     const apiResponse: DiseaseCollectionApiResponse<DiseasePageProps[]> =
       await response.json();
 
-    return apiResponse.data;
+    return apiResponse.data.map(withtopicEmphasizedDescription);
   } catch (error) {
     console.error('Error fetching disease pages:', error);
     throw error;
@@ -130,7 +157,7 @@ export const fetchDiseaseBySlug = async (
       throw new Error(`Disease with slug "${slug}" not found`);
     }
 
-    return apiResponse.data[0];
+    return withtopicEmphasizedDescription(apiResponse.data[0]);
   } catch (error) {
     console.error('Error fetching disease by slug:', error);
     throw error;
