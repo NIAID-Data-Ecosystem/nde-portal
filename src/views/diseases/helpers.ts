@@ -11,11 +11,18 @@ import {
 } from 'src/views/diseases/types';
 import { sendGTMEvent } from '@next/third-parties/google';
 import { getTabIdFromTypeLabel } from '../search/components/filters/utils/tab-filter-utils';
+import { schemeObservable10 } from 'd3-scale-chromatic';
 
 // Color scale for data types.
 export const getFillColor = scaleOrdinal({
-  domain: ['Dataset', 'ComputationalTool', 'ResourceCatalog'],
-  range: ['#e8c543', '#ff8359', '#6e95fc'],
+  domain: [
+    'Dataset',
+    'ComputationalTool',
+    'ResourceCatalog',
+    'Sample',
+    'DataCollection',
+  ],
+  range: schemeObservable10 as string[],
 });
 
 export const normalizeSearchText = (value: string = '') => {
