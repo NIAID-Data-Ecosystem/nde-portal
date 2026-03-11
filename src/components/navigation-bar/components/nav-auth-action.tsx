@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, ButtonProps, Flex } from '@chakra-ui/react';
+import { Button, ButtonProps } from '@chakra-ui/react';
 import { useAuth } from 'src/hooks/useAuth';
 import { NavDropdownItem } from './nav-dropdown-item';
 import { NavDropdown, NavDropdownTrigger } from './nav-desktop-dropdown';
@@ -96,6 +96,7 @@ const DesktopAccountAction = ({
     <NavDropdownTrigger
       label={isLoading ? ACCOUNTS_CONFIG.default : displayName}
       icon={FaCircleUser}
+      isLoading={isLoading}
       isDisabled={isLoading}
     >
       {!isLoading && (
@@ -159,15 +160,7 @@ export const DesktopAuthAction = () => {
   if (!ENABLE_AUTH) return null;
 
   if (isLoading) {
-    return (
-      <Flex opacity={0}>
-        <DesktopAccountAction
-          isLoading={isLoading}
-          displayName={displayName ?? ACCOUNTS_CONFIG.default}
-          onLogout={logout}
-        />
-      </Flex>
-    );
+    return <DesktopLoginAction isLoading={false} onLogin={login} />;
   }
 
   if (isAuthenticated) {

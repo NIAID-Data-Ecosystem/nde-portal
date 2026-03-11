@@ -52,8 +52,7 @@ const normalizeNextPath = (nextPath: string) => {
  */
 export function getAuthConfig(): AuthConfig {
   const apiUrl =
-    process.env.NEXT_PUBLIC_API_URL ||
-    'https://api-staging.data.niaid.nih.gov/v1';
+    process.env.NEXT_PUBLIC_API_URL || 'https://api.data.niaid.nih.gov/v1';
 
   // Remove /v1 suffix for auth endpoints
   const apiBaseUrl = apiUrl.replace(/\/v1$/, '');
@@ -62,8 +61,7 @@ export function getAuthConfig(): AuthConfig {
   const frontendUrl =
     typeof window !== 'undefined'
       ? window.location.origin
-      : process.env.NEXT_PUBLIC_BASE_URL ||
-        'https://data-staging.niaid.nih.gov';
+      : process.env.NEXT_PUBLIC_BASE_URL || 'https://data.niaid.nih.gov';
 
   const configuredProvidersRaw =
     process.env.NEXT_PUBLIC_AUTH_PROVIDERS || 'github,orcid';
