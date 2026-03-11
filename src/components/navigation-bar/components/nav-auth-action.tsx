@@ -53,7 +53,7 @@ const DesktopLoginAction = ({
       bg='transparent'
       alignSelf='center'
       _hover={{ bg: 'whiteAlpha.300' }}
-      onClick={onLogin}
+      onClick={() => onLogin()}
       size='sm'
       ml={2}
     >
@@ -126,7 +126,7 @@ const MobileLoadingAction = () => {
 
 const MobileLoginAction = ({ onLogin }: { onLogin: () => void }) => {
   return (
-    <Button size='sm' w='100%' colorScheme='niaid' onClick={onLogin}>
+    <Button size='sm' w='100%' colorScheme='niaid' onClick={() => onLogin()}>
       {ACCOUNTS_CONFIG.login}
     </Button>
   );
