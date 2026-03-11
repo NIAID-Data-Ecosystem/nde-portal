@@ -5,7 +5,6 @@ import { Table, Column } from 'src/components/table';
 import { Cell } from 'src/components/resource-sections/components/samples/components/SampleTable/Cells';
 import { Link } from 'src/components/link';
 import { FormattedResource, IncludedInDataCatalog } from 'src/utils/api/types';
-
 // For columns whose display value is a rich object
 // (e.g. { identifier, url }) or an array of DefinedTerms we store a parallel
 // `_sort_<field>` plain string on each row. The column `property` points at
@@ -186,7 +185,7 @@ export const SampleResultsTable: React.FC<SampleResultsTableProps> = ({
   const rows = useMemo(() => results.map(toRow), [results]);
 
   return (
-    <Skeleton isLoaded={!isLoading}>
+    <Skeleton isLoaded={!isLoading} width='100%'>
       <Table
         ariaLabel='Sample search results'
         caption='Table of sample search results'
@@ -195,15 +194,23 @@ export const SampleResultsTable: React.FC<SampleResultsTableProps> = ({
         getCells={getCells as any}
         isLoading={isLoading}
         hasPagination={false}
-        tableContainerProps={{ overflowX: 'auto' }}
+        tableContainerProps={{
+          overflowX: 'auto',
+        }}
         tableHeadProps={{
           sx: {
-            '> tr > *': { minW: '120px !important', maxW: '240px !important' },
+            '> tr > *': {
+              minW: '120px !important',
+              maxW: '240px !important',
+            },
           },
         }}
         tableBodyProps={{
           sx: {
-            '> tr > *': { minW: '120px !important', maxW: '240px !important' },
+            '> tr > *': {
+              minW: '120px !important',
+              maxW: '240px !important',
+            },
           },
         }}
         getTableRowProps={(_, idx) => ({
