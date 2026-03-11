@@ -1,7 +1,9 @@
 export type APIResourceType =
   | 'Dataset'
   | 'ResourceCatalog'
-  | 'ComputationalTool';
+  | 'ComputationalTool'
+  | 'Sample'
+  | 'DataCollection';
 
 export type CollectionType =
   | 'Knowledge Base'
@@ -27,6 +29,8 @@ export type DisplayResourceType =
   | 'Dataset'
   | 'Resource Catalog'
   | 'Computational Tool'
+  | 'Sample'
+  | 'Data Collection'
   | 'Software'
   | 'Scholarly Article'
   | 'Other';
@@ -38,13 +42,16 @@ export const formatAPIResourceTypeForDisplay = (
   if (!str) {
     return 'Other';
   }
-
   if (str.toLowerCase() === 'dataset') {
     return 'Dataset';
   } else if (str.toLowerCase() === 'resourcecatalog') {
     return 'Resource Catalog';
   } else if (str.toLowerCase() === 'computationaltool') {
     return 'Computational Tool';
+  } else if (str.toLowerCase() === 'sample') {
+    return 'Sample';
+  } else if (str.toLowerCase() === 'datacollection') {
+    return 'Data Collection';
   } else {
     return 'Other';
   }
