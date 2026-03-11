@@ -317,7 +317,11 @@ export const SearchResultsController = ({
                             section.label
                           } (${section.count.toLocaleString()})`}
                         >
-                          <h1>table</h1>
+                          <SearchResults
+                            id={tab.id}
+                            tabs={tabs}
+                            types={[section.type]}
+                          />
                         </AccordionContent>
                       );
                     }
