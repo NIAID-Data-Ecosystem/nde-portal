@@ -50,7 +50,23 @@ const RESULT_FIELDS = [
   'variableMeasured',
 ];
 
-const SAMPLE_EXTRA_FIELDS = ['identifier', 'sampleType', 'sex'];
+const SAMPLE_EXTRA_FIELDS = [
+  'identifier',
+  'alternateIdentifier',
+  'name',
+  'description',
+  'sampleType',
+  'sex',
+  'anatomicalStructure',
+  'anatomicalSystem',
+  'sampleAvailability',
+  'sampleQuantity',
+  'developmentalStage',
+  'associatedGenotype',
+  'cellType',
+  'locationOfOrigin',
+  'itemLocation',
+];
 
 /*
 [COMPONENT INFO]:

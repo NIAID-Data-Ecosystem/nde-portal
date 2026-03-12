@@ -51,10 +51,21 @@ const toSortString = (value: unknown): string => {
 
 const SAMPLE_RESULTS_COLUMNS: Column[] = [
   { title: 'Identifier', property: sortKey('identifier'), isSortable: true },
+  {
+    title: 'Alternate Identifier',
+    property: sortKey('alternateIdentifier'),
+    isSortable: true,
+  },
   { title: 'Date', property: sortKey('date'), isSortable: true },
+  { title: 'Name', property: sortKey('name'), isSortable: true },
   {
     title: 'Source',
     property: sortKey('includedInDataCatalog'),
+    isSortable: true,
+  },
+  {
+    title: 'Description',
+    property: sortKey('description'),
     isSortable: true,
   },
   {
@@ -81,6 +92,61 @@ const SAMPLE_RESULTS_COLUMNS: Column[] = [
   {
     title: 'Measurement Technique',
     property: sortKey('measurementTechnique'),
+    isSortable: true,
+  },
+  {
+    title: 'Anatomical Structure',
+    property: sortKey('anatomicalStructure'),
+    isSortable: true,
+  },
+  {
+    title: 'Anatomical System',
+    property: sortKey('anatomicalSystem'),
+    isSortable: true,
+  },
+  {
+    title: 'Sample Type',
+    property: sortKey('sampleType'),
+    isSortable: true,
+  },
+  {
+    title: 'Sample Availability',
+    property: sortKey('sampleAvailability'),
+    isSortable: true,
+  },
+  {
+    title: 'Sample Quantity',
+    property: sortKey('sampleQuantity'),
+    isSortable: true,
+  },
+  {
+    title: 'Sex',
+    property: sortKey('sex'),
+    isSortable: true,
+  },
+  {
+    title: 'Developmental Stage',
+    property: sortKey('developmentalStage'),
+    isSortable: true,
+  },
+  {
+    title: 'Associated Genotype',
+    property: sortKey('associatedGenotype'),
+    isSortable: true,
+  },
+  {
+    title: 'Cell Type',
+    property: sortKey('cellType'),
+    isSortable: true,
+  },
+  {
+    title: 'Location of Origin',
+    property: sortKey('locationOfOrigin'),
+    isSortable: true,
+  },
+  {
+    title: 'Item Location',
+    property: sortKey('itemLocation'),
     isSortable: true,
   },
 ];
@@ -118,6 +184,10 @@ const toRow = (resource: FormattedResource): Record<string, unknown> => {
     includedInDataCatalog: catalogDisplay,
     [sortKey('identifier')]: toSortString(identifierDisplay),
     [sortKey('date')]: toSortString(resource.date),
+    [sortKey('alternateIdentifier')]: toSortString(
+      resource.alternateIdentifier,
+    ),
+    [sortKey('name')]: toSortString(resource.name),
     [sortKey('includedInDataCatalog')]: toSortString(catalogDisplay),
     [sortKey('healthCondition')]: toSortString(resource.healthCondition),
     [sortKey('infectiousAgent')]: toSortString(resource.infectiousAgent),
@@ -127,6 +197,19 @@ const toRow = (resource: FormattedResource): Record<string, unknown> => {
     [sortKey('measurementTechnique')]: toSortString(
       resource.measurementTechnique,
     ),
+    [sortKey('anatomicalStructure')]: toSortString(
+      resource.anatomicalStructure,
+    ),
+    [sortKey('anatomicalSystem')]: toSortString(resource.anatomicalSystem),
+    [sortKey('sampleType')]: toSortString(resource.sampleType),
+    [sortKey('sampleAvailability')]: toSortString(resource.sampleAvailability),
+    [sortKey('sampleQuantity')]: toSortString(resource.sampleQuantity),
+    [sortKey('sex')]: toSortString(resource.sex),
+    [sortKey('developmentalStage')]: toSortString(resource.developmentalStage),
+    [sortKey('associatedGenotype')]: toSortString(resource.associatedGenotype),
+    [sortKey('cellType')]: toSortString(resource.cellType),
+    [sortKey('locationOfOrigin')]: toSortString(resource.locationOfOrigin),
+    [sortKey('itemLocation')]: toSortString(resource.itemLocation),
   };
 };
 
