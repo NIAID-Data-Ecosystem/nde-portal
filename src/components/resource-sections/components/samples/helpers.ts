@@ -63,8 +63,10 @@ export const formatNumericValue = ({
   return '';
 };
 
-export const formatTerm = (term: string) =>
-  term.charAt(0).toUpperCase() + term.slice(1);
+export const formatTerm = (term: string) => {
+  if (!term || typeof term !== 'string') return '';
+  return term.charAt(0).toUpperCase() + term.slice(1);
+};
 
 /**
  * Format a propertyID string into a human-readable column title.

@@ -29,14 +29,15 @@ const DefinedTermCell = ({ identifier, name, url }: DefinedTerm) => {
 const QuantitativeValueCell = ({
   maxValue,
   minValue,
+  name,
   unitText,
   value,
 }: QuantitativeValue) => {
-  const valueStr = formatNumericValue({
-    value,
-    minValue,
-    maxValue,
-  });
+  const valueStr = formatNumericValue({ value, minValue, maxValue });
+
+  // Fall back to `name` when no numeric value fields are present
+  // (e.g. { "@type": "QuantitativeValue", "name": "42 year" })
+  if (!valueStr && name) return <TextCell>{name}</TextCell>;
 
   if (!unitText) return <TextCell>{valueStr}</TextCell>;
   const unitStr = formatUnitText(unitText);
@@ -62,12 +63,19 @@ export const renderValue = (val: CellValue, key?: React.Key) => {
     return <TextCell key={key}>{formatTerm(val)}</TextCell>;
   }
 
-  if ('value' in val || 'minValue' in val || 'maxValue' in val) {
-    return <QuantitativeValueCell key={key} {...val} />;
+  // Check @type explicitly first so a QuantitativeValue with only a `name`
+  // field (and no value/minValue/maxValue) isn't misrouted to DefinedTermCell.
+  if (
+    (val as QuantitativeValue)['@type'] === 'QuantitativeValue' ||
+    'value' in val ||
+    'minValue' in val ||
+    'maxValue' in val
+  ) {
+    return <QuantitativeValueCell key={key} {...(val as QuantitativeValue)} />;
   }
 
   if ('name' in val || 'identifier' in val || 'url' in val) {
-    return <DefinedTermCell key={key} {...val} />;
+    return <DefinedTermCell key={key} {...(val as DefinedTerm)} />;
   }
 
   return null;
