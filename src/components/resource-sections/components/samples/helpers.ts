@@ -390,10 +390,8 @@ export const getSampleCollectionItemsRows = (
     // leading underscore stripped).
     const rawIdentifier = sample.identifier;
     const resolvedIdentifier = Array.isArray(rawIdentifier)
-      ? ((sample as any)._id as string | undefined)
-          ?.replace(/^_/, '')
-          .toUpperCase() ?? ''
-      : rawIdentifier ?? (sample as any)._id ?? '';
+      ? sample._id?.replace(/^_/, '').toUpperCase() ?? ''
+      : rawIdentifier ?? sample._id ?? '';
 
     return {
       ...sample,
