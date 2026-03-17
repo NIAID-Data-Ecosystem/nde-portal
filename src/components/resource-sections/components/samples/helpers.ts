@@ -386,13 +386,20 @@ export const getSampleCollectionItemsRows = (
       ]),
     );
 
+    // When identifier is an array of strings, fall back to _id (with the
+    // leading underscore stripped).
+    const rawIdentifier = sample.identifier;
+    const resolvedIdentifier = Array.isArray(rawIdentifier)
+      ? sample._id?.replace(/^_/, '').toUpperCase() ?? ''
+      : rawIdentifier ?? sample._id ?? '';
+
     return {
       ...sample,
       identifier: {
-        identifier: sample.identifier ?? (sample as any)._id,
+        identifier: resolvedIdentifier,
         url: sample.url ?? '',
       },
-      _identifierSort: sample.identifier ?? (sample as any)._id ?? '',
+      _identifierSort: resolvedIdentifier,
       ...additionalPropertyEntries,
     };
   });
