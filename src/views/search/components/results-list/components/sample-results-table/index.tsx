@@ -2,15 +2,14 @@ import React, { useMemo } from 'react';
 import { Text } from '@chakra-ui/react';
 import { Skeleton } from 'src/components/skeleton';
 import { Table, Column } from 'src/components/table';
-import { Cell } from 'src/components/resource-sections/components/samples/components/SampleTable/Cells';
 import { Link } from 'src/components/link';
 import { FormattedResource, IncludedInDataCatalog } from 'src/utils/api/types';
-// For columns whose display value is a rich object
-// (e.g. { identifier, url }) or an array of DefinedTerms we store a parallel
-// `_sort_<field>` plain string on each row. The column `property` points at
-// that sort key; getCells remaps it back to the original field name to read
-// the display value.
+import { renderCellData } from 'src/views/search/components/results-list/components/sample-results-table/components/cells';
 
+// For columns whose display value is a rich object (e.g. { identifier, url })
+// or an array of DefinedTerms, a parallel `_sort_<field>` plain string
+// is stored on each row. The column `property` points at that sort key;
+// getCells remaps it back to the original field name to read the display value.
 const SORT_PREFIX = '_sort_' as const;
 type SortKey = `${typeof SORT_PREFIX}${string}`;
 
@@ -49,105 +48,154 @@ const toSortString = (value: unknown): string => {
   return String(value).toLowerCase();
 };
 
+// The shared Column interface exposes `props?: any` which Table spreads onto
+// both the <Th> header cell and every <Cell> data cell in its render loop.
+const withWidth = (width: string) => ({
+  minW: width,
+  maxW: width,
+  w: width,
+});
+
+// Adjust the width string in `props` to change a column's rendered width.
+// Both the header and every body cell will reflect the change automatically.
 const SAMPLE_RESULTS_COLUMNS: Column[] = [
-  { title: 'Identifier', property: sortKey('identifier'), isSortable: true },
+  {
+    title: 'Identifier',
+    property: sortKey('identifier'),
+    isSortable: true,
+    props: withWidth('160px'),
+  },
   {
     title: 'Alternate Identifier',
     property: sortKey('alternateIdentifier'),
     isSortable: true,
+    props: withWidth('180px'),
   },
-  { title: 'Date', property: sortKey('date'), isSortable: true },
-  { title: 'Name', property: sortKey('name'), isSortable: true },
+  {
+    title: 'Date',
+    property: sortKey('date'),
+    isSortable: true,
+    props: withWidth('130px'),
+  },
+  {
+    title: 'Name',
+    property: sortKey('name'),
+    isSortable: true,
+    props: withWidth('200px'),
+  },
   {
     title: 'Source',
     property: sortKey('includedInDataCatalog'),
     isSortable: true,
+    props: withWidth('160px'),
   },
   {
     title: 'Description',
     property: sortKey('description'),
     isSortable: true,
+    props: withWidth('250px'),
   },
   {
     title: 'Health Condition',
     property: sortKey('healthCondition'),
     isSortable: true,
+    props: withWidth('160px'),
   },
   {
     title: 'Infectious Agent',
     property: sortKey('infectiousAgent'),
     isSortable: true,
+    props: withWidth('160px'),
   },
-  { title: 'Species', property: sortKey('species'), isSortable: true },
+  {
+    title: 'Species',
+    property: sortKey('species'),
+    isSortable: true,
+    props: withWidth('170px'),
+  },
   {
     title: 'Conditions of Access',
     property: sortKey('conditionsOfAccess'),
     isSortable: true,
+    props: withWidth('180px'),
   },
   {
     title: 'Variable Measured',
     property: sortKey('variableMeasured'),
     isSortable: true,
+    props: withWidth('160px'),
   },
   {
     title: 'Measurement Technique',
     property: sortKey('measurementTechnique'),
     isSortable: true,
+    props: withWidth('200px'),
   },
   {
     title: 'Anatomical Structure',
     property: sortKey('anatomicalStructure'),
     isSortable: true,
+    props: withWidth('180px'),
   },
   {
     title: 'Anatomical System',
     property: sortKey('anatomicalSystem'),
     isSortable: true,
+    props: withWidth('160px'),
   },
   {
     title: 'Sample Type',
     property: sortKey('sampleType'),
     isSortable: true,
+    props: withWidth('140px'),
   },
   {
     title: 'Sample Availability',
     property: sortKey('sampleAvailability'),
     isSortable: true,
+    props: withWidth('170px'),
   },
   {
     title: 'Sample Quantity',
     property: sortKey('sampleQuantity'),
     isSortable: true,
+    props: withWidth('150px'),
   },
   {
     title: 'Sex',
     property: sortKey('sex'),
     isSortable: true,
+    props: withWidth('100px'),
   },
   {
     title: 'Developmental Stage',
     property: sortKey('developmentalStage'),
     isSortable: true,
+    props: withWidth('190px'),
   },
   {
     title: 'Associated Genotype',
     property: sortKey('associatedGenotype'),
     isSortable: true,
+    props: withWidth('180px'),
   },
   {
     title: 'Cell Type',
     property: sortKey('cellType'),
     isSortable: true,
+    props: withWidth('150px'),
   },
   {
     title: 'Location of Origin',
     property: sortKey('locationOfOrigin'),
     isSortable: true,
+    props: withWidth('170px'),
   },
   {
     title: 'Item Location',
     property: sortKey('itemLocation'),
     isSortable: true,
+    props: withWidth('150px'),
   },
 ];
 
@@ -222,9 +270,11 @@ const getCells = ({
   data: Record<string, unknown>;
   isLoading?: boolean;
 }) => {
+  // Remap the sort-key property back to the real field name for display.
   const field = SORT_KEY_TO_FIELD[column.property] ?? column.property;
   const value = data?.[field];
 
+  // Identifier: { identifier, url } => link or plain text
   if (field === 'identifier') {
     const id = value as { identifier: string; url: string } | null;
     if (!id) return null;
@@ -237,6 +287,7 @@ const getCells = ({
     );
   }
 
+  // Source: { name, url } => link or plain text
   if (field === 'includedInDataCatalog') {
     const cat = value as { name: string; url: string | null } | null;
     if (!cat) return null;
@@ -249,11 +300,13 @@ const getCells = ({
     );
   }
 
+  // Scalar string fields that don't need DefinedTerm / QuantitativeValue rendering
   if (field === 'date' || field === 'conditionsOfAccess') {
     return value ? <Text fontSize='sm'>{String(value)}</Text> : null;
   }
 
-  return Cell.renderCellData({ column, data: value as any, isLoading });
+  // Other fields
+  return renderCellData({ column, data: value as any, isLoading });
 };
 
 interface SampleResultsTableProps {
@@ -279,22 +332,6 @@ export const SampleResultsTable: React.FC<SampleResultsTableProps> = ({
         hasPagination={false}
         tableContainerProps={{
           overflowX: 'auto',
-        }}
-        tableHeadProps={{
-          sx: {
-            '> tr > *': {
-              minW: '120px !important',
-              maxW: '240px !important',
-            },
-          },
-        }}
-        tableBodyProps={{
-          sx: {
-            '> tr > *': {
-              minW: '120px !important',
-              maxW: '240px !important',
-            },
-          },
         }}
         getTableRowProps={(_, idx) => ({
           bg: idx % 2 === 0 ? 'white' : 'page.alt',
