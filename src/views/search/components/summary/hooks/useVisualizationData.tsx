@@ -47,11 +47,7 @@ export const useVisualizationData = ({
     return availableOptions.includes(preferredChartType)
       ? preferredChartType
       : config.chart.defaultOption;
-  }, [
-    preferredChartType,
-    config.chart?.availableOptions,
-    config.chart?.defaultOption,
-  ]);
+  }, [preferredChartType, config.chart]);
 
   // Fetch aggregation data based on the config and search state.
   const aggData = useAggregationQuery({
@@ -97,6 +93,8 @@ export const useVisualizationData = ({
     setDrillStack([]);
   }, [config.id, config.property, chartType, facetData?.length, config.chart]);
 
+  const availableOptionsKey = config.chart?.availableOptions?.join('|');
+
   useEffect(() => {
     // If preferred chart type is no longer valid, reset to default.
     if (!config.chart || !preferredChartType) return;
@@ -105,7 +103,8 @@ export const useVisualizationData = ({
       setPreferredChartType(config.chart.defaultOption);
     }
   }, [
-    config.chart?.availableOptions?.join('|'),
+    config.chart,
+    availableOptionsKey,
     preferredChartType,
     setPreferredChartType,
   ]);
@@ -156,7 +155,14 @@ export const useVisualizationData = ({
         onFilterUpdate?.(newFilters, filterProperty);
       }
     },
-    [tail, onFilterUpdate, config.property, isSliceSelected, selectedFilters],
+    [
+      tail,
+      onFilterUpdate,
+      config.property,
+      isSliceSelected,
+      selectedFilters,
+      config.filterProperty,
+    ],
   );
 
   return {

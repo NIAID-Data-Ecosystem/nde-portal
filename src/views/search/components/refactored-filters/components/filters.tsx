@@ -42,7 +42,7 @@ export const Filters = React.memo(
     // Omits date filter from filter config since date is handled differently (as a histogram)
     const configWithoutDate = useMemo(
       () => FILTER_CONFIGS.filter(facet => facet.property !== 'date'),
-      [FILTER_CONFIGS],
+      [],
     );
 
     // Build the extra_filter that includes the default date filter

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Accordion,
   AccordionItem,
@@ -42,7 +42,7 @@ export const SidebarDesktop = ({
   ) as SidebarContent[];
 
   // Find which category contains the selected page
-  const getExpandedIndices = () => {
+  const getExpandedIndices = useCallback(() => {
     if (!selectedSlug || !categories) return [];
 
     const expandedIndices: number[] = [];
@@ -55,7 +55,7 @@ export const SidebarDesktop = ({
       }
     });
     return expandedIndices;
-  };
+  }, [selectedSlug, categories]);
 
   const [expandedIndices, setExpandedIndices] = useState<number[]>(
     getExpandedIndices(),
@@ -70,7 +70,7 @@ export const SidebarDesktop = ({
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTop = 0;
     }
-  }, [selectedSlug]);
+  }, [selectedSlug, getExpandedIndices]);
 
   return (
     <Accordion

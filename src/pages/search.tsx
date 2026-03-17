@@ -93,7 +93,7 @@ const Search: NextPage<{
         date: getDefaultDateRange(),
       }),
     });
-  }, [router.isReady]);
+  }, [router.isReady, handleRouteUpdate, selectedFilters]);
 
   // Validate and cap date filter at current year if it exceeds (runtime validation)
   useEffect(() => {

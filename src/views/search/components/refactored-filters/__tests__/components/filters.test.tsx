@@ -45,7 +45,7 @@ jest.mock('../../components/container', () => ({
   }: any) => {
     React.useEffect(
       () => onVisibleFiltersChange?.(['date', 'includedInDataCatalog']),
-      [],
+      [onVisibleFiltersChange],
     );
     return (
       <div>

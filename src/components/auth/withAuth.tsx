@@ -49,7 +49,7 @@ export function withAuth<P extends object>(
         sessionStorage.setItem('auth_return_to', router.asPath);
         router.replace(redirectTo);
       }
-    }, [isLoading, isAuthenticated, redirectTo, router]);
+    }, [isLoading, isAuthenticated, router]);
 
     // Show loading state
     if (isLoading) {
