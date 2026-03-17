@@ -2,7 +2,7 @@
   "name": "nde-portal",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --hostname 0.0.0.0",
     "build:core": "yarn generate-footer-content && yarn generate-metadata-completeness-fields && next build",
     "build": "yarn with-prod-env yarn build:core",
     "build:staging": "env-cmd -f .env.staging yarn build:core",

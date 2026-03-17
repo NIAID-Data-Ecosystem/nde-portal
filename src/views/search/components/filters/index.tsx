@@ -84,6 +84,7 @@ export const Filters = React.memo(
       initialParams: {
         q: queryParams.q,
         extra_filter: extraFilterWithDate,
+        use_ai_search: queryParams.use_ai_search,
       },
       updateParams: {
         q: queryParams.q,
@@ -177,6 +178,7 @@ export const Filters = React.memo(
                     q: queryParams.q,
                     extra_filter:
                       queryFilterObject2String(queryParams.filters) || '',
+                    use_ai_search: queryParams.use_ai_search,
                   }}
                   showHistogram={showHistogram}
                   showDateControls={showDateControls}

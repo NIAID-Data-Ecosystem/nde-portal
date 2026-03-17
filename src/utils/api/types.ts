@@ -397,6 +397,7 @@ export interface QuantitativeValue {
 
 export interface SampleAggregate {
   '@type': 'Sample';
+  _id?: string;
   additionalProperty?: AdditionalProperty | AdditionalProperty[];
   anatomicalStructure?: DefinedTerm[];
   anatomicalSystem?: DefinedTerm[];

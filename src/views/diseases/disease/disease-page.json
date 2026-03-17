@@ -1,28 +1,28 @@
 {
   "showcase": {
-    "title": "{{topic}} Resources in the NIAID Data Ecosystem",
-    "description": "This section provides a visual summary of the resources available within the NIAID Discovery Portal for {{topic}} research. The graphics below highlight key metadata elements to help you find relevant data and refine your search for more targeted results. [View all search results related to {{topic}}]({{query}})."
+    "title": "{{Topic}} Resources in the NIAID Data Ecosystem",
+    "description": "This section provides a visual summary of the resources available within the NIAID Discovery Portal for _{{topic}}_ research. The graphics below highlight key metadata elements to help you find relevant data and refine your search for more targeted results. [View all search results related to _{{topic}}_]({{query}})."
   },
   "charts": {
-    "title": "{{count}} {{topic}} Related Resources",
+    "title": "{{count}} {{Topic}} Related Resources",
     "treemaplist": {
       "title": "Resources mentioning {{topic}} also mentioned the following:",
-      "description": "{{topic}} datasets, computational tools, and resource catalogs also encompass different Health Conditions, Pathogens, and Measurement Techniques. Use the interactive figures below to help identify resources that advance your research needs."
+      "description": "_{{Topic}}_ datasets, computational tools, and resource catalogs also encompass different Health Conditions, Pathogens, and Measurement Techniques. Use the interactive figures below to help identify resources that advance your research needs."
     },
     "types": {
       "title": "Data Types",
-      "description": "The NIAID Data Ecosystem currently ingests metadata for Datasets, Computational Tools and Resource Catalogs. Click on a type of resource to conduct a type-specific search for {{topic}} resources."
+      "description": "The NIAID Data Ecosystem currently ingests metadata for Datasets, Computational Tools and Resource Catalogs. Click on a type of resource to conduct a type-specific search for _{{topic}}_ resources."
     },
     "sources": {
       "title": "Data Sources",
-      "description": "{{topic}} researchers share their datasets, computational tools and other resources by depositing them in a variety of different repositories.  Use the visualization to explore the resources in the NIAID Data Ecosystem by source."
+      "description": "_{{Topic}}_ researchers share their datasets, computational tools and other resources by depositing them in a variety of different repositories.  Use the visualization to explore the resources in the NIAID Data Ecosystem by source."
     },
     "conditions-of-access": {
       "title": "Conditions Of Access",
-      "description": "Access requirements, like whether registration or a data use agreement (DUA) is needed to access a resource, aren’t always clear. Use the visualization to see how access conditions are distributed and click any category to filter {{topic}} resources by that access type."
+      "description": "Access requirements, like whether registration or a data use agreement (DUA) is needed to access a resource, aren’t always clear. Use the visualization to see how access conditions are distributed and click any category to filter _{{topic}}_ resources by that access type."
     }
   },
   "external": {
-    "title": "External Resources for {{topic}}"
+    "title": "External Resources for {{Topic}}"
   }
 }

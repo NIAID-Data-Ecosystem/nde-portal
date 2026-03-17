@@ -148,7 +148,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           >
             <DisplayHTMLContent
               noOfLines={3}
-              content={name || alternateName || ''}
+              content={name || alternateName || 'N/A'}
               fontWeight='semibold'
               color='inherit'
               fontSize='lg'

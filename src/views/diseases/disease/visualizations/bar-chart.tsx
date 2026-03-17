@@ -33,7 +33,7 @@ import {
   TooltipSubtitle,
   TooltipTitle,
 } from 'src/components/visualizations/tooltip/index';
-import { getFillColor } from '../../helpers';
+import { getFillColor } from '../../chart-utils';
 
 export interface SourceFacet {
   term: FacetTerm['term'];
