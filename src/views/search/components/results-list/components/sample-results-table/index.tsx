@@ -322,10 +322,10 @@ interface SampleResultsTableProps {
   isLoading: boolean;
 }
 
-export const SampleResultsTable: React.FC<SampleResultsTableProps> = ({
+export const SampleResultsTable = ({
   results,
   isLoading,
-}) => {
+}: SampleResultsTableProps) => {
   const rows = useMemo(() => results.map(toRow), [results]);
 
   return (
