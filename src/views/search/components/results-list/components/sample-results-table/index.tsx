@@ -4,7 +4,7 @@ import { Skeleton } from 'src/components/skeleton';
 import { Table, Column } from 'src/components/table';
 import { Link } from 'src/components/link';
 import { FormattedResource, IncludedInDataCatalog } from 'src/utils/api/types';
-import { renderCellData } from 'src/views/search/components/results-list/components/sample-results-table/components/cells';
+import { renderCellData } from './components/Cells';
 
 // For columns whose display value is a rich object (e.g. { identifier, url })
 // or an array of DefinedTerms, a parallel `_sort_<field>` plain string
@@ -218,10 +218,18 @@ const toRow = (resource: FormattedResource): Record<string, unknown> => {
     catalog?.url ??
     null;
 
+  const rawIdentifier = (resource as any).identifier;
+  const resolvedIdentifier = Array.isArray(rawIdentifier)
+    ? (resource as any)._id?.replace(/^_/, '').toUpperCase() ?? ''
+    : typeof rawIdentifier === 'string' && rawIdentifier
+    ? rawIdentifier
+    : (resource as any)._id?.replace(/^_/, '').toUpperCase() ?? '';
+
   const identifierDisplay = {
-    identifier: resource.id ?? (resource as any)._id ?? '',
+    identifier: resolvedIdentifier,
     url: resource.url ?? '',
   };
+
   const catalogDisplay = catalog
     ? { name: catalog.name ?? '', url: catalogUrl }
     : null;
