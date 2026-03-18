@@ -105,22 +105,19 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
         <SearchResultsHeading as='h2'>Filtered by: </SearchResultsHeading>
         <HStack flexWrap='wrap' spacing={1.5} py={1}>
           {/* Clear all filters button */}
-          <Tag
-            as={Button}
-            {...tagStyles}
-            colorScheme='secondary'
-            px={4}
-            variant='outline'
-            fontSize='sm'
-            fontWeight='medium'
-            _hover={{ bg: 'secondary.600' }}
+          <Button
+            size='xs'
             onClick={() => {
               resetPagination();
               removeAllFilters();
             }}
+            colorScheme='secondary'
+            variant='outline'
+            lineHeight='unset'
+            fontWeight='medium'
           >
             Clear All
-          </Tag>
+          </Button>
 
           {/* Render each tag with close button */}
           {tags.map(({ key, name, value, displayValue, filterKey }) => (

@@ -41,6 +41,17 @@
         "label": "Home"
       }
     },
+    "/login": {
+      "seo": {
+        "title": "Log In",
+        "description": "Choose an authentication provider to sign in to the NIAID Data Ecosystem Discovery Portal.",
+        "keywords": ["login", "authentication", "ORCID", "GitHub"],
+        "preventIndexing": true
+      },
+      "nav": {
+        "label": "Log In"
+      }
+    },
     "/search": {
       "seo": {
         "title": "Search Results",
