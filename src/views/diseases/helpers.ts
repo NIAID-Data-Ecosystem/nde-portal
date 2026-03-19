@@ -102,7 +102,7 @@ export const processDiseaseDescription = (
   return description.replace(regex, match => `*${match}*`);
 };
 
-const withtopicEmphasizedDescription = (
+export const withtopicEmphasizedDescription = (
   page: DiseasePageProps,
 ): DiseasePageProps => ({
   ...page,
