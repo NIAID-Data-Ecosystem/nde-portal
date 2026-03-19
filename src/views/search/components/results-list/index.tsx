@@ -13,6 +13,7 @@ import { usePaginationContext } from '../../context/pagination-context';
 import { updateRoute } from '../../utils/update-route';
 import { SearchResultsToolbar } from './components/toolbar';
 import Banner from 'src/components/banner';
+import { useSearchResultsFetchedContext } from '../../context/search-results-fetched-context';
 
 const RESULT_FIELDS = [
   '_meta',
@@ -58,12 +59,10 @@ export const SearchResults = ({
   id,
   tabs,
   types,
-  handleFiltersFetching,
 }: {
   id: TabType['id'];
   tabs: TabType[];
   types: string[];
-  handleFiltersFetching?: (isFetched: boolean) => void;
 }) => {
   const router = useRouter();
 
@@ -111,11 +110,33 @@ export const SearchResults = ({
     },
   );
 
-  const { data, isLoading, isRefetching, error, isFetched } = response;
+  const { data, isLoading, isRefetching, isFetching, error, isFetched } =
+    response;
+
+  const { markResultsFetching, markResultsFetched } =
+    useSearchResultsFetchedContext();
+  const isActiveTab = id === activeTabId;
 
   React.useEffect(() => {
-    handleFiltersFetching?.(isFetched);
-  }, [handleFiltersFetching, isFetched]);
+    if (!isActiveTab) {
+      return;
+    }
+
+    if (isFetching) {
+      markResultsFetching();
+      return;
+    }
+
+    if (isFetched) {
+      markResultsFetched();
+    }
+  }, [
+    isActiveTab,
+    markResultsFetching,
+    markResultsFetched,
+    isFetching,
+    isFetched,
+  ]);
 
   const numCards = useMemo(
     () =>

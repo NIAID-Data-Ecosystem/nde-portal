@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFilterQueries } from './hooks/useFilterQueries';
 import { FILTER_CONFIGS } from './config';
 import { useRouter } from 'next/router';
@@ -11,6 +11,7 @@ import { queryFilterObject2String } from './utils/query-builders';
 import { updateRoute } from '../../utils/update-route';
 import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
 import { usePaginationContext } from '../../context/pagination-context';
+import { useSearchResultsFetchedContext } from '../../context/search-results-fetched-context';
 import { useSearchTabsContext } from '../../context/search-tabs-context';
 import { getTabFilterProperties } from './utils/tab-filter-utils';
 import { TabType } from '../../types';
@@ -25,7 +26,6 @@ interface FiltersProps {
   removeAllFilters: () => void;
   onToggleViz?: (vizId: string) => void;
   isVizActive?: (vizId: string) => boolean;
-  enabled?: boolean;
 }
 
 // Filters component
@@ -34,7 +34,6 @@ export const Filters = React.memo(
     colorScheme = 'primary',
     isDisabled,
     selectedFilters,
-    enabled,
     removeAllFilters,
     onToggleViz,
     isVizActive,
@@ -43,6 +42,9 @@ export const Filters = React.memo(
     const queryParams = useSearchQueryFromURL();
     const { resetPagination } = usePaginationContext();
     const { selectedTab } = useSearchTabsContext();
+    const { isFiltersFetchEnabled, markFiltersFetched } =
+      useSearchResultsFetchedContext();
+    const [isDateFilterFetching, setIsDateFilterFetching] = useState(false);
 
     // Determine appropriate filters for the selected tab
     const filtersForTab = useMemo(() => {
@@ -94,8 +96,25 @@ export const Filters = React.memo(
         use_ai_search: queryParams.use_ai_search,
       },
       config,
-      enabled,
+      enabled: isFiltersFetchEnabled,
     });
+
+    useEffect(() => {
+      if (
+        isFiltersFetchEnabled &&
+        !isLoading &&
+        !isUpdating &&
+        !isDateFilterFetching
+      ) {
+        markFiltersFetched();
+      }
+    }, [
+      isFiltersFetchEnabled,
+      isLoading,
+      isUpdating,
+      isDateFilterFetching,
+      markFiltersFetched,
+    ]);
 
     const handleUpdate = useCallback(
       (update: {}) => {
@@ -184,7 +203,8 @@ export const Filters = React.memo(
                   }}
                   showHistogram={showHistogram}
                   showDateControls={showDateControls}
-                  enabled={enabled}
+                  enabled={isFiltersFetchEnabled}
+                  onFetchStateChange={setIsDateFilterFetching}
                 />
               </FiltersSection>
             );

@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import {
   SearchTabsProvider,
@@ -23,6 +23,7 @@ import {
 import { FilterTags } from 'src/views/search/components/filters/components/tag';
 import { SearchResultsHeader } from 'src/views/search/components/search-results-header';
 import { PaginationProvider } from 'src/views/search/context/pagination-context';
+import { SearchResultsFetchedProvider } from 'src/views/search/context/search-results-fetched-context';
 import { SearchResultsController } from 'src/views/search/components/search-results-tabs-controller';
 import { fetchSearchResults } from 'src/utils/api';
 import { tabs } from 'src/views/search/config/tabs';
@@ -126,14 +127,6 @@ const Search: NextPage<{
     return tab?.id || DEFAULT_TAB_ID;
   }, [router.query.tab]);
 
-  const [enableFiltersFetching, setEnableFiltersFetching] = useState(false);
-  const handleFiltersFetching = useCallback(
-    (priorityQueryIsFetched: boolean) => {
-      setEnableFiltersFetching(priorityQueryIsFetched);
-    },
-    [],
-  );
-
   return (
     <PageContainer
       meta={getPageSeoConfig('/search')}
@@ -143,72 +136,70 @@ const Search: NextPage<{
     >
       <SearchTabsProvider initialTab={initialTab}>
         <PaginationProvider>
-          <Flex bg='page.alt'>
-            <Flex
-              id='search-page-filters-sidebar'
-              bg='#fff'
-              borderRight='0.5px solid'
-              borderRightColor='gray.200'
-              flex={{ base: 0, lg: 1 }}
-              minW={{ base: 'unset', lg: '380px' }}
-              maxW={{ base: 'unset', lg: '450px' }}
-            >
-              {/* Filters sidebar */}
-              <Filters
-                colorScheme='secondary'
-                selectedFilters={selectedFilters}
-                isDisabled={appliedFilters.length === 0}
-                removeAllFilters={removeAllFilters}
-                enabled={enableFiltersFetching}
-              />
-            </Flex>
-            <Box flex={3}>
-              <VStack
-                alignItems='flex-start'
-                p={4}
+          <SearchResultsFetchedProvider>
+            <Flex bg='page.alt'>
+              <Flex
+                id='search-page-filters-sidebar'
                 bg='#fff'
-                borderBottom='1px solid'
-                borderRight='1px solid'
-                borderColor='gray.100'
-                spacing={2}
+                borderRight='0.5px solid'
+                borderRightColor='gray.200'
+                flex={{ base: 0, lg: 1 }}
+                minW={{ base: 'unset', lg: '380px' }}
+                maxW={{ base: 'unset', lg: '450px' }}
               >
-                <Flex flex={1} flexDirection='column' width='100%'>
-                  <Flex flex={1} justifyContent='flex-end'>
-                    <OntologyBrowserPopup
-                      querystring={
-                        queryParams.q === '__all__' ? '' : queryParams.q
+                {/* Filters sidebar */}
+                <Filters
+                  colorScheme='secondary'
+                  selectedFilters={selectedFilters}
+                  isDisabled={appliedFilters.length === 0}
+                  removeAllFilters={removeAllFilters}
+                />
+              </Flex>
+              <Box flex={3}>
+                <VStack
+                  alignItems='flex-start'
+                  p={4}
+                  bg='#fff'
+                  borderBottom='1px solid'
+                  borderRight='1px solid'
+                  borderColor='gray.100'
+                  spacing={2}
+                >
+                  <Flex flex={1} flexDirection='column' width='100%'>
+                    <Flex flex={1} justifyContent='flex-end'>
+                      <OntologyBrowserPopup
+                        querystring={
+                          queryParams.q === '__all__' ? '' : queryParams.q
+                        }
+                        selectedFilters={selectedFilters}
+                      />
+                    </Flex>
+                    {/* Heading: Showing results for... */}
+                    <SearchResultsHeader
+                      querystring={queryParams.q}
+                      showAIBanner={
+                        SHOW_AI_ASSISTED_SEARCH &&
+                        router.query.use_ai_search === 'true'
                       }
-                      selectedFilters={selectedFilters}
                     />
                   </Flex>
-                  {/* Heading: Showing results for... */}
-                  <SearchResultsHeader
-                    querystring={queryParams.q}
-                    showAIBanner={
-                      SHOW_AI_ASSISTED_SEARCH &&
-                      router.query.use_ai_search === 'true'
-                    }
-                  />
-                </Flex>
 
-                {/* Filter tags : Tags with the names of the currently selected filters */}
-                {Object.values(selectedFilters).length > 0 && (
-                  <FilterTags
-                    filtersConfig={FILTER_CONFIGS}
-                    selectedFilters={selectedFilters}
-                    handleRouteUpdate={handleRouteUpdate}
-                    removeAllFilters={removeAllFilters}
-                  />
-                )}
-              </VStack>
+                  {/* Filter tags : Tags with the names of the currently selected filters */}
+                  {Object.values(selectedFilters).length > 0 && (
+                    <FilterTags
+                      filtersConfig={FILTER_CONFIGS}
+                      selectedFilters={selectedFilters}
+                      handleRouteUpdate={handleRouteUpdate}
+                      removeAllFilters={removeAllFilters}
+                    />
+                  )}
+                </VStack>
 
-              {/* Search Results */}
-              <SearchResultsController
-                initialData={initialData}
-                handleFiltersFetching={handleFiltersFetching}
-              />
-            </Box>
-          </Flex>
+                {/* Search Results */}
+                <SearchResultsController initialData={initialData} />
+              </Box>
+            </Flex>
+          </SearchResultsFetchedProvider>
         </PaginationProvider>
       </SearchTabsProvider>
     </PageContainer>
