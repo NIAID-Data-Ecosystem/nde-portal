@@ -148,13 +148,14 @@ export const useFilterQueries = ({
   config,
   initialParams,
   updateParams,
+  enabled = true,
 }: {
   config: FilterConfig[];
   initialParams: Params;
   updateParams: Params;
+  enabled?: boolean;
 }) => {
   const router = useRouter();
-
   // Memoize the initial queries to avoid unnecessary recalculations
   const initialQueries = useMemo(() => {
     return config
@@ -188,7 +189,7 @@ export const useFilterQueries = ({
                   total: 0,
                 },
               },
-              enabled: router.isReady,
+              enabled: router.isReady && enabled,
               refetchOnWindowFocus: false,
             },
           ),
@@ -200,6 +201,7 @@ export const useFilterQueries = ({
     initialParams.extra_filter,
     initialParams?.use_ai_search,
     router.isReady,
+    enabled,
   ]);
 
   // Note: Wrap useQueries combine function in callback because inline functions will run on every render.
@@ -260,13 +262,13 @@ export const useFilterQueries = ({
             { ...updateParams, facets: facetConfig.property },
             {
               queryKey: ['filtered'],
-              enabled: shouldRunUpdateQueries && router.isReady,
+              enabled: shouldRunUpdateQueries && router.isReady && enabled,
               refetchOnWindowFocus: false,
             },
           ),
       )
       .filter(query => !!query);
-  }, [config, updateParams, shouldRunUpdateQueries, router.isReady]);
+  }, [config, updateParams, shouldRunUpdateQueries, router.isReady, enabled]);
 
   // Fetch the updated results with the selected filters
   const {

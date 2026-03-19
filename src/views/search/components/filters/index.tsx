@@ -25,6 +25,7 @@ interface FiltersProps {
   removeAllFilters: () => void;
   onToggleViz?: (vizId: string) => void;
   isVizActive?: (vizId: string) => boolean;
+  enabled?: boolean;
 }
 
 // Filters component
@@ -33,6 +34,7 @@ export const Filters = React.memo(
     colorScheme = 'primary',
     isDisabled,
     selectedFilters,
+    enabled,
     removeAllFilters,
     onToggleViz,
     isVizActive,
@@ -92,6 +94,7 @@ export const Filters = React.memo(
         use_ai_search: queryParams.use_ai_search,
       },
       config,
+      enabled,
     });
 
     const handleUpdate = useCallback(
@@ -153,7 +156,6 @@ export const Filters = React.memo(
               router.pathname,
             );
             const showDateControls = true; // Always show controls in filters
-
             return (
               <FiltersSection
                 key={config.name}
@@ -182,6 +184,7 @@ export const Filters = React.memo(
                   }}
                   showHistogram={showHistogram}
                   showDateControls={showDateControls}
+                  enabled={enabled}
                 />
               </FiltersSection>
             );

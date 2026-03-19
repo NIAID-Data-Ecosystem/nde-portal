@@ -21,6 +21,7 @@ interface DateFilterProps {
   resetFilter: () => void;
   showHistogram?: boolean;
   showDateControls?: boolean;
+  enabled?: boolean;
 }
 
 /**
@@ -122,6 +123,7 @@ export const DateFilter: React.FC<DateFilterProps> = props => {
     initialParams,
     updateParams: queryParams,
     config: DATE_FILTER_CONFIG,
+    enabled: props.enabled,
   });
 
   const { initialResults, isLoading } = initialQueryData;

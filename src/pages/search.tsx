@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import {
   SearchTabsProvider,
@@ -126,6 +126,14 @@ const Search: NextPage<{
     return tab?.id || DEFAULT_TAB_ID;
   }, [router.query.tab]);
 
+  const [enableFiltersFetching, setEnableFiltersFetching] = useState(false);
+  const handleFiltersFetching = useCallback(
+    (priorityQueryIsFetched: boolean) => {
+      setEnableFiltersFetching(priorityQueryIsFetched);
+    },
+    [],
+  );
+
   return (
     <PageContainer
       meta={getPageSeoConfig('/search')}
@@ -151,6 +159,7 @@ const Search: NextPage<{
                 selectedFilters={selectedFilters}
                 isDisabled={appliedFilters.length === 0}
                 removeAllFilters={removeAllFilters}
+                enabled={enableFiltersFetching}
               />
             </Flex>
             <Box flex={3}>
@@ -194,7 +203,10 @@ const Search: NextPage<{
               </VStack>
 
               {/* Search Results */}
-              <SearchResultsController initialData={initialData} />
+              <SearchResultsController
+                initialData={initialData}
+                handleFiltersFetching={handleFiltersFetching}
+              />
             </Box>
           </Flex>
         </PaginationProvider>

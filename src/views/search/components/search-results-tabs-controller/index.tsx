@@ -36,11 +36,13 @@ const CAROUSEL_RESULTS_FIELDS = [
 interface SearchResultsControllerProps {
   colorScheme?: string;
   initialData: FetchSearchResultsResponse;
+  handleFiltersFetching?: (isFetched: boolean) => void;
 }
 
 export const SearchResultsController = ({
   colorScheme = 'secondary',
   initialData,
+  handleFiltersFetching,
 }: SearchResultsControllerProps) => {
   const router = useRouter();
   const { selectedIndex, setSelectedIndex } = useSearchTabsContext();
@@ -78,7 +80,7 @@ export const SearchResultsController = ({
       facet_size: 100,
       use_ai_search: queryParams.use_ai_search,
     },
-    { initialData },
+    { enabled: router.isReady },
   );
 
   const { data: facetData } = searchResultsData.response;
@@ -316,6 +318,9 @@ export const SearchResultsController = ({
                           id={tab.id}
                           tabs={tabs}
                           types={[section.type]}
+                          handleFiltersFetching={isFetched =>
+                            handleFiltersFetching?.(isFetched)
+                          }
                         />
                       </AccordionContent>
                     );

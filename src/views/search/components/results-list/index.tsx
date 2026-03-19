@@ -13,7 +13,6 @@ import { usePaginationContext } from '../../context/pagination-context';
 import { updateRoute } from '../../utils/update-route';
 import { SearchResultsToolbar } from './components/toolbar';
 import Banner from 'src/components/banner';
-import { FetchSearchResultsResponse } from 'src/utils/api/types';
 
 const RESULT_FIELDS = [
   '_meta',
@@ -59,10 +58,12 @@ export const SearchResults = ({
   id,
   tabs,
   types,
+  handleFiltersFetching,
 }: {
   id: TabType['id'];
   tabs: TabType[];
   types: string[];
+  handleFiltersFetching?: (isFetched: boolean) => void;
 }) => {
   const router = useRouter();
 
@@ -110,7 +111,11 @@ export const SearchResults = ({
     },
   );
 
-  const { data, isLoading, isRefetching, error } = response;
+  const { data, isLoading, isRefetching, error, isFetched } = response;
+
+  React.useEffect(() => {
+    handleFiltersFetching?.(isFetched);
+  }, [handleFiltersFetching, isFetched]);
 
   const numCards = useMemo(
     () =>
