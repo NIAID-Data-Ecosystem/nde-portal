@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQueries, UseQueryResult } from '@tanstack/react-query';
 import { Params } from 'src/utils/api';
 import { FilterConfig, QueryData, RawQueryResult } from '../types';
+import { useRouter } from 'next/router';
 
 // Function to create a hash map from the filtered results for faster lookup
 const createFilteredResultsMap = (updatedResults: QueryData) => {
@@ -152,6 +153,8 @@ export const useFilterQueries = ({
   initialParams: Params;
   updateParams: Params;
 }) => {
+  const router = useRouter();
+
   // Memoize the initial queries to avoid unnecessary recalculations
   const initialQueries = useMemo(() => {
     return config
@@ -185,6 +188,7 @@ export const useFilterQueries = ({
                   total: 0,
                 },
               },
+              enabled: router.isReady,
               refetchOnWindowFocus: false,
             },
           ),
@@ -195,6 +199,7 @@ export const useFilterQueries = ({
     initialParams.q,
     initialParams.extra_filter,
     initialParams?.use_ai_search,
+    router.isReady,
   ]);
 
   // Note: Wrap useQueries combine function in callback because inline functions will run on every render.
@@ -255,13 +260,13 @@ export const useFilterQueries = ({
             { ...updateParams, facets: facetConfig.property },
             {
               queryKey: ['filtered'],
-              enabled: shouldRunUpdateQueries,
+              enabled: shouldRunUpdateQueries && router.isReady,
               refetchOnWindowFocus: false,
             },
           ),
       )
       .filter(query => !!query);
-  }, [config, updateParams, shouldRunUpdateQueries]);
+  }, [config, updateParams, shouldRunUpdateQueries, router.isReady]);
 
   // Fetch the updated results with the selected filters
   const {
