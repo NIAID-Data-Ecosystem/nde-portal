@@ -69,7 +69,6 @@ export const SearchResultsController = ({
   };
 
   const queryParams = useSearchQueryFromURL();
-
   const searchResultsData = useSearchResultsData(
     {
       ...queryParams,
@@ -79,7 +78,7 @@ export const SearchResultsController = ({
       facet_size: 100,
       use_ai_search: queryParams.use_ai_search,
     },
-    { initialData },
+    { enabled: router.isReady },
   );
 
   const { data: facetData } = searchResultsData.response;
@@ -137,8 +136,10 @@ export const SearchResultsController = ({
       ...queryParams,
       q: queryParams.q,
       filters: { ...queryParams.filters, ['@type']: ['ResourceCatalog'] },
+      fields: CAROUSEL_RESULTS_FIELDS,
       facets: ['@type'],
-      facet_size: 100,
+      size: 50,
+      sort: 'name.raw',
       use_ai_search: queryParams.use_ai_search,
     },
 
