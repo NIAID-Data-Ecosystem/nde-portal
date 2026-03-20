@@ -82,19 +82,20 @@ export const Filters = React.memo(
       return queryFilterObject2String(filtersToUse) || '';
     }, [queryParams.filters, selectedFilters.date]);
 
+    const filterQueryParams = useMemo(
+      () => ({
+        q: queryParams.q,
+        extra_filter: extraFilterWithDate,
+        use_ai_search: queryParams.use_ai_search,
+      }),
+      [queryParams.q, extraFilterWithDate, queryParams.use_ai_search],
+    );
+
     // Use custom hook to get filter query results
     // Both initialParams and updateParams now include the date filter
     const { results, error, isLoading, isUpdating } = useFilterQueries({
-      initialParams: {
-        q: queryParams.q,
-        extra_filter: extraFilterWithDate,
-        use_ai_search: queryParams.use_ai_search,
-      },
-      updateParams: {
-        q: queryParams.q,
-        extra_filter: extraFilterWithDate,
-        use_ai_search: queryParams.use_ai_search,
-      },
+      initialParams: filterQueryParams,
+      updateParams: filterQueryParams,
       config,
       enabled: isFiltersFetchEnabled,
     });
@@ -144,7 +145,6 @@ export const Filters = React.memo(
       },
       [selectedFilters, handleUpdate],
     );
-
     return (
       <FiltersContainer
         title='Search Filters'

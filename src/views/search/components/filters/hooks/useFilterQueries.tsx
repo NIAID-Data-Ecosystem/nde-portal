@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useQueries, UseQueryResult } from '@tanstack/react-query';
 import { Params } from 'src/utils/api';
 import { FilterConfig, QueryData, RawQueryResult } from '../types';
@@ -252,6 +252,10 @@ export const useFilterQueries = ({
   }, [updateParams, filtersChanged, useAiSearchChanged, initialResults]);
 
   const updateQueries = useMemo(() => {
+    if (!shouldRunUpdateQueries || !updateParams) {
+      return [];
+    }
+
     return config
       .filter(facet => facet?.createQueries)
       .flatMap(
@@ -281,23 +285,22 @@ export const useFilterQueries = ({
     combine: combineCallback,
   });
 
-  // Merge initial and filtered results (if they exist)
-  const [mergedResults, setMergedResults] = useState<QueryData>({});
-
-  useEffect(() => {
+  const mergedResults = useMemo<QueryData>(() => {
     if (
       shouldRunUpdateQueries &&
       !isUpdating &&
+      initialResults &&
       updatedResults &&
-      Object.keys(updatedResults)?.length > 0
+      Object.keys(updatedResults).length > 0
     ) {
-      const merged = mergeResults(initialResults, updatedResults);
-      setMergedResults(merged);
-    } else if (!isLoading && !isUpdating && initialResults) {
-      // If update queries are disabled (because params are the same),
-      // just use initialResults directly
-      setMergedResults(initialResults);
+      return mergeResults(initialResults, updatedResults);
     }
+
+    if (!isLoading && !isUpdating && initialResults) {
+      return initialResults;
+    }
+
+    return {};
   }, [
     initialResults,
     updatedResults,
