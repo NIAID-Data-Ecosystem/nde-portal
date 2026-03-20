@@ -65,7 +65,7 @@ export const DiseaseOverviewCard = ({
           {/* Description (if present) */}
           {topicEmphasizedDescription || description ? (
             <>
-              <Text noOfLines={6} fontSize='xs' lineHeight='short'>
+              <Text as='div' noOfLines={6} fontSize='xs' lineHeight='short'>
                 {topicEmphasizedDescription ? (
                   <ReactMarkdown rehypePlugins={[rehypeRaw, remarkGfm]}>
                     {topicEmphasizedDescription}
