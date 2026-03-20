@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFilterQueries } from './hooks/useFilterQueries';
 import { FILTER_CONFIGS } from './config';
 import { useRouter } from 'next/router';
@@ -11,6 +11,7 @@ import { queryFilterObject2String } from './utils/query-builders';
 import { updateRoute } from '../../utils/update-route';
 import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
 import { usePaginationContext } from '../../context/pagination-context';
+import { useSearchResultsFetchedContext } from '../../context/search-results-fetched-context';
 import { useSearchTabsContext } from '../../context/search-tabs-context';
 import { getTabFilterProperties } from './utils/tab-filter-utils';
 import { TabType } from '../../types';
@@ -41,6 +42,9 @@ export const Filters = React.memo(
     const queryParams = useSearchQueryFromURL();
     const { resetPagination } = usePaginationContext();
     const { selectedTab } = useSearchTabsContext();
+    const { isFiltersFetchEnabled, markFiltersFetched } =
+      useSearchResultsFetchedContext();
+    const [isDateFilterFetching, setIsDateFilterFetching] = useState(false);
 
     // Determine appropriate filters for the selected tab
     const filtersForTab = useMemo(() => {
@@ -78,21 +82,40 @@ export const Filters = React.memo(
       return queryFilterObject2String(filtersToUse) || '';
     }, [queryParams.filters, selectedFilters.date]);
 
+    const filterQueryParams = useMemo(
+      () => ({
+        q: queryParams.q,
+        extra_filter: extraFilterWithDate,
+        use_ai_search: queryParams.use_ai_search,
+      }),
+      [queryParams.q, extraFilterWithDate, queryParams.use_ai_search],
+    );
+
     // Use custom hook to get filter query results
     // Both initialParams and updateParams now include the date filter
     const { results, error, isLoading, isUpdating } = useFilterQueries({
-      initialParams: {
-        q: queryParams.q,
-        extra_filter: extraFilterWithDate,
-        use_ai_search: queryParams.use_ai_search,
-      },
-      updateParams: {
-        q: queryParams.q,
-        extra_filter: extraFilterWithDate,
-        use_ai_search: queryParams.use_ai_search,
-      },
+      initialParams: filterQueryParams,
+      updateParams: filterQueryParams,
       config,
+      enabled: isFiltersFetchEnabled,
     });
+
+    useEffect(() => {
+      if (
+        isFiltersFetchEnabled &&
+        !isLoading &&
+        !isUpdating &&
+        !isDateFilterFetching
+      ) {
+        markFiltersFetched();
+      }
+    }, [
+      isFiltersFetchEnabled,
+      isLoading,
+      isUpdating,
+      isDateFilterFetching,
+      markFiltersFetched,
+    ]);
 
     const handleUpdate = useCallback(
       (update: {}) => {
@@ -122,7 +145,6 @@ export const Filters = React.memo(
       },
       [selectedFilters, handleUpdate],
     );
-
     return (
       <FiltersContainer
         title='Search Filters'
@@ -153,7 +175,6 @@ export const Filters = React.memo(
               router.pathname,
             );
             const showDateControls = true; // Always show controls in filters
-
             return (
               <FiltersSection
                 key={config.name}
@@ -182,6 +203,8 @@ export const Filters = React.memo(
                   }}
                   showHistogram={showHistogram}
                   showDateControls={showDateControls}
+                  enabled={isFiltersFetchEnabled}
+                  onFetchStateChange={setIsDateFilterFetching}
                 />
               </FiltersSection>
             );

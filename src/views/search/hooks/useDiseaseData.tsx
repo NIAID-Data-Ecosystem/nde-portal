@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { withtopicEmphasizedDescription } from 'src/views/diseases/helpers';
 import { DiseasePageProps } from 'src/views/diseases/types';
 import { SelectedFilterType } from 'src/views/search/components/filters/types';
 
@@ -83,7 +84,7 @@ const fetchMatchingDiseases = async (
     }
 
     const apiResponse = await response.json();
-    return apiResponse.data || [];
+    return apiResponse.data.map(withtopicEmphasizedDescription);
   } catch (error) {
     console.error('Error fetching diseases:', error);
     return []; // Return empty array on error to prevent UI crashes

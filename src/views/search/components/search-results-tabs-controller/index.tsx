@@ -77,20 +77,19 @@ export const SearchResultsController = ({
   };
 
   const queryParams = useSearchQueryFromURL();
-
   const searchResultsData = useSearchResultsData(
     {
+      ...queryParams,
       q: queryParams.q,
       filters: queryParams.filters,
       facets: ['@type'],
       facet_size: 100,
       use_ai_search: queryParams.use_ai_search,
     },
-    { initialData },
+    { enabled: router.isReady },
   );
 
   const { data: facetData } = searchResultsData.response;
-
   // Determine the correct tab based on actual search results
   useEffect(() => {
     if (!facetData?.facets || !router.isReady) return;
@@ -161,15 +160,16 @@ export const SearchResultsController = ({
 
   const carouselResultsData = useSearchResultsData(
     {
-      q: queryParams.q || '',
-      filters: {
-        ...queryParams.filters,
-        '@type': ['ResourceCatalog'],
-      },
+      ...queryParams,
+      q: queryParams.q,
+      filters: { ...queryParams.filters, ['@type']: ['ResourceCatalog'] },
       fields: CAROUSEL_RESULTS_FIELDS,
+      facets: ['@type'],
       size: 50,
       sort: 'name.raw',
+      use_ai_search: queryParams.use_ai_search,
     },
+
     {
       enabled: hasResourceCatalogRecords,
     },
