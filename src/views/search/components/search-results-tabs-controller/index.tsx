@@ -81,7 +81,6 @@ export const SearchResultsController = ({
 
   const resourceCatalogResultsData = useSearchResultsData(
     {
-      ...queryParams,
       q: queryParams.q,
       filters: { ...queryParams.filters, ['@type']: ['ResourceCatalog'] },
       fields: CAROUSEL_RESULTS_FIELDS,
@@ -97,7 +96,6 @@ export const SearchResultsController = ({
 
   const datasetData = useSearchResultsData(
     {
-      ...queryParams,
       q: queryParams.q,
       filters: { ...queryParams.filters, ['@type']: ['Dataset'] },
       facets: ['@type'],
@@ -109,7 +107,6 @@ export const SearchResultsController = ({
 
   const compToolsData = useSearchResultsData(
     {
-      ...queryParams,
       q: queryParams.q,
       filters: { ...queryParams.filters, ['@type']: ['ComputationalTool'] },
       facets: ['@type'],
