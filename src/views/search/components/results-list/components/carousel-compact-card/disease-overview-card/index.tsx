@@ -4,6 +4,9 @@ import { DiseasePageProps } from 'src/views/diseases/types';
 import { Skeleton } from 'src/components/skeleton';
 import { CompactCard } from '../compact-card';
 import { TAB_LABELS } from 'src/views/search/config/tabs';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
 
 interface DiseaseOverviewCardProps {
   data?: DiseasePageProps | null;
@@ -14,7 +17,7 @@ export const DiseaseOverviewCard = ({
   data,
   isLoading = false,
 }: DiseaseOverviewCardProps) => {
-  const { title, description, slug } = data || {};
+  const { title, description, slug, topicEmphasizedDescription } = data || {};
 
   if (!isLoading && !slug) {
     console.warn(
@@ -60,10 +63,16 @@ export const DiseaseOverviewCard = ({
       <CompactCard.Body>
         <Skeleton isLoaded={!isLoading} flex='1'>
           {/* Description (if present) */}
-          {description ? (
+          {topicEmphasizedDescription || description ? (
             <>
-              <Text noOfLines={6} fontSize='xs' lineHeight='short'>
-                {description}
+              <Text as='div' noOfLines={6} fontSize='xs' lineHeight='short'>
+                {topicEmphasizedDescription ? (
+                  <ReactMarkdown rehypePlugins={[rehypeRaw, remarkGfm]}>
+                    {topicEmphasizedDescription}
+                  </ReactMarkdown>
+                ) : (
+                  <>{description}</>
+                )}
               </Text>
               <Text fontSize='xs' lineHeight='short' marginTop={7}>
                 {invitation}

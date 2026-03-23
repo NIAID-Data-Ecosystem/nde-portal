@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useQueries, UseQueryResult } from '@tanstack/react-query';
 import { Params } from 'src/utils/api';
 import { FilterConfig, QueryData, RawQueryResult } from '../types';
+import { useRouter } from 'next/router';
 
 // Function to create a hash map from the filtered results for faster lookup
 const createFilteredResultsMap = (updatedResults: QueryData) => {
@@ -147,11 +148,14 @@ export const useFilterQueries = ({
   config,
   initialParams,
   updateParams,
+  enabled = true,
 }: {
   config: FilterConfig[];
   initialParams: Params;
   updateParams: Params;
+  enabled?: boolean;
 }) => {
+  const router = useRouter();
   // Memoize the initial queries to avoid unnecessary recalculations
   const initialQueries = useMemo(() => {
     return config
@@ -185,6 +189,7 @@ export const useFilterQueries = ({
                   total: 0,
                 },
               },
+              enabled: router.isReady && enabled,
               refetchOnWindowFocus: false,
             },
           ),
@@ -195,6 +200,8 @@ export const useFilterQueries = ({
     initialParams.q,
     initialParams.extra_filter,
     initialParams?.use_ai_search,
+    router.isReady,
+    enabled,
   ]);
 
   // Note: Wrap useQueries combine function in callback because inline functions will run on every render.
@@ -245,6 +252,10 @@ export const useFilterQueries = ({
   }, [updateParams, filtersChanged, useAiSearchChanged, initialResults]);
 
   const updateQueries = useMemo(() => {
+    if (!shouldRunUpdateQueries || !updateParams) {
+      return [];
+    }
+
     return config
       .filter(facet => facet?.createQueries)
       .flatMap(
@@ -255,13 +266,13 @@ export const useFilterQueries = ({
             { ...updateParams, facets: facetConfig.property },
             {
               queryKey: ['filtered'],
-              enabled: shouldRunUpdateQueries,
+              enabled: shouldRunUpdateQueries && router.isReady && enabled,
               refetchOnWindowFocus: false,
             },
           ),
       )
       .filter(query => !!query);
-  }, [config, updateParams, shouldRunUpdateQueries]);
+  }, [config, updateParams, shouldRunUpdateQueries, router.isReady, enabled]);
 
   // Fetch the updated results with the selected filters
   const {
@@ -274,23 +285,22 @@ export const useFilterQueries = ({
     combine: combineCallback,
   });
 
-  // Merge initial and filtered results (if they exist)
-  const [mergedResults, setMergedResults] = useState<QueryData>({});
-
-  useEffect(() => {
+  const mergedResults = useMemo<QueryData>(() => {
     if (
       shouldRunUpdateQueries &&
       !isUpdating &&
+      initialResults &&
       updatedResults &&
-      Object.keys(updatedResults)?.length > 0
+      Object.keys(updatedResults).length > 0
     ) {
-      const merged = mergeResults(initialResults, updatedResults);
-      setMergedResults(merged);
-    } else if (!isLoading && !isUpdating && initialResults) {
-      // If update queries are disabled (because params are the same),
-      // just use initialResults directly
-      setMergedResults(initialResults);
+      return mergeResults(initialResults, updatedResults);
     }
+
+    if (!isLoading && !isUpdating && initialResults) {
+      return initialResults;
+    }
+
+    return {};
   }, [
     initialResults,
     updatedResults,

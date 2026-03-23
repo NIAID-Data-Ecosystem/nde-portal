@@ -48,7 +48,7 @@ export const useSearchResultsData = (
     ],
   );
 
-  const queryKey = ['search-results-draft', params];
+  const queryKey = ['search-results', params];
 
   const queryResponse = useSearchResultsQuery(params, {
     queryKey,

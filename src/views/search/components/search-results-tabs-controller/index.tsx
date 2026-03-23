@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { TabPanel } from '@chakra-ui/react';
 import { useSearchTabsContext } from '../../context/search-tabs-context';
@@ -46,9 +46,17 @@ export const SearchResultsController = ({
   const { selectedIndex, setSelectedIndex } = useSearchTabsContext();
   const { getPagination, setPagination } = usePaginationContext();
 
+  // Track if the user has chosen a tab. When set, the auto-tab will only
+  // override the user choice if there are no results for that tab.
+  const userSelectedTabRef = useRef<string | null>(null);
+
   const handleTabChange = (index: number) => {
     setSelectedIndex(index);
     const selectedTab = tabs[index];
+
+    // Record the user choice so the auto-tab respects it.
+    userSelectedTabRef.current = selectedTab.id;
+
     const paginationState = getPagination(selectedTab.id);
 
     setPagination(selectedTab.id, paginationState);
@@ -69,20 +77,19 @@ export const SearchResultsController = ({
   };
 
   const queryParams = useSearchQueryFromURL();
-
   const searchResultsData = useSearchResultsData(
     {
+      ...queryParams,
       q: queryParams.q,
       filters: queryParams.filters,
       facets: ['@type'],
       facet_size: 100,
       use_ai_search: queryParams.use_ai_search,
     },
-    { initialData },
+    { enabled: router.isReady },
   );
 
   const { data: facetData } = searchResultsData.response;
-
   // Determine the correct tab based on actual search results
   useEffect(() => {
     if (!facetData?.facets || !router.isReady) return;
@@ -97,6 +104,25 @@ export const SearchResultsController = ({
     const selectedTypes: string[] = Array.isArray(typeFilter)
       ? typeFilter.filter((item): item is string => typeof item === 'string')
       : [];
+
+    // If the user has selected a tab, only leave it when that tab
+    // has no associated results anymore.
+    if (userSelectedTabRef.current !== null) {
+      const currentTab = tabs[selectedIndex];
+      const currentTabHasResults = currentTab?.types.some(({ type }) =>
+        facetCounts.some(f => f.type === type && f.count > 0),
+      );
+
+      if (currentTabHasResults) {
+        // The user's chosen tab still has associated results. The active tab
+        // remains the same.
+        return;
+      }
+
+      // No results for the chosen tab. Use the auto-tab to select the
+      // active tab.
+      userSelectedTabRef.current = null;
+    }
 
     // Determine the correct tab
     const calculatedTabId = getDefaultTabId(tabs, facetCounts, selectedTypes);
@@ -134,15 +160,16 @@ export const SearchResultsController = ({
 
   const carouselResultsData = useSearchResultsData(
     {
-      q: queryParams.q || '',
-      filters: {
-        ...queryParams.filters,
-        '@type': ['ResourceCatalog'],
-      },
+      ...queryParams,
+      q: queryParams.q,
+      filters: { ...queryParams.filters, ['@type']: ['ResourceCatalog'] },
       fields: CAROUSEL_RESULTS_FIELDS,
+      facets: ['@type'],
       size: 50,
       sort: 'name.raw',
+      use_ai_search: queryParams.use_ai_search,
     },
+
     {
       enabled: hasResourceCatalogRecords,
     },
