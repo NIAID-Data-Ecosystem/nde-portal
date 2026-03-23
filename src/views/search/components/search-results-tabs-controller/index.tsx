@@ -77,27 +77,71 @@ export const SearchResultsController = ({
   };
 
   const queryParams = useSearchQueryFromURL();
-  const searchResultsData = useSearchResultsData(
+  const MAX_RESOURCE_CATALOG_RESULTS = 50;
+
+  const resourceCatalogResultsData = useSearchResultsData(
     {
       ...queryParams,
       q: queryParams.q,
-      filters: queryParams.filters,
+      filters: { ...queryParams.filters, ['@type']: ['ResourceCatalog'] },
+      fields: CAROUSEL_RESULTS_FIELDS,
       facets: ['@type'],
-      facet_size: 100,
+      size: MAX_RESOURCE_CATALOG_RESULTS, // apply size since results will be directly rendered in carousel.
+      sort: 'name.raw',
+      use_ai_search: queryParams.use_ai_search,
+    },
+    {
+      enabled: router.isReady,
+    },
+  );
+
+  const datasetData = useSearchResultsData(
+    {
+      ...queryParams,
+      q: queryParams.q,
+      filters: { ...queryParams.filters, ['@type']: ['Dataset'] },
+      facets: ['@type'],
+      size: 0, // only the dataset facet counts are needed
       use_ai_search: queryParams.use_ai_search,
     },
     { enabled: router.isReady },
   );
 
-  const { data: facetData } = searchResultsData.response;
+  const compToolsData = useSearchResultsData(
+    {
+      ...queryParams,
+      q: queryParams.q,
+      filters: { ...queryParams.filters, ['@type']: ['ComputationalTool'] },
+      facets: ['@type'],
+      size: 0, // only the computational tool facet counts are needed
+      use_ai_search: queryParams.use_ai_search,
+    },
+    { enabled: router.isReady },
+  );
+  const facetsData = [
+    resourceCatalogResultsData,
+    datasetData,
+    compToolsData,
+  ].map(facetData => {
+    const facet = facetData?.response?.data?.facets?.['@type']?.terms?.[0];
+    const facetWithType = {
+      term: facet?.term || '',
+      type: facet?.term || '',
+      count: facet?.count || 0,
+    };
+    // For Resource Catalog, the count should reflect the max num of items we want to show in the carousel, not the total count from the facet.
+    if (facet?.term === 'ResourceCatalog') {
+      facetWithType.count = Math.min(
+        facetWithType.count,
+        MAX_RESOURCE_CATALOG_RESULTS,
+      );
+    }
+    return facetWithType;
+  });
+
   // Determine the correct tab based on actual search results
   useEffect(() => {
-    if (!facetData?.facets || !router.isReady) return;
-    const facetCounts =
-      facetData?.facets?.['@type']?.terms?.map(term => ({
-        type: term.term,
-        count: term.count,
-      })) || [];
+    if (!facetsData.length || !router.isReady) return;
 
     // Get selected resource types from filters
     const typeFilter = queryParams.filters?.['@type'];
@@ -110,7 +154,7 @@ export const SearchResultsController = ({
     if (userSelectedTabRef.current !== null) {
       const currentTab = tabs[selectedIndex];
       const currentTabHasResults = currentTab?.types.some(({ type }) =>
-        facetCounts.some(f => f.type === type && f.count > 0),
+        facetsData.some(f => f.type === type && f.count > 0),
       );
 
       if (currentTabHasResults) {
@@ -125,7 +169,7 @@ export const SearchResultsController = ({
     }
 
     // Determine the correct tab
-    const calculatedTabId = getDefaultTabId(tabs, facetCounts, selectedTypes);
+    const calculatedTabId = getDefaultTabId(tabs, facetsData, selectedTypes);
 
     // Find the index for the tab
     const calculatedIndex = tabs.findIndex(t => t.id === calculatedTabId);
@@ -150,36 +194,13 @@ export const SearchResultsController = ({
         );
       }
     }
-  }, [facetData?.facets, queryParams.filters, router.isReady, router.query.q]);
-
-  const hasResourceCatalogRecords = useMemo(() => {
-    const terms = facetData?.facets?.['@type']?.terms ?? [];
-    const resourceCatalogFacet = terms.find(t => t.term === 'ResourceCatalog');
-    return (resourceCatalogFacet?.count || 0) > 0;
-  }, [facetData?.facets]);
-
-  const carouselResultsData = useSearchResultsData(
-    {
-      ...queryParams,
-      q: queryParams.q,
-      filters: { ...queryParams.filters, ['@type']: ['ResourceCatalog'] },
-      fields: CAROUSEL_RESULTS_FIELDS,
-      facets: ['@type'],
-      size: 50,
-      sort: 'name.raw',
-      use_ai_search: queryParams.use_ai_search,
-    },
-
-    {
-      enabled: hasResourceCatalogRecords,
-    },
-  );
+  }, [facetsData, queryParams.filters, router.isReady, router.query.q]);
 
   const {
     data: carouselData,
     isLoading: carouselIsLoading,
     isPending: carouselIsPending,
-  } = carouselResultsData.response;
+  } = resourceCatalogResultsData.response;
 
   const resourceCatalogData = useMemo(
     () => carouselData?.results || [],
@@ -210,6 +231,7 @@ export const SearchResultsController = ({
     return items;
   }, [resourceCatalogData, matchingDiseases]);
 
+  const hasResourceCatalogRecords = resourceCatalogData.length > 0;
   const shouldShowCarousel = hasResourceCatalogRecords || hasMatchingDiseases;
 
   const isCarouselLoading =
@@ -220,8 +242,7 @@ export const SearchResultsController = ({
     () =>
       tabs.map(tab => {
         const tabTypesWithCount = tab.types.map(({ label, type }) => {
-          const terms = facetData?.facets?.['@type']?.terms ?? [];
-          const facet = terms.find(t => t.term === type);
+          const facet = facetsData.find(t => t.term === type);
           let count = facet?.count || 0;
 
           if (type === 'Disease') {
@@ -240,7 +261,7 @@ export const SearchResultsController = ({
           types: tabTypesWithCount,
         };
       }),
-    [facetData?.facets, tabs, matchingDiseases.length],
+    [facetsData, tabs, matchingDiseases.length],
   );
 
   const getAccordionDefaultIndices = (
