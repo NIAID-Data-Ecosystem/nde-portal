@@ -7,6 +7,10 @@ import {
 import { capitalize, has, isPlainObject } from 'lodash';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import {
+  APIResourceType,
+  formatAPIResourceTypeForDisplay,
+} from 'src/utils/formatting/formatResourceType';
 
 // Constants
 const DISPLAY_NAME_SEPARATOR = ' | ';
@@ -72,16 +76,18 @@ const getDisplayValue = (
   if (key === DATE_FILTER_KEY && isDateRangeValues(values)) {
     return index === 0 ? formatDateRange(values[0], values[1]) : '';
   }
-
   // Handle string values
   if (isStringValue(value)) {
     // Format display names
     if (key.includes('displayName')) {
       return formatDisplayName(value);
     }
-
+    // Apply type formatting for @type filters
+    if (key === '@type') {
+      return formatAPIResourceTypeForDisplay(value as APIResourceType);
+    }
     // Apply config transformations for specific keys
-    if (key === '@type' || key === 'conditionsOfAccess') {
+    if (key === 'conditionsOfAccess') {
       return applyConfigTransform(value, config);
     }
   }
