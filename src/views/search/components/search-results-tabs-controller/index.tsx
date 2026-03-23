@@ -79,7 +79,6 @@ export const SearchResultsController = ({
   const queryParams = useSearchQueryFromURL();
   const searchResultsData = useSearchResultsData(
     {
-      ...queryParams,
       q: queryParams.q,
       filters: queryParams.filters,
       facets: ['@type'],
@@ -160,7 +159,6 @@ export const SearchResultsController = ({
 
   const carouselResultsData = useSearchResultsData(
     {
-      ...queryParams,
       q: queryParams.q,
       filters: { ...queryParams.filters, ['@type']: ['ResourceCatalog'] },
       fields: CAROUSEL_RESULTS_FIELDS,
