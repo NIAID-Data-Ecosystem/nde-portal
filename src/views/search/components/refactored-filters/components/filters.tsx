@@ -13,6 +13,7 @@ import { usePaginationContext } from '../../../context/pagination-context';
 import { getDefaultDateRange } from '../../../config/defaultQuery';
 import { shouldEnableInVisualSummaryPage } from 'src/utils/feature-flags';
 import { FILTER_CONFIGS } from '../config';
+import { useSearchResultsFetchedContext } from 'src/views/search/context/search-results-fetched-context';
 
 interface FiltersProps {
   colorScheme?: string;
@@ -38,6 +39,7 @@ export const Filters = React.memo(
     const [visibleFilterIds, setVisibleFilterIds] = useState<string[]>(
       FILTER_CONFIGS.map(config => config.id),
     );
+    const { isFiltersFetchEnabled } = useSearchResultsFetchedContext();
 
     // Omits date filter from filter config since date is handled differently (as a histogram)
     const configWithoutDate = useMemo(
@@ -66,13 +68,10 @@ export const Filters = React.memo(
     }, [queryParams.filters, selectedFilters.date]);
 
     // Use simplified filter queries hook
-    const { results, error, isUpdating } = useFilterQueries({
+    const { results, error, isLoading, isUpdating } = useFilterQueries({
       configs: configWithoutDate,
+      enabled: isFiltersFetchEnabled,
       params: {
-        q: queryParams.q,
-        extra_filter: extraFilterWithDate,
-      },
-      updateParams: {
         q: queryParams.q,
         extra_filter: extraFilterWithDate,
         use_ai_search: queryParams.use_ai_search,

@@ -1,16 +1,18 @@
 import React, { createContext, useCallback, useContext, useState } from 'react';
 import { useRouter } from 'next/router';
 
-type SearchFiltersGatePhase = 'idle' | 'results_fetching' | 'filters_open';
+type SearchFiltersGatePhase = 'waiting_for_results' | 'filters_enabled';
 
 interface SearchResultsFetchedContextValue {
   isFiltersFetchEnabled: boolean;
   markResultsFetching: () => void;
   markResultsFetched: () => void;
-  markFiltersFetched: () => void;
 }
 
-// Context to track whether search results have been fetched. Used to enable filters fetching only after initial search results are fetched to improve performance.
+// Context to gate filter fetching until initial search results have loaded.
+// Lifecycle per search cycle:
+//   URL changes → waiting_for_results (disabled)
+//   Results fetched → filters_enabled (enabled, stays enabled until next URL change)
 const SearchResultsFetchedContext = createContext<
   SearchResultsFetchedContextValue | undefined
 >(undefined);
@@ -21,25 +23,21 @@ export const SearchResultsFetchedProvider: React.FC<{
   const router = useRouter();
   const [gateState, setGateState] = useState({
     path: router.asPath,
-    phase: 'idle' as SearchFiltersGatePhase,
+    phase: 'waiting_for_results' as SearchFiltersGatePhase,
   });
 
-  // Scope the gate to the current URL path+query so each search cycle starts disabled.
+  // Enabled once results are fetched for the current path.
+  // Automatically disabled when the path changes (new search / filter click).
   const isFiltersFetchEnabled =
-    gateState.path === router.asPath && gateState.phase === 'filters_open';
+    gateState.path === router.asPath && gateState.phase === 'filters_enabled';
 
   const setPhaseForCurrentPath = useCallback(
     (phase: SearchFiltersGatePhase) => {
       setGateState(prev => {
-        const next = {
-          path: router.asPath,
-          phase,
-        };
-
+        const next = { path: router.asPath, phase };
         if (prev.path === next.path && prev.phase === next.phase) {
           return prev;
         }
-
         return next;
       });
     },
@@ -47,15 +45,11 @@ export const SearchResultsFetchedProvider: React.FC<{
   );
 
   const markResultsFetching = useCallback(() => {
-    setPhaseForCurrentPath('results_fetching');
+    setPhaseForCurrentPath('waiting_for_results');
   }, [setPhaseForCurrentPath]);
 
   const markResultsFetched = useCallback(() => {
-    setPhaseForCurrentPath('filters_open');
-  }, [setPhaseForCurrentPath]);
-
-  const markFiltersFetched = useCallback(() => {
-    setPhaseForCurrentPath('idle');
+    setPhaseForCurrentPath('filters_enabled');
   }, [setPhaseForCurrentPath]);
 
   return (
@@ -64,7 +58,6 @@ export const SearchResultsFetchedProvider: React.FC<{
         isFiltersFetchEnabled,
         markResultsFetching,
         markResultsFetched,
-        markFiltersFetched,
       }}
     >
       {children}

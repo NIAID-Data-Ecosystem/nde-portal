@@ -6,6 +6,7 @@ import { encodeString } from 'src/utils/querystring-helpers';
 import { FilterConfig, FilterTerm, FilterResults } from '../types';
 import { Facet, FacetTerm } from 'src/utils/api/types';
 import { SearchQueryParams } from 'src/views/search/types';
+import { useRouter } from 'next/router';
 
 /**
  * Build base query parameters for facet queries
@@ -197,11 +198,9 @@ const fetchFilterData = async (
 interface UseFilterQueriesOptions {
   /** Filter configurations to query */
   configs: FilterConfig[];
-  /** Base query parameters */
+  /** Query parameters for the filter API calls */
   params: SearchQueryParams;
-  /** Optional: Additional params that trigger updates when changed */
-  updateParams?: SearchQueryParams;
-  /** Whether queries are enabled */
+  /** Whether queries are enabled (e.g. gated on search results loading first) */
   enabled?: boolean;
 }
 
@@ -212,7 +211,6 @@ interface UseFilterQueriesOptions {
 export const useFilterQueries = ({
   configs,
   params,
-  updateParams,
   enabled = true,
 }: UseFilterQueriesOptions): {
   results: FilterResults;
@@ -220,73 +218,64 @@ export const useFilterQueries = ({
   isUpdating: boolean;
   error: Error | null;
 } => {
-  // Determine if we need to run update queries (filters changed)
-  const shouldUpdate = useMemo(() => {
-    if (!updateParams) return false;
-    return (
-      updateParams.extra_filter !== params.extra_filter ||
-      updateParams.use_ai_search !== params.use_ai_search
-    );
-  }, [params, updateParams]);
+  const router = useRouter();
 
-  // Active params are either update params (if filters changed) or base params
-  const activeParams = shouldUpdate && updateParams ? updateParams : params;
+  const queriesEnabled = router.isReady && enabled;
 
   // Create queries for each filter config
   const queries = useMemo(
     () =>
       configs.map(config => ({
-        queryKey: ['filter', config.id, activeParams],
-        queryFn: () => fetchFilterData(activeParams, config),
-        enabled,
+        queryKey: ['filter', config.id, params],
+        queryFn: () => fetchFilterData(params, config),
+        enabled: queriesEnabled,
         staleTime: 1000 * 60 * 5, // 5 minutes
         refetchOnWindowFocus: false,
         placeholderData: keepPreviousData,
       })),
-    [configs, activeParams, enabled],
+    [configs, params, queriesEnabled],
   );
 
   // Execute all queries
   const queryResults = useQueries({ queries });
 
-  // Aggregate loading and error states
-  const isLoading = queryResults.some(r => r.isLoading);
-  const isUpdating = queryResults.some(r => r.isFetching && !r.isLoading);
   const error = queryResults.find(r => r.error)?.error || null;
 
+  // isLoading: queries are disabled (waiting for gate) or performing initial fetch
+  // In React Query v5, disabled queries report isPending=true but isLoading=false,
+  // so we check isPending directly to cover the "not yet enabled" state.
+  const isLoading = queryResults.some(r => r.isPending);
+  const isUpdating = !isLoading && queryResults.some(r => r.isFetching);
+
   // Keep a ref to the last fully-resolved results so consumers
-  // don't see intermediate/empty state while queries are refetching.
+  // see stable data while queries are refetching.
   const settledResultsRef = useRef<FilterResults>({} as FilterResults);
 
-  // Combine results into a single object, falling back to
-  // previously settled data when a query hasn't returned yet.
   const results = useMemo(() => {
     const prev = settledResultsRef.current;
-    const allSettled = !isLoading && !isUpdating;
 
     const next = configs.reduce((acc, config, index) => {
       const result = queryResults[index];
-      const hasData = result.data && (result.data as FilterTerm[]).length > 0;
-      const terms = hasData
-        ? (result.data as FilterTerm[])
-        : prev[config.id]?.terms || [];
+      const data = result.data as FilterTerm[] | undefined;
+      const terms =
+        data && data.length > 0 ? data : prev[config.id]?.terms || [];
 
       acc[config.id] = {
         id: config.id,
         terms,
         data: terms,
-        isLoading: result.isLoading,
-        isUpdating: result.isFetching && !result.isLoading,
+        isLoading,
+        isUpdating,
         error: result.error,
       };
       return acc;
     }, {} as FilterResults);
 
-    if (allSettled) {
+    if (!isLoading && !isUpdating) {
       settledResultsRef.current = next;
     }
 
-    return allSettled ? next : { ...prev, ...next };
+    return next;
   }, [configs, queryResults, isLoading, isUpdating]);
 
   return {
