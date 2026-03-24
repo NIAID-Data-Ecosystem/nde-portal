@@ -37,6 +37,7 @@ import {
   queryFilterString2Object,
 } from 'src/views/search/components/filters/utils/query-builders';
 import { FilterTags } from 'src/views/search/components/refactored-filters/components/tag';
+import { SearchResultsFetchedProvider } from 'src/views/search/context/search-results-fetched-context';
 
 const DEFAULT_ACTIVE_VIZ_IDS = ['date'];
 
@@ -193,82 +194,84 @@ const Search: NextPage<{
     >
       <SearchTabsProvider initialTab={initialTab}>
         <PaginationProvider>
-          <Flex bg='page.alt'>
-            <Flex
-              id='search-page-filters-sidebar'
-              bg='#fff'
-              borderRight='0.5px solid'
-              borderRightColor='gray.200'
-              flex={{ base: 0, lg: 1 }}
-              minW={{ base: 'unset', lg: '380px' }}
-              maxW={{ base: 'unset', lg: '450px' }}
-            >
-              {/* Filters sidebar */}
-              <Filters
-                colorScheme='secondary'
-                selectedFilters={selectedFilters}
-                isDisabled={appliedFilters.length === 0}
-                removeAllFilters={removeAllFilters}
-                onToggleViz={toggleViz}
-                isVizActive={isVizActive}
-              />
-            </Flex>
-
-            <Box flex={3} maxW='1800px'>
-              <VStack
-                alignItems='flex-start'
-                p={4}
+          <SearchResultsFetchedProvider>
+            <Flex bg='page.alt'>
+              <Flex
+                id='search-page-filters-sidebar'
                 bg='#fff'
-                borderBottom='1px solid'
-                borderRight='1px solid'
-                borderColor='gray.100'
-                spacing={2}
+                borderRight='0.5px solid'
+                borderRightColor='gray.200'
+                flex={{ base: 0, lg: 1 }}
+                minW={{ base: 'unset', lg: '380px' }}
+                maxW={{ base: 'unset', lg: '450px' }}
               >
-                <Flex flex={1} flexDirection='column' width='100%'>
-                  <Flex flex={1} justifyContent='flex-end'>
-                    <OntologyBrowserPopup
-                      querystring={
-                        queryParams.q === '__all__' ? '' : queryParams.q
+                {/* Filters sidebar */}
+                <Filters
+                  colorScheme='secondary'
+                  selectedFilters={selectedFilters}
+                  isDisabled={appliedFilters.length === 0}
+                  removeAllFilters={removeAllFilters}
+                  onToggleViz={toggleViz}
+                  isVizActive={isVizActive}
+                />
+              </Flex>
+
+              <Box flex={3} maxW='1800px'>
+                <VStack
+                  alignItems='flex-start'
+                  p={4}
+                  bg='#fff'
+                  borderBottom='1px solid'
+                  borderRight='1px solid'
+                  borderColor='gray.100'
+                  spacing={2}
+                >
+                  <Flex flex={1} flexDirection='column' width='100%'>
+                    <Flex flex={1} justifyContent='flex-end'>
+                      <OntologyBrowserPopup
+                        querystring={
+                          queryParams.q === '__all__' ? '' : queryParams.q
+                        }
+                        selectedFilters={selectedFilters}
+                      />
+                    </Flex>
+                    {/* Heading: Showing results for... */}
+                    <SearchResultsHeader
+                      querystring={queryParams.q}
+                      showAIBanner={
+                        SHOW_AI_ASSISTED_SEARCH &&
+                        router.query.use_ai_search === 'true'
                       }
-                      selectedFilters={selectedFilters}
                     />
                   </Flex>
-                  {/* Heading: Showing results for... */}
-                  <SearchResultsHeader
-                    querystring={queryParams.q}
-                    showAIBanner={
-                      SHOW_AI_ASSISTED_SEARCH &&
-                      router.query.use_ai_search === 'true'
-                    }
-                  />
-                </Flex>
 
-                {/* Filter tags : Tags with the names of the currently selected filters */}
-                {Object.values(selectedFilters).length > 0 && (
-                  <FilterTags
-                    filtersConfig={FILTER_CONFIGS}
+                  {/* Filter tags : Tags with the names of the currently selected filters */}
+                  {Object.values(selectedFilters).length > 0 && (
+                    <FilterTags
+                      filtersConfig={FILTER_CONFIGS}
+                      selectedFilters={selectedFilters}
+                      handleRouteUpdate={handleRouteUpdate}
+                      removeAllFilters={removeAllFilters}
+                    />
+                  )}
+                </VStack>
+                {SHOW_VISUAL_SUMMARY && (
+                  <SummaryGrid
+                    searchParams={queryParams}
+                    onFilterUpdate={(values, facet) => {
+                      handleSelectedFilters(values, facet);
+                    }}
+                    activeVizIds={activeVizIds}
+                    removeActiveVizId={toggleViz}
+                    configs={FILTER_CONFIGS}
                     selectedFilters={selectedFilters}
-                    handleRouteUpdate={handleRouteUpdate}
-                    removeAllFilters={removeAllFilters}
                   />
                 )}
-              </VStack>
-              {SHOW_VISUAL_SUMMARY && (
-                <SummaryGrid
-                  searchParams={queryParams}
-                  onFilterUpdate={(values, facet) => {
-                    handleSelectedFilters(values, facet);
-                  }}
-                  activeVizIds={activeVizIds}
-                  removeActiveVizId={toggleViz}
-                  configs={FILTER_CONFIGS}
-                  selectedFilters={selectedFilters}
-                />
-              )}
-              {/* Search Results */}
-              <SearchResultsController initialData={initialData} />
-            </Box>
-          </Flex>
+                {/* Search Results */}
+                <SearchResultsController initialData={initialData} />
+              </Box>
+            </Flex>
+          </SearchResultsFetchedProvider>
         </PaginationProvider>
       </SearchTabsProvider>
     </PageContainer>
