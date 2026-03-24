@@ -66,7 +66,7 @@ export const Filters = React.memo(
     }, [queryParams.filters, selectedFilters.date]);
 
     // Use simplified filter queries hook
-    const { results, error, isLoading, isUpdating } = useFilterQueries({
+    const { results, error, isUpdating } = useFilterQueries({
       configs: configWithoutDate,
       params: {
         q: queryParams.q,

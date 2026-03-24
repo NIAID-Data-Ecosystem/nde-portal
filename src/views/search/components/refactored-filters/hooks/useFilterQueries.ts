@@ -1,5 +1,5 @@
-import { useQueries } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { keepPreviousData, useQueries } from '@tanstack/react-query';
+import { useMemo, useRef } from 'react';
 import { fetchSearchResults } from 'src/utils/api';
 import { fetchMetadata } from 'src/hooks/api/helpers';
 import { encodeString } from 'src/utils/querystring-helpers';
@@ -241,7 +241,7 @@ export const useFilterQueries = ({
         enabled,
         staleTime: 1000 * 60 * 5, // 5 minutes
         refetchOnWindowFocus: false,
-        placeholderData: [] as FilterTerm[],
+        placeholderData: keepPreviousData,
       })),
     [configs, activeParams, enabled],
   );
@@ -249,11 +249,28 @@ export const useFilterQueries = ({
   // Execute all queries
   const queryResults = useQueries({ queries });
 
-  // Combine results into a single object
+  // Aggregate loading and error states
+  const isLoading = queryResults.some(r => r.isLoading);
+  const isUpdating = queryResults.some(r => r.isFetching && !r.isLoading);
+  const error = queryResults.find(r => r.error)?.error || null;
+
+  // Keep a ref to the last fully-resolved results so consumers
+  // don't see intermediate/empty state while queries are refetching.
+  const settledResultsRef = useRef<FilterResults>({} as FilterResults);
+
+  // Combine results into a single object, falling back to
+  // previously settled data when a query hasn't returned yet.
   const results = useMemo(() => {
-    return configs.reduce((acc, config, index) => {
+    const prev = settledResultsRef.current;
+    const allSettled = !isLoading && !isUpdating;
+
+    const next = configs.reduce((acc, config, index) => {
       const result = queryResults[index];
-      const terms = (result.data as FilterTerm[]) || [];
+      const hasData = result.data && (result.data as FilterTerm[]).length > 0;
+      const terms = hasData
+        ? (result.data as FilterTerm[])
+        : prev[config.id]?.terms || [];
+
       acc[config.id] = {
         id: config.id,
         terms,
@@ -264,12 +281,13 @@ export const useFilterQueries = ({
       };
       return acc;
     }, {} as FilterResults);
-  }, [configs, queryResults]);
 
-  // Aggregate loading and error states
-  const isLoading = queryResults.some(r => r.isLoading);
-  const isUpdating = queryResults.some(r => r.isFetching && !r.isLoading);
-  const error = queryResults.find(r => r.error)?.error || null;
+    if (allSettled) {
+      settledResultsRef.current = next;
+    }
+
+    return allSettled ? next : { ...prev, ...next };
+  }, [configs, queryResults, isLoading, isUpdating]);
 
   return {
     results,
