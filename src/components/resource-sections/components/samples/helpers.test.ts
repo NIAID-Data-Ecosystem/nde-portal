@@ -131,7 +131,7 @@ describe('helpers', () => {
       expect(formatPropertyId('genomic')).toBe('Genomic');
     });
 
-    it('normalizes mixed-case input — each word is title-cased', () => {
+    it('normalizes mixed-case input: each word is title-cased', () => {
       expect(formatPropertyId('CELL_TYPE')).toBe('Cell Type');
       expect(formatPropertyId('cElL_tYpE')).toBe('Cell Type');
     });
@@ -226,6 +226,68 @@ describe('helpers', () => {
       const cols = getAvailableSamplePropertyColumns({} as any);
       expect(cols.find(c => c.key === 'identifier')!.isSortable).toBe(true);
       expect(cols.find(c => c.key === 'titledProp')!.isSortable).toBe(false);
+    });
+
+    it('passes the raw value array through when transform is not defined', () => {
+      // A config with two includedProperties and no transform should expose the
+      // raw array directly.
+      (getValueByPath as jest.Mock).mockImplementation(
+        (_data: any, path: string) => {
+          if (path === 'min') return 0;
+          if (path === 'max') return 100;
+          return undefined;
+        },
+      );
+      (hasNonEmptyValue as jest.Mock).mockImplementation((v: any) => v != null);
+
+      const customColumns = [
+        { key: 'rangeProp', includedProperties: ['min', 'max'] },
+      ];
+      const cols = getAvailableSamplePropertyColumns(
+        {} as any,
+        customColumns as any,
+      );
+
+      // No transform: values should be the raw array [0, 100]
+      expect(cols[0].values).toEqual([0, 100]);
+    });
+
+    it('unwraps a single includedProperty value to a scalar (not wrapped in an array)', () => {
+      (getValueByPath as jest.Mock).mockReturnValue('scalar-value');
+      (hasNonEmptyValue as jest.Mock).mockReturnValue(true);
+
+      const customColumns = [
+        { key: 'singleProp', includedProperties: ['field'] },
+      ];
+      const cols = getAvailableSamplePropertyColumns(
+        {} as any,
+        customColumns as any,
+      );
+
+      expect(cols[0].values).toBe('scalar-value');
+    });
+
+    it('still includes a column when transform returns null (emptiness check runs before transform)', () => {
+      // The hasNonEmptyValue check happens on the raw value, before the
+      // transform runs.  A transform returning null should not suppress the column.
+      (getValueByPath as jest.Mock).mockReturnValue('present');
+      (hasNonEmptyValue as jest.Mock).mockReturnValue(true);
+
+      const nullTransformColumns = [
+        {
+          key: 'nullTransformProp',
+          includedProperties: ['field'],
+          transform: () => null,
+        },
+      ];
+      const cols = getAvailableSamplePropertyColumns(
+        {} as any,
+        nullTransformColumns as any,
+      );
+
+      // Column is present because the pre-transform value was non-empty
+      expect(cols).toHaveLength(1);
+      expect(cols[0].values).toBeNull();
     });
   });
 
@@ -327,6 +389,53 @@ describe('helpers', () => {
 
       expect(rows[0]._identifierSort).toBe('S1');
       expect(rows[1]._identifierSort).toBe('S2');
+    });
+
+    it('falls back to _id when identifier is an array of strings', () => {
+      // When identifier is an array, fall back to
+      // _id, stripping any leading underscore and uppercasing the result.
+      const samples = [
+        { identifier: ['S1', 'S2'], _id: '_abc123', url: 'https://x.com' },
+      ] as any[];
+
+      const rows = getSampleCollectionItemsRows(samples);
+
+      expect(rows[0].identifier).toEqual({
+        identifier: 'ABC123',
+        url: 'https://x.com',
+      });
+      expect(rows[0]._identifierSort).toBe('ABC123');
+    });
+
+    it('uses _id as-is when identifier is absent (no transform applied outside the array branch)', () => {
+      // The replace(/^_/, '').toUpperCase() transform only runs when
+      // identifier is an array.
+      const samples = [{ _id: '_xyz789' }] as any[];
+
+      const rows = getSampleCollectionItemsRows(samples);
+
+      expect(rows[0].identifier).toEqual({ identifier: '_xyz789', url: '' });
+      expect(rows[0]._identifierSort).toBe('_xyz789');
+    });
+
+    it('uses _id verbatim (no uppercasing) when identifier is absent', () => {
+      // Mirrors the test above with a value that has no leading underscore,
+      // confirming that neither strip nor uppercase is applied.
+      const samples = [{ _id: 'plain99' }] as any[];
+
+      const rows = getSampleCollectionItemsRows(samples);
+
+      expect(rows[0].identifier).toEqual({ identifier: 'plain99', url: '' });
+      expect(rows[0]._identifierSort).toBe('plain99');
+    });
+
+    it('produces an empty string identifier when both identifier and _id are absent', () => {
+      const samples = [{}] as any[];
+
+      const rows = getSampleCollectionItemsRows(samples);
+
+      expect(rows[0].identifier).toEqual({ identifier: '', url: '' });
+      expect(rows[0]._identifierSort).toBe('');
     });
   });
 
@@ -697,6 +806,52 @@ describe('helpers', () => {
       );
 
       additionalCols.forEach(col => expect(col.isSortable).toBe(false));
+    });
+
+    it('marks only the Sample ID column as isSortable:true; all other columns get isSortable:false', () => {
+      // Verify that isSortable:true from a config entry (e.g. 'identifier')
+      // is NOT leaked onto standard output columns. Only _identifierSort carries it.
+      const samples = [
+        { identifier: 'S1', min: 1, max: 5 },
+        { identifier: 'S2', min: 2, max: 10 },
+      ] as any[];
+
+      const cols = getSampleCollectionItemsColumns(samples);
+
+      const sortableCols = cols.filter(c => c.isSortable === true);
+      expect(sortableCols).toHaveLength(1);
+      expect(sortableCols[0].property).toBe('_identifierSort');
+
+      cols
+        .filter(c => c.property !== '_identifierSort')
+        .forEach(col => expect(col.isSortable).toBe(false));
+    });
+
+    it('hides UNIFORM_HIDE_PROPS for a single-sample collection but keeps non-special uniform fields', () => {
+      // With one sample every field is trivially uniform.
+      // species/infectiousAgent/healthCondition should be hidden (R2).
+      // Non-special fields with values should survive as uniform columns.
+      const samples = [
+        { identifier: 'S1', species: [{ name: 'human' }], titleVal: 'X' },
+      ] as any[];
+
+      const cols = getSampleCollectionItemsColumns(samples);
+      const props = cols.map(c => c.property);
+
+      expect(props).toContain('_identifierSort');
+      expect(props).not.toContain('species');
+      expect(props).toContain('titledProp');
+    });
+
+    it('returns only the Sample ID column when all non-special fields are empty', () => {
+      // R1 drops every column with no value; only the static Sample ID survives.
+      // Samples must have no identifier field either, otherwise the 'identifier'
+      // config entry in SAMPLE_AGGREGATE_COLUMNS produces a uniform column.
+      const samples = [{ _id: 'A' }, { _id: 'B' }] as any[];
+
+      const cols = getSampleCollectionItemsColumns(samples);
+
+      expect(cols.map(c => c.property)).toEqual(['_identifierSort']);
     });
   });
 });

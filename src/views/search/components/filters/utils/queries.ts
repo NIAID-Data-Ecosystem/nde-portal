@@ -11,6 +11,25 @@ interface SourcesData extends FetchSearchResultsResponse {
   repos: Metadata | null;
 }
 
+const getFacetTermsBucket = (facets: FetchSearchResultsResponse['facets']) => {
+  if (!facets) {
+    return undefined;
+  }
+
+  const primaryFacet = Object.entries(facets).find(
+    ([facetKey, facetValue]) =>
+      facetKey !== 'multi_terms_agg' && Array.isArray(facetValue?.terms),
+  )?.[1];
+
+  if (primaryFacet) {
+    return primaryFacet;
+  }
+
+  return Object.values(facets).find(facetValue =>
+    Array.isArray(facetValue?.terms),
+  );
+};
+
 /**
  * Generate common query parameters for making the API call.
  *
@@ -51,9 +70,9 @@ export const structureQueryData = (data: FetchSearchResultsResponse) => {
     throw new Error('No facets returned from fetchSearchResults');
   }
 
-  const terms = Object.values(facets)[0].terms;
+  const terms = getFacetTermsBucket(facets)?.terms || [];
 
-  if (facets?.multi_terms_agg) {
+  if (terms.length && facets?.multi_terms_agg?.terms) {
     facets.multi_terms_agg.terms.forEach(({ term: multiTerm }) => {
       const [groupBy, term] = multiTerm.split('|');
       const matchIndex = terms.findIndex(t => t.term === term);
@@ -232,22 +251,23 @@ export const createQueryWithSourceMetadata = ({
       if (!facets) {
         throw new Error('No facets returned from fetchSearchResults');
       }
+
+      const facetTerms = getFacetTermsBucket(facets)?.terms || [];
+
       // Merge repository details with the facet terms
       const repos =
         (data?.repos?.src &&
           Object.values(data.repos.src).filter(repo => repo?.sourceInfo)) ||
         [];
-      const terms = Object.values(facets)[0].terms.map(
-        (item: { term: string; count: number }) => ({
-          label: item.term,
-          term: item.term,
-          count: item.count,
-          facet: queryParams.facets,
-          groupBy:
-            repos?.find(r => r.sourceInfo?.name === item.term)?.sourceInfo
-              ?.genre || 'Generalist',
-        }),
-      );
+      const terms = facetTerms.map((item: { term: string; count: number }) => ({
+        label: item.term,
+        term: item.term,
+        count: item.count,
+        facet: queryParams.facets,
+        groupBy:
+          repos?.find(r => r.sourceInfo?.name === item.term)?.sourceInfo
+            ?.genre || 'Generalist',
+      }));
 
       return {
         id,
