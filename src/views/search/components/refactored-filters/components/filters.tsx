@@ -10,7 +10,6 @@ import { DateFilter } from './date-filter';
 import { updateRoute } from '../../../utils/update-route';
 import { useSearchQueryFromURL } from '../../../hooks/useSearchQueryFromURL';
 import { usePaginationContext } from '../../../context/pagination-context';
-import { getDefaultDateRange } from '../../../config/defaultQuery';
 import { shouldEnableInVisualSummaryPage } from 'src/utils/feature-flags';
 import { FILTER_CONFIGS } from '../config';
 
@@ -45,24 +44,9 @@ export const Filters = React.memo(
       [FILTER_CONFIGS],
     );
 
-    // Build the extra_filter that includes the default date filter
-    const extraFilterWithDate = useMemo(() => {
-      // Get current filters
-      const currentFilters = queryParams.filters || {};
-
-      // Check if user has selected a date filter
-      const hasDateFilter =
-        selectedFilters.date && selectedFilters.date.length > 0;
-
-      // If no date filter, apply default
-      const filtersToUse = hasDateFilter
-        ? currentFilters
-        : {
-            ...currentFilters,
-            date: getDefaultDateRange(),
-          };
-
-      return filtersToQueryString(filtersToUse as SelectedFilters) || '';
+    // Build the extra_filter query param string based on selected filters, including date if selected
+    const filterString = useMemo(() => {
+      return filtersToQueryString(queryParams.filters || {}) || '';
     }, [queryParams.filters, selectedFilters.date]);
 
     // Use simplified filter queries hook
@@ -70,11 +54,11 @@ export const Filters = React.memo(
       configs: configWithoutDate,
       params: {
         q: queryParams.q,
-        extra_filter: extraFilterWithDate,
+        extra_filter: filterString,
       },
       updateParams: {
         q: queryParams.q,
-        extra_filter: extraFilterWithDate,
+        extra_filter: filterString,
         use_ai_search: queryParams.use_ai_search,
       },
     });
