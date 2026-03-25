@@ -15,7 +15,6 @@ import { useSearchResultsFetchedContext } from '../../context/search-results-fet
 import { useSearchTabsContext } from '../../context/search-tabs-context';
 import { getTabFilterProperties } from './utils/tab-filter-utils';
 import { TabType } from '../../types';
-import { getDefaultDateRange } from '../../config/defaultQuery';
 import { shouldEnableInVisualSummaryPage } from 'src/utils/feature-flags';
 
 // Interface for Filters component props
@@ -62,33 +61,13 @@ export const Filters = React.memo(
       [filtersForTab],
     );
 
-    // Build the extra_filter that includes the date filter
-    const extraFilterWithDate = useMemo(() => {
-      // Get current filters
-      const currentFilters = queryParams.filters || {};
-
-      // Check if user has selected a date filter
-      const hasDateFilter =
-        selectedFilters.date && selectedFilters.date.length > 0;
-
-      // If no date filter, apply default
-      const filtersToUse = hasDateFilter
-        ? currentFilters
-        : {
-            ...currentFilters,
-            date: getDefaultDateRange(),
-          };
-
-      return queryFilterObject2String(filtersToUse) || '';
-    }, [queryParams.filters, selectedFilters.date]);
-
     const filterQueryParams = useMemo(
       () => ({
         q: queryParams.q,
-        extra_filter: extraFilterWithDate,
+        extra_filter: queryFilterObject2String(queryParams.filters || {}) || '',
         use_ai_search: queryParams.use_ai_search,
       }),
-      [queryParams.q, extraFilterWithDate, queryParams.use_ai_search],
+      [queryParams.q, queryParams.filters, queryParams.use_ai_search],
     );
 
     // Use custom hook to get filter query results

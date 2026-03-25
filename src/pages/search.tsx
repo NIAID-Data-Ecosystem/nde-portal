@@ -17,8 +17,8 @@ import {
   queryFilterObject2String,
 } from 'src/views/search/components/filters/utils/query-builders';
 import {
+  defaultSelectedFilters,
   defaultQuery,
-  getDefaultDateRange,
 } from 'src/views/search/config/defaultQuery';
 import { FilterTags } from 'src/views/search/components/filters/components/tag';
 import { SearchResultsHeader } from 'src/views/search/components/search-results-header';
@@ -30,7 +30,7 @@ import { tabs } from 'src/views/search/config/tabs';
 import { OntologyBrowserPopup } from 'src/views/ontology-browser/components/popup';
 import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
 
-// Default filters list.
+// Default filters property list with empty array as value.
 const defaultFilters = FILTER_CONFIGS.reduce(
   (r, { property }) => ({ ...r, [property]: [] }),
   {},
@@ -85,13 +85,10 @@ const Search: NextPage<{
   useEffect(() => {
     if (!router.isReady) return;
 
-    const hasDateFilter = selectedFilters.date?.length > 0;
-    if (hasDateFilter) return;
-
     handleRouteUpdate({
       filters: queryFilterObject2String({
+        ...defaultSelectedFilters,
         ...selectedFilters,
-        date: getDefaultDateRange(),
       }),
     });
   }, [router.isReady]);
@@ -115,7 +112,7 @@ const Search: NextPage<{
     handleRouteUpdate({
       filters: queryFilterObject2String({
         ...selectedFilters,
-        date: [start, `${currentYear}-12-31`],
+        ...defaultSelectedFilters,
       }),
     });
   }, [router.isReady, selectedFilters, handleRouteUpdate]);
