@@ -74,7 +74,7 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
         typeof filterValue[0] === 'string' &&
         typeof filterValue[1] === 'string'
       ) {
-        // Remove the entire date range
+        // Remove the entire date range, including any _exists_ filters related to date because they are not relevant if the user is clearing the date filter and will only limit the results in an unintended way if left in the filters.
         updatedFilters = {
           ...selectedFilters,
           [filterKey]: [],
