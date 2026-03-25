@@ -16,7 +16,7 @@ import {
 } from 'src/views/search/components/filters/types';
 import {
   defaultQuery,
-  getDefaultDateRange,
+  defaultSelectedFilters,
 } from 'src/views/search/config/defaultQuery';
 import { SearchResultsHeader } from 'src/views/search/components/search-results-header';
 import { PaginationProvider } from 'src/views/search/context/pagination-context';
@@ -141,16 +141,10 @@ const Search: NextPage<{
   useEffect(() => {
     if (!router.isReady) return;
 
-    const hasDateFilter = selectedFilters.date?.length > 0;
-    if (hasDateFilter) {
-      hasInitialized.current = true;
-      return;
-    }
-
-    handleUpdate({
+    handleRouteUpdate({
       filters: queryFilterObject2String({
+        ...defaultSelectedFilters,
         ...selectedFilters,
-        date: getDefaultDateRange(),
       }),
     });
 
