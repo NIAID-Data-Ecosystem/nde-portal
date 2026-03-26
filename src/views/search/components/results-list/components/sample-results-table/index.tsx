@@ -180,6 +180,12 @@ const SAMPLE_RESULTS_COLUMNS: Column[] = [
     props: withWidth('180px'),
   },
   {
+    title: 'Associated Phenotype',
+    property: sortKey('associatedPhenotype'),
+    isSortable: true,
+    props: withWidth('180px'),
+  },
+  {
     title: 'Cell Type',
     property: sortKey('cellType'),
     isSortable: true,

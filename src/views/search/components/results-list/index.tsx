@@ -64,6 +64,7 @@ const SAMPLE_EXTRA_FIELDS = [
   'sampleQuantity',
   'developmentalStage',
   'associatedGenotype',
+  'associatedPhenotype',
   'cellType',
   'locationOfOrigin',
   'itemLocation',
