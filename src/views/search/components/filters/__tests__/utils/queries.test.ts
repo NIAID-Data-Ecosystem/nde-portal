@@ -2,6 +2,7 @@ import {
   createCommonQuery,
   createNotExistsQuery,
   createQueryWithSourceMetadata,
+  structureQueryData,
 } from '../../utils/queries';
 import { fetchSearchResults } from 'src/utils/api';
 import { Metadata } from 'src/hooks/api/types';
@@ -231,6 +232,37 @@ describe('API Query Functions', () => {
 
       const data = await query.queryFn();
       expect(data).toEqual(fetchSearchResultsResponse);
+    });
+  });
+
+  describe('structureQueryData', () => {
+    it('should ignore non-facet entries when finding terms', () => {
+      const data = structureQueryData({
+        total: 42,
+        results: [],
+        facets: {
+          total: 42 as never,
+          'topicCategory.name.raw': {
+            terms: [{ term: 'Genomics', count: 10 }],
+            missing: 0,
+            other: 0,
+            total: 0,
+            _type: '',
+          },
+        },
+      });
+
+      expect(data).toEqual([
+        {
+          label: 'Any',
+          term: '_exists_',
+          count: 42,
+        },
+        {
+          term: 'Genomics',
+          count: 10,
+        },
+      ]);
     });
   });
 

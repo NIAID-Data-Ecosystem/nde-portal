@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { omit } from 'lodash';
 import { Box, Flex, Heading } from '@chakra-ui/react';
 import { Params } from 'src/utils/api';
@@ -21,6 +21,8 @@ interface DateFilterProps {
   resetFilter: () => void;
   showHistogram?: boolean;
   showDateControls?: boolean;
+  enabled?: boolean;
+  onFetchStateChange?: (isFetching: boolean) => void;
 }
 
 /**
@@ -111,7 +113,7 @@ const DateFilterContent: React.FC<
  * Wraps the filter content with DateRangeContext for state management.
  */
 export const DateFilter: React.FC<DateFilterProps> = props => {
-  const { queryParams, selectedDates } = props;
+  const { queryParams, selectedDates, onFetchStateChange } = props;
 
   const initialParams = useMemo(
     () => prepareInitialParams(queryParams),
@@ -122,7 +124,14 @@ export const DateFilter: React.FC<DateFilterProps> = props => {
     initialParams,
     updateParams: queryParams,
     config: DATE_FILTER_CONFIG,
+    enabled: props.enabled,
   });
+
+  const isFetching = initialQueryData.isLoading || initialQueryData.isUpdating;
+
+  useEffect(() => {
+    onFetchStateChange?.(isFetching);
+  }, [onFetchStateChange, isFetching]);
 
   const { initialResults, isLoading } = initialQueryData;
   const data = useMemo(

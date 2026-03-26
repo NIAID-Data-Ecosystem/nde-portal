@@ -17,19 +17,20 @@ import {
   queryFilterObject2String,
 } from 'src/views/search/components/filters/utils/query-builders';
 import {
+  defaultSelectedFilters,
   defaultQuery,
-  getDefaultDateRange,
 } from 'src/views/search/config/defaultQuery';
 import { FilterTags } from 'src/views/search/components/filters/components/tag';
 import { SearchResultsHeader } from 'src/views/search/components/search-results-header';
 import { PaginationProvider } from 'src/views/search/context/pagination-context';
+import { SearchResultsFetchedProvider } from 'src/views/search/context/search-results-fetched-context';
 import { SearchResultsController } from 'src/views/search/components/search-results-tabs-controller';
 import { fetchSearchResults } from 'src/utils/api';
 import { tabs } from 'src/views/search/config/tabs';
 import { OntologyBrowserPopup } from 'src/views/ontology-browser/components/popup';
 import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
 
-// Default filters list.
+// Default filters property list with empty array as value.
 const defaultFilters = FILTER_CONFIGS.reduce(
   (r, { property }) => ({ ...r, [property]: [] }),
   {},
@@ -84,13 +85,10 @@ const Search: NextPage<{
   useEffect(() => {
     if (!router.isReady) return;
 
-    const hasDateFilter = selectedFilters.date?.length > 0;
-    if (hasDateFilter) return;
-
     handleRouteUpdate({
       filters: queryFilterObject2String({
+        ...defaultSelectedFilters,
         ...selectedFilters,
-        date: getDefaultDateRange(),
       }),
     });
   }, [router.isReady]);
@@ -114,7 +112,7 @@ const Search: NextPage<{
     handleRouteUpdate({
       filters: queryFilterObject2String({
         ...selectedFilters,
-        date: [start, `${currentYear}-12-31`],
+        ...defaultSelectedFilters,
       }),
     });
   }, [router.isReady, selectedFilters, handleRouteUpdate]);
@@ -135,68 +133,70 @@ const Search: NextPage<{
     >
       <SearchTabsProvider initialTab={initialTab}>
         <PaginationProvider>
-          <Flex bg='page.alt'>
-            <Flex
-              id='search-page-filters-sidebar'
-              bg='#fff'
-              borderRight='0.5px solid'
-              borderRightColor='gray.200'
-              flex={{ base: 0, lg: 1 }}
-              minW={{ base: 'unset', lg: '380px' }}
-              maxW={{ base: 'unset', lg: '450px' }}
-            >
-              {/* Filters sidebar */}
-              <Filters
-                colorScheme='secondary'
-                selectedFilters={selectedFilters}
-                isDisabled={appliedFilters.length === 0}
-                removeAllFilters={removeAllFilters}
-              />
-            </Flex>
-            <Box flex={3} minWidth={0} maxWidth='2000px'>
-              <VStack
-                alignItems='flex-start'
-                p={4}
+          <SearchResultsFetchedProvider>
+            <Flex bg='page.alt'>
+              <Flex
+                id='search-page-filters-sidebar'
                 bg='#fff'
-                borderBottom='1px solid'
-                borderRight='1px solid'
-                borderColor='gray.100'
-                spacing={2}
+                borderRight='0.5px solid'
+                borderRightColor='gray.200'
+                flex={{ base: 0, lg: 1 }}
+                minW={{ base: 'unset', lg: '380px' }}
+                maxW={{ base: 'unset', lg: '450px' }}
               >
-                <Flex flex={1} flexDirection='column' width='100%'>
-                  <Flex flex={1} justifyContent='flex-end'>
-                    <OntologyBrowserPopup
-                      querystring={
-                        queryParams.q === '__all__' ? '' : queryParams.q
+                {/* Filters sidebar */}
+                <Filters
+                  colorScheme='secondary'
+                  selectedFilters={selectedFilters}
+                  isDisabled={appliedFilters.length === 0}
+                  removeAllFilters={removeAllFilters}
+                />
+              </Flex>
+              <Box flex={3} minWidth={0} maxWidth='2000px'>
+                <VStack
+                  alignItems='flex-start'
+                  p={4}
+                  bg='#fff'
+                  borderBottom='1px solid'
+                  borderRight='1px solid'
+                  borderColor='gray.100'
+                  spacing={2}
+                >
+                  <Flex flex={1} flexDirection='column' width='100%'>
+                    <Flex flex={1} justifyContent='flex-end'>
+                      <OntologyBrowserPopup
+                        querystring={
+                          queryParams.q === '__all__' ? '' : queryParams.q
+                        }
+                        selectedFilters={selectedFilters}
+                      />
+                    </Flex>
+                    {/* Heading: Showing results for... */}
+                    <SearchResultsHeader
+                      querystring={queryParams.q}
+                      showAIBanner={
+                        SHOW_AI_ASSISTED_SEARCH &&
+                        router.query.use_ai_search === 'true'
                       }
-                      selectedFilters={selectedFilters}
                     />
                   </Flex>
-                  {/* Heading: Showing results for... */}
-                  <SearchResultsHeader
-                    querystring={queryParams.q}
-                    showAIBanner={
-                      SHOW_AI_ASSISTED_SEARCH &&
-                      router.query.use_ai_search === 'true'
-                    }
-                  />
-                </Flex>
 
-                {/* Filter tags : Tags with the names of the currently selected filters */}
-                {Object.values(selectedFilters).length > 0 && (
-                  <FilterTags
-                    filtersConfig={FILTER_CONFIGS}
-                    selectedFilters={selectedFilters}
-                    handleRouteUpdate={handleRouteUpdate}
-                    removeAllFilters={removeAllFilters}
-                  />
-                )}
-              </VStack>
+                  {/* Filter tags : Tags with the names of the currently selected filters */}
+                  {Object.values(selectedFilters).length > 0 && (
+                    <FilterTags
+                      filtersConfig={FILTER_CONFIGS}
+                      selectedFilters={selectedFilters}
+                      handleRouteUpdate={handleRouteUpdate}
+                      removeAllFilters={removeAllFilters}
+                    />
+                  )}
+                </VStack>
 
-              {/* Search Results */}
-              <SearchResultsController initialData={initialData} />
-            </Box>
-          </Flex>
+                {/* Search Results */}
+                <SearchResultsController initialData={initialData} />
+              </Box>
+            </Flex>
+          </SearchResultsFetchedProvider>
         </PaginationProvider>
       </SearchTabsProvider>
     </PageContainer>

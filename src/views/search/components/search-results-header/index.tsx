@@ -45,7 +45,8 @@ export const SearchResultsHeader = ({
         <AIBanner>
           <Text lineHeight='short'>
             AI-assisted search is active. Results are limited to the top 1,000
-            most relevant matches.{' '}
+            most relevant matches. Applying any filter or changing tabs triggers
+            a new search, so result counts may change.{' '}
             <Link
               href={AI_ASSISTED_SEARCH_KC_LINK}
               color='inherit'

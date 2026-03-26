@@ -14,6 +14,7 @@ import { updateRoute } from '../../utils/update-route';
 import { SearchResultsToolbar } from './components/toolbar';
 import Banner from 'src/components/banner';
 import { SampleResultsTable } from './components/sample-results-table';
+import { useSearchResultsFetchedContext } from '../../context/search-results-fetched-context';
 
 const RESULT_FIELDS = [
   '_meta',
@@ -135,7 +136,33 @@ export const SearchResults = ({
     },
   );
 
-  const { data, isLoading, isRefetching, error } = response;
+  const { data, isLoading, isRefetching, isFetching, error, isFetched } =
+    response;
+
+  const { markResultsFetching, markResultsFetched } =
+    useSearchResultsFetchedContext();
+  const isActiveTab = id === activeTabId;
+
+  React.useEffect(() => {
+    if (!isActiveTab) {
+      return;
+    }
+
+    if (isFetching) {
+      markResultsFetching();
+      return;
+    }
+
+    if (isFetched) {
+      markResultsFetched();
+    }
+  }, [
+    isActiveTab,
+    markResultsFetching,
+    markResultsFetched,
+    isFetching,
+    isFetched,
+  ]);
 
   const numCards = useMemo(
     () =>

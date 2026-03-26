@@ -1,3 +1,5 @@
+import { SelectedFilters } from './components/refactored-filters';
+
 export type TabType = {
   id: 'ct' | 'd' | 's';
   types: {
@@ -12,7 +14,7 @@ export interface SearchQueryParams {
   facets?: string[];
   facet_size?: number;
   fields?: string[];
-  filters?: Record<string, string[]>;
+  filters?: SelectedFilters;
   extra_filter?: string;
   from?: number;
   size?: number;
