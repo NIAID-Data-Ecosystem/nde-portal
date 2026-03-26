@@ -36,7 +36,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
   const params = useMemo(
     () => ({
       maxBarWidth: 40,
-      height: 150,
+      height: 180,
       padding: 0.1,
       fill: {
         inactive: theme.colors.blackAlpha[100],
@@ -54,7 +54,6 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
     debounceTime: 150,
     initialSize: { height: params.height },
   });
-
   const range_min = useMemo(() => dates[0], [dates]);
   const range_max = useMemo(() => dates[1], [dates]);
 
@@ -232,7 +231,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
       )}
 
       <Flex ref={containerRef} justifyContent='center' h='100%'>
-        <Flex position='relative' w='100%' h='100%' flexDirection='column'>
+        <Flex w='100%' h='100%' flexDirection='column'>
           <Flex
             ref={parentRef}
             justifyContent='center'
@@ -244,7 +243,6 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
               as='svg'
               id='filters-histogram'
               width={effectiveSvgWidth}
-              height={height}
               style={{ overflow: 'visible' }}
             >
               <defs>
@@ -304,6 +302,9 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
                               y={height - defaultBarHeight}
                               height={defaultBarHeight}
                               fill={params.fill.gray}
+                              style={{
+                                transition: 'y 0.1s ease, height 0.1s ease',
+                              }}
                             />
                           )}
 
@@ -319,6 +320,9 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
                             y={barY}
                             height={barHeight}
                             fill={fill}
+                            style={{
+                              transition: 'y 0.1s ease, height 0.1s ease',
+                            }}
                           />
                         </React.Fragment>
                       );
@@ -397,7 +401,13 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
               )}
             </Box>
           </Flex>
-          <Flex w='100%' justifyContent='center' mt={8} flexShrink={0}>
+          <Flex
+            w='100%'
+            justifyContent='center'
+            mt={8}
+            flexShrink={0}
+            minHeight={50}
+          >
             <DateBrush containerWidth={width} />
           </Flex>
         </Flex>
