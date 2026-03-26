@@ -12,6 +12,8 @@ import { useDateRangeContext } from '../hooks/useDateRangeContext';
 import { FilterTerm } from '../../../types';
 import { DateBrush } from './date-brush';
 import { useParentSize } from '@visx/responsive';
+import { text } from 'd3';
+import { display } from 'styled-system';
 
 interface HistogramProps {
   updatedData: FilterTerm[];
@@ -64,7 +66,19 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
     showTooltip,
     hideTooltip,
   } = useTooltip({
-    tooltipData: { count: 0, term: '', label: '', updatedCount: 0 },
+    tooltipData: {
+      count: 0,
+      term: '',
+      label: '',
+      updatedCount: 0,
+      display: {
+        label: '',
+        total: '',
+        count: '',
+        updatedCount: '',
+        countText: '',
+      },
+    },
   });
 
   const { containerRef, containerBounds, TooltipInPortal } = useTooltipInPortal(
@@ -96,10 +110,34 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
         ('clientX' in event ? event.clientX : 0) - containerBounds.left;
       const coordsY =
         ('clientY' in event ? event.clientY : 0) - containerBounds.top;
+
+      // Show "updatedCount of count" if updatedCount is smaller than total count (addressing issue with use_ai_search facet counts) and greater than 0, otherwise just show count
+      const showFullDisplayText =
+        range_min &&
+        range_max &&
+        datum.term >= range_min &&
+        datum.term <= range_max &&
+        datum.updatedCount !== datum.count &&
+        datum.updatedCount < datum.count &&
+        datum.updatedCount > 0;
+
+      const display = {
+        label: datum.label,
+        total: formatNumber(datum.count),
+        count: formatNumber(datum.count),
+        updatedCount: formatNumber(datum.updatedCount),
+        countText: '',
+      };
+
+      display.countText = showFullDisplayText
+        ? `${display.updatedCount} of ${display.total}`
+        : display.total;
+
+      // const displayText =
       showTooltip({
         tooltipLeft: coordsX,
         tooltipTop: coordsY,
-        tooltipData: datum,
+        tooltipData: { ...datum, display },
       });
     },
     [containerBounds.left, containerBounds.top, showTooltip],
@@ -189,15 +227,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
             zIndex: 2000,
           }}
         >
-          {tooltipData.label}:{' '}
-          {range_min &&
-            range_max &&
-            tooltipData.term >= range_min &&
-            tooltipData.term <= range_max &&
-            tooltipData.updatedCount !== tooltipData.count &&
-            tooltipData.updatedCount! > 0 &&
-            `${formatNumber(tooltipData.updatedCount)} of `}
-          {formatNumber(tooltipData.count)}
+          {tooltipData.label}: {tooltipData.display.countText}
         </TooltipComponent>
       )}
 

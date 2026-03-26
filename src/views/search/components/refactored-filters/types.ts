@@ -28,6 +28,9 @@ export interface SelectedFilters {
   [property: string]: SelectedFilterValue[];
 }
 
+export interface SelectedFilterType {
+  [property: string]: SelectedFilterValue[];
+}
 /**
  * Query type determines how the filter query is built
  * - 'facet': Regular facet query with exists/not-exists options

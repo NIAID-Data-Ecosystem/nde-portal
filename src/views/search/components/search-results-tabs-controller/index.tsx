@@ -83,7 +83,7 @@ export const SearchResultsController = ({
       filters: queryParams.filters,
       facets: ['@type'],
       facet_size: 100,
-      use_ai_search: queryParams.use_ai_search,
+      use_ai_search: queryParams.use_ai_search ?? 'false',
     },
     { enabled: router.isReady },
   );
@@ -165,7 +165,7 @@ export const SearchResultsController = ({
       facets: ['@type'],
       size: 50,
       sort: 'name.raw',
-      use_ai_search: queryParams.use_ai_search,
+      use_ai_search: queryParams.use_ai_search ?? 'false',
     },
 
     {

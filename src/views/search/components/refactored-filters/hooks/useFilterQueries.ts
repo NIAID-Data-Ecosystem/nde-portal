@@ -27,7 +27,7 @@ const buildFacetParams = (
     facet_size: params.facet_size || 1000,
     facets: facetProperty,
     sort: undefined,
-    use_ai_search: params.use_ai_search,
+    use_ai_search: params?.use_ai_search ?? 'false',
   };
 };
 
@@ -132,6 +132,34 @@ const fetchSourceFacet = async (
 /**
  * Fetch date histogram data
  */
+
+const fetchNonDateResources = async (
+  params: SearchQueryParams,
+): Promise<FilterTerm[]> => {
+  const property = 'date';
+  const resourcesWithoutDate = [];
+
+  // Fetch resources with no date information.
+  const notExistsFilter = params.extra_filter
+    ? `${params.extra_filter} AND -_exists_:${property}`
+    : `-_exists_:${property}`;
+
+  const notExistsParams = buildFacetParams(params, property, notExistsFilter);
+  notExistsParams.facet_size = 0;
+
+  const notExistsData = await fetchSearchResults(notExistsParams);
+
+  if (notExistsData && notExistsData.total > 0) {
+    resourcesWithoutDate.push({
+      term: '-_exists_',
+      label: 'No',
+      count: notExistsData.total,
+    });
+  }
+
+  return resourcesWithoutDate;
+};
+
 const fetchDateFacet = async (
   params: SearchQueryParams,
 ): Promise<FilterTerm[]> => {
@@ -154,24 +182,10 @@ const fetchDateFacet = async (
     })) || [];
 
   // Fetch resources with no date information.
-  const notExistsFilter = params.extra_filter
-    ? `${params.extra_filter} AND -_exists_:${property}`
-    : `-_exists_:${property}`;
+  const resourcesWithoutDate = await fetchNonDateResources(params);
+  const allTerms = [...terms, ...resourcesWithoutDate];
 
-  const notExistsParams = buildFacetParams(params, property, notExistsFilter);
-  notExistsParams.facet_size = 0;
-
-  const notExistsData = await fetchSearchResults(notExistsParams);
-
-  if (notExistsData && notExistsData.total > 0) {
-    terms.push({
-      term: '-_exists_',
-      label: 'No',
-      count: notExistsData.total,
-    });
-  }
-
-  return terms;
+  return allTerms;
 };
 
 /**
@@ -226,7 +240,7 @@ export const useFilterQueries = ({
   const queries = useMemo(
     () =>
       configs.map(config => ({
-        queryKey: ['filter', config.id, params],
+        queryKey: ['search-results-facets', config.property, params],
         queryFn: () => fetchFilterData(params, config),
         enabled: queriesEnabled,
         staleTime: 1000 * 60 * 5, // 5 minutes

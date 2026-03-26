@@ -52,13 +52,13 @@ export const Filters = React.memo(
     }, [queryParams.filters, selectedFilters.date]);
 
     // Use simplified filter queries hook
-    const { results, error, isLoading, isUpdating } = useFilterQueries({
+    const { results, error, isUpdating } = useFilterQueries({
       configs: configWithoutDate,
       enabled: isFiltersFetchEnabled,
       params: {
         q: queryParams.q,
         extra_filter: filterString,
-        use_ai_search: queryParams.use_ai_search,
+        use_ai_search: queryParams.use_ai_search ?? 'false',
       },
     });
 
@@ -155,9 +155,11 @@ export const Filters = React.memo(
                       filtersToQueryString(
                         queryParams.filters as SelectedFilters,
                       ) || '',
+                    use_ai_search: queryParams.use_ai_search ?? 'false',
                   }}
                   showHistogram={showHistogram}
                   showDateControls={showDateControls}
+                  enabled={isFiltersFetchEnabled}
                 />
               </FiltersSection>
             );

@@ -1,15 +1,16 @@
 import { useRouter } from 'next/router';
 import { useCallback, useMemo } from 'react';
-import { DateFilter } from 'src/views/search/components/filters/components/date-filter';
-import { SelectedFilterType } from 'src/views/search/components/filters/types';
+import { DateFilter } from 'src/views/search/components/refactored-filters/components/date-filter';
 import {
   queryFilterObject2String,
   queryFilterString2Object,
-} from 'src/views/search/components/filters/utils/query-builders';
+} from 'src/views/search/components/refactored-filters/utils/query-string';
 import { ChartDatum } from 'src/views/search/components/summary/types';
 import { useSearchQueryFromURL } from 'src/views/search/hooks/useSearchQueryFromURL';
 import { updateRoute } from 'src/views/search/utils/update-route';
 import { usePaginationContext } from 'src/views/search/context/pagination-context';
+import { useSearchResultsFetchedContext } from 'src/views/search/context/search-results-fetched-context';
+import { SelectedFilterType } from 'src/views/search/components/refactored-filters/types';
 
 export interface DateHistogramProps {
   /** Array of data values used to generate the chart. */
@@ -30,6 +31,7 @@ export const DateHistogram = (props: DateHistogramProps) => {
   const router = useRouter();
   const queryParams = useSearchQueryFromURL();
   const { resetPagination } = usePaginationContext();
+  const { isFiltersFetchEnabled } = useSearchResultsFetchedContext();
 
   const selectedFilters: SelectedFilterType = useMemo(() => {
     const queryFilters = router.query.filters;
@@ -81,13 +83,15 @@ export const DateHistogram = (props: DateHistogramProps) => {
       colorScheme='secondary'
       queryParams={{
         q: queryParams.q,
-        extra_filter: queryFilterObject2String(queryParams.filters) || '',
+        extra_filter: queryFilterObject2String(queryParams.filters || {}) || '',
+        use_ai_search: queryParams.use_ai_search ?? 'false',
       }}
       selectedDates={selected || []}
       handleSelectedFilter={values => handleSelectedFilters(values, property)}
       resetFilter={() => handleSelectedFilters([], property)}
       showHistogram={true}
       showDateControls={false}
+      enabled={isFiltersFetchEnabled}
     />
   );
 };

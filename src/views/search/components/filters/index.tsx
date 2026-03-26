@@ -63,7 +63,7 @@ export const Filters = React.memo(
       () => ({
         q: queryParams.q,
         extra_filter: queryFilterObject2String(queryParams.filters || {}) || '',
-        use_ai_search: queryParams.use_ai_search,
+        use_ai_search: queryParams.use_ai_search ?? 'false',
       }),
       [queryParams.q, queryParams.filters, queryParams.use_ai_search],
     );
@@ -159,7 +159,7 @@ export const Filters = React.memo(
                     q: queryParams.q,
                     extra_filter:
                       queryFilterObject2String(queryParams.filters) || '',
-                    use_ai_search: queryParams.use_ai_search,
+                    use_ai_search: queryParams.use_ai_search ?? 'false',
                   }}
                   showHistogram={showHistogram}
                   showDateControls={showDateControls}

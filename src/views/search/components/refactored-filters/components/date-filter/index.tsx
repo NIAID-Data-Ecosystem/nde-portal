@@ -22,6 +22,7 @@ interface DateFilterProps {
   resetFilter: () => void;
   showHistogram?: boolean;
   showDateControls?: boolean;
+  enabled: boolean;
 }
 
 /**
@@ -30,7 +31,7 @@ interface DateFilterProps {
  */
 const prepareInitialParams = (
   queryParams: Params,
-): { q: string; extra_filter: string } => {
+): { q: string; extra_filter: string; use_ai_search?: string } => {
   const filtersObject = queryParams.extra_filter
     ? queryFilterString2Object(queryParams.extra_filter)
     : {};
@@ -40,6 +41,7 @@ const prepareInitialParams = (
   return {
     q: queryParams.q || '',
     extra_filter: queryFilterObject2String(filtersWithoutDate) || '',
+    use_ai_search: queryParams.use_ai_search ?? 'false',
   };
 };
 
@@ -131,6 +133,7 @@ export const DateFilter: React.FC<DateFilterProps> = props => {
   const initialQueryData = useFilterQueries({
     configs: DATE_FILTER_CONFIG,
     params: initialParams,
+    enabled: props.enabled,
   });
 
   // Fetch updated data (with current query params)
@@ -139,7 +142,9 @@ export const DateFilter: React.FC<DateFilterProps> = props => {
     params: {
       q: queryParams.q || '',
       extra_filter: queryParams.extra_filter || '',
+      use_ai_search: queryParams.use_ai_search ?? 'false',
     },
+    enabled: props.enabled,
   });
 
   const { results: initialResults, isLoading: initialLoading } =

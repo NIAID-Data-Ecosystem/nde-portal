@@ -168,7 +168,7 @@ export const useFilterQueries = ({
               q: initialParams.q,
               extra_filter: initialParams?.extra_filter || '',
               facets: facetConfig.property,
-              use_ai_search: initialParams?.use_ai_search || 'false',
+              use_ai_search: initialParams?.use_ai_search ?? 'false',
             },
             {
               queryKey: ['search-results'],

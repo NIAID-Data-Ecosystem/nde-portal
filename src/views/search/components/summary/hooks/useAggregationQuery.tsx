@@ -34,6 +34,7 @@ export const useAggregationQuery = ({
     facets: property,
     size: 0,
   };
+  console.log('params', params);
 
   const { data, isLoading, error, isFetching, isPlaceholderData, refetch } =
     useQuery({
