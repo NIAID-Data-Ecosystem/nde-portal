@@ -1,5 +1,5 @@
 import { FilterConfig, FilterTermType } from '../types';
-import { buildQueries, buildSourceQueries } from '../utils/query-builders';
+import { buildQueries, buildSourceQueries } from '../utils/query-string';
 import { formatDate, formatISOString } from 'src/utils/api/helpers';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import {

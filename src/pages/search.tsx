@@ -15,7 +15,7 @@ import { FILTER_CONFIGS } from 'src/views/search/components/filters/config';
 import {
   queryFilterString2Object,
   queryFilterObject2String,
-} from 'src/views/search/components/filters/utils/query-builders';
+} from 'src/views/search/components/filters/utils/query-string';
 import {
   defaultSelectedFilters,
   defaultQuery,

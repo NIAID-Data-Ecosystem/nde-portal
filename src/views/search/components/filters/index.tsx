@@ -7,7 +7,7 @@ import { FiltersList } from './components/list';
 import { FiltersContainer } from './components/container';
 import { DateFilter } from './components/date-filter';
 import { SelectedFilterType } from './types';
-import { queryFilterObject2String } from './utils/query-builders';
+import { queryFilterObject2String } from './utils/query-string';
 import { updateRoute } from '../../utils/update-route';
 import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
 import { usePaginationContext } from '../../context/pagination-context';

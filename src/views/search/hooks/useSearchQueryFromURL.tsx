@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { defaultQuery, DefaultSearchQueryParams } from '../config/defaultQuery';
 import { encodeString } from 'src/utils/querystring-helpers';
 import { FILTER_CONFIGS } from '../components/filters/config';
-import { queryFilterString2Object } from '../components/filters/utils/query-builders';
+import { queryFilterString2Object } from '../components/filters/utils/query-string';
 
 const parseNumberQueryParam = (
   param: string | string[] | undefined,

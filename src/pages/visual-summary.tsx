@@ -35,7 +35,7 @@ import { useActiveVizIds } from 'src/views/search/components/summary/hooks/useAc
 import {
   queryFilterObject2String,
   queryFilterString2Object,
-} from 'src/views/search/components/filters/utils/query-builders';
+} from 'src/views/search/components/filters/utils/query-string';
 import { FilterTags } from 'src/views/search/components/refactored-filters/components/tag';
 import { SearchResultsFetchedProvider } from 'src/views/search/context/search-results-fetched-context';
 

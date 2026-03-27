@@ -1,4 +1,4 @@
-import { buildQueries, buildSourceQueries } from '../../utils/query-builders';
+import { buildQueries, buildSourceQueries } from '../../utils/query-string';
 import {
   createCommonQuery,
   createQueryWithSourceMetadata,

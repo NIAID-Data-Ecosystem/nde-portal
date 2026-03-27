@@ -8,7 +8,7 @@ import { FILTER_CONFIGS } from '../../config';
 import {
   queryFilterObject2String,
   queryFilterString2Object,
-} from '../../utils/query-builders';
+} from '../../utils/query-string';
 import { HistogramSection } from './components/histogram-section';
 import { DateControls } from './components/date-controls';
 import { useDateFilterData } from './hooks/useDateFilterData';

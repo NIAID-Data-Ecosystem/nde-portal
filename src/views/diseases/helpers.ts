@@ -3,7 +3,7 @@ import { Params } from 'src/utils/api';
 import {
   queryFilterObject2String,
   queryFilterString2Object,
-} from '../search/components/filters/utils/query-builders';
+} from '../search/components/filters/utils/query-string';
 import {
   DiseasePageProps,
   DiseaseCollectionApiResponse,
