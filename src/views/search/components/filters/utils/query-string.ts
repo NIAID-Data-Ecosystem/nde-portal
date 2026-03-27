@@ -156,8 +156,11 @@ export const getSelectedFilterDisplay = (
  * Used by DateFilter to build filter strings
  */
 export const queryFilterObject2String = (
-  filters: Record<string, SelectedFilterValueType[]>,
+  filters?: Record<string, SelectedFilterValueType[]>,
 ): string => {
+  if (!filters) {
+    return '';
+  }
   return filtersToQueryString(filters) || '';
 };
 
@@ -166,7 +169,10 @@ export const queryFilterObject2String = (
  * Used by DateFilter to parse existing filters
  */
 export const queryFilterString2Object = (
-  queryString: string,
+  queryString?: string | string[],
 ): SelectedFilterType => {
+  if (!queryString || Array.isArray(queryString)) {
+    return {};
+  }
   return queryStringToFilters(queryString) || {};
 };

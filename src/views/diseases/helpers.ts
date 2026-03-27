@@ -48,7 +48,7 @@ export const getSearchResultsRoute = ({
   term?: string;
 }): UrlObject => {
   const q = query.q || '';
-  const filters = queryFilterString2Object(query.extra_filter) || {};
+  const filters = queryFilterString2Object(query?.extra_filter || '') || {};
 
   if (facet && term) {
     filters[facet] = [term];
