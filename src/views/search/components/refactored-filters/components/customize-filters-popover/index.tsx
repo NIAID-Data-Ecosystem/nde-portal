@@ -115,7 +115,7 @@ export const CustomizeFiltersPopover: React.FC<
     <Popover placement='bottom-end'>
       <Flex justifyContent='flex-end'>
         <PopoverTrigger>
-          <Button colorScheme='gray' variant='outline' size='xs'>
+          <Button colorScheme='gray' variant='outline' size='sm' flex={1}>
             <Icon as={FaSliders} boxSize={4} mr={2} />
             {CUSTOMIZE_FILTERS_COPY.button}
           </Button>
