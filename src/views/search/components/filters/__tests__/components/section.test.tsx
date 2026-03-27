@@ -1,160 +1,63 @@
 import React from 'react';
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  within,
-} from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import { Accordion } from '@chakra-ui/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { FiltersSection } from '../../components/section';
-import { ChakraProvider, useBreakpointValue } from '@chakra-ui/react';
-import {
-  FiltersContainer,
-  FiltersContainerProps,
-} from '../../components/container';
-import { SearchTabsProvider } from 'src/views/search/context/search-tabs-context';
-import { TabType } from 'src/views/search/types';
 
-// Mock the useBreakpointValue hook  -- put in desktop mode
-jest.mock('@chakra-ui/react', () => {
-  const originalModule = jest.requireActual('@chakra-ui/react');
-  return {
-    ...originalModule,
-    useBreakpointValue: jest.fn(),
-  };
-});
+const shouldEnableInVisualSummaryPage = jest.fn();
 
-// Mock Tooltip component
-jest.mock('src/components/tooltip', () => ({
-  __esModule: true,
-  default: ({
-    children,
-    label,
-  }: {
-    children: React.ReactNode;
-    label: string;
-  }) => (
-    <div>
-      {children}
-      <span role='tooltip'>{label}</span>
-    </div>
-  ),
+jest.mock('src/utils/feature-flags', () => ({
+  shouldEnableInVisualSummaryPage: (...args: any[]) =>
+    shouldEnableInVisualSummaryPage(...args),
 }));
 
-const renderComponent = (props: {
-  containerProps: Omit<FiltersContainerProps, 'children'>;
-  sections: {
-    _id: string;
-    name: string;
-    property: string;
-    description: string;
-    children: React.ReactNode;
-  }[];
-}) => {
-  return render(
-    <ChakraProvider>
-      <SearchTabsProvider initialTab={'d'}>
-        <FiltersContainer {...props.containerProps}>
-          {props.sections.map(section => (
-            <FiltersSection {...section} key={section._id} />
-          ))}
-        </FiltersContainer>
-      </SearchTabsProvider>
-    </ChakraProvider>,
-  );
-};
+jest.mock('src/components/tooltip', () => ({
+  __esModule: true,
+  default: ({ children }: any) => <>{children}</>,
+}));
 
-describe('FiltersSection', () => {
-  (useBreakpointValue as jest.Mock).mockImplementation(values => values.lg);
-  const sections = [
-    {
-      _id: 'test_01',
-      name: 'Test Filter 1',
-      property: 'test_01',
-      tabIds: ['d', 'ct'] as TabType['id'][],
-      description: 'test 1 description',
-      children: <div>Filter1 children</div>,
-      createQueries: () => [],
-    },
-    {
-      _id: 'test_02',
-      name: 'Test Filter 2',
-      property: 'test_02',
-      tabIds: ['d', 'ct'] as TabType['id'][],
-      description: 'test 2 description',
-      children: <div>Filter2 children</div>,
-      createQueries: () => [],
-    },
-  ];
-  const containerProps = {
-    title: 'Test Container',
-    error: null,
-    filtersList: sections,
-    selectedFilters: { ['test_01']: ['value1'] },
-  };
+jest.mock('next/router', () => ({
+  useRouter: () => ({ pathname: '/search' }),
+}));
 
-  it('renders correctly', () => {
-    renderComponent({
-      containerProps: {
-        ...containerProps,
-        selectedFilters: {},
-        removeAllFilters: jest.fn(),
-      },
-      sections,
-    });
-    expect(screen.getByText('Test Filter 1')).toBeInTheDocument();
-    expect(screen.queryByText('Filter1 children')).toBeNull();
+describe('refactored-filters/components/section', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  it('expands and collapses on click', async () => {
-    renderComponent({
-      containerProps: {
-        ...containerProps,
-        selectedFilters: {},
-        removeAllFilters: jest.fn(),
-      },
-      sections,
-    });
-    const button = screen.getByRole('button', { name: /Test Filter 1/i });
-
-    // Initially collapsed
-    expect(screen.queryByText('Filter1 children')).toBeNull();
-
-    fireEvent.click(button);
-
-    // After click, it should be expanded
-    await waitFor(() =>
-      expect(screen.getByText('Filter1 children')).toBeVisible(),
+  it('renders and expands panel content', () => {
+    shouldEnableInVisualSummaryPage.mockReturnValue(false);
+    render(
+      <Accordion allowMultiple>
+        <FiltersSection name='Topic' description='topic description'>
+          <div>section-content</div>
+        </FiltersSection>
+      </Accordion>,
     );
 
-    fireEvent.click(button);
-
-    // After another click, it should be collapsed
-    await waitFor(() =>
-      expect(screen.queryByText('Filter1 children')).toBeNull(),
-    );
+    fireEvent.click(screen.getByRole('button', { name: /topic/i }));
+    expect(screen.getByText('section-content')).toBeInTheDocument();
   });
 
-  it('displays tooltip with correct description', async () => {
-    renderComponent({
-      containerProps: {
-        ...containerProps,
-        selectedFilters: {},
-        removeAllFilters: jest.fn(),
-      },
-      sections,
-    });
-    const button = screen.getByRole('button', { name: /Test Filter 1/i });
+  it('shows chart toggle in visual-summary mode and invokes callback', () => {
+    shouldEnableInVisualSummaryPage.mockReturnValue(true);
+    const onToggleViz = jest.fn();
+    render(
+      <Accordion allowMultiple>
+        <FiltersSection
+          name='Topic'
+          description='topic description'
+          filterId='topic'
+          isVizActive={false}
+          onToggleViz={onToggleViz}
+        >
+          <div>section-content</div>
+        </FiltersSection>
+      </Accordion>,
+    );
 
-    fireEvent.mouseOver(button);
-
-    await waitFor(() => {
-      const tooltips = screen.getAllByRole('tooltip');
-      const tooltip = tooltips.find(
-        t => t.textContent === 'Test 1 description',
-      );
-      expect(tooltip).toBeInTheDocument();
-    });
+    fireEvent.click(
+      screen.getByRole('button', { name: /add topic visualisation chart/i }),
+    );
+    expect(onToggleViz).toHaveBeenCalledWith('topic');
   });
 });

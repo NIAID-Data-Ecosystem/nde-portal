@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { omit } from 'lodash';
 import { Box, Flex, Heading } from '@chakra-ui/react';
 import { Params } from 'src/utils/api';
@@ -12,7 +12,6 @@ import {
 import { HistogramSection } from './components/histogram-section';
 import { DateControls } from './components/date-controls';
 import { useDateFilterData } from './hooks/useDateFilterData';
-import { FilterResults } from '../../types';
 
 interface DateFilterProps {
   colorScheme: string;
@@ -22,16 +21,15 @@ interface DateFilterProps {
   resetFilter: () => void;
   showHistogram?: boolean;
   showDateControls?: boolean;
-  enabled: boolean;
+  enabled?: boolean;
+  onFetchStateChange?: (isFetching: boolean) => void;
 }
 
 /**
  * Prepares query parameters by removing the date filter.
  * This ensures we get all possible results for the histogram display.
  */
-const prepareInitialParams = (
-  queryParams: Params,
-): { q: string; extra_filter: string; use_ai_search?: string } => {
+const prepareInitialParams = (queryParams: Params): Params => {
   const filtersObject = queryParams.extra_filter
     ? queryFilterString2Object(queryParams.extra_filter)
     : {};
@@ -39,9 +37,8 @@ const prepareInitialParams = (
   const filtersWithoutDate = omit(filtersObject, ['date']);
 
   return {
-    q: queryParams.q || '',
+    ...queryParams,
     extra_filter: queryFilterObject2String(filtersWithoutDate) || '',
-    use_ai_search: queryParams.use_ai_search ?? 'false',
   };
 };
 
@@ -51,30 +48,25 @@ const DATE_FILTER_CONFIG = FILTER_CONFIGS.filter(
 
 const DateFilterContent: React.FC<
   DateFilterProps & {
-    results: FilterResults;
-    initialResults: FilterResults;
-    error: Error | null;
-    isLoading: boolean;
-    isUpdating: boolean;
+    initialQueryData: ReturnType<typeof useFilterQueries>;
   }
 > = ({
   colorScheme,
-  results,
-  initialResults,
-  error,
-  isLoading,
-  isUpdating,
+  initialQueryData,
   selectedDates,
   handleSelectedFilter,
   resetFilter,
   showHistogram = true,
   showDateControls = true,
 }) => {
+  const { results, initialResults, error, isLoading, isUpdating } =
+    initialQueryData;
+
   const { selectedData, resourcesWithNoDate, hasAnyDateData } =
     useDateFilterData(
       results,
       initialResults,
-      DATE_FILTER_CONFIG[0].id,
+      DATE_FILTER_CONFIG[0]._id,
       handleSelectedFilter,
     );
 
@@ -121,56 +113,40 @@ const DateFilterContent: React.FC<
  * Wraps the filter content with DateRangeContext for state management.
  */
 export const DateFilter: React.FC<DateFilterProps> = props => {
-  const { queryParams, selectedDates } = props;
+  const { queryParams, selectedDates, onFetchStateChange } = props;
 
-  // Prepare params without date filter for initial data
   const initialParams = useMemo(
     () => prepareInitialParams(queryParams),
     [queryParams],
   );
 
-  // Fetch initial data (without date filter)
   const initialQueryData = useFilterQueries({
-    configs: DATE_FILTER_CONFIG,
-    params: initialParams,
+    initialParams,
+    updateParams: queryParams,
+    config: DATE_FILTER_CONFIG,
     enabled: props.enabled,
   });
 
-  // Fetch updated data (with current query params)
-  const updateQueryData = useFilterQueries({
-    configs: DATE_FILTER_CONFIG,
-    params: {
-      q: queryParams.q || '',
-      extra_filter: queryParams.extra_filter || '',
-      use_ai_search: queryParams.use_ai_search ?? 'false',
-    },
-    enabled: props.enabled,
-  });
+  const isFetching = initialQueryData.isLoading || initialQueryData.isUpdating;
 
-  const { results: initialResults, isLoading: initialLoading } =
-    initialQueryData;
-  const { results, isLoading, isUpdating, error } = updateQueryData;
+  useEffect(() => {
+    onFetchStateChange?.(isFetching);
+  }, [onFetchStateChange, isFetching]);
 
+  const { initialResults, isLoading } = initialQueryData;
   const data = useMemo(
-    () => initialResults?.[DATE_FILTER_CONFIG[0].id]?.data || [],
+    () => initialResults?.[DATE_FILTER_CONFIG[0]._id]?.['data'] || [],
     [initialResults],
   );
 
   return (
     <DateRange
       data={data}
-      isLoading={initialLoading}
+      isLoading={isLoading}
       selectedDates={selectedDates}
       colorScheme='secondary'
     >
-      <DateFilterContent
-        results={results}
-        initialResults={initialResults}
-        error={error}
-        isLoading={isLoading || initialLoading}
-        isUpdating={isUpdating}
-        {...props}
-      />
+      <DateFilterContent initialQueryData={initialQueryData} {...props} />
     </DateRange>
   );
 };

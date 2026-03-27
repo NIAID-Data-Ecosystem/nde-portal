@@ -1,74 +1,125 @@
-import { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
-import { FacetParams } from './utils/queries';
-import { TabType } from '../../types';
-
-export type SelectedFilterValueType = string | { [key: string]: string[] };
-
-export interface SelectedFilterType {
-  [key: string]: SelectedFilterValueType[];
-}
-
-export interface RawQueryResult {
-  id: string;
-  facet: string;
-  results: {
-    count: number;
-    facet?: string;
-    label?: string;
-    groupBy?: string;
-    term: string;
-  }[];
-}
-
-// Define the structure of the transformed query result
-export interface FilterTermType
-  extends Omit<RawQueryResult['results'][number], 'label'> {
+/**
+ * Simplified filter term representing a single filterable value
+ */
+export interface FilterTermType {
+  term: string;
   label: string;
+  count: number;
+  groupBy?: string;
+  facet?: string;
 }
 
+/**
+ * Filter item extends FilterTermType with header support for grouped lists
+ */
 export interface FilterItem extends FilterTermType {
   isHeader?: boolean;
 }
 
-export interface QueryData {
-  [facet: string]: Omit<UseQueryResult<FilterTermType[]>, 'data'> & {
-    data: FilterTermType[];
-  };
+/**
+ * Selected filter value - can be a string or an object for exists/not-exists queries
+ */
+export type SelectedFilterValueType = string | { [key: string]: string[] };
+
+/**
+ * Currently selected filters keyed by filter property
+ */
+
+export interface SelectedFilterType {
+  [property: string]: SelectedFilterValueType[];
+}
+/**
+ * Query type determines how the filter query is built
+ * - 'facet': Regular facet query with exists/not-exists options
+ * - 'source': Special query that includes source metadata
+ * - 'histogram': Date histogram query
+ */
+export type FilterQueryType = 'facet' | 'source' | 'histogram';
+
+/**
+ * Chart types available for visualizations
+ */
+export type ChartType = 'pie' | 'bar' | 'histogram';
+
+/**
+ * Filter category types available for grouping filters in the UI
+ */
+export type FilterCategory =
+  | 'Shared / Dataset'
+  | 'Dataset'
+  | 'Computational Tool'
+  | 'Sample';
+
+/**
+ * Configuration for individual chart types (e.g., bar, pie)
+ */
+export interface ChartTypeConfig {
+  maxItems?: number;
+  minPercent?: number;
 }
 
-// Interface for filter configuration
 /**
- * @FilterConfig
- *
- * Interface for filter configuration.
- *
- * @property _id - The unique identifier for the filter.
- * @property vizId - The associated visualization ID for the filter (if applicable).
- * @property name - The name used for display the filter.
- * @property property - The schema property to filter on, used in selected filters.
- * @property description - The description of the filter, used for the tooltip.
- * @property createQueries - Function to create queries for the filter.
- * @property groupBy - The property to group the terms under.
- * @property isDefaultOpen - Whether the filter is open by default.
- * @property transformData - Function to transform data before rendering, used for updating the display label mostly.
- *
+ * Visualization chart configuration
+ */
+export interface ChartConfig {
+  availableOptions: ChartType[];
+  defaultOption: ChartType;
+  bar?: ChartTypeConfig;
+  pie?: ChartTypeConfig;
+  histogram?: ChartTypeConfig;
+}
+
+/**
+ * Simplified filter configuration - no more createQueries function!
+ * The query building logic is now handled internally by the hook based on `queryType`
  */
 export interface FilterConfig {
-  _id: string;
-  vizId?: string;
+  /** Unique identifier for the filter */
+  id: string;
+  /** Display name for the filter */
   name: string;
+  /** The API property to query/aggregate data (e.g., 'sourceOrganization.name.raw') */
   property: string;
+  /** Property to categorize filters in the UI */
+  category: FilterCategory;
+  /** Optional: The property to use for filtering, if different from property (e.g., 'sourceOrganization.name') */
+  filterProperty?: string;
+  /** Tooltip description */
   description: string;
-  tabIds: TabType['id'][];
-  createQueries: (
-    id: string,
-    params: FacetParams,
-    options?: UseQueryOptions<any, Error, RawQueryResult>,
-  ) => UseQueryOptions<any, Error, RawQueryResult>[];
-  groupBy?: {
-    property: string;
+  /** Query type determines how the API query is built */
+  queryType: FilterQueryType;
+  /** Optional: Whether the filter is open by default */
+  isDefaultOpen?: boolean;
+  /** Optional: Grouping configuration for terms */
+  groupBy?: { property: string; label: string }[];
+  /** Optional: Chart configuration for visualizations */
+  chart?: ChartConfig;
+  /** Optional: Transform function for visualization data */
+  transformData?: (item: { count: number; term: string; label?: string }) => {
+    count: number;
+    term: string;
     label: string;
-  }[];
-  isDefaultOpen?: Boolean;
-  transformData?: (item: RawQueryResult['results'][number]) => FilterTermType; // useful for transforming data before rendering. Note that the label is used for search and display.
+  };
+  /** IDs of tabs where this filter should be shown */
+  tabIds?: string[];
+}
+
+/**
+ * Filter query results for a single filter
+ */
+export interface FilterQueryResult {
+  id: string;
+  terms: FilterTermType[];
+  /** Alias for terms - used by DateFilter */
+  data: FilterTermType[];
+  isLoading: boolean;
+  isUpdating: boolean;
+  error: Error | null;
+}
+
+/**
+ * Combined results for all filters
+ */
+export interface FilterResults {
+  [filterId: string]: FilterQueryResult;
 }

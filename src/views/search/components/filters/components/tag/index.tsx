@@ -12,12 +12,13 @@ import {
   SelectedFilterType,
   SelectedFilterValueType,
 } from '../../types';
-import { queryFilterObject2String } from 'src/views/search/components/refactored-filters/utils/query-string';
 import { defaultQuery } from 'src/views/search/config/defaultQuery';
 import { isEqual } from 'lodash';
 import { generateTags } from './utils';
 import { SearchResultsHeading } from '../../../search-results-header';
 import { usePaginationContext } from 'src/views/search/context/pagination-context';
+
+import { queryFilterObject2String } from '../../utils/query-string';
 
 interface FilterTagsProps {
   filtersConfig: FilterConfig[];

@@ -10,7 +10,7 @@ import { VariableSizeList as List } from 'react-window';
 import { useDebounceValue } from 'usehooks-ts';
 import { SearchInput } from 'src/components/search-input';
 import { Checkbox } from './checkbox';
-import { FilterTermType, FilterConfig, FilterItem } from '../types';
+import { FilterTermType, FilterItem, FilterConfig } from '../types';
 
 // VirtualizedList component to render the list of filter terms
 const VirtualizedList = React.memo(

@@ -1,176 +1,57 @@
 import React from 'react';
-import { ChakraProvider, useBreakpointValue } from '@chakra-ui/react';
-import { render, screen, fireEvent, act } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { FiltersContainer } from '../../components/container';
-import { FilterConfig } from '../../types';
-import { SearchTabsProvider } from 'src/views/search/context/search-tabs-context';
 
-// Mock data
-const mockFiltersList: FilterConfig[] = [
-  {
-    _id: '01',
-    name: 'Filter 1',
-    description: '',
-    property: 'filter1',
-    isDefaultOpen: false,
-    createQueries: () => {
-      return [];
-    },
-    tabIds: ['d', 'ct'],
-  },
-  {
-    _id: '02',
-    name: 'Filter 2',
-    description: '',
-    property: 'filter2',
-    isDefaultOpen: true,
-    createQueries: () => {
-      return [];
-    },
-    tabIds: ['d', 'ct'],
-  },
-];
-const mockSelectedFilters = {
-  filter1: ['value1'],
-  filter2: [],
-};
-
-// Mock the useBreakpointValue hook  -- put in desktop mode
 jest.mock('@chakra-ui/react', () => {
-  const originalModule = jest.requireActual('@chakra-ui/react');
+  const actual = jest.requireActual('@chakra-ui/react');
   return {
-    ...originalModule,
+    ...actual,
     useBreakpointValue: jest.fn(),
   };
 });
 
-const renderComponent = (props = {}) => {
-  return render(
-    <ChakraProvider>
-      <SearchTabsProvider initialTab={'d'}>
-        <FiltersContainer
-          title='Test Filters'
-          selectedFilters={mockSelectedFilters}
-          filtersList={mockFiltersList}
-          error={null}
-          removeAllFilters={jest.fn()}
-          {...props}
-        >
-          <div>Filter children</div>
-        </FiltersContainer>
-      </SearchTabsProvider>
-    </ChakraProvider>,
-  );
-};
+jest.mock('../../components/customize-filters-popover', () => ({
+  CustomizeFiltersPopover: () => <div data-testid='customize-popover' />,
+}));
 
-describe('FiltersContainer', () => {
+const { useBreakpointValue } = jest.requireMock('@chakra-ui/react');
+
+describe('refactored-filters/components/container', () => {
+  const props = {
+    title: 'Search Filters',
+    selectedFilters: { foo: ['bar'] },
+    removeAllFilters: jest.fn(),
+    error: null,
+    filtersList: [{ id: 'a', property: 'foo' }],
+    children: <div>child-content</div>,
+  } as any;
+
   beforeEach(() => {
-    (useBreakpointValue as jest.Mock).mockImplementation(values => values.lg);
-
-    // Mock window.innerWidth to simulate desktop
-    Object.defineProperty(window, 'innerWidth', {
-      writable: true,
-      configurable: true,
-      value: 1024, // Set to a value that corresponds to the desktop breakpoint
-    });
-    window.dispatchEvent(new Event('resize'));
-  });
-
-  afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('renders correctly with title and removeAllFilters', () => {
-    renderComponent();
-    expect(screen.getByText('Test Filters')).toBeInTheDocument();
-    expect(screen.getByText('Clear All')).toBeInTheDocument();
-    expect(screen.getByText('Filter children')).toBeInTheDocument();
+  it('renders desktop content and supports clear all', () => {
+    useBreakpointValue.mockReturnValue('desktop');
+    render(<FiltersContainer {...props} />);
+
+    expect(screen.getByText('Search Filters')).toBeInTheDocument();
+    expect(screen.getByText('child-content')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /clear all/i }));
+    expect(props.removeAllFilters).toHaveBeenCalled();
   });
 
-  it('renders correctly without title', () => {
-    renderComponent({ title: '' });
-    expect(screen.queryByText('Test Filters')).not.toBeInTheDocument();
-    expect(screen.getByText('Clear All')).toBeInTheDocument();
-    expect(screen.getByText('Filter children')).toBeInTheDocument();
-  });
-
-  it('does not render the drawer on desktop', () => {
-    renderComponent();
-    expect(
-      screen.queryByRole('button', { name: /filters/i }),
-    ).not.toBeInTheDocument();
-  });
-
-  it('clears all filters', () => {
-    const mockRemoveAllFilters = jest.fn();
-    renderComponent({ removeAllFilters: mockRemoveAllFilters });
-
-    const clearButton = screen.getByRole('button', { name: /clear all/i });
-    fireEvent.click(clearButton);
-    expect(mockRemoveAllFilters).toHaveBeenCalled();
-  });
-
-  it('displays error message', () => {
-    const mockError = new Error('Test error');
-    renderComponent({ error: mockError });
-
+  it('renders error state', () => {
+    useBreakpointValue.mockReturnValue('desktop');
+    render(<FiltersContainer {...props} error={new Error('x')} />);
     expect(
       screen.getByText(/something went wrong, unable to load filters/i),
     ).toBeInTheDocument();
   });
 
-  it('renders mobile version and opens drawer', () => {
-    (useBreakpointValue as jest.Mock).mockImplementation(values => values.base);
-    renderComponent();
-    const openButton = screen.getByRole('button', { name: /filters/i });
-    expect(openButton).toBeInTheDocument();
-    fireEvent.click(openButton);
+  it('renders mobile drawer trigger and opens content', () => {
+    useBreakpointValue.mockReturnValue('mobile');
+    render(<FiltersContainer {...props} />);
+    fireEvent.click(screen.getByRole('button', { name: /search filters/i }));
     expect(screen.getByText('Submit and Close')).toBeInTheDocument();
-  });
-
-  it('renders tablet version and opens drawer', () => {
-    (useBreakpointValue as jest.Mock).mockImplementation(values => values.sm);
-    renderComponent();
-    const openButton = screen.getByRole('button', { name: /filters/i });
-    expect(openButton).toBeInTheDocument();
-    fireEvent.click(openButton);
-    expect(screen.getByText('Submit and Close')).toBeInTheDocument();
-  });
-
-  it('initializes innerHeight correctly', () => {
-    (useBreakpointValue as jest.Mock).mockImplementation(values => undefined);
-
-    // Set initial innerHeight
-    Object.defineProperty(window, 'innerHeight', {
-      writable: true,
-      configurable: true,
-      value: 1024,
-    });
-
-    renderComponent();
-    // Check initial innerHeight value
-    expect(
-      screen.queryByRole('button', { name: /filters/i }),
-    ).not.toBeInTheDocument(); // Assuming desktop view
-  });
-
-  it('updates innerHeight on window resize', () => {
-    renderComponent();
-
-    // Check initial innerHeight value
-    expect(window.innerHeight).toBe(1024); // default value
-
-    // Resize window
-    act(() => {
-      Object.defineProperty(window, 'innerHeight', {
-        writable: true,
-        configurable: true,
-        value: 800, // new value
-      });
-      window.dispatchEvent(new Event('resize'));
-    });
-
-    expect(screen.queryByText('Submit and Close')).not.toBeInTheDocument(); //  desktop view
   });
 });

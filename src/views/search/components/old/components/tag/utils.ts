@@ -1,13 +1,12 @@
 import { TagInfo } from '.';
-
-import { capitalize, has, isPlainObject } from 'lodash';
-import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
-import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import {
   FilterConfig,
   SelectedFilterType,
   SelectedFilterValueType,
 } from '../../types';
+import { capitalize, has, isPlainObject } from 'lodash';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import {
   APIResourceType,
   formatAPIResourceTypeForDisplay,
@@ -77,7 +76,6 @@ const getDisplayValue = (
   if (key === DATE_FILTER_KEY && isDateRangeValues(values)) {
     return index === 0 ? formatDateRange(values[0], values[1]) : '';
   }
-
   // Handle string values
   if (isStringValue(value)) {
     // Format display names

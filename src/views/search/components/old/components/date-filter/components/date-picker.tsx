@@ -18,6 +18,7 @@ export const DatePicker = ({
   handleSelectedFilter,
   resetFilter,
 }: DatePickerProps) => {
+  const [selected, setSelected] = useState(selectedDates);
   const { allData } = useDateRangeContext();
 
   // Separate state for the actual input values
@@ -49,6 +50,7 @@ export const DatePicker = ({
     dates.filter(d => !EXIST_FILTERS.includes(d as any));
 
   useEffect(() => {
+    setSelected(selectedDates);
     const actualDates = getActualDates(selectedDates);
     setStartInputValue(actualDates[0] || min);
     setEndInputValue(actualDates[1] || max);
@@ -65,6 +67,7 @@ export const DatePicker = ({
       dates[1] = max;
     }
 
+    setSelected(dates);
     handleSelectedFilter(dates);
   };
 

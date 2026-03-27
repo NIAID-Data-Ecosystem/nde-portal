@@ -1,6 +1,11 @@
 import { useMemo, useEffect } from 'react';
 import { useDateRangeContext } from './useDateRangeContext';
-import { FilterResults, FilterTermType } from '../../../types';
+
+interface FilterResults {
+  [key: string]: {
+    data: any[];
+  };
+}
 
 /**
  * Custom hook to process date filter data
@@ -18,12 +23,12 @@ export const useDateFilterData = (
   const { setOnBrushChangeEnd } = useDateRangeContext();
 
   const selectedData = useMemo(
-    () => results?.[filterKey]?.data,
+    () => results?.[filterKey]?.['data'],
     [filterKey, results],
   );
 
   const initialData = useMemo(
-    () => initialResults?.[filterKey]?.data || [],
+    () => initialResults?.[filterKey]?.['data'] || [],
     [filterKey, initialResults],
   );
 
@@ -31,9 +36,7 @@ export const useDateFilterData = (
   // This ensures the checkbox isn't disabled when dates are filtered
   const resourcesWithNoDate = useMemo(() => {
     return (
-      initialData?.filter(
-        (d: FilterTermType) => d.term === '-_exists_' && d.count > 0,
-      ) || []
+      initialData?.filter(d => d.term === '-_exists_' && d.count > 0) || []
     );
   }, [initialData]);
 
@@ -41,9 +44,8 @@ export const useDateFilterData = (
   const hasAnyDateData = useMemo(() => {
     if (!selectedData) return false;
     return (
-      selectedData.filter(
-        (d: FilterTermType) => d.term !== '-_exists_' && d.count !== 0,
-      ).length > 0
+      selectedData.filter(d => d.term !== '-_exists_' && d.count !== 0).length >
+      0
     );
   }, [selectedData]);
 

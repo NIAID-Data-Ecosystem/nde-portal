@@ -1,161 +1,172 @@
+import { SelectedFilterType, SelectedFilterValueType } from '../types';
 import { formatResourceTypeForAPI } from 'src/utils/formatting/formatResourceType';
-import {
-  createCommonQuery,
-  createQueryWithSourceMetadata,
-  createNotExistsQuery,
-  QueryArgs,
-} from './queries';
-import { FilterConfig } from '../types';
 
 /**
- * Create queries for a given facet field.
- *
- * @param overrides - Optional overrides for the query arguments.
- * @returns Function to create queries for the given facet field.
+ * Convert selected filters object to a query string for API calls
  */
-export const buildQueries =
-  (overrides?: Partial<QueryArgs>): FilterConfig['createQueries'] =>
-  (id, params, options) => {
-    if (!id) {
-      throw new Error('id is required');
-    }
-    // Destructure options to exclude queryKey and gather other options, with defaults
-    const { queryKey = [], ...queryOptions } = options || {};
-
-    return [
-      createCommonQuery({
-        id,
-        queryKey,
-        params,
-        ...queryOptions,
-        ...overrides,
-      }),
-      createNotExistsQuery({
-        id,
-        queryKey,
-        params,
-        ...queryOptions,
-        ...overrides,
-      }),
-    ];
-  };
-
-/**
- * Create queries for the "Sources" facet field.
- *
- * @param facetField - The facet field to filter by.
- * @returns Function to create queries for the "Sources" facet field.
- */
-export const buildSourceQueries =
-  (overrides?: QueryArgs): FilterConfig['createQueries'] =>
-  (id, params, options) => {
-    if (!id) {
-      throw new Error('id is required');
-    }
-    // Destructure options to exclude queryKey and gather other options, with defaults
-    const { queryKey = [], ...queryOptions } = options || {};
-
-    return [
-      createQueryWithSourceMetadata({
-        id,
-        queryKey,
-        params,
-        ...queryOptions,
-        ...overrides,
-      }),
-    ];
-  };
-
-// Convert filters object to string for url routing + api call.
-export const queryFilterObject2String = (selectedFilters: any) => {
-  // create querystring for filters where values are provided.
-  let filterString = Object.keys(selectedFilters)
-    .filter(filterName => selectedFilters[filterName].length > 0)
-    .map(filterName => {
-      // Retrieve string filter values
-      const filter_strings = selectedFilters[filterName].filter(
-        (v: any) => typeof v === 'string' && v !== '',
+export const filtersToQueryString = (
+  selectedFilters: SelectedFilterType,
+): string | null => {
+  const filterParts = Object.entries(selectedFilters)
+    .filter(([_, values]) => values.length > 0)
+    .map(([filterName, values]) => {
+      // Separate string values from object values (for _exists_ filters)
+      const stringValues = values.filter(
+        (v): v is string => typeof v === 'string' && v !== '',
       );
-      // Retrieve object filter values (notably used when checking for dataset where facet is not represented i.e.{-_exists_: [facet]} )
-      const filter_objects = selectedFilters[filterName].filter(
-        (v: any) => typeof v === 'object',
+      const objectValues = values.filter(
+        (v): v is { [key: string]: string[] } => typeof v === 'object',
       );
 
-      let values = '';
-      if (filter_strings.length > 0 && filterName === '@type') {
-        // check if filter string exists and format the @type value for API if needed.
-        values = `("${filter_strings
-          .map((type: string) => formatResourceTypeForAPI(type))
+      let valueString = '';
+
+      // Handle @type specially - needs API formatting
+      if (stringValues.length > 0 && filterName === '@type') {
+        valueString = `("${stringValues
+          .map(type => formatResourceTypeForAPI(type))
           .join('" OR "')}")`;
-      } else if (filterName === 'date') {
-        // If one date is selected we do exact match, if multiple we apply range
-        if (filter_strings.length === 1) {
-          values = filter_strings.join('');
-        } else if (filter_strings.length > 0) {
-          values = `["${filter_strings.join('" TO "')}"]`;
+      }
+      // Handle date - single value is exact match, multiple is range
+      else if (filterName === 'date') {
+        if (stringValues.length === 1) {
+          valueString = stringValues[0];
+        } else if (stringValues.length > 1) {
+          valueString = `["${stringValues.join('" TO "')}"]`;
         }
-        // if type is date we join with "TO"
-      } else if (filter_strings.length > 0) {
-        values = `("${filter_strings.join('" OR "')}")`;
-      } else {
-        values = '';
+      }
+      // Standard OR query for other filters
+      else if (stringValues.length > 0) {
+        valueString = `("${stringValues.join('" OR "')}")`;
       }
 
-      // handle case where filters is an object such as when {-_exists_: keywords}
-      if (filter_objects.length > 0) {
-        filter_objects.map((obj: Record<string, any>) => {
-          if (!values) {
-            values = `${queryFilterObject2String(obj)}`;
-          } else {
-            values += ' OR ' + `${queryFilterObject2String(obj)}`;
-          }
-        });
+      // Handle object values (e.g., { '-_exists_': ['facet'] })
+      if (objectValues.length > 0) {
+        const objectStrings = objectValues.map(obj =>
+          filtersToQueryString(obj),
+        );
+        if (valueString) {
+          valueString += ' OR ' + objectStrings.join(' OR ');
+        } else {
+          valueString = objectStrings.join(' OR ') || '';
+        }
       }
-      return `(${filterName}:${values})`;
+
+      return valueString ? `(${filterName}:${valueString})` : null;
     })
-    .join(' AND ');
-  return filterString ? filterString : null;
+    .filter(Boolean);
+
+  return filterParts.length > 0 ? filterParts.join(' AND ') : null;
 };
 
-// Convert filters url string to object for state management.
-export const queryFilterString2Object = (str?: string | string[]) => {
-  if (!str || Array.isArray(str)) {
+/**
+ * Parse a query string back into a filters object
+ */
+export const queryStringToFilters = (
+  queryString?: string | string[],
+): SelectedFilterType | null => {
+  if (!queryString || Array.isArray(queryString)) {
     return null;
   }
 
-  let filters = str.includes(' AND ') ? str.split(' AND ') : [str];
-  let queryObject = filters.reduce((r: any, filter) => {
-    let filter_string = filter;
-    if (
-      filter_string.charAt(0) === '(' &&
-      filter_string.charAt(filter_string.length - 1) === ')'
-    ) {
-      filter_string = filter_string.slice(1, filter_string.length - 1);
+  const filterParts = queryString.includes(' AND ')
+    ? queryString.split(' AND ')
+    : [queryString];
+
+  return filterParts.reduce((acc, part) => {
+    // Remove outer parentheses
+    let cleanPart = part;
+    if (cleanPart.startsWith('(') && cleanPart.endsWith(')')) {
+      cleanPart = cleanPart.slice(1, -1);
     }
 
-    // split on first occurence of ":" to retrieve [key, value] pair
-    let filterKeyValue = filter_string.split(/:(.*)/s);
-    if (filterKeyValue.length < 2) {
-      return r;
+    // Split on first colon to get key and value
+    const colonIndex = cleanPart.indexOf(':');
+    if (colonIndex === -1) return acc;
+
+    const key = cleanPart.slice(0, colonIndex).replace(/[("]/g, '');
+    const valueString = cleanPart.slice(colonIndex + 1);
+
+    // Parse the value string
+    const values = parseFilterValues(valueString, key);
+    if (values.length > 0) {
+      acc[key] = values;
     }
-    let name = filterKeyValue[0].replaceAll('("', '').replaceAll('")', '');
 
-    let value = filterKeyValue[1]
-      .replace('("', '')
-      .replace('")', '')
-      .replace('["', '')
-      .replace('"]', '')
-      .split(/(?:" OR ")| OR |(?:" TO ")| TO /)
-      .map(v => {
-        // Handle exists filter
-        if (v.includes('_exists_')) {
-          return queryFilterString2Object(v);
-        }
-        return v;
-      });
+    return acc;
+  }, {} as SelectedFilterType);
+};
 
-    r[name] = value;
-    return r;
-  }, {});
-  return queryObject;
+/**
+ * Parse filter values from a query string value
+ */
+const parseFilterValues = (
+  valueString: string,
+  key: string,
+): SelectedFilterValueType[] => {
+  // Clean up the value string
+  let cleaned = valueString
+    .replace(/^\(?"?/, '')
+    .replace(/"?\)?$/, '')
+    .replace(/^\[?"?/, '')
+    .replace(/"?\]?$/, '');
+
+  // Handle exists filters
+  if (cleaned.startsWith('_exists_') || cleaned.startsWith('-_exists_')) {
+    return [{ [cleaned.includes('-') ? '-_exists_' : '_exists_']: [key] }];
+  }
+
+  // Split by OR or TO (for date ranges)
+  const separator = key === 'date' ? /" TO "| TO / : /" OR "/;
+  const parts = cleaned.split(separator).filter(Boolean);
+
+  return parts.map(part => part.replace(/^"|"$/g, ''));
+};
+
+/**
+ * Normalize filter values - converts _exists_ strings to objects
+ */
+export const normalizeFilterValues = (
+  values: SelectedFilterValueType[],
+  facet: string,
+): SelectedFilterValueType[] => {
+  return values.map(value => {
+    if (value === '_exists_' || value === '-_exists_') {
+      return { [value]: [facet] };
+    }
+    return value;
+  });
+};
+
+/**
+ * Get the display values from selected filters (flattening object values)
+ */
+export const getSelectedFilterDisplay = (
+  values: SelectedFilterValueType[],
+): string[] => {
+  return values.map(value => {
+    if (typeof value === 'object') {
+      return Object.keys(value)[0];
+    }
+    return value;
+  });
+};
+
+/**
+ * Convert a filter object to a query string
+ * Used by DateFilter to build filter strings
+ */
+export const queryFilterObject2String = (
+  filters: Record<string, SelectedFilterValueType[]>,
+): string => {
+  return filtersToQueryString(filters) || '';
+};
+
+/**
+ * Parse a query string to a filter object
+ * Used by DateFilter to parse existing filters
+ */
+export const queryFilterString2Object = (
+  queryString: string,
+): SelectedFilterType => {
+  return queryStringToFilters(queryString) || {};
 };
