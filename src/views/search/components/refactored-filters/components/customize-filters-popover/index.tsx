@@ -66,7 +66,7 @@ export const CustomizeFiltersPopover: React.FC<
     const storedValue = window.localStorage.getItem(
       CUSTOM_VISIBLE_FILTERS_STORAGE_KEY,
     );
-
+    // If no stored value, default to showing all filters.
     if (!storedValue) {
       setVisibleFilterIds(allFilterIds);
       setIsReady(true);

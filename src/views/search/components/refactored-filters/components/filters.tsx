@@ -10,9 +10,13 @@ import { DateFilter } from './date-filter';
 import { updateRoute } from '../../../utils/update-route';
 import { useSearchQueryFromURL } from '../../../hooks/useSearchQueryFromURL';
 import { usePaginationContext } from '../../../context/pagination-context';
-import { shouldEnableInVisualSummaryPage } from 'src/utils/feature-flags';
+import {
+  shouldEnableInVisualSummaryPage,
+  SHOW_VISUAL_SUMMARY,
+} from 'src/utils/feature-flags';
 import { FILTER_CONFIGS } from '../config';
 import { useSearchResultsFetchedContext } from 'src/views/search/context/search-results-fetched-context';
+import { useSearchTabsContext } from 'src/views/search/context/search-tabs-context';
 
 interface FiltersProps {
   colorScheme?: string;
@@ -33,17 +37,27 @@ export const Filters = React.memo(
     isVizActive,
   }: FiltersProps) => {
     const router = useRouter();
+    const { selectedTab } = useSearchTabsContext();
     const queryParams = useSearchQueryFromURL();
     const { resetPagination } = usePaginationContext();
-    const [visibleFilterIds, setVisibleFilterIds] = useState<string[]>(
-      FILTER_CONFIGS.map(config => config.id),
-    );
+    const filterIds = FILTER_CONFIGS.map(config => config.id);
+    const [userSelectedFilters, setUserSelectedFilters] =
+      useState<string[]>(filterIds);
     const { isFiltersFetchEnabled } = useSearchResultsFetchedContext();
 
-    // Omits date filter from filter config since date is handled differently (as a histogram)
-    const configWithoutDate = useMemo(
-      () => FILTER_CONFIGS.filter(facet => facet.property !== 'date'),
-      [FILTER_CONFIGS],
+    const visibleFiltersList = useMemo(
+      () =>
+        FILTER_CONFIGS.filter(filterConfig => {
+          // Show filter if it's in the list of visible ids (i.e. the user hasn't hidden it) and if it is part of the tabs that should be shown for the current route
+          const userHasSelectedToShow = userSelectedFilters.includes(
+            filterConfig.id,
+          );
+          const isRelevantForTab =
+            SHOW_VISUAL_SUMMARY ||
+            filterConfig?.tabIds?.includes(selectedTab.id);
+          return userHasSelectedToShow && isRelevantForTab;
+        }),
+      [userSelectedFilters, selectedTab.id],
     );
 
     // Build the extra_filter query param string based on selected filters, including date if selected
@@ -53,7 +67,8 @@ export const Filters = React.memo(
 
     // Use simplified filter queries hook
     const { results, error, isUpdating } = useFilterQueries({
-      configs: configWithoutDate,
+      // Omits date filter from filter config since date is handled differently (as a histogram)
+      configs: visibleFiltersList.filter(facet => facet.property !== 'date'),
       enabled: isFiltersFetchEnabled,
       params: {
         q: queryParams.q,
@@ -91,13 +106,11 @@ export const Filters = React.memo(
       [selectedFilters, handleUpdate],
     );
 
-    const visibleFilterConfigs = useMemo(
-      () =>
-        FILTER_CONFIGS.filter(filterConfig =>
-          visibleFilterIds.includes(filterConfig.id),
-        ),
-      [visibleFilterIds],
-    );
+    // Determine visibility based on route
+    // On search page: show both histogram and controls when visual summary is enabled
+    // On visual-summary page: show only controls (histogram is in the grid)
+    const showHistogram = !shouldEnableInVisualSummaryPage(router.pathname);
+    const showDateControls = true; // Always show controls in filters
 
     return (
       <FiltersContainer
@@ -106,13 +119,13 @@ export const Filters = React.memo(
         filtersList={FILTER_CONFIGS}
         isDisabled={isDisabled}
         selectedFilters={selectedFilters}
-        onVisibleFiltersChange={setVisibleFilterIds}
+        onVisibleFiltersChange={setUserSelectedFilters}
         removeAllFilters={() => {
           resetPagination();
           removeAllFilters();
         }}
       >
-        {visibleFilterConfigs.map(filterConfig => {
+        {visibleFiltersList.map(filterConfig => {
           const { id, name, property, description } = filterConfig;
           const selected = selectedFilters?.[property]?.map(filter => {
             if (typeof filter === 'object') {
@@ -123,14 +136,6 @@ export const Filters = React.memo(
           });
 
           if (property === 'date') {
-            // Determine visibility based on route
-            // On search page: show both histogram and controls when visual summary is enabled
-            // On visual-summary page: show only controls (histogram is in the grid)
-            const showHistogram = !shouldEnableInVisualSummaryPage(
-              router.pathname,
-            );
-            const showDateControls = true; // Always show controls in filters
-
             return (
               <FiltersSection
                 key={name}

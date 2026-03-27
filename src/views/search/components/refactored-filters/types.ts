@@ -103,6 +103,8 @@ export interface FilterConfig {
     term: string;
     label: string;
   };
+  /** IDs of tabs where this filter should be shown */
+  tabIds?: string[];
 }
 
 /**
