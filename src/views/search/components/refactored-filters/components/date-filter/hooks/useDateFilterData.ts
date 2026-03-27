@@ -1,6 +1,6 @@
 import { useMemo, useEffect } from 'react';
 import { useDateRangeContext } from './useDateRangeContext';
-import { FilterResults, FilterTerm } from '../../../types';
+import { FilterResults, FilterTermType } from '../../../types';
 
 /**
  * Custom hook to process date filter data
@@ -32,7 +32,7 @@ export const useDateFilterData = (
   const resourcesWithNoDate = useMemo(() => {
     return (
       initialData?.filter(
-        (d: FilterTerm) => d.term === '-_exists_' && d.count > 0,
+        (d: FilterTermType) => d.term === '-_exists_' && d.count > 0,
       ) || []
     );
   }, [initialData]);
@@ -42,7 +42,7 @@ export const useDateFilterData = (
     if (!selectedData) return false;
     return (
       selectedData.filter(
-        (d: FilterTerm) => d.term !== '-_exists_' && d.count !== 0,
+        (d: FilterTermType) => d.term !== '-_exists_' && d.count !== 0,
       ).length > 0
     );
   }, [selectedData]);

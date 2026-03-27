@@ -171,7 +171,7 @@ export const Filters = React.memo(
           }
 
           // Convert terms from simplified format for FiltersList
-          const filterTerms =
+          const FilterTermTypes =
             results?.[id]?.terms.map(term => ({
               term: term.term,
               label: term.label,
@@ -195,7 +195,7 @@ export const Filters = React.memo(
                 config={filterConfig}
                 colorScheme={colorScheme}
                 searchPlaceholder={`Search ${name.toLowerCase()} filters`}
-                terms={filterTerms}
+                terms={FilterTermTypes}
                 selectedFilters={selected || []}
                 handleSelectedFilters={values =>
                   handleSelectedFilters(values, property)

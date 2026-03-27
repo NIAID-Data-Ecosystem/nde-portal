@@ -1,7 +1,7 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
 import { Flex, Spinner, Text } from '@chakra-ui/react';
-import { FacetTermWithDetails } from '../../../types';
+import { FilterTermType } from '../../../types';
 import { shouldEnableInVisualSummaryPage } from 'src/utils/feature-flags';
 import { useRouter } from 'next/router';
 
@@ -10,7 +10,7 @@ const Histogram = dynamic(() => import('./histogram'), {
 });
 
 interface HistogramSectionProps {
-  data: FacetTermWithDetails[];
+  data: FilterTermType[];
   hasData: boolean;
   isLoading: boolean;
   isUpdating: boolean;

@@ -1,4 +1,4 @@
-import { FilterConfig, FacetTermWithDetails } from '../types';
+import { FilterConfig, FilterTermType } from '../types';
 import { buildQueries, buildSourceQueries } from '../utils/query-builders';
 import { formatDate, formatISOString } from 'src/utils/api/helpers';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
@@ -57,7 +57,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
       ];
     },
 
-    transformData: (item): FacetTermWithDetails => {
+    transformData: (item): FilterTermType => {
       if (item.term.includes('_exists_')) {
         return { ...item, label: item.label || '' };
       }
@@ -108,7 +108,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
         ...options,
       }),
     ],
-    // transformData: (item): FacetTermWithDetails => {
+    // transformData: (item): FilterTermType => {
     //   let label = item.label || item.term;
     //   if (label.toLocaleLowerCase().includes('creid')) {
     //     label = label.replace(/creid/g, 'CREID');
@@ -163,7 +163,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     tabIds: ['d', 'ct'],
     description: getMetadataDescription('conditionsOfAccess') || '',
     createQueries: buildQueries(),
-    transformData: (item): FacetTermWithDetails => {
+    transformData: (item): FilterTermType => {
       let term = item.label || item.term;
       // Ignore any and non specified
       if (item.term.includes('_exists_')) {

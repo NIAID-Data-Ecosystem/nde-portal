@@ -1,7 +1,7 @@
 // FiltersList.test.tsx
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { FilterConfig, FacetTermWithDetails, FilterItem } from '../../types';
+import { FilterConfig, FilterTermType, FilterItem } from '../../types';
 import { FiltersList, groupTerms } from '../../components/list';
 import { SearchInputProps } from 'src/components/search-input';
 
@@ -249,7 +249,7 @@ describe('groupTerms', () => {
   });
 
   it('groups terms correctly with no groupOrder', () => {
-    const terms: FacetTermWithDetails[] = [
+    const terms: FilterTermType[] = [
       { term: 'term1', label: 'Term 1', count: 5 },
       { term: 'term2', label: 'Term 2', count: 3, groupBy: 'Group 1' },
       { term: 'term3', label: 'Term 3', count: 1, groupBy: 'Group 2' },
@@ -266,7 +266,7 @@ describe('groupTerms', () => {
   });
 
   it('groups terms correctly with groupOrder', () => {
-    const terms: FacetTermWithDetails[] = [
+    const terms: FilterTermType[] = [
       { term: 'term1', label: 'Term 1', count: 5 },
       { term: 'term2', label: 'Term 2', count: 3, groupBy: 'Group 1' },
       { term: 'term3', label: 'Term 3', count: 1, groupBy: 'Group 2' },
@@ -298,7 +298,7 @@ describe('groupTerms', () => {
   });
 
   it('places _exists_ terms first', () => {
-    const terms: FacetTermWithDetails[] = [
+    const terms: FilterTermType[] = [
       { term: 'term1', label: 'Term 1', count: 5 },
       { term: '-_exists_', label: 'Not', count: 1 },
       { term: 'term2', label: 'Term 2', count: 3, groupBy: 'Group 1' },
@@ -316,7 +316,7 @@ describe('groupTerms', () => {
   });
 
   it('places selected filters at the top', () => {
-    const terms: FacetTermWithDetails[] = [
+    const terms: FilterTermType[] = [
       { term: 'term1', label: 'Term 1', count: 1 },
       { term: 'term2', label: 'Term 2', count: 100 },
       { term: 'selected1', label: 'Selected Term 1', count: 2 },
@@ -331,7 +331,7 @@ describe('groupTerms', () => {
   });
 
   it('places selected filters right after _exists_', () => {
-    const terms: FacetTermWithDetails[] = [
+    const terms: FilterTermType[] = [
       { term: '-_exists_', label: 'Not', count: 1 },
       { term: '_exists_', label: 'Any', count: 2 },
       { term: 'term1', label: 'Term 1', count: 1 },
@@ -349,7 +349,7 @@ describe('groupTerms', () => {
     ]);
   });
   it('handles terms without groupBy or exists', () => {
-    const terms: FacetTermWithDetails[] = [
+    const terms: FilterTermType[] = [
       { term: 'term1', label: 'Term 1', count: 1 },
       { term: 'term2', label: 'Term 2', count: 3 },
     ];

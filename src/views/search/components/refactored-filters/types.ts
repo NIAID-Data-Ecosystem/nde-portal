@@ -1,7 +1,7 @@
 /**
  * Simplified filter term representing a single filterable value
  */
-export interface FilterTerm {
+export interface FilterTermType {
   term: string;
   label: string;
   count: number;
@@ -10,9 +10,9 @@ export interface FilterTerm {
 }
 
 /**
- * Filter item extends FilterTerm with header support for grouped lists
+ * Filter item extends FilterTermType with header support for grouped lists
  */
-export interface FilterItem extends FilterTerm {
+export interface FilterItem extends FilterTermType {
   isHeader?: boolean;
 }
 
@@ -112,9 +112,9 @@ export interface FilterConfig {
  */
 export interface FilterQueryResult {
   id: string;
-  terms: FilterTerm[];
+  terms: FilterTermType[];
   /** Alias for terms - used by DateFilter */
-  data: FilterTerm[];
+  data: FilterTermType[];
   isLoading: boolean;
   isUpdating: boolean;
   error: Error | null;

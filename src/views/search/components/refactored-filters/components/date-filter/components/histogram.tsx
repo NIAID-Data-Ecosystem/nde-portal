@@ -9,19 +9,18 @@ import { useTooltip, useTooltipInPortal, defaultStyles } from '@visx/tooltip';
 import { formatNumber } from 'src/utils/helpers';
 import { addMissingYears } from '../helpers';
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
-import { FilterTerm } from '../../../types';
+import { FilterTermType } from '../../../types';
 import { DateBrush } from './date-brush';
 import { useParentSize } from '@visx/responsive';
-import { text } from 'd3';
-import { display } from 'styled-system';
 
 interface HistogramProps {
-  updatedData: FilterTerm[];
+  updatedData: FilterTermType[];
   handleClick: (args: string[]) => void;
 }
 
 const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
   const { filteredData, dates, allData } = useDateRangeContext();
+  // Filter updatedData to remove any future years
 
   const currentYear = new Date().getFullYear();
   const sanitizedUpdatedData = useMemo(
@@ -93,8 +92,10 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
     [containerBounds?.width],
   );
 
+  // Type-cast to fix React 18+ type compatibility issue
   const TooltipComponent = TooltipInPortal as any;
 
+  // Show tooltip when user mouses over histogram bars.
   const handleMouseOver = useCallback(
     (
       event: React.MouseEvent<SVGRectElement>,
@@ -142,8 +143,10 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
     [containerBounds.left, containerBounds.top, showTooltip],
   );
 
+  // visibleData is filteredData (already filtered by date range in context)
   const visibleData = filteredData;
 
+  // Check if there's any data with count > 0 in the visible range
   const hasDataInRange = useMemo(
     () =>
       visibleData &&
@@ -152,6 +155,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
     [visibleData],
   );
 
+  // x-axis is date, using index for domain
   const xScale = useMemo(() => {
     const maxW =
       width / visibleData.length > params.maxBarWidth
@@ -165,6 +169,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
     });
   }, [visibleData, width, params.padding, params.maxBarWidth]);
 
+  // y-axis is document count
   const yScale = useMemo(
     () =>
       scaleLinear<number>({
@@ -174,30 +179,36 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
     [visibleData, height],
   );
 
+  // Set svg width
   const svgWidth = useMemo(
     () => (xScale(visibleData.length - 1) || 0) + xScale.bandwidth(),
     [visibleData.length, xScale],
   );
 
+  // Ensure minimum width for message display
   const effectiveSvgWidth = useMemo(
     () => (hasDataInRange ? svgWidth : Math.max(svgWidth, 360)),
     [svgWidth, hasDataInRange],
   );
 
+  // "Fill in" the data where years are missing
   const updatedCounts = useMemo(() => {
     const filled = addMissingYears([...sanitizedUpdatedData]);
+    // Filter again after addMissingYears to ensure no future years
     return filled.filter(d => {
       const year = parseInt(d.term.split('-')[0], 10);
       return year <= currentYear;
     });
   }, [sanitizedUpdatedData, currentYear]);
 
+  // Calculate tick values for x-axis. Only show min and max.
   const xAxisTickValues = useMemo(() => {
     if (visibleData.length === 0) return [];
     if (visibleData.length === 1) return [0];
     return [0, visibleData.length - 1];
   }, [visibleData.length]);
 
+  // Early return if no data at all in the complete dataset
   if (!allData || allData.length === 0) {
     return (
       <Text fontStyle='italic' color='gray.800' mt={1}>
@@ -216,14 +227,16 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
         minHeight: params.height,
       }}
     >
+      {/* Show tooltip when hovering in any vertical space to bar. */}
       {tooltipOpen && tooltipData && tooltipData.label && (
         <TooltipComponent
+          // set this to random so it correctly updates with parent bounds
           key={Math.random()}
           top={tooltipTop}
           left={tooltipLeft}
           style={{
             ...defaultStyles,
-            zIndex: 2000,
+            zIndex: 2000, // needed for when housed in a modal.
           }}
         >
           {tooltipData.label}: {tooltipData.display.countText}
@@ -263,6 +276,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
                   <>
                     {visibleData.map((d, i) => {
                       const { term, count } = d;
+                      /* Updated counts when date has changed */
                       const updatedCount =
                         updatedCounts.find(u => u.term === term)?.count || 0;
 
@@ -289,6 +303,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
 
                       return (
                         <React.Fragment key={`bar-${term}`}>
+                          {/* Used only when the bar is selected and the updated count is less than the full count. */}
                           {updatedCount > 0 && updatedCount < count && (
                             <Bar
                               className='partial-bar'
@@ -307,7 +322,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
                               }}
                             />
                           )}
-
+                          {/* Bars that show the full count. */}
                           <Bar
                             className='full-bar'
                             x={barX}
@@ -330,6 +345,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
                   </>
                 ) : (
                   <>
+                    {/* Show message when no data in range */}
                     <text
                       x={effectiveSvgWidth / 2}
                       y={height / 2}
@@ -344,10 +360,12 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
                 )}
               </Group>
 
+              {/* Invisible bars for tooltip triggers */}
               {hasDataInRange && (
                 <Group>
                   {visibleData.map((d, i) => {
                     const { term } = d;
+                    /* Updated counts when date has changed */
                     const updatedCount =
                       updatedCounts.find(u => u.term === term)?.count || 0;
 
@@ -372,6 +390,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
                           onMouseOut={hideTooltip}
                           style={{ cursor: 'pointer' }}
                           onClick={() => {
+                            // Set filter to single year
                             const year = term.split('-')[0];
                             handleClick([`${year}-01-01`, `${year}-12-31`]);
                           }}
@@ -381,7 +400,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
                   })}
                 </Group>
               )}
-
+              {/* x-axis */}
               {hasDataInRange && (
                 <Group>
                   <AxisBottom
@@ -401,6 +420,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
               )}
             </Box>
           </Flex>
+          {/* brush */}
           <Flex
             w='100%'
             justifyContent='center'

@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { addMissingYears, getYear } from '../helpers';
-import { FilterTerm, FilterItem } from '../../../types';
+import { FilterTermType, FilterItem } from '../../../types';
 
 export interface ContextProps {
   colorScheme: string;
-  allData: FilterTerm[]; // All data from complete dataset
-  filteredData: FilterTerm[]; // Data within selected date range
+  allData: FilterTermType[]; // All data from complete dataset
+  filteredData: FilterTermType[]; // Data within selected date range
   dates: (string | null)[];
   dateRange: number[];
   setDateRange: React.Dispatch<React.SetStateAction<ContextProps['dateRange']>>;

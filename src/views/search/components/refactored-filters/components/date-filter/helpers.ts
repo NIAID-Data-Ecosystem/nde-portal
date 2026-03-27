@@ -1,4 +1,4 @@
-import { FilterTerm } from '../../types';
+import { FilterTermType } from '../../types';
 
 export const getYear = (term: string): number | null => {
   if (!term || term === '-_exists_') return null;
@@ -9,14 +9,14 @@ export const getYear = (term: string): number | null => {
 const normalizeTermForYear = (year: number) => `${year}-01-01`;
 
 export const addMissingYears = (
-  dates: FilterTerm[],
+  dates: FilterTermType[],
   opts?: {
     /** If provided, clamp the filled range to this start year(inclusive) or end year (inclusive). */
     endYear?: number;
     startYear?: number;
     makeLabel?: (year: number) => string;
   },
-): FilterTerm[] => {
+): FilterTermType[] => {
   const makeLabel = opts?.makeLabel ?? ((y: number) => String(y));
 
   const valid = dates.filter(
@@ -24,7 +24,7 @@ export const addMissingYears = (
   );
 
   // Index by year so we can quickly check whether a year already exists.
-  const yearToEntry = new Map<number, FilterTerm>();
+  const yearToEntry = new Map<number, FilterTermType>();
   for (const d of valid) {
     const y = getYear(d.term)!;
     if (!yearToEntry.has(y)) {
@@ -38,7 +38,7 @@ export const addMissingYears = (
   const start = opts?.startYear ?? sortedYears[0];
   const end = opts?.endYear ?? sortedYears[sortedYears.length - 1];
 
-  const output: FilterTerm[] = [];
+  const output: FilterTermType[] = [];
   for (let y = start; y <= end; y += 1) {
     const existing = yearToEntry.get(y);
     if (existing) {

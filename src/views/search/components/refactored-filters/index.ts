@@ -1,7 +1,7 @@
 // Types
 export type {
   FilterConfig,
-  FilterTerm,
+  FilterTermType,
   FilterItem,
   FilterResults,
   FilterQueryResult,

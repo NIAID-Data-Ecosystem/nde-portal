@@ -18,12 +18,13 @@ export const DatePicker = ({
   handleSelectedFilter,
   resetFilter,
 }: DatePickerProps) => {
-  const [selected, setSelected] = useState(selectedDates);
   const { allData } = useDateRangeContext();
 
+  // Separate state for the actual input values
   const [startInputValue, setStartInputValue] = useState('');
   const [endInputValue, setEndInputValue] = useState('');
 
+  // Memoize min/max calculations
   const { min, max, currentYear } = useMemo(() => {
     const minDate = formatISOString((allData && allData[0]?.term) || '');
     const maxFromData = formatISOString(
@@ -43,11 +44,11 @@ export const DatePicker = ({
 
   const isDisabled = !allData || !allData.length;
 
+  // Extract actual date values (excluding _exists_ filters)
   const getActualDates = (dates: string[]) =>
     dates.filter(d => !EXIST_FILTERS.includes(d as any));
 
   useEffect(() => {
-    setSelected(selectedDates);
     const actualDates = getActualDates(selectedDates);
     setStartInputValue(actualDates[0] || min);
     setEndInputValue(actualDates[1] || max);
@@ -58,15 +59,16 @@ export const DatePicker = ({
 
     let dates = [startInputValue || min, endInputValue || max];
 
+    // Ensure end date doesn't exceed current year
     const endYear = parseInt(dates[1].split('-')[0]);
     if (endYear > currentYear) {
       dates[1] = max;
     }
 
-    setSelected(dates);
     handleSelectedFilter(dates);
   };
 
+  // Shared date input configuration
   const dateInputProps = {
     type: 'date' as const,
     colorScheme: colorScheme,

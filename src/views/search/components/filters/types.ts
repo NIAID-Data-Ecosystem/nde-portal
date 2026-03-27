@@ -21,18 +21,18 @@ export interface RawQueryResult {
 }
 
 // Define the structure of the transformed query result
-export interface FacetTermWithDetails
+export interface FilterTermType
   extends Omit<RawQueryResult['results'][number], 'label'> {
   label: string;
 }
 
-export interface FilterItem extends FacetTermWithDetails {
+export interface FilterItem extends FilterTermType {
   isHeader?: boolean;
 }
 
 export interface QueryData {
-  [facet: string]: Omit<UseQueryResult<FacetTermWithDetails[]>, 'data'> & {
-    data: FacetTermWithDetails[];
+  [facet: string]: Omit<UseQueryResult<FilterTermType[]>, 'data'> & {
+    data: FilterTermType[];
   };
 }
 
@@ -70,7 +70,5 @@ export interface FilterConfig {
     label: string;
   }[];
   isDefaultOpen?: Boolean;
-  transformData?: (
-    item: RawQueryResult['results'][number],
-  ) => FacetTermWithDetails; // useful for transforming data before rendering. Note that the label is used for search and display.
+  transformData?: (item: RawQueryResult['results'][number]) => FilterTermType; // useful for transforming data before rendering. Note that the label is used for search and display.
 }

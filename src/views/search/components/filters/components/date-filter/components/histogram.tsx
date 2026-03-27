@@ -9,12 +9,12 @@ import { useTooltip, useTooltipInPortal, defaultStyles } from '@visx/tooltip';
 import { formatNumber } from 'src/utils/helpers';
 import { addMissingYears } from '../helpers';
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
-import { FacetTermWithDetails } from '../../../types';
+import { FilterTermType } from '../../../types';
 import { DateBrush } from './date-brush';
 import { useParentSize } from '@visx/responsive';
 
 interface HistogramProps {
-  updatedData: FacetTermWithDetails[];
+  updatedData: FilterTermType[];
   handleClick: (args: string[]) => void;
 }
 

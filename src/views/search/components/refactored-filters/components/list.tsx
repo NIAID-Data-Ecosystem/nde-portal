@@ -10,7 +10,7 @@ import { VariableSizeList as List } from 'react-window';
 import { useDebounceValue } from 'usehooks-ts';
 import { SearchInput } from 'src/components/search-input';
 import { Checkbox } from './checkbox';
-import { FilterTerm, FilterItem, FilterConfig } from '../types';
+import { FilterTermType, FilterItem, FilterConfig } from '../types';
 
 // VirtualizedList component to render the list of filter terms
 const VirtualizedList = React.memo(
@@ -132,7 +132,7 @@ export const sortTerms = (terms: FilterItem[], selectedFilters: string[]) => {
 };
 
 export const groupTerms = (
-  terms: FilterTerm[],
+  terms: FilterTermType[],
   selectedFilters: string[],
   groupOrder?: FilterConfig['groupBy'],
 ) => {
@@ -204,7 +204,7 @@ export const groupTerms = (
 // Define the props interface for the FiltersList component
 interface FiltersListProps {
   colorScheme: string;
-  terms: FilterTerm[];
+  terms: FilterTermType[];
   searchPlaceholder: string;
   selectedFilters: string[];
   handleSelectedFilters: (arg: string[]) => void;

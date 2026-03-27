@@ -25,7 +25,7 @@ interface DateBrushProps {
 const BRUSH_HEIGHT = 30;
 const AXIS_HEIGHT = 20;
 const TOTAL_HEIGHT = BRUSH_HEIGHT + AXIS_HEIGHT;
-const DRAG_THRESHOLD = 6;
+const DRAG_THRESHOLD = 6; // pixels (threshold for distinguishing click from drag)
 
 export const DateBrush = ({
   containerWidth,
@@ -36,16 +36,25 @@ export const DateBrush = ({
   const brushRef = useRef<BaseBrush | null>(null);
   const chartRef = useRef<HTMLDivElement>(null);
 
+  // Track current brush selection years for handle labels
   const [brushYears, setBrushYears] = useState<{
     startYear: string;
     endYear: string;
   } | null>(null);
 
+  // Track if user is currently interacting with brush
   const [isUserInteracting, setIsUserInteracting] = useState(false);
+
+  // Track focus state
   const [isFocused, setIsFocused] = useState(false);
+
+  // Track the external update counter to force remounts
   const [externalUpdateCounter, setExternalUpdateCounter] = useState(0);
+
+  // Track the last dateRange that was applied from user interaction
   const lastUserDateRange = useRef<number[] | null>(null);
 
+  // Track drag detection
   const dragDetection = useRef<{
     startX: number | null;
     startY: number | null;
@@ -56,17 +65,21 @@ export const DateBrush = ({
     isDragging: false,
   });
 
+  // Get the earliest year from allData
   const earliestYear = useMemo(() => {
     if (!allData || allData.length === 0) return null;
     return allData[0]?.label || null;
   }, [allData]);
 
+  // Get current year
   const currentYear = useMemo(() => new Date().getFullYear().toString(), []);
 
+  // Calculate inner dimensions
   const innerWidth = useMemo(() => {
     return Math.max(0, containerWidth - margin.left - margin.right);
   }, [containerWidth, margin]);
 
+  // Use band scale with years as domain
   const xScale = useMemo(() => {
     if (!allData || allData.length === 0) return null;
     const scale = scaleBand<string>({
@@ -78,6 +91,7 @@ export const DateBrush = ({
     return scale;
   }, [allData, innerWidth]);
 
+  // Dummy y-scale for brush (not used for positioning)
   const yScale = useMemo(() => {
     return scaleBand<number>({
       domain: [0, 1],
@@ -85,12 +99,14 @@ export const DateBrush = ({
     });
   }, []);
 
+  // Only show ticks at the extremes
   const tickValues = useMemo(() => {
     if (!allData || allData.length === 0) return [];
     if (allData.length === 1) return [allData[0].label];
     return [allData[0].label, allData[allData.length - 1].label];
   }, [allData]);
 
+  // Format ticks to show earliest year and current year
   const tickFormat = useMemo(() => {
     if (!earliestYear) return () => '';
     return (value: string) => {
@@ -100,6 +116,7 @@ export const DateBrush = ({
     };
   }, [earliestYear, currentYear, allData]);
 
+  // Calculate brush position from dateRange
   const calculatedBrushPosition = useMemo(() => {
     if (
       !xScale ||
@@ -124,6 +141,7 @@ export const DateBrush = ({
     };
   }, [xScale, allData, dateRange, innerWidth]);
 
+  // Initialize brushYears when calculatedBrushPosition changes
   useEffect(() => {
     if (
       !isUserInteracting &&
@@ -143,10 +161,13 @@ export const DateBrush = ({
     }
   }, [calculatedBrushPosition, allData, dateRange, isUserInteracting]);
 
+  // Detect external changes to dateRange (not from user interaction)
   useEffect(() => {
     if (isUserInteracting) return;
 
+    // Check if dateRange changed from an external source
     if (lastUserDateRange.current === null) {
+      // First render: set initial state
       lastUserDateRange.current = [...dateRange];
       return;
     }
@@ -156,9 +177,11 @@ export const DateBrush = ({
       lastUserDateRange.current[1] !== dateRange[1];
 
     if (hasChanged) {
+      // External change detected: increment counter to force remount
       setExternalUpdateCounter(prev => prev + 1);
       lastUserDateRange.current = [...dateRange];
 
+      // Update brush years immediately
       if (allData && dateRange.length === 2) {
         const startYear = allData[dateRange[0]]?.label;
         const endYear = allData[dateRange[1]]?.label;
@@ -173,8 +196,10 @@ export const DateBrush = ({
     }
   }, [dateRange, isUserInteracting, allData]);
 
+  // Key for forcing brush to remount on external changes only
   const brushKey = `brush-${externalUpdateCounter}`;
 
+  // Handle debounced keyboard updates
   const handleKeyboardUpdate = useCallback(
     ({ newStartX, newEndX }: { newStartX: number; newEndX: number }) => {
       if (!allData || !xScale || !onBrushChangeEnd) return;
@@ -206,6 +231,7 @@ export const DateBrush = ({
     [allData, xScale, onBrushChangeEnd],
   );
 
+  // Handle immediate visual updates during keyboard navigation
   const handleKeyboardImmediate = useCallback(
     (newStartX: number, newEndX: number) => {
       if (!allData || !xScale) return;
@@ -232,8 +258,10 @@ export const DateBrush = ({
       const startYear = selectedYears[0];
       const endYear = selectedYears[selectedYears.length - 1];
 
+      // Update brush year labels (real-time)
       setBrushYears({ startYear, endYear });
 
+      // Update dateRange (real-time)
       const startIndex = allData.findIndex(d => d.label === startYear);
       const endIndex = allData.findIndex(d => d.label === endYear);
 
@@ -245,6 +273,7 @@ export const DateBrush = ({
     [allData, xScale, setDateRange],
   );
 
+  // Use keyboard navigation hook
   const { activeHandle, isKeyboardNavigating } = useBrushKeyboardNavigation({
     chartRef,
     brushRef,
@@ -261,28 +290,34 @@ export const DateBrush = ({
 
   const onBrushChange = useCallback(
     (domain: Bounds | null) => {
+      // Ignore onChange during keyboard navigation
       if (isKeyboardNavigating) {
         return;
       }
 
+      // Only process changes if actual dragging detected
       if (!dragDetection.current.isDragging) {
         return;
       }
 
       if (!domain || !allData || !xScale || !brushRef.current) return;
 
+      // Get brush extent from brushRef state
       const brushState = brushRef.current.state;
       const extent = brushState?.extent;
       const x0 = extent.x0;
       const x1 = extent.x1;
       const bandwidth = xScale.bandwidth();
 
+      // Find all years whose band positions overlap with the brush extent
       const selectedYears: string[] = [];
       allData.forEach(d => {
         const yearPos = xScale(d.label);
         if (yearPos !== undefined) {
           const yearStart = yearPos;
           const yearEnd = yearPos + bandwidth;
+
+          // Check if this year's band overlaps with brush extent
           const brushOverlapsYear = yearEnd >= x0 && yearStart <= x1;
 
           if (brushOverlapsYear) {
@@ -296,11 +331,13 @@ export const DateBrush = ({
       const startYear = selectedYears[0];
       const endYear = selectedYears[selectedYears.length - 1];
 
+      // Update brush year labels for visual feedback (real-time)
       setBrushYears({
         startYear,
         endYear,
       });
 
+      // Find indices in allData / update dateRange for visual feedback (real-time)
       const startIndex = allData.findIndex(d => d.label === startYear);
       const endIndex = allData.findIndex(d => d.label === endYear);
 
@@ -311,19 +348,23 @@ export const DateBrush = ({
     [allData, xScale, setDateRange, isKeyboardNavigating],
   );
 
+  // Handle brush interaction end (delayed filter update)
   const handleBrushEnd = useCallback(
     (domain: Bounds | null) => {
       setIsDragging(false);
       setIsUserInteracting(false);
 
+      // Check if this was actually a drag or just a click
       const wasDragging = dragDetection.current.isDragging;
 
+      // Reset drag detection
       dragDetection.current = {
         startX: null,
         startY: null,
         isDragging: false,
       };
 
+      // Only trigger updates if it was an actual drag
       if (!wasDragging) {
         return;
       }
@@ -337,6 +378,7 @@ export const DateBrush = ({
       )
         return;
 
+      // Get brush extent from brushRef state
       const brushState = brushRef.current.state;
       const extent = brushState?.extent;
 
@@ -354,6 +396,8 @@ export const DateBrush = ({
         if (yearPos !== undefined) {
           const yearStart = yearPos;
           const yearEnd = yearPos + bandwidth;
+
+          // Catch even tiny brush extents
           const brushOverlapsYear = yearEnd >= x0 && yearStart <= x1;
 
           if (brushOverlapsYear) {
@@ -367,39 +411,46 @@ export const DateBrush = ({
       const startYear = selectedYears[0];
       const endYear = selectedYears[selectedYears.length - 1];
 
+      // Update lastUserDateRange to reflect the user's selection
       const startIndex = allData.findIndex(d => d.label === startYear);
       const endIndex = allData.findIndex(d => d.label === endYear);
       if (startIndex !== -1 && endIndex !== -1) {
         lastUserDateRange.current = [startIndex, endIndex];
       }
 
+      // Trigger the callback to update filters (delayed)
       onBrushChangeEnd(startYear, endYear);
     },
     [allData, xScale, onBrushChangeEnd, setIsDragging],
   );
 
+  // Handle brush interaction start
   const handleBrushStart = useCallback(
     (start: { x: number; y: number }) => {
       setIsDragging(true);
       setIsUserInteracting(true);
 
+      // Initialize drag detection (record starting position)
       dragDetection.current = {
         startX: start.x,
         startY: start.y,
-        isDragging: false,
+        isDragging: false, // Not yet dragging
       };
     },
     [setIsDragging],
   );
 
+  // Listen to mouse/touch move events to detect actual dragging
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent | TouchEvent) => {
       if (!isUserInteracting) return;
 
       const { startX, startY, isDragging } = dragDetection.current;
 
+      // If already detected as dragging, no need to check again
       if (isDragging || startX === null || startY === null) return;
 
+      // Get current position
       let currentX: number;
       let currentY: number;
 
@@ -413,9 +464,11 @@ export const DateBrush = ({
         currentY = touch.clientY;
       }
 
+      // Calculate distance moved
       const deltaX = Math.abs(currentX - startX);
       const deltaY = Math.abs(currentY - startY);
 
+      // Check if movement exceeds threshold
       if (deltaX >= DRAG_THRESHOLD || deltaY >= DRAG_THRESHOLD) {
         dragDetection.current.isDragging = true;
       }
@@ -461,6 +514,7 @@ export const DateBrush = ({
         style={{ overflow: 'visible' }}
       >
         <Group left={margin.left} top={margin.top}>
+          {/* Brush selection area. key forces remount only on external changes.*/}
           <Brush
             key={brushKey}
             xScale={xScale}
@@ -510,6 +564,7 @@ export const DateBrush = ({
             }}
           />
 
+          {/* x-axis with fixed labels (earliest and current year) */}
           <AxisBottom
             top={BRUSH_HEIGHT}
             scale={xScale}
