@@ -27,7 +27,7 @@ export const useAggregationQuery = ({
 }: UseAggregationQueryArgs): UseAggregationQueryResult => {
   const params = {
     ...searchState,
-    from: '' + searchState.from,
+    from: '' + (searchState.from || 0),
     filters: queryFilterObject2String(searchState.filters) || '',
     extra_filter: queryFilterObject2String(searchState.filters) || '',
     facet_size: searchState?.facet_size || 100,
