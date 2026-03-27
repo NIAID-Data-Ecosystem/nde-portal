@@ -17,7 +17,7 @@ import {
   Box,
 } from '@chakra-ui/react';
 import { FaFilter } from 'react-icons/fa6';
-import { FilterConfig, SelectedFilters } from '../types';
+import { FilterConfig, SelectedFilterType } from '../types';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { CustomizeFiltersPopover } from './customize-filters-popover';
 import { useRouter } from 'next/router';
@@ -26,7 +26,7 @@ import { shouldEnableInVisualSummaryPage } from 'src/utils/feature-flags';
 export interface FiltersContainerProps {
   title?: string;
   isDisabled?: boolean;
-  selectedFilters: SelectedFilters;
+  selectedFilters: SelectedFilterType;
   removeAllFilters: () => void;
   error: Error | null;
   filtersList: FilterConfig[];

@@ -12,7 +12,7 @@ import {
 } from 'src/views/search/components/refactored-filters';
 import {
   SelectedFilterType,
-  SelectedFilterTypeValue,
+  SelectedFilterValueType,
 } from 'src/views/search/components/filters/types';
 import {
   defaultQuery,
@@ -115,7 +115,7 @@ const Search: NextPage<{
   );
 
   const handleSelectedFilters = useCallback(
-    (values: SelectedFilterTypeValue[], facet: string) => {
+    (values: SelectedFilterValueType[], facet: string) => {
       // Merge + de-dupe
       // Normalize _exists_ filters into object form
       // const normalizedValues = mergedValues.map(value =>

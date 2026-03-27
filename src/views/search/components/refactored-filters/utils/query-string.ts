@@ -1,11 +1,11 @@
-import { SelectedFilters, SelectedFilterValue } from '../types';
+import { SelectedFilterType, SelectedFilterValueType } from '../types';
 import { formatResourceTypeForAPI } from 'src/utils/formatting/formatResourceType';
 
 /**
  * Convert selected filters object to a query string for API calls
  */
 export const filtersToQueryString = (
-  selectedFilters: SelectedFilters,
+  selectedFilters: SelectedFilterType,
 ): string | null => {
   const filterParts = Object.entries(selectedFilters)
     .filter(([_, values]) => values.length > 0)
@@ -63,7 +63,7 @@ export const filtersToQueryString = (
  */
 export const queryStringToFilters = (
   queryString?: string | string[],
-): SelectedFilters | null => {
+): SelectedFilterType | null => {
   if (!queryString || Array.isArray(queryString)) {
     return null;
   }
@@ -93,7 +93,7 @@ export const queryStringToFilters = (
     }
 
     return acc;
-  }, {} as SelectedFilters);
+  }, {} as SelectedFilterType);
 };
 
 /**
@@ -102,7 +102,7 @@ export const queryStringToFilters = (
 const parseFilterValues = (
   valueString: string,
   key: string,
-): SelectedFilterValue[] => {
+): SelectedFilterValueType[] => {
   // Clean up the value string
   let cleaned = valueString
     .replace(/^\(?"?/, '')
@@ -126,9 +126,9 @@ const parseFilterValues = (
  * Normalize filter values - converts _exists_ strings to objects
  */
 export const normalizeFilterValues = (
-  values: SelectedFilterValue[],
+  values: SelectedFilterValueType[],
   facet: string,
-): SelectedFilterValue[] => {
+): SelectedFilterValueType[] => {
   return values.map(value => {
     if (value === '_exists_' || value === '-_exists_') {
       return { [value]: [facet] };
@@ -141,7 +141,7 @@ export const normalizeFilterValues = (
  * Get the display values from selected filters (flattening object values)
  */
 export const getSelectedFilterDisplay = (
-  values: SelectedFilterValue[],
+  values: SelectedFilterValueType[],
 ): string[] => {
   return values.map(value => {
     if (typeof value === 'object') {
@@ -156,7 +156,7 @@ export const getSelectedFilterDisplay = (
  * Used by DateFilter to build filter strings
  */
 export const queryFilterObject2String = (
-  filters: Record<string, SelectedFilterValue[]>,
+  filters: Record<string, SelectedFilterValueType[]>,
 ): string => {
   return filtersToQueryString(filters) || '';
 };
@@ -167,6 +167,6 @@ export const queryFilterObject2String = (
  */
 export const queryFilterString2Object = (
   queryString: string,
-): SelectedFilters => {
+): SelectedFilterType => {
   return queryStringToFilters(queryString) || {};
 };

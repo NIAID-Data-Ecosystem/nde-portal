@@ -19,17 +19,14 @@ export interface FilterItem extends FilterTermType {
 /**
  * Selected filter value - can be a string or an object for exists/not-exists queries
  */
-export type SelectedFilterValue = string | { [key: string]: string[] };
+export type SelectedFilterValueType = string | { [key: string]: string[] };
 
 /**
  * Currently selected filters keyed by filter property
  */
-export interface SelectedFilters {
-  [property: string]: SelectedFilterValue[];
-}
 
 export interface SelectedFilterType {
-  [property: string]: SelectedFilterValue[];
+  [property: string]: SelectedFilterValueType[];
 }
 /**
  * Query type determines how the filter query is built

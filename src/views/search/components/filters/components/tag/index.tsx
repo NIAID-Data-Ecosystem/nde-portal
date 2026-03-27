@@ -10,9 +10,9 @@ import {
 import {
   FilterConfig,
   SelectedFilterType,
-  SelectedFilterTypeValue,
+  SelectedFilterValueType,
 } from '../../types';
-import { queryFilterObject2String } from '../../utils/query-builders';
+import { queryFilterObject2String } from 'src/views/search/components/refactored-filters/utils/query-string';
 import { defaultQuery } from 'src/views/search/config/defaultQuery';
 import { isEqual } from 'lodash';
 import { generateTags } from './utils';
@@ -30,7 +30,7 @@ export interface TagInfo {
   key: string;
   filterKey: string;
   name: string;
-  value: string | SelectedFilterTypeValue | SelectedFilterTypeValue[];
+  value: string | SelectedFilterValueType | SelectedFilterValueType[];
   displayValue: string;
 }
 
@@ -62,7 +62,7 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
     // Removes a single filter value from selectedFilters and updates the route.
     const removeSelectedFilter = (
       filterKey: string,
-      filterValue: SelectedFilterTypeValue | SelectedFilterTypeValue[],
+      filterValue: SelectedFilterValueType | SelectedFilterValueType[],
     ) => {
       let updatedFilters: SelectedFilterType;
 

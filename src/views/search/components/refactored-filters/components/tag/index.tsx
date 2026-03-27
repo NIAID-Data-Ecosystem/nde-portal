@@ -7,16 +7,17 @@ import {
   TagCloseButton,
   TagLabel,
 } from '@chakra-ui/react';
-import { FilterConfig } from '../../types';
+import {
+  FilterConfig,
+  SelectedFilterType,
+  SelectedFilterValueType,
+} from '../../types';
 import { defaultQuery } from 'src/views/search/config/defaultQuery';
 import { isEqual } from 'lodash';
 import { generateTags } from './utils';
 import { SearchResultsHeading } from '../../../search-results-header';
 import { usePaginationContext } from 'src/views/search/context/pagination-context';
-import {
-  SelectedFilterType,
-  SelectedFilterTypeValue,
-} from '../../../filters/types';
+
 import { queryFilterObject2String } from '../../utils/query-string';
 
 interface FilterTagsProps {
@@ -30,7 +31,7 @@ export interface TagInfo {
   key: string;
   filterKey: string;
   name: string;
-  value: string | SelectedFilterTypeValue | SelectedFilterTypeValue[];
+  value: string | SelectedFilterValueType | SelectedFilterValueType[];
   displayValue: string;
 }
 
@@ -62,7 +63,7 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
     // Removes a single filter value from selectedFilters and updates the route.
     const removeSelectedFilter = (
       filterKey: string,
-      filterValue: SelectedFilterTypeValue | SelectedFilterTypeValue[],
+      filterValue: SelectedFilterValueType | SelectedFilterValueType[],
     ) => {
       let updatedFilters: SelectedFilterType;
 
@@ -74,7 +75,7 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
         typeof filterValue[0] === 'string' &&
         typeof filterValue[1] === 'string'
       ) {
-        // Remove the entire date range
+        // Remove the entire date range, including any _exists_ filters related to date because they are not relevant if the user is clearing the date filter and will only limit the results in an unintended way if left in the filters.
         updatedFilters = {
           ...selectedFilters,
           [filterKey]: [],
@@ -105,22 +106,19 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
         <SearchResultsHeading as='h2'>Filtered by: </SearchResultsHeading>
         <HStack flexWrap='wrap' spacing={1.5} py={1}>
           {/* Clear all filters button */}
-          <Tag
-            as={Button}
-            {...tagStyles}
-            colorScheme='secondary'
-            px={4}
-            variant='outline'
-            fontSize='sm'
-            fontWeight='medium'
-            _hover={{ bg: 'secondary.600' }}
+          <Button
+            size='xs'
             onClick={() => {
               resetPagination();
               removeAllFilters();
             }}
+            colorScheme='secondary'
+            variant='outline'
+            lineHeight='unset'
+            fontWeight='medium'
           >
             Clear All
-          </Tag>
+          </Button>
 
           {/* Render each tag with close button */}
           {tags.map(({ key, name, value, displayValue, filterKey }) => (

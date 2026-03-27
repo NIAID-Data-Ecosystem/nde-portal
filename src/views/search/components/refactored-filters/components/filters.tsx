@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useFilterQueries } from '../hooks/useFilterQueries';
 import { filtersToQueryString } from '../utils/query-string';
-import { SelectedFilters } from '../types';
+import { SelectedFilterType } from '../types';
 import { useRouter } from 'next/router';
 import { FiltersSection } from './section';
 import { FiltersList } from './list';
@@ -21,7 +21,7 @@ import { useSearchTabsContext } from 'src/views/search/context/search-tabs-conte
 interface FiltersProps {
   colorScheme?: string;
   isDisabled?: boolean;
-  selectedFilters: SelectedFilters;
+  selectedFilters: SelectedFilterType;
   removeAllFilters: () => void;
   onToggleViz?: (filterId: string) => void;
   isVizActive?: (filterId: string) => boolean;
@@ -97,7 +97,7 @@ export const Filters = React.memo(
         let updatedFilterString = filtersToQueryString({
           ...selectedFilters,
           ...{ [facet]: updatedValues },
-        } as SelectedFilters);
+        } as SelectedFilterType);
         handleUpdate({
           from: 1,
           filters: updatedFilterString,
@@ -158,7 +158,7 @@ export const Filters = React.memo(
                     q: queryParams.q,
                     extra_filter:
                       filtersToQueryString(
-                        queryParams.filters as SelectedFilters,
+                        queryParams.filters as SelectedFilterType,
                       ) || '',
                     use_ai_search: queryParams.use_ai_search ?? 'false',
                   }}
