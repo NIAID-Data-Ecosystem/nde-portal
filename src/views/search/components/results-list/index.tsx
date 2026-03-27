@@ -13,6 +13,7 @@ import { usePaginationContext } from '../../context/pagination-context';
 import { updateRoute } from '../../utils/update-route';
 import { SearchResultsToolbar } from './components/toolbar';
 import Banner from 'src/components/banner';
+import { SampleResultsTable } from './components/sample-results-table';
 import { useSearchResultsFetchedContext } from '../../context/search-results-fetched-context';
 
 const RESULT_FIELDS = [
@@ -49,10 +50,30 @@ const RESULT_FIELDS = [
   'usageInfo',
   'variableMeasured',
 ];
+
+const SAMPLE_EXTRA_FIELDS = [
+  'identifier',
+  'alternateIdentifier',
+  'name',
+  'description',
+  'sampleType',
+  'sex',
+  'anatomicalStructure',
+  'anatomicalSystem',
+  'sampleAvailability',
+  'sampleQuantity',
+  'developmentalStage',
+  'associatedGenotype',
+  'associatedPhenotype',
+  'cellType',
+  'locationOfOrigin',
+  'itemLocation',
+];
+
 /*
 [COMPONENT INFO]:
  Search results pages displays the list of records returned by a search.
- Contains pagination and search results cards.
+ Contains pagination and search results cards. When the active tab is the Samples tab ('s'), results are rendered as a table instead of cards.
 */
 
 export const SearchResults = ({
@@ -78,6 +99,12 @@ export const SearchResults = ({
   // Selected tab index is stored in context to sync with other components.
   const urlQueryParams = useSearchQueryFromURL();
 
+  // For the Samples tab, use extra fields for the table columns.
+  const isSamplesTab = id === 's';
+  const fields = isSamplesTab
+    ? [...RESULT_FIELDS, ...SAMPLE_EXTRA_FIELDS]
+    : RESULT_FIELDS;
+
   const { response, params } = useSearchResultsData(
     {
       ...urlQueryParams,
@@ -88,7 +115,7 @@ export const SearchResults = ({
         ...urlQueryParams.filters,
         '@type': [...(urlQueryParams?.filters?.['@type'] || types || [])],
       },
-      fields: RESULT_FIELDS,
+      fields,
     },
     {
       // Only fetch data when the router is ready and the active tab is selected.
@@ -169,6 +196,13 @@ export const SearchResults = ({
     return <EmptyState />;
   }
 
+  // Shared pagination handler used by both top and bottom pagination controls.
+  const handlePageChange = (newFrom: number) => {
+    const update = { from: newFrom };
+    setPagination(id, update);
+    updateRoute(router, update);
+  };
+
   return (
     <>
       <VStack borderRadius='semi' bg='white' px={4} py={2}>
@@ -181,12 +215,7 @@ export const SearchResults = ({
           ariaLabel='Paginate through resources.'
           selectedPage={from}
           selectedPerPage={size}
-          handleSelectedPage={newFrom => {
-            const update = { from: newFrom };
-            setPagination(id, update);
-            updateRoute(router, update);
-            return;
-          }}
+          handleSelectedPage={handlePageChange}
           isLoading={isLoading || isRefetching}
           total={data?.total || 0}
         />
@@ -200,32 +229,40 @@ export const SearchResults = ({
           </Banner>
         </Collapse>
 
-        {/* Search results cards */}
-        {numCards > 0 && (
-          <VStack
-            as={UnorderedList}
-            className='search-results-cards'
-            alignItems='flex-start'
-            flex={3}
-            ml={0}
-            spacing={4}
-            w='100%'
-          >
-            {Array(numCards)
-              .fill(null)
-              .map((_, idx) => {
-                return (
-                  <ListItem key={data?.results?.[idx]._id || idx} w='100%'>
-                    <Card
-                      isLoading={!router.isReady || isLoading}
-                      data={data?.results[idx]}
-                      referrerPath={router.asPath}
-                      querystring={urlQueryParams.q}
-                    />
-                  </ListItem>
-                );
-              })}
-          </VStack>
+        {/* Samples tab: render a scrollable table instead of cards */}
+        {isSamplesTab ? (
+          <SampleResultsTable
+            results={data?.results || []}
+            isLoading={!router.isReady || isLoading}
+          />
+        ) : (
+          /* Dataset / ComputationalTool tabs: render result cards */
+          numCards > 0 && (
+            <VStack
+              as={UnorderedList}
+              className='search-results-cards'
+              alignItems='flex-start'
+              flex={3}
+              ml={0}
+              spacing={4}
+              w='100%'
+            >
+              {Array(numCards)
+                .fill(null)
+                .map((_, idx) => {
+                  return (
+                    <ListItem key={data?.results?.[idx]._id || idx} w='100%'>
+                      <Card
+                        isLoading={!router.isReady || isLoading}
+                        data={data?.results[idx]}
+                        referrerPath={router.asPath}
+                        querystring={urlQueryParams.q}
+                      />
+                    </ListItem>
+                  );
+                })}
+            </VStack>
+          )
         )}
 
         {/* Pagination controls */}
@@ -234,12 +271,7 @@ export const SearchResults = ({
           ariaLabel='Paginate through resources.'
           selectedPage={from}
           selectedPerPage={size}
-          handleSelectedPage={newFrom => {
-            const update = { from: newFrom };
-            setPagination(id, update);
-            updateRoute(router, update);
-            return;
-          }}
+          handleSelectedPage={handlePageChange}
           isLoading={isLoading || isRefetching}
           total={data?.total || 0}
         />

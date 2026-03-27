@@ -152,7 +152,7 @@ const Search: NextPage<{
                   removeAllFilters={removeAllFilters}
                 />
               </Flex>
-              <Box flex={3}>
+              <Box flex={3} minWidth={0} maxWidth='2000px'>
                 <VStack
                   alignItems='flex-start'
                   p={4}
