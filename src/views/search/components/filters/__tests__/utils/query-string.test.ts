@@ -11,7 +11,7 @@ import {
   queryFilterString2Object,
 } from '../../utils/query-string';
 
-describe('refactored-filters/utils/query-string', () => {
+describe('filters/utils/query-string', () => {
   it('builds query strings for standard values, date ranges, @type, and exists objects', () => {
     const result = filtersToQueryString({
       topic: ['alpha', 'beta'],

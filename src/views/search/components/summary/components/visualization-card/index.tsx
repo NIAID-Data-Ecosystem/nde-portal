@@ -1,5 +1,5 @@
 import { SearchState } from '../../types';
-import { FilterConfig } from '../../../refactored-filters';
+import { FilterConfig } from '../../../filters';
 import { useDisclosure, Flex } from '@chakra-ui/react';
 import { SelectedFilterValueType } from '../../../filters/types';
 import { DEFAULT_MORE_PARAMS } from '../../helpers';

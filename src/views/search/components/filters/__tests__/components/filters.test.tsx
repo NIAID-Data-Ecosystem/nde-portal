@@ -94,7 +94,7 @@ jest.mock('../../components/date-filter', () => ({
   ),
 }));
 
-describe('refactored-filters/components/filters', () => {
+describe('filters/components/filters', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     useFilterQueries.mockReturnValue({

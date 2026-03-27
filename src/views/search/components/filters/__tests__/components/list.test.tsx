@@ -32,7 +32,7 @@ jest.mock('src/components/search-input', () => ({
   ),
 }));
 
-describe('refactored-filters/components/list', () => {
+describe('filters/components/list', () => {
   const baseProps = {
     colorScheme: 'primary',
     terms: [

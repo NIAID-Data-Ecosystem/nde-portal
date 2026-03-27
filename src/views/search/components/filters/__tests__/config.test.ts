@@ -11,7 +11,7 @@ jest.mock('src/utils/formatting/formatConditionsOfAccess', () => ({
 
 import { FILTER_CONFIGS, getFilterById } from '../config';
 
-describe('refactored-filters/config', () => {
+describe('filters/config', () => {
   it('has unique filter ids and required fields', () => {
     const ids = FILTER_CONFIGS.map(cfg => cfg.id);
     expect(new Set(ids).size).toBe(ids.length);

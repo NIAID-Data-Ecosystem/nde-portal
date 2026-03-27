@@ -19,7 +19,7 @@ jest.mock('next/router', () => ({
   useRouter: () => ({ pathname: '/search' }),
 }));
 
-describe('refactored-filters/components/section', () => {
+describe('filters/components/section', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });

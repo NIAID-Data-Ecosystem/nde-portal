@@ -18,7 +18,7 @@ jest.mock('src/components/tooltip', () => ({
   ),
 }));
 
-describe('refactored-filters/components/checkbox', () => {
+describe('filters/components/checkbox', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });

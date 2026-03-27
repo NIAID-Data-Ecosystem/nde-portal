@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChartDatum, ChartType, SearchState } from '../types';
-import { FilterConfig } from '../../refactored-filters';
+import { FilterConfig } from '../../filters';
 import { useAggregationQuery } from './useAggregationQuery';
 import { usePreferredChartType } from './usePreferredChartType';
 import {

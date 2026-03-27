@@ -1,6 +1,6 @@
 import * as mod from '../index';
 
-describe('refactored-filters/index exports', () => {
+describe('filters/index exports', () => {
   it('exports key runtime symbols', () => {
     expect(mod.FILTER_CONFIGS).toBeDefined();
     expect(mod.getFilterById).toBeDefined();

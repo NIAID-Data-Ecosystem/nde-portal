@@ -12,7 +12,7 @@ import {
   SelectedFilterType,
   SelectedFilterValueType,
 } from '../../types';
-import { queryFilterObject2String } from 'src/views/search/components/refactored-filters/utils/query-string';
+import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-string';
 import { defaultQuery } from 'src/views/search/config/defaultQuery';
 import { isEqual } from 'lodash';
 import { generateTags } from './utils';

@@ -1,4 +1,4 @@
-import { SelectedFilterType } from './components/refactored-filters';
+import { SelectedFilterType } from './components/filters';
 
 export type TabType = {
   id: 'ct' | 'd';

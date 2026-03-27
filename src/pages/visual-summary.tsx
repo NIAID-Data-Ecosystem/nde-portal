@@ -6,14 +6,11 @@ import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { SearchTabsProvider } from 'src/views/search/context/search-tabs-context';
 import { useSearchQueryFromURL } from 'src/views/search/hooks/useSearchQueryFromURL';
 import { Box, Flex, VStack } from '@chakra-ui/react';
-import {
-  Filters,
-  FILTER_CONFIGS,
-} from 'src/views/search/components/refactored-filters';
+import { Filters, FILTER_CONFIGS } from 'src/views/search/components/filters';
 import {
   SelectedFilterType,
   SelectedFilterValueType,
-} from 'src/views/search/components/refactored-filters/types';
+} from 'src/views/search/components/filters/types';
 import {
   defaultQuery,
   defaultSelectedFilters,
@@ -35,8 +32,8 @@ import { useActiveVizIds } from 'src/views/search/components/summary/hooks/useAc
 import {
   queryFilterString2Object,
   queryFilterObject2String,
-} from 'src/views/search/components/refactored-filters/utils/query-string';
-import { FilterTags } from 'src/views/search/components/refactored-filters/components/tag';
+} from 'src/views/search/components/filters/utils/query-string';
+import { FilterTags } from 'src/views/search/components/filters/components/tag';
 import { SearchResultsFetchedProvider } from 'src/views/search/context/search-results-fetched-context';
 
 const DEFAULT_ACTIVE_VIZ_IDS = ['date'];

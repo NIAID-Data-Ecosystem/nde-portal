@@ -16,7 +16,7 @@ jest.mock('../../components/customize-filters-popover', () => ({
 
 const { useBreakpointValue } = jest.requireMock('@chakra-ui/react');
 
-describe('refactored-filters/components/container', () => {
+describe('filters/components/container', () => {
   const props = {
     title: 'Search Filters',
     selectedFilters: { foo: ['bar'] },
