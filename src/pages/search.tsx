@@ -10,12 +10,11 @@ import {
 import { useSearchQueryFromURL } from 'src/views/search/hooks/useSearchQueryFromURL';
 import { Box, Flex, VStack } from '@chakra-ui/react';
 import { Filters } from 'src/views/search/components/filters';
-import { SelectedFilterType } from 'src/views/search/components/filters/types';
 import { FILTER_CONFIGS } from 'src/views/search/components/filters/config';
 import {
   queryFilterString2Object,
   queryFilterObject2String,
-} from 'src/views/search/components/filters/utils/query-string';
+} from 'src/views/search/components/refactored-filters/utils/query-string';
 import {
   defaultSelectedFilters,
   defaultQuery,
@@ -29,6 +28,7 @@ import { fetchSearchResults } from 'src/utils/api';
 import { tabs } from 'src/views/search/config/tabs';
 import { OntologyBrowserPopup } from 'src/views/ontology-browser/components/popup';
 import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
+import { SelectedFilterType } from 'src/views/search/components/refactored-filters/types';
 
 // Default filters property list with empty array as value.
 const defaultFilters = FILTER_CONFIGS.reduce(

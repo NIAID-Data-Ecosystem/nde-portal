@@ -13,7 +13,7 @@ import {
 import {
   SelectedFilterType,
   SelectedFilterValueType,
-} from 'src/views/search/components/filters/types';
+} from 'src/views/search/components/refactored-filters/types';
 import {
   defaultQuery,
   defaultSelectedFilters,
@@ -33,9 +33,9 @@ import SummaryGrid from 'src/views/search/components/summary';
 import { updateRoute } from 'src/views/search/utils/update-route';
 import { useActiveVizIds } from 'src/views/search/components/summary/hooks/useActiveVizIds';
 import {
-  queryFilterObject2String,
   queryFilterString2Object,
-} from 'src/views/search/components/filters/utils/query-string';
+  queryFilterObject2String,
+} from 'src/views/search/components/refactored-filters/utils/query-string';
 import { FilterTags } from 'src/views/search/components/refactored-filters/components/tag';
 import { SearchResultsFetchedProvider } from 'src/views/search/context/search-results-fetched-context';
 
