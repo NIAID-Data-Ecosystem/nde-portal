@@ -82,13 +82,12 @@ const getDisplayValue = (
     if (key.includes('displayName')) {
       return formatDisplayName(value);
     }
+    if (config?.transformData) {
+      return applyConfigTransform(value, config);
+    }
     // Apply type formatting for @type filters
     if (key === '@type') {
       return formatAPIResourceTypeForDisplay(value as APIResourceType);
-    }
-    // Apply config transformations for specific keys
-    if (key === 'conditionsOfAccess') {
-      return applyConfigTransform(value, config);
     }
   }
 
