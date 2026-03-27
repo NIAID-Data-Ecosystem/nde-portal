@@ -12,6 +12,8 @@ import { useDateRangeContext } from '../hooks/useDateRangeContext';
 import { FilterTerm } from '../../../types';
 import { DateBrush } from './date-brush';
 import { useParentSize } from '@visx/responsive';
+import { text } from 'd3';
+import { display } from 'styled-system';
 
 interface HistogramProps {
   updatedData: FilterTerm[];
@@ -34,7 +36,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
   const params = useMemo(
     () => ({
       maxBarWidth: 40,
-      height: 150,
+      height: 180,
       padding: 0.1,
       fill: {
         inactive: theme.colors.blackAlpha[100],
@@ -52,7 +54,6 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
     debounceTime: 150,
     initialSize: { height: params.height },
   });
-
   const range_min = useMemo(() => dates[0], [dates]);
   const range_max = useMemo(() => dates[1], [dates]);
 
@@ -64,7 +65,19 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
     showTooltip,
     hideTooltip,
   } = useTooltip({
-    tooltipData: { count: 0, term: '', label: '', updatedCount: 0 },
+    tooltipData: {
+      count: 0,
+      term: '',
+      label: '',
+      updatedCount: 0,
+      display: {
+        label: '',
+        total: '',
+        count: '',
+        updatedCount: '',
+        countText: '',
+      },
+    },
   });
 
   const { containerRef, containerBounds, TooltipInPortal } = useTooltipInPortal(
@@ -96,10 +109,34 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
         ('clientX' in event ? event.clientX : 0) - containerBounds.left;
       const coordsY =
         ('clientY' in event ? event.clientY : 0) - containerBounds.top;
+
+      // Show "updatedCount of count" if updatedCount is smaller than total count (addressing issue with use_ai_search facet counts) and greater than 0, otherwise just show count
+      const showFullDisplayText =
+        range_min &&
+        range_max &&
+        datum.term >= range_min &&
+        datum.term <= range_max &&
+        datum.updatedCount !== datum.count &&
+        datum.updatedCount < datum.count &&
+        datum.updatedCount > 0;
+
+      const display = {
+        label: datum.label,
+        total: formatNumber(datum.count),
+        count: formatNumber(datum.count),
+        updatedCount: formatNumber(datum.updatedCount),
+        countText: '',
+      };
+
+      display.countText = showFullDisplayText
+        ? `${display.updatedCount} of ${display.total}`
+        : display.total;
+
+      // const displayText =
       showTooltip({
         tooltipLeft: coordsX,
         tooltipTop: coordsY,
-        tooltipData: datum,
+        tooltipData: { ...datum, display },
       });
     },
     [containerBounds.left, containerBounds.top, showTooltip],
@@ -189,20 +226,12 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
             zIndex: 2000,
           }}
         >
-          {tooltipData.label}:{' '}
-          {range_min &&
-            range_max &&
-            tooltipData.term >= range_min &&
-            tooltipData.term <= range_max &&
-            tooltipData.updatedCount !== tooltipData.count &&
-            tooltipData.updatedCount! > 0 &&
-            `${formatNumber(tooltipData.updatedCount)} of `}
-          {formatNumber(tooltipData.count)}
+          {tooltipData.label}: {tooltipData.display.countText}
         </TooltipComponent>
       )}
 
       <Flex ref={containerRef} justifyContent='center' h='100%'>
-        <Flex position='relative' w='100%' h='100%' flexDirection='column'>
+        <Flex w='100%' h='100%' flexDirection='column'>
           <Flex
             ref={parentRef}
             justifyContent='center'
@@ -214,7 +243,6 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
               as='svg'
               id='filters-histogram'
               width={effectiveSvgWidth}
-              height={height}
               style={{ overflow: 'visible' }}
             >
               <defs>
@@ -274,6 +302,9 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
                               y={height - defaultBarHeight}
                               height={defaultBarHeight}
                               fill={params.fill.gray}
+                              style={{
+                                transition: 'y 0.1s ease, height 0.1s ease',
+                              }}
                             />
                           )}
 
@@ -289,6 +320,9 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
                             y={barY}
                             height={barHeight}
                             fill={fill}
+                            style={{
+                              transition: 'y 0.1s ease, height 0.1s ease',
+                            }}
                           />
                         </React.Fragment>
                       );
@@ -367,7 +401,13 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
               )}
             </Box>
           </Flex>
-          <Flex w='100%' justifyContent='center' mt={8} flexShrink={0}>
+          <Flex
+            w='100%'
+            justifyContent='center'
+            mt={8}
+            flexShrink={0}
+            minHeight={50}
+          >
             <DateBrush containerWidth={width} />
           </Flex>
         </Flex>

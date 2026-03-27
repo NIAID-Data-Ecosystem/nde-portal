@@ -245,18 +245,27 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
       () => groupTerms(terms, selectedFilters, config?.groupBy),
       [terms, config?.groupBy, selectedFilters],
     );
+
+    // Only update the displayed sort order when data has settled,
+    // so clicking a filter doesn't re-sort before new counts arrive.
+    const settledTermsRef = useRef<FilterItem[]>([]);
+    if (!isLoading && !isUpdating) {
+      settledTermsRef.current = groupedAndSorted;
+    }
+    const displayTerms = settledTermsRef.current;
+
     // Filter the terms based on the search term
     const searchedTerms: FilterItem[] = useMemo(() => {
-      if (!groupedAndSorted?.length) {
+      if (!displayTerms?.length) {
         return [];
       }
       if (!debouncedSearchTerm) {
-        return groupedAndSorted;
+        return displayTerms;
       }
-      return groupedAndSorted.filter(t =>
+      return displayTerms.filter(t =>
         t.label.toLowerCase().includes(debouncedSearchTerm.toLowerCase()),
       );
-    }, [groupedAndSorted, debouncedSearchTerm]);
+    }, [displayTerms, debouncedSearchTerm]);
     return (
       <>
         {/* Search through filter terms */}

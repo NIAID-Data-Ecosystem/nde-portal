@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useFilterQueries } from './hooks/useFilterQueries';
 import { FILTER_CONFIGS } from './config';
 import { useRouter } from 'next/router';
@@ -41,9 +41,7 @@ export const Filters = React.memo(
     const queryParams = useSearchQueryFromURL();
     const { resetPagination } = usePaginationContext();
     const { selectedTab } = useSearchTabsContext();
-    const { isFiltersFetchEnabled, markFiltersFetched } =
-      useSearchResultsFetchedContext();
-    const [isDateFilterFetching, setIsDateFilterFetching] = useState(false);
+    const { isFiltersFetchEnabled } = useSearchResultsFetchedContext();
 
     // Determine appropriate filters for the selected tab
     const filtersForTab = useMemo(() => {
@@ -65,7 +63,7 @@ export const Filters = React.memo(
       () => ({
         q: queryParams.q,
         extra_filter: queryFilterObject2String(queryParams.filters || {}) || '',
-        use_ai_search: queryParams.use_ai_search,
+        use_ai_search: queryParams.use_ai_search ?? 'false',
       }),
       [queryParams.q, queryParams.filters, queryParams.use_ai_search],
     );
@@ -78,23 +76,6 @@ export const Filters = React.memo(
       config,
       enabled: isFiltersFetchEnabled,
     });
-
-    useEffect(() => {
-      if (
-        isFiltersFetchEnabled &&
-        !isLoading &&
-        !isUpdating &&
-        !isDateFilterFetching
-      ) {
-        markFiltersFetched();
-      }
-    }, [
-      isFiltersFetchEnabled,
-      isLoading,
-      isUpdating,
-      isDateFilterFetching,
-      markFiltersFetched,
-    ]);
 
     const handleUpdate = useCallback(
       (update: {}) => {
@@ -178,12 +159,11 @@ export const Filters = React.memo(
                     q: queryParams.q,
                     extra_filter:
                       queryFilterObject2String(queryParams.filters) || '',
-                    use_ai_search: queryParams.use_ai_search,
+                    use_ai_search: queryParams.use_ai_search ?? 'false',
                   }}
                   showHistogram={showHistogram}
                   showDateControls={showDateControls}
                   enabled={isFiltersFetchEnabled}
-                  onFetchStateChange={setIsDateFilterFetching}
                 />
               </FiltersSection>
             );

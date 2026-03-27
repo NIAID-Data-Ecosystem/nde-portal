@@ -121,7 +121,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
       >
         {/* Loading skeleton only on load  */}
         <Skeleton
-          isLoaded={!isLoading || isUpdating}
+          isLoaded={!isLoading && !isUpdating}
           display='flex'
           alignItems='center'
           flex={1}

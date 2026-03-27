@@ -251,7 +251,12 @@ const Search: NextPage<{
                 </VStack>
                 {SHOW_VISUAL_SUMMARY && (
                   <SummaryGrid
-                    searchParams={queryParams}
+                    searchParams={{
+                      ...queryParams,
+                      from: 0,
+                      size: 0,
+                      sort: '',
+                    }}
                     onFilterUpdate={(values, facet) => {
                       handleSelectedFilters(values, facet);
                     }}

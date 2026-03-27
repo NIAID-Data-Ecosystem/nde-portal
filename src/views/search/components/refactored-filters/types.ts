@@ -28,6 +28,9 @@ export interface SelectedFilters {
   [property: string]: SelectedFilterValue[];
 }
 
+export interface SelectedFilterType {
+  [property: string]: SelectedFilterValue[];
+}
 /**
  * Query type determines how the filter query is built
  * - 'facet': Regular facet query with exists/not-exists options
@@ -100,6 +103,8 @@ export interface FilterConfig {
     term: string;
     label: string;
   };
+  /** IDs of tabs where this filter should be shown */
+  tabIds?: string[];
 }
 
 /**

@@ -29,6 +29,14 @@ jest.mock('src/views/search/context/pagination-context', () => ({
   usePaginationContext: () => ({ resetPagination: jest.fn() }),
 }));
 
+jest.mock('src/views/search/context/search-tabs-context', () => ({
+  useSearchTabsContext: () => ({ selectedTab: { id: 'd' } }),
+}));
+
+jest.mock('src/views/search/context/search-results-fetched-context', () => ({
+  useSearchResultsFetchedContext: () => ({ isFiltersFetchEnabled: true }),
+}));
+
 jest.mock('src/views/search/config/defaultQuery', () => ({
   getDefaultDateRange: () => ['2020-01-01', '2021-12-31'],
 }));

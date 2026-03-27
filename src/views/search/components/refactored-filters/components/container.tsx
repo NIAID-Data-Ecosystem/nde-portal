@@ -20,6 +20,8 @@ import { FaFilter } from 'react-icons/fa6';
 import { FilterConfig, SelectedFilters } from '../types';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { CustomizeFiltersPopover } from './customize-filters-popover';
+import { useRouter } from 'next/router';
+import { shouldEnableInVisualSummaryPage } from 'src/utils/feature-flags';
 
 export interface FiltersContainerProps {
   title?: string;
@@ -60,7 +62,11 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   removeAllFilters,
   onVisibleFiltersChange,
 }) => {
+  const router = useRouter();
+
   // State for managing which accordion sections are open
+  // Determine if visual summary section should be shown based on feature flag and current route since this component is shared with /search page.
+  const SHOW_VISUAL_SUMMARY = shouldEnableInVisualSummaryPage(router.pathname);
   const [openSections, setOpenSections] = useState<Set<string>>(new Set());
 
   // Prevent accordion state initialization on every render
@@ -142,10 +148,13 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         borderBottom='0.5px solid'
         borderBottomColor='gray.100'
       >
-        <CustomizeFiltersPopover
-          filtersList={filtersList}
-          onVisibleFiltersChange={onVisibleFiltersChange}
-        />
+        {/* Popover for customizing visible filters */}
+        {SHOW_VISUAL_SUMMARY && (
+          <CustomizeFiltersPopover
+            filtersList={filtersList}
+            onVisibleFiltersChange={onVisibleFiltersChange}
+          />
+        )}
         <Flex gap={2} justifyContent='space-between'>
           {title && (
             <Heading size='sm' fontWeight='medium' lineHeight='short'>
