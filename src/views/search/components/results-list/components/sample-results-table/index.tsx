@@ -63,7 +63,7 @@ const SAMPLE_RESULTS_COLUMNS: Column[] = [
     title: 'Identifier',
     property: sortKey('identifier'),
     isSortable: true,
-    props: withWidth('160px'),
+    props: withWidth('180px'),
   },
   {
     title: 'Alternate Identifier',
@@ -81,7 +81,7 @@ const SAMPLE_RESULTS_COLUMNS: Column[] = [
     title: 'Name',
     property: sortKey('name'),
     isSortable: true,
-    props: withWidth('200px'),
+    props: withWidth('250px'),
   },
   {
     title: 'Source',
@@ -195,7 +195,7 @@ const SAMPLE_RESULTS_COLUMNS: Column[] = [
     title: 'Location of Origin',
     property: sortKey('locationOfOrigin'),
     isSortable: true,
-    props: withWidth('170px'),
+    props: withWidth('185px'),
   },
   {
     title: 'Item Location',
