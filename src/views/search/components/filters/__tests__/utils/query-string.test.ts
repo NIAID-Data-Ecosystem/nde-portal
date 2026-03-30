@@ -64,7 +64,7 @@ describe('filters/utils/query-string', () => {
   it('supports date exact-match formatting and wrapper converters', () => {
     const q = queryFilterObject2String({ date: ['2020-01-01'] });
     expect(q).toBe('(date:2020-01-01)');
-    expect(queryFilterString2Object(q)).toEqual({ date: ['2020-01-01'] });
+    expect(queryFilterString2Object(q!)).toEqual({ date: ['2020-01-01'] });
     expect(queryFilterString2Object('')).toBeNull();
   });
 });

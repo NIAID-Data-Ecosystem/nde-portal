@@ -78,6 +78,7 @@ describe('filters/components/date-filter/index', () => {
         selectedDates={['2021-01-01', '2021-12-31']}
         handleSelectedFilter={jest.fn()}
         resetFilter={jest.fn()}
+        enabled
       />,
     );
 
@@ -112,6 +113,7 @@ describe('filters/components/date-filter/index', () => {
         selectedDates={[]}
         handleSelectedFilter={jest.fn()}
         resetFilter={jest.fn()}
+        enabled
       />,
     );
 

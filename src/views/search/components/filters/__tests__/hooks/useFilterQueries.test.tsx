@@ -58,11 +58,6 @@ describe('useFilterQueries', () => {
             extra_filter: 'x:y',
             advancedSearch: 'false',
           } as any,
-          updateParams: {
-            q: 'term',
-            extra_filter: 'x:y2',
-            use_ai_search: 'true',
-          } as any,
         }),
       { wrapper: createWrapper() },
     );

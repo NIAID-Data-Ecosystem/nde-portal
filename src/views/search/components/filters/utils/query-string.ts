@@ -14,9 +14,9 @@ const VALUE_SPLIT_PATTERN = /(?:" OR ")| OR |(?:" TO ")| TO /;
  *   (keywords:(-_exists_:("keywords")))
  */
 export const queryFilterObject2String = (
-  selectedFilters: SelectedFilterType,
+  selectedFilters?: SelectedFilterType,
 ): string | null => {
-  const filterParts = Object.entries(selectedFilters)
+  const filterParts = Object.entries(selectedFilters || {})
     .filter(([_, values]) => values.length > 0)
     .map(([filterName, values]) => {
       const stringValues = values.filter(
