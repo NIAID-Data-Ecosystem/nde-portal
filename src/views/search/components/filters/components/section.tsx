@@ -9,8 +9,7 @@ import {
 } from '@chakra-ui/react';
 import { FaChevronDown } from 'react-icons/fa6';
 import Tooltip from 'src/components/tooltip';
-import { shouldEnableInVisualSummaryPage } from 'src/utils/feature-flags';
-import { useRouter } from 'next/router';
+import { SHOW_VISUAL_SUMMARY } from 'src/utils/feature-flags';
 import { FiltersChartToggle } from './filters-chart-toggle';
 
 interface FiltersSectionProps {
@@ -29,12 +28,6 @@ Filter drawer corresponding to a filter facet.
 */
 export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
   ({ name, description, children, filterId, isVizActive, onToggleViz }) => {
-    const router = useRouter();
-    // Determine if visual summary section should be shown based on feature flag and current route since this component is shared with /search page.
-    const SHOW_VISUAL_SUMMARY = shouldEnableInVisualSummaryPage(
-      router.pathname,
-    );
-
     return (
       <AccordionItem border='none'>
         {({ isExpanded }) => {

@@ -10,10 +10,7 @@ import { DateFilter } from './date-filter';
 import { updateRoute } from '../../../utils/update-route';
 import { useSearchQueryFromURL } from '../../../hooks/useSearchQueryFromURL';
 import { usePaginationContext } from '../../../context/pagination-context';
-import {
-  shouldEnableInVisualSummaryPage,
-  SHOW_VISUAL_SUMMARY,
-} from 'src/utils/feature-flags';
+import { SHOW_VISUAL_SUMMARY } from 'src/utils/feature-flags';
 import { FILTER_CONFIGS } from '../config';
 import { useSearchResultsFetchedContext } from 'src/views/search/context/search-results-fetched-context';
 import { useSearchTabsContext } from 'src/views/search/context/search-tabs-context';
@@ -109,7 +106,7 @@ export const Filters = React.memo(
     // Determine visibility based on route
     // On search page: show both histogram and controls when visual summary is enabled
     // On visual-summary page: show only controls (histogram is in the grid)
-    const showHistogram = !shouldEnableInVisualSummaryPage(router.pathname);
+    const showHistogram = !SHOW_VISUAL_SUMMARY;
     const showDateControls = true; // Always show controls in filters
 
     return (

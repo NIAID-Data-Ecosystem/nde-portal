@@ -21,7 +21,7 @@ import { FilterConfig, SelectedFilterType } from '../types';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { CustomizeFiltersPopover } from './customize-filters-popover';
 import { useRouter } from 'next/router';
-import { shouldEnableInVisualSummaryPage } from 'src/utils/feature-flags';
+import { SHOW_VISUAL_SUMMARY } from 'src/utils/feature-flags';
 
 export interface FiltersContainerProps {
   title?: string;
@@ -66,7 +66,6 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
 
   // State for managing which accordion sections are open
   // Determine if visual summary section should be shown based on feature flag and current route since this component is shared with /search page.
-  const SHOW_VISUAL_SUMMARY = shouldEnableInVisualSummaryPage(router.pathname);
   const [openSections, setOpenSections] = useState<Set<string>>(new Set());
 
   // Prevent accordion state initialization on every render

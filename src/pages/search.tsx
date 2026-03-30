@@ -173,7 +173,7 @@ const Search: NextPage<{
   }, [router.isReady, selectedFilters, handleUpdate]);
 
   // If the initial tab is not set, return a loading state.
-  if (!initialTab || !SHOW_VISUAL_SUMMARY) {
+  if (!initialTab) {
     return null;
   }
   return (
