@@ -1,7 +1,7 @@
 import { SelectedFilterType } from './components/filters';
 
 export type TabType = {
-  id: 'ct' | 'd';
+  id: 'ct' | 'd' | 's';
   types: {
     label: string;
     type: string;

@@ -206,8 +206,7 @@ const Search: NextPage<{
                   isVizActive={isVizActive}
                 />
               </Flex>
-
-              <Box flex={3} maxW='1800px'>
+              <Box flex={3} minWidth={0} maxWidth='2000px'>
                 <VStack
                   alignItems='flex-start'
                   p={4}
