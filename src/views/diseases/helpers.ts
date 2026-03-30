@@ -3,7 +3,7 @@ import { Params } from 'src/utils/api';
 import {
   queryFilterObject2String,
   queryFilterString2Object,
-} from '../search/components/filters/utils/query-builders';
+} from '../search/components/filters/utils/query-string';
 import {
   DiseasePageProps,
   DiseaseCollectionApiResponse,
@@ -48,7 +48,7 @@ export const getSearchResultsRoute = ({
   term?: string;
 }): UrlObject => {
   const q = query.q || '';
-  const filters = queryFilterString2Object(query.extra_filter) || {};
+  const filters = queryFilterString2Object(query?.extra_filter || '') || {};
 
   if (facet && term) {
     filters[facet] = [term];

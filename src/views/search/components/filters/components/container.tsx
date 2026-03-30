@@ -19,8 +19,9 @@ import {
 import { FaFilter } from 'react-icons/fa6';
 import { FilterConfig, SelectedFilterType } from '../types';
 import { ScrollContainer } from 'src/components/scroll-container';
-import { useSearchTabsContext } from '../../../context/search-tabs-context';
-import { getCommonFilterProperties } from '../utils/tab-filter-utils';
+import { CustomizeFiltersPopover } from './customize-filters-popover';
+import { useRouter } from 'next/router';
+import { SHOW_VISUAL_SUMMARY } from 'src/utils/feature-flags';
 
 export interface FiltersContainerProps {
   title?: string;
@@ -29,15 +30,15 @@ export interface FiltersContainerProps {
   removeAllFilters: () => void;
   error: Error | null;
   filtersList: FilterConfig[];
+  onVisibleFiltersChange?: (visibleFilterIds: string[]) => void;
   children: React.ReactNode;
 }
 
 const DrawerContentMemo: React.FC<{
   content: React.ReactNode;
   onClose: () => void;
-  screenSize: string;
   innerHeight: number;
-}> = React.memo(({ content, onClose, screenSize, innerHeight }) => (
+}> = React.memo(({ content, onClose, innerHeight }) => (
   <DrawerContent height={`${innerHeight}px`} pt={8}>
     <DrawerCloseButton />
     <ScrollContainer>
@@ -59,26 +60,19 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   filtersList,
   isDisabled = false,
   removeAllFilters,
+  onVisibleFiltersChange,
 }) => {
-  // State for managing which sections are open per tab
-  // It allows tab-specific filters to maintain their open/closed state
-  // when switching between tabs
-  const [tabSpecificOpenSections, setTabSpecificOpenSections] = useState<
-    Record<string, Set<string>>
-  >({});
+  const router = useRouter();
 
-  // State for managing which common sections are open
-  // Common filters persist their state across all tabs
-  const [commonOpenSections, setCommonOpenSections] = useState<Set<string>>(
-    new Set(),
-  );
+  // State for managing which accordion sections are open
+  // Determine if visual summary section should be shown based on feature flag and current route since this component is shared with /search page.
+  const [openSections, setOpenSections] = useState<Set<string>>(new Set());
 
   // Prevent accordion state initialization on every render
   const [isInitialized, setIsInitialized] = useState(false);
 
   const btnRef = useRef<HTMLButtonElement>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { selectedTab } = useSearchTabsContext();
   const screenSize = useBreakpointValue(
     {
       base: 'mobile',
@@ -93,162 +87,89 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
     typeof window !== 'undefined' ? window.innerHeight : 100,
   );
 
-  const windowResizeHandler = () => {
-    if (typeof window !== 'undefined') {
-      setInnerHeight(window.innerHeight);
-    }
-  };
-
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', windowResizeHandler);
-      return () => {
-        window.removeEventListener('resize', windowResizeHandler);
-      };
-    }
+    if (typeof window === 'undefined') return;
+
+    const handleResize = () => setInnerHeight(window.innerHeight);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Get list of filter properties that are common across all tabs
-  const commonFilters = useMemo(() => {
-    return getCommonFilterProperties();
-  }, []);
-
-  // Get open sections for the current tab
-  const currentTabSpecificOpenSections = useMemo(() => {
-    return tabSpecificOpenSections[selectedTab.id] || new Set<string>();
-  }, [tabSpecificOpenSections, selectedTab.id]);
-
-  // Combine common and tab-specific open sections for the selected tab
-  const allCurrentOpenSections = useMemo(() => {
-    const combined = new Set([
-      ...commonOpenSections,
-      ...currentTabSpecificOpenSections,
-    ]);
-    return combined;
-  }, [commonOpenSections, currentTabSpecificOpenSections]);
-
-  /**
-   * Initialize accordion state based on:
-   * 1. Currently selected filters (auto-open sections with active filters)
-   * 2. Filter configs marked as default open
-   */
+  // Initialize accordion state: auto-open sections with active filters
   useEffect(() => {
     if (!isInitialized) {
-      const newCommonOpenSections = new Set<string>();
+      const sectionsToOpen = new Set<string>();
 
-      setTabSpecificOpenSections(prev => {
-        const tabId = selectedTab.id;
-        const updated = { ...prev };
-        if (!updated[tabId]) {
-          updated[tabId] = new Set<string>();
+      Object.keys(selectedFilters).forEach(property => {
+        const filterValue = selectedFilters[property];
+        if (filterValue && filterValue.length > 0) {
+          sectionsToOpen.add(property);
         }
-        const newTabSpecificOpenSections = new Set<string>();
-
-        if (selectedFilters) {
-          Object.entries(selectedFilters)
-            .filter(([_, v]) => v.length > 0)
-            .forEach(([property]) => {
-              if (commonFilters.includes(property)) {
-                newCommonOpenSections.add(property);
-              } else {
-                newTabSpecificOpenSections.add(property);
-              }
-            });
-        }
-
-        filtersList.forEach(config => {
-          if (config.isDefaultOpen) {
-            if (commonFilters.includes(config.property)) {
-              newCommonOpenSections.add(config.property);
-            } else {
-              newTabSpecificOpenSections.add(config.property);
-            }
-          }
-        });
-
-        updated[tabId] = newTabSpecificOpenSections;
-        return updated;
       });
 
-      setCommonOpenSections(newCommonOpenSections);
+      setOpenSections(sectionsToOpen);
       setIsInitialized(true);
     }
-  }, [
-    selectedFilters,
-    filtersList,
-    selectedTab.id,
-    commonFilters,
-    isInitialized,
-  ]);
+  }, [selectedFilters, isInitialized]);
 
   // Convert open section properties to accordion indices
   const accordionIndices = useMemo(() => {
-    return Array.from(allCurrentOpenSections)
+    return Array.from(openSections)
       .map(property =>
         filtersList.findIndex(config => config.property === property),
       )
       .filter(index => index !== -1)
       .sort((a, b) => a - b);
-  }, [allCurrentOpenSections, filtersList]);
+  }, [openSections, filtersList]);
 
-  /**
-   * Handle accordion section expand/collapse
-   * Separate common filters from tab-specific filters to maintain
-   * appropriate state persistence
-   */
   const handleAccordionChange = (expandedIndex: number | number[]) => {
     const indices = Array.isArray(expandedIndex)
       ? expandedIndex
       : [expandedIndex];
 
-    const newCommonOpenProperties = new Set<string>();
-    const newTabSpecificOpenProperties = new Set<string>();
-
-    // Categorize each opened section as common or tab-specific
+    const openProperties = new Set<string>();
     indices.forEach(index => {
       if (index >= 0 && index < filtersList.length) {
-        const property = filtersList[index].property;
-        if (commonFilters.includes(property)) {
-          newCommonOpenProperties.add(property);
-        } else {
-          newTabSpecificOpenProperties.add(property);
-        }
+        openProperties.add(filtersList[index].property);
       }
     });
 
-    setCommonOpenSections(newCommonOpenProperties);
-
-    setTabSpecificOpenSections(prev => {
-      const updated = { ...prev };
-      updated[selectedTab.id] = newTabSpecificOpenProperties;
-      return updated;
-    });
+    setOpenSections(openProperties);
   };
 
   const content = (
     <>
       <Flex
-        justifyContent='space-between'
         px={{ base: 0, md: 4 }}
-        py={{ base: 2, md: 4 }}
-        alignItems='center'
+        py={2}
+        gap={4}
+        flexDirection='column'
         borderBottom='0.5px solid'
         borderBottomColor='gray.100'
       >
-        {title && (
-          <Heading size='sm' fontWeight='medium' lineHeight='short'>
-            {title}
-          </Heading>
+        {/* Popover for customizing visible filters */}
+        {SHOW_VISUAL_SUMMARY && (
+          <CustomizeFiltersPopover
+            filtersList={filtersList}
+            onVisibleFiltersChange={onVisibleFiltersChange}
+          />
         )}
-        <Button
-          colorScheme='secondary'
-          variant='outline'
-          size='xs'
-          onClick={removeAllFilters}
-          isDisabled={isDisabled}
-        >
-          Clear All
-        </Button>
+        <Flex gap={2} justifyContent='space-between'>
+          {title && (
+            <Heading size='sm' fontWeight='medium' lineHeight='short'>
+              {title}
+            </Heading>
+          )}
+          <Button
+            colorScheme='secondary'
+            variant='link'
+            size='xs'
+            onClick={removeAllFilters}
+            isDisabled={isDisabled}
+          >
+            Clear All
+          </Button>
+        </Flex>
       </Flex>
       {error ? (
         <Flex p={4} bg='status.error_lt'>
@@ -317,7 +238,6 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         <DrawerContentMemo
           content={content}
           onClose={onClose}
-          screenSize={screenSize!}
           innerHeight={innerHeight}
         />
       </Drawer>

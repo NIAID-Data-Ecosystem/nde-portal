@@ -12,14 +12,11 @@ jest.mock('src/views/search/components/search-results-header', () => ({
   SearchResultsHeading: ({ children }: any) => <h2>{children}</h2>,
 }));
 
-jest.mock(
-  'src/views/search/components/refactored-filters/utils/query-string',
-  () => ({
-    queryFilterObject2String: jest.fn(() => '(compiled-filter)'),
-  }),
-);
+jest.mock('src/views/search/components/filters/utils/query-string', () => ({
+  queryFilterObject2String: jest.fn(() => '(compiled-filter)'),
+}));
 
-describe('refactored-filters/components/tag', () => {
+describe('filters/components/tag', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });

@@ -2,7 +2,7 @@ import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { SearchState } from '../types';
 import { fetchSearchResults } from 'src/utils/api';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { queryFilterObject2String } from '../../filters/utils/query-builders';
+import { queryFilterObject2String } from '../../filters/utils/query-string';
 
 type UseAggregationQueryArgs = {
   property: string;

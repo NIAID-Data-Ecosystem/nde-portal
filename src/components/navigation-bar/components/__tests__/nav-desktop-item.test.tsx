@@ -2,20 +2,24 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { NavBarItem } from '../nav-desktop-item';
 
-const mockNavTopLevelLink = jest.fn(() => <div data-testid='top-level-link' />);
+const mockNavTopLevelLink = jest.fn((_props: unknown) => (
+  <div data-testid='top-level-link' />
+));
 const mockNavDropdownTrigger = jest.fn(
   ({ children }: { children: React.ReactNode }) => (
     <div data-testid='dropdown-trigger'>{children}</div>
   ),
 );
-const mockNavDropdownMenu = jest.fn(() => <div data-testid='dropdown-menu' />);
+const mockNavDropdownMenu = jest.fn((_props: unknown) => (
+  <div data-testid='dropdown-menu' />
+));
 
 jest.mock('../nav-desktop-top-level-link', () => ({
   NavTopLevelLink: (props: unknown) => mockNavTopLevelLink(props),
 }));
 
 jest.mock('../nav-desktop-dropdown', () => ({
-  NavDropdownTrigger: (props: unknown) => mockNavDropdownTrigger(props),
+  NavDropdownTrigger: (props: any) => mockNavDropdownTrigger(props),
   NavDropdownMenu: (props: unknown) => mockNavDropdownMenu(props),
 }));
 

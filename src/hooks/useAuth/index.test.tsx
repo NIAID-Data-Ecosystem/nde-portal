@@ -157,7 +157,11 @@ describe('useAuth hooks', () => {
   it('handles non-401 fetch errors and warns in development', async () => {
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const originalNodeEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'development';
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: 'development',
+      writable: true,
+      configurable: true,
+    });
 
     mockResolveUserInfo.mockResolvedValue(null);
     (global.fetch as jest.Mock).mockResolvedValue({
@@ -182,7 +186,11 @@ describe('useAuth hooks', () => {
     });
     expect(warnSpy).toHaveBeenCalled();
 
-    process.env.NODE_ENV = originalNodeEnv;
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: originalNodeEnv,
+      writable: true,
+      configurable: true,
+    });
     warnSpy.mockRestore();
   });
 

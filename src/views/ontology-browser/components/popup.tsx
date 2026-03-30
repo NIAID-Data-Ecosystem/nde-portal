@@ -2,7 +2,7 @@ import { Button } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import {
   SelectedFilterType,
-  SelectedFilterTypeValue,
+  SelectedFilterValueType,
 } from 'src/views/search/components/filters/types';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -18,7 +18,7 @@ const extractSubstringFromQueryString = (term: string, fieldName: string) => {
 };
 
 const extractValueFromSelectedFilters = (
-  term: SelectedFilterTypeValue,
+  term: SelectedFilterValueType,
   fieldName: string,
 ) => {
   if (typeof term === 'object') {

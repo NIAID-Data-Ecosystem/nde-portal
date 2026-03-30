@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChartDatum, ChartType, SearchState } from '../types';
-import { FilterConfig } from '../../refactored-filters';
+import { FilterConfig } from '../../filters';
 import { useAggregationQuery } from './useAggregationQuery';
 import { usePreferredChartType } from './usePreferredChartType';
 import {
@@ -10,14 +10,14 @@ import {
   isMoreSlice,
   normalizeAggregateData,
 } from '../helpers';
-import { SelectedFilterTypeValue } from '../../filters/types';
+import { SelectedFilterValueType } from '../../filters/types';
 
 interface UseVisualizationDataParams {
   config: FilterConfig;
   searchState: SearchState;
   isActive: boolean;
-  selectedFilters: SelectedFilterTypeValue[];
-  onFilterUpdate?: (values: SelectedFilterTypeValue[], facet: string) => void;
+  selectedFilters: SelectedFilterValueType[];
+  onFilterUpdate?: (values: SelectedFilterValueType[], facet: string) => void;
 }
 
 export const useVisualizationData = ({
