@@ -5,6 +5,7 @@ import { Table, Column } from 'src/components/table';
 import { Link } from 'src/components/link';
 import { FormattedResource, IncludedInDataCatalog } from 'src/utils/api/types';
 import { renderCellData } from './components/Cells';
+import { getTruncatedText } from 'src/components/table/helpers';
 
 // For columns whose display value is a rich object (e.g. { identifier, url })
 // or an array of DefinedTerms, a parallel `_sort_<field>` plain string
@@ -312,6 +313,17 @@ const getCells = ({
     ) : (
       <Text fontSize='sm'>{cat.name}</Text>
     );
+  }
+
+  // Limit description to 144 characters
+  if (field === 'description') {
+    const { text } = getTruncatedText(value as string, false, 144);
+    return text ? (
+      <Text fontSize='sm'>
+        {text}
+        {(value as string).length > 144 ? '…' : ''}
+      </Text>
+    ) : null;
   }
 
   // Scalar string fields that don't need DefinedTerm / QuantitativeValue rendering
