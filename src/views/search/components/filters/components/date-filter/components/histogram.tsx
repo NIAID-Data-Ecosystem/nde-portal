@@ -256,6 +256,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
               as='svg'
               id='filters-histogram'
               width={effectiveSvgWidth}
+              height={height}
               style={{ overflow: 'visible' }}
             >
               <defs>
