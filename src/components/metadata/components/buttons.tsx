@@ -137,7 +137,7 @@ export const SearchButton = ({
 //   children,
 // }: {
 //   property: string;
-//   value: SelectedFilterTypeValue;
+//   value: SelectedFilterValueType;
 //   children: React.ReactNode;
 // }) => {
 //   const router = useRouter();

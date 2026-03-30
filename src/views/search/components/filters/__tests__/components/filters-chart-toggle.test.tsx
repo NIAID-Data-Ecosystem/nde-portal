@@ -5,7 +5,7 @@ import {
   FiltersDisclaimer,
 } from '../../components/filters-chart-toggle';
 
-describe('refactored-filters/components/filters-chart-toggle', () => {
+describe('filters/components/filters-chart-toggle', () => {
   it('renders disclaimer copy', () => {
     render(<FiltersDisclaimer />);
     expect(

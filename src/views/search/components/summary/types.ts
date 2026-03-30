@@ -1,7 +1,7 @@
 import { SearchQueryParams } from 'src/views/search/types';
 
-// Re-export chart types from refactored-filters for consistency
-export type { ChartType, ChartTypeConfig } from '../refactored-filters/types';
+// Re-export chart types from filters for consistency
+export type { ChartType, ChartTypeConfig } from '../filters/types';
 
 export interface ChartDatum {
   id: string;

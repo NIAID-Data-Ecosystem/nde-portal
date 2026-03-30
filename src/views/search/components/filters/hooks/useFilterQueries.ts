@@ -3,7 +3,7 @@ import { useMemo, useRef } from 'react';
 import { fetchSearchResults } from 'src/utils/api';
 import { fetchMetadata } from 'src/hooks/api/helpers';
 import { encodeString } from 'src/utils/querystring-helpers';
-import { FilterConfig, FilterTerm, FilterResults } from '../types';
+import { FilterConfig, FilterTermType, FilterResults } from '../types';
 import { Facet, FacetTerm } from 'src/utils/api/types';
 import { SearchQueryParams } from 'src/views/search/types';
 import { useRouter } from 'next/router';
@@ -37,7 +37,7 @@ const buildFacetParams = (
 const fetchStandardFacet = async (
   params: SearchQueryParams,
   config: FilterConfig,
-): Promise<FilterTerm[]> => {
+): Promise<FilterTermType[]> => {
   const { property } = config;
 
   // Add _exists_ filter to get counts for "Any" option to filter string.
@@ -53,7 +53,7 @@ const fetchStandardFacet = async (
   }
 
   const facetData = Object.values(data.facets)[0] as Facet[keyof Facet];
-  const terms: FilterTerm[] =
+  const terms: FilterTermType[] =
     facetData?.terms?.map((t: FacetTerm) => {
       const transformed = config.transformData
         ? config.transformData({ term: t.term, count: t.count, label: t.term })
@@ -67,7 +67,7 @@ const fetchStandardFacet = async (
     }) || [];
 
   // Add "Any" (_exists_) option with total count
-  const allTerms: FilterTerm[] = [
+  const allTerms: FilterTermType[] = [
     { term: '_exists_', label: 'Any', count: data.total },
     ...terms,
   ];
@@ -99,7 +99,7 @@ const fetchStandardFacet = async (
 const fetchSourceFacet = async (
   params: SearchQueryParams,
   config: FilterConfig,
-): Promise<FilterTerm[]> => {
+): Promise<FilterTermType[]> => {
   const queryParams = buildFacetParams(params, config.property);
 
   const [data, repos] = await Promise.all([
@@ -135,7 +135,7 @@ const fetchSourceFacet = async (
 
 const fetchNonDateResources = async (
   params: SearchQueryParams,
-): Promise<FilterTerm[]> => {
+): Promise<FilterTermType[]> => {
   const property = 'date';
   const resourcesWithoutDate = [];
 
@@ -162,7 +162,7 @@ const fetchNonDateResources = async (
 
 const fetchDateFacet = async (
   params: SearchQueryParams,
-): Promise<FilterTerm[]> => {
+): Promise<FilterTermType[]> => {
   const property = 'date';
   // Date uses histogram aggregation
   const queryParams = {
@@ -174,7 +174,7 @@ const fetchDateFacet = async (
   const data = await fetchSearchResults(queryParams);
   const facetData = Object.values(data?.facets)[0] as Facet[keyof Facet];
 
-  const terms: FilterTerm[] =
+  const terms: FilterTermType[] =
     facetData?.terms?.map((t: FacetTerm) => ({
       term: t.term,
       label: t.term.split('-')[0] || t.term, // Extract year
@@ -194,7 +194,7 @@ const fetchDateFacet = async (
 const fetchFilterData = async (
   params: SearchQueryParams,
   config: FilterConfig,
-): Promise<FilterTerm[]> => {
+): Promise<FilterTermType[]> => {
   switch (config.queryType) {
     case 'source':
       return fetchSourceFacet(params, config);
@@ -270,7 +270,7 @@ export const useFilterQueries = ({
 
     const next = configs.reduce((acc, config, index) => {
       const result = queryResults[index];
-      const data = result.data as FilterTerm[] | undefined;
+      const data = result.data as FilterTermType[] | undefined;
       const terms =
         data && data.length > 0 ? data : prev[config.id]?.terms || [];
 

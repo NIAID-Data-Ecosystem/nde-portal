@@ -1,11 +1,11 @@
 import { Flex, SimpleGrid, Text } from '@chakra-ui/react';
 import { SearchState } from './types';
-import { FilterConfig } from '../refactored-filters';
+import { FilterConfig } from '../filters';
 import { VisualizationCard } from './components/visualization-card';
 import { SelectedFilterType } from '../filters/types';
 import { InfoLabel } from 'src/components/info-label';
-import { SelectedFilterTypeValue } from '../filters/types';
-import { FiltersDisclaimer } from 'src/views/search/components/refactored-filters/components/filters-chart-toggle';
+import { SelectedFilterValueType } from '../filters/types';
+import { FiltersDisclaimer } from 'src/views/search/components/filters/components/filters-chart-toggle';
 
 interface SummaryGridProps {
   // Ids of visualizations are currently enabled / visible
@@ -15,7 +15,7 @@ interface SummaryGridProps {
   // Search parameters from URL
   searchParams: SearchState;
   // What happens on filter update from visualization interaction
-  onFilterUpdate?: (values: SelectedFilterTypeValue[], facet: string) => void;
+  onFilterUpdate?: (values: SelectedFilterValueType[], facet: string) => void;
   // All available visualization configs
   configs: FilterConfig[];
   // Currently selected filters

@@ -44,7 +44,7 @@ jest.mock('../../../components/date-filter/components/date-controls', () => ({
   DateControls: () => <div>date-controls</div>,
 }));
 
-describe('refactored-filters/components/date-filter/index', () => {
+describe('filters/components/date-filter/index', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     useDateFilterData.mockReturnValue({
@@ -78,6 +78,7 @@ describe('refactored-filters/components/date-filter/index', () => {
         selectedDates={['2021-01-01', '2021-12-31']}
         handleSelectedFilter={jest.fn()}
         resetFilter={jest.fn()}
+        enabled
       />,
     );
 
@@ -112,6 +113,7 @@ describe('refactored-filters/components/date-filter/index', () => {
         selectedDates={[]}
         handleSelectedFilter={jest.fn()}
         resetFilter={jest.fn()}
+        enabled
       />,
     );
 

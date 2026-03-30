@@ -1,12 +1,12 @@
 // Types
 export type {
   FilterConfig,
-  FilterTerm,
+  FilterTermType,
   FilterItem,
   FilterResults,
   FilterQueryResult,
-  SelectedFilters,
-  SelectedFilterValue,
+  SelectedFilterType,
+  SelectedFilterValueType,
   FilterQueryType,
   ChartType,
   ChartConfig,
@@ -28,8 +28,8 @@ export { useFilterQueries } from './hooks/useFilterQueries';
 
 // Utils
 export {
-  filtersToQueryString,
-  queryStringToFilters,
+  queryFilterObject2String,
+  queryFilterString2Object,
   normalizeFilterValues,
   getSelectedFilterDisplay,
 } from './utils/query-string';

@@ -41,10 +41,6 @@ jest.mock('src/views/search/config/defaultQuery', () => ({
   getDefaultDateRange: () => ['2020-01-01', '2021-12-31'],
 }));
 
-jest.mock('src/utils/feature-flags', () => ({
-  shouldEnableInVisualSummaryPage: jest.fn(() => false),
-}));
-
 jest.mock('../../components/container', () => ({
   FiltersContainer: ({
     children,
@@ -94,7 +90,7 @@ jest.mock('../../components/date-filter', () => ({
   ),
 }));
 
-describe('refactored-filters/components/filters', () => {
+describe('filters/components/filters', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     useFilterQueries.mockReturnValue({

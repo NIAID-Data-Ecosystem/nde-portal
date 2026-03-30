@@ -1,5 +1,5 @@
 import { buildNavigationFromConfig, filterRoutesByEnv } from '../utils';
-import { SiteConfig } from '../page-container/types';
+import { SiteConfig } from 'src/components/page-container/types';
 
 describe('navigation utils', () => {
   it('returns unfiltered routes when environment is empty', () => {

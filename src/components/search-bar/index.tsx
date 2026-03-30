@@ -24,7 +24,7 @@ import {
 import { SearchHistoryItem } from './components/search-history-item';
 import { CheckboxList, CheckboxListProps } from '../checkbox-list';
 import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
-import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-builders';
+import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-string';
 import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
 
 const DropdownContent = dynamic(() =>

@@ -3,17 +3,15 @@ jest.mock('src/utils/formatting/formatResourceType', () => ({
 }));
 
 import {
-  filtersToQueryString,
-  queryStringToFilters,
-  normalizeFilterValues,
-  getSelectedFilterDisplay,
   queryFilterObject2String,
   queryFilterString2Object,
+  normalizeFilterValues,
+  getSelectedFilterDisplay,
 } from '../../utils/query-string';
 
-describe('refactored-filters/utils/query-string', () => {
+describe('filters/utils/query-string', () => {
   it('builds query strings for standard values, date ranges, @type, and exists objects', () => {
-    const result = filtersToQueryString({
+    const result = queryFilterObject2String({
       topic: ['alpha', 'beta'],
       date: ['2020-01-01', '2021-12-31'],
       '@type': ['Dataset'],
@@ -30,11 +28,11 @@ describe('refactored-filters/utils/query-string', () => {
   });
 
   it('returns null for no selected filter values', () => {
-    expect(filtersToQueryString({ topic: [], date: [] })).toBeNull();
+    expect(queryFilterObject2String({ topic: [], date: [] })).toBeNull();
   });
 
   it('parses query strings back to filter objects', () => {
-    const parsed = queryStringToFilters(
+    const parsed = queryFilterString2Object(
       '(topic:("alpha" OR "beta")) AND (date:["2020-01-01" TO "2021-12-31"])',
     );
     expect(parsed).toEqual({
@@ -44,9 +42,9 @@ describe('refactored-filters/utils/query-string', () => {
   });
 
   it('handles invalid and array queryString input safely', () => {
-    expect(queryStringToFilters(undefined)).toBeNull();
-    expect(queryStringToFilters(['a', 'b'])).toBeNull();
-    expect(queryStringToFilters('(invalid)')).toEqual({});
+    expect(queryFilterString2Object(undefined)).toBeNull();
+    expect(queryFilterString2Object(['a', 'b'])).toBeNull();
+    expect(queryFilterString2Object('(invalid)')).toEqual({});
   });
 
   it('normalizes exists values and selected display values', () => {
@@ -66,7 +64,7 @@ describe('refactored-filters/utils/query-string', () => {
   it('supports date exact-match formatting and wrapper converters', () => {
     const q = queryFilterObject2String({ date: ['2020-01-01'] });
     expect(q).toBe('(date:2020-01-01)');
-    expect(queryFilterString2Object(q)).toEqual({ date: ['2020-01-01'] });
-    expect(queryFilterString2Object('')).toEqual({});
+    expect(queryFilterString2Object(q!)).toEqual({ date: ['2020-01-01'] });
+    expect(queryFilterString2Object('')).toBeNull();
   });
 });

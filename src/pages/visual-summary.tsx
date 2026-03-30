@@ -6,13 +6,10 @@ import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { SearchTabsProvider } from 'src/views/search/context/search-tabs-context';
 import { useSearchQueryFromURL } from 'src/views/search/hooks/useSearchQueryFromURL';
 import { Box, Flex, VStack } from '@chakra-ui/react';
-import {
-  Filters,
-  FILTER_CONFIGS,
-} from 'src/views/search/components/refactored-filters';
+import { Filters, FILTER_CONFIGS } from 'src/views/search/components/filters';
 import {
   SelectedFilterType,
-  SelectedFilterTypeValue,
+  SelectedFilterValueType,
 } from 'src/views/search/components/filters/types';
 import {
   defaultQuery,
@@ -33,10 +30,10 @@ import SummaryGrid from 'src/views/search/components/summary';
 import { updateRoute } from 'src/views/search/utils/update-route';
 import { useActiveVizIds } from 'src/views/search/components/summary/hooks/useActiveVizIds';
 import {
-  queryFilterObject2String,
   queryFilterString2Object,
-} from 'src/views/search/components/filters/utils/query-builders';
-import { FilterTags } from 'src/views/search/components/refactored-filters/components/tag';
+  queryFilterObject2String,
+} from 'src/views/search/components/filters/utils/query-string';
+import { FilterTags } from 'src/views/search/components/filters/components/tag';
 import { SearchResultsFetchedProvider } from 'src/views/search/context/search-results-fetched-context';
 
 const DEFAULT_ACTIVE_VIZ_IDS = ['date'];
@@ -115,7 +112,7 @@ const Search: NextPage<{
   );
 
   const handleSelectedFilters = useCallback(
-    (values: SelectedFilterTypeValue[], facet: string) => {
+    (values: SelectedFilterValueType[], facet: string) => {
       // Merge + de-dupe
       // Normalize _exists_ filters into object form
       // const normalizedValues = mergedValues.map(value =>

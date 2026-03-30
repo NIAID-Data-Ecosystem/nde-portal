@@ -1,47 +1,58 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
-import {
-  SearchTabsProvider,
-  DEFAULT_TAB_ID,
-} from 'src/views/search/context/search-tabs-context';
+import { SearchTabsProvider } from 'src/views/search/context/search-tabs-context';
 import { useSearchQueryFromURL } from 'src/views/search/hooks/useSearchQueryFromURL';
 import { Box, Flex, VStack } from '@chakra-ui/react';
-import { Filters } from 'src/views/search/components/filters';
-import { SelectedFilterType } from 'src/views/search/components/filters/types';
-import { FILTER_CONFIGS } from 'src/views/search/components/filters/config';
+import { Filters, FILTER_CONFIGS } from 'src/views/search/components/filters';
+import {
+  SelectedFilterType,
+  SelectedFilterValueType,
+} from 'src/views/search/components/filters/types';
+import {
+  defaultQuery,
+  defaultSelectedFilters,
+} from 'src/views/search/config/defaultQuery';
+import { SearchResultsHeader } from 'src/views/search/components/search-results-header';
+import { PaginationProvider } from 'src/views/search/context/pagination-context';
+import { SearchResultsController } from 'src/views/search/components/search-results-tabs-controller';
+import { fetchSearchResults } from 'src/utils/api';
+import { TabType } from 'src/views/search/types';
+import { tabs } from 'src/views/search/config/tabs';
+import { OntologyBrowserPopup } from 'src/views/ontology-browser/components/popup';
+import {
+  SHOW_AI_ASSISTED_SEARCH,
+  SHOW_VISUAL_SUMMARY,
+} from 'src/utils/feature-flags';
+import SummaryGrid from 'src/views/search/components/summary';
+import { updateRoute } from 'src/views/search/utils/update-route';
+import { useActiveVizIds } from 'src/views/search/components/summary/hooks/useActiveVizIds';
 import {
   queryFilterString2Object,
   queryFilterObject2String,
-} from 'src/views/search/components/filters/utils/query-builders';
-import {
-  defaultSelectedFilters,
-  defaultQuery,
-} from 'src/views/search/config/defaultQuery';
+} from 'src/views/search/components/filters/utils/query-string';
 import { FilterTags } from 'src/views/search/components/filters/components/tag';
-import { SearchResultsHeader } from 'src/views/search/components/search-results-header';
-import { PaginationProvider } from 'src/views/search/context/pagination-context';
 import { SearchResultsFetchedProvider } from 'src/views/search/context/search-results-fetched-context';
-import { SearchResultsController } from 'src/views/search/components/search-results-tabs-controller';
-import { fetchSearchResults } from 'src/utils/api';
-import { tabs } from 'src/views/search/config/tabs';
-import { OntologyBrowserPopup } from 'src/views/ontology-browser/components/popup';
-import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
 
-// Default filters property list with empty array as value.
+const DEFAULT_ACTIVE_VIZ_IDS = ['date'];
+
+// Default filters list.
 const defaultFilters = FILTER_CONFIGS.reduce(
   (r, { property }) => ({ ...r, [property]: [] }),
   {},
 );
-
 //  This page renders the search results from the search bar.
 const Search: NextPage<{
   initialData: FetchSearchResultsResponse;
 }> = ({ initialData }) => {
   const router = useRouter();
   const hasInitialized = useRef(false);
+
+  const { activeVizIds, toggleViz, isVizActive } = useActiveVizIds(
+    DEFAULT_ACTIVE_VIZ_IDS,
+  );
 
   const queryParams = useSearchQueryFromURL();
 
@@ -81,6 +92,48 @@ const Search: NextPage<{
     });
   }, [handleRouteUpdate]);
 
+  // Set the initial tab based on the router query
+  const [initialTab, setInitialTab] = useState<TabType['id'] | null>(null);
+
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    const defaultTab = tabs.find(t => t.isDefault)?.id || tabs[0].id;
+    const tabParamId = router.query.tab as string;
+    const tab = tabs.find(t => t.id === tabParamId);
+    setInitialTab(tab?.id || defaultTab);
+  }, [router]);
+
+  const handleUpdate = useCallback(
+    (update: {}) => {
+      return updateRoute(router, update);
+    },
+    [router],
+  );
+
+  const handleSelectedFilters = useCallback(
+    (values: SelectedFilterValueType[], facet: string) => {
+      // Merge + de-dupe
+      // Normalize _exists_ filters into object form
+      // const normalizedValues = mergedValues.map(value =>
+      //   value === '_exists_' || value === '-_exists_'
+      //     ? { [value]: [facet] }
+      //     : value,
+      // );
+
+      const updatedFilterString = queryFilterObject2String({
+        ...selectedFilters,
+        [facet]: values,
+      });
+
+      handleUpdate({
+        from: 1,
+        filters: updatedFilterString,
+      });
+    },
+    [selectedFilters, handleUpdate],
+  );
+
   // Apply default date filter on first load only
   useEffect(() => {
     if (!router.isReady) return;
@@ -91,6 +144,8 @@ const Search: NextPage<{
         ...selectedFilters,
       }),
     });
+
+    hasInitialized.current = true;
   }, [router.isReady]);
 
   // Validate and cap date filter at current year if it exceeds (runtime validation)
@@ -109,21 +164,18 @@ const Search: NextPage<{
 
     if (endYear <= currentYear) return;
 
-    handleRouteUpdate({
+    handleUpdate({
       filters: queryFilterObject2String({
         ...selectedFilters,
-        ...defaultSelectedFilters,
+        date: [start, `${currentYear}-12-31`],
       }),
     });
-  }, [router.isReady, selectedFilters, handleRouteUpdate]);
+  }, [router.isReady, selectedFilters, handleUpdate]);
 
-  // Get initial tab from URL or use default
-  const initialTab = useMemo(() => {
-    const tabFromUrl = router.query.tab as string;
-    const tab = tabs.find(t => t.id === tabFromUrl);
-    return tab?.id || DEFAULT_TAB_ID;
-  }, [router.query.tab]);
-
+  // If the initial tab is not set, return a loading state.
+  if (!initialTab) {
+    return null;
+  }
   return (
     <PageContainer
       meta={getPageSeoConfig('/search')}
@@ -150,6 +202,8 @@ const Search: NextPage<{
                   selectedFilters={selectedFilters}
                   isDisabled={appliedFilters.length === 0}
                   removeAllFilters={removeAllFilters}
+                  onToggleViz={toggleViz}
+                  isVizActive={isVizActive}
                 />
               </Flex>
               <Box flex={3} minWidth={0} maxWidth='2000px'>
@@ -191,7 +245,23 @@ const Search: NextPage<{
                     />
                   )}
                 </VStack>
-
+                {SHOW_VISUAL_SUMMARY && (
+                  <SummaryGrid
+                    searchParams={{
+                      ...queryParams,
+                      from: 0,
+                      size: 0,
+                      sort: '',
+                    }}
+                    onFilterUpdate={(values, facet) => {
+                      handleSelectedFilters(values, facet);
+                    }}
+                    activeVizIds={activeVizIds}
+                    removeActiveVizId={toggleViz}
+                    configs={FILTER_CONFIGS}
+                    selectedFilters={selectedFilters}
+                  />
+                )}
                 {/* Search Results */}
                 <SearchResultsController initialData={initialData} />
               </Box>

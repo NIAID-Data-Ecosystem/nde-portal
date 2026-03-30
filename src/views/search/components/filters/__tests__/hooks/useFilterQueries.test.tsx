@@ -1,171 +1,174 @@
+import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React from 'react';
-import { buildFacetQueryParams } from '../../utils/queries';
-import { FilterConfig, QueryData, RawQueryResult } from '../../types';
-import { mergeResults, useFilterQueries } from '../../hooks/useFilterQueries';
+import { useFilterQueries } from '../../hooks/useFilterQueries';
 
-const config = [
-  {
-    _id: 'category_id',
-    name: 'Category Filter',
-    description: 'A filter for categories',
-    property: 'category',
-    createQueries: jest.fn((id, params, options) => {
-      // Destructure options to exclude queryKey and gather other options, with defaults
-      const { queryKey = [] } = options || {};
+jest.mock('src/utils/api', () => ({
+  fetchSearchResults: jest.fn(),
+}));
 
-      // add exists to get total count for resource with category
-      const extraFilterWithFacets = params.extra_filter
-        ? `${params.extra_filter}${
-            params.facets ? ` AND _exists_:${params.facets}` : ''
-          }`
-        : params.facets
-        ? `_exists_:${params.facets}`
-        : '';
+jest.mock('src/hooks/api/helpers', () => ({
+  fetchMetadata: jest.fn(),
+}));
 
-      const queryParams = buildFacetQueryParams({
-        ...params,
-        extra_filter: extraFilterWithFacets,
-      });
+jest.mock('src/utils/querystring-helpers', () => ({
+  encodeString: jest.fn((q: string) => `enc:${q}`),
+}));
 
-      return [
-        {
-          queryKey: [...queryKey, queryParams],
-          queryFn: async (): Promise<RawQueryResult> => {
-            if (params.extra_filter) {
-              return {
-                id,
-                // total: 26,
-                facet: 'category',
-                results: [
-                  { term: 'electronics', count: 22 },
-                  { term: 'books', count: 4 },
-                ],
-              };
-            }
-            return {
-              id,
-              // total: 15,
-              facet: 'category',
-              results: [
-                { term: 'electronics', count: 10 },
-                { term: 'books', count: 5 },
-              ],
-            };
-          },
-        },
-      ];
-    }),
-    tabIds: ['d'],
-  } as FilterConfig,
-];
+const { fetchSearchResults } = jest.requireMock('src/utils/api');
+const { fetchMetadata } = jest.requireMock('src/hooks/api/helpers');
 
-const queryClient = new QueryClient();
-
-const wrapper = ({ children }: { children: React.ReactNode }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-);
+const createWrapper = () => {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  return ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={client}>{children}</QueryClientProvider>
+  );
+};
 
 describe('useFilterQueries', () => {
-  const id = config[0]._id;
-
   beforeEach(() => {
-    queryClient.clear();
+    jest.clearAllMocks();
   });
 
-  it('should return initial results and loading states correctly', async () => {
+  it('fetches standard facet query and includes exists/not-exists terms', async () => {
+    fetchSearchResults
+      .mockResolvedValueOnce({
+        total: 10,
+        facets: { x: { terms: [{ term: 't1', count: 2 }] } },
+      })
+      .mockResolvedValueOnce({ total: 3, facets: { x: { terms: [] } } });
+
     const { result } = renderHook(
       () =>
         useFilterQueries({
-          initialParams: {
-            q: '__all__',
-          },
-          updateParams: {
-            q: '__all__',
-          },
-          config,
+          configs: [
+            {
+              id: 'facet-id',
+              name: 'Facet',
+              property: 'facet.field',
+              description: '',
+              category: 'Shared',
+              queryType: 'facet',
+            },
+          ] as any,
+          params: {
+            q: 'term',
+            extra_filter: 'x:y',
+            advancedSearch: 'false',
+          } as any,
         }),
-      {
-        wrapper,
-      },
+      { wrapper: createWrapper() },
     );
 
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    await waitFor(() =>
+      expect(result.current.results['facet-id'].data.length).toBeGreaterThan(0),
+    );
 
-    expect(result.current.isLoading).toBe(false);
-    expect(result.current.isUpdating).toBe(false);
-    expect(result.current.error).toBe(null);
-    expect(result.current.results[id].status).toBe('success');
-    expect(result.current.results[id].isSuccess).toBe(true);
-    expect(result.current.results[id].data).toEqual([
-      { term: 'electronics', count: 10, label: 'electronics' },
-      { term: 'books', count: 5, label: 'books' },
+    expect(result.current.error).toBeNull();
+    expect(result.current.results['facet-id'].data.map(d => d.term)).toEqual([
+      '_exists_',
+      't1',
+      '-_exists_',
     ]);
   });
 
-  it('should merge initial and filtered results correctly', async () => {
+  it('fetches source facet query with metadata grouping', async () => {
+    fetchSearchResults.mockResolvedValue({
+      total: 5,
+      facets: { x: { terms: [{ term: 'repoA', count: 1 }] } },
+    });
+    fetchMetadata.mockResolvedValue({
+      src: {
+        a: { sourceInfo: { name: 'repoA', genre: 'IID' } },
+      },
+    });
+
     const { result } = renderHook(
       () =>
         useFilterQueries({
-          initialParams: {
-            q: '__all__',
-          },
-          updateParams: {
-            q: '__all__',
-            extra_filter: '_exists_:category',
-          },
-          config,
+          configs: [
+            {
+              id: 'source-id',
+              name: 'Source',
+              property: 'includedInDataCatalog.name',
+              description: '',
+              category: 'Shared',
+              queryType: 'source',
+            },
+          ] as any,
+          params: { q: 'term' } as any,
         }),
-      {
-        wrapper,
-      },
+      { wrapper: createWrapper() },
+    );
+
+    await waitFor(() =>
+      expect(result.current.results['source-id'].data.length).toBeGreaterThan(
+        0,
+      ),
+    );
+    expect(result.current.results['source-id'].data[0].groupBy).toBe('IID');
+  });
+
+  it('fetches histogram query and appends not-exists count', async () => {
+    fetchSearchResults
+      .mockResolvedValueOnce({
+        total: 5,
+        facets: { x: { terms: [{ term: '2020-01-01', count: 4 }] } },
+      })
+      .mockResolvedValueOnce({ total: 1, facets: { x: { terms: [] } } });
+
+    const { result } = renderHook(
+      () =>
+        useFilterQueries({
+          configs: [
+            {
+              id: 'date',
+              name: 'Date',
+              property: 'date',
+              description: '',
+              category: 'Shared',
+              queryType: 'histogram',
+            },
+          ] as any,
+          params: { q: 'term' } as any,
+        }),
+      { wrapper: createWrapper() },
+    );
+
+    await waitFor(() =>
+      expect(result.current.results.date.data.length).toBeGreaterThan(0),
+    );
+    expect(result.current.results.date.data.map(d => d.term)).toEqual([
+      '2020-01-01',
+      '-_exists_',
+    ]);
+  });
+
+  it('returns empty terms when facets are missing and handles advanced search mode', async () => {
+    fetchSearchResults.mockResolvedValue({ total: 0 });
+
+    const { result } = renderHook(
+      () =>
+        useFilterQueries({
+          configs: [
+            {
+              id: 'facet-id',
+              name: 'Facet',
+              property: 'facet.field',
+              description: '',
+              category: 'Shared',
+              queryType: 'facet',
+            },
+          ] as any,
+          params: { q: 'raw-query', advancedSearch: 'true' } as any,
+        }),
+      { wrapper: createWrapper() },
     );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
-
-    expect(result.current.results).toEqual({
-      [id]: {
-        data: [
-          { term: 'electronics', count: 22, label: 'electronics' },
-          { term: 'books', count: 4, label: 'books' },
-        ],
-      },
-    });
-  });
-
-  it('should correctly handle cases where initial results have terms not present in updated results', () => {
-    const initialResults: QueryData = {
-      [id]: {
-        data: [
-          { term: 'electronics', count: 10, label: 'electronics' },
-          { term: 'books', count: 5, label: 'books' },
-          { term: 'furniture', count: 3, label: 'furniture' },
-        ],
-      } as QueryData['string'],
-    };
-
-    const updatedResults: QueryData = {
-      [id]: {
-        data: [
-          { term: 'electronics', count: 22, label: 'electronics' },
-          { term: 'books', count: 4, label: 'books' },
-        ],
-      } as QueryData['string'],
-    };
-
-    const expectedMergedResults: QueryData = {
-      [id]: {
-        data: [
-          { term: 'electronics', count: 22, label: 'electronics' },
-          { term: 'books', count: 4, label: 'books' },
-          { term: 'furniture', count: 0, label: 'furniture' }, // Count set to 0 since it's not in updatedResults
-        ],
-      } as QueryData['string'],
-    };
-
-    const result = mergeResults(initialResults, updatedResults);
-
-    expect(result).toEqual(expectedMergedResults);
+    expect(result.current.results['facet-id'].data).toEqual([]);
+    expect(result.current.error).toBeNull();
   });
 });
