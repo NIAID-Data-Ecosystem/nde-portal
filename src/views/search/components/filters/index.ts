@@ -28,8 +28,8 @@ export { useFilterQueries } from './hooks/useFilterQueries';
 
 // Utils
 export {
-  filtersToQueryString,
-  queryStringToFilters,
+  queryFilterObject2String,
+  queryFilterString2Object,
   normalizeFilterValues,
   getSelectedFilterDisplay,
 } from './utils/query-string';

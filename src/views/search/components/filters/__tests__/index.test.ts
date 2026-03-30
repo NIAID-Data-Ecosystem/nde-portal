@@ -10,8 +10,8 @@ describe('filters/index exports', () => {
     expect(mod.FiltersContainer).toBeDefined();
     expect(mod.DateFilter).toBeDefined();
     expect(mod.useFilterQueries).toBeDefined();
-    expect(mod.filtersToQueryString).toBeDefined();
-    expect(mod.queryStringToFilters).toBeDefined();
+    expect(mod.queryFilterObject2String).toBeDefined();
+    expect(mod.queryFilterString2Object).toBeDefined();
     expect(mod.normalizeFilterValues).toBeDefined();
     expect(mod.getSelectedFilterDisplay).toBeDefined();
   });

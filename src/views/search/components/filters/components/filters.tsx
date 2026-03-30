@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useFilterQueries } from '../hooks/useFilterQueries';
-import { filtersToQueryString } from '../utils/query-string';
+import { queryFilterObject2String } from '../utils/query-string';
 import { SelectedFilterType } from '../types';
 import { useRouter } from 'next/router';
 import { FiltersSection } from './section';
@@ -62,7 +62,7 @@ export const Filters = React.memo(
 
     // Build the extra_filter query param string based on selected filters, including date if selected
     const filterString = useMemo(() => {
-      return filtersToQueryString(queryParams.filters || {}) || '';
+      return queryFilterObject2String(queryParams.filters || {}) || '';
     }, [queryParams.filters, selectedFilters.date]);
 
     // Use simplified filter queries hook
@@ -94,7 +94,7 @@ export const Filters = React.memo(
           }
           return value;
         });
-        let updatedFilterString = filtersToQueryString({
+        let updatedFilterString = queryFilterObject2String({
           ...selectedFilters,
           ...{ [facet]: updatedValues },
         } as SelectedFilterType);
@@ -157,7 +157,7 @@ export const Filters = React.memo(
                   queryParams={{
                     q: queryParams.q,
                     extra_filter:
-                      filtersToQueryString(
+                      queryFilterObject2String(
                         queryParams.filters as SelectedFilterType,
                       ) || '',
                     use_ai_search: queryParams.use_ai_search ?? 'false',
@@ -171,7 +171,7 @@ export const Filters = React.memo(
           }
 
           // Convert terms from simplified format for FiltersList
-          const FilterTermTypes =
+          const filterItems =
             results?.[id]?.terms.map(term => ({
               term: term.term,
               label: term.label,
@@ -195,7 +195,7 @@ export const Filters = React.memo(
                 config={filterConfig}
                 colorScheme={colorScheme}
                 searchPlaceholder={`Search ${name.toLowerCase()} filters`}
-                terms={FilterTermTypes}
+                terms={filterItems}
                 selectedFilters={selected || []}
                 handleSelectedFilters={values =>
                   handleSelectedFilters(values, property)
