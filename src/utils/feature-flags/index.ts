@@ -21,7 +21,7 @@ export const SHOW_CREDIT_TEXT_SECTION = !isProd;
 export const SHOW_AI_ASSISTED_SEARCH = true;
 
 // Show visual summary section in non-production environments for testing/review. To enable in production, set this flag to `true`.
-export const SHOW_VISUAL_SUMMARY = true;
+export const SHOW_VISUAL_SUMMARY = !isProd;
 
 /**
  * Check if visual summary features/elements should be shown on the search page.
