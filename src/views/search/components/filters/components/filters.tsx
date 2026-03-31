@@ -58,21 +58,28 @@ export const Filters = React.memo(
     );
 
     // Build the extra_filter query param string based on selected filters, including date if selected
-    const filterString = useMemo(() => {
-      return queryFilterObject2String(queryParams.filters || {}) || '';
-    }, [queryParams.filters, selectedFilters.date]);
+    const filtersAggParams = useMemo(() => {
+      return {
+        q: queryParams.q,
+        extra_filter: queryFilterObject2String(queryParams.filters || {}) || '',
+        use_ai_search: queryParams.use_ai_search ?? 'false',
+        advancedSearch: queryParams.advancedSearch,
+      };
+    }, [
+      queryParams.q,
+      queryParams.filters,
+      queryParams.use_ai_search,
+      queryParams.advancedSearch,
+    ]);
 
     // Use simplified filter queries hook
-    const { results, error, isUpdating } = useFilterQueries({
-      // Omits date filter from filter config since date is handled differently (as a histogram)
-      configs: visibleFiltersList.filter(facet => facet.property !== 'date'),
+    const filtersAggQuery = useFilterQueries({
+      configs: visibleFiltersList,
       enabled: isFiltersFetchEnabled,
-      params: {
-        q: queryParams.q,
-        extra_filter: filterString,
-        use_ai_search: queryParams?.use_ai_search,
-      },
+      params: filtersAggParams,
     });
+
+    const { results, error, isUpdating } = filtersAggQuery;
 
     const handleUpdate = useCallback(
       (update: {}) => {
@@ -108,7 +115,6 @@ export const Filters = React.memo(
     // On visual-summary page: show only controls (histogram is in the grid)
     const showHistogram = !SHOW_VISUAL_SUMMARY;
     const showDateControls = true; // Always show controls in filters
-
     return (
       <FiltersContainer
         title='Search Filters'
@@ -131,42 +137,6 @@ export const Filters = React.memo(
               return filter;
             }
           });
-
-          if (property === 'date') {
-            return (
-              <FiltersSection
-                key={name}
-                name={name}
-                description={description}
-                filterId={filterConfig.chart ? id : undefined}
-                isVizActive={
-                  filterConfig.chart && isVizActive ? isVizActive(id) : false
-                }
-                onToggleViz={onToggleViz}
-              >
-                <DateFilter
-                  colorScheme={colorScheme}
-                  handleSelectedFilter={values =>
-                    handleSelectedFilters(values, property)
-                  }
-                  resetFilter={() => handleSelectedFilters([], property)}
-                  selectedDates={selected || []}
-                  queryParams={{
-                    q: queryParams.q,
-                    extra_filter:
-                      queryFilterObject2String(
-                        queryParams.filters as SelectedFilterType,
-                      ) || '',
-                    use_ai_search: queryParams.use_ai_search ?? 'false',
-                  }}
-                  showHistogram={showHistogram}
-                  showDateControls={showDateControls}
-                  enabled={isFiltersFetchEnabled}
-                />
-              </FiltersSection>
-            );
-          }
-
           return (
             <FiltersSection
               key={name}
@@ -178,18 +148,34 @@ export const Filters = React.memo(
               }
               onToggleViz={onToggleViz}
             >
-              <FiltersList
-                config={filterConfig}
-                colorScheme={colorScheme}
-                searchPlaceholder={`Search ${name.toLowerCase()} filters`}
-                terms={results?.[id]?.terms || []}
-                selectedFilters={selected || []}
-                handleSelectedFilters={values =>
-                  handleSelectedFilters(values, property)
-                }
-                isLoading={results?.[id]?.isLoading}
-                isUpdating={results?.[id]?.isUpdating || isUpdating}
-              />
+              {id === 'date' ? (
+                <DateFilter
+                  colorScheme={colorScheme}
+                  handleSelectedFilter={values =>
+                    handleSelectedFilters(values, property)
+                  }
+                  resetFilter={() => handleSelectedFilters([], property)}
+                  selectedDates={selected || []}
+                  updatedAggregateQueryData={filtersAggQuery}
+                  queryParams={filtersAggParams}
+                  showHistogram={showHistogram}
+                  showDateControls={showDateControls}
+                  enabled={isFiltersFetchEnabled}
+                />
+              ) : (
+                <FiltersList
+                  config={filterConfig}
+                  colorScheme={colorScheme}
+                  searchPlaceholder={`Search ${name.toLowerCase()} filters`}
+                  terms={results?.[id]?.terms || []}
+                  selectedFilters={selected || []}
+                  handleSelectedFilters={values =>
+                    handleSelectedFilters(values, property)
+                  }
+                  isLoading={results?.[id]?.isLoading ?? true}
+                  isUpdating={results?.[id]?.isUpdating || isUpdating}
+                />
+              )}
             </FiltersSection>
           );
         })}

@@ -22,6 +22,13 @@ interface UseFilterQueriesOptions {
   enabled?: boolean;
 }
 
+export interface UseFilterQueriesResult {
+  results: FilterResults | undefined;
+  isLoading: boolean;
+  isUpdating: boolean;
+  error: Error | null;
+}
+
 /**
  * Hook for fetching filter data.
  *
@@ -32,12 +39,7 @@ export const useFilterQueries = ({
   configs,
   params,
   enabled = true,
-}: UseFilterQueriesOptions): {
-  results: FilterResults;
-  isLoading: boolean;
-  isUpdating: boolean;
-  error: Error | null;
-} => {
+}: UseFilterQueriesOptions): UseFilterQueriesResult => {
   const router = useRouter();
   const queriesEnabled = router.isReady && enabled;
   // Always request ALL facet properties + hist=date so the query key is stable
@@ -95,9 +97,10 @@ export const useFilterQueries = ({
       if (response?.facets) {
         if (config.queryType === 'histogram') {
           // Date histogram data from hist=date
-          const facetData = response.facets['date'];
-          if (facetData?.terms) {
-            terms = facetData.terms.map(t => ({
+          const missingDatesCount = response?.facets?.date?.missing || 0;
+          const histogramDates = response?.facets?.hist_dates;
+          if (histogramDates?.terms) {
+            terms = histogramDates.terms.map(t => ({
               term: t.term,
               label: t.term.split('-')[0] || t.term,
               count: t.count,
@@ -105,11 +108,11 @@ export const useFilterQueries = ({
             }));
           }
           // Append -_exists_ using missing
-          if (facetData && facetData.missing > 0) {
+          if (missingDatesCount > 0) {
             terms.push({
               term: '-_exists_',
-              label: 'No',
-              count: facetData.missing,
+              label: 'Missing',
+              count: missingDatesCount,
               facet: 'date',
             });
           }
