@@ -70,7 +70,7 @@ export const Filters = React.memo(
       params: {
         q: queryParams.q,
         extra_filter: filterString,
-        use_ai_search: queryParams.use_ai_search ?? 'false',
+        use_ai_search: queryParams?.use_ai_search,
       },
     });
 
@@ -167,16 +167,6 @@ export const Filters = React.memo(
             );
           }
 
-          // Convert terms from simplified format for FiltersList
-          const filterItems =
-            results?.[id]?.terms.map(term => ({
-              term: term.term,
-              label: term.label,
-              count: term.count,
-              groupBy: term.groupBy,
-              facet: property,
-            })) || [];
-
           return (
             <FiltersSection
               key={name}
@@ -192,7 +182,7 @@ export const Filters = React.memo(
                 config={filterConfig}
                 colorScheme={colorScheme}
                 searchPlaceholder={`Search ${name.toLowerCase()} filters`}
-                terms={filterItems}
+                terms={results?.[id]?.terms || []}
                 selectedFilters={selected || []}
                 handleSelectedFilters={values =>
                   handleSelectedFilters(values, property)

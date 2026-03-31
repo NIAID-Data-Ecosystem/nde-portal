@@ -1,210 +1,14 @@
-import { keepPreviousData, useQueries } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useMemo, useRef } from 'react';
-import { fetchSearchResults } from 'src/utils/api';
 import { fetchMetadata } from 'src/hooks/api/helpers';
-import { encodeString } from 'src/utils/querystring-helpers';
 import { FilterConfig, FilterTermType, FilterResults } from '../types';
-import { Facet, FacetTerm } from 'src/utils/api/types';
 import { SearchQueryParams } from 'src/views/search/types';
 import { useRouter } from 'next/router';
-
-/**
- * Build base query parameters for facet queries
- */
-const buildFacetParams = (
-  params: SearchQueryParams,
-  facetProperty: string,
-  extraFilter?: string,
-) => {
-  const encodedQuery =
-    params.advancedSearch === 'true' ? params.q : encodeString(params.q);
-
-  return {
-    q: encodedQuery,
-    extra_filter: extraFilter || params.extra_filter || '',
-    filters: '',
-    size: 0,
-    facet_size: params.facet_size || 1000,
-    facets: facetProperty,
-    sort: undefined,
-    use_ai_search: params?.use_ai_search ?? 'false',
-  };
-};
-
-/**
- * Fetch standard facet data with exists/not-exists counts
- */
-const fetchStandardFacet = async (
-  params: SearchQueryParams,
-  config: FilterConfig,
-): Promise<FilterTermType[]> => {
-  const { property } = config;
-
-  // Add _exists_ filter to get counts for "Any" option to filter string.
-  const existsFilter = params.extra_filter
-    ? `${params.extra_filter} AND _exists_:${property}`
-    : `_exists_:${property}`;
-
-  const queryParams = buildFacetParams(params, property, existsFilter);
-  const data = await fetchSearchResults(queryParams);
-
-  if (!data?.facets) {
-    return [];
-  }
-
-  const facetData = Object.values(data.facets)[0] as Facet[keyof Facet];
-  const terms: FilterTermType[] =
-    facetData?.terms?.map((t: FacetTerm) => {
-      const transformed = config.transformData
-        ? config.transformData({ term: t.term, count: t.count, label: t.term })
-        : { term: t.term, count: t.count, label: t.term };
-
-      return {
-        term: transformed.term,
-        label: transformed.label,
-        count: transformed.count,
-      };
-    }) || [];
-
-  // Add "Any" (_exists_) option with total count
-  const allTerms: FilterTermType[] = [
-    { term: '_exists_', label: 'Any', count: data.total },
-    ...terms,
-  ];
-
-  // Fetch "Not specified" (-_exists_) count
-  const notExistsFilter = params.extra_filter
-    ? `${params.extra_filter} AND -_exists_:${property}`
-    : `-_exists_:${property}`;
-
-  const notExistsParams = buildFacetParams(params, property, notExistsFilter);
-  notExistsParams.facet_size = 0;
-
-  const notExistsData = await fetchSearchResults(notExistsParams);
-
-  if (notExistsData && notExistsData.total > 0) {
-    allTerms.push({
-      term: '-_exists_',
-      label: 'No',
-      count: notExistsData.total,
-    });
-  }
-
-  return allTerms;
-};
-
-/**
- * Fetch source facet data with repository metadata
- */
-const fetchSourceFacet = async (
-  params: SearchQueryParams,
-  config: FilterConfig,
-): Promise<FilterTermType[]> => {
-  const queryParams = buildFacetParams(params, config.property);
-
-  const [data, repos] = await Promise.all([
-    fetchSearchResults(queryParams),
-    fetchMetadata(),
-  ]);
-
-  if (!data?.facets) {
-    return [];
-  }
-
-  const facetData = Object.values(data.facets)[0] as Facet[keyof Facet];
-  const repoList =
-    (repos?.src &&
-      Object.values(repos.src).filter((repo: any) => repo?.sourceInfo)) ||
-    [];
-
-  return (
-    facetData?.terms?.map((t: FacetTerm) => ({
-      term: t.term,
-      label: t.term,
-      count: t.count,
-      groupBy:
-        (repoList as any[]).find((r: any) => r.sourceInfo?.name === t.term)
-          ?.sourceInfo?.genre || 'Generalist',
-    })) || []
-  );
-};
-
-/**
- * Fetch date histogram data
- */
-
-const fetchNonDateResources = async (
-  params: SearchQueryParams,
-): Promise<FilterTermType[]> => {
-  const property = 'date';
-  const resourcesWithoutDate = [];
-
-  // Fetch resources with no date information.
-  const notExistsFilter = params.extra_filter
-    ? `${params.extra_filter} AND -_exists_:${property}`
-    : `-_exists_:${property}`;
-
-  const notExistsParams = buildFacetParams(params, property, notExistsFilter);
-  notExistsParams.facet_size = 0;
-
-  const notExistsData = await fetchSearchResults(notExistsParams);
-
-  if (notExistsData && notExistsData.total > 0) {
-    resourcesWithoutDate.push({
-      term: '-_exists_',
-      label: 'No',
-      count: notExistsData.total,
-    });
-  }
-
-  return resourcesWithoutDate;
-};
-
-const fetchDateFacet = async (
-  params: SearchQueryParams,
-): Promise<FilterTermType[]> => {
-  const property = 'date';
-  // Date uses histogram aggregation
-  const queryParams = {
-    ...buildFacetParams(params, ''),
-    hist: property,
-    facets: '',
-  };
-
-  const data = await fetchSearchResults(queryParams);
-  const facetData = Object.values(data?.facets)[0] as Facet[keyof Facet];
-
-  const terms: FilterTermType[] =
-    facetData?.terms?.map((t: FacetTerm) => ({
-      term: t.term,
-      label: t.term.split('-')[0] || t.term, // Extract year
-      count: t.count,
-    })) || [];
-
-  // Fetch resources with no date information.
-  const resourcesWithoutDate = await fetchNonDateResources(params);
-  const allTerms = [...terms, ...resourcesWithoutDate];
-
-  return allTerms;
-};
-
-/**
- * Main fetch function that routes to the appropriate fetcher based on query type
- */
-const fetchFilterData = async (
-  params: SearchQueryParams,
-  config: FilterConfig,
-): Promise<FilterTermType[]> => {
-  switch (config.queryType) {
-    case 'source':
-      return fetchSourceFacet(params, config);
-    case 'histogram':
-      return fetchDateFacet(params);
-    case 'facet':
-    default:
-      return fetchStandardFacet(params, config);
-  }
-};
+import {
+  useAggregation,
+  AggregationQueryParams,
+} from 'src/views/search/hooks/useAggregation';
+import { ALL_FACET_PROPERTIES } from '../config';
 
 /**
  * Hook options
@@ -219,8 +23,10 @@ interface UseFilterQueriesOptions {
 }
 
 /**
- * Hook for fetching filter data
+ * Hook for fetching filter data.
  *
+ * Makes a single aggregation API call for all facets + date histogram,
+ * then derives per-filter results from the response.
  */
 export const useFilterQueries = ({
   configs,
@@ -233,33 +39,48 @@ export const useFilterQueries = ({
   error: Error | null;
 } => {
   const router = useRouter();
-
   const queriesEnabled = router.isReady && enabled;
-
-  // Create queries for each filter config
-  const queries = useMemo(
-    () =>
-      configs.map(config => ({
-        queryKey: ['search-results-facets', config.property, params],
-        queryFn: () => fetchFilterData(params, config),
-        enabled: queriesEnabled,
-        staleTime: 1000 * 60 * 5, // 5 minutes
-        refetchOnWindowFocus: false,
-        placeholderData: keepPreviousData,
-      })),
-    [configs, params, queriesEnabled],
+  // Always request ALL facet properties + hist=date so the query key is stable
+  // regardless of which filters are currently visible. This prevents refetches
+  // when the user toggles filter visibility and enables cache sharing with the
+  // date filter and visual summary.
+  const aggParams: AggregationQueryParams = useMemo(
+    () => ({
+      q: params.q || '',
+      extra_filter: params.extra_filter || '',
+      facets: ALL_FACET_PROPERTIES,
+      use_ai_search: params?.use_ai_search ?? 'false',
+      advancedSearch: params?.advancedSearch,
+      hist: 'date',
+    }),
+    [
+      params.q,
+      params.extra_filter,
+      params.use_ai_search,
+      params.advancedSearch,
+    ],
   );
 
-  // Execute all queries
-  const queryResults = useQueries({ queries });
+  // Single aggregation query for all facets + date histogram
+  const aggQuery = useAggregation({
+    params: aggParams,
+    enabled: queriesEnabled,
+  });
 
-  const error = queryResults.find(r => r.error)?.error || null;
+  // Source facets still need metadata for genre grouping
+  const hasSourceConfig = configs.some(c => c.queryType === 'source');
+  const metadataQuery = useQuery({
+    queryKey: ['metadata'],
+    queryFn: fetchMetadata,
+    enabled: queriesEnabled && hasSourceConfig,
+    staleTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
+  });
 
-  // isLoading: queries are disabled (waiting for gate) or performing initial fetch
-  // In React Query v5, disabled queries report isPending=true but isLoading=false,
-  // so we check isPending directly to cover the "not yet enabled" state.
-  const isLoading = queryResults.some(r => r.isPending);
-  const isUpdating = !isLoading && queryResults.some(r => r.isFetching);
+  const response = aggQuery.data;
+  const isLoading = aggQuery.isPending;
+  const isUpdating = !isLoading && aggQuery.isFetching;
+  const error = (aggQuery.error as Error) || null;
 
   // Keep a ref to the last fully-resolved results so consumers
   // see stable data while queries are refetching.
@@ -268,19 +89,105 @@ export const useFilterQueries = ({
   const results = useMemo(() => {
     const prev = settledResultsRef.current;
 
-    const next = configs.reduce((acc, config, index) => {
-      const result = queryResults[index];
-      const data = result.data as FilterTermType[] | undefined;
-      const terms =
-        data && data.length > 0 ? data : prev[config.id]?.terms || [];
+    const next = configs.reduce((acc, config) => {
+      let terms: FilterTermType[] = [];
+
+      if (response?.facets) {
+        if (config.queryType === 'histogram') {
+          // Date histogram data from hist=date
+          const facetData = response.facets['date'];
+          if (facetData?.terms) {
+            terms = facetData.terms.map(t => ({
+              term: t.term,
+              label: t.term.split('-')[0] || t.term,
+              count: t.count,
+              facet: 'date',
+            }));
+          }
+          // Append -_exists_ using missing
+          if (facetData && facetData.missing > 0) {
+            terms.push({
+              term: '-_exists_',
+              label: 'No',
+              count: facetData.missing,
+              facet: 'date',
+            });
+          }
+        } else if (config.queryType === 'source') {
+          // Source facets need metadata for groupBy
+          const facetData = response.facets[config.property];
+          if (facetData?.terms) {
+            const repos = metadataQuery.data;
+            const repoList =
+              (repos?.src &&
+                Object.values(repos.src).filter((r: any) => r?.sourceInfo)) ||
+              [];
+            terms = facetData.terms.map(t => ({
+              term: t.term,
+              label: t.term,
+              count: t.count,
+              facet: config.property,
+              groupBy:
+                (repoList as any[]).find(
+                  (r: any) => r.sourceInfo?.name === t.term,
+                )?.sourceInfo?.genre || 'Generalist',
+            }));
+          }
+        } else {
+          // Standard facet
+          const facetData = response.facets[config.property];
+          if (facetData?.terms) {
+            const mappedTerms = facetData.terms.map(t => {
+              const transformed = config.transformData
+                ? config.transformData({
+                    term: t.term,
+                    count: t.count,
+                    label: t.term,
+                  })
+                : { term: t.term, count: t.count, label: t.term };
+              return {
+                term: transformed.term,
+                label: transformed.label,
+                count: transformed.count,
+                facet: config.property,
+              };
+            });
+
+            // Prepend "Any" (_exists_) using total - missing
+            const existsCount = response.total - (facetData.missing || 0);
+            terms = [
+              {
+                term: '_exists_',
+                label: 'Any',
+                count: existsCount,
+                facet: config.property,
+              },
+              ...mappedTerms,
+            ];
+
+            // Append "No" (-_exists_) using missing (only if missing > 0 AND config allows it)
+            if ((facetData.missing || 0) > 0 && config.showMissing !== false) {
+              terms.push({
+                term: '-_exists_',
+                label: 'No',
+                count: facetData.missing,
+                facet: config.property,
+              });
+            }
+          }
+        }
+      }
+
+      const finalTerms =
+        terms.length > 0 ? terms : prev[config.id]?.terms || [];
 
       acc[config.id] = {
         id: config.id,
-        terms,
-        data: terms,
+        terms: finalTerms,
+        data: finalTerms,
         isLoading,
         isUpdating,
-        error: result.error,
+        error: aggQuery.error,
       };
       return acc;
     }, {} as FilterResults);
@@ -290,7 +197,7 @@ export const useFilterQueries = ({
     }
 
     return next;
-  }, [configs, queryResults, isLoading, isUpdating]);
+  }, [configs, response, isLoading, isUpdating, metadataQuery.data]);
 
   return {
     results,

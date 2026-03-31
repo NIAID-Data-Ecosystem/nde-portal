@@ -54,6 +54,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     property: 'sourceOrganization.name.raw',
     filterProperty: 'sourceOrganization.name',
     queryType: 'facet',
+    showMissing: false,
     description: getMetadataDescription('sourceOrganization') || '',
     chart: DEFAULT_BAR_PIE_CHART,
     category: 'Shared / Dataset',
@@ -247,6 +248,14 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     tabIds: ['s'],
   },
 ];
+
+/**
+ * Static comma-separated list of all facet properties from FILTER_CONFIGS.
+ * Used to ensure a stable query key across all consumers (filters, date filter, visual summary).
+ */
+export const ALL_FACET_PROPERTIES = FILTER_CONFIGS.map(c => c.property).join(
+  ',',
+);
 
 /**
  * Get a filter config by id

@@ -92,6 +92,8 @@ export interface FilterConfig {
   isDefaultOpen?: boolean;
   /** Optional: Grouping configuration for terms */
   groupBy?: { property: string; label: string }[];
+  /** Optional: Whether to show "No {facet}" option (defaults to true) */
+  showMissing?: boolean;
   /** Optional: Chart configuration for visualizations */
   chart?: ChartConfig;
   /** Optional: Transform function for visualization data */

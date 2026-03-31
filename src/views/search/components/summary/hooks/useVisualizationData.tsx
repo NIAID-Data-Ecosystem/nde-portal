@@ -1,16 +1,20 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChartDatum, ChartType, SearchState } from '../types';
 import { FilterConfig } from '../../filters';
-import { useAggregationQuery } from './useAggregationQuery';
+import {
+  useAggregation,
+  AggregationQueryParams,
+} from 'src/views/search/hooks/useAggregation';
+import { ALL_FACET_PROPERTIES } from '../../filters/config';
 import { usePreferredChartType } from './usePreferredChartType';
 import {
   bucketSmallValues,
   chartRegistry,
   DEFAULT_MORE_PARAMS,
   isMoreSlice,
-  normalizeAggregateData,
 } from '../helpers';
 import { SelectedFilterValueType } from '../../filters/types';
+import { queryFilterObject2String } from '../../filters/utils/query-string';
 
 interface UseVisualizationDataParams {
   config: FilterConfig;
@@ -53,16 +57,44 @@ export const useVisualizationData = ({
     config.chart?.defaultOption,
   ]);
 
-  // Fetch aggregation data based on the config and search state.
-  const aggData = useAggregationQuery({
-    property: config.property,
-    searchState,
+  // Fetch aggregation data from the shared cache.
+  // Uses the same query key as the filters, so React Query deduplicates the request.
+  const aggParams: AggregationQueryParams = useMemo(
+    () => ({
+      q: searchState.q || '',
+      extra_filter: queryFilterObject2String(searchState.filters) || '',
+      facets: ALL_FACET_PROPERTIES,
+      use_ai_search: searchState.use_ai_search ?? 'false',
+      advancedSearch: searchState.advancedSearch,
+      hist: 'date',
+    }),
+    [
+      searchState.q,
+      searchState.filters,
+      searchState.use_ai_search,
+      searchState.advancedSearch,
+    ],
+  );
+
+  const aggQuery = useAggregation({
+    params: aggParams,
     enabled: isActive && hasChartConfig,
   });
 
-  // Normalize the aggregated data.
-  const facetData =
-    aggData.data && normalizeAggregateData(aggData.data, config.property);
+  const aggData = {
+    data: aggQuery.data,
+    isLoading: aggQuery.isLoading,
+    isFetching: aggQuery.isFetching,
+    isPlaceholderData: aggQuery.isPlaceholderData,
+    isError: aggQuery.isError,
+    refetch: aggQuery.refetch,
+  };
+
+  // Normalize the aggregated data — slice to 100 terms for chart display.
+  const facetData = useMemo(() => {
+    if (!aggQuery.data?.facets?.[config.property]?.terms) return undefined;
+    return aggQuery.data.facets[config.property].terms.slice(0, 100);
+  }, [aggQuery.data, config.property]);
 
   // Format chart data.
   const chartAdapter = chartType ? chartRegistry[chartType] : null;
