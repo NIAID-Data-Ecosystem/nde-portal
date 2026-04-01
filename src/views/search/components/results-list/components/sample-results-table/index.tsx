@@ -59,146 +59,178 @@ const withWidth = (width: string) => ({
 
 // Adjust the width string in `props` to change a column's rendered width.
 // Both the header and every body cell will reflect the change automatically.
-const SAMPLE_RESULTS_COLUMNS: Column[] = [
+
+// All possible columns for the sample results table.
+// Each column has a stable `id` field used for visibility tracking.
+export interface SampleColumn extends Column {
+  // Stable identifier used for localStorage persistence
+  id: string;
+}
+
+export const ALL_SAMPLE_COLUMNS: SampleColumn[] = [
   {
+    id: 'identifier',
     title: 'Identifier',
     property: sortKey('identifier'),
     isSortable: true,
     props: withWidth('180px'),
   },
   {
+    id: 'alternateIdentifier',
     title: 'Alternate Identifier',
     property: sortKey('alternateIdentifier'),
     isSortable: true,
     props: withWidth('180px'),
   },
   {
+    id: 'date',
     title: 'Date',
     property: sortKey('date'),
     isSortable: true,
     props: withWidth('130px'),
   },
   {
+    id: 'name',
     title: 'Name',
     property: sortKey('name'),
     isSortable: true,
     props: withWidth('250px'),
   },
   {
+    id: 'includedInDataCatalog',
     title: 'Source',
     property: sortKey('includedInDataCatalog'),
     isSortable: true,
     props: withWidth('160px'),
   },
   {
+    id: 'description',
     title: 'Description',
     property: sortKey('description'),
     isSortable: true,
     props: withWidth('250px'),
   },
   {
+    id: 'healthCondition',
     title: 'Health Condition',
     property: sortKey('healthCondition'),
     isSortable: true,
     props: withWidth('160px'),
   },
   {
+    id: 'infectiousAgent',
     title: 'Infectious Agent',
     property: sortKey('infectiousAgent'),
     isSortable: true,
     props: withWidth('160px'),
   },
   {
+    id: 'species',
     title: 'Species',
     property: sortKey('species'),
     isSortable: true,
     props: withWidth('170px'),
   },
   {
+    id: 'conditionsOfAccess',
     title: 'Conditions of Access',
     property: sortKey('conditionsOfAccess'),
     isSortable: true,
     props: withWidth('180px'),
   },
   {
+    id: 'variableMeasured',
     title: 'Variable Measured',
     property: sortKey('variableMeasured'),
     isSortable: true,
     props: withWidth('160px'),
   },
   {
+    id: 'measurementTechnique',
     title: 'Measurement Technique',
     property: sortKey('measurementTechnique'),
     isSortable: true,
     props: withWidth('200px'),
   },
   {
+    id: 'anatomicalStructure',
     title: 'Anatomical Structure',
     property: sortKey('anatomicalStructure'),
     isSortable: true,
     props: withWidth('180px'),
   },
   {
+    id: 'anatomicalSystem',
     title: 'Anatomical System',
     property: sortKey('anatomicalSystem'),
     isSortable: true,
     props: withWidth('160px'),
   },
   {
+    id: 'sampleType',
     title: 'Sample Type',
     property: sortKey('sampleType'),
     isSortable: true,
     props: withWidth('140px'),
   },
   {
+    id: 'sampleAvailability',
     title: 'Sample Availability',
     property: sortKey('sampleAvailability'),
     isSortable: true,
     props: withWidth('170px'),
   },
   {
+    id: 'sampleQuantity',
     title: 'Sample Quantity',
     property: sortKey('sampleQuantity'),
     isSortable: true,
     props: withWidth('150px'),
   },
   {
+    id: 'sex',
     title: 'Sex',
     property: sortKey('sex'),
     isSortable: true,
     props: withWidth('100px'),
   },
   {
+    id: 'developmentalStage',
     title: 'Developmental Stage',
     property: sortKey('developmentalStage'),
     isSortable: true,
     props: withWidth('190px'),
   },
   {
+    id: 'associatedGenotype',
     title: 'Associated Genotype',
     property: sortKey('associatedGenotype'),
     isSortable: true,
     props: withWidth('180px'),
   },
   {
+    id: 'associatedPhenotype',
     title: 'Associated Phenotype',
     property: sortKey('associatedPhenotype'),
     isSortable: true,
     props: withWidth('180px'),
   },
   {
+    id: 'cellType',
     title: 'Cell Type',
     property: sortKey('cellType'),
     isSortable: true,
     props: withWidth('150px'),
   },
   {
+    id: 'locationOfOrigin',
     title: 'Location of Origin',
     property: sortKey('locationOfOrigin'),
     isSortable: true,
     props: withWidth('185px'),
   },
   {
+    id: 'itemLocation',
     title: 'Item Location',
     property: sortKey('itemLocation'),
     isSortable: true,
@@ -207,7 +239,7 @@ const SAMPLE_RESULTS_COLUMNS: Column[] = [
 ];
 
 const SORT_KEY_TO_FIELD: Record<string, string> = Object.fromEntries(
-  SAMPLE_RESULTS_COLUMNS.map(col => [
+  ALL_SAMPLE_COLUMNS.map(col => [
     col.property,
     col.property.slice(SORT_PREFIX.length),
   ]),
@@ -338,20 +370,32 @@ const getCells = ({
 interface SampleResultsTableProps {
   results: FormattedResource[];
   isLoading: boolean;
+  /**
+   * IDs of columns that should be visible.
+   * When undefined, all columns are shown.
+   */
+  visibleColumnIds?: string[];
 }
 
 export const SampleResultsTable = ({
   results,
   isLoading,
+  visibleColumnIds,
 }: SampleResultsTableProps) => {
   const rows = useMemo(() => results.map(toRow), [results]);
+
+  // Filter the master column list to only the visible ones, preserving order
+  const visibleColumns = useMemo(() => {
+    if (!visibleColumnIds) return ALL_SAMPLE_COLUMNS;
+    return ALL_SAMPLE_COLUMNS.filter(col => visibleColumnIds.includes(col.id));
+  }, [visibleColumnIds]);
 
   return (
     <Skeleton isLoaded={!isLoading} width='100%'>
       <Table
         ariaLabel='Sample search results'
         caption='Table of sample search results'
-        columns={SAMPLE_RESULTS_COLUMNS}
+        columns={visibleColumns}
         data={rows as any}
         getCells={getCells as any}
         isLoading={isLoading}
