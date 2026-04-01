@@ -1,5 +1,6 @@
 import { FilterConfig, ChartConfig } from './types';
 import { getMetadataDescription } from 'src/components/metadata';
+import { SHOW_SAMPLES_TAB } from 'src/utils/feature-flags';
 import {
   formatConditionsOfAccess,
   transformConditionsOfAccessLabel,
@@ -247,7 +248,14 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     category: 'Sample',
     tabIds: ['s'],
   },
-];
+].filter(config => {
+  // If SHOW_SAMPLES_TAB is false, filter out any filters in the "Sample" category.
+  if (SHOW_SAMPLES_TAB) {
+    return config;
+  } else {
+    return config.category !== 'Sample';
+  }
+});
 
 /**
  * Static comma-separated list of all facet properties from FILTER_CONFIGS.
