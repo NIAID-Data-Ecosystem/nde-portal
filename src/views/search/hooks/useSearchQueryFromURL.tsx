@@ -1,9 +1,13 @@
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
-import { defaultQuery, DefaultSearchQueryParams } from '../config/defaultQuery';
+import {
+  defaultQuery,
+  DefaultSearchQueryParams,
+  defaultSelectedFilters,
+} from '../config/defaultQuery';
 import { encodeString } from 'src/utils/querystring-helpers';
 import { FILTER_CONFIGS } from '../components/filters/config';
-import { queryFilterString2Object } from '../components/filters/utils/query-builders';
+import { queryFilterString2Object } from '../components/filters/utils/query-string';
 
 const parseNumberQueryParam = (
   param: string | string[] | undefined,
@@ -25,7 +29,7 @@ export const useSearchQueryFromURL = (): DefaultSearchQueryParams => {
 
   const filters = useMemo(() => {
     const raw = queryFilterString2Object(router.query.filters);
-    return { ...defaultFilters, ...(raw ?? {}) };
+    return { ...defaultFilters, ...defaultSelectedFilters, ...(raw ?? {}) };
   }, [router.query.filters, defaultFilters]);
 
   const from = useMemo(

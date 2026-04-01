@@ -6,11 +6,12 @@ interface TypeCount {
   count: number;
 }
 
-// Priority order: Dataset/ResourceCatalog (same priority), ComputationalTool
+// Priority order: Dataset/ResourceCatalog (same priority), ComputationalTool, Sample
 const PRIORITY_ORDER = {
   Dataset: 1,
   ResourceCatalog: 1,
   ComputationalTool: 2,
+  Sample: 3,
 };
 
 /**

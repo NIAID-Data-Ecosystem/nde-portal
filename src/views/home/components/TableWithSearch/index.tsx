@@ -18,7 +18,7 @@ import { ResourceCatalog } from 'src/hooks/api/useResourceCatalogs';
 import { formatDomainName, formatTypeName } from './helpers';
 import { Filters } from './filters/';
 import useFilteredData from './hooks/useFilteredData';
-import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-builders';
+import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-string';
 import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
 
 export interface TableData

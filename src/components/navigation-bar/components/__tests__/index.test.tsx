@@ -1,12 +1,12 @@
 import React from 'react';
 
-const mockDynamic = jest.fn(() => () => (
+const mockDynamic = jest.fn((_loader: any) => () => (
   <div data-testid='dynamic-component' />
 ));
 
 jest.mock('next/dynamic', () => ({
   __esModule: true,
-  default: (...args: unknown[]) => mockDynamic(...args),
+  default: (...args: [any]) => mockDynamic(...args),
 }));
 
 jest.mock('../nav-layout', () => ({

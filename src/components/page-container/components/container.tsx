@@ -71,7 +71,13 @@ export const PageContainer: React.FC<PageContainerProps> = ({
       {/* Meta fields for SEO */}
       <SeoMetaFields {...meta} />
 
-      <Flex as='main' w='100%' flexDirection='column' minW='300px'>
+      <Flex
+        as='main'
+        w='100%'
+        flexDirection='column'
+        minW='300px'
+        overflow='hidden'
+      >
         <Navigation />
 
         {/*Page content has margin-top to compensate for fixed nav bar. */}

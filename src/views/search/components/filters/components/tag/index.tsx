@@ -10,14 +10,15 @@ import {
 import {
   FilterConfig,
   SelectedFilterType,
-  SelectedFilterTypeValue,
+  SelectedFilterValueType,
 } from '../../types';
-import { queryFilterObject2String } from '../../utils/query-builders';
 import { defaultQuery } from 'src/views/search/config/defaultQuery';
 import { isEqual } from 'lodash';
 import { generateTags } from './utils';
 import { SearchResultsHeading } from '../../../search-results-header';
 import { usePaginationContext } from 'src/views/search/context/pagination-context';
+
+import { queryFilterObject2String } from '../../utils/query-string';
 
 interface FilterTagsProps {
   filtersConfig: FilterConfig[];
@@ -30,7 +31,7 @@ export interface TagInfo {
   key: string;
   filterKey: string;
   name: string;
-  value: string | SelectedFilterTypeValue | SelectedFilterTypeValue[];
+  value: string | SelectedFilterValueType | SelectedFilterValueType[];
   displayValue: string;
 }
 
@@ -62,7 +63,7 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
     // Removes a single filter value from selectedFilters and updates the route.
     const removeSelectedFilter = (
       filterKey: string,
-      filterValue: SelectedFilterTypeValue | SelectedFilterTypeValue[],
+      filterValue: SelectedFilterValueType | SelectedFilterValueType[],
     ) => {
       let updatedFilters: SelectedFilterType;
 
@@ -74,7 +75,7 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
         typeof filterValue[0] === 'string' &&
         typeof filterValue[1] === 'string'
       ) {
-        // Remove the entire date range
+        // Remove the entire date range, including any _exists_ filters related to date because they are not relevant if the user is clearing the date filter and will only limit the results in an unintended way if left in the filters.
         updatedFilters = {
           ...selectedFilters,
           [filterKey]: [],

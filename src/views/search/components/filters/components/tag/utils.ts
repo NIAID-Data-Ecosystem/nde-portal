@@ -1,12 +1,13 @@
 import { TagInfo } from '.';
-import {
-  FilterConfig,
-  SelectedFilterType,
-  SelectedFilterTypeValue,
-} from '../../types';
+
 import { capitalize, has, isPlainObject } from 'lodash';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import {
+  FilterConfig,
+  SelectedFilterType,
+  SelectedFilterValueType,
+} from '../../types';
 import {
   APIResourceType,
   formatAPIResourceTypeForDisplay,
@@ -28,7 +29,7 @@ const isObjectValue = (value: unknown): value is Record<string, unknown> =>
   isPlainObject(value);
 
 const isDateRangeValues = (
-  values: (string | SelectedFilterTypeValue)[],
+  values: (string | SelectedFilterValueType)[],
 ): values is [string, string] =>
   values.length === 2 && isStringValue(values[0]) && isStringValue(values[1]);
 
@@ -60,8 +61,8 @@ const applyConfigTransform = (value: string, config?: FilterConfig): string => {
 // Controls how a selected filter is displayed in the tag
 const getDisplayValue = (
   key: string,
-  value: string | SelectedFilterTypeValue,
-  values: (string | SelectedFilterTypeValue)[],
+  value: string | SelectedFilterValueType,
+  values: (string | SelectedFilterValueType)[],
   index: number,
   config?: FilterConfig,
 ): string => {
@@ -82,13 +83,12 @@ const getDisplayValue = (
     if (key.includes('displayName')) {
       return formatDisplayName(value);
     }
+    if (config?.transformData) {
+      return applyConfigTransform(value, config);
+    }
     // Apply type formatting for @type filters
     if (key === '@type') {
       return formatAPIResourceTypeForDisplay(value as APIResourceType);
-    }
-    // Apply config transformations for specific keys
-    if (key === 'conditionsOfAccess') {
-      return applyConfigTransform(value, config);
     }
   }
 
@@ -96,7 +96,7 @@ const getDisplayValue = (
 };
 
 // Checks if a filter represents a date exists/not exists query
-const stripDateExistsQuery = (values: (string | SelectedFilterTypeValue)[]) => {
+const stripDateExistsQuery = (values: (string | SelectedFilterValueType)[]) => {
   return values.filter(
     value =>
       !isObjectValue(value) &&
@@ -122,7 +122,7 @@ const createDateRangeTag = (
 const createValueTags = (
   key: string,
   name: string,
-  values: (string | SelectedFilterTypeValue)[],
+  values: (string | SelectedFilterValueType)[],
   config?: FilterConfig,
 ): TagInfo[] => {
   return values

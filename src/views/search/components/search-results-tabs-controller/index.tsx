@@ -18,6 +18,7 @@ import { TabType } from '../../types';
 import { generateOtherResourcesTitle, tabs } from '../../config/tabs';
 import { getDefaultTabId } from '../../utils/get-default-tab';
 import { useDiseaseData } from '../../hooks/useDiseaseData';
+import { SHOW_SAMPLES_TAB } from 'src/utils/feature-flags';
 
 const CAROUSEL_RESULTS_FIELDS = [
   '_meta',
@@ -83,7 +84,7 @@ export const SearchResultsController = ({
       filters: queryParams.filters,
       facets: ['@type'],
       facet_size: 100,
-      use_ai_search: queryParams.use_ai_search,
+      use_ai_search: queryParams.use_ai_search ?? 'false',
     },
     { enabled: router.isReady },
   );
@@ -165,7 +166,7 @@ export const SearchResultsController = ({
       facets: ['@type'],
       size: 50,
       sort: 'name.raw',
-      use_ai_search: queryParams.use_ai_search,
+      use_ai_search: queryParams.use_ai_search ?? 'false',
     },
 
     {
@@ -216,28 +217,36 @@ export const SearchResultsController = ({
 
   const tabsWithFacetCounts = useMemo(
     () =>
-      tabs.map(tab => {
-        const tabTypesWithCount = tab.types.map(({ label, type }) => {
-          const terms = facetData?.facets?.['@type']?.terms ?? [];
-          const facet = terms.find(t => t.term === type);
-          let count = facet?.count || 0;
-
-          if (type === 'Disease') {
-            count = matchingDiseases.length;
+      tabs
+        .filter(tab => {
+          if (
+            !SHOW_SAMPLES_TAB &&
+            tab.types.every(({ type }) => type === 'Sample')
+          ) {
+            return false;
           }
+          return true;
+        })
+        .map(tab => {
+          const tabTypesWithCount = tab.types
+            .filter(({ type }) => type !== 'Sample' || SHOW_SAMPLES_TAB)
+            .map(({ label, type }) => {
+              const terms = facetData?.facets?.['@type']?.terms ?? [];
+              const facet = terms.find(t => t.term === type);
+              let count = facet?.count || 0;
+
+              if (type === 'Disease') {
+                count = matchingDiseases.length;
+              }
+
+              return { label, type, count };
+            });
 
           return {
-            label,
-            type,
-            count,
+            ...tab,
+            types: tabTypesWithCount,
           };
-        });
-
-        return {
-          ...tab,
-          types: tabTypesWithCount,
-        };
-      }),
+        }),
     [facetData?.facets, tabs, matchingDiseases.length],
   );
 
@@ -254,6 +263,10 @@ export const SearchResultsController = ({
           indices.push(index);
         }
       } else if (section.type === 'ComputationalTool') {
+        if (section.count > 0 || section.count === 0) {
+          indices.push(index);
+        }
+      } else if (section.type === 'Sample') {
         if (section.count > 0 || section.count === 0) {
           indices.push(index);
         }
@@ -283,6 +296,8 @@ export const SearchResultsController = ({
                 >
                   {sections.map(section => {
                     if (section.type === 'Disease') return null;
+                    if (section.type === 'Sample' && !SHOW_SAMPLES_TAB)
+                      return null;
 
                     // For ResourceCatalog, render "Other Resources" with carousel
                     if (section.type === 'ResourceCatalog') {

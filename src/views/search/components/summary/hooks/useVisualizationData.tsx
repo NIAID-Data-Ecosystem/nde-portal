@@ -1,23 +1,27 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChartDatum, ChartType, SearchState } from '../types';
-import { FilterConfig } from '../../refactored-filters';
-import { useAggregationQuery } from './useAggregationQuery';
+import { FilterConfig } from '../../filters';
+import {
+  useAggregation,
+  AggregationQueryParams,
+} from 'src/views/search/hooks/useAggregation';
+import { ALL_FACET_PROPERTIES } from '../../filters/config';
 import { usePreferredChartType } from './usePreferredChartType';
 import {
   bucketSmallValues,
   chartRegistry,
   DEFAULT_MORE_PARAMS,
   isMoreSlice,
-  normalizeAggregateData,
 } from '../helpers';
-import { SelectedFilterTypeValue } from '../../filters/types';
+import { SelectedFilterValueType } from '../../filters/types';
+import { queryFilterObject2String } from '../../filters/utils/query-string';
 
 interface UseVisualizationDataParams {
   config: FilterConfig;
   searchState: SearchState;
   isActive: boolean;
-  selectedFilters: SelectedFilterTypeValue[];
-  onFilterUpdate?: (values: SelectedFilterTypeValue[], facet: string) => void;
+  selectedFilters: SelectedFilterValueType[];
+  onFilterUpdate?: (values: SelectedFilterValueType[], facet: string) => void;
 }
 
 export const useVisualizationData = ({
@@ -47,33 +51,94 @@ export const useVisualizationData = ({
     return availableOptions.includes(preferredChartType)
       ? preferredChartType
       : config.chart.defaultOption;
-  }, [
-    preferredChartType,
-    config.chart?.availableOptions,
-    config.chart?.defaultOption,
-  ]);
+  }, [preferredChartType, config.chart]);
 
-  // Fetch aggregation data based on the config and search state.
-  const aggData = useAggregationQuery({
-    property: config.property,
-    searchState,
+  const filterProperty = config.filterProperty || config.property;
+  const isHistogramChart =
+    chartType === 'histogram' || config.queryType === 'histogram';
+
+  const extraFilter = useMemo(
+    () => queryFilterObject2String(searchState.filters) || '',
+    [searchState.filters],
+  );
+
+  // Fetch aggregation data from the shared cache.
+  // Uses the same query key as the filters, so React Query deduplicates the request.
+  const aggParams: AggregationQueryParams = useMemo(
+    () => ({
+      q: searchState.q || '',
+      extra_filter: extraFilter,
+      facets: ALL_FACET_PROPERTIES,
+      use_ai_search: searchState.use_ai_search ?? 'false',
+      advancedSearch: searchState.advancedSearch,
+      hist: 'date',
+    }),
+    [
+      searchState.q,
+      extraFilter,
+      searchState.use_ai_search,
+      searchState.advancedSearch,
+    ],
+  );
+
+  const aggQuery = useAggregation({
+    params: aggParams,
     enabled: isActive && hasChartConfig,
   });
 
-  // Normalize the aggregated data.
-  const facetData =
-    aggData.data && normalizeAggregateData(aggData.data, config.property);
+  const aggData = {
+    data: aggQuery.data,
+    isLoading: aggQuery.isLoading,
+    isFetching: aggQuery.isFetching,
+    isPlaceholderData: aggQuery.isPlaceholderData,
+    isError: aggQuery.isError,
+    refetch: aggQuery.refetch,
+  };
+
+  // Normalize aggregated data for charts.
+  // Histogram uses facets.hist_dates (from hist=date) and keeps full bucket set.
+  // Other charts use facet terms and are capped to 100 for readability/perf.
+  const dateHistogramTerms = useMemo(
+    () => aggQuery.data?.facets?.hist_dates?.terms,
+    [aggQuery.data],
+  );
+
+  const facetTerms = useMemo(
+    () => aggQuery.data?.facets?.[config.property]?.terms,
+    [aggQuery.data, config.property],
+  );
+
+  const chartTerms = useMemo(() => {
+    if (isHistogramChart) {
+      return dateHistogramTerms;
+    }
+    return facetTerms?.slice(0, 100);
+  }, [isHistogramChart, dateHistogramTerms, facetTerms]);
+
+  const chartTermsLength = chartTerms?.length ?? 0;
+  const availableOptionsKey = useMemo(
+    () => config.chart?.availableOptions?.join('|') ?? '',
+    [config.chart?.availableOptions],
+  );
+
+  const formatChartLabel = useCallback(
+    (term: string, count: number) => {
+      if (chartType === 'bar') return term;
+      if (isHistogramChart) return term.split('-')[0] || term;
+      return `${term} (${count.toLocaleString()})`;
+    },
+    [chartType, isHistogramChart],
+  );
 
   // Format chart data.
   const chartAdapter = chartType ? chartRegistry[chartType] : null;
   const chartData = useMemo(() => {
-    if (!chartAdapter || !facetData) return null;
-    return chartAdapter.mapFacetsToChartData(facetData, {
-      formatLabel: (term, count) =>
-        chartType === 'bar' ? term : `${term} (${count.toLocaleString()})`,
+    if (!chartAdapter || !chartTerms) return null;
+    return chartAdapter.mapFacetsToChartData(chartTerms, {
+      formatLabel: formatChartLabel,
       transformData: config.transformData,
     });
-  }, [facetData, chartAdapter, chartType, config.transformData]);
+  }, [chartTerms, chartAdapter, formatChartLabel, config.transformData]);
 
   // Current level data based on drill stack.
   const currentLevelData = useMemo(() => {
@@ -83,6 +148,10 @@ export const useVisualizationData = ({
   // Bucket small values into "More"
   const { bucketedData, tail } = useMemo(() => {
     if (!chartType || !config.chart) return { bucketedData: [], tail: [] };
+    if (isHistogramChart) {
+      // For histograms, we don't want to bucket small values, so return early.
+      return { bucketedData: currentLevelData || [], tail: [] };
+    }
     const chartTypeConfig = config.chart[chartType] || {};
     const { data, tail } = bucketSmallValues(currentLevelData || [], {
       ...chartTypeConfig,
@@ -90,12 +159,12 @@ export const useVisualizationData = ({
     });
 
     return { bucketedData: data, tail };
-  }, [currentLevelData, config.chart, chartType]);
+  }, [currentLevelData, config.chart, chartType, isHistogramChart]);
 
   // If the query/config changes, reset drill mode
   useEffect(() => {
     setDrillStack([]);
-  }, [config.id, config.property, chartType, facetData?.length, config.chart]);
+  }, [config.id, config.property, chartType, chartTermsLength, config.chart]);
 
   useEffect(() => {
     // If preferred chart type is no longer valid, reset to default.
@@ -105,7 +174,8 @@ export const useVisualizationData = ({
       setPreferredChartType(config.chart.defaultOption);
     }
   }, [
-    config.chart?.availableOptions?.join('|'),
+    config.chart,
+    availableOptionsKey,
     preferredChartType,
     setPreferredChartType,
   ]);
@@ -140,8 +210,6 @@ export const useVisualizationData = ({
 
       // If slice is already selected, remove it; otherwise add it
       const isSelected = isSliceSelected(id);
-      // Use filterProperty if provided, otherwise fall back to property
-      const filterProperty = config.filterProperty || config.property;
 
       if (isSelected) {
         // Remove the filter - filter out this id from the existing filters
@@ -156,7 +224,7 @@ export const useVisualizationData = ({
         onFilterUpdate?.(newFilters, filterProperty);
       }
     },
-    [tail, onFilterUpdate, config.property, isSliceSelected, selectedFilters],
+    [tail, onFilterUpdate, filterProperty, isSliceSelected, selectedFilters],
   );
 
   return {
@@ -165,8 +233,8 @@ export const useVisualizationData = ({
     chartAdapter,
     bucketedData,
     drillStack,
-    facetData,
-    hasEmptyData: facetData?.length === 0,
+    facetData: chartTerms,
+    hasEmptyData: chartTerms?.length === 0,
     handleBack,
     handleSliceClick,
     isSliceSelected,
