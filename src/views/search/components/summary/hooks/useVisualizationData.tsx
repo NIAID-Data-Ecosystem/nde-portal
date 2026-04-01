@@ -51,11 +51,7 @@ export const useVisualizationData = ({
     return availableOptions.includes(preferredChartType)
       ? preferredChartType
       : config.chart.defaultOption;
-  }, [
-    preferredChartType,
-    config.chart?.availableOptions,
-    config.chart?.defaultOption,
-  ]);
+  }, [preferredChartType, config.chart]);
 
   const filterProperty = config.filterProperty || config.property;
   const isHistogramChart =
@@ -119,6 +115,12 @@ export const useVisualizationData = ({
     return facetTerms?.slice(0, 100);
   }, [isHistogramChart, dateHistogramTerms, facetTerms]);
 
+  const chartTermsLength = chartTerms?.length ?? 0;
+  const availableOptionsKey = useMemo(
+    () => config.chart?.availableOptions?.join('|') ?? '',
+    [config.chart?.availableOptions],
+  );
+
   const formatChartLabel = useCallback(
     (term: string, count: number) => {
       if (chartType === 'bar') return term;
@@ -162,7 +164,7 @@ export const useVisualizationData = ({
   // If the query/config changes, reset drill mode
   useEffect(() => {
     setDrillStack([]);
-  }, [config.id, config.property, chartType, chartTerms?.length, config.chart]);
+  }, [config.id, config.property, chartType, chartTermsLength, config.chart]);
 
   useEffect(() => {
     // If preferred chart type is no longer valid, reset to default.
@@ -172,7 +174,8 @@ export const useVisualizationData = ({
       setPreferredChartType(config.chart.defaultOption);
     }
   }, [
-    config.chart?.availableOptions?.join('|'),
+    config.chart,
+    availableOptionsKey,
     preferredChartType,
     setPreferredChartType,
   ]);

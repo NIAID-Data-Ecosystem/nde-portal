@@ -200,7 +200,14 @@ export const useFilterQueries = ({
     }
 
     return next;
-  }, [configs, response, isLoading, isUpdating, metadataQuery.data]);
+  }, [
+    configs,
+    response,
+    isLoading,
+    isUpdating,
+    metadataQuery.data,
+    aggQuery.error,
+  ]);
 
   return {
     results,

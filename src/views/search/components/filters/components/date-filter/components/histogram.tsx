@@ -140,7 +140,13 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
         tooltipData: { ...datum, display },
       });
     },
-    [containerBounds.left, containerBounds.top, showTooltip],
+    [
+      containerBounds.left,
+      containerBounds.top,
+      range_min,
+      range_max,
+      showTooltip,
+    ],
   );
 
   // visibleData is filteredData (already filtered by date range in context)
