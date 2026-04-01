@@ -251,11 +251,11 @@ export const FILTER_CONFIGS: FilterConfig[] = [
 ].filter(config => {
   // If SHOW_SAMPLES_TAB is false, filter out any filters in the "Sample" category.
   if (SHOW_SAMPLES_TAB) {
-    return config;
+    return config; // No filtering, return all configs
   } else {
-    return config.category !== 'Sample';
+    return config.category !== 'Sample' ? config : null; // Filter out "Sample" category
   }
-});
+}) as FilterConfig[];
 
 /**
  * Static comma-separated list of all facet properties from FILTER_CONFIGS.
