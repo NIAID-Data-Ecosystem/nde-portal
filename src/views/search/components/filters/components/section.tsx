@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  AccordionIcon,
   AccordionItem,
   AccordionButton,
   AccordionPanel,
@@ -29,7 +30,13 @@ Filter drawer corresponding to a filter facet.
 export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
   ({ name, description, children, filterId, isVizActive, onToggleViz }) => {
     return (
-      <AccordionItem border='none'>
+      <AccordionItem
+        bg='#fff'
+        my={0.5}
+        border='1px solid'
+        borderRadius='md'
+        borderColor='blackAlpha.200'
+      >
         {({ isExpanded }) => {
           return (
             <>
@@ -37,13 +44,13 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                 <AccordionButton
                   as='span'
                   role='button'
-                  p={4}
+                  px={3}
                   gap={2}
                   borderLeft='4px solid'
                   borderBottom='0.5px solid'
                   borderRadius='sm'
                   flexDirection={SHOW_VISUAL_SUMMARY ? 'row' : 'row-reverse'}
-                  py={isExpanded ? 1.5 : 2}
+                  py={isExpanded ? 1.5 : 1}
                   bg={isExpanded ? 'secondary.50' : 'transparent'}
                   borderTopColor={isExpanded ? 'secondary.100' : 'gray.100'}
                   borderBottomColor={isExpanded ? 'transparent' : 'gray.100'}
@@ -52,16 +59,6 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                     bg: isExpanded ? 'secondary.50' : 'gray.50',
                   }}
                 >
-                  <Icon
-                    as={FaChevronDown}
-                    mr={2}
-                    color='gray.800'
-                    data-testid='minus-icon'
-                    fontSize='12px'
-                    transform={isExpanded ? 'rotate(180deg)' : undefined}
-                    transition='transform 0.2s ease-in-out'
-                  />
-
                   <Tooltip
                     label={
                       description.charAt(0).toUpperCase() + description.slice(1)
@@ -99,6 +96,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                       </Box>
                     </Tooltip>
                   )}
+                  <AccordionIcon />
                 </AccordionButton>
               </h2>
               {isExpanded ? (

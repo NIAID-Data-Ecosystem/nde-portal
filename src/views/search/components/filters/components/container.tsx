@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
-  Accordion,
   Button,
   Drawer,
   DrawerBody,
@@ -20,7 +19,6 @@ import { FaFilter } from 'react-icons/fa6';
 import { FilterConfig, SelectedFilterType } from '../types';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { CustomizeFiltersPopover } from './customize-filters-popover';
-import { useRouter } from 'next/router';
 import { SHOW_VISUAL_SUMMARY } from 'src/utils/feature-flags';
 
 export interface FiltersContainerProps {
@@ -56,21 +54,11 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   title,
   error,
   children,
-  selectedFilters,
   filtersList,
   isDisabled = false,
   removeAllFilters,
   onVisibleFiltersChange,
 }) => {
-  const router = useRouter();
-
-  // State for managing which accordion sections are open
-  // Determine if visual summary section should be shown based on feature flag and current route since this component is shared with /search page.
-  const [openSections, setOpenSections] = useState<Set<string>>(new Set());
-
-  // Prevent accordion state initialization on every render
-  const [isInitialized, setIsInitialized] = useState(false);
-
   const btnRef = useRef<HTMLButtonElement>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const screenSize = useBreakpointValue(
@@ -95,48 +83,6 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Initialize accordion state: auto-open sections with active filters
-  useEffect(() => {
-    if (!isInitialized) {
-      const sectionsToOpen = new Set<string>();
-
-      Object.keys(selectedFilters).forEach(property => {
-        const filterValue = selectedFilters[property];
-        if (filterValue && filterValue.length > 0) {
-          sectionsToOpen.add(property);
-        }
-      });
-
-      setOpenSections(sectionsToOpen);
-      setIsInitialized(true);
-    }
-  }, [selectedFilters, isInitialized]);
-
-  // Convert open section properties to accordion indices
-  const accordionIndices = useMemo(() => {
-    return Array.from(openSections)
-      .map(property =>
-        filtersList.findIndex(config => config.property === property),
-      )
-      .filter(index => index !== -1)
-      .sort((a, b) => a - b);
-  }, [openSections, filtersList]);
-
-  const handleAccordionChange = (expandedIndex: number | number[]) => {
-    const indices = Array.isArray(expandedIndex)
-      ? expandedIndex
-      : [expandedIndex];
-
-    const openProperties = new Set<string>();
-    indices.forEach(index => {
-      if (index >= 0 && index < filtersList.length) {
-        openProperties.add(filtersList[index].property);
-      }
-    });
-
-    setOpenSections(openProperties);
-  };
-
   const content = (
     <>
       <Flex
@@ -148,18 +94,23 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         borderBottomColor='gray.100'
       >
         {/* Popover for customizing visible filters */}
-        {SHOW_VISUAL_SUMMARY && (
-          <CustomizeFiltersPopover
-            filtersList={filtersList}
-            onVisibleFiltersChange={onVisibleFiltersChange}
-          />
-        )}
         <Flex gap={2} justifyContent='space-between'>
-          {title && (
-            <Heading size='sm' fontWeight='medium' lineHeight='short'>
+          {SHOW_VISUAL_SUMMARY && (
+            <CustomizeFiltersPopover
+              filtersList={filtersList}
+              onVisibleFiltersChange={onVisibleFiltersChange}
+            />
+          )}
+          {/* {title && (
+            <Heading
+              size='sm'
+              fontWeight='medium'
+              lineHeight='short'
+              color='text.heading'
+            >
               {title}
             </Heading>
-          )}
+          )} */}
           <Button
             colorScheme='secondary'
             variant='link'
@@ -179,14 +130,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
           </Heading>
         </Flex>
       ) : (
-        <Accordion
-          bg='white'
-          allowMultiple
-          index={accordionIndices}
-          onChange={handleAccordionChange}
-        >
-          {children}
-        </Accordion>
+        <Box bg='white'>{children}</Box>
       )}
     </>
   );
