@@ -16,7 +16,7 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
-import { FaTableColumns } from 'react-icons/fa6';
+import { FaSliders } from 'react-icons/fa6';
 
 export const CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY =
   'search-visible-sample-columns';
@@ -151,7 +151,7 @@ export const CustomizeColumnsPopover = ({
           colorScheme='primary'
           variant='outline'
           size='sm'
-          leftIcon={<Icon as={FaTableColumns} boxSize={3.5} />}
+          leftIcon={<Icon as={FaSliders} boxSize={3.5} />}
         >
           {COPY.button} ({selectedCount}/{totalCount})
         </Button>
