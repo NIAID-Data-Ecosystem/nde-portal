@@ -3,7 +3,6 @@ import dynamic from 'next/dynamic';
 import { Flex, Spinner, Text } from '@chakra-ui/react';
 import { FilterTermType } from '../../../types';
 import { SHOW_VISUAL_SUMMARY } from 'src/utils/feature-flags';
-import { useRouter } from 'next/router';
 
 const Histogram = dynamic(() => import('./histogram'), {
   ssr: false,
@@ -24,7 +23,6 @@ export const HistogramSection: React.FC<HistogramSectionProps> = ({
   isUpdating,
   onDateSelect,
 }) => {
-  const router = useRouter();
   const [hasLoadedOnce, setHasLoadedOnce] = React.useState(false);
 
   React.useEffect(() => {

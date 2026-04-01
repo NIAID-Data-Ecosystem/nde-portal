@@ -14,7 +14,7 @@ export type {
 } from './types';
 
 // Config
-export { FILTER_CONFIGS, getFilterById } from './config';
+export { FILTER_CONFIGS, ALL_FACET_PROPERTIES, getFilterById } from './config';
 
 // Components
 export { Filters } from './components/filters';

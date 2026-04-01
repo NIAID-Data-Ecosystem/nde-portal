@@ -344,24 +344,6 @@ export const SearchResultsController = ({
                       );
                     }
 
-                    // For Sample, render a table instead of result cards
-                    if (section.type === 'Sample') {
-                      return (
-                        <AccordionContent
-                          key='sample'
-                          title={`${
-                            section.label
-                          } (${section.count.toLocaleString()})`}
-                        >
-                          <SearchResults
-                            id={tab.id}
-                            tabs={tabs}
-                            types={[section.type]}
-                          />
-                        </AccordionContent>
-                      );
-                    }
-
                     // For Dataset and ComputationalTool, render normal search results
                     return (
                       <AccordionContent

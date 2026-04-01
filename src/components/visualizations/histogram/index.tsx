@@ -5,6 +5,7 @@ import {
   queryFilterObject2String,
   queryFilterString2Object,
 } from 'src/views/search/components/filters/utils/query-string';
+import { UseFilterQueriesResult } from 'src/views/search/components/filters/hooks/useFilterQueries';
 import { ChartDatum } from 'src/views/search/components/summary/types';
 import { useSearchQueryFromURL } from 'src/views/search/hooks/useSearchQueryFromURL';
 import { updateRoute } from 'src/views/search/utils/update-route';
@@ -26,7 +27,9 @@ export interface DateHistogramProps {
   isExpanded?: boolean;
 }
 
+// TO DO: This component currently reuses the DateFilter component for convenience, but in the future (once Visual Summary is approved), the Date Histogram will be completely decoupled from the DateFilter and will have its own API call and state management via useVisualizationData. The shared use of the aggregate query data is a temporary solution to avoid duplicating the logic for shaping the histogram data in both places, but this will be refactored in the future so that the DateHistogram gets its data directly from useVisualizationData instead of through the DateFilter props.
 export const DateHistogram = (props: DateHistogramProps) => {
+  const { data } = props;
   const property = 'date';
   const router = useRouter();
   const queryParams = useSearchQueryFromURL();
@@ -78,21 +81,54 @@ export const DateHistogram = (props: DateHistogramProps) => {
     [selectedFilters, handleUpdate],
   );
 
+  // Reuse visualization hook output as the "updated" date query payload expected by DateFilter.
+  // This keeps fetching and shape-normalization in useVisualizationData.
+  const updatedAggregateQueryData = useMemo<UseFilterQueriesResult>(() => {
+    const terms = (data || []).map(item => ({
+      term: item.term || item.id,
+      label: item.label,
+      count: item.value,
+      facet: 'date',
+    }));
+
+    return {
+      results: {
+        date: {
+          id: 'date',
+          terms,
+          data: terms,
+          isLoading: false,
+          isUpdating: false,
+          error: null,
+        },
+      },
+      isLoading: false,
+      isUpdating: false,
+      error: null,
+    };
+  }, [data]);
+
+  const histogramQueryParams = useMemo(
+    () => ({
+      q: queryParams.q,
+      extra_filter: queryFilterObject2String(queryParams.filters || {}) || '',
+      use_ai_search: queryParams.use_ai_search ?? 'false',
+      advancedSearch: queryParams.advancedSearch,
+    }),
+    [queryParams],
+  );
+
   return (
     <DateFilter
       colorScheme='secondary'
-      queryParams={{
-        q: queryParams.q,
-        extra_filter: queryFilterObject2String(queryParams.filters || {}) || '',
-        use_ai_search: queryParams.use_ai_search ?? 'false',
-      }}
+      queryParams={histogramQueryParams}
       selectedDates={selected || []}
       handleSelectedFilter={values => handleSelectedFilters(values, property)}
       resetFilter={() => handleSelectedFilters([], property)}
       showHistogram={true}
       showDateControls={false}
       enabled={isFiltersFetchEnabled}
+      updatedAggregateQueryData={updatedAggregateQueryData}
     />
   );
 };
-1;
