@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DateFilter } from '../../../components/date-filter';
 
 const useAggregation = jest.fn();
@@ -55,6 +56,19 @@ describe('filters/components/date-filter/index', () => {
     });
   });
 
+  const renderWithQueryClient = (component: React.ReactElement) => {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+      },
+    });
+    return render(
+      <QueryClientProvider client={queryClient}>
+        {component}
+      </QueryClientProvider>,
+    );
+  };
+
   it('renders histogram and controls when no error', () => {
     // Initial aggregation query (without date filter)
     useAggregation
@@ -90,7 +104,7 @@ describe('filters/components/date-filter/index', () => {
         error: null,
       });
 
-    render(
+    renderWithQueryClient(
       <DateFilter
         colorScheme='secondary'
         queryParams={{ q: 'abc', extra_filter: '(date:("2020"))' } as any}
@@ -98,6 +112,18 @@ describe('filters/components/date-filter/index', () => {
         handleSelectedFilter={jest.fn()}
         resetFilter={jest.fn()}
         enabled
+        updatedAggregateQueryData={{
+          results: {
+            date: {
+              terms: [{ term: '2021-01-01', count: 2 }],
+              missing: 1,
+              total: 2,
+            },
+          },
+          isLoading: false,
+          isUpdating: false,
+          error: null,
+        }}
       />,
     );
 
@@ -127,7 +153,7 @@ describe('filters/components/date-filter/index', () => {
         error: new Error('boom'),
       });
 
-    render(
+    renderWithQueryClient(
       <DateFilter
         colorScheme='secondary'
         queryParams={{ q: 'abc', extra_filter: '' } as any}
@@ -135,6 +161,12 @@ describe('filters/components/date-filter/index', () => {
         handleSelectedFilter={jest.fn()}
         resetFilter={jest.fn()}
         enabled
+        updatedAggregateQueryData={{
+          results: undefined,
+          isLoading: false,
+          isUpdating: false,
+          error: new Error('boom'),
+        }}
       />,
     );
 

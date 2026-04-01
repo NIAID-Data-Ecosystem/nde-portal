@@ -2,17 +2,31 @@ import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFilterQueries } from '../../hooks/useFilterQueries';
+import router from 'next-router-mock';
 
-jest.mock('src/views/search/hooks/useAggregation', () => ({
-  ALL_FACET_PROPERTIES: 'facet.field,includedInDataCatalog.name,date',
-  buildAggregationQueryKey: (params: any) => ['aggregation', params],
-  fetchAggregation: jest.fn(),
-}));
+// Mock only the fetchSearchResults function so fetchAggregation works correctly
+jest.mock('src/utils/api', () => {
+  const actual = jest.requireActual('src/utils/api');
+  return {
+    ...actual,
+    fetchSearchResults: jest.fn(),
+  };
+});
+
+jest.mock('src/views/search/hooks/useAggregation', () => {
+  // Get the actual module
+  const actual = jest.requireActual('src/views/search/hooks/useAggregation');
+  return {
+    ...actual,
+    fetchAggregation: jest.fn(),
+  };
+});
 
 jest.mock('src/hooks/api/helpers', () => ({
   fetchMetadata: jest.fn(),
 }));
 
+const { fetchSearchResults } = jest.requireMock('src/utils/api');
 const { fetchAggregation } = jest.requireMock(
   'src/views/search/hooks/useAggregation',
 );
@@ -30,10 +44,12 @@ const createWrapper = () => {
 describe('useFilterQueries', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Set router.isReady to true to enable queries
+    router.isReady = true;
   });
 
   it('fetches standard facet query and includes exists/not-exists terms', async () => {
-    fetchAggregation.mockResolvedValueOnce({
+    fetchSearchResults.mockResolvedValueOnce({
       total: 10,
       facets: {
         'facet.field': {
@@ -85,7 +101,7 @@ describe('useFilterQueries', () => {
   });
 
   it('fetches source facet query with metadata grouping', async () => {
-    fetchAggregation.mockResolvedValueOnce({
+    fetchSearchResults.mockResolvedValueOnce({
       total: 5,
       facets: {
         'includedInDataCatalog.name': {
@@ -130,15 +146,18 @@ describe('useFilterQueries', () => {
   });
 
   it('fetches histogram query and appends not-exists count', async () => {
-    fetchAggregation.mockResolvedValueOnce({
+    fetchSearchResults.mockResolvedValueOnce({
       total: 5,
       facets: {
-        date: {
+        hist_dates: {
           _type: 'date_histogram',
           terms: [{ term: '2020-01-01', count: 4 }],
           missing: 1,
           other: 0,
           total: 4,
+        },
+        date: {
+          missing: 1,
         },
       },
     });
@@ -171,7 +190,7 @@ describe('useFilterQueries', () => {
   });
 
   it('returns empty terms when facets are missing and handles advanced search mode', async () => {
-    fetchAggregation.mockResolvedValueOnce({ total: 0 });
+    fetchSearchResults.mockResolvedValueOnce({ total: 0 });
 
     const { result } = renderHook(
       () =>
@@ -197,7 +216,7 @@ describe('useFilterQueries', () => {
   });
 
   it('respects showMissing: false and does not append -_exists_ term', async () => {
-    fetchAggregation.mockResolvedValueOnce({
+    fetchSearchResults.mockResolvedValueOnce({
       total: 10,
       facets: {
         'facet.field': {
