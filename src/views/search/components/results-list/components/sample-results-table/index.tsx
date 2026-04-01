@@ -83,18 +83,18 @@ export const ALL_SAMPLE_COLUMNS: SampleColumn[] = [
     props: withWidth('180px'),
   },
   {
-    id: 'date',
-    title: 'Date',
-    property: sortKey('date'),
-    isSortable: true,
-    props: withWidth('130px'),
-  },
-  {
     id: 'name',
     title: 'Name',
     property: sortKey('name'),
     isSortable: true,
     props: withWidth('250px'),
+  },
+  {
+    id: 'date',
+    title: 'Date',
+    property: sortKey('date'),
+    isSortable: true,
+    props: withWidth('130px'),
   },
   {
     id: 'includedInDataCatalog',

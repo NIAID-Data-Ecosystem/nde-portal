@@ -52,6 +52,8 @@ interface CustomizeColumnsPopoverProps {
   onVisibleColumnsChange?: (visibleColumnIds: string[]) => void;
 }
 
+const REQUIRED_COLUMN_IDS = ['identifier', 'name'];
+
 export const CustomizeColumnsPopover = ({
   columnsList,
   onVisibleColumnsChange,
@@ -125,11 +127,16 @@ export const CustomizeColumnsPopover = ({
   }, [visibleColumnIds, onVisibleColumnsChange, isReady]);
 
   const handleChange = (values: string[]) => {
-    setVisibleColumnIds(values);
+    // Always keep required columns selected
+    const withRequired = [
+      ...REQUIRED_COLUMN_IDS.filter(id => allColumnIds.includes(id)),
+      ...values.filter(id => !REQUIRED_COLUMN_IDS.includes(id)),
+    ];
+    setVisibleColumnIds(withRequired);
     if (typeof window !== 'undefined') {
       window.localStorage.setItem(
         CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-        JSON.stringify(values),
+        JSON.stringify(withRequired),
       );
     }
   };
@@ -194,6 +201,7 @@ export const CustomizeColumnsPopover = ({
                   key={col.id}
                   value={col.id}
                   px={2}
+                  isDisabled={REQUIRED_COLUMN_IDS.includes(col.id)}
                   _hover={{ bg: 'secondary.50' }}
                   borderRadius='sm'
                 >
