@@ -115,9 +115,12 @@ describe('filters/components/date-filter/index', () => {
         updatedAggregateQueryData={{
           results: {
             date: {
-              terms: [{ term: '2021-01-01', count: 2 }],
-              missing: 1,
-              total: 2,
+              id: 'date',
+              terms: [{ term: '2021-01-01', label: '2021', count: 2 }],
+              data: [{ term: '2021-01-01', label: '2021', count: 2 }],
+              isLoading: false,
+              isUpdating: false,
+              error: null,
             },
           },
           isLoading: false,

@@ -85,19 +85,27 @@ describe('useFilterQueries', () => {
     );
 
     await waitFor(() =>
-      expect(result.current.results['facet-id'].data.length).toBeGreaterThan(0),
+      expect(
+        result.current.results?.['facet-id']?.data.length ?? 0,
+      ).toBeGreaterThan(0),
     );
 
+    const results = result.current.results;
+    expect(results).toBeDefined();
+    if (!results) {
+      throw new Error('Expected results to be defined');
+    }
+
     expect(result.current.error).toBeNull();
-    expect(result.current.results['facet-id'].data.map(d => d.term)).toEqual([
+    expect(results['facet-id'].data.map(d => d.term)).toEqual([
       '_exists_',
       't1',
       '-_exists_',
     ]);
     // _exists_ count = total - missing = 10 - 3 = 7
-    expect(result.current.results['facet-id'].data[0].count).toBe(7);
+    expect(results['facet-id'].data[0].count).toBe(7);
     // -_exists_ count = missing = 3
-    expect(result.current.results['facet-id'].data[2].count).toBe(3);
+    expect(results['facet-id'].data[2].count).toBe(3);
   });
 
   it('fetches source facet query with metadata grouping', async () => {
@@ -138,11 +146,16 @@ describe('useFilterQueries', () => {
     );
 
     await waitFor(() =>
-      expect(result.current.results['source-id'].data.length).toBeGreaterThan(
-        0,
-      ),
+      expect(
+        result.current.results?.['source-id']?.data.length ?? 0,
+      ).toBeGreaterThan(0),
     );
-    expect(result.current.results['source-id'].data[0].groupBy).toBe('IID');
+    const results = result.current.results;
+    expect(results).toBeDefined();
+    if (!results) {
+      throw new Error('Expected results to be defined');
+    }
+    expect(results['source-id'].data[0].groupBy).toBe('IID');
   });
 
   it('fetches histogram query and appends not-exists count', async () => {
@@ -181,9 +194,14 @@ describe('useFilterQueries', () => {
     );
 
     await waitFor(() =>
-      expect(result.current.results.date.data.length).toBeGreaterThan(0),
+      expect(result.current.results?.date?.data.length ?? 0).toBeGreaterThan(0),
     );
-    expect(result.current.results.date.data.map(d => d.term)).toEqual([
+    const results = result.current.results;
+    expect(results).toBeDefined();
+    if (!results) {
+      throw new Error('Expected results to be defined');
+    }
+    expect(results.date.data.map(d => d.term)).toEqual([
       '2020-01-01',
       '-_exists_',
     ]);
@@ -211,7 +229,12 @@ describe('useFilterQueries', () => {
     );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(result.current.results['facet-id'].data).toEqual([]);
+    const results = result.current.results;
+    expect(results).toBeDefined();
+    if (!results) {
+      throw new Error('Expected results to be defined');
+    }
+    expect(results['facet-id'].data).toEqual([]);
     expect(result.current.error).toBeNull();
   });
 
@@ -249,9 +272,16 @@ describe('useFilterQueries', () => {
     );
 
     await waitFor(() =>
-      expect(result.current.results['facet-id'].data.length).toBeGreaterThan(0),
+      expect(
+        result.current.results?.['facet-id']?.data.length ?? 0,
+      ).toBeGreaterThan(0),
     );
-    expect(result.current.results['facet-id'].data.map(d => d.term)).toEqual([
+    const results = result.current.results;
+    expect(results).toBeDefined();
+    if (!results) {
+      throw new Error('Expected results to be defined');
+    }
+    expect(results['facet-id'].data.map(d => d.term)).toEqual([
       '_exists_',
       't1',
     ]);
