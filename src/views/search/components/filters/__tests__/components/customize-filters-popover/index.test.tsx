@@ -53,7 +53,9 @@ describe('customize-filters-popover', () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole('button', { name: /customize filters/i }));
+    fireEvent.click(
+      screen.getByRole('button', { name: /customize search filters/i }),
+    );
     fireEvent.change(screen.getByPlaceholderText(/search filters/i), {
       target: { value: 'host' },
     });
