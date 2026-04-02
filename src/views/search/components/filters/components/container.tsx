@@ -4,6 +4,7 @@ import {
   Drawer,
   DrawerBody,
   DrawerFooter,
+  DrawerHeader,
   DrawerOverlay,
   DrawerContent,
   DrawerCloseButton,
@@ -16,7 +17,7 @@ import {
   Box,
 } from '@chakra-ui/react';
 import { FaFilter } from 'react-icons/fa6';
-import { FilterConfig, SelectedFilterType } from '../types';
+import { FilterConfig } from '../types';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { CustomizeFiltersPopover } from './customize-filters-popover';
 import { SHOW_VISUAL_SUMMARY } from 'src/utils/feature-flags';
@@ -24,7 +25,6 @@ import { SHOW_VISUAL_SUMMARY } from 'src/utils/feature-flags';
 export interface FiltersContainerProps {
   title?: string;
   isDisabled?: boolean;
-  selectedFilters: SelectedFilterType;
   removeAllFilters: () => void;
   error: Error | null;
   filtersList: FilterConfig[];
@@ -36,15 +36,23 @@ const DrawerContentMemo: React.FC<{
   content: React.ReactNode;
   onClose: () => void;
   innerHeight: number;
-}> = React.memo(({ content, onClose, innerHeight }) => (
-  <DrawerContent height={`${innerHeight}px`} pt={8}>
-    <DrawerCloseButton />
+  title: string;
+}> = React.memo(({ content, onClose, innerHeight, title }) => (
+  <DrawerContent height={`${innerHeight}px`}>
+    <DrawerHeader borderBottomWidth='1px' py={3} px={4}>
+      <Flex align='center' gap={2}>
+        <Text fontSize='md' fontWeight='semibold' flex={1}>
+          {title}
+        </Text>
+      </Flex>
+    </DrawerHeader>
+    <DrawerCloseButton top={3} />
     <ScrollContainer>
-      <DrawerBody>{content}</DrawerBody>
+      <DrawerBody px={2}>{content}</DrawerBody>
     </ScrollContainer>
-    <DrawerFooter borderTopWidth='1px'>
-      <Button onClick={onClose} colorScheme='secondary' size='md'>
-        Submit and Close
+    <DrawerFooter borderTopWidth='1px' py={3}>
+      <Button onClick={onClose} colorScheme='secondary' size='md' w='full'>
+        Done
       </Button>
     </DrawerFooter>
   </DrawerContent>
@@ -147,6 +155,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         left={4}
         bottom={50}
         boxShadow='high'
+        borderRadius='full'
         w='3.5rem'
         h='3.5rem'
         p={0}
@@ -183,6 +192,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
           content={content}
           onClose={onClose}
           innerHeight={innerHeight}
+          title={title || 'Filters'}
         />
       </Drawer>
     </>

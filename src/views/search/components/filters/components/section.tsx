@@ -6,9 +6,7 @@ import {
   AccordionPanel,
   Box,
   Text,
-  Icon,
 } from '@chakra-ui/react';
-import { FaChevronDown } from 'react-icons/fa6';
 import Tooltip from 'src/components/tooltip';
 import { SHOW_VISUAL_SUMMARY } from 'src/utils/feature-flags';
 import { FiltersChartToggle } from './filters-chart-toggle';
@@ -44,13 +42,13 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                 <AccordionButton
                   as='span'
                   role='button'
-                  px={3}
+                  px={{ base: 4, md: 3 }}
                   gap={2}
                   borderLeft='4px solid'
                   borderBottom='0.5px solid'
                   borderRadius='sm'
                   flexDirection={SHOW_VISUAL_SUMMARY ? 'row' : 'row-reverse'}
-                  py={isExpanded ? 1.5 : 1}
+                  py={{ base: isExpanded ? 3 : 2.5, md: isExpanded ? 1.5 : 1 }}
                   bg={isExpanded ? 'secondary.50' : 'transparent'}
                   borderTopColor={isExpanded ? 'secondary.100' : 'gray.100'}
                   borderBottomColor={isExpanded ? 'transparent' : 'gray.100'}
