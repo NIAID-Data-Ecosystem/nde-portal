@@ -375,20 +375,36 @@ interface SampleResultsTableProps {
    * When undefined, all columns are shown.
    */
   visibleColumnIds?: string[];
+  /**
+   * Full ordered list of all column IDs (visible + hidden).
+   * The table renders visible columns in this order.
+   * When undefined, the default ALL_SAMPLE_COLUMNS order is used.
+   */
+  columnOrder?: string[];
 }
 
 export const SampleResultsTable = ({
   results,
   isLoading,
   visibleColumnIds,
+  columnOrder,
 }: SampleResultsTableProps) => {
   const rows = useMemo(() => results.map(toRow), [results]);
 
-  // Filter the master column list to only the visible ones, preserving order
+  // Build the ordered + filtered column list:
+  // 1. Start from columnOrder (if provided) or the master list order.
+  // 2. Keep only columns that are in visibleColumnIds.
   const visibleColumns = useMemo(() => {
-    if (!visibleColumnIds) return ALL_SAMPLE_COLUMNS;
-    return ALL_SAMPLE_COLUMNS.filter(col => visibleColumnIds.includes(col.id));
-  }, [visibleColumnIds]);
+    const sourceOrder =
+      columnOrder && columnOrder.length > 0
+        ? columnOrder
+            .map(id => ALL_SAMPLE_COLUMNS.find(c => c.id === id))
+            .filter((c): c is SampleColumn => !!c)
+        : ALL_SAMPLE_COLUMNS;
+
+    if (!visibleColumnIds) return sourceOrder;
+    return sourceOrder.filter(col => visibleColumnIds.includes(col.id));
+  }, [visibleColumnIds, columnOrder]);
 
   return (
     <Skeleton isLoaded={!isLoading} width='100%'>

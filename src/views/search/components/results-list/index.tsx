@@ -22,6 +22,7 @@ import {
   CustomizeColumnsPopover,
   DEFAULT_VISIBLE_COLUMN_IDS,
   CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+  CUSTOM_COLUMN_ORDER_STORAGE_KEY,
 } from './components/sample-results-table/components/CustomizeColumnsPopover';
 
 const RESULT_FIELDS = [
@@ -111,6 +112,32 @@ const getInitialVisibleColumnIds = (): string[] => {
   return DEFAULT_VISIBLE_COLUMN_IDS;
 };
 
+// Read the persisted column order from localStorage.
+// Falls back to the master column order when no stored value exists.
+const getInitialColumnOrder = (): string[] => {
+  if (typeof window === 'undefined') {
+    return ALL_SAMPLE_COLUMNS.map(c => c.id);
+  }
+  try {
+    const stored = window.localStorage.getItem(CUSTOM_COLUMN_ORDER_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const allIds = ALL_SAMPLE_COLUMNS.map(c => c.id);
+        const valid = parsed.filter((id: unknown): id is string =>
+          allIds.includes(id as string),
+        );
+        // Append any columns missing from the persisted order
+        const missing = allIds.filter(id => !valid.includes(id));
+        if (valid.length > 0) return [...valid, ...missing];
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return ALL_SAMPLE_COLUMNS.map(c => c.id);
+};
+
 /*
 [COMPONENT INFO]:
  Search results pages displays the list of records returned by a search.
@@ -149,6 +176,11 @@ export const SearchResults = ({
   // Column visibility state (Samples tab only)
   const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(
     getInitialVisibleColumnIds,
+  );
+
+  // Column order state (Samples tab only)
+  const [columnOrder, setColumnOrder] = useState<string[]>(
+    getInitialColumnOrder,
   );
 
   const { response, params } = useSearchResultsData(
@@ -261,6 +293,7 @@ export const SearchResults = ({
               <CustomizeColumnsPopover
                 columnsList={SAMPLE_COLUMN_CONFIGS}
                 onVisibleColumnsChange={setVisibleColumnIds}
+                onColumnOrderChange={setColumnOrder}
               />
             ) : undefined
           }
@@ -292,6 +325,7 @@ export const SearchResults = ({
             results={data?.results || []}
             isLoading={!router.isReady || isLoading}
             visibleColumnIds={visibleColumnIds}
+            columnOrder={columnOrder}
           />
         ) : (
           /* Dataset / ComputationalTool tabs: render result cards */
