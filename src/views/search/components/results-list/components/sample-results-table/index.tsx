@@ -419,6 +419,14 @@ export const SampleResultsTable = ({
         tableContainerProps={{
           overflowX: 'auto',
         }}
+        tableHeadProps={{
+          sx: {
+            // Replace per-cell bottom border with a single full-width
+            // border on the thead row, which always spans the container width.
+            th: { borderBottom: 'none' },
+            tr: { borderBottom: '1px solid', borderColor: 'gray.200' },
+          },
+        }}
         getTableRowProps={(_, idx) => ({
           bg: idx % 2 === 0 ? 'white' : 'page.alt',
         })}
