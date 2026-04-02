@@ -1,0 +1,185 @@
+import React, { useCallback, useMemo, useState } from 'react';
+import { useFilterQueries } from '../hooks/useFilterQueries';
+import { queryFilterObject2String } from '../utils/query-string';
+import { SelectedFilterType } from '../types';
+import { useRouter } from 'next/router';
+import { FiltersSection } from './section';
+import { FiltersList } from './list';
+import { FiltersContainer } from './container';
+import { DateFilter } from './date-filter';
+import { updateRoute } from '../../../utils/update-route';
+import { useSearchQueryFromURL } from '../../../hooks/useSearchQueryFromURL';
+import { usePaginationContext } from '../../../context/pagination-context';
+import { SHOW_VISUAL_SUMMARY } from 'src/utils/feature-flags';
+import { FILTER_CONFIGS } from '../config';
+import { useSearchResultsFetchedContext } from 'src/views/search/context/search-results-fetched-context';
+import { useSearchTabsContext } from 'src/views/search/context/search-tabs-context';
+
+interface FiltersProps {
+  colorScheme?: string;
+  isDisabled?: boolean;
+  selectedFilters: SelectedFilterType;
+  removeAllFilters: () => void;
+  onToggleViz?: (filterId: string) => void;
+  isVizActive?: (filterId: string) => boolean;
+}
+
+export const Filters = React.memo(
+  ({
+    colorScheme = 'primary',
+    isDisabled,
+    selectedFilters,
+    removeAllFilters,
+    onToggleViz,
+    isVizActive,
+  }: FiltersProps) => {
+    const router = useRouter();
+    const { selectedTab } = useSearchTabsContext();
+    const queryParams = useSearchQueryFromURL();
+    const { resetPagination } = usePaginationContext();
+    const filterIds = FILTER_CONFIGS.map(config => config.id);
+    const [userSelectedFilters, setUserSelectedFilters] =
+      useState<string[]>(filterIds);
+    const { isFiltersFetchEnabled } = useSearchResultsFetchedContext();
+
+    const visibleFiltersList = useMemo(
+      () =>
+        FILTER_CONFIGS.filter(filterConfig => {
+          // Show filter if it's in the list of visible ids (i.e. the user hasn't hidden it) and if it is part of the tabs that should be shown for the current route
+          const userHasSelectedToShow = userSelectedFilters.includes(
+            filterConfig.id,
+          );
+          const isRelevantForTab =
+            SHOW_VISUAL_SUMMARY ||
+            filterConfig?.tabIds?.includes(selectedTab.id);
+          return userHasSelectedToShow && isRelevantForTab;
+        }),
+      [userSelectedFilters, selectedTab.id],
+    );
+
+    // Build the extra_filter query param string based on selected filters, including date if selected
+    const filtersAggParams = useMemo(() => {
+      return {
+        q: queryParams.q,
+        extra_filter: queryFilterObject2String(queryParams.filters || {}) || '',
+        use_ai_search: queryParams.use_ai_search ?? 'false',
+        advancedSearch: queryParams.advancedSearch,
+      };
+    }, [
+      queryParams.q,
+      queryParams.filters,
+      queryParams.use_ai_search,
+      queryParams.advancedSearch,
+    ]);
+
+    // Use simplified filter queries hook
+    const filtersAggQuery = useFilterQueries({
+      configs: visibleFiltersList,
+      enabled: isFiltersFetchEnabled,
+      params: filtersAggParams,
+    });
+
+    const { results, error, isUpdating } = filtersAggQuery;
+
+    const handleUpdate = useCallback(
+      (update: {}) => {
+        resetPagination();
+        return updateRoute(router, update);
+      },
+      [resetPagination, router],
+    );
+
+    const handleSelectedFilters = useCallback(
+      (values: string[], facet: string) => {
+        const updatedValues = values.map(value => {
+          // return object with inverted facet + key for exists values
+          if (value === '-_exists_' || value === '_exists_') {
+            return { [value]: [facet] };
+          }
+          return value;
+        });
+        let updatedFilterString = queryFilterObject2String({
+          ...selectedFilters,
+          ...{ [facet]: updatedValues },
+        } as SelectedFilterType);
+        handleUpdate({
+          from: 1,
+          filters: updatedFilterString,
+        });
+      },
+      [selectedFilters, handleUpdate],
+    );
+
+    // Determine visibility based on route
+    // On search page: show both histogram and controls when visual summary is enabled
+    // On visual-summary page: show only controls (histogram is in the grid)
+    const showHistogram = !SHOW_VISUAL_SUMMARY;
+    const showDateControls = true; // Always show controls in filters
+    return (
+      <FiltersContainer
+        title='Search Filters'
+        error={error}
+        filtersList={FILTER_CONFIGS}
+        isDisabled={isDisabled}
+        selectedFilters={selectedFilters}
+        onVisibleFiltersChange={setUserSelectedFilters}
+        removeAllFilters={() => {
+          resetPagination();
+          removeAllFilters();
+        }}
+      >
+        {visibleFiltersList.map(filterConfig => {
+          const { id, name, property, description } = filterConfig;
+          const selected = selectedFilters?.[property]?.map(filter => {
+            if (typeof filter === 'object') {
+              return Object.keys(filter)[0];
+            } else {
+              return filter;
+            }
+          });
+          return (
+            <FiltersSection
+              key={name}
+              name={name}
+              description={description}
+              filterId={filterConfig.chart ? id : undefined}
+              isVizActive={
+                filterConfig.chart && isVizActive ? isVizActive(id) : false
+              }
+              onToggleViz={onToggleViz}
+            >
+              {id === 'date' ? (
+                <DateFilter
+                  colorScheme={colorScheme}
+                  handleSelectedFilter={values =>
+                    handleSelectedFilters(values, property)
+                  }
+                  resetFilter={() => handleSelectedFilters([], property)}
+                  selectedDates={selected || []}
+                  updatedAggregateQueryData={filtersAggQuery}
+                  queryParams={filtersAggParams}
+                  showHistogram={showHistogram}
+                  showDateControls={showDateControls}
+                  enabled={isFiltersFetchEnabled}
+                />
+              ) : (
+                <FiltersList
+                  config={filterConfig}
+                  colorScheme={colorScheme}
+                  searchPlaceholder={`Search ${name.toLowerCase()} filters`}
+                  terms={results?.[id]?.terms || []}
+                  selectedFilters={selected || []}
+                  handleSelectedFilters={values =>
+                    handleSelectedFilters(values, property)
+                  }
+                  isLoading={results?.[id]?.isLoading ?? true}
+                  isUpdating={results?.[id]?.isUpdating || isUpdating}
+                />
+              )}
+            </FiltersSection>
+          );
+        })}
+      </FiltersContainer>
+    );
+  },
+);

@@ -1,7 +1,7 @@
 import { SearchState } from '../../types';
-import { FilterConfig } from '../../../refactored-filters';
+import { FilterConfig } from '../../../filters';
 import { useDisclosure, Flex } from '@chakra-ui/react';
-import { SelectedFilterTypeValue } from '../../../filters/types';
+import { SelectedFilterValueType } from '../../../filters/types';
 import { DEFAULT_MORE_PARAMS } from '../../helpers';
 import { CardHeader } from './card-header';
 import { ChartContent } from './chart-content';
@@ -13,8 +13,8 @@ type VisualizationCardProps = {
   searchState: SearchState;
   isActive: boolean;
   removeActiveVizId: (vizId: string) => void;
-  onFilterUpdate?: (values: SelectedFilterTypeValue[], facet: string) => void;
-  selectedFilters: SelectedFilterTypeValue[];
+  onFilterUpdate?: (values: SelectedFilterValueType[], facet: string) => void;
+  selectedFilters: SelectedFilterValueType[];
 };
 
 export const VisualizationCard = (props: VisualizationCardProps) => {

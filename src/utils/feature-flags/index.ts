@@ -7,6 +7,10 @@ const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
 export const SHOULD_HIDE_SAMPLES = (hash: string) =>
   hash === 'samples' && isProd;
 
+// Hide the samples tab on the search results page in production builds until
+// approved. To enable tab in production, set this flag to `true`.
+export const SHOW_SAMPLES_TAB = !isProd;
+
 // Show credit text section in non-production environments for testing/review. To enable section in production, set this flag to `true`.
 // Note that we currently have two separate sections where credit text appears:
 // - In the sidebar under "Resource Access": src/components/resource-sections/components/sidebar/components/external/index.tsx

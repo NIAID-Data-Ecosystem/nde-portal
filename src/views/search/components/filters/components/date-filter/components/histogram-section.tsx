@@ -1,16 +1,15 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
 import { Flex, Spinner, Text } from '@chakra-ui/react';
-import { FacetTermWithDetails } from '../../../types';
-import { shouldEnableInVisualSummaryPage } from 'src/utils/feature-flags';
-import { useRouter } from 'next/router';
+import { FilterTermType } from '../../../types';
+import { SHOW_VISUAL_SUMMARY } from 'src/utils/feature-flags';
 
 const Histogram = dynamic(() => import('./histogram'), {
   ssr: false,
 });
 
 interface HistogramSectionProps {
-  data: FacetTermWithDetails[];
+  data: FilterTermType[];
   hasData: boolean;
   isLoading: boolean;
   isUpdating: boolean;
@@ -24,7 +23,6 @@ export const HistogramSection: React.FC<HistogramSectionProps> = ({
   isUpdating,
   onDateSelect,
 }) => {
-  const router = useRouter();
   const [hasLoadedOnce, setHasLoadedOnce] = React.useState(false);
 
   React.useEffect(() => {
@@ -33,18 +31,14 @@ export const HistogramSection: React.FC<HistogramSectionProps> = ({
     }
   }, [isLoading, isUpdating]);
 
-  const isEnabledInVisualSummaryPage = shouldEnableInVisualSummaryPage(
-    router.pathname,
-  );
-
   return (
     <Flex
       w='100%'
       flexDirection='column'
       alignItems='center'
       p={4}
-      px={isEnabledInVisualSummaryPage ? undefined : 10}
-      mt={isEnabledInVisualSummaryPage ? undefined : -1.5}
+      px={SHOW_VISUAL_SUMMARY ? undefined : 10}
+      mt={SHOW_VISUAL_SUMMARY ? undefined : -1.5}
       position='relative'
       minHeight='180px'
       height='100%'
