@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Button, Flex, Text } from '@chakra-ui/react';
+import { Flex, Text } from '@chakra-ui/react';
 import { useSpring, animated } from '@react-spring/web';
 import { Annotation, HtmlLabel } from '@visx/annotation';
 import { AxisBottom } from '@visx/axis';
@@ -207,6 +207,15 @@ export const BarChart = ({
                 scale={xScale}
                 tickValues={tickValues}
                 tickFormat={v => Number(v).toLocaleString()}
+                tickLabelProps={() => ({
+                  style: {
+                    fontFamily: theme.fonts.body,
+                    fontSize: theme.fontSizes['2xs'],
+                    fontWeight: theme.fontWeights.semibold,
+                    fill: theme.colors.text.heading,
+                    textAnchor: 'middle',
+                  },
+                })}
               />
               <GridColumns
                 scale={xScale}
