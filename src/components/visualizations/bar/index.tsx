@@ -69,7 +69,7 @@ const getTermColor = (data: ChartDatum[]) =>
 export const BarChart = ({
   width: initialWidth = 400,
   height: initialHeight = 400,
-  margin = { top: 10, right: 40, bottom: 0, left: 0 },
+  margin = { top: 10, right: 30, bottom: 0, left: 0 },
   data,
   onSliceClick,
   isSliceSelected,
