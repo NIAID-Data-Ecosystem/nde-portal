@@ -1,4 +1,13 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
+  Text,
+} from '@chakra-ui/react';
 import { useFilterQueries } from '../hooks/useFilterQueries';
 import { queryFilterObject2String } from '../utils/query-string';
 import { SelectedFilterType } from '../types';
@@ -81,6 +90,45 @@ export const Filters = React.memo(
 
     const { results, error, isUpdating } = filtersAggQuery;
 
+    const groupedFilters = useMemo(() => {
+      return visibleFiltersList.reduce((groups, config) => {
+        if (!groups[config.category]) {
+          groups[config.category] = [];
+        }
+        groups[config.category].push(config);
+        return groups;
+      }, {} as Record<string, typeof visibleFiltersList>);
+    }, [visibleFiltersList]);
+
+    const groupedCategories = useMemo(
+      () => Object.entries(groupedFilters),
+      [groupedFilters],
+    );
+
+    const categoryAccordionDefaultIndex = useMemo(() => {
+      if (groupedCategories.length === 0) {
+        return [] as number[];
+      }
+
+      const categoriesWithActiveFilters = new Set(
+        groupedCategories
+          .map(([_, filters], index) => {
+            const hasSelection = filters.some(filterConfig => {
+              const values = selectedFilters?.[filterConfig.property];
+              return Array.isArray(values) && values.length > 0;
+            });
+            return hasSelection ? index : -1;
+          })
+          .filter(index => index !== -1),
+      );
+
+      if (categoriesWithActiveFilters.size === 0) {
+        return [0];
+      }
+
+      return Array.from(categoriesWithActiveFilters).sort((a, b) => a - b);
+    }, [groupedCategories, selectedFilters]);
+
     const handleUpdate = useCallback(
       (update: {}) => {
         resetPagination();
@@ -110,6 +158,18 @@ export const Filters = React.memo(
       [selectedFilters, handleUpdate],
     );
 
+    const getFilterIndicesForOpenState = useCallback(
+      (filtersInCategory: typeof visibleFiltersList) => {
+        return filtersInCategory
+          .map((config, index) => {
+            const values = selectedFilters?.[config.property];
+            return Array.isArray(values) && values.length > 0 ? index : -1;
+          })
+          .filter(index => index !== -1);
+      },
+      [selectedFilters],
+    );
+
     // Determine visibility based on route
     // On search page: show both histogram and controls when visual summary is enabled
     // On visual-summary page: show only controls (histogram is in the grid)
@@ -121,64 +181,110 @@ export const Filters = React.memo(
         error={error}
         filtersList={FILTER_CONFIGS}
         isDisabled={isDisabled}
-        selectedFilters={selectedFilters}
         onVisibleFiltersChange={setUserSelectedFilters}
         removeAllFilters={() => {
           resetPagination();
           removeAllFilters();
         }}
       >
-        {visibleFiltersList.map(filterConfig => {
-          const { id, name, property, description } = filterConfig;
-          const selected = selectedFilters?.[property]?.map(filter => {
-            if (typeof filter === 'object') {
-              return Object.keys(filter)[0];
-            } else {
-              return filter;
-            }
-          });
-          return (
-            <FiltersSection
-              key={name}
-              name={name}
-              description={description}
-              filterId={filterConfig.chart ? id : undefined}
-              isVizActive={
-                filterConfig.chart && isVizActive ? isVizActive(id) : false
-              }
-              onToggleViz={onToggleViz}
-            >
-              {id === 'date' ? (
-                <DateFilter
-                  colorScheme={colorScheme}
-                  handleSelectedFilter={values =>
-                    handleSelectedFilters(values, property)
-                  }
-                  resetFilter={() => handleSelectedFilters([], property)}
-                  selectedDates={selected || []}
-                  updatedAggregateQueryData={filtersAggQuery}
-                  queryParams={filtersAggParams}
-                  showHistogram={showHistogram}
-                  showDateControls={showDateControls}
-                  enabled={isFiltersFetchEnabled}
-                />
-              ) : (
-                <FiltersList
-                  config={filterConfig}
-                  colorScheme={colorScheme}
-                  searchPlaceholder={`Search ${name.toLowerCase()} filters`}
-                  terms={results?.[id]?.terms || []}
-                  selectedFilters={selected || []}
-                  handleSelectedFilters={values =>
-                    handleSelectedFilters(values, property)
-                  }
-                  isLoading={results?.[id]?.isLoading ?? true}
-                  isUpdating={results?.[id]?.isUpdating || isUpdating}
-                />
-              )}
-            </FiltersSection>
-          );
-        })}
+        <Accordion allowMultiple defaultIndex={categoryAccordionDefaultIndex}>
+          {groupedCategories.map(([category, filtersInCategory]) => {
+            return (
+              <AccordionItem key={category} border='none'>
+                <h2>
+                  <AccordionButton
+                    px={4}
+                    py={{ base: 3, md: 2 }}
+                    bg='gray.50'
+                    borderBottom='1px solid'
+                    borderBottomColor='gray.100'
+                    _hover={{ bg: 'gray.100' }}
+                  >
+                    <Box flex='1' textAlign='left'>
+                      <Text
+                        fontSize='sm'
+                        fontWeight='semibold'
+                        color='gray.800'
+                      >
+                        {category}
+                      </Text>
+                    </Box>
+
+                    <AccordionIcon />
+                  </AccordionButton>
+                </h2>
+                <AccordionPanel px={2} py={1} bg='blackAlpha.50'>
+                  <Accordion
+                    allowMultiple
+                    defaultIndex={getFilterIndicesForOpenState(
+                      filtersInCategory,
+                    )}
+                  >
+                    {filtersInCategory.map(filterConfig => {
+                      const { id, name, property, description } = filterConfig;
+                      const selected = selectedFilters?.[property]?.map(
+                        filter => {
+                          if (typeof filter === 'object') {
+                            return Object.keys(filter)[0];
+                          }
+                          return filter;
+                        },
+                      );
+
+                      return (
+                        <FiltersSection
+                          key={name}
+                          name={name}
+                          description={description}
+                          filterId={filterConfig.chart ? id : undefined}
+                          isVizActive={
+                            filterConfig.chart && isVizActive
+                              ? isVizActive(id)
+                              : false
+                          }
+                          onToggleViz={onToggleViz}
+                        >
+                          {id === 'date' ? (
+                            <DateFilter
+                              colorScheme={colorScheme}
+                              handleSelectedFilter={values =>
+                                handleSelectedFilters(values, property)
+                              }
+                              resetFilter={() =>
+                                handleSelectedFilters([], property)
+                              }
+                              selectedDates={selected || []}
+                              updatedAggregateQueryData={filtersAggQuery}
+                              queryParams={filtersAggParams}
+                              showHistogram={showHistogram}
+                              showDateControls={showDateControls}
+                              enabled={isFiltersFetchEnabled}
+                            />
+                          ) : (
+                            <FiltersList
+                              config={filterConfig}
+                              colorScheme={colorScheme}
+                              searchPlaceholder={`Search ${name.toLowerCase()} filters`}
+                              terms={results?.[id]?.terms || []}
+                              selectedFilters={selected || []}
+                              handleSelectedFilters={values =>
+                                handleSelectedFilters(values, property)
+                              }
+                              isLoading={results?.[id]?.isLoading ?? true}
+                              isUpdating={
+                                results?.[id]?.isUpdating || isUpdating
+                              }
+                            />
+                          )}
+                        </FiltersSection>
+                      );
+                    })}
+                  </Accordion>
+                </AccordionPanel>
+              </AccordionItem>
+            );
+          })}
+        </Accordion>
       </FiltersContainer>
     );
   },

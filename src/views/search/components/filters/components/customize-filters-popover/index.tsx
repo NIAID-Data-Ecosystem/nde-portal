@@ -23,7 +23,7 @@ import { filterGroupsBySearchTerm, groupFiltersByCategory } from './utils';
 const CUSTOM_VISIBLE_FILTERS_STORAGE_KEY = 'search-visible-filters';
 
 const CUSTOMIZE_FILTERS_COPY = {
-  button: 'Customize Filters',
+  button: 'Customize Search Filters',
   header: 'Customize Filters',
   description: 'Select which filters to display.',
   searchPlaceholder: 'Search filters',

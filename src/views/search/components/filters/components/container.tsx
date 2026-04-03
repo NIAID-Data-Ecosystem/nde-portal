@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
-  Accordion,
   Button,
   Drawer,
   DrawerBody,
   DrawerFooter,
+  DrawerHeader,
   DrawerOverlay,
   DrawerContent,
   DrawerCloseButton,
@@ -17,16 +17,14 @@ import {
   Box,
 } from '@chakra-ui/react';
 import { FaFilter } from 'react-icons/fa6';
-import { FilterConfig, SelectedFilterType } from '../types';
+import { FilterConfig } from '../types';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { CustomizeFiltersPopover } from './customize-filters-popover';
-import { useRouter } from 'next/router';
 import { SHOW_VISUAL_SUMMARY } from 'src/utils/feature-flags';
 
 export interface FiltersContainerProps {
   title?: string;
   isDisabled?: boolean;
-  selectedFilters: SelectedFilterType;
   removeAllFilters: () => void;
   error: Error | null;
   filtersList: FilterConfig[];
@@ -38,15 +36,23 @@ const DrawerContentMemo: React.FC<{
   content: React.ReactNode;
   onClose: () => void;
   innerHeight: number;
-}> = React.memo(({ content, onClose, innerHeight }) => (
-  <DrawerContent height={`${innerHeight}px`} pt={8}>
-    <DrawerCloseButton />
+  title: string;
+}> = React.memo(({ content, onClose, innerHeight, title }) => (
+  <DrawerContent height={`${innerHeight}px`}>
+    <DrawerHeader borderBottomWidth='1px' py={3} px={4}>
+      <Flex align='center' gap={2}>
+        <Text fontSize='md' fontWeight='semibold' flex={1}>
+          {title}
+        </Text>
+      </Flex>
+    </DrawerHeader>
+    <DrawerCloseButton top={3} />
     <ScrollContainer>
-      <DrawerBody>{content}</DrawerBody>
+      <DrawerBody px={2}>{content}</DrawerBody>
     </ScrollContainer>
-    <DrawerFooter borderTopWidth='1px'>
-      <Button onClick={onClose} colorScheme='secondary' size='md'>
-        Submit and Close
+    <DrawerFooter borderTopWidth='1px' py={3}>
+      <Button onClick={onClose} colorScheme='secondary' size='md' w='full'>
+        Done
       </Button>
     </DrawerFooter>
   </DrawerContent>
@@ -56,21 +62,11 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   title,
   error,
   children,
-  selectedFilters,
   filtersList,
   isDisabled = false,
   removeAllFilters,
   onVisibleFiltersChange,
 }) => {
-  const router = useRouter();
-
-  // State for managing which accordion sections are open
-  // Determine if visual summary section should be shown based on feature flag and current route since this component is shared with /search page.
-  const [openSections, setOpenSections] = useState<Set<string>>(new Set());
-
-  // Prevent accordion state initialization on every render
-  const [isInitialized, setIsInitialized] = useState(false);
-
   const btnRef = useRef<HTMLButtonElement>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const screenSize = useBreakpointValue(
@@ -95,48 +91,6 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Initialize accordion state: auto-open sections with active filters
-  useEffect(() => {
-    if (!isInitialized) {
-      const sectionsToOpen = new Set<string>();
-
-      Object.keys(selectedFilters).forEach(property => {
-        const filterValue = selectedFilters[property];
-        if (filterValue && filterValue.length > 0) {
-          sectionsToOpen.add(property);
-        }
-      });
-
-      setOpenSections(sectionsToOpen);
-      setIsInitialized(true);
-    }
-  }, [selectedFilters, isInitialized]);
-
-  // Convert open section properties to accordion indices
-  const accordionIndices = useMemo(() => {
-    return Array.from(openSections)
-      .map(property =>
-        filtersList.findIndex(config => config.property === property),
-      )
-      .filter(index => index !== -1)
-      .sort((a, b) => a - b);
-  }, [openSections, filtersList]);
-
-  const handleAccordionChange = (expandedIndex: number | number[]) => {
-    const indices = Array.isArray(expandedIndex)
-      ? expandedIndex
-      : [expandedIndex];
-
-    const openProperties = new Set<string>();
-    indices.forEach(index => {
-      if (index >= 0 && index < filtersList.length) {
-        openProperties.add(filtersList[index].property);
-      }
-    });
-
-    setOpenSections(openProperties);
-  };
-
   const content = (
     <>
       <Flex
@@ -148,18 +102,23 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         borderBottomColor='gray.100'
       >
         {/* Popover for customizing visible filters */}
-        {SHOW_VISUAL_SUMMARY && (
-          <CustomizeFiltersPopover
-            filtersList={filtersList}
-            onVisibleFiltersChange={onVisibleFiltersChange}
-          />
-        )}
         <Flex gap={2} justifyContent='space-between'>
-          {title && (
-            <Heading size='sm' fontWeight='medium' lineHeight='short'>
+          {SHOW_VISUAL_SUMMARY && (
+            <CustomizeFiltersPopover
+              filtersList={filtersList}
+              onVisibleFiltersChange={onVisibleFiltersChange}
+            />
+          )}
+          {/* {title && (
+            <Heading
+              size='sm'
+              fontWeight='medium'
+              lineHeight='short'
+              color='text.heading'
+            >
               {title}
             </Heading>
-          )}
+          )} */}
           <Button
             colorScheme='secondary'
             variant='link'
@@ -179,14 +138,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
           </Heading>
         </Flex>
       ) : (
-        <Accordion
-          bg='white'
-          allowMultiple
-          index={accordionIndices}
-          onChange={handleAccordionChange}
-        >
-          {children}
-        </Accordion>
+        <Box bg='white'>{children}</Box>
       )}
     </>
   );
@@ -203,6 +155,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         left={4}
         bottom={50}
         boxShadow='high'
+        borderRadius='full'
         w='3.5rem'
         h='3.5rem'
         p={0}
@@ -239,6 +192,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
           content={content}
           onClose={onClose}
           innerHeight={innerHeight}
+          title={title || 'Filters'}
         />
       </Drawer>
     </>
