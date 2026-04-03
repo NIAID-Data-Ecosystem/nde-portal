@@ -69,7 +69,7 @@ const getTermColor = (data: ChartDatum[]) =>
 export const BarChart = ({
   width: initialWidth = 400,
   height: initialHeight = 400,
-  margin = { top: 10, right: 20, bottom: 0, left: 0 },
+  margin = { top: 10, right: 40, bottom: 0, left: 0 },
   data,
   onSliceClick,
   isSliceSelected,
@@ -89,7 +89,6 @@ export const BarChart = ({
   const svgWidth = width;
   const svgHeight = height;
   const innerWidth = Math.max(0, width - margin.left - margin.right);
-  const innerHeight = Math.max(0, height - margin.top - margin.bottom);
 
   // Calculate the usable bar width after accounting for label space.
   const barMaxWidth = Math.max(0, innerWidth - labelStyles.width);
@@ -97,8 +96,7 @@ export const BarChart = ({
   // Axis max value for formatting
   const maxVal = useMemo(() => Math.max(...data.map(d => d.value), 1), [data]);
   const { niceMax, tickValues } = useMemo(() => {
-    // keep your special casing if you like, but this generally works well
-    return makeNiceTicks({ maxValue: maxVal, targetTickCount: 3 });
+    return makeNiceTicks({ maxValue: maxVal });
   }, [maxVal]);
   const xScale = useMemo(() => {
     return applyLogScale
@@ -208,7 +206,7 @@ export const BarChart = ({
                 left={labelStyles.width}
                 scale={xScale}
                 tickValues={tickValues}
-                tickFormat={v => `${Math.round(Number(v)).toLocaleString()}`}
+                tickFormat={v => Number(v).toLocaleString()}
               />
               <GridColumns
                 scale={xScale}
