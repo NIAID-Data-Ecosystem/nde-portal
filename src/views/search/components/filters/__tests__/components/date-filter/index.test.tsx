@@ -1,12 +1,14 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DateFilter } from '../../../components/date-filter';
 
-const useFilterQueries = jest.fn();
+const useAggregation = jest.fn();
 const useDateFilterData = jest.fn();
 
-jest.mock('../../../hooks/useFilterQueries', () => ({
-  useFilterQueries: (...args: any[]) => useFilterQueries(...args),
+jest.mock('src/views/search/hooks/useAggregation', () => ({
+  useAggregation: (...args: any[]) => useAggregation(...args),
+  ALL_FACET_PROPERTIES: 'date',
 }));
 
 jest.mock('../../../utils/query-string', () => ({
@@ -54,24 +56,55 @@ describe('filters/components/date-filter/index', () => {
     });
   });
 
+  const renderWithQueryClient = (component: React.ReactElement) => {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+      },
+    });
+    return render(
+      <QueryClientProvider client={queryClient}>
+        {component}
+      </QueryClientProvider>,
+    );
+  };
+
   it('renders histogram and controls when no error', () => {
-    useFilterQueries
+    // Initial aggregation query (without date filter)
+    useAggregation
       .mockReturnValueOnce({
-        results: {
-          date: { data: [{ term: '2020-01-01', count: 1, label: '2020' }] },
+        data: {
+          total: 5,
+          facets: {
+            date: {
+              terms: [{ term: '2020-01-01', count: 3 }],
+              missing: 4,
+              total: 3,
+            },
+          },
         },
-        isLoading: false,
+        isPending: false,
+        isFetching: false,
+        error: null,
       })
+      // Updated aggregation query (with date filter) - shared cache
       .mockReturnValueOnce({
-        results: {
-          date: { data: [{ term: '2021-01-01', count: 2, label: '2021' }] },
+        data: {
+          total: 5,
+          facets: {
+            date: {
+              terms: [{ term: '2021-01-01', count: 2 }],
+              missing: 1,
+              total: 2,
+            },
+          },
         },
-        isLoading: false,
-        isUpdating: false,
+        isPending: false,
+        isFetching: false,
         error: null,
       });
 
-    render(
+    renderWithQueryClient(
       <DateFilter
         colorScheme='secondary'
         queryParams={{ q: 'abc', extra_filter: '(date:("2020"))' } as any}
@@ -79,6 +112,21 @@ describe('filters/components/date-filter/index', () => {
         handleSelectedFilter={jest.fn()}
         resetFilter={jest.fn()}
         enabled
+        updatedAggregateQueryData={{
+          results: {
+            date: {
+              id: 'date',
+              terms: [{ term: '2021-01-01', label: '2021', count: 2 }],
+              data: [{ term: '2021-01-01', label: '2021', count: 2 }],
+              isLoading: false,
+              isUpdating: false,
+              error: null,
+            },
+          },
+          isLoading: false,
+          isUpdating: false,
+          error: null,
+        }}
       />,
     );
 
@@ -94,19 +142,21 @@ describe('filters/components/date-filter/index', () => {
       hasAnyDateData: false,
     });
 
-    useFilterQueries
+    useAggregation
       .mockReturnValueOnce({
-        results: { date: { data: [] } },
-        isLoading: false,
+        data: undefined,
+        isPending: false,
+        isFetching: false,
+        error: null,
       })
       .mockReturnValueOnce({
-        results: { date: { data: [] } },
-        isLoading: false,
-        isUpdating: false,
+        data: undefined,
+        isPending: false,
+        isFetching: false,
         error: new Error('boom'),
       });
 
-    render(
+    renderWithQueryClient(
       <DateFilter
         colorScheme='secondary'
         queryParams={{ q: 'abc', extra_filter: '' } as any}
@@ -114,6 +164,12 @@ describe('filters/components/date-filter/index', () => {
         handleSelectedFilter={jest.fn()}
         resetFilter={jest.fn()}
         enabled
+        updatedAggregateQueryData={{
+          results: undefined,
+          isLoading: false,
+          isUpdating: false,
+          error: new Error('boom'),
+        }}
       />,
     );
 

@@ -35,7 +35,6 @@ import { NewsOrEventsObject, fetchEvents } from './updates';
 import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
 import { HeroBanner } from 'src/views/home/components/HeroBanner';
-import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import {
   fetchAllFeaturedPages,
   transformFeaturedContentForCarousel,

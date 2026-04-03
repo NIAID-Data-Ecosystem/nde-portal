@@ -1,5 +1,6 @@
 import { FilterConfig, ChartConfig } from './types';
 import { getMetadataDescription } from 'src/components/metadata';
+import { SHOW_SAMPLES_TAB } from 'src/utils/feature-flags';
 import {
   formatConditionsOfAccess,
   transformConditionsOfAccessLabel,
@@ -54,6 +55,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     property: 'sourceOrganization.name.raw',
     filterProperty: 'sourceOrganization.name',
     queryType: 'facet',
+    showMissing: false,
     description: getMetadataDescription('sourceOrganization') || '',
     chart: DEFAULT_BAR_PIE_CHART,
     category: 'Shared / Dataset',
@@ -246,7 +248,22 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     category: 'Sample',
     tabIds: ['s'],
   },
-];
+].filter(config => {
+  // If SHOW_SAMPLES_TAB is false, filter out any filters in the "Sample" category.
+  if (SHOW_SAMPLES_TAB) {
+    return config; // No filtering, return all configs
+  } else {
+    return config.category !== 'Sample' ? config : null; // Filter out "Sample" category
+  }
+}) as FilterConfig[];
+
+/**
+ * Static comma-separated list of all facet properties from FILTER_CONFIGS.
+ * Used to ensure a stable query key across all consumers (filters, date filter, visual summary).
+ */
+export const ALL_FACET_PROPERTIES = FILTER_CONFIGS.map(c => c.property).join(
+  ',',
+);
 
 /**
  * Get a filter config by id
