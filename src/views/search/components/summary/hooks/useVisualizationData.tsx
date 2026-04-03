@@ -123,9 +123,10 @@ export const useVisualizationData = ({
 
   const formatChartLabel = useCallback(
     (term: string, count: number) => {
-      if (chartType === 'bar') return term;
       if (isHistogramChart) return term.split('-')[0] || term;
-      return `${term} (${count.toLocaleString()})`;
+      const capitalizedTerm = term.charAt(0).toUpperCase() + term.slice(1);
+      if (chartType === 'bar') return capitalizedTerm;
+      return `${capitalizedTerm} (${count.toLocaleString()})`;
     },
     [chartType, isHistogramChart],
   );
