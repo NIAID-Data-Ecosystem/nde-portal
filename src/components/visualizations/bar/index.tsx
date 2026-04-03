@@ -314,13 +314,17 @@ export const BarChart = ({
                           pointerEvents: 'auto',
                           textAlign: labelStyles.horizontalAnchor,
                           width: `${maxLabelWidth}px`,
+                          overflow: 'hidden',
                         }}
                       >
                         <Text
                           color={id === MORE_ID ? 'link.color' : 'text.heading'}
-                          maxWidth={`${maxLabelWidth}px`}
+                          width='100%'
+                          display='block'
+                          overflow='hidden'
+                          textOverflow='ellipsis'
+                          whiteSpace='nowrap'
                           textDecoration={id === MORE_ID ? 'underline' : 'none'}
-                          noOfLines={1}
                           style={{ cursor: 'pointer' }}
                           onClick={e => {
                             e.stopPropagation();
