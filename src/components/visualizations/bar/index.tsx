@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Button, Flex, Text } from '@chakra-ui/react';
+import { Flex, Text } from '@chakra-ui/react';
 import { useSpring, animated } from '@react-spring/web';
 import { Annotation, HtmlLabel } from '@visx/annotation';
 import { AxisBottom } from '@visx/axis';
@@ -29,11 +29,10 @@ import { makeNiceTicks } from './helpers';
 
 const barStyles = {
   height: {
-    min: 8,
-    max: 8,
+    // cap the bar height to prevent overly tall bars with few items or in expanded mode
+    max: 10,
     expanded: {
-      min: 8,
-      max: 22,
+      max: 20,
     },
   },
   selected: {
@@ -48,11 +47,17 @@ const barStyles = {
   fill: theme.colors.gray[200],
   fillOpacity: 0.6,
 };
+// label styles are minimal since we're hiding the axis line and ticks, but we need to reserve space for the tick labels
 const labelStyles = {
   width: 100,
   padding: 8,
   horizontalAnchor: 'end',
   verticalAnchor: 'middle',
+} as const;
+
+// axis styles are minimal since we're hiding the axis line and ticks, but we need to reserve space for the tick labels
+const axisStyles = {
+  height: 24,
 } as const;
 
 const getTermColor = (data: ChartDatum[]) =>
@@ -64,7 +69,7 @@ const getTermColor = (data: ChartDatum[]) =>
 export const BarChart = ({
   width: initialWidth = 400,
   height: initialHeight = 400,
-  margin = { top: 10, right: 20, bottom: 0, left: 0 },
+  margin = { top: 10, right: 30, bottom: 0, left: 0 },
   data,
   onSliceClick,
   isSliceSelected,
@@ -81,10 +86,9 @@ export const BarChart = ({
   });
   const svgRef = React.useRef<SVGSVGElement | null>(null);
 
-  const svgWidth = width + margin.left + margin.right;
-  const svgHeight = height + margin.top + margin.bottom;
+  const svgWidth = width;
+  const svgHeight = height;
   const innerWidth = Math.max(0, width - margin.left - margin.right);
-  const innerHeight = Math.max(0, height - margin.top - margin.bottom);
 
   // Calculate the usable bar width after accounting for label space.
   const barMaxWidth = Math.max(0, innerWidth - labelStyles.width);
@@ -92,8 +96,7 @@ export const BarChart = ({
   // Axis max value for formatting
   const maxVal = useMemo(() => Math.max(...data.map(d => d.value), 1), [data]);
   const { niceMax, tickValues } = useMemo(() => {
-    // keep your special casing if you like, but this generally works well
-    return makeNiceTicks({ maxValue: maxVal, targetTickCount: 3 });
+    return makeNiceTicks({ maxValue: maxVal });
   }, [maxVal]);
   const xScale = useMemo(() => {
     return applyLogScale
@@ -108,42 +111,35 @@ export const BarChart = ({
         });
   }, [barMaxWidth, maxVal, niceMax, applyLogScale]);
 
-  // ---- Fit-to-height Y layout ----
+  // Fill the available vertical space, but shrink the chart when bars are few.
   const numBars = Math.max(1, data.length);
-
-  // Use available height to determine bar height and spacing
-  const idealBarHeight =
-    (height - (numBars - 1) * barStyles.padding.y) / numBars;
-
-  // Determine bar height within min/max bounds
-  const barHeightMin = isExpanded
-    ? barStyles.height.expanded.min
-    : barStyles.height.min;
 
   const barHeightMax = isExpanded
     ? barStyles.height.expanded.max
     : barStyles.height.max;
 
-  const barHeight = Math.max(
-    barHeightMin,
-    Math.min(barHeightMax, idealBarHeight),
+  // Natural compact height: just enough to render bars snugly.
+  const compactRowHeight = barHeightMax + 12;
+  const naturalSvgHeight =
+    numBars * compactRowHeight + axisStyles.height + margin.top + margin.bottom;
+  const effectiveSvgHeight = Math.min(svgHeight, naturalSvgHeight);
+  const plotHeight = Math.max(
+    0,
+    effectiveSvgHeight - margin.top - margin.bottom - axisStyles.height,
   );
-
-  // This is how tall the bar “stack” actually is.
-  const contentHeight =
-    numBars * barHeight + (numBars - 1) * barStyles.padding.y;
 
   const yScale = useMemo(
     () =>
       scaleBand({
-        range: [0, contentHeight],
+        range: [0, plotHeight],
         domain: data.map(d => d.term),
         paddingInner: 0,
         paddingOuter: 0,
         round: true,
       }),
-    [contentHeight, data],
+    [plotHeight, data, isExpanded],
   );
+  const barHeight = Math.min(barHeightMax, yScale.bandwidth());
 
   const colorScale = useMemo(() => getTermColor(data), [data]);
 
@@ -185,7 +181,11 @@ export const BarChart = ({
       <Flex ref={parentRef} w='100%' h='100%'>
         <div
           ref={containerRef}
-          style={{ position: 'relative', width: svgWidth, height: svgHeight }}
+          style={{
+            position: 'relative',
+            width: svgWidth,
+            height: effectiveSvgHeight,
+          }}
         >
           {/* Accessible title + description */}
           {/* <VisuallyHidden>
@@ -196,22 +196,31 @@ export const BarChart = ({
             ref={svgRef}
             role='img'
             width={svgWidth}
-            height={svgHeight}
+            height={effectiveSvgHeight}
             // aria-labelledby='summary-stacked-title'
             // aria-describedby='summary-stacked-desc'
           >
             <Group top={margin.top} left={margin.left}>
               <AxisBottom
-                top={contentHeight}
+                top={plotHeight}
                 left={labelStyles.width}
                 scale={xScale}
                 tickValues={tickValues}
-                tickFormat={v => `${Math.round(Number(v)).toLocaleString()}`}
+                tickFormat={v => Number(v).toLocaleString()}
+                tickLabelProps={() => ({
+                  style: {
+                    fontFamily: theme.fonts.body,
+                    fontSize: theme.fontSizes['2xs'],
+                    fontWeight: theme.fontWeights.semibold,
+                    fill: theme.colors.text.heading,
+                    textAnchor: 'middle',
+                  },
+                })}
               />
               <GridColumns
                 scale={xScale}
                 width={innerWidth}
-                height={contentHeight}
+                height={plotHeight}
                 left={labelStyles.width}
                 tickValues={tickValues}
                 stroke='#e0e0e0'
@@ -224,7 +233,8 @@ export const BarChart = ({
                 const barWidth = xScale(value) || 0;
 
                 const rowY = yScale(term) ?? 0;
-                const barY = rowY;
+                const barY =
+                  rowY + Math.max(0, (yScale.bandwidth() - barHeight) / 2);
 
                 const fill = colorScale(id);
                 const isHovered = hoveredId === id;
@@ -313,13 +323,17 @@ export const BarChart = ({
                           pointerEvents: 'auto',
                           textAlign: labelStyles.horizontalAnchor,
                           width: `${maxLabelWidth}px`,
+                          overflow: 'hidden',
                         }}
                       >
                         <Text
                           color={id === MORE_ID ? 'link.color' : 'text.heading'}
-                          maxWidth={`${maxLabelWidth}px`}
+                          width='100%'
+                          display='block'
+                          overflow='hidden'
+                          textOverflow='ellipsis'
+                          whiteSpace='nowrap'
                           textDecoration={id === MORE_ID ? 'underline' : 'none'}
-                          noOfLines={1}
                           style={{ cursor: 'pointer' }}
                           onClick={e => {
                             e.stopPropagation();
@@ -338,18 +352,6 @@ export const BarChart = ({
               })}
             </Group>
           </svg>
-          {/* {moreItem.length > 0 && (
-            <Button
-              size='xs'
-              variant='ghost'
-              textDecoration='underline'
-              onClick={() => onSliceClick?.(moreItem[0].id)}
-              colorScheme='blue'
-              color='link.color'
-            >
-              {moreItem[0].label + ` (${moreItem[0].value})`}
-            </Button>
-          )} */}
 
           {/* Tooltip */}
           {tooltipOpen && tooltipData && (

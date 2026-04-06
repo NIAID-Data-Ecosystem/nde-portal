@@ -52,7 +52,14 @@ const SummaryGrid = (props: SummaryGridProps) => {
       <FiltersDisclaimer />
 
       {props.activeVizIds.length > 0 && (
-        <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing={4} mt={2}>
+        <SimpleGrid
+          templateColumns={{
+            base: 'repeat(auto-fill, minmax(325px, 1fr))',
+            '2xl': 'repeat(3, minmax(325px, 1fr))',
+          }}
+          spacing={4}
+          mt={2}
+        >
           {/* Map over config to render visualizations - only for configs with chart config */}
           {props.configs
             .filter(config => !!config.chart)
