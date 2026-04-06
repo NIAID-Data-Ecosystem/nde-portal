@@ -179,6 +179,11 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
           variant='unstyled'
           resize='none'
           overflow='hidden'
+          _placeholder={{
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
           // optional, make growth feel smoother
           onInput={autoResize}
           {...getInputProps({
@@ -188,7 +193,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
             type,
             flex: 1,
             size,
-            mr: renderSubmitButton ? rightElWidth : 4,
+            mr: renderSubmitButton ? { base: 24, sm: rightElWidth } : 4,
             isDisabled,
             isInvalid,
             onKeyDown: (
