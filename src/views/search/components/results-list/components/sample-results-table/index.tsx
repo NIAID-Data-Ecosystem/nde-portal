@@ -6,6 +6,7 @@ import { Link } from 'src/components/link';
 import { FormattedResource, IncludedInDataCatalog } from 'src/utils/api/types';
 import { renderCellData } from './components/Cells';
 import { getTruncatedText } from 'src/components/table/helpers';
+import { REQUIRED_COLUMN_IDS } from './components/CustomizeColumnsPopover';
 
 // For columns whose display value is a rich object (e.g. { identifier, url })
 // or an array of DefinedTerms, a parallel `_sort_<field>` plain string
@@ -367,6 +368,12 @@ const getCells = ({
   return renderCellData({ column, data: value as any, isLoading });
 };
 
+// Required columns used as the fallback when visibleColumnIds resolves to
+// an empty array (e.g. during pre-hydration or after a "Clear All").
+const REQUIRED_COLUMNS = ALL_SAMPLE_COLUMNS.filter(col =>
+  REQUIRED_COLUMN_IDS.includes(col.id),
+);
+
 interface SampleResultsTableProps {
   results: FormattedResource[];
   isLoading: boolean;
@@ -402,8 +409,13 @@ export const SampleResultsTable = ({
             .filter((c): c is SampleColumn => !!c)
         : ALL_SAMPLE_COLUMNS;
 
-    if (!visibleColumnIds) return sourceOrder;
-    return sourceOrder.filter(col => visibleColumnIds.includes(col.id));
+    const filtered = visibleColumnIds
+      ? sourceOrder.filter(col => visibleColumnIds.includes(col.id))
+      : sourceOrder;
+
+    // Table requires at least one column. Fall back to required columns
+    // if the filtered result is empty.
+    return filtered.length > 0 ? filtered : REQUIRED_COLUMNS;
   }, [visibleColumnIds, columnOrder]);
 
   return (
