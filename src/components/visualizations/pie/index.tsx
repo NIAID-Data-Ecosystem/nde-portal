@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Box, Flex } from '@chakra-ui/react';
-import { animated, useTransition, to } from '@react-spring/web';
+import { animated, useSpring, useTransition, to } from '@react-spring/web';
 import {
   Annotation,
   CircleSubject,
@@ -101,11 +101,45 @@ export const PieChart = ({
   });
 
   // Use parent div to measure size for responsive rendering.
-  const { parentRef, ...dimensions } = useParentSize({ debounceTime: 150 });
+  const { parentRef, ...dimensions } = useParentSize({
+    debounceTime: 150,
+    initialSize: { width: 0, height: initialHeight },
+  });
+
+  const [isMeasured, setIsMeasured] = useState(false);
+  const [enableResizeAnimation, setEnableResizeAnimation] = useState(false);
+  const hasMeasuredRef = useRef(false);
+
+  const measuredWidth = dimensions.width;
+  const measuredHeight = dimensions.height;
 
   // Dimensions accounting for margins.
-  const width = dimensions.width || initialWidth;
-  const height = dimensions.height || initialHeight;
+  const width = isMeasured ? measuredWidth : initialWidth;
+  const height = isMeasured ? measuredHeight : initialHeight;
+
+  useEffect(() => {
+    if (!hasMeasuredRef.current && measuredWidth > 0 && measuredHeight > 0) {
+      hasMeasuredRef.current = true;
+      // Wait two animation frames so parent layout settles before first paint.
+      const rafA = requestAnimationFrame(() => {
+        const rafB = requestAnimationFrame(() => {
+          setIsMeasured(true);
+          // Keep first paint static; animate only subsequent resizes.
+          requestAnimationFrame(() => setEnableResizeAnimation(true));
+        });
+        return () => cancelAnimationFrame(rafB);
+      });
+
+      return () => cancelAnimationFrame(rafA);
+    }
+  }, [measuredWidth, measuredHeight]);
+
+  const svgSpring = useSpring({
+    width,
+    height,
+    immediate: !enableResizeAnimation,
+    config: { tension: 280, friction: 32 },
+  });
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
   const outerRadius = (Math.min(innerWidth, innerHeight) / 2) * PIE_SCALE;
@@ -138,51 +172,53 @@ export const PieChart = ({
       tooltipData: datum,
     });
   };
-
   return (
     <Flex w='100%' h='100%'>
       <Flex ref={parentRef} w='100%' h='100%'>
-        <Box ref={containerRef} width={width} height={height}>
-          <svg
-            ref={svgRef}
-            width={width}
-            height={height}
-            onClick={() => setHoveredId(null)}
-          >
-            <Group top={groupTop} left={groupLeft}>
-              <Pie
-                key={viewKey}
-                data={data}
-                pieValue={d => d.value}
-                cornerRadius={3}
-                outerRadius={outerRadius}
-                innerRadius={innerRadius}
-              >
-                {pie => (
-                  <AnimatedPie<ChartDatum>
-                    {...pie}
-                    svgWidth={width}
-                    groupLeft={groupLeft}
-                    viewKey={viewKey}
-                    innerRadius={innerRadius}
-                    outerRadius={outerRadius}
-                    animate={animate}
-                    getKey={({ data: { id } }) => id}
-                    getLabel={({ data: { label } }) => label}
-                    onClickDatum={({ data: { id } }) => onSliceClick?.(id)}
-                    getColor={({ data: { id } }) => colorScale(id)}
-                    hoveredId={hoveredId}
-                    isSliceSelected={isSliceSelected}
-                    handleMouseOver={handleMouseOver}
-                    handleMouseOut={() => {
-                      setHoveredId(null);
-                      hideTooltip();
-                    }}
-                  />
-                )}
-              </Pie>
-            </Group>
-          </svg>
+        <Box ref={containerRef} width='100%' height='100%'>
+          {isMeasured && data && data.length > 0 && (
+            <animated.svg
+              ref={svgRef}
+              width={svgSpring.width}
+              height={svgSpring.height}
+              style={{ overflow: 'visible' }}
+              onClick={() => setHoveredId(null)}
+            >
+              <Group top={groupTop} left={groupLeft}>
+                <Pie
+                  key={viewKey}
+                  data={data}
+                  pieValue={d => d.value}
+                  cornerRadius={3}
+                  outerRadius={outerRadius}
+                  innerRadius={innerRadius}
+                >
+                  {pie => (
+                    <AnimatedPie<ChartDatum>
+                      {...pie}
+                      svgWidth={width}
+                      groupLeft={groupLeft}
+                      viewKey={viewKey}
+                      innerRadius={innerRadius}
+                      outerRadius={outerRadius}
+                      animate={animate}
+                      getKey={({ data: { id } }) => id}
+                      getLabel={({ data: { label } }) => label}
+                      onClickDatum={({ data: { id } }) => onSliceClick?.(id)}
+                      getColor={({ data: { id } }) => colorScale(id)}
+                      hoveredId={hoveredId}
+                      isSliceSelected={isSliceSelected}
+                      handleMouseOver={handleMouseOver}
+                      handleMouseOut={() => {
+                        setHoveredId(null);
+                        hideTooltip();
+                      }}
+                    />
+                  )}
+                </Pie>
+              </Group>
+            </animated.svg>
+          )}
         </Box>
       </Flex>
       {/* Tooltip */}

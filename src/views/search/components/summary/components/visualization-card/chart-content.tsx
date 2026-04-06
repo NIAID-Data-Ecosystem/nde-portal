@@ -51,10 +51,10 @@ export const ChartContent = ({
   onModalClose,
 }: ChartContentProps) => {
   const renderChartView = (isExpanded: boolean) => {
+    const minHeight = '280px';
     const height = isExpanded
-      ? 'clamp(180px, 50vh, 450px)'
-      : 'clamp(180px, 30vh, 300px)';
-    const minHeight = '250px';
+      ? `clamp(${minHeight}, 50vh, 450px)`
+      : `clamp(${minHeight}, 30vh, 300px)`;
     // No data is provided for the chart.
     if (isEmpty) {
       return <EmptyState height={height} />;
