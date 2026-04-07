@@ -15,16 +15,22 @@ import { MetadataScoreToggle } from './components/metadata-score-toggle';
 
 /*
 [COMPONENT INFO]:
- Search results pages displays the list of records returned by a search.
- Contains pagination and search results cards.
+ Search results toolbar displays sort/size controls, an optional extra-actions
+ slot, and the Download Metadata button.
+
+ `extraActions` is an optional render prop for inserting additional controls
+ (e.g. "Customize Columns") to the left of the Download Metadata button.
 */
 
 export const SearchResultsToolbar = ({
   id,
   params,
+  extraActions,
 }: {
   id: TabType['id'];
   params: Params;
+  /** Optional content rendered to the left of the Download Metadata button. */
+  extraActions?: React.ReactNode;
 }) => {
   const router = useRouter();
 
@@ -53,6 +59,8 @@ export const SearchResultsToolbar = ({
         flexDirection={{ base: 'column-reverse', md: 'row' }}
         alignItems={{ base: 'unset', md: 'center' }}
         justifyContent={'space-between'}
+        flexWrap={{ base: 'nowrap', md: 'wrap' }}
+        rowGap={2}
         pb={2}
         w='100%'
       >
@@ -86,18 +94,22 @@ export const SearchResultsToolbar = ({
           />
         </Stack>
 
-        {/* Download CTA */}
-        <DownloadMetadata
-          pb={{ base: 2, md: 0 }}
-          exportFileName={`nde-results-${(params.q ?? '').replaceAll(
-            ' ',
-            '_',
-          )}`}
-          params={params}
-          buttonProps={{ variant: 'outline' }}
-        >
-          Download Metadata
-        </DownloadMetadata>
+        {/* Right-side actions: optional extra slot + Download Metadata */}
+        <Flex flexWrap='wrap' columnGap={2} rowGap={2} alignItems='center'>
+          {extraActions && <Flex pb={{ base: 2, md: 0 }}>{extraActions}</Flex>}
+          {/* Download CTA */}
+          <DownloadMetadata
+            pb={{ base: 2, md: 0 }}
+            exportFileName={`nde-results-${(params.q ?? '').replaceAll(
+              ' ',
+              '_',
+            )}`}
+            params={params}
+            buttonProps={{ variant: 'outline' }}
+          >
+            Download Metadata
+          </DownloadMetadata>
+        </Flex>
       </Flex>
     </>
   );
