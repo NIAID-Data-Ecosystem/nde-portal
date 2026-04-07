@@ -23,6 +23,7 @@ export const AdvancedSearchLink: React.FC<LinkProps> = props => {
         fontSize='sm'
         fontWeight='medium'
         lineHeight='shorter'
+        whiteSpace='nowrap'
         _visited={{ color: 'primary.600' }}
         _hover={{ color: 'primary.400' }}
         {...props}

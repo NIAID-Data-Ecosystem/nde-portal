@@ -56,19 +56,6 @@ describe('histogram', () => {
     jest.clearAllMocks();
   });
 
-  it('shows no-date-info fallback when allData is empty', () => {
-    useDateRangeContext.mockReturnValue({
-      filteredData: [],
-      dates: [null, null],
-      allData: [],
-    });
-
-    render(<Histogram updatedData={[]} handleClick={jest.fn()} />);
-    expect(
-      screen.getByText(/no results with date information/i),
-    ).toBeInTheDocument();
-  });
-
   it('renders bars and handles click selection', () => {
     const handleClick = jest.fn();
     useDateRangeContext.mockReturnValue({

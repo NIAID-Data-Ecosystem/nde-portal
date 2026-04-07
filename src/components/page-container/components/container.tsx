@@ -113,7 +113,12 @@ export const PageContainer: React.FC<PageContainerProps> = ({
           {/* {includeSearchBar && <SearchBarSection />} */}
           {includeSearchBar && (
             <Search.Wrapper>
-              <Flex justifyContent='space-between' alignItems='baseline'>
+              <Flex
+                justifyContent='space-between'
+                alignItems='baseline'
+                flexWrap='wrap'
+                gap={2}
+              >
                 {SHOW_AI_ASSISTED_SEARCH && <Search.AIToggle />}
                 <Search.AdvancedSearchLink />
               </Flex>
