@@ -2,74 +2,152 @@
  * User Settings Page - Protected route requiring authentication
  */
 
+import { useState } from 'react';
 import {
   Box,
-  Container,
   Heading,
   Text,
   VStack,
   HStack,
-  Divider,
+  Link,
   Button,
+  Switch,
 } from '@chakra-ui/react';
 import { useAuth } from 'src/hooks/useAuth';
 import { withAuth } from 'src/components/auth/withAuth';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 
 function UserSettingsPage() {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
+  const [emailUpdates, setEmailUpdates] = useState(false);
+  const [feedbackTesting, setFeedbackTesting] = useState(false);
+  const [betaFeatures, setBetaFeatures] = useState(false);
+  const [aiSearch, setAiSearch] = useState(false);
 
-  if (!user) return null;
   return (
     <PageContainer meta={getPageSeoConfig('/settings')} px={0} py={0}>
       <Box
-        maxW='md'
+        maxW='2xl'
         mx='auto'
-        my={{ base: 8, md: 16 }}
-        bg='white'
-        border='1px'
-        borderColor='gray.200'
-        borderRadius='md'
-        boxShadow='sm'
-        p={{ base: 6, md: 8 }}
+        my={{ base: 6, md: 12 }}
+        px={{ base: 4, md: 0 }}
       >
-        <Heading as='h1' size='lg' mb={3}>
-          Account Settings
-        </Heading>
-        <VStack align='start' spacing={1} lineHeight='shorter' fontSize='md'>
-          <Text fontWeight='semibold'>{user.name}</Text>
-          <Text color='gray.700'>@{user.username}</Text>
+        {/* Header */}
+        <VStack alignItems='start' gap={2} mb={8}>
+          <Heading as='h1' size='xl' fontWeight='bold'>
+            Settings
+          </Heading>
+          <Text color='gray.600' fontSize='md'>
+            Manage account settings and preferences
+          </Text>
         </VStack>
-        <Divider my={4} />
-        <VStack align='stretch' spacing={2} lineHeight='shorter'>
-          <HStack justify='space-between'>
-            <Text fontWeight='medium'>Provider</Text>
-            <Text color='gray.700'>{user.oauth_provider}</Text>
-          </HStack>
 
-          {user.email && (
-            <HStack justify='space-between'>
-              <Text fontWeight='medium'>Email</Text>
-              <Text color='gray.700'>{user.email}</Text>
+        {/* Communication Preferences Section */}
+        <VStack alignItems='start' gap={6} mb={8}>
+          <VStack alignItems='start' gap={0} w='full'>
+            <Heading as='h2' size='md' fontWeight='semibold' mb={4}>
+              Communication preferences
+            </Heading>
+            {/* Email Updates */}
+            <HStack
+              justifyContent='space-between'
+              alignItems='start'
+              py={4}
+              w='full'
+              borderBottom='1px'
+              borderColor='gray.200'
+            >
+              <VStack alignItems='start' gap={1} flex={1}>
+                <Text fontWeight='medium'>Email Updates</Text>
+                <Text fontSize='sm' color='gray.600'>
+                  Receive emails about new features and updates to the Discovery
+                  Portal.
+                </Text>
+              </VStack>
+              <Switch
+                isChecked={emailUpdates}
+                onChange={e => setEmailUpdates(e.target.checked)}
+              />
             </HStack>
-          )}
 
-          {user.organization && (
-            <HStack justify='space-between'>
-              <Text fontWeight='medium'>Organization</Text>
-              <Text color='gray.700'>{user.organization}</Text>
+            {/* Feedback and Testing */}
+            <HStack
+              justifyContent='space-between'
+              alignItems='start'
+              py={4}
+              w='full'
+              borderBottom='1px'
+              borderColor='gray.200'
+            >
+              <VStack alignItems='start' gap={1} flex={1}>
+                <Text fontWeight='medium'>Feedback and Testing</Text>
+                <Text fontSize='sm' color='gray.600'>
+                  Help improve the NIAID Data Ecosystem by participating in
+                  feedback and usability testing.
+                </Text>
+              </VStack>
+              <Switch
+                isChecked={feedbackTesting}
+                onChange={e => setFeedbackTesting(e.target.checked)}
+              />
             </HStack>
-          )}
-          <Button
-            colorScheme='red'
-            variant='solid'
-            size='sm'
-            onClick={logout}
-            mt={4}
-          >
-            Log Out
-          </Button>
+
+            {/* Beta Features */}
+            <HStack
+              justifyContent='space-between'
+              alignItems='start'
+              py={4}
+              w='full'
+            >
+              <VStack alignItems='start' gap={1} flex={1}>
+                <Text fontWeight='medium'>Beta features</Text>
+                <Text fontSize='sm' color='gray.600'>
+                  Get early access to experimental features.
+                </Text>
+              </VStack>
+              <Switch
+                isChecked={betaFeatures}
+                onChange={e => setBetaFeatures(e.target.checked)}
+              />
+            </HStack>
+          </VStack>
         </VStack>
+
+        {/* Search Preferences Section */}
+        <VStack alignItems='start' gap={6} mb={12}>
+          <VStack alignItems='start' gap={0} w='full'>
+            <Heading as='h2' size='md' fontWeight='semibold' mb={4}>
+              Search preferences
+            </Heading>
+            {/* AI-assisted Search */}
+            <HStack
+              justifyContent='space-between'
+              alignItems='start'
+              py={4}
+              w='full'
+            >
+              <VStack alignItems='start' gap={1} flex={1}>
+                <Text fontWeight='medium'>AI-assisted search</Text>
+                <Text fontSize='sm' color='gray.600'>
+                  Turn on AI-assisted search by default.{' '}
+                  <Link color='blue.600' textDecoration='underline'>
+                    Learn about AI-assisted search
+                  </Link>
+                  .
+                </Text>
+              </VStack>
+              <Switch
+                isChecked={aiSearch}
+                onChange={e => setAiSearch(e.target.checked)}
+              />
+            </HStack>
+          </VStack>
+        </VStack>
+
+        {/* Log Out Button */}
+        <Button colorScheme='red' variant='outline' onClick={logout}>
+          Log Out
+        </Button>
       </Box>
     </PageContainer>
   );
