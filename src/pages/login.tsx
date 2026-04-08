@@ -89,26 +89,44 @@ function LoginPage() {
           px={{ base: 4, md: 10 }}
           py={{ base: 10, lg: 16 }}
           bg='#fff'
+          position='relative'
+          overflow='hidden'
         >
+          <Image
+            src='/assets/homepage/ecosystem-hero-nodes.png'
+            alt=''
+            aria-hidden='true'
+            position='absolute'
+            bottom={{ base: '-80%', lg: '-35%' }}
+            left={{ base: '-10%', lg: '-5%' }}
+            width={{ base: '1000px', lg: '1200px' }}
+            transform='rotate(20deg)'
+            opacity={0.25}
+            pointerEvents='none'
+            zIndex={0}
+            maxWidth='unset'
+          />
           <Heading
             as='h1'
             size='md'
             mb={4}
             color='text.heading'
-            fontWeight='medium'
+            fontWeight='semibold'
+            zIndex={1}
           >
             Log in to your account
           </Heading>
           <Box
             w='100%'
-            maxW='430px'
+            maxW={{ base: '500px', lg: '350px' }}
             textAlign='center'
-            bg='white'
+            bg='whiteAlpha.800'
             border='1px'
-            borderColor='gray.200'
+            borderColor='gray.100'
             borderRadius='6px'
             boxShadow='sm'
             p={{ base: 6, md: 8 }}
+            zIndex={1}
           >
             {isLoading ? (
               <Stack align='center' py={4}>
@@ -122,19 +140,24 @@ function LoginPage() {
                     key={provider.id}
                     colorScheme='gray'
                     variant='outline'
+                    size='md'
+                    py={1}
+                    borderColor='gray.100'
                     _hover={{
                       bg: 'niaid.50',
-                      borderColor: 'gray.400',
+                      borderColor: 'niaid.300',
                     }}
                     _active={{
                       bg: 'niaid.50',
-                      borderColor: 'gray.400',
+                      borderColor: 'niaid.300',
                     }}
                     onClick={() => login(provider.id)}
                   >
-                    <HStack spacing={2} w='100%' justify='flex-start'>
+                    <HStack spacing={2} justify='flex-start'>
                       <ProviderIcon providerId={provider.id} />
-                      <Text>Log In With {provider.label}</Text>
+                      <Text fontSize='inherit'>
+                        Log In With {provider.label}
+                      </Text>
                     </HStack>
                   </Button>
                 ))}
