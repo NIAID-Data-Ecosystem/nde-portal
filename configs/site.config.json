@@ -271,6 +271,17 @@
         ]
       }
     },
+    "/status": {
+      "seo": {
+        "title": "System Status",
+        "description": "View real-time health and uptime status for NIAID Data Ecosystem services.",
+        "keywords": ["status", "uptime", "health", "NIAID", "API"]
+      },
+      "nav": {
+        "label": "System Status",
+        "description": "Check the health of NIAID services"
+      }
+    },
     "/404": {
       "seo": {
         "title": "404",
@@ -329,6 +340,9 @@
           },
           {
             "page": "/knowledge-center/how-to-cite-the-niaid-data-ecosystem"
+          },
+          {
+            "page": "/status"
           }
         ]
       },
