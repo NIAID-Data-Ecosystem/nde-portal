@@ -79,6 +79,14 @@ const SAMPLE_EXTRA_FIELDS = [
   'itemLocation',
 ];
 
+// Fields always fetched for the samples tab regardless of visible columns.
+const SAMPLE_REQUIRED_FIELDS = [
+  '_meta',
+  '@type',
+  'url',
+  'includedInDataCatalog',
+];
+
 // Build the ColumnConfig list expected by CustomizeColumnsPopover from the
 // master column definitions in SampleResultsTable.
 const SAMPLE_COLUMN_CONFIGS = ALL_SAMPLE_COLUMNS.map(col => ({
@@ -169,9 +177,6 @@ export const SearchResults = ({
 
   // For the Samples tab, use extra fields for the table columns.
   const isSamplesTab = id === 's';
-  const fields = isSamplesTab
-    ? [...RESULT_FIELDS, ...SAMPLE_EXTRA_FIELDS]
-    : RESULT_FIELDS;
 
   // Column visibility state (Samples tab only)
   const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(
@@ -182,6 +187,25 @@ export const SearchResults = ({
   const [columnOrder, setColumnOrder] = useState<string[]>(
     getInitialColumnOrder,
   );
+
+  // Derive the fields to fetch from which columns are currently visible.
+  // For non-sample tabs the full RESULT_FIELDS list is used unchanged.
+  // For the samples tab we only fetch the SAMPLE_EXTRA_FIELDS that correspond
+  // to a visible column and SAMPLE_REQUIRED_FIELDS for internal logic.
+  const fields = useMemo(() => {
+    if (!isSamplesTab) return RESULT_FIELDS;
+
+    const visibleSampleFields = visibleColumnIds.filter(colId =>
+      SAMPLE_EXTRA_FIELDS.includes(colId),
+    );
+    return [
+      ...new Set([
+        ...RESULT_FIELDS,
+        ...SAMPLE_REQUIRED_FIELDS,
+        ...visibleSampleFields,
+      ]),
+    ];
+  }, [isSamplesTab, visibleColumnIds]);
 
   const { response, params } = useSearchResultsData(
     {
