@@ -6,9 +6,7 @@ import {
 import { StatusBadge } from './StatusBadge';
 import { UptimeBar } from './UptimeBar';
 
-interface EndpointCardProps extends EndpointState {
-  secondsAgo: number;
-}
+interface EndpointCardProps extends EndpointState {}
 
 export const EndpointCard = ({
   name,
@@ -23,10 +21,10 @@ export const EndpointCard = ({
   return (
     <Box
       bg='white'
-      border='1px solid'
+      border='0.25px solid'
       borderColor='#d0d7de'
-      borderRadius='6px'
       p={6}
+      // maxW='300px'
     >
       {/* Header */}
       <Flex
@@ -84,7 +82,10 @@ export const EndpointCard = ({
         >
           {Object.entries(extraInfo).map(([key, value]) => (
             <Text key={key} fontSize='sm' color='gray.600'>
-              {key}: <strong>{value}</strong>
+              {key}:{' '}
+              <Text as='span' fontWeight='medium' textTransform='capitalize'>
+                {value}
+              </Text>
             </Text>
           ))}
         </VStack>

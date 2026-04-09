@@ -29,7 +29,7 @@ interface UptimeBarProps {
 
 export const UptimeBar = ({ history }: UptimeBarProps) => {
   // Show last 30 days on mobile, 60 on tablet, 90 on desktop
-  const visibleDays = useBreakpointValue({ base: 30, md: 60, lg: 90 }) ?? 90;
+  const visibleDays = useBreakpointValue({ base: 30, sm: 60, lg: 90 }) ?? 90;
   const visibleHistory = history.slice(-visibleDays);
   const daysLabel = `${visibleDays} days ago`;
 

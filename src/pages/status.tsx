@@ -18,6 +18,16 @@ const ENDPOINTS: EndpointConfig[] = [
       if (res?.ok === true) return 'degraded';
       return 'down';
     },
+    extractInfo: data => {
+      const info: Record<string, string> = {
+        'Server uptime': 'N/A',
+      };
+      if (typeof data?.uptime === 'number') {
+        info['Server uptime'] = formatUptimeDuration(data.uptime);
+      }
+      info['Environment'] = process.env.NEXT_PUBLIC_APP_ENV || 'N/A';
+      return info;
+    },
   },
   {
     id: 'niaid-strapi',
@@ -34,9 +44,11 @@ const ENDPOINTS: EndpointConfig[] = [
       if (typeof data?.uptime === 'number') {
         info['Server uptime'] = formatUptimeDuration(data.uptime);
       }
-      if (data?.env) {
-        info['Environment'] = data.env;
-      }
+      info['Environment'] = process.env.NEXT_PUBLIC_APP_ENV || 'N/A';
+
+      // if (data?.env) {
+      //   info['Environment'] = data.env;
+      // }
       return info;
     },
   },
@@ -71,7 +83,7 @@ function StatusPageContent() {
           <StatusBanner status={overallStatus} />
 
           {/* Endpoint cards */}
-          <Grid templateColumns={{ base: '1fr', md: '1fr 1fr' }} gap={6}>
+          <Grid templateColumns={{ base: '1fr', sm: '1fr 1fr' }} gap={0}>
             {endpoints.map(ep => (
               <EndpointCard key={ep.id} {...ep} />
             ))}

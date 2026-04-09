@@ -20,7 +20,6 @@ export function useEndpointHealth(config: EndpointConfig) {
     lastChecked: null,
     history: initializeHistory(),
   });
-  const [secondsAgo, setSecondsAgo] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
   const tickRef = useRef<ReturnType<typeof setInterval>>();
 
@@ -82,7 +81,7 @@ export function useEndpointHealth(config: EndpointConfig) {
       });
     }
 
-    setSecondsAgo(0);
+    // setSecondsAgo(0);
   }, [config]);
 
   useEffect(() => {
@@ -97,9 +96,9 @@ export function useEndpointHealth(config: EndpointConfig) {
     intervalRef.current = setInterval(checkHealth, POLL_INTERVAL);
 
     // Tick "seconds ago" counter
-    tickRef.current = setInterval(() => {
-      setSecondsAgo(prev => prev + 1);
-    }, 1000);
+    // tickRef.current = setInterval(() => {
+    //   setSecondsAgo(prev => prev + 1);
+    // }, 1000);
 
     return () => {
       clearInterval(intervalRef.current);
@@ -107,5 +106,5 @@ export function useEndpointHealth(config: EndpointConfig) {
     };
   }, [checkHealth]);
 
-  return { ...state, secondsAgo };
+  return state;
 }
