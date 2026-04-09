@@ -107,5 +107,42 @@
       "hasDownload",
       "collectionType"
     ]
+  },
+  "DataCollection": {
+    "required": [
+      "about",
+      "collectionSize",
+      "date",
+      "dateModified",
+      "description",
+      "includedInDataCatalog",
+      "name",
+      "url",
+      "funding",
+      "measurementTechnique"
+    ],
+    "recommended": [
+      "author",
+      "citation",
+      "conditionsOfAccess",
+      "creator",
+      "dateCreated",
+      "datePublished",
+      "exampleOfWork",
+      "funding",
+      "healthCondition",
+      "infectiousAgent",
+      "interactionStatistic",
+      "isBasedOn",
+      "license",
+      "measurementTechnique",
+      "sameAs",
+      "spatialCoverage",
+      "species",
+      "temporalCoverage",
+      "topicCategory",
+      "usageInfo",
+      "variableMeasured"
+    ]
   }
 }

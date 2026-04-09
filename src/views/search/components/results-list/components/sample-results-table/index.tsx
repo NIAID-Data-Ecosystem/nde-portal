@@ -5,6 +5,8 @@ import { Table, Column } from 'src/components/table';
 import { Link } from 'src/components/link';
 import { FormattedResource, IncludedInDataCatalog } from 'src/utils/api/types';
 import { renderCellData } from './components/Cells';
+import { getTruncatedText } from 'src/components/table/helpers';
+import { REQUIRED_COLUMN_IDS } from './components/CustomizeColumnsPopover';
 
 // For columns whose display value is a rich object (e.g. { identifier, url })
 // or an array of DefinedTerms, a parallel `_sort_<field>` plain string
@@ -58,146 +60,185 @@ const withWidth = (width: string) => ({
 
 // Adjust the width string in `props` to change a column's rendered width.
 // Both the header and every body cell will reflect the change automatically.
-const SAMPLE_RESULTS_COLUMNS: Column[] = [
+
+// All possible columns for the sample results table.
+// Each column has a stable `id` field used for visibility tracking.
+export interface SampleColumn extends Column {
+  // Stable identifier used for localStorage persistence
+  id: string;
+}
+
+export const ALL_SAMPLE_COLUMNS: SampleColumn[] = [
   {
+    id: 'identifier',
     title: 'Identifier',
     property: sortKey('identifier'),
     isSortable: true,
     props: withWidth('180px'),
   },
   {
+    id: 'alternateIdentifier',
     title: 'Alternate Identifier',
     property: sortKey('alternateIdentifier'),
     isSortable: true,
     props: withWidth('180px'),
   },
   {
-    title: 'Date',
-    property: sortKey('date'),
-    isSortable: true,
-    props: withWidth('130px'),
-  },
-  {
+    id: 'name',
     title: 'Name',
     property: sortKey('name'),
     isSortable: true,
     props: withWidth('250px'),
   },
   {
+    id: 'date',
+    title: 'Date',
+    property: sortKey('date'),
+    isSortable: true,
+    props: withWidth('130px'),
+  },
+  {
+    id: 'includedInDataCatalog',
     title: 'Source',
     property: sortKey('includedInDataCatalog'),
     isSortable: true,
     props: withWidth('160px'),
   },
   {
+    id: 'description',
     title: 'Description',
     property: sortKey('description'),
     isSortable: true,
     props: withWidth('250px'),
   },
   {
+    id: 'healthCondition',
     title: 'Health Condition',
     property: sortKey('healthCondition'),
     isSortable: true,
     props: withWidth('160px'),
   },
   {
+    id: 'infectiousAgent',
     title: 'Infectious Agent',
     property: sortKey('infectiousAgent'),
     isSortable: true,
     props: withWidth('160px'),
   },
   {
+    id: 'species',
     title: 'Species',
     property: sortKey('species'),
     isSortable: true,
     props: withWidth('170px'),
   },
   {
+    id: 'conditionsOfAccess',
     title: 'Conditions of Access',
     property: sortKey('conditionsOfAccess'),
     isSortable: true,
     props: withWidth('180px'),
   },
   {
+    id: 'variableMeasured',
     title: 'Variable Measured',
     property: sortKey('variableMeasured'),
     isSortable: true,
     props: withWidth('160px'),
   },
   {
+    id: 'measurementTechnique',
     title: 'Measurement Technique',
     property: sortKey('measurementTechnique'),
     isSortable: true,
     props: withWidth('200px'),
   },
   {
+    id: 'anatomicalStructure',
     title: 'Anatomical Structure',
     property: sortKey('anatomicalStructure'),
     isSortable: true,
     props: withWidth('180px'),
   },
   {
+    id: 'anatomicalSystem',
     title: 'Anatomical System',
     property: sortKey('anatomicalSystem'),
     isSortable: true,
     props: withWidth('160px'),
   },
   {
+    id: 'sampleType',
     title: 'Sample Type',
     property: sortKey('sampleType'),
     isSortable: true,
     props: withWidth('140px'),
   },
   {
+    id: 'sampleAvailability',
     title: 'Sample Availability',
     property: sortKey('sampleAvailability'),
     isSortable: true,
     props: withWidth('170px'),
   },
   {
+    id: 'sampleQuantity',
     title: 'Sample Quantity',
     property: sortKey('sampleQuantity'),
     isSortable: true,
     props: withWidth('150px'),
   },
   {
+    id: 'instrument',
+    title: 'Instrument',
+    property: sortKey('instrument'),
+    isSortable: true,
+    props: withWidth('190px'),
+  },
+  {
+    id: 'sex',
     title: 'Sex',
     property: sortKey('sex'),
     isSortable: true,
     props: withWidth('100px'),
   },
   {
+    id: 'developmentalStage',
     title: 'Developmental Stage',
     property: sortKey('developmentalStage'),
     isSortable: true,
     props: withWidth('190px'),
   },
   {
+    id: 'associatedGenotype',
     title: 'Associated Genotype',
     property: sortKey('associatedGenotype'),
     isSortable: true,
     props: withWidth('180px'),
   },
   {
+    id: 'associatedPhenotype',
     title: 'Associated Phenotype',
     property: sortKey('associatedPhenotype'),
     isSortable: true,
     props: withWidth('180px'),
   },
   {
+    id: 'cellType',
     title: 'Cell Type',
     property: sortKey('cellType'),
     isSortable: true,
     props: withWidth('150px'),
   },
   {
+    id: 'locationOfOrigin',
     title: 'Location of Origin',
     property: sortKey('locationOfOrigin'),
     isSortable: true,
     props: withWidth('185px'),
   },
   {
+    id: 'itemLocation',
     title: 'Item Location',
     property: sortKey('itemLocation'),
     isSortable: true,
@@ -206,7 +247,7 @@ const SAMPLE_RESULTS_COLUMNS: Column[] = [
 ];
 
 const SORT_KEY_TO_FIELD: Record<string, string> = Object.fromEntries(
-  SAMPLE_RESULTS_COLUMNS.map(col => [
+  ALL_SAMPLE_COLUMNS.map(col => [
     col.property,
     col.property.slice(SORT_PREFIX.length),
   ]),
@@ -250,6 +291,7 @@ const toRow = (resource: FormattedResource): Record<string, unknown> => {
       resource.alternateIdentifier,
     ),
     [sortKey('name')]: toSortString(resource.name),
+    [sortKey('description')]: toSortString(resource.description),
     [sortKey('includedInDataCatalog')]: toSortString(catalogDisplay),
     [sortKey('healthCondition')]: toSortString(resource.healthCondition),
     [sortKey('infectiousAgent')]: toSortString(resource.infectiousAgent),
@@ -266,9 +308,11 @@ const toRow = (resource: FormattedResource): Record<string, unknown> => {
     [sortKey('sampleType')]: toSortString(resource.sampleType),
     [sortKey('sampleAvailability')]: toSortString(resource.sampleAvailability),
     [sortKey('sampleQuantity')]: toSortString(resource.sampleQuantity),
+    [sortKey('instrument')]: toSortString(resource.instrument),
     [sortKey('sex')]: toSortString(resource.sex),
     [sortKey('developmentalStage')]: toSortString(resource.developmentalStage),
     [sortKey('associatedGenotype')]: toSortString(resource.associatedGenotype),
+    [sortKey('associatedPhenotype')]: toSortString(resource.associatePhenotype),
     [sortKey('cellType')]: toSortString(resource.cellType),
     [sortKey('locationOfOrigin')]: toSortString(resource.locationOfOrigin),
     [sortKey('itemLocation')]: toSortString(resource.itemLocation),
@@ -314,6 +358,17 @@ const getCells = ({
     );
   }
 
+  // Limit description to 144 characters
+  if (field === 'description') {
+    const { text } = getTruncatedText(value as string, false, 144);
+    return text ? (
+      <Text fontSize='sm'>
+        {text}
+        {(value as string).length > 144 ? '…' : ''}
+      </Text>
+    ) : null;
+  }
+
   // Scalar string fields that don't need DefinedTerm / QuantitativeValue rendering
   if (field === 'date' || field === 'conditionsOfAccess') {
     return value ? <Text fontSize='sm'>{String(value)}</Text> : null;
@@ -323,29 +378,76 @@ const getCells = ({
   return renderCellData({ column, data: value as any, isLoading });
 };
 
+// Required columns used as the fallback when visibleColumnIds resolves to
+// an empty array (e.g. during pre-hydration or after a "Clear All").
+const REQUIRED_COLUMNS = ALL_SAMPLE_COLUMNS.filter(col =>
+  REQUIRED_COLUMN_IDS.includes(col.id),
+);
+
 interface SampleResultsTableProps {
   results: FormattedResource[];
   isLoading: boolean;
+  /**
+   * IDs of columns that should be visible.
+   * When undefined, all columns are shown.
+   */
+  visibleColumnIds?: string[];
+  /**
+   * Full ordered list of all column IDs (visible + hidden).
+   * The table renders visible columns in this order.
+   * When undefined, the default ALL_SAMPLE_COLUMNS order is used.
+   */
+  columnOrder?: string[];
 }
 
 export const SampleResultsTable = ({
   results,
   isLoading,
+  visibleColumnIds,
+  columnOrder,
 }: SampleResultsTableProps) => {
   const rows = useMemo(() => results.map(toRow), [results]);
+
+  // Build the ordered + filtered column list:
+  // 1. Start from columnOrder (if provided) or the master list order.
+  // 2. Keep only columns that are in visibleColumnIds.
+  const visibleColumns = useMemo(() => {
+    const sourceOrder =
+      columnOrder && columnOrder.length > 0
+        ? columnOrder
+            .map(id => ALL_SAMPLE_COLUMNS.find(c => c.id === id))
+            .filter((c): c is SampleColumn => !!c)
+        : ALL_SAMPLE_COLUMNS;
+
+    const filtered = visibleColumnIds
+      ? sourceOrder.filter(col => visibleColumnIds.includes(col.id))
+      : sourceOrder;
+
+    // Table requires at least one column. Fall back to required columns
+    // if the filtered result is empty.
+    return filtered.length > 0 ? filtered : REQUIRED_COLUMNS;
+  }, [visibleColumnIds, columnOrder]);
 
   return (
     <Skeleton isLoaded={!isLoading} width='100%'>
       <Table
         ariaLabel='Sample search results'
         caption='Table of sample search results'
-        columns={SAMPLE_RESULTS_COLUMNS}
+        columns={visibleColumns}
         data={rows as any}
         getCells={getCells as any}
         isLoading={isLoading}
         hasPagination={false}
         tableContainerProps={{
           overflowX: 'auto',
+        }}
+        tableHeadProps={{
+          sx: {
+            // Replace per-cell bottom border with a single full-width
+            // border on the thead row, which always spans the container width.
+            th: { borderBottom: 'none' },
+            tr: { borderBottom: '1px solid', borderColor: 'gray.200' },
+          },
         }}
         getTableRowProps={(_, idx) => ({
           bg: idx % 2 === 0 ? 'white' : 'page.alt',
