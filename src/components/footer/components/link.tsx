@@ -56,7 +56,7 @@ export const FooterSocialLinks = ({ routes }: { routes: FooterRoute[] }) => {
     <>
       {routes &&
         routes.map(route => {
-          if (!route?.href) {
+          if (!route?.href || !route?.label) {
             return;
           }
           const { label, type, href, isExternal } = route;
