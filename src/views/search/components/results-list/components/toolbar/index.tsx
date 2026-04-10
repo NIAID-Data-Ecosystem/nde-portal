@@ -64,11 +64,15 @@ export const SearchResultsToolbar = ({
         pb={2}
         w='100%'
       >
-        <Stack flexDirection={{ base: 'column', sm: 'row' }} spacing={[1, 4]}>
+        <Stack
+          flexDirection={{ base: 'column', sm: 'row' }}
+          flexWrap='wrap'
+          spacing={[1, 4]}
+        >
           {/* Sort menu */}
           <SelectWithLabel
             id='sort-results'
-            label='Sort search results by:'
+            label='Sort by:'
             options={SORT_OPTIONS}
             value={sort}
             handleChange={newSort => {
@@ -82,7 +86,7 @@ export const SearchResultsToolbar = ({
           {/* Size menu */}
           <SelectWithLabel
             id='size-results'
-            label='Show number of results per page:'
+            label='Rows per page:'
             options={PAGE_SIZE_OPTIONS}
             value={size}
             handleChange={newSize => {
