@@ -35,7 +35,7 @@ export const Navigation: React.FC<FlexProps> = props => {
           ml={{ base: 6, lg: 10 }}
           flex={1}
           justifyContent='flex-end'
-          sx={{ '>a,>button': { px: 4, py: 2 } }}
+          sx={{ '>a,>button': { px: 4, py: 2, color: 'white' } }}
         >
           {navigation.map(navItem => (
             <Nav.DesktopNavItem
