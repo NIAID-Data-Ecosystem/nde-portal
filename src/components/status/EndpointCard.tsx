@@ -52,11 +52,11 @@ export const EndpointCard = ({
         gap={2}
       >
         <HStack spacing={4} flexWrap='wrap'>
-          <Text fontSize='sm' color='gray.600'>
+          <Text fontSize='sm' color='gray.700'>
             Uptime: <strong>{uptimePercent}%</strong>
           </Text>
           {responseTime !== null && (
-            <Text fontSize='sm' color='gray.600'>
+            <Text fontSize='sm' color='gray.700'>
               Response time: <strong>{responseTime}ms</strong>
             </Text>
           )}
@@ -81,7 +81,7 @@ export const EndpointCard = ({
           borderColor='gray.100'
         >
           {Object.entries(extraInfo).map(([key, value]) => (
-            <Text key={key} fontSize='sm' color='gray.600'>
+            <Text key={key} fontSize='sm' color='gray.700'>
               {key}:{' '}
               <Text as='span' fontWeight='medium' textTransform='capitalize'>
                 {value}

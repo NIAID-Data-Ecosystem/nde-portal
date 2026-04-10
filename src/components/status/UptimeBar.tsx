@@ -59,10 +59,10 @@ export const UptimeBar = ({ history }: UptimeBarProps) => {
         ))}
       </Flex>
       <Flex justifyContent='space-between' mt={1}>
-        <Text fontSize='xs' color='gray.500'>
+        <Text fontSize='xs' color='gray.700'>
           {daysLabel}
         </Text>
-        <Text fontSize='xs' color='gray.500'>
+        <Text fontSize='xs' color='gray.700'>
           Today
         </Text>
       </Flex>

@@ -112,7 +112,7 @@ export const PagesCard = ({ endpointStatuses }: PagesCardProps) => {
           if (e.key === 'Enter' || e.key === ' ') onToggle();
         }}
         _hover={{ color: 'blue.600' }}
-        color='gray.600'
+        color='gray.700'
         userSelect='none'
       >
         <Box as={isOpen ? FiChevronDown : FiChevronRight} boxSize='14px' />
@@ -164,7 +164,7 @@ export const PagesCard = ({ endpointStatuses }: PagesCardProps) => {
                 </Text> */}
               </Box>
               <Flex alignItems='center' gap={2} flexShrink={0}>
-                <Text fontSize='xs' color='gray.500'>
+                <Text fontSize='xs' color='gray.700'>
                   {PAGE_STATUS_LABELS[page.status]}
                 </Text>
                 <StatusDot status={page.status} />

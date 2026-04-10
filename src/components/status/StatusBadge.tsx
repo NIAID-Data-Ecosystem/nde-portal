@@ -14,7 +14,7 @@ interface StatusBadgeProps {
 export const StatusBadge = ({ status }: StatusBadgeProps) => {
   if (status === 'loading') {
     return (
-      <Badge bg='gray.100' color='gray.500' px={2} py={0.5} borderRadius='full'>
+      <Badge bg='gray.100' color='gray.700' px={2} py={0.5} borderRadius='full'>
         Checking...
       </Badge>
     );
