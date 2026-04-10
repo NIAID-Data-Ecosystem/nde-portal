@@ -44,17 +44,30 @@ export const PAGE_DEPENDENCIES: PageDependency[] = Object.entries(
   .sort((a, b) => a.label.localeCompare(b.label));
 
 /**
- * Derive a single page's status from the statuses of the endpoints it depends on.
+ * Derive a single page's status from endpoint health AND a direct route check.
+ * The route check catches issues that endpoint health alone cannot
+ * (e.g. broken builds, routing errors, SSR failures).
  */
 export function getPageStatus(
   depEndpoints: string[],
   endpointStatuses: Record<string, EndpointStatus | 'loading'>,
+  routeStatus?: EndpointStatus | 'loading',
 ): PageStatus | 'loading' {
-  if (depEndpoints.length === 0) return 'operational';
+  // If the route itself is unreachable, the page is impacted regardless of APIs
+  if (routeStatus === 'down') return 'impacted';
+  if (routeStatus === 'degraded') return 'degraded';
+
+  // For pages with no API deps, the route check is the only signal
+  if (depEndpoints.length === 0) {
+    if (routeStatus === 'loading') return 'loading';
+    return 'operational';
+  }
 
   const statuses = depEndpoints.map(id => endpointStatuses[id] ?? 'loading');
 
-  if (statuses.some(s => s === 'loading')) return 'loading';
+  // Still loading if route or any endpoint is pending
+  if (routeStatus === 'loading' || statuses.some(s => s === 'loading'))
+    return 'loading';
   if (statuses.some(s => s === 'down')) return 'impacted';
   if (statuses.some(s => s === 'degraded')) return 'degraded';
   return 'operational';
@@ -65,9 +78,10 @@ export function getPageStatus(
  */
 export function getOverallPagesStatus(
   endpointStatuses: Record<string, EndpointStatus | 'loading'>,
+  staticPageStatuses?: Record<string, EndpointStatus | 'loading'>,
 ): PageStatus | 'loading' {
   const pageStatuses = PAGE_DEPENDENCIES.map(p =>
-    getPageStatus(p.endpoints, endpointStatuses),
+    getPageStatus(p.endpoints, endpointStatuses, staticPageStatuses?.[p.path]),
   );
 
   if (pageStatuses.every(s => s === 'loading')) return 'loading';

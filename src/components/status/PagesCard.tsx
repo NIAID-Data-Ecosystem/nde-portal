@@ -1,13 +1,13 @@
 import { Box, Collapse, Flex, Text, useDisclosure } from '@chakra-ui/react';
 import { FiChevronDown, FiChevronRight } from 'react-icons/fi';
 import { EndpointStatus, STATUS_COLORS } from 'src/utils/status-helpers';
-import { ENDPOINT_NAMES } from 'src/utils/endpoint-configs';
 import {
   PAGE_DEPENDENCIES,
   PageStatus,
   getPageStatus,
   getOverallPagesStatus,
 } from 'src/utils/page-dependencies';
+import { usePageAvailability } from 'src/hooks/usePageAvailability';
 import { StatusBadge } from './StatusBadge';
 
 const PAGE_STATUS_COLORS: Record<PageStatus, string> = {
@@ -45,12 +45,20 @@ interface PagesCardProps {
 
 export const PagesCard = ({ endpointStatuses }: PagesCardProps) => {
   const { isOpen, onToggle } = useDisclosure();
+  const pageRouteStatuses = usePageAvailability();
 
-  const overallStatus = getOverallPagesStatus(endpointStatuses);
+  const overallStatus = getOverallPagesStatus(
+    endpointStatuses,
+    pageRouteStatuses,
+  );
 
   const pages = PAGE_DEPENDENCIES.map(page => ({
     ...page,
-    status: getPageStatus(page.endpoints, endpointStatuses),
+    status: getPageStatus(
+      page.endpoints,
+      endpointStatuses,
+      pageRouteStatuses[page.path],
+    ),
   }));
 
   // Sort impacted/degraded pages to the top
@@ -75,11 +83,6 @@ export const PagesCard = ({ endpointStatuses }: PagesCardProps) => {
       : overallStatus === 'loading'
       ? 'loading'
       : overallStatus;
-
-  // Collect unique endpoint names used across all pages
-  const allEndpointIds = [
-    ...new Set(PAGE_DEPENDENCIES.flatMap(p => p.endpoints)),
-  ];
 
   return (
     <Box bg='white' border='0.25px solid' borderColor='#d0d7de' p={6}>
