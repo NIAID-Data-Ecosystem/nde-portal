@@ -55,6 +55,7 @@ const customJestConfig = {
     '<rootDir>/node_modules/',
     '<rootDir>/coverage',
     '<rootDir>/dist',
+    '<rootDir>/e2e/',
     '<rootDir>/src/__tests__/mocks/',
     '<rootDir>/src/__tests__/validate-links.test.js',
   ],

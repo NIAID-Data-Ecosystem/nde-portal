@@ -4,6 +4,7 @@
 // Used for __tests__/testing-library.js
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom/extend-expect';
+import 'jest-axe/extend-expect';
 import { setupServer } from 'msw/node';
 import { handlers } from 'src/__tests__/mocks/utils';
 
@@ -36,6 +37,9 @@ Object.defineProperty(global, 'IntersectionObserver', {
   configurable: true,
   value: MockIntersectionObserver,
 });
+
+// Mock HTMLCanvasElement.getContext — jsdom does not implement Canvas
+HTMLCanvasElement.prototype.getContext = () => null;
 
 // Mock remark and related packages to avoid ES module import issues
 // Using virtual:true to avoid "Cannot find module" errors
