@@ -93,7 +93,7 @@ export function useEndpointHealth(config: EndpointConfig) {
     checkHealth();
 
     // Poll every 60s
-    intervalRef.current = setInterval(checkHealth, POLL_INTERVAL);
+    // intervalRef.current = setInterval(checkHealth, POLL_INTERVAL);
 
     // Tick "seconds ago" counter
     // tickRef.current = setInterval(() => {
