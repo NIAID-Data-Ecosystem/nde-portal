@@ -1,58 +1,9 @@
 import { Box, Grid, Heading, Text, VStack } from '@chakra-ui/react';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
-import { StatusBanner, EndpointCard } from 'src/components/status';
+import { StatusBanner, EndpointCard, PagesCard } from 'src/components/status';
 import { useEndpointHealth } from 'src/hooks/useEndpointHealth';
-import {
-  EndpointConfig,
-  formatUptimeDuration,
-  getOverallStatus,
-} from 'src/utils/status-helpers';
-
-const ENDPOINTS: EndpointConfig[] = [
-  {
-    id: 'niaid-data-api',
-    name: 'NIAID Data API',
-    url: `${process.env.NEXT_PUBLIC_API_URL}/metadata`,
-    checkHealth: res => {
-      if (res?.ok === true && res?.status === 200) return 'operational';
-      if (res?.ok === true) return 'degraded';
-      return 'down';
-    },
-    extractInfo: data => {
-      const info: Record<string, string> = {
-        'Server uptime': 'N/A',
-      };
-      if (typeof data?.uptime === 'number') {
-        info['Server uptime'] = formatUptimeDuration(data.uptime);
-      }
-      info['Environment'] = process.env.NEXT_PUBLIC_APP_ENV || 'N/A';
-      return info;
-    },
-  },
-  {
-    id: 'niaid-strapi',
-    name: 'NIAID Strapi Health',
-    url: `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/health`,
-    checkHealth: (_res, data) => {
-      if (data?.status === 'ok' && data?.env === 'production')
-        return 'operational';
-      if (data?.status === 'ok') return 'degraded';
-      return 'down';
-    },
-    extractInfo: data => {
-      const info: Record<string, string> = {};
-      if (typeof data?.uptime === 'number') {
-        info['Server uptime'] = formatUptimeDuration(data.uptime);
-      }
-      info['Environment'] = process.env.NEXT_PUBLIC_APP_ENV || 'N/A';
-
-      // if (data?.env) {
-      //   info['Environment'] = data.env;
-      // }
-      return info;
-    },
-  },
-];
+import { getOverallStatus } from 'src/utils/status-helpers';
+import { ENDPOINTS } from 'src/utils/endpoint-configs';
 
 function StatusPageContent() {
   const endpoint1 = useEndpointHealth(ENDPOINTS[0]);
@@ -66,7 +17,7 @@ function StatusPageContent() {
         maxW='4xl'
         mx='auto'
         py={{ base: 6, md: 10 }}
-        px={{ base: 4, md: 0 }}
+        px={{ base: 4, md: 4 }}
       >
         <VStack alignItems='stretch' spacing={6}>
           {/* Page header */}
@@ -83,11 +34,22 @@ function StatusPageContent() {
           <StatusBanner status={overallStatus} />
 
           {/* Endpoint cards */}
-          <Grid templateColumns={{ base: '1fr', sm: '1fr 1fr' }} gap={0}>
+          <Grid
+            templateColumns={{ base: '1fr', md: '1fr 1fr' }}
+            gap={0}
+            flexWrap='wrap'
+          >
             {endpoints.map(ep => (
               <EndpointCard key={ep.id} {...ep} />
             ))}
           </Grid>
+
+          {/* Pages card — derived from endpoint statuses */}
+          <PagesCard
+            endpointStatuses={Object.fromEntries(
+              endpoints.map(ep => [ep.id, ep.status]),
+            )}
+          />
         </VStack>
       </Box>
     </Box>

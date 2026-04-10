@@ -24,7 +24,7 @@ export const EndpointCard = ({
       border='0.25px solid'
       borderColor='#d0d7de'
       p={6}
-      // maxW='300px'
+      minWidth='300px'
     >
       {/* Header */}
       <Flex

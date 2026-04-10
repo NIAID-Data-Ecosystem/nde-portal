@@ -78,7 +78,6 @@ const siteLinks = [
   '/sources/',
   '/advanced-search/',
   '/about/',
-  '/faq/',
 ];
 
 const gatherLinks = async () => {

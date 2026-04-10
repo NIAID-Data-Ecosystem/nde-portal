@@ -13,9 +13,9 @@ interface StatusBannerProps {
 
 export const StatusBanner = ({ status }: StatusBannerProps) => {
   return (
-    <Alert status={status === 'operational' ? 'success' : 'error'}>
+    <Alert status={status === 'operational' ? 'success' : 'error'} py={2}>
       <AlertIcon />
-      <Text fontWeight='semibold' fontSize='lg' color='inherit'>
+      <Text fontWeight='medium' fontSize='lg' color='inherit'>
         {MESSAGES[status]}
       </Text>
     </Alert>
