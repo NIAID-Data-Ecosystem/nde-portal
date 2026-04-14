@@ -24,7 +24,7 @@ export const SelectWithLabel = ({
 }: SelectWithLabelProps) => {
   return (
     <Flex as='label' htmlFor={id} alignItems='center' gap={2} cursor='pointer'>
-      <Text as='span' fontSize='sm' whiteSpace='nowrap' color='gray.600'>
+      <Text as='span' fontSize='sm' whiteSpace='nowrap' color='gray.900'>
         {label}
       </Text>
       <Select
