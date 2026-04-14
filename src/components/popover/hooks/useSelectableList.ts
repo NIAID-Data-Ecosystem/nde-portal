@@ -204,13 +204,11 @@ export const useSelectableList = ({
   const moveUp = useCallback(
     (id: string) => {
       setOrder(prev => {
+        const pinnedRequired = requiredIds.filter(i => prev.includes(i));
         const movable = prev.filter(i => !requiredIds.includes(i));
         const idx = movable.indexOf(id);
         if (idx <= 0) return prev;
-        const next = pinRequired(
-          arrayMove(movable, idx, idx - 1),
-          requiredIds.filter(i => prev.includes(i)),
-        );
+        const next = [...pinnedRequired, ...arrayMove(movable, idx, idx - 1)];
         writeToStorage(storageKeyOrder ?? null, next);
         return next;
       });
@@ -221,13 +219,11 @@ export const useSelectableList = ({
   const moveDown = useCallback(
     (id: string) => {
       setOrder(prev => {
+        const pinnedRequired = requiredIds.filter(i => prev.includes(i));
         const movable = prev.filter(i => !requiredIds.includes(i));
         const idx = movable.indexOf(id);
         if (idx === -1 || idx >= movable.length - 1) return prev;
-        const next = pinRequired(
-          arrayMove(movable, idx, idx + 1),
-          requiredIds.filter(i => prev.includes(i)),
-        );
+        const next = [...pinnedRequired, ...arrayMove(movable, idx, idx + 1)];
         writeToStorage(storageKeyOrder ?? null, next);
         return next;
       });
