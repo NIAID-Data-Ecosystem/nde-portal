@@ -17,6 +17,7 @@ import { useAuth } from 'src/hooks/useAuth';
 import { withAuth } from 'src/components/auth/withAuth';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { useUserData } from 'src/hooks/useUserData';
+import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
 const SETTINGS_COPY = {
   page: {
@@ -156,6 +157,8 @@ function UserSettingsPage() {
   const updateSetting = (key: ToggleKey) => {
     updatePreferenceField(TOGGLE_TO_PREF[key]);
   };
+
+  if (!ENABLE_AUTH) return null;
 
   return (
     <PageContainer meta={getPageSeoConfig('/settings')} px={0} py={0}>
