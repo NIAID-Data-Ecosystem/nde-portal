@@ -2,10 +2,12 @@ import { useCallback, useRef, useState } from 'react';
 
 export type UserPreferences = {
   ai_toggle_preference: boolean;
-  avatar_url: string;
   beta: boolean;
   contact_preference: boolean;
+  feedback_preference: boolean;
 };
+
+export type UserPreferencesKeys = keyof UserPreferences;
 
 export type FavoriteSearch = {
   query: string;
@@ -31,14 +33,11 @@ export type UserProfile = UserPreferences & {
   email: string;
 };
 
-const DEFAULT_AVATAR_URL =
-  'https://avatars.githubusercontent.com/u/25373313?v=4';
-
 const DEFAULT_PREFERENCES: UserPreferences = {
   ai_toggle_preference: false,
-  avatar_url: DEFAULT_AVATAR_URL,
   beta: true,
   contact_preference: false,
+  feedback_preference: false,
 };
 
 const DEFAULT_MOCK_PROFILE: UserProfile = {
@@ -48,11 +47,11 @@ const DEFAULT_MOCK_PROFILE: UserProfile = {
   ai_toggle_preference: false,
   favorite_searches: [],
   favorite_datasets: [],
-  avatar_url: DEFAULT_AVATAR_URL,
   name: process.env.NEXT_PUBLIC_MOCK_AUTH_NAME || 'Mock User',
   email: process.env.NEXT_PUBLIC_MOCK_AUTH_EMAIL || 'user@email.com',
   beta: true,
   contact_preference: false,
+  feedback_preference: false,
   created: '2026-03-11T19:36:34+00:00',
   updated: '2026-03-11T20:24:13+00:00',
 };
@@ -261,21 +260,10 @@ export function useUserData() {
   }, [callUserDataApi]);
 
   const updatePreferenceField = useCallback(
-    (
-      field:
-        | 'ai_toggle_preference'
-        | 'avatar_url'
-        | 'beta'
-        | 'contact_preference',
-    ) => {
+    (field: UserPreferencesKeys) => {
       const nextPreferences = {
         ...preferences,
-        [field]:
-          field === 'avatar_url'
-            ? preferences.avatar_url
-              ? ''
-              : DEFAULT_AVATAR_URL
-            : !preferences[field],
+        [field]: !preferences[field],
       };
 
       setPreferences(nextPreferences);

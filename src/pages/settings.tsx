@@ -16,7 +16,7 @@ import {
 import { useAuth } from 'src/hooks/useAuth';
 import { withAuth } from 'src/components/auth/withAuth';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
-import { useUserData } from 'src/hooks/useUserData';
+import { UserPreferencesKeys, useUserData } from 'src/hooks/useUserData';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
 const SETTINGS_COPY = {
@@ -142,12 +142,9 @@ function UserSettingsPage() {
   const { preferences, updatePreferenceField } = useUserData();
 
   // Map UI toggle keys to API preference fields
-  const TOGGLE_TO_PREF: Record<
-    ToggleKey,
-    'contact_preference' | 'beta' | 'ai_toggle_preference'
-  > = {
+  const TOGGLE_TO_PREF: Record<ToggleKey, UserPreferencesKeys> = {
     emailUpdates: 'contact_preference',
-    feedbackTesting: 'contact_preference',
+    feedbackTesting: 'feedback_preference',
     betaFeatures: 'beta',
     aiSearch: 'ai_toggle_preference',
   };
