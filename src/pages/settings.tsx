@@ -2,7 +2,7 @@
  * User Settings Page - Protected route requiring authentication
  */
 
-import { ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
 import {
   Box,
   Heading,
@@ -16,6 +16,7 @@ import {
 import { useAuth } from 'src/hooks/useAuth';
 import { withAuth } from 'src/components/auth/withAuth';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
+import { useUserData } from 'src/hooks/useUserData';
 
 const SETTINGS_COPY = {
   page: {
@@ -137,15 +138,23 @@ function SettingToggle({
 
 function UserSettingsPage() {
   const { logout } = useAuth();
-  const [settings, setSettings] = useState<Record<ToggleKey, boolean>>({
-    emailUpdates: false,
-    feedbackTesting: false,
-    betaFeatures: false,
-    aiSearch: false,
-  });
+  const { preferences, updatePreferenceField } = useUserData();
 
-  const updateSetting = (key: ToggleKey, checked: boolean) => {
-    setSettings(prev => ({ ...prev, [key]: checked }));
+  // Map UI toggle keys to API preference fields
+  const TOGGLE_TO_PREF: Record<
+    ToggleKey,
+    'contact_preference' | 'beta' | 'ai_toggle_preference'
+  > = {
+    emailUpdates: 'contact_preference',
+    feedbackTesting: 'contact_preference',
+    betaFeatures: 'beta',
+    aiSearch: 'ai_toggle_preference',
+  };
+
+  const getChecked = (key: ToggleKey) => preferences[TOGGLE_TO_PREF[key]];
+
+  const updateSetting = (key: ToggleKey) => {
+    updatePreferenceField(TOGGLE_TO_PREF[key]);
   };
 
   return (
@@ -176,8 +185,8 @@ function UserSettingsPage() {
               <SettingToggle
                 key={key}
                 {...SETTINGS_COPY.toggles[key]}
-                isChecked={settings[key]}
-                onChange={checked => updateSetting(key, checked)}
+                isChecked={getChecked(key)}
+                onChange={() => updateSetting(key)}
                 showBorder={index < section.toggleKeys.length - 1}
               />
             ))}
