@@ -17,7 +17,7 @@ import { useAuth } from 'src/hooks/useAuth';
 import { withAuth } from 'src/components/auth/withAuth';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 
-const COPY = {
+const SETTINGS_COPY = {
   page: {
     title: 'Settings',
     subtitle: 'Manage account settings and preferences',
@@ -56,6 +56,28 @@ const COPY = {
   },
 };
 
+type ToggleKey =
+  | 'emailUpdates'
+  | 'feedbackTesting'
+  | 'betaFeatures'
+  | 'aiSearch';
+
+const TOGGLE_SECTIONS: Array<{
+  title: string;
+  mb?: number;
+  toggleKeys: ToggleKey[];
+}> = [
+  {
+    title: SETTINGS_COPY.sections.communication.title,
+    toggleKeys: ['emailUpdates', 'feedbackTesting', 'betaFeatures'],
+  },
+  {
+    title: SETTINGS_COPY.sections.search.title,
+    mb: 12,
+    toggleKeys: ['aiSearch'],
+  },
+];
+
 function SettingsSection({
   title,
   children,
@@ -66,11 +88,11 @@ function SettingsSection({
   mb?: number;
 }) {
   return (
-    <VStack alignItems='start' gap={6} mb={mb}>
+    <VStack alignItems='start' gap={0} w='full' mb={mb}>
+      <Heading as='h2' size='md' fontWeight='semibold' mb={2}>
+        {title}
+      </Heading>
       <VStack alignItems='start' gap={0} w='full'>
-        <Heading as='h2' size='md' fontWeight='semibold' mb={2}>
-          {title}
-        </Heading>
         {children}
       </VStack>
     </VStack>
@@ -115,10 +137,16 @@ function SettingToggle({
 
 function UserSettingsPage() {
   const { logout } = useAuth();
-  const [emailUpdates, setEmailUpdates] = useState(false);
-  const [feedbackTesting, setFeedbackTesting] = useState(false);
-  const [betaFeatures, setBetaFeatures] = useState(false);
-  const [aiSearch, setAiSearch] = useState(false);
+  const [settings, setSettings] = useState<Record<ToggleKey, boolean>>({
+    emailUpdates: false,
+    feedbackTesting: false,
+    betaFeatures: false,
+    aiSearch: false,
+  });
+
+  const updateSetting = (key: ToggleKey, checked: boolean) => {
+    setSettings(prev => ({ ...prev, [key]: checked }));
+  };
 
   return (
     <PageContainer meta={getPageSeoConfig('/settings')} px={0} py={0}>
@@ -131,40 +159,30 @@ function UserSettingsPage() {
         {/* Header */}
         <VStack alignItems='start' gap={2} mb={8}>
           <Heading as='h1' size='xl' fontWeight='bold'>
-            {COPY.page.title}
+            {SETTINGS_COPY.page.title}
           </Heading>
           <Text color='gray.800' fontSize='md'>
-            {COPY.page.subtitle}
+            {SETTINGS_COPY.page.subtitle}
           </Text>
         </VStack>
 
-        <SettingsSection title={COPY.sections.communication.title}>
-          <SettingToggle
-            {...COPY.toggles.emailUpdates}
-            isChecked={emailUpdates}
-            onChange={setEmailUpdates}
-            showBorder
-          />
-          <SettingToggle
-            {...COPY.toggles.feedbackTesting}
-            isChecked={feedbackTesting}
-            onChange={setFeedbackTesting}
-            showBorder
-          />
-          <SettingToggle
-            {...COPY.toggles.betaFeatures}
-            isChecked={betaFeatures}
-            onChange={setBetaFeatures}
-          />
-        </SettingsSection>
-
-        <SettingsSection title={COPY.sections.search.title} mb={12}>
-          <SettingToggle
-            {...COPY.toggles.aiSearch}
-            isChecked={aiSearch}
-            onChange={setAiSearch}
-          />
-        </SettingsSection>
+        {TOGGLE_SECTIONS.map(section => (
+          <SettingsSection
+            key={section.title}
+            title={section.title}
+            mb={section.mb ?? 8}
+          >
+            {section.toggleKeys.map((key, index) => (
+              <SettingToggle
+                key={key}
+                {...SETTINGS_COPY.toggles[key]}
+                isChecked={settings[key]}
+                onChange={checked => updateSetting(key, checked)}
+                showBorder={index < section.toggleKeys.length - 1}
+              />
+            ))}
+          </SettingsSection>
+        ))}
 
         {/* Log Out Button */}
         <Button
