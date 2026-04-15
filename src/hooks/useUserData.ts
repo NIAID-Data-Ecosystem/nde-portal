@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type UserPreferences = {
   ai_toggle_preference: boolean;
@@ -255,9 +255,34 @@ export function useUserData() {
     [callMockUserDataApi, logApiResult],
   );
 
-  const getProfile = useCallback(() => {
-    void callUserDataApi('GET', '/user/data');
+  const getProfile = useCallback(async () => {
+    const result = await callUserDataApi('GET', '/user/data');
+    if (result && 'body' in result && result.ok && result.body) {
+      const profile = result.body as Partial<UserProfile>;
+      const keys: (keyof UserProfile)[] = [
+        'ai_toggle_preference',
+        'beta',
+        'contact_preference',
+        'feedback_preference',
+      ];
+      const updates = Object.fromEntries(
+        keys
+          .filter(key => profile[key] !== undefined)
+          .map(key => [key, profile[key]]),
+      ) as Partial<UserProfile>;
+
+      setPreferences(prev => ({
+        ...prev,
+        ...updates,
+      }));
+    }
+    return result;
   }, [callUserDataApi]);
+
+  // Fetch preferences on mount
+  useEffect(() => {
+    void getProfile();
+  }, [getProfile]);
 
   const updatePreferenceField = useCallback(
     (field: UserPreferencesKeys) => {
