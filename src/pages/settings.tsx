@@ -2,7 +2,7 @@
  * User Settings Page - Protected route requiring authentication
  */
 
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import {
   Box,
   Heading,
@@ -16,6 +16,102 @@ import {
 import { useAuth } from 'src/hooks/useAuth';
 import { withAuth } from 'src/components/auth/withAuth';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
+
+const COPY = {
+  page: {
+    title: 'Settings',
+    subtitle: 'Manage account settings and preferences',
+  },
+  sections: {
+    communication: { title: 'Communication preferences' },
+    search: { title: 'Search preferences' },
+  },
+  toggles: {
+    emailUpdates: {
+      label: 'Email Updates',
+      description:
+        'Receive emails about new features and updates to the Discovery Portal.',
+    },
+    feedbackTesting: {
+      label: 'Feedback and Testing',
+      description:
+        'Help improve the NIAID Data Ecosystem by participating in feedback and usability testing.',
+    },
+    betaFeatures: {
+      label: 'Beta features',
+      description: 'Get early access to experimental features.',
+    },
+    aiSearch: {
+      label: 'AI-assisted search',
+      description: (
+        <>
+          Turn on AI-assisted search by default.{' '}
+          <Link color='blue.600' textDecoration='underline'>
+            Learn about AI-assisted search
+          </Link>
+          .
+        </>
+      ),
+    },
+  },
+};
+
+function SettingsSection({
+  title,
+  children,
+  mb = 8,
+}: {
+  title: string;
+  children: ReactNode;
+  mb?: number;
+}) {
+  return (
+    <VStack alignItems='start' gap={6} mb={mb}>
+      <VStack alignItems='start' gap={0} w='full'>
+        <Heading as='h2' size='md' fontWeight='semibold' mb={2}>
+          {title}
+        </Heading>
+        {children}
+      </VStack>
+    </VStack>
+  );
+}
+
+function SettingToggle({
+  label,
+  description,
+  isChecked,
+  onChange,
+  showBorder,
+}: {
+  label: string;
+  description: ReactNode;
+  isChecked: boolean;
+  onChange: (checked: boolean) => void;
+  showBorder?: boolean;
+}) {
+  return (
+    <HStack
+      justifyContent='space-between'
+      alignItems='start'
+      py={4}
+      w='full'
+      {...(showBorder && { borderBottom: '1px', borderColor: 'gray.200' })}
+    >
+      <VStack alignItems='start' gap={1} flex={1}>
+        <Text fontWeight='medium'>{label}</Text>
+        <Text fontSize='sm' color='gray.800'>
+          {description}
+        </Text>
+      </VStack>
+      <Switch
+        colorScheme='primary'
+        isChecked={isChecked}
+        onChange={e => onChange(e.target.checked)}
+      />
+    </HStack>
+  );
+}
 
 function UserSettingsPage() {
   const { logout } = useAuth();
@@ -35,117 +131,50 @@ function UserSettingsPage() {
         {/* Header */}
         <VStack alignItems='start' gap={2} mb={8}>
           <Heading as='h1' size='xl' fontWeight='bold'>
-            Settings
+            {COPY.page.title}
           </Heading>
-          <Text color='gray.600' fontSize='md'>
-            Manage account settings and preferences
+          <Text color='gray.800' fontSize='md'>
+            {COPY.page.subtitle}
           </Text>
         </VStack>
 
-        {/* Communication Preferences Section */}
-        <VStack alignItems='start' gap={6} mb={8}>
-          <VStack alignItems='start' gap={0} w='full'>
-            <Heading as='h2' size='md' fontWeight='semibold' mb={4}>
-              Communication preferences
-            </Heading>
-            {/* Email Updates */}
-            <HStack
-              justifyContent='space-between'
-              alignItems='start'
-              py={4}
-              w='full'
-              borderBottom='1px'
-              borderColor='gray.200'
-            >
-              <VStack alignItems='start' gap={1} flex={1}>
-                <Text fontWeight='medium'>Email Updates</Text>
-                <Text fontSize='sm' color='gray.600'>
-                  Receive emails about new features and updates to the Discovery
-                  Portal.
-                </Text>
-              </VStack>
-              <Switch
-                isChecked={emailUpdates}
-                onChange={e => setEmailUpdates(e.target.checked)}
-              />
-            </HStack>
+        <SettingsSection title={COPY.sections.communication.title}>
+          <SettingToggle
+            {...COPY.toggles.emailUpdates}
+            isChecked={emailUpdates}
+            onChange={setEmailUpdates}
+            showBorder
+          />
+          <SettingToggle
+            {...COPY.toggles.feedbackTesting}
+            isChecked={feedbackTesting}
+            onChange={setFeedbackTesting}
+            showBorder
+          />
+          <SettingToggle
+            {...COPY.toggles.betaFeatures}
+            isChecked={betaFeatures}
+            onChange={setBetaFeatures}
+          />
+        </SettingsSection>
 
-            {/* Feedback and Testing */}
-            <HStack
-              justifyContent='space-between'
-              alignItems='start'
-              py={4}
-              w='full'
-              borderBottom='1px'
-              borderColor='gray.200'
-            >
-              <VStack alignItems='start' gap={1} flex={1}>
-                <Text fontWeight='medium'>Feedback and Testing</Text>
-                <Text fontSize='sm' color='gray.600'>
-                  Help improve the NIAID Data Ecosystem by participating in
-                  feedback and usability testing.
-                </Text>
-              </VStack>
-              <Switch
-                isChecked={feedbackTesting}
-                onChange={e => setFeedbackTesting(e.target.checked)}
-              />
-            </HStack>
-
-            {/* Beta Features */}
-            <HStack
-              justifyContent='space-between'
-              alignItems='start'
-              py={4}
-              w='full'
-            >
-              <VStack alignItems='start' gap={1} flex={1}>
-                <Text fontWeight='medium'>Beta features</Text>
-                <Text fontSize='sm' color='gray.600'>
-                  Get early access to experimental features.
-                </Text>
-              </VStack>
-              <Switch
-                isChecked={betaFeatures}
-                onChange={e => setBetaFeatures(e.target.checked)}
-              />
-            </HStack>
-          </VStack>
-        </VStack>
-
-        {/* Search Preferences Section */}
-        <VStack alignItems='start' gap={6} mb={12}>
-          <VStack alignItems='start' gap={0} w='full'>
-            <Heading as='h2' size='md' fontWeight='semibold' mb={4}>
-              Search preferences
-            </Heading>
-            {/* AI-assisted Search */}
-            <HStack
-              justifyContent='space-between'
-              alignItems='start'
-              py={4}
-              w='full'
-            >
-              <VStack alignItems='start' gap={1} flex={1}>
-                <Text fontWeight='medium'>AI-assisted search</Text>
-                <Text fontSize='sm' color='gray.600'>
-                  Turn on AI-assisted search by default.{' '}
-                  <Link color='blue.600' textDecoration='underline'>
-                    Learn about AI-assisted search
-                  </Link>
-                  .
-                </Text>
-              </VStack>
-              <Switch
-                isChecked={aiSearch}
-                onChange={e => setAiSearch(e.target.checked)}
-              />
-            </HStack>
-          </VStack>
-        </VStack>
+        <SettingsSection title={COPY.sections.search.title} mb={12}>
+          <SettingToggle
+            {...COPY.toggles.aiSearch}
+            isChecked={aiSearch}
+            onChange={setAiSearch}
+          />
+        </SettingsSection>
 
         {/* Log Out Button */}
-        <Button colorScheme='red' variant='outline' onClick={logout}>
+        <Button
+          colorScheme='red'
+          variant='ghost'
+          size='sm'
+          onClick={logout}
+          textDecoration='underline'
+          ml={'-2'}
+        >
           Log Out
         </Button>
       </Box>
