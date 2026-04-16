@@ -1,12 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { FaClockRotateLeft } from 'react-icons/fa6';
+import { FaClockRotateLeft, FaMagnifyingGlass } from 'react-icons/fa6';
 import { uniq } from 'lodash';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import {
   Button,
   Flex,
-  HStack,
   Icon,
   IconButton,
   ListItem,
@@ -53,21 +52,42 @@ const SearchInput = ({
       }}
       renderSubmitButton={() => {
         return (
-          <HStack height='100%' alignItems='flex-start'>
+          <Flex height='100%' alignItems='flex-start' gap={{ base: 0, md: 2 }}>
             {showOptionsMenu && optionMenuProps && (
-              <CheckboxList {...optionMenuProps}></CheckboxList>
+              <Flex display={{ base: 'none', md: 'flex' }}>
+                <CheckboxList {...optionMenuProps}></CheckboxList>
+              </Flex>
             )}
+            <Button
+              colorScheme={inputProps.colorScheme}
+              aria-label={inputProps.ariaLabel}
+              size='sm'
+              type='submit'
+              display={{ base: 'flex', sm: 'none' }}
+              minW='2.25rem'
+              px={2}
+              my={1}
+              mr={2}
+              alignSelf='flex-start'
+            >
+              <Icon as={FaMagnifyingGlass} />
+            </Button>
             <Button
               colorScheme={inputProps.colorScheme}
               aria-label={inputProps.ariaLabel}
               size={inputProps.size}
               type='submit'
-              display={{ base: 'none', md: 'flex' }}
+              display={{ base: 'none', sm: 'flex' }}
             >
               Search
             </Button>
             {showSearchHistory && (
-              <Flex borderLeft='1px solid' borderLeftColor='gray.200' pl={1}>
+              <Flex
+                display={{ base: 'none', md: 'flex' }}
+                borderLeft='1px solid'
+                borderLeftColor='gray.200'
+                pl={1}
+              >
                 <Tooltip label='View search history.'>
                   <IconButton
                     variant='ghost'
@@ -83,7 +103,7 @@ const SearchInput = ({
                 </Tooltip>
               </Flex>
             )}
-          </HStack>
+          </Flex>
         );
       }}
     />
@@ -175,6 +195,30 @@ const SearchBar = ({
     [searchHistory, showSearchHistory],
   );
 
+  const resolvedOptionMenuProps = optionMenuProps
+    ? {
+        selectedOptions:
+          queryFilters?.filter(item => item.property === '@type') || [],
+        handleChange: setQueryFilters,
+        ...optionMenuProps,
+      }
+    : undefined;
+
+  const mobileOptionMenuProps = resolvedOptionMenuProps
+    ? {
+        ...resolvedOptionMenuProps,
+        buttonProps: {
+          ...(resolvedOptionMenuProps.buttonProps || {}),
+          size: 'sm',
+          variant: 'ghost',
+          bg: 'white',
+          borderRadius: 'sm',
+          minW: 'unset',
+          px: 3,
+        },
+      }
+    : undefined;
+
   return (
     <>
       <SearchInput
@@ -186,16 +230,7 @@ const SearchBar = ({
         type='text'
         showSearchHistory={showSearchHistory}
         showOptionsMenu={showOptionsMenu}
-        optionMenuProps={
-          optionMenuProps
-            ? {
-                selectedOptions:
-                  queryFilters?.filter(item => item.property === '@type') || [],
-                handleChange: setQueryFilters,
-                ...optionMenuProps,
-              }
-            : undefined
-        }
+        optionMenuProps={resolvedOptionMenuProps}
         onChange={setSearchTerm}
         onSubmit={handleSubmit}
         getInputValue={(idx: number): string => {
@@ -205,6 +240,52 @@ const SearchBar = ({
           return '';
         }}
       />
+
+      {(showOptionsMenu || showSearchHistory) && (
+        <Flex
+          mt='-1px'
+          px={2}
+          py={1}
+          display={{ base: 'flex', md: 'none' }}
+          border='1px solid'
+          borderTopWidth={0}
+          borderColor='gray.200'
+          borderBottomRadius='md'
+          bg='white'
+          justifyContent='flex-end'
+          alignItems='center'
+          gap={1}
+        >
+          {showOptionsMenu && mobileOptionMenuProps && (
+            <CheckboxList {...mobileOptionMenuProps}></CheckboxList>
+          )}
+          {showOptionsMenu && showSearchHistory && (
+            <Flex
+              display={{ base: 'block', md: 'none' }}
+              h='1.5rem'
+              borderLeft='1px solid'
+              borderLeftColor='gray.100'
+              mx={1}
+            />
+          )}
+          {showSearchHistory && (
+            <Tooltip label='View search history.'>
+              <IconButton
+                variant='ghost'
+                size='sm'
+                bg='white'
+                aria-label='View search history.'
+                icon={
+                  <Flex px={2}>
+                    <Icon as={FaClockRotateLeft} />
+                  </Flex>
+                }
+                onClick={() => setIsOpen(!isOpen)}
+              />
+            </Tooltip>
+          )}
+        </Flex>
+      )}
 
       {isOpen && showSearchHistory && historyList && (
         <DropdownContent>

@@ -157,7 +157,8 @@ export const bucketSmallValues = (
     tail,
   };
 };
-
+const capitalizeFirstLetter = (s: string) =>
+  s.charAt(0).toUpperCase() + s.slice(1);
 // Mapping chart types to their respective components and data mappers.
 const mapFacetsToChartData = (
   data: FacetTerm[],
@@ -174,7 +175,7 @@ const mapFacetsToChartData = (
     // Apply transformData if provided
     const transformed = config.transformData
       ? config.transformData({ count: b.count, term: b.term })
-      : { count: b.count, term: b.term, label: b.term };
+      : { count: b.count, term: b.term, label: capitalizeFirstLetter(b.term) };
 
     return {
       id: transformed.term,

@@ -1,4 +1,3 @@
-import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { CustomizeFiltersPopover } from '../../../components/customize-filters-popover';
 
@@ -53,14 +52,18 @@ describe('customize-filters-popover', () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole('button', { name: /customize filters/i }));
+    fireEvent.click(
+      screen.getByRole('button', { name: /customize search filters/i }),
+    );
     fireEvent.change(screen.getByPlaceholderText(/search filters/i), {
       target: { value: 'host' },
     });
     expect(screen.getByText('Host Species')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /select all/i }));
-    await waitFor(() => expect(onVisibleFiltersChange).toHaveBeenCalled());
+    await waitFor(() =>
+      expect(onVisibleFiltersChange).toHaveBeenLastCalledWith(['a', 'b']),
+    );
   });
 
   it('falls back to defaults on invalid localStorage payload', async () => {

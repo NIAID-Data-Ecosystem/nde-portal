@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { Button, Flex, Text } from '@chakra-ui/react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Flex, Text } from '@chakra-ui/react';
 import { useSpring, animated } from '@react-spring/web';
 import { Annotation, HtmlLabel } from '@visx/annotation';
 import { AxisBottom } from '@visx/axis';
@@ -7,7 +7,6 @@ import { localPoint } from '@visx/event';
 import { Group } from '@visx/group';
 import { useParentSize } from '@visx/responsive';
 import { scaleBand, scaleLinear, scaleLog } from '@visx/scale';
-import { Bar } from '@visx/shape';
 import {
   TooltipWithBounds,
   useTooltip,
@@ -29,11 +28,10 @@ import { makeNiceTicks } from './helpers';
 
 const barStyles = {
   height: {
-    min: 8,
-    max: 8,
+    // cap the bar height to prevent overly tall bars with few items or in expanded mode
+    max: 10,
     expanded: {
-      min: 8,
-      max: 22,
+      max: 20,
     },
   },
   selected: {
@@ -48,11 +46,17 @@ const barStyles = {
   fill: theme.colors.gray[200],
   fillOpacity: 0.6,
 };
+// label styles are minimal since we're hiding the axis line and ticks, but we need to reserve space for the tick labels
 const labelStyles = {
   width: 100,
   padding: 8,
   horizontalAnchor: 'end',
   verticalAnchor: 'middle',
+} as const;
+
+// axis styles are minimal since we're hiding the axis line and ticks, but we need to reserve space for the tick labels
+const axisStyles = {
+  height: 24,
 } as const;
 
 const getTermColor = (data: ChartDatum[]) =>
@@ -64,7 +68,7 @@ const getTermColor = (data: ChartDatum[]) =>
 export const BarChart = ({
   width: initialWidth = 400,
   height: initialHeight = 400,
-  margin = { top: 10, right: 20, bottom: 0, left: 0 },
+  margin = { top: 10, right: 30, bottom: 0, left: 0 },
   data,
   onSliceClick,
   isSliceSelected,
@@ -74,26 +78,40 @@ export const BarChart = ({
   // State: whether to apply log scale or raw counts (potentially remove depending on NIAID feedback)
   const [applyLogScale, setApplyLogScale] = useState<boolean>(useLogScale);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [isMeasured, setIsMeasured] = useState(false);
+  const hasMeasuredRef = useRef(false);
 
   const { parentRef, width, height } = useParentSize({
     debounceTime: 150,
-    initialSize: { width: initialWidth, height: initialHeight },
+    initialSize: { width: 0, height: initialHeight },
   });
+
+  useEffect(() => {
+    if (!hasMeasuredRef.current && width > 0) {
+      hasMeasuredRef.current = true;
+      setIsMeasured(true);
+    }
+  }, [width]);
   const svgRef = React.useRef<SVGSVGElement | null>(null);
 
-  const svgWidth = width + margin.left + margin.right;
-  const svgHeight = height + margin.top + margin.bottom;
+  const svgWidth = width;
+  const svgHeight = height;
   const innerWidth = Math.max(0, width - margin.left - margin.right);
-  const innerHeight = Math.max(0, height - margin.top - margin.bottom);
 
   // Calculate the usable bar width after accounting for label space.
   const barMaxWidth = Math.max(0, innerWidth - labelStyles.width);
 
+  // Track container resizes so we can skip animation during accordion open/close
+  const prevBarMaxWidthRef = useRef(barMaxWidth);
+  const isResizing = barMaxWidth !== prevBarMaxWidthRef.current;
+  useEffect(() => {
+    prevBarMaxWidthRef.current = barMaxWidth;
+  }, [barMaxWidth]);
+
   // Axis max value for formatting
   const maxVal = useMemo(() => Math.max(...data.map(d => d.value), 1), [data]);
   const { niceMax, tickValues } = useMemo(() => {
-    // keep your special casing if you like, but this generally works well
-    return makeNiceTicks({ maxValue: maxVal, targetTickCount: 3 });
+    return makeNiceTicks({ maxValue: maxVal });
   }, [maxVal]);
   const xScale = useMemo(() => {
     return applyLogScale
@@ -108,42 +126,43 @@ export const BarChart = ({
         });
   }, [barMaxWidth, maxVal, niceMax, applyLogScale]);
 
-  // ---- Fit-to-height Y layout ----
+  // Fill the available vertical space, but shrink the chart when bars are few.
   const numBars = Math.max(1, data.length);
-
-  // Use available height to determine bar height and spacing
-  const idealBarHeight =
-    (height - (numBars - 1) * barStyles.padding.y) / numBars;
-
-  // Determine bar height within min/max bounds
-  const barHeightMin = isExpanded
-    ? barStyles.height.expanded.min
-    : barStyles.height.min;
 
   const barHeightMax = isExpanded
     ? barStyles.height.expanded.max
     : barStyles.height.max;
 
-  const barHeight = Math.max(
-    barHeightMin,
-    Math.min(barHeightMax, idealBarHeight),
-  );
+  // Natural compact height: just enough to render bars snugly.
+  const compactRowHeight = barHeightMax + 12;
+  const naturalSvgHeight =
+    numBars * compactRowHeight + axisStyles.height + margin.top + margin.bottom;
+  const effectiveSvgHeight = Math.min(svgHeight, naturalSvgHeight);
 
-  // This is how tall the bar “stack” actually is.
-  const contentHeight =
-    numBars * barHeight + (numBars - 1) * barStyles.padding.y;
+  const svgSpring = useSpring({
+    width: svgWidth,
+    height: effectiveSvgHeight,
+    immediate: isResizing,
+    config: { tension: 280, friction: 32 },
+  });
+
+  const plotHeight = Math.max(
+    0,
+    effectiveSvgHeight - margin.top - margin.bottom - axisStyles.height,
+  );
 
   const yScale = useMemo(
     () =>
       scaleBand({
-        range: [0, contentHeight],
+        range: [0, plotHeight],
         domain: data.map(d => d.term),
         paddingInner: 0,
         paddingOuter: 0,
         round: true,
       }),
-    [contentHeight, data],
+    [plotHeight, data, isExpanded],
   );
+  const barHeight = Math.min(barHeightMax, yScale.bandwidth());
 
   const colorScale = useMemo(() => getTermColor(data), [data]);
 
@@ -185,171 +204,190 @@ export const BarChart = ({
       <Flex ref={parentRef} w='100%' h='100%'>
         <div
           ref={containerRef}
-          style={{ position: 'relative', width: svgWidth, height: svgHeight }}
+          style={{
+            position: 'relative',
+            width: svgWidth,
+            height: effectiveSvgHeight,
+          }}
         >
           {/* Accessible title + description */}
           {/* <VisuallyHidden>
             <p id='summary-stacked-title'>{title}</p>
             <p id='summary-stacked-desc'>{description}</p>
           </VisuallyHidden> */}
-          <svg
-            ref={svgRef}
-            role='img'
-            width={svgWidth}
-            height={svgHeight}
-            // aria-labelledby='summary-stacked-title'
-            // aria-describedby='summary-stacked-desc'
-          >
-            <Group top={margin.top} left={margin.left}>
-              <AxisBottom
-                top={contentHeight}
-                left={labelStyles.width}
-                scale={xScale}
-                tickValues={tickValues}
-                tickFormat={v => `${Math.round(Number(v)).toLocaleString()}`}
-              />
-              <GridColumns
-                scale={xScale}
-                width={innerWidth}
-                height={contentHeight}
-                left={labelStyles.width}
-                tickValues={tickValues}
-                stroke='#e0e0e0'
-              />
+          {isMeasured && data && data.length > 0 && (
+            <animated.svg
+              ref={svgRef}
+              role='img'
+              width={svgSpring.width}
+              height={svgSpring.height}
+              style={{ overflow: 'visible' }}
+              // aria-labelledby='summary-stacked-title'
+              // aria-describedby='summary-stacked-desc'
+            >
+              <Group top={margin.top} left={margin.left}>
+                <AxisBottom
+                  top={plotHeight}
+                  left={labelStyles.width}
+                  scale={xScale}
+                  tickValues={tickValues}
+                  tickFormat={v => Number(v).toLocaleString()}
+                  tickLabelProps={() => ({
+                    style: {
+                      fontFamily: theme.fonts.body,
+                      fontSize: theme.fontSizes['2xs'],
+                      fontWeight: theme.fontWeights.semibold,
+                      fill: theme.colors.text.heading,
+                      textAnchor: 'middle',
+                    },
+                  })}
+                />
+                <GridColumns
+                  scale={xScale}
+                  width={innerWidth}
+                  height={plotHeight}
+                  left={labelStyles.width}
+                  tickValues={tickValues}
+                  stroke='#e0e0e0'
+                />
 
-              {data.map(datum => {
-                const { id, term, label, value } = datum;
+                {data.map(datum => {
+                  const { id, term, label, value } = datum;
 
-                const barX = labelStyles.width;
-                const barWidth = xScale(value) || 0;
+                  const barX = labelStyles.width;
+                  const barWidth = xScale(value) || 0;
 
-                const rowY = yScale(term) ?? 0;
-                const barY = rowY;
+                  const rowY = yScale(term) ?? 0;
+                  const barY =
+                    rowY + Math.max(0, (yScale.bandwidth() - barHeight) / 2);
 
-                const fill = colorScale(id);
-                const isHovered = hoveredId === id;
-                const isSelected = isSliceSelected?.(id) ?? false;
+                  const fill = colorScale(id);
+                  const isHovered = hoveredId === id;
+                  const isSelected = isSliceSelected?.(id) ?? false;
 
-                // Determine if this bar is dimmed due to another bar being hovered
-                const isDimmed = hoveredId !== null && !isHovered;
+                  // Determine if this bar is dimmed due to another bar being hovered
+                  const isDimmed = hoveredId !== null && !isHovered;
 
-                // Label is anchored just before the bars
-                const labelX = barX - labelStyles.padding;
-                const labelY = barY + barHeight / 2;
+                  // Label is anchored just before the bars
+                  const labelX = barX - labelStyles.padding;
+                  const labelY = barY + barHeight / 2;
 
-                const maxLabelWidth = getMaxLabelWidthPx({
-                  horizontalAnchor: 'end',
-                  labelX,
-                  svgWidth,
-                  groupLeft: margin.left,
-                  minWidth: 40,
-                  edgePadding: labelStyles.padding,
-                  maxWidthCap: svgWidth * 0.55,
-                });
-                return (
-                  <Group
-                    key={id}
-                    onClick={() => onSliceClick?.(id)}
-                    onPointerMove={e => handlePointerMove(e, datum)}
-                    onPointerLeave={handlePointerLeave}
-                    onFocus={e => handlePointerMove(e, datum)}
-                    onBlur={handlePointerLeave}
-                    style={{
-                      cursor: 'pointer',
-                      opacity: isDimmed ? 0.6 : 1,
-                    }}
-                  >
-                    {/* filled default bar (rendered to fill the full width for hover purposes) */}
-                    <Bar
-                      x={barX}
-                      y={barY}
-                      width={barMaxWidth}
-                      height={barHeight}
-                      fill={barStyles.fill}
-                      fillOpacity={barStyles.fillOpacity}
-                      rx={barStyles.rx}
-                    />
-
-                    {/* if selected, add bar to mark selection */}
-                    {isSelected && (
+                  const maxLabelWidth = getMaxLabelWidthPx({
+                    horizontalAnchor: 'end',
+                    labelX,
+                    svgWidth,
+                    groupLeft: margin.left,
+                    minWidth: 40,
+                    edgePadding: labelStyles.padding,
+                    maxWidthCap: svgWidth * 0.55,
+                  });
+                  return (
+                    <Group
+                      key={id}
+                      onClick={() => onSliceClick?.(id)}
+                      onPointerMove={e => handlePointerMove(e, datum)}
+                      onPointerLeave={handlePointerLeave}
+                      onFocus={e => handlePointerMove(e, datum)}
+                      onBlur={handlePointerLeave}
+                      style={{
+                        cursor: 'pointer',
+                        opacity: isDimmed ? 0.6 : 1,
+                      }}
+                    >
+                      {/* filled default bar (rendered to fill the full width for hover purposes) */}
                       <AnimatedRect
+                        immediate={isResizing}
                         bar={{
                           x: barX,
-                          y: barY - barStyles.selected.padding.y / 2,
-                          width:
-                            barWidth +
-                            barStyles.selected.padding.x +
-                            (isHovered ? 4 : 0),
-                          height: barHeight + barStyles.selected.padding.y,
+                          y: barY,
+                          width: barMaxWidth,
+                          height: barHeight,
                           data: datum,
-                          fill,
-                          fillOpacity: barStyles.selected.fillOpacity,
+                          fill: barStyles.fill,
+                          fillOpacity: barStyles.fillOpacity,
                           rx: barStyles.rx,
                         }}
                       />
-                    )}
-                    {/* bar filled with color matching type */}
-                    <AnimatedRect
-                      bar={{
-                        x: barX,
-                        y: barY,
-                        width: barWidth + (isHovered ? 4 : 0),
-                        height: barHeight,
-                        data: datum,
-                        fill,
-                        rx: barStyles.rx,
-                      }}
-                    />
 
-                    {/* labels */}
-                    <Annotation x={labelX} y={labelY}>
-                      <HtmlLabel
-                        showAnchorLine={false}
-                        horizontalAnchor={labelStyles.horizontalAnchor}
-                        verticalAnchor={labelStyles.verticalAnchor}
-                        containerStyle={{
-                          fontSize: '10px',
-                          fontWeight: 'bold',
-                          pointerEvents: 'auto',
-                          textAlign: labelStyles.horizontalAnchor,
-                          width: `${maxLabelWidth}px`,
-                        }}
-                      >
-                        <Text
-                          color={id === MORE_ID ? 'link.color' : 'text.heading'}
-                          maxWidth={`${maxLabelWidth}px`}
-                          textDecoration={id === MORE_ID ? 'underline' : 'none'}
-                          noOfLines={1}
-                          style={{ cursor: 'pointer' }}
-                          onClick={e => {
-                            e.stopPropagation();
-                            onSliceClick?.(id);
+                      {/* if selected, add bar to mark selection */}
+                      {isSelected && (
+                        <AnimatedRect
+                          immediate={isResizing}
+                          bar={{
+                            x: barX,
+                            y: barY - barStyles.selected.padding.y / 2,
+                            width:
+                              barWidth +
+                              barStyles.selected.padding.x +
+                              (isHovered ? 4 : 0),
+                            height: barHeight + barStyles.selected.padding.y,
+                            data: datum,
+                            fill,
+                            fillOpacity: barStyles.selected.fillOpacity,
+                            rx: barStyles.rx,
                           }}
-                          onPointerEnter={e => handlePointerMove(e, datum)}
-                          onPointerMove={e => handlePointerMove(e, datum)}
-                          onPointerLeave={handlePointerLeave}
+                        />
+                      )}
+                      {/* bar filled with color matching type */}
+                      <AnimatedRect
+                        immediate={isResizing}
+                        bar={{
+                          x: barX,
+                          y: barY,
+                          width: barWidth + (isHovered ? 4 : 0),
+                          height: barHeight,
+                          data: datum,
+                          fill,
+                          rx: barStyles.rx,
+                        }}
+                      />
+
+                      {/* labels */}
+                      <Annotation x={labelX} y={labelY}>
+                        <HtmlLabel
+                          showAnchorLine={false}
+                          horizontalAnchor={labelStyles.horizontalAnchor}
+                          verticalAnchor={labelStyles.verticalAnchor}
+                          containerStyle={{
+                            fontSize: '10px',
+                            fontWeight: 'bold',
+                            pointerEvents: 'auto',
+                            textAlign: labelStyles.horizontalAnchor,
+                            width: `${maxLabelWidth}px`,
+                            overflow: 'hidden',
+                          }}
                         >
-                          {label}
-                        </Text>
-                      </HtmlLabel>
-                    </Annotation>
-                  </Group>
-                );
-              })}
-            </Group>
-          </svg>
-          {/* {moreItem.length > 0 && (
-            <Button
-              size='xs'
-              variant='ghost'
-              textDecoration='underline'
-              onClick={() => onSliceClick?.(moreItem[0].id)}
-              colorScheme='blue'
-              color='link.color'
-            >
-              {moreItem[0].label + ` (${moreItem[0].value})`}
-            </Button>
-          )} */}
+                          <Text
+                            color={
+                              id === MORE_ID ? 'link.color' : 'text.heading'
+                            }
+                            width='100%'
+                            display='block'
+                            overflow='hidden'
+                            textOverflow='ellipsis'
+                            whiteSpace='nowrap'
+                            textDecoration={
+                              id === MORE_ID ? 'underline' : 'none'
+                            }
+                            style={{ cursor: 'pointer' }}
+                            onClick={e => {
+                              e.stopPropagation();
+                              onSliceClick?.(id);
+                            }}
+                            onPointerEnter={e => handlePointerMove(e, datum)}
+                            onPointerMove={e => handlePointerMove(e, datum)}
+                            onPointerLeave={handlePointerLeave}
+                          >
+                            {label}
+                          </Text>
+                        </HtmlLabel>
+                      </Annotation>
+                    </Group>
+                  );
+                })}
+              </Group>
+            </animated.svg>
+          )}
 
           {/* Tooltip */}
           {tooltipOpen && tooltipData && (
@@ -373,6 +411,7 @@ export const BarChart = ({
 
 export const AnimatedRect = ({
   bar,
+  immediate = false,
 }: {
   bar: {
     data: ChartDatum;
@@ -384,14 +423,17 @@ export const AnimatedRect = ({
     fillOpacity?: number;
     rx: number;
   };
+  immediate?: boolean;
 }) => {
   const spring = useSpring({
     width: bar.width,
+    y: bar.y,
+    immediate,
   });
   return (
     <animated.rect
       x={bar.x}
-      y={bar.y}
+      y={spring.y}
       width={spring.width}
       height={bar.height}
       fill={bar.fill}

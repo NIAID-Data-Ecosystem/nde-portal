@@ -122,7 +122,7 @@ export const CompatibilityBadge = ({
       const augmented =
         data.required_augmented_fields_coverage?.[field] || null;
       return {
-        label: schema[field].name,
+        label: schema[field]?.name || '',
         field,
         count,
         augmented,
@@ -136,7 +136,7 @@ export const CompatibilityBadge = ({
       const augmented =
         data.recommended_augmented_fields_coverage?.[field] || null;
       return {
-        label: schema[field].name,
+        label: schema[field]?.name || '',
         field,
         count,
         augmented,

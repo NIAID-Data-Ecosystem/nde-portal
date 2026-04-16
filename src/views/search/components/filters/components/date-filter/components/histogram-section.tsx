@@ -24,7 +24,6 @@ export const HistogramSection: React.FC<HistogramSectionProps> = ({
   onDateSelect,
 }) => {
   const [hasLoadedOnce, setHasLoadedOnce] = React.useState(false);
-
   React.useEffect(() => {
     if (!isLoading && !isUpdating) {
       setHasLoadedOnce(true);
@@ -36,14 +35,14 @@ export const HistogramSection: React.FC<HistogramSectionProps> = ({
       w='100%'
       flexDirection='column'
       alignItems='center'
-      p={4}
-      px={SHOW_VISUAL_SUMMARY ? undefined : 10}
+      py={2}
+      px={SHOW_VISUAL_SUMMARY ? 4 : 10}
       mt={SHOW_VISUAL_SUMMARY ? undefined : -1.5}
       position='relative'
       minHeight='180px'
       height='100%'
     >
-      {(isLoading || isUpdating) && (
+      {!SHOW_VISUAL_SUMMARY && (isLoading || isUpdating) && (
         <Flex
           position='absolute'
           top={0}
@@ -63,7 +62,6 @@ export const HistogramSection: React.FC<HistogramSectionProps> = ({
           />
         </Flex>
       )}
-
       {hasData ? (
         <Histogram updatedData={data || []} handleClick={onDateSelect} />
       ) : (

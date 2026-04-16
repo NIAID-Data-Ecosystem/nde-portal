@@ -20,6 +20,7 @@ interface HistogramProps {
 
 const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
   const { filteredData, dates, allData } = useDateRangeContext();
+  const brushSectionHeight = 50;
   // Filter updatedData to remove any future years
 
   const currentYear = new Date().getFullYear();
@@ -216,13 +217,8 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
 
   // Early return if no data at all in the complete dataset
   if (!allData || allData.length === 0) {
-    return (
-      <Text fontStyle='italic' color='gray.800' mt={1}>
-        No results with date information.
-      </Text>
-    );
+    return <></>;
   }
-
   return (
     <div
       id='date-histogram'
@@ -230,7 +226,6 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
         position: 'relative',
         width: '100%',
         height: '100%',
-        minHeight: params.height,
       }}
     >
       {/* Show tooltip when hovering in any vertical space to bar. */}
@@ -251,13 +246,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
 
       <Flex ref={containerRef} justifyContent='center' h='100%'>
         <Flex w='100%' h='100%' flexDirection='column'>
-          <Flex
-            ref={parentRef}
-            justifyContent='center'
-            width='100%'
-            flex={1}
-            minH={0}
-          >
+          <Flex ref={parentRef} justifyContent='center' width='100%' minH={0}>
             <Box
               as='svg'
               id='filters-histogram'
@@ -433,7 +422,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
             justifyContent='center'
             mt={8}
             flexShrink={0}
-            minHeight={50}
+            minHeight={brushSectionHeight}
           >
             <DateBrush containerWidth={width} />
           </Flex>
