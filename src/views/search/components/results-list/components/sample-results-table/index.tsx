@@ -127,7 +127,7 @@ export const ALL_SAMPLE_COLUMNS: SampleColumn[] = [
   },
   {
     id: 'species',
-    title: 'Species',
+    title: 'Host Species',
     property: sortKey('species'),
     isSortable: true,
     props: withWidth('170px'),
