@@ -55,6 +55,7 @@ const SummaryGrid = (props: SummaryGridProps) => {
           onChange={index =>
             setAccordionIndex(typeof index === 'number' ? [index] : index)
           }
+          reduceMotion={true}
         >
           <AccordionItem border='none'>
             {/* Section header with tooltip */}
@@ -66,6 +67,7 @@ const SummaryGrid = (props: SummaryGridProps) => {
                       flexDirection='column'
                       width='100%'
                       alignItems='flex-start'
+                      px={1}
                     >
                       <InfoLabel
                         title='Visual Summary'
