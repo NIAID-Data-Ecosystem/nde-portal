@@ -34,17 +34,42 @@ interface SummaryGridProps {
   // Currently selected filters
   selectedFilters: SelectedFilterType;
 }
+const STORAGE_KEY = 'nde-visual-summary-open';
+
+const getStoredAccordionState = (): number[] => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored !== null) {
+      return JSON.parse(stored);
+    }
+  } catch {}
+  return [0]; // default open
+};
+
 const SummaryGrid = (props: SummaryGridProps) => {
-  const [accordionIndex, setAccordionIndex] = useState<number[]>([0]);
+  const [accordionIndex, setAccordionIndex] = useState<number[]>(
+    getStoredAccordionState,
+  );
   const prevVizIdsLength = useRef(props.activeVizIds.length);
 
   // Open the accordion when a new chart is added
   useEffect(() => {
     if (props.activeVizIds.length > prevVizIdsLength.current) {
       setAccordionIndex([0]);
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify([0]));
+      } catch {}
     }
     prevVizIdsLength.current = props.activeVizIds.length;
   }, [props.activeVizIds]);
+
+  const handleAccordionChange = (index: number | number[]) => {
+    const next = typeof index === 'number' ? [index] : index;
+    setAccordionIndex(next);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    } catch {}
+  };
 
   return (
     <Flex direction='column' width='100%' bg='white' p={4} gap={1}>
@@ -52,9 +77,7 @@ const SummaryGrid = (props: SummaryGridProps) => {
         <Accordion
           allowToggle
           index={accordionIndex}
-          onChange={index =>
-            setAccordionIndex(typeof index === 'number' ? [index] : index)
-          }
+          onChange={handleAccordionChange}
           reduceMotion={true}
         >
           <AccordionItem border='none'>
