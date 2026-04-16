@@ -7,6 +7,7 @@ import { CardHeader } from './card-header';
 import { ChartContent } from './chart-content';
 import { DrillStackBreadcrumb } from './drill-stack-breadcrumb';
 import { useVisualizationData } from '../../hooks/useVisualizationData';
+import { ChartLoadingSpinner } from './chart-loading-spinner';
 
 type VisualizationCardProps = {
   config: FilterConfig;
@@ -72,7 +73,10 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
       borderColor='gray.100'
       borderWidth='1px'
       borderRadius='md'
+      position='relative'
     >
+      {aggData.isLoading && <ChartLoadingSpinner />}
+
       <CardHeader
         label={config.name}
         hasEmptyData={hasEmptyData}

@@ -34,7 +34,7 @@ describe('filters/components/container', () => {
     useBreakpointValue.mockReturnValue('desktop');
     render(<FiltersContainer {...props} />);
 
-    expect(screen.getByText('Search Filters')).toBeInTheDocument();
+    expect(screen.getByTestId('customize-popover')).toBeInTheDocument();
     expect(screen.getByText('child-content')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /clear all/i }));
     expect(props.removeAllFilters).toHaveBeenCalled();
@@ -52,6 +52,6 @@ describe('filters/components/container', () => {
     useBreakpointValue.mockReturnValue('mobile');
     render(<FiltersContainer {...props} />);
     fireEvent.click(screen.getByRole('button', { name: /search filters/i }));
-    expect(screen.getByText('Submit and Close')).toBeInTheDocument();
+    expect(screen.getByText('Done')).toBeInTheDocument();
   });
 });

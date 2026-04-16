@@ -72,7 +72,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
     if (isHeader) {
       return (
         <Text
-          px={6}
+          px={3}
           fontSize='xs'
           fontWeight='semibold'
           lineHeight='shorter'
@@ -100,7 +100,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
         }}
         value={term}
         w='100%'
-        px={6}
+        px={3}
         pr={2}
         py={1.5}
         alignItems='flex-start'

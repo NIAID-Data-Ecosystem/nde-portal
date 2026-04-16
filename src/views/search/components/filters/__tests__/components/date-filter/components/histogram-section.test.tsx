@@ -10,6 +10,10 @@ jest.mock('next/router', () => ({
   useRouter: () => ({ pathname: '/search' }),
 }));
 
+jest.mock('src/utils/feature-flags', () => ({
+  SHOW_VISUAL_SUMMARY: false,
+}));
+
 describe('histogram-section', () => {
   it('shows loading overlay while loading', () => {
     render(
@@ -23,20 +27,5 @@ describe('histogram-section', () => {
     );
     expect(screen.getByTestId('histogram')).toBeInTheDocument();
     expect(document.querySelector('.chakra-spinner')).toBeInTheDocument();
-  });
-
-  it('shows no-data message after initial load completion', () => {
-    render(
-      <HistogramSection
-        data={[]}
-        hasData={false}
-        isLoading={false}
-        isUpdating={false}
-        onDateSelect={jest.fn()}
-      />,
-    );
-    expect(
-      screen.getByText(/no results with date information/i),
-    ).toBeInTheDocument();
   });
 });

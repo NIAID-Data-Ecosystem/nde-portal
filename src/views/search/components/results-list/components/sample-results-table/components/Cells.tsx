@@ -73,24 +73,30 @@ export type CellValue =
 
 // Render a single scalar value to the appropriate cell element.
 export const renderValue = (val: CellValue, key?: React.Key) => {
-  if (!val) return null;
+  if (val == null) return null;
 
   if (typeof val === 'string') {
     return <TextCell key={key}>{formatTerm(val)}</TextCell>;
   }
 
-  // Explicit @type check first so a QuantitativeValue with only `name` is not
-  // misrouted to DefinedTermCell.
+  if (typeof val === 'boolean') {
+    return <TextCell key={key}>{val ? 'Yes' : 'No'}</TextCell>;
+  }
+
   if (
-    (val as QuantitativeValue)['@type'] === 'QuantitativeValue' ||
-    'value' in val ||
-    'minValue' in val ||
-    'maxValue' in val
+    typeof val === 'object' &&
+    ((val as QuantitativeValue)['@type'] === 'QuantitativeValue' ||
+      'value' in val ||
+      'minValue' in val ||
+      'maxValue' in val)
   ) {
     return <QuantitativeValueCell key={key} {...(val as QuantitativeValue)} />;
   }
 
-  if ('name' in val || 'identifier' in val || 'url' in val) {
+  if (
+    typeof val === 'object' &&
+    ('name' in val || 'identifier' in val || 'url' in val)
+  ) {
     return <DefinedTermCell key={key} {...(val as DefinedTerm)} />;
   }
 

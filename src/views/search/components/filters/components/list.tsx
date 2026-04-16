@@ -260,7 +260,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
     return (
       <>
         {/* Search through filter terms */}
-        <Box px={4} pt={4} pb={2}>
+        <Box p={2} pt={4}>
           {!isLoading && !isUpdating && !terms?.length ? (
             <Text fontStyle='italic' color='gray.800' mt={1} textAlign='center'>
               No results with {config.name.toLocaleLowerCase()} information.
