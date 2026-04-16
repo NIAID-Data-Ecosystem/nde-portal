@@ -1,8 +1,40 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See
-[standard-version](https://github.com/conventional-changelog/standard-version)
-for commit guidelines.
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [5.3.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v5.2.0...v5.3.0) (2026-04-16)
+
+
+### 🐛 Bugfixes
+
+* allow column sorting via arrow interaction ([#429](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/429)) ([93cc0a3](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/93cc0a365a2ae7af2f15020aa66e97d67fe428d3))
+* **diseases:** typo ([3a670b6](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/3a670b6ca4bd57ca2782fb1d76ecea7f260c6ec7))
+* ensure BEI records are parsed correctly ([#424](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/424)) ([eb316a6](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/eb316a6ad2718809541cf9ff1b00ea1b846e2434))
+* handle QuantitativeValue DefinedTerm fields ([#409](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/409)) ([81e948f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/81e948fa591e90332b127ea6178aecc9e4fcb2ca))
+* **home:** remove sources with missing identifiers from landing page table ([c3381f8](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/c3381f8f9becde5437d23878afcf11e7371dd2d5))
+* schema label retrieval in metadata badge ([deccaf7](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/deccaf7d51a30a3af96a50fcbd4798c2a6b4b1e7))
+* scope carousel wheel listener to its container ([73d2413](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/73d2413210aa451a6323ace71e34fd0addccaf73))
+* scope carousel wheel listener to its container ([f92bf62](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f92bf62bf339f1e39c4c4656711a8c30a8893013))
+* **search:** add -_exists_ as default query ([#415](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/415)) ([18f6b41](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/18f6b411b9ec02a0a9e102708f7bdfc93022cc23))
+* **search:** add ai generated filter to resource catalog cards ([1d3fbca](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/1d3fbca2064e326ffdf374083be9418fc8972765))
+* **search:** add ai generated flag to filters ([2541f50](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/2541f504db8ebb60affade3e55c6a4f80b7ba24f))
+* **search:** filter tag type display ([02f1845](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/02f1845885d0818e1d339e9e0862bd39dd1bf829))
+* **search:** prevent counts from updating on page change ([cd1d13c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/cd1d13caec5255589324b43b67a74345336a621e))
+* **sources:** ssr/client mismatch in formatDate helper ([829a56c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/829a56c3bf8d3acd1b89d4ee26b82373effb5b94))
+
+
+### 🚀 Features
+
+* add customizable filters to visual summary page ([#399](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/399)) ([864a083](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/864a08360a961f3140837b0eaf72ab1f5eca94dd))
+* add data collection to metadata fields ([ce5e9f3](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/ce5e9f3bdb04227c5773e829e63a63181dea9597))
+* add labels for sort and size dropdowns ([#427](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/427)) ([55425bd](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/55425bda2bd2b68265ff0d568c7e21cada42a143))
+* improve dropdown label accessibility ([#430](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/430)) ([5ec0fb4](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/5ec0fb446fd19ba9b234ef29c2c6cddc08640b04))
+* **settings:** add feedback preference option ([4476963](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/44769632e9113f65d49118187e95f00dbd2457b9))
+* **settings:** set default saved preferences ([24fad7f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/24fad7fd2f6aa694f081134eade4eec5989dbbef))
+* User Profile Page Mock ups  ([#431](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/431)) ([4b1d3f4](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/4b1d3f45d1fddbc3e3ab769070ea393f90f0c3c6))
+* visual summary bar chart improvements ([#423](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/423)) ([4944dd1](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/4944dd1ceddc6ab6f90625a267c3174fa9d2be02))
+* visual summary improvements ([#417](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/417)) ([86d816f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/86d816f1776edebd8287f9d0bca1eee8a43601da))
+* visual summary minor improvements ([#432](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/432)) ([1ad519c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/1ad519c2cefd103b3ffb24654a55992c0299681e))
 
 ## [5.2.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v5.1.2...v5.2.0) (2026-02-17)
 
