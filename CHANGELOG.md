@@ -41,8 +41,6 @@ for commit guidelines.
 - add customizable filters to visual summary page
   ([#399](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/399))
   ([864a083](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/864a08360a961f3140837b0eaf72ab1f5eca94dd))
-- add data collection to metadata fields
-  ([ce5e9f3](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/ce5e9f3bdb04227c5773e829e63a63181dea9597))
 - add labels for sort and size dropdowns
   ([#427](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/427))
   ([55425bd](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/55425bda2bd2b68265ff0d568c7e21cada42a143))
@@ -53,9 +51,6 @@ for commit guidelines.
   ([4476963](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/44769632e9113f65d49118187e95f00dbd2457b9))
 - **settings:** set default saved preferences
   ([24fad7f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/24fad7fd2f6aa694f081134eade4eec5989dbbef))
-- User Profile Page Mock ups
-  ([#431](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/431))
-  ([4b1d3f4](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/4b1d3f45d1fddbc3e3ab769070ea393f90f0c3c6))
 - visual summary bar chart improvements
   ([#423](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/423))
   ([4944dd1](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/4944dd1ceddc6ab6f90625a267c3174fa9d2be02))
