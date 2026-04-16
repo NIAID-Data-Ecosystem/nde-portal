@@ -17,9 +17,13 @@ import { ChartDatum } from 'src/views/search/components/summary/types';
 import { isMoreSlice } from 'src/views/search/components/summary/helpers';
 import { theme } from 'src/theme';
 import { getMaxLabelWidthPx } from './helpers';
-import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
+import {
+  TooltipWithBounds,
+  useTooltip,
+  useTooltipInPortal,
+} from '@visx/tooltip';
 import { localPoint } from '@visx/event';
-import { TooltipBody, TooltipTitle, TooltipWrapper } from '../tooltip';
+import { TooltipTitle, TooltipWrapper } from '../tooltip';
 
 const defaultMargin = { top: 50, right: 50, bottom: 50, left: 50 };
 
@@ -95,7 +99,7 @@ export const PieChart = ({
     hideTooltip,
   } = useTooltip<ChartDatum>();
 
-  const { containerRef, TooltipInPortal } = useTooltipInPortal({
+  const { containerRef } = useTooltipInPortal({
     detectBounds: true,
     scroll: true,
   });
@@ -175,7 +179,7 @@ export const PieChart = ({
   return (
     <Flex w='100%' h='100%'>
       <Flex ref={parentRef} w='100%' h='100%'>
-        <Box ref={containerRef} width='100%' height='100%'>
+        <Box ref={containerRef} width='100%' height='100%' position='relative'>
           {isMeasured && data && data.length > 0 && (
             <animated.svg
               ref={svgRef}
@@ -219,23 +223,23 @@ export const PieChart = ({
               </Group>
             </animated.svg>
           )}
+          {/* Tooltip */}
+          {tooltipOpen && tooltipData && (
+            <TooltipWithBounds
+              data-testid='tooltip'
+              // set this to random so it correctly updates with parent bounds
+              key={Math.random()}
+              left={tooltipLeft}
+              top={tooltipTop}
+              aria-live='polite'
+            >
+              <TooltipWrapper>
+                <TooltipTitle fontSize='xs'>{tooltipData.label}</TooltipTitle>
+              </TooltipWrapper>
+            </TooltipWithBounds>
+          )}
         </Box>
       </Flex>
-      {/* Tooltip */}
-      {tooltipOpen && tooltipData && (
-        <TooltipInPortal
-          data-testid='tooltip'
-          // set this to random so it correctly updates with parent bounds
-          key={Math.random()}
-          left={tooltipLeft}
-          top={tooltipTop}
-          aria-live='polite'
-        >
-          <TooltipWrapper>
-            <TooltipTitle fontSize='xs'>{tooltipData.label}</TooltipTitle>
-          </TooltipWrapper>
-        </TooltipInPortal>
-      )}
     </Flex>
   );
 };
