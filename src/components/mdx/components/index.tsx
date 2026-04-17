@@ -342,7 +342,6 @@ export const MDXComponents = {
       (src.includes('.webm') || src.includes('.mp4'));
 
     if (isVideo) {
-      console.log('props', props);
       const { src: _src, alt, ...videoProps } = props;
       return (
         <Box
