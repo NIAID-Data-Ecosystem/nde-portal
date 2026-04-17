@@ -108,6 +108,7 @@
   },
   "resolutions": {
     "@xmldom/xmldom": "^0.8.12",
+    "basic-ftp": "^5.3.0",
     "brace-expansion": "^2.0.3",
     "cookie": "^0.7.0",
     "diff": "^4.0.4",
