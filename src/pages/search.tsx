@@ -36,7 +36,11 @@ import {
 import { FilterTags } from 'src/views/search/components/filters/components/tag';
 import { SearchResultsFetchedProvider } from 'src/views/search/context/search-results-fetched-context';
 
-const DEFAULT_ACTIVE_VIZ_IDS = ['date'];
+const DEFAULT_ACTIVE_VIZ_IDS = [
+  'date',
+  'includedInDataCatalog',
+  'healthCondition.name.raw',
+];
 
 // Default filters list.
 const defaultFilters = FILTER_CONFIGS.reduce(

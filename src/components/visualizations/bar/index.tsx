@@ -101,6 +101,13 @@ export const BarChart = ({
   // Calculate the usable bar width after accounting for label space.
   const barMaxWidth = Math.max(0, innerWidth - labelStyles.width);
 
+  // Track container resizes so we can skip animation during accordion open/close
+  const prevBarMaxWidthRef = useRef(barMaxWidth);
+  const isResizing = barMaxWidth !== prevBarMaxWidthRef.current;
+  useEffect(() => {
+    prevBarMaxWidthRef.current = barMaxWidth;
+  }, [barMaxWidth]);
+
   // Axis max value for formatting
   const maxVal = useMemo(() => Math.max(...data.map(d => d.value), 1), [data]);
   const { niceMax, tickValues } = useMemo(() => {
@@ -135,6 +142,7 @@ export const BarChart = ({
   const svgSpring = useSpring({
     width: svgWidth,
     height: effectiveSvgHeight,
+    immediate: isResizing,
     config: { tension: 280, friction: 32 },
   });
 
@@ -288,6 +296,7 @@ export const BarChart = ({
                     >
                       {/* filled default bar (rendered to fill the full width for hover purposes) */}
                       <AnimatedRect
+                        immediate={isResizing}
                         bar={{
                           x: barX,
                           y: barY,
@@ -303,6 +312,7 @@ export const BarChart = ({
                       {/* if selected, add bar to mark selection */}
                       {isSelected && (
                         <AnimatedRect
+                          immediate={isResizing}
                           bar={{
                             x: barX,
                             y: barY - barStyles.selected.padding.y / 2,
@@ -320,6 +330,7 @@ export const BarChart = ({
                       )}
                       {/* bar filled with color matching type */}
                       <AnimatedRect
+                        immediate={isResizing}
                         bar={{
                           x: barX,
                           y: barY,
@@ -400,6 +411,7 @@ export const BarChart = ({
 
 export const AnimatedRect = ({
   bar,
+  immediate = false,
 }: {
   bar: {
     data: ChartDatum;
@@ -411,10 +423,12 @@ export const AnimatedRect = ({
     fillOpacity?: number;
     rx: number;
   };
+  immediate?: boolean;
 }) => {
   const spring = useSpring({
     width: bar.width,
     y: bar.y,
+    immediate,
   });
   return (
     <animated.rect
