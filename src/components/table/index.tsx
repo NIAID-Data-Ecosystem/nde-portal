@@ -46,7 +46,21 @@ export interface TableProps<TData extends Record<string, string | number>> {
   getTableRowProps?: (row: any, idx: number) => any;
   tableHeadProps?: HTMLChakraProps<'thead'>;
   tableContainerProps?: TableContainerProps;
+  /**
+   * When provided, the table operates in *controlled sort* mode:
+   * - Internal `useTableSort` is bypassed entirely.
+   * - The column whose `property` matches `controlledSortProperty` is
+   *   highlighted as selected.
+   * - Clicking a sort toggle calls `onControlledSort` instead of updating
+   *   local state, so the parent drives the sort.
+   *
+   * Omitting both props keeps the original uncontrolled behavior.
+   */
+  controlledSortProperty?: string | null;
+  controlledSortAsc?: boolean;
+  onControlledSort?: (property: string, ascending: boolean) => void;
 }
+
 // Constants for table configuration.
 // [NUM_ROWS]: num of rows per page
 const NUM_ROWS = [5, 10, 50, 100];
@@ -65,7 +79,13 @@ export const Table: React.FC<TableProps<any>> = ({
   tableBodyProps,
   getTableRowProps,
   tableContainerProps,
+  controlledSortProperty,
+  controlledSortAsc,
+  onControlledSort,
 }) => {
+  const isControlled =
+    controlledSortProperty !== undefined && onControlledSort !== undefined;
+
   // create unique id for each row
   const dataWithUniqueID = useMemo(
     () =>
@@ -97,18 +117,22 @@ export const Table: React.FC<TableProps<any>> = ({
   // [from]: current page number
   const [from, setFrom] = useState(0);
 
+  // In controlled mode the parent already sorted the data server-side, so data
+  // is displayed as-is.  In uncontrolled mode the locally sorted copy is used.
+  const displayData = isControlled ? dataWithUniqueID : tableData;
+
   // [rows]: all rows to display
-  const [rows, setRows] = useState(tableData);
+  const [rows, setRows] = useState(displayData);
 
   useEffect(() => {
     setSize(hasPagination ? size : data.length);
     // update rows to display based on current page number and num of rows per page
     setRows(
       hasPagination
-        ? tableData.slice(from * size, from * size + size)
-        : tableData,
+        ? displayData.slice(from * size, from * size + size)
+        : displayData,
     );
-  }, [tableData, size, from, data.length, hasPagination, numRows]);
+  }, [displayData, size, from, data.length, hasPagination, numRows]);
 
   return (
     <Skeleton
@@ -131,18 +155,32 @@ export const Table: React.FC<TableProps<any>> = ({
             <Box as='thead' {...tableHeadProps}>
               <Tr role='row' flex='1' display='flex' w='100%'>
                 {columns.map(column => {
+                  const isSelected = isControlled
+                    ? column.property === controlledSortProperty
+                    : column.property === orderBy;
+
+                  const currentSortBy = isControlled
+                    ? controlledSortAsc
+                      ? 'ASC'
+                      : 'DESC'
+                    : sortBy;
+
                   return (
                     <Th
                       key={`table-col-th-${column.property}`}
                       label={column.title}
-                      isSelected={column.property === orderBy}
+                      isSelected={isSelected}
                       borderBottomColor={`${colorScheme}.200`}
                       isSortable={column.isSortable}
                       tableSortToggleProps={{
-                        isSelected: column.property === orderBy,
-                        sortBy,
+                        isSelected,
+                        sortBy: currentSortBy as 'ASC' | 'DESC',
                         handleToggle: (sortByAsc: boolean) => {
-                          updateSort(column.property, sortByAsc);
+                          if (isControlled) {
+                            onControlledSort!(column.property, sortByAsc);
+                          } else {
+                            updateSort(column.property, sortByAsc);
+                          }
                         },
                       }}
                       {...column.props}
