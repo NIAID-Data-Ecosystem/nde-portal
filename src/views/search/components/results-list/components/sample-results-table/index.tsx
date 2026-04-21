@@ -472,8 +472,14 @@ export const SampleResultsTable = ({
         getCells={getCells as any}
         isLoading={isLoading}
         hasPagination={false}
+        // Opt in to sticky headers. The bounded maxHeight and overflowY give
+        // the browser a scroll boundary, which is required for position:sticky
+        // on the thead element to function correctly.
+        stickyHeader
         tableContainerProps={{
           overflowX: 'auto',
+          maxHeight: '70vh',
+          overflowY: 'auto',
         }}
         tableHeadProps={{
           sx: {

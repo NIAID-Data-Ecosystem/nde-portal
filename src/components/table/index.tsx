@@ -59,6 +59,16 @@ export interface TableProps<TData extends Record<string, string | number>> {
   controlledSortProperty?: string | null;
   controlledSortAsc?: boolean;
   onControlledSort?: (property: string, ascending: boolean) => void;
+  /**
+   * When true, the thead element sticks to the top of the scrolling container
+   * as the user scrolls vertically through rows.
+   *
+   * Requires tableContainerProps to include a bounded maxHeight and
+   * overflowY:'auto'.
+   *
+   * Defaults to false.
+   */
+  stickyHeader?: boolean;
 }
 
 // Constants for table configuration.
@@ -82,6 +92,7 @@ export const Table: React.FC<TableProps<any>> = ({
   controlledSortProperty,
   controlledSortAsc,
   onControlledSort,
+  stickyHeader = false,
 }) => {
   const isControlled =
     controlledSortProperty !== undefined && onControlledSort !== undefined;
@@ -118,7 +129,7 @@ export const Table: React.FC<TableProps<any>> = ({
   const [from, setFrom] = useState(0);
 
   // In controlled mode the parent already sorted the data server-side, so data
-  // is displayed as-is.  In uncontrolled mode the locally sorted copy is used.
+  // is displayed as-is. In uncontrolled mode the locally sorted copy is used.
   const displayData = isControlled ? dataWithUniqueID : tableData;
 
   // [rows]: all rows to display
@@ -133,6 +144,17 @@ export const Table: React.FC<TableProps<any>> = ({
         : displayData,
     );
   }, [displayData, size, from, data.length, hasPagination, numRows]);
+
+  // When stickyHeader is enabled, position:sticky is applied to the thead
+  // element itself rather than individual th cells.
+  const stickyHeadProps = stickyHeader
+    ? {
+        position: 'sticky' as const,
+        top: 0,
+        zIndex: 1,
+        bg: 'white',
+      }
+    : {};
 
   return (
     <Skeleton
@@ -152,7 +174,7 @@ export const Table: React.FC<TableProps<any>> = ({
             <VisuallyHidden id='table-caption' as='caption'>
               {caption}
             </VisuallyHidden>
-            <Box as='thead' {...tableHeadProps}>
+            <Box as='thead' {...stickyHeadProps} {...tableHeadProps}>
               <Tr role='row' flex='1' display='flex' w='100%'>
                 {columns.map(column => {
                   const isSelected = isControlled
@@ -184,7 +206,7 @@ export const Table: React.FC<TableProps<any>> = ({
                         },
                       }}
                       {...column.props}
-                    ></Th>
+                    />
                   );
                 })}
               </Tr>
