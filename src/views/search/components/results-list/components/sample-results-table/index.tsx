@@ -476,6 +476,8 @@ export const SampleResultsTable = ({
         // the browser a scroll boundary, which is required for position:sticky
         // on the thead element to function correctly.
         stickyHeader
+        // Opt in to the mirrored top horizontal scrollbar.
+        showTopScrollbar
         tableContainerProps={{
           overflowX: 'auto',
           maxHeight: '70vh',
