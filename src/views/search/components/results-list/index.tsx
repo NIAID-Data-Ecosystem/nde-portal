@@ -281,6 +281,20 @@ export const SearchResults = ({
     updateRoute(router, update);
   };
 
+  /**
+   * Called by SampleResultsTable when the user clicks a column sort toggle.
+   * Converts the API field + direction into the sort string format used
+   * elsewhere (e.g. `"-name.raw"` for descending), then updates both
+   * pagination state and the URL (identical to how the toolbar sort
+   * dropdown works, including the reset to page 1).
+   */
+  const handleSampleSortChange = (apiField: string, ascending: boolean) => {
+    const newSort = ascending ? apiField : `-${apiField}`;
+    const update = { sort: newSort, from: 1 };
+    setPagination(id, update);
+    updateRoute(router, update);
+  };
+
   return (
     <>
       <VStack borderRadius='semi' bg='white' px={4} py={2}>
@@ -326,6 +340,8 @@ export const SearchResults = ({
             isLoading={!router.isReady || isLoading}
             visibleColumnIds={visibleColumnIds}
             columnOrder={columnOrder}
+            currentSort={sort}
+            onSortChange={handleSampleSortChange}
           />
         ) : (
           /* Dataset / ComputationalTool tabs: render result cards */

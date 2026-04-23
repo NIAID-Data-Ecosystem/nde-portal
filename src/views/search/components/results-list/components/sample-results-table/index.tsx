@@ -8,48 +8,6 @@ import { renderCellData } from './components/Cells';
 import { getTruncatedText } from 'src/components/table/helpers';
 import { REQUIRED_COLUMN_IDS } from './components/CustomizeColumnsPopover';
 
-// For columns whose display value is a rich object (e.g. { identifier, url })
-// or an array of DefinedTerms, a parallel `_sort_<field>` plain string
-// is stored on each row. The column `property` points at that sort key;
-// getCells remaps it back to the original field name to read the display value.
-const SORT_PREFIX = '_sort_' as const;
-type SortKey = `${typeof SORT_PREFIX}${string}`;
-
-const sortKey = (field: string): SortKey => `${SORT_PREFIX}${field}`;
-
-const toSortString = (value: unknown): string => {
-  if (value == null) return '';
-  if (Array.isArray(value)) {
-    return value
-      .map(item => {
-        if (item == null) return '';
-        if (typeof item === 'string') return item;
-        if (typeof item === 'object')
-          return (
-            (item as any).name ??
-            (item as any).displayName ??
-            (item as any).identifier ??
-            ''
-          );
-        return String(item);
-      })
-      .filter(Boolean)
-      .join(', ')
-      .toLowerCase();
-  }
-  if (typeof value === 'object') {
-    return (
-      (value as any).name ??
-      (value as any).identifier ??
-      (value as any).displayName ??
-      ''
-    )
-      .toString()
-      .toLowerCase();
-  }
-  return String(value).toLowerCase();
-};
-
 // The shared Column interface exposes `props?: any` which Table spreads onto
 // both the <Th> header cell and every <Cell> data cell in its render loop.
 const withWidth = (width: string) => ({
@@ -58,200 +16,255 @@ const withWidth = (width: string) => ({
   w: width,
 });
 
-// Adjust the width string in `props` to change a column's rendered width.
-// Both the header and every body cell will reflect the change automatically.
-
-// All possible columns for the sample results table.
-// Each column has a stable `id` field used for visibility tracking.
 export interface SampleColumn extends Column {
-  // Stable identifier used for localStorage persistence
+  /** Stable identifier used for localStorage persistence. */
   id: string;
+  /**
+   * The API sort field to use when this column's sort toggle is clicked.
+   * `null` means the column is not server-sortable.
+   */
+  apiSortField: string | null;
 }
+
+const COLUMN_API_SORT_FIELDS: Record<string, string | null> = {
+  identifier: null,
+  alternateIdentifier: null,
+  name: 'name.raw',
+  date: 'date',
+  includedInDataCatalog: 'includedInDataCatalog.name',
+  description: null,
+  healthCondition: null,
+  infectiousAgent: null,
+  species: null,
+  conditionsOfAccess: 'conditionsOfAccess',
+  variableMeasured: null,
+  measurementTechnique: null,
+  anatomicalStructure: null,
+  anatomicalSystem: null,
+  sampleType: null,
+  sampleAvailability: 'sampleAvailability',
+  sampleQuantity: null,
+  instrument: null,
+  sex: 'sex',
+  developmentalStage: null,
+  associatedGenotype: null,
+  associatedPhenotype: null,
+  cellType: null,
+  locationOfOrigin: null,
+  itemLocation: null,
+};
 
 export const ALL_SAMPLE_COLUMNS: SampleColumn[] = [
   {
     id: 'identifier',
     title: 'Identifier',
-    property: sortKey('identifier'),
-    isSortable: true,
+    property: 'identifier',
+    isSortable: false,
+    apiSortField: COLUMN_API_SORT_FIELDS['identifier'],
     props: withWidth('180px'),
   },
   {
     id: 'alternateIdentifier',
     title: 'Alternate Identifier',
-    property: sortKey('alternateIdentifier'),
-    isSortable: true,
+    property: 'alternateIdentifier',
+    isSortable: false,
+    apiSortField: COLUMN_API_SORT_FIELDS['alternateIdentifier'],
     props: withWidth('180px'),
   },
   {
     id: 'name',
     title: 'Name',
-    property: sortKey('name'),
+    property: 'name',
     isSortable: true,
+    apiSortField: COLUMN_API_SORT_FIELDS['name'],
     props: withWidth('250px'),
   },
   {
     id: 'date',
     title: 'Date',
-    property: sortKey('date'),
+    property: 'date',
     isSortable: true,
+    apiSortField: COLUMN_API_SORT_FIELDS['date'],
     props: withWidth('130px'),
   },
   {
     id: 'includedInDataCatalog',
     title: 'Source',
-    property: sortKey('includedInDataCatalog'),
+    property: 'includedInDataCatalog',
     isSortable: true,
+    apiSortField: COLUMN_API_SORT_FIELDS['includedInDataCatalog'],
     props: withWidth('160px'),
   },
   {
     id: 'description',
     title: 'Description',
-    property: sortKey('description'),
-    isSortable: true,
+    property: 'description',
+    isSortable: false,
+    apiSortField: COLUMN_API_SORT_FIELDS['description'],
     props: withWidth('250px'),
   },
   {
     id: 'healthCondition',
     title: 'Health Condition',
-    property: sortKey('healthCondition'),
-    isSortable: true,
+    property: 'healthCondition',
+    isSortable: false,
+    apiSortField: COLUMN_API_SORT_FIELDS['healthCondition'],
     props: withWidth('160px'),
   },
   {
     id: 'infectiousAgent',
     title: 'Infectious Agent',
-    property: sortKey('infectiousAgent'),
-    isSortable: true,
+    property: 'infectiousAgent',
+    isSortable: false,
+    apiSortField: COLUMN_API_SORT_FIELDS['infectiousAgent'],
     props: withWidth('160px'),
   },
   {
     id: 'species',
-    title: 'Species',
-    property: sortKey('species'),
-    isSortable: true,
+    title: 'Host Species',
+    property: 'species',
+    isSortable: false,
+    apiSortField: COLUMN_API_SORT_FIELDS['species'],
     props: withWidth('170px'),
   },
   {
     id: 'conditionsOfAccess',
     title: 'Conditions of Access',
-    property: sortKey('conditionsOfAccess'),
+    property: 'conditionsOfAccess',
     isSortable: true,
+    apiSortField: COLUMN_API_SORT_FIELDS['conditionsOfAccess'],
     props: withWidth('180px'),
   },
   {
     id: 'variableMeasured',
     title: 'Variable Measured',
-    property: sortKey('variableMeasured'),
-    isSortable: true,
+    property: 'variableMeasured',
+    isSortable: false,
+    apiSortField: COLUMN_API_SORT_FIELDS['variableMeasured'],
     props: withWidth('160px'),
   },
   {
     id: 'measurementTechnique',
     title: 'Measurement Technique',
-    property: sortKey('measurementTechnique'),
-    isSortable: true,
+    property: 'measurementTechnique',
+    isSortable: false,
+    apiSortField: COLUMN_API_SORT_FIELDS['measurementTechnique'],
     props: withWidth('200px'),
   },
   {
     id: 'anatomicalStructure',
     title: 'Anatomical Structure',
-    property: sortKey('anatomicalStructure'),
-    isSortable: true,
+    property: 'anatomicalStructure',
+    isSortable: false,
+    apiSortField: COLUMN_API_SORT_FIELDS['anatomicalStructure'],
     props: withWidth('180px'),
   },
   {
     id: 'anatomicalSystem',
     title: 'Anatomical System',
-    property: sortKey('anatomicalSystem'),
-    isSortable: true,
+    property: 'anatomicalSystem',
+    isSortable: false,
+    apiSortField: COLUMN_API_SORT_FIELDS['anatomicalSystem'],
     props: withWidth('160px'),
   },
   {
     id: 'sampleType',
     title: 'Sample Type',
-    property: sortKey('sampleType'),
-    isSortable: true,
+    property: 'sampleType',
+    isSortable: false,
+    apiSortField: COLUMN_API_SORT_FIELDS['sampleType'],
     props: withWidth('140px'),
   },
   {
     id: 'sampleAvailability',
     title: 'Sample Availability',
-    property: sortKey('sampleAvailability'),
+    property: 'sampleAvailability',
     isSortable: true,
-    props: withWidth('170px'),
+    apiSortField: COLUMN_API_SORT_FIELDS['sampleAvailability'],
+    props: withWidth('180px'),
   },
   {
     id: 'sampleQuantity',
     title: 'Sample Quantity',
-    property: sortKey('sampleQuantity'),
-    isSortable: true,
+    property: 'sampleQuantity',
+    isSortable: false,
+    apiSortField: COLUMN_API_SORT_FIELDS['sampleQuantity'],
     props: withWidth('150px'),
   },
   {
     id: 'instrument',
     title: 'Instrument',
-    property: sortKey('instrument'),
-    isSortable: true,
+    property: 'instrument',
+    isSortable: false,
+    apiSortField: COLUMN_API_SORT_FIELDS['instrument'],
     props: withWidth('190px'),
   },
   {
     id: 'sex',
     title: 'Sex',
-    property: sortKey('sex'),
+    property: 'sex',
     isSortable: true,
-    props: withWidth('100px'),
+    apiSortField: COLUMN_API_SORT_FIELDS['sex'],
+    props: withWidth('120px'),
   },
   {
     id: 'developmentalStage',
     title: 'Developmental Stage',
-    property: sortKey('developmentalStage'),
-    isSortable: true,
+    property: 'developmentalStage',
+    isSortable: false,
+    apiSortField: COLUMN_API_SORT_FIELDS['developmentalStage'],
     props: withWidth('190px'),
   },
   {
     id: 'associatedGenotype',
     title: 'Associated Genotype',
-    property: sortKey('associatedGenotype'),
-    isSortable: true,
+    property: 'associatedGenotype',
+    isSortable: false,
+    apiSortField: COLUMN_API_SORT_FIELDS['associatedGenotype'],
     props: withWidth('180px'),
   },
   {
     id: 'associatedPhenotype',
     title: 'Associated Phenotype',
-    property: sortKey('associatedPhenotype'),
-    isSortable: true,
+    property: 'associatedPhenotype',
+    isSortable: false,
+    apiSortField: COLUMN_API_SORT_FIELDS['associatedPhenotype'],
     props: withWidth('180px'),
   },
   {
     id: 'cellType',
     title: 'Cell Type',
-    property: sortKey('cellType'),
-    isSortable: true,
+    property: 'cellType',
+    isSortable: false,
+    apiSortField: COLUMN_API_SORT_FIELDS['cellType'],
     props: withWidth('150px'),
   },
   {
     id: 'locationOfOrigin',
     title: 'Location of Origin',
-    property: sortKey('locationOfOrigin'),
-    isSortable: true,
+    property: 'locationOfOrigin',
+    isSortable: false,
+    apiSortField: COLUMN_API_SORT_FIELDS['locationOfOrigin'],
     props: withWidth('185px'),
   },
   {
     id: 'itemLocation',
     title: 'Item Location',
-    property: sortKey('itemLocation'),
-    isSortable: true,
+    property: 'itemLocation',
+    isSortable: false,
+    apiSortField: COLUMN_API_SORT_FIELDS['itemLocation'],
     props: withWidth('150px'),
   },
 ];
 
-const SORT_KEY_TO_FIELD: Record<string, string> = Object.fromEntries(
-  ALL_SAMPLE_COLUMNS.map(col => [
-    col.property,
-    col.property.slice(SORT_PREFIX.length),
-  ]),
-);
+/**
+ * Given a column `property`, return the API sort field string, or `null`
+ * if the column is not server-sortable.
+ */
+export const getApiSortFieldForProperty = (property: string): string | null => {
+  const col = ALL_SAMPLE_COLUMNS.find(c => c.property === property);
+  return col?.apiSortField ?? null;
+};
 
 const toRow = (resource: FormattedResource): Record<string, unknown> => {
   const rawCatalog = resource.includedInDataCatalog;
@@ -272,50 +285,15 @@ const toRow = (resource: FormattedResource): Record<string, unknown> => {
     ? rawIdentifier
     : (resource as any)._id?.replace(/^_/, '').toUpperCase() ?? '';
 
-  const identifierDisplay = {
-    identifier: resolvedIdentifier,
-    url: resource.url ?? '',
-  };
-
-  const catalogDisplay = catalog
-    ? { name: catalog.name ?? '', url: catalogUrl }
-    : null;
-
   return {
     ...resource,
-    identifier: identifierDisplay,
-    includedInDataCatalog: catalogDisplay,
-    [sortKey('identifier')]: toSortString(identifierDisplay),
-    [sortKey('date')]: toSortString(resource.date),
-    [sortKey('alternateIdentifier')]: toSortString(
-      resource.alternateIdentifier,
-    ),
-    [sortKey('name')]: toSortString(resource.name),
-    [sortKey('description')]: toSortString(resource.description),
-    [sortKey('includedInDataCatalog')]: toSortString(catalogDisplay),
-    [sortKey('healthCondition')]: toSortString(resource.healthCondition),
-    [sortKey('infectiousAgent')]: toSortString(resource.infectiousAgent),
-    [sortKey('species')]: toSortString(resource.species),
-    [sortKey('conditionsOfAccess')]: toSortString(resource.conditionsOfAccess),
-    [sortKey('variableMeasured')]: toSortString(resource.variableMeasured),
-    [sortKey('measurementTechnique')]: toSortString(
-      resource.measurementTechnique,
-    ),
-    [sortKey('anatomicalStructure')]: toSortString(
-      resource.anatomicalStructure,
-    ),
-    [sortKey('anatomicalSystem')]: toSortString(resource.anatomicalSystem),
-    [sortKey('sampleType')]: toSortString(resource.sampleType),
-    [sortKey('sampleAvailability')]: toSortString(resource.sampleAvailability),
-    [sortKey('sampleQuantity')]: toSortString(resource.sampleQuantity),
-    [sortKey('instrument')]: toSortString(resource.instrument),
-    [sortKey('sex')]: toSortString(resource.sex),
-    [sortKey('developmentalStage')]: toSortString(resource.developmentalStage),
-    [sortKey('associatedGenotype')]: toSortString(resource.associatedGenotype),
-    [sortKey('associatedPhenotype')]: toSortString(resource.associatePhenotype),
-    [sortKey('cellType')]: toSortString(resource.cellType),
-    [sortKey('locationOfOrigin')]: toSortString(resource.locationOfOrigin),
-    [sortKey('itemLocation')]: toSortString(resource.itemLocation),
+    identifier: {
+      identifier: resolvedIdentifier,
+      url: resource.url ?? '',
+    },
+    includedInDataCatalog: catalog
+      ? { name: catalog.name ?? '', url: catalogUrl }
+      : null,
   };
 };
 
@@ -328,12 +306,10 @@ const getCells = ({
   data: Record<string, unknown>;
   isLoading?: boolean;
 }) => {
-  // Remap the sort-key property back to the real field name for display.
-  const field = SORT_KEY_TO_FIELD[column.property] ?? column.property;
-  const value = data?.[field];
+  const value = data?.[column.property];
 
   // Identifier: { identifier, url } => link or plain text
-  if (field === 'identifier') {
+  if (column.property === 'identifier') {
     const id = value as { identifier: string; url: string } | null;
     if (!id) return null;
     return id.url ? (
@@ -346,7 +322,7 @@ const getCells = ({
   }
 
   // Source: { name, url } => link or plain text
-  if (field === 'includedInDataCatalog') {
+  if (column.property === 'includedInDataCatalog') {
     const cat = value as { name: string; url: string | null } | null;
     if (!cat) return null;
     return cat.url ? (
@@ -359,7 +335,7 @@ const getCells = ({
   }
 
   // Limit description to 144 characters
-  if (field === 'description') {
+  if (column.property === 'description') {
     const { text } = getTruncatedText(value as string, false, 144);
     return text ? (
       <Text fontSize='sm'>
@@ -370,7 +346,7 @@ const getCells = ({
   }
 
   // Scalar string fields that don't need DefinedTerm / QuantitativeValue rendering
-  if (field === 'date' || field === 'conditionsOfAccess') {
+  if (column.property === 'date' || column.property === 'conditionsOfAccess') {
     return value ? <Text fontSize='sm'>{String(value)}</Text> : null;
   }
 
@@ -398,13 +374,52 @@ interface SampleResultsTableProps {
    * When undefined, the default ALL_SAMPLE_COLUMNS order is used.
    */
   columnOrder?: string[];
+  /**
+   * The currently active API sort string (e.g. `"name.raw"` or `"-date"`).
+   * A leading `-` indicates descending order.
+   * When provided the table header highlights the matching column and
+   * delegates sort-toggle clicks to `onSortChange` instead of sorting
+   * the page locally.
+   */
+  currentSort?: string;
+  /**
+   * Called when the user clicks a sortable column header arrow.
+   * Receives the API sort field and the desired direction.
+   */
+  onSortChange?: (apiField: string, ascending: boolean) => void;
 }
+
+/**
+ * Derive the controlled-sort props that the generic `Table` component
+ * understands from the raw API `sort` string (e.g. `"-name.raw"`).
+ *
+ * Returns `{ controlledSortProperty, controlledSortAsc }` where
+ * `controlledSortProperty` is the matching column `property` value,
+ * or `null` when no column matches.
+ */
+const deriveControlledSortProps = (
+  currentSort: string,
+): { controlledSortProperty: string | null; controlledSortAsc: boolean } => {
+  const isDesc = currentSort.startsWith('-');
+  const apiField = isDesc ? currentSort.slice(1) : currentSort;
+
+  const matchingColumn = ALL_SAMPLE_COLUMNS.find(
+    col => col.apiSortField === apiField,
+  );
+
+  return {
+    controlledSortProperty: matchingColumn?.property ?? null,
+    controlledSortAsc: !isDesc,
+  };
+};
 
 export const SampleResultsTable = ({
   results,
   isLoading,
   visibleColumnIds,
   columnOrder,
+  currentSort,
+  onSortChange,
 }: SampleResultsTableProps) => {
   const rows = useMemo(() => results.map(toRow), [results]);
 
@@ -423,10 +438,29 @@ export const SampleResultsTable = ({
       ? sourceOrder.filter(col => visibleColumnIds.includes(col.id))
       : sourceOrder;
 
-    // Table requires at least one column. Fall back to required columns
-    // if the filtered result is empty.
     return filtered.length > 0 ? filtered : REQUIRED_COLUMNS;
   }, [visibleColumnIds, columnOrder]);
+
+  // Controlled sort: derive which column property is active and its direction.
+  const { controlledSortProperty, controlledSortAsc } = useMemo(
+    () =>
+      currentSort
+        ? deriveControlledSortProps(currentSort)
+        : { controlledSortProperty: null, controlledSortAsc: true },
+    [currentSort],
+  );
+
+  // When the user clicks a sort toggle, map the column property back to the
+  // API field and bubble the change up to the parent.
+  const handleControlledSort = useMemo(() => {
+    if (!onSortChange) return undefined;
+    return (property: string, ascending: boolean) => {
+      const apiField = getApiSortFieldForProperty(property);
+      if (apiField) {
+        onSortChange(apiField, ascending);
+      }
+    };
+  }, [onSortChange]);
 
   return (
     <Skeleton isLoaded={!isLoading} width='100%'>
@@ -438,13 +472,19 @@ export const SampleResultsTable = ({
         getCells={getCells as any}
         isLoading={isLoading}
         hasPagination={false}
+        // Opt in to sticky headers. The bounded maxHeight and overflowY give
+        // the browser a scroll boundary, which is required for position:sticky
+        // on the thead element to function correctly.
+        stickyHeader
+        // Opt in to the mirrored top horizontal scrollbar.
+        showTopScrollbar
         tableContainerProps={{
           overflowX: 'auto',
+          maxHeight: '70vh',
+          overflowY: 'auto',
         }}
         tableHeadProps={{
           sx: {
-            // Replace per-cell bottom border with a single full-width
-            // border on the thead row, which always spans the container width.
             th: { borderBottom: 'none' },
             tr: { borderBottom: '1px solid', borderColor: 'gray.200' },
           },
@@ -452,6 +492,9 @@ export const SampleResultsTable = ({
         getTableRowProps={(_, idx) => ({
           bg: idx % 2 === 0 ? 'white' : 'page.alt',
         })}
+        controlledSortProperty={controlledSortProperty}
+        controlledSortAsc={controlledSortAsc}
+        onControlledSort={handleControlledSort}
       />
     </Skeleton>
   );
