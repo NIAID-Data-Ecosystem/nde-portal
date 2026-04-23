@@ -114,11 +114,16 @@ export const Table: React.FC<TableProps<any>> = ({
   // Callback ref (called by React whenever the bottom container node changes)
   const bottomCallbackRef = useCallback((node: HTMLDivElement | null) => {
     bottomNodeRef.current = node;
-    setBottomNode(node); // triggers effects that depend on the node
+    setBottomNode(node);
   }, []);
 
   const [tableScrollWidth, setTableScrollWidth] = useState(0);
+  const [containerClientWidth, setContainerClientWidth] = useState(0);
   const [verticalScrollbarWidth, setVerticalScrollbarWidth] = useState(0);
+
+  // True only when the table content is wider than the visible container,
+  // i.e. when horizontal scrollbars are actually needed.
+  const hasOverflow = tableScrollWidth > containerClientWidth;
 
   // Measurement effect
   // Depends on `bottomNode` so it re-runs whenever the DOM node is replaced
@@ -128,6 +133,9 @@ export const Table: React.FC<TableProps<any>> = ({
 
     const measure = () => {
       setTableScrollWidth(bottomNode.scrollWidth);
+      // clientWidth excludes the vertical scrollbar gutter, giving us the
+      // true visible width to compare against scrollWidth.
+      setContainerClientWidth(bottomNode.clientWidth);
       setVerticalScrollbarWidth(
         bottomNode.offsetWidth - bottomNode.clientWidth,
       );
@@ -159,7 +167,7 @@ export const Table: React.FC<TableProps<any>> = ({
   // node is replaced. Uses a synchronous write (no rAF) so both thumbs update
   // in the same paint frame, avoiding the ghost-thumb artifact.
   useEffect(() => {
-    if (!showTopScrollbar || !bottomNode) return;
+    if (!showTopScrollbar || !hasOverflow || !bottomNode) return;
     const top = topScrollbarRef.current;
     const bottom = bottomNode;
     if (!top) return;
@@ -189,7 +197,7 @@ export const Table: React.FC<TableProps<any>> = ({
       top.removeEventListener('scroll', onTopScroll);
       bottom.removeEventListener('scroll', onBottomScroll);
     };
-  }, [showTopScrollbar, bottomNode]);
+  }, [showTopScrollbar, hasOverflow, bottomNode]);
 
   // create unique id for each row
   const dataWithUniqueID = useMemo(
@@ -241,7 +249,7 @@ export const Table: React.FC<TableProps<any>> = ({
     ? { position: 'sticky' as const, top: 0, zIndex: 1, bg: 'white' }
     : {};
 
-  // Inner table markup
+  /// Inner table markup
   const tableMarkup = (
     <ChakraTable
       role='table'
@@ -330,8 +338,11 @@ export const Table: React.FC<TableProps<any>> = ({
       minH={isLoading ? '500px' : 'unset'}
     >
       <TableWrapper colorScheme={colorScheme}>
-        {/* Top scrollbar (optional) */}
-        {showTopScrollbar && (
+        {/* Top scrollbar */}
+        {/* Rendered only when showTopScrollbar is requested AND the table
+            content is actually wider than the container. When there is no
+            overflow the div is removed from the DOM entirely. */}
+        {showTopScrollbar && hasOverflow && (
           <div
             ref={topScrollbarRef}
             style={{
@@ -348,7 +359,7 @@ export const Table: React.FC<TableProps<any>> = ({
             <div
               style={{
                 height: '1px',
-                width: tableScrollWidth > 0 ? `${tableScrollWidth}px` : '100%',
+                width: `${tableScrollWidth}px`,
               }}
             />
           </div>
