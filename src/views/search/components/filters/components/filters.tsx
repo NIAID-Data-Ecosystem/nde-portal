@@ -23,6 +23,7 @@ import { SHOW_VISUAL_SUMMARY } from 'src/utils/feature-flags';
 import { FILTER_CONFIGS } from '../config';
 import { useSearchResultsFetchedContext } from 'src/views/search/context/search-results-fetched-context';
 import { useSearchTabsContext } from 'src/views/search/context/search-tabs-context';
+import { useBioSampleAggregation } from 'src/views/search/hooks/useBioSampleAggregation';
 
 interface FiltersProps {
   colorScheme?: string;
@@ -81,11 +82,25 @@ export const Filters = React.memo(
       queryParams.advancedSearch,
     ]);
 
+    // Always-on, lightweight (size=0) call scoped to
+    // @type:Sample AND additionalType:"BioSample".
+    // Its facet data is passed to useFilterQueries so Sample-category filter
+    // counts reflect only BioSample records.
+    const bioSampleAgg = useBioSampleAggregation(
+      {
+        q: queryParams.q,
+        use_ai_search: queryParams.use_ai_search ?? 'false',
+        advancedSearch: queryParams.advancedSearch,
+      },
+      { enabled: router.isReady },
+    );
+
     // Use simplified filter queries hook
     const filtersAggQuery = useFilterQueries({
       configs: visibleFiltersList,
       enabled: isFiltersFetchEnabled,
       params: filtersAggParams,
+      bioSampleAggregationData: bioSampleAgg.data,
     });
 
     const { results, error, isUpdating } = filtersAggQuery;

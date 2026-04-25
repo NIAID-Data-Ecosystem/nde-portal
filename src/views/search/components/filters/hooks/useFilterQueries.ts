@@ -9,6 +9,7 @@ import {
   AggregationQueryParams,
 } from 'src/views/search/hooks/useAggregation';
 import { ALL_FACET_PROPERTIES } from '../config';
+import { FetchSearchResultsResponse } from 'src/utils/api/types';
 
 /**
  * Hook options
@@ -20,6 +21,13 @@ interface UseFilterQueriesOptions {
   params: SearchQueryParams;
   /** Whether queries are enabled (e.g. gated on search results loading first) */
   enabled?: boolean;
+  /**
+   * Pre-fetched BioSample-scoped aggregation response.
+   * When provided, Sample-category filter facet counts are derived from this
+   * data instead of the main aggregation, so they correctly reflect only
+   * @type:Sample AND additionalType:"BioSample" records.
+   */
+  bioSampleAggregationData?: FetchSearchResultsResponse | undefined;
 }
 
 export interface UseFilterQueriesResult {
@@ -34,11 +42,16 @@ export interface UseFilterQueriesResult {
  *
  * Makes a single aggregation API call for all facets + date histogram,
  * then derives per-filter results from the response.
+ *
+ * For filters in the "Sample" category, facet counts are sourced from
+ * `bioSampleAggregationData` (when supplied) so they reflect only
+ * @type:Sample AND additionalType:"BioSample" records.
  */
 export const useFilterQueries = ({
   configs,
   params,
   enabled = true,
+  bioSampleAggregationData,
 }: UseFilterQueriesOptions): UseFilterQueriesResult => {
   const router = useRouter();
   const queriesEnabled = router.isReady && enabled;
@@ -94,11 +107,19 @@ export const useFilterQueries = ({
     const next = configs.reduce((acc, config) => {
       let terms: FilterTermType[] = [];
 
-      if (response?.facets) {
+      // Sample-category filters use the BioSample-scoped aggregation data so
+      // their counts reflect only @type:Sample AND additionalType:"BioSample".
+      const isSampleFilter = config.category === 'Sample';
+      const activeResponse =
+        isSampleFilter && bioSampleAggregationData
+          ? bioSampleAggregationData
+          : response;
+
+      if (activeResponse?.facets) {
         if (config.queryType === 'histogram') {
           // Date histogram data from hist=date
-          const missingDatesCount = response?.facets?.date?.missing || 0;
-          const histogramDates = response?.facets?.hist_dates;
+          const missingDatesCount = activeResponse?.facets?.date?.missing || 0;
+          const histogramDates = activeResponse?.facets?.hist_dates;
           if (histogramDates?.terms) {
             terms = histogramDates.terms.map(t => ({
               term: t.term,
@@ -118,7 +139,7 @@ export const useFilterQueries = ({
           }
         } else if (config.queryType === 'source') {
           // Source facets need metadata for groupBy
-          const facetData = response.facets[config.property];
+          const facetData = activeResponse.facets[config.property];
           if (facetData?.terms) {
             const repos = metadataQuery.data;
             const repoList =
@@ -138,7 +159,7 @@ export const useFilterQueries = ({
           }
         } else {
           // Standard facet
-          const facetData = response.facets[config.property];
+          const facetData = activeResponse.facets[config.property];
           if (facetData?.terms) {
             const mappedTerms = facetData.terms.map(t => {
               const transformed = config.transformData
@@ -157,7 +178,7 @@ export const useFilterQueries = ({
             });
 
             // Prepend "Any" (_exists_) using total - missing
-            const existsCount = response.total - (facetData.missing || 0);
+            const existsCount = activeResponse.total - (facetData.missing || 0);
             terms = [
               {
                 term: '_exists_',
@@ -203,6 +224,7 @@ export const useFilterQueries = ({
   }, [
     configs,
     response,
+    bioSampleAggregationData,
     isLoading,
     isUpdating,
     metadataQuery.data,

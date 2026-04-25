@@ -16,6 +16,7 @@ export interface SearchQueryParams {
   fields?: string[];
   filters?: SelectedFilterType;
   extra_filter?: string;
+  additionalFilter?: string;
   from?: number;
   size?: number;
   sort?: string;
