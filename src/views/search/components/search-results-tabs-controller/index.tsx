@@ -19,6 +19,8 @@ import { generateOtherResourcesTitle, tabs } from '../../config/tabs';
 import { getDefaultTabId } from '../../utils/get-default-tab';
 import { useDiseaseData } from '../../hooks/useDiseaseData';
 import { SHOW_SAMPLES_TAB } from 'src/utils/feature-flags';
+import { useBioSampleAggregation } from '../../hooks/useBioSampleAggregation';
+import { queryFilterObject2String } from '../filters/utils/query-string';
 
 const CAROUSEL_RESULTS_FIELDS = [
   '_meta',
@@ -90,6 +92,30 @@ export const SearchResultsController = ({
   );
 
   const { data: facetData } = searchResultsData.response;
+
+  // Serialize the currently selected filters so the BioSample aggregation
+  // respects them.
+  const serializedFilters = useMemo(
+    () => queryFilterObject2String(queryParams.filters || {}) || '',
+    [queryParams.filters],
+  );
+
+  // Provide the accurate count for the Samples tab label and the facet
+  // counts for Sample-category filters. Runs in parallel with the main
+  // aggregation so the count is visible even when the Samples tab is not
+  // active. Passes extra_filter so user-selected filters are respected.
+  const bioSampleAgg = useBioSampleAggregation(
+    {
+      q: queryParams.q,
+      use_ai_search: queryParams.use_ai_search ?? 'false',
+      advancedSearch: queryParams.advancedSearch,
+      extra_filter: serializedFilters,
+    },
+    { enabled: router.isReady },
+  );
+
+  const bioSampleTotal = bioSampleAgg.data?.total ?? 0;
+
   // Determine the correct tab based on actual search results
   useEffect(() => {
     if (!facetData?.facets || !router.isReady) return;
@@ -98,6 +124,11 @@ export const SearchResultsController = ({
         type: term.term,
         count: term.count,
       })) || [];
+
+    // Override the Sample count with the accurate BioSample-scoped total.
+    const facetCountsWithBioSample = facetCounts.map(f =>
+      f.type === 'Sample' ? { ...f, count: bioSampleTotal } : f,
+    );
 
     // Get selected resource types from filters
     const typeFilter = queryParams.filters?.['@type'];
@@ -110,7 +141,7 @@ export const SearchResultsController = ({
     if (userSelectedTabRef.current !== null) {
       const currentTab = tabs[selectedIndex];
       const currentTabHasResults = currentTab?.types.some(({ type }) =>
-        facetCounts.some(f => f.type === type && f.count > 0),
+        facetCountsWithBioSample.some(f => f.type === type && f.count > 0),
       );
 
       if (currentTabHasResults) {
@@ -125,7 +156,11 @@ export const SearchResultsController = ({
     }
 
     // Determine the correct tab
-    const calculatedTabId = getDefaultTabId(tabs, facetCounts, selectedTypes);
+    const calculatedTabId = getDefaultTabId(
+      tabs,
+      facetCountsWithBioSample,
+      selectedTypes,
+    );
 
     // Find the index for the tab
     const calculatedIndex = tabs.findIndex(t => t.id === calculatedTabId);
@@ -150,7 +185,13 @@ export const SearchResultsController = ({
         );
       }
     }
-  }, [facetData?.facets, queryParams.filters, router.isReady, router.query.q]);
+  }, [
+    facetData?.facets,
+    bioSampleTotal,
+    queryParams.filters,
+    router.isReady,
+    router.query.q,
+  ]);
 
   const hasResourceCatalogRecords = useMemo(() => {
     const terms = facetData?.facets?.['@type']?.terms ?? [];
@@ -168,7 +209,6 @@ export const SearchResultsController = ({
       sort: 'name.raw',
       use_ai_search: queryParams.use_ai_search ?? 'false',
     },
-
     {
       enabled: hasResourceCatalogRecords,
     },
@@ -239,6 +279,12 @@ export const SearchResultsController = ({
                 count = matchingDiseases.length;
               }
 
+              // Use the BioSample-scoped total for the Sample type so the tab
+              // label reflects only @type:Sample AND additionalType:"BioSample".
+              if (type === 'Sample') {
+                count = bioSampleTotal;
+              }
+
               return { label, type, count };
             });
 
@@ -247,7 +293,7 @@ export const SearchResultsController = ({
             types: tabTypesWithCount,
           };
         }),
-    [facetData?.facets, tabs, matchingDiseases.length],
+    [facetData?.facets, tabs, matchingDiseases.length, bioSampleTotal],
   );
 
   const getAccordionDefaultIndices = (
@@ -344,13 +390,20 @@ export const SearchResultsController = ({
                       );
                     }
 
+                    // For Dataset, ComputationalTool, and Sample render normal search results.
+                    // The Sample accordion title uses bioSampleTotal so it matches the tab label.
+                    const sectionCount =
+                      section.type === 'Sample'
+                        ? bioSampleTotal
+                        : section.count;
+
                     // For Dataset and ComputationalTool, render normal search results
                     return (
                       <AccordionContent
                         key={section.type}
                         title={`${
                           section.label
-                        } (${section.count.toLocaleString()})`}
+                        } (${sectionCount.toLocaleString()})`}
                       >
                         <SearchResults
                           id={tab.id}

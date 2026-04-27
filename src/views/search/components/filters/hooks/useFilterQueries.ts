@@ -9,6 +9,7 @@ import {
   AggregationQueryParams,
 } from 'src/views/search/hooks/useAggregation';
 import { ALL_FACET_PROPERTIES } from '../config';
+import { FetchSearchResultsResponse } from 'src/utils/api/types';
 
 /**
  * Hook options
@@ -20,6 +21,22 @@ interface UseFilterQueriesOptions {
   params: SearchQueryParams;
   /** Whether queries are enabled (e.g. gated on search results loading first) */
   enabled?: boolean;
+  /**
+   * Pre-fetched BioSample-scoped aggregation response.
+   * Used for Sample-category filter facet counts.
+   */
+  bioSampleAggregationData?: FetchSearchResultsResponse | undefined;
+  /**
+   * Pre-fetched ComputationalTool-scoped aggregation response.
+   * Used for Computational Tool filter facet counts.
+   */
+  computationalToolAggregationData?: FetchSearchResultsResponse | undefined;
+  /**
+   * Pre-fetched Shared/Dataset aggregation response.
+   * Includes all record types except non-BioSample Sample records.
+   * Used for Shared/Dataset filter facet counts.
+   */
+  sharedDatasetAggregationData?: FetchSearchResultsResponse | undefined;
 }
 
 export interface UseFilterQueriesResult {
@@ -30,22 +47,58 @@ export interface UseFilterQueriesResult {
 }
 
 /**
+ * Selects the correct aggregation response for a given filter config.
+ *
+ * Routing rules:
+ *   - "Sample" category:  bioSampleAggregationData
+ *   - "Computational Tool": computationalToolAggregationData
+ *   - "Shared / Dataset": sharedDatasetAggregationData
+ *   - anything else: fallback main aggregation response
+ */
+const selectAggregationForFilter = (
+  config: FilterConfig,
+  mainResponse: FetchSearchResultsResponse | undefined,
+  bioSampleAggregationData: FetchSearchResultsResponse | undefined,
+  computationalToolAggregationData: FetchSearchResultsResponse | undefined,
+  sharedDatasetAggregationData: FetchSearchResultsResponse | undefined,
+): FetchSearchResultsResponse | undefined => {
+  switch (config.category) {
+    case 'Sample':
+      return bioSampleAggregationData ?? mainResponse;
+    case 'Computational Tool':
+      return computationalToolAggregationData ?? mainResponse;
+    case 'Shared / Dataset':
+      return sharedDatasetAggregationData ?? mainResponse;
+    default:
+      return mainResponse;
+  }
+};
+
+/**
  * Hook for fetching filter data.
  *
  * Makes a single aggregation API call for all facets + date histogram,
  * then derives per-filter results from the response.
+ *
+ * Each filter category is routed to its appropriate scoped aggregation:
+ *   - Shared/Dataset:sharedDatasetAggregationData (all types except non-BioSample Samples)
+ *   - Computational Tool: computationalToolAggregationData (@type:ComputationalTool only)
+ *   - Sample: bioSampleAggregationData (@type:Sample AND additionalType:"BioSample")
  */
 export const useFilterQueries = ({
   configs,
   params,
   enabled = true,
+  bioSampleAggregationData,
+  computationalToolAggregationData,
+  sharedDatasetAggregationData,
 }: UseFilterQueriesOptions): UseFilterQueriesResult => {
   const router = useRouter();
   const queriesEnabled = router.isReady && enabled;
+
+  // Keep the main aggregation query as a fallback / cache-warming call.
   // Always request ALL facet properties + hist=date so the query key is stable
-  // regardless of which filters are currently visible. This prevents refetches
-  // when the user toggles filter visibility and enables cache sharing with the
-  // date filter and visual summary.
+  // regardless of which filters are currently visible.
   const aggParams: AggregationQueryParams = useMemo(
     () => ({
       q: params.q || '',
@@ -63,7 +116,8 @@ export const useFilterQueries = ({
     ],
   );
 
-  // Single aggregation query for all facets + date histogram
+  // Main (unscoped) aggregation: kept as fallback when a scoped response is
+  // not yet available.
   const aggQuery = useAggregation({
     params: aggParams,
     enabled: queriesEnabled,
@@ -94,11 +148,20 @@ export const useFilterQueries = ({
     const next = configs.reduce((acc, config) => {
       let terms: FilterTermType[] = [];
 
-      if (response?.facets) {
+      // Route to the correct scoped aggregation for this filter's category.
+      const activeResponse = selectAggregationForFilter(
+        config,
+        response,
+        bioSampleAggregationData,
+        computationalToolAggregationData,
+        sharedDatasetAggregationData,
+      );
+
+      if (activeResponse?.facets) {
         if (config.queryType === 'histogram') {
           // Date histogram data from hist=date
-          const missingDatesCount = response?.facets?.date?.missing || 0;
-          const histogramDates = response?.facets?.hist_dates;
+          const missingDatesCount = activeResponse?.facets?.date?.missing || 0;
+          const histogramDates = activeResponse?.facets?.hist_dates;
           if (histogramDates?.terms) {
             terms = histogramDates.terms.map(t => ({
               term: t.term,
@@ -118,7 +181,7 @@ export const useFilterQueries = ({
           }
         } else if (config.queryType === 'source') {
           // Source facets need metadata for groupBy
-          const facetData = response.facets[config.property];
+          const facetData = activeResponse.facets[config.property];
           if (facetData?.terms) {
             const repos = metadataQuery.data;
             const repoList =
@@ -138,7 +201,7 @@ export const useFilterQueries = ({
           }
         } else {
           // Standard facet
-          const facetData = response.facets[config.property];
+          const facetData = activeResponse.facets[config.property];
           if (facetData?.terms) {
             const mappedTerms = facetData.terms.map(t => {
               const transformed = config.transformData
@@ -157,7 +220,7 @@ export const useFilterQueries = ({
             });
 
             // Prepend "Any" (_exists_) using total - missing
-            const existsCount = response.total - (facetData.missing || 0);
+            const existsCount = activeResponse.total - (facetData.missing || 0);
             terms = [
               {
                 term: '_exists_',
@@ -203,6 +266,9 @@ export const useFilterQueries = ({
   }, [
     configs,
     response,
+    bioSampleAggregationData,
+    computationalToolAggregationData,
+    sharedDatasetAggregationData,
     isLoading,
     isUpdating,
     metadataQuery.data,

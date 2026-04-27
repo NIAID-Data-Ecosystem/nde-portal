@@ -24,6 +24,7 @@ import {
   CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
   CUSTOM_COLUMN_ORDER_STORAGE_KEY,
 } from './components/sample-results-table/components/CustomizeColumnsPopover';
+import { BIOSAMPLE_EXTRA_FILTER } from '../../hooks/useBioSampleAggregation';
 
 const RESULT_FIELDS = [
   '_meta',
@@ -193,6 +194,8 @@ export const SearchResults = ({
         ...urlQueryParams.filters,
         '@type': [...(urlQueryParams?.filters?.['@type'] || types || [])],
       },
+      // For the Samples tab, append the BioSample constraint via additionalFilter.
+      additionalFilter: isSamplesTab ? BIOSAMPLE_EXTRA_FILTER : undefined,
       fields,
     },
     {
