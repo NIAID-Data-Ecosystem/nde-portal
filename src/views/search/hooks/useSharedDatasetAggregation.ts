@@ -4,7 +4,7 @@ import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { encodeString } from 'src/utils/querystring-helpers';
 import { ALL_FACET_PROPERTIES } from '../components/filters/config';
 
-export interface BioSampleAggregationParams {
+export interface SharedDatasetAggregationParams {
   q: string;
   use_ai_search?: string;
   advancedSearch?: string;
@@ -12,26 +12,28 @@ export interface BioSampleAggregationParams {
 }
 
 /**
- * The raw Elasticsearch filter string that scopes any query to BioSample records.
+ * The raw Elasticsearch filter string that scopes any query to all record
+ * types EXCEPT non-BioSample Sample records.
+ *
+ * Written as a negative exclusion so the query remains compatible with the
+ * existing extra_filter AND-chaining pattern:
+ *   NOT (@type:Sample AND NOT additionalType:"BioSample")
  */
-export const BIOSAMPLE_EXTRA_FILTER =
-  '@type:Sample AND additionalType:"BioSample"';
+export const SHARED_DATASET_EXTRA_FILTER =
+  'NOT (@type:Sample AND NOT additionalType:"BioSample")';
 
 /**
- * Always-on aggregation hook scoped to @type:Sample AND additionalType:"BioSample".
+ * Always-on aggregation hook for Shared/Dataset filters.
  *
- * Runs in parallel with the main aggregation so that:
- *  - The Samples tab count is always visible.
- *  - Sample-category filter facet counts reflect only BioSample records.
- *
- * Accepts an optional `extra_filter` so that user-selected filters from the
- * filter panel are respected.
+ * Includes all record types but excludes Sample records that do NOT have
+ * additionalType="BioSample", so that BioSample records are counted alongside
+ * Datasets, ResourceCatalogs, and ComputationalTools.
  *
  * Uses size=0 so no result documents are fetched (only facet data and the
  * total count are returned), keeping the request lightweight.
  */
-export const useBioSampleAggregation = (
-  params: BioSampleAggregationParams,
+export const useSharedDatasetAggregation = (
+  params: SharedDatasetAggregationParams,
   options?: { enabled?: boolean },
 ) => {
   const {
@@ -43,14 +45,14 @@ export const useBioSampleAggregation = (
 
   const encodedQ = advancedSearch === 'true' ? q : encodeString(q);
 
-  // Combine the BioSample type constraint with any active user filters.
+  // Combine the shared/dataset constraint with any active user filters.
   const combinedFilter = extra_filter
-    ? `${extra_filter} AND ${BIOSAMPLE_EXTRA_FILTER}`
-    : BIOSAMPLE_EXTRA_FILTER;
+    ? `${extra_filter} AND ${SHARED_DATASET_EXTRA_FILTER}`
+    : SHARED_DATASET_EXTRA_FILTER;
 
   return useQuery<FetchSearchResultsResponse | undefined>({
     queryKey: [
-      'biosample-aggregation',
+      'shared-dataset-aggregation',
       encodedQ,
       use_ai_search,
       advancedSearch,

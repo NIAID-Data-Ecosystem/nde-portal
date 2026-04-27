@@ -23,11 +23,20 @@ interface UseFilterQueriesOptions {
   enabled?: boolean;
   /**
    * Pre-fetched BioSample-scoped aggregation response.
-   * When provided, Sample-category filter facet counts are derived from this
-   * data instead of the main aggregation, so they correctly reflect only
-   * @type:Sample AND additionalType:"BioSample" records.
+   * Used for Sample-category filter facet counts.
    */
   bioSampleAggregationData?: FetchSearchResultsResponse | undefined;
+  /**
+   * Pre-fetched ComputationalTool-scoped aggregation response.
+   * Used for Computational Tool filter facet counts.
+   */
+  computationalToolAggregationData?: FetchSearchResultsResponse | undefined;
+  /**
+   * Pre-fetched Shared/Dataset aggregation response.
+   * Includes all record types except non-BioSample Sample records.
+   * Used for Shared/Dataset filter facet counts.
+   */
+  sharedDatasetAggregationData?: FetchSearchResultsResponse | undefined;
 }
 
 export interface UseFilterQueriesResult {
@@ -38,27 +47,58 @@ export interface UseFilterQueriesResult {
 }
 
 /**
+ * Selects the correct aggregation response for a given filter config.
+ *
+ * Routing rules:
+ *   - "Sample" category:  bioSampleAggregationData
+ *   - "Computational Tool": computationalToolAggregationData
+ *   - "Shared / Dataset": sharedDatasetAggregationData
+ *   - anything else: fallback main aggregation response
+ */
+const selectAggregationForFilter = (
+  config: FilterConfig,
+  mainResponse: FetchSearchResultsResponse | undefined,
+  bioSampleAggregationData: FetchSearchResultsResponse | undefined,
+  computationalToolAggregationData: FetchSearchResultsResponse | undefined,
+  sharedDatasetAggregationData: FetchSearchResultsResponse | undefined,
+): FetchSearchResultsResponse | undefined => {
+  switch (config.category) {
+    case 'Sample':
+      return bioSampleAggregationData ?? mainResponse;
+    case 'Computational Tool':
+      return computationalToolAggregationData ?? mainResponse;
+    case 'Shared / Dataset':
+      return sharedDatasetAggregationData ?? mainResponse;
+    default:
+      return mainResponse;
+  }
+};
+
+/**
  * Hook for fetching filter data.
  *
  * Makes a single aggregation API call for all facets + date histogram,
  * then derives per-filter results from the response.
  *
- * For filters in the "Sample" category, facet counts are sourced from
- * `bioSampleAggregationData` (when supplied) so they reflect only
- * @type:Sample AND additionalType:"BioSample" records.
+ * Each filter category is routed to its appropriate scoped aggregation:
+ *   - Shared/Dataset:sharedDatasetAggregationData (all types except non-BioSample Samples)
+ *   - Computational Tool: computationalToolAggregationData (@type:ComputationalTool only)
+ *   - Sample: bioSampleAggregationData (@type:Sample AND additionalType:"BioSample")
  */
 export const useFilterQueries = ({
   configs,
   params,
   enabled = true,
   bioSampleAggregationData,
+  computationalToolAggregationData,
+  sharedDatasetAggregationData,
 }: UseFilterQueriesOptions): UseFilterQueriesResult => {
   const router = useRouter();
   const queriesEnabled = router.isReady && enabled;
+
+  // Keep the main aggregation query as a fallback / cache-warming call.
   // Always request ALL facet properties + hist=date so the query key is stable
-  // regardless of which filters are currently visible. This prevents refetches
-  // when the user toggles filter visibility and enables cache sharing with the
-  // date filter and visual summary.
+  // regardless of which filters are currently visible.
   const aggParams: AggregationQueryParams = useMemo(
     () => ({
       q: params.q || '',
@@ -76,7 +116,8 @@ export const useFilterQueries = ({
     ],
   );
 
-  // Single aggregation query for all facets + date histogram
+  // Main (unscoped) aggregation: kept as fallback when a scoped response is
+  // not yet available.
   const aggQuery = useAggregation({
     params: aggParams,
     enabled: queriesEnabled,
@@ -107,13 +148,14 @@ export const useFilterQueries = ({
     const next = configs.reduce((acc, config) => {
       let terms: FilterTermType[] = [];
 
-      // Sample-category filters use the BioSample-scoped aggregation data so
-      // their counts reflect only @type:Sample AND additionalType:"BioSample".
-      const isSampleFilter = config.category === 'Sample';
-      const activeResponse =
-        isSampleFilter && bioSampleAggregationData
-          ? bioSampleAggregationData
-          : response;
+      // Route to the correct scoped aggregation for this filter's category.
+      const activeResponse = selectAggregationForFilter(
+        config,
+        response,
+        bioSampleAggregationData,
+        computationalToolAggregationData,
+        sharedDatasetAggregationData,
+      );
 
       if (activeResponse?.facets) {
         if (config.queryType === 'histogram') {
@@ -225,6 +267,8 @@ export const useFilterQueries = ({
     configs,
     response,
     bioSampleAggregationData,
+    computationalToolAggregationData,
+    sharedDatasetAggregationData,
     isLoading,
     isUpdating,
     metadataQuery.data,

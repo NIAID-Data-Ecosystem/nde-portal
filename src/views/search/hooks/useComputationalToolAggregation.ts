@@ -4,7 +4,7 @@ import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { encodeString } from 'src/utils/querystring-helpers';
 import { ALL_FACET_PROPERTIES } from '../components/filters/config';
 
-export interface BioSampleAggregationParams {
+export interface ComputationalToolAggregationParams {
   q: string;
   use_ai_search?: string;
   advancedSearch?: string;
@@ -12,26 +12,21 @@ export interface BioSampleAggregationParams {
 }
 
 /**
- * The raw Elasticsearch filter string that scopes any query to BioSample records.
+ * The raw Elasticsearch filter string that scopes any query to ComputationalTool records.
  */
-export const BIOSAMPLE_EXTRA_FILTER =
-  '@type:Sample AND additionalType:"BioSample"';
+export const COMPUTATIONAL_TOOL_EXTRA_FILTER = '@type:ComputationalTool';
 
 /**
- * Always-on aggregation hook scoped to @type:Sample AND additionalType:"BioSample".
+ * Always-on aggregation hook scoped to @type:ComputationalTool.
  *
- * Runs in parallel with the main aggregation so that:
- *  - The Samples tab count is always visible.
- *  - Sample-category filter facet counts reflect only BioSample records.
- *
- * Accepts an optional `extra_filter` so that user-selected filters from the
- * filter panel are respected.
+ * Used to drive Computational Tool filter facet counts so they reflect
+ * only ComputationalTool records.
  *
  * Uses size=0 so no result documents are fetched (only facet data and the
  * total count are returned), keeping the request lightweight.
  */
-export const useBioSampleAggregation = (
-  params: BioSampleAggregationParams,
+export const useComputationalToolAggregation = (
+  params: ComputationalToolAggregationParams,
   options?: { enabled?: boolean },
 ) => {
   const {
@@ -43,14 +38,14 @@ export const useBioSampleAggregation = (
 
   const encodedQ = advancedSearch === 'true' ? q : encodeString(q);
 
-  // Combine the BioSample type constraint with any active user filters.
+  // Combine the ComputationalTool type constraint with any active user filters.
   const combinedFilter = extra_filter
-    ? `${extra_filter} AND ${BIOSAMPLE_EXTRA_FILTER}`
-    : BIOSAMPLE_EXTRA_FILTER;
+    ? `${extra_filter} AND ${COMPUTATIONAL_TOOL_EXTRA_FILTER}`
+    : COMPUTATIONAL_TOOL_EXTRA_FILTER;
 
   return useQuery<FetchSearchResultsResponse | undefined>({
     queryKey: [
-      'biosample-aggregation',
+      'computational-tool-aggregation',
       encodedQ,
       use_ai_search,
       advancedSearch,

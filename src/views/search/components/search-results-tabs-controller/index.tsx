@@ -20,6 +20,7 @@ import { getDefaultTabId } from '../../utils/get-default-tab';
 import { useDiseaseData } from '../../hooks/useDiseaseData';
 import { SHOW_SAMPLES_TAB } from 'src/utils/feature-flags';
 import { useBioSampleAggregation } from '../../hooks/useBioSampleAggregation';
+import { queryFilterObject2String } from '../filters/utils/query-string';
 
 const CAROUSEL_RESULTS_FIELDS = [
   '_meta',
@@ -92,15 +93,23 @@ export const SearchResultsController = ({
 
   const { data: facetData } = searchResultsData.response;
 
+  // Serialize the currently selected filters so the BioSample aggregation
+  // respects them.
+  const serializedFilters = useMemo(
+    () => queryFilterObject2String(queryParams.filters || {}) || '',
+    [queryParams.filters],
+  );
+
   // Provide the accurate count for the Samples tab label and the facet
-  // counts for Sample-category filters.  Runs in parallel with the main
+  // counts for Sample-category filters. Runs in parallel with the main
   // aggregation so the count is visible even when the Samples tab is not
-  // active.
+  // active. Passes extra_filter so user-selected filters are respected.
   const bioSampleAgg = useBioSampleAggregation(
     {
       q: queryParams.q,
       use_ai_search: queryParams.use_ai_search ?? 'false',
       advancedSearch: queryParams.advancedSearch,
+      extra_filter: serializedFilters,
     },
     { enabled: router.isReady },
   );
@@ -200,7 +209,6 @@ export const SearchResultsController = ({
       sort: 'name.raw',
       use_ai_search: queryParams.use_ai_search ?? 'false',
     },
-
     {
       enabled: hasResourceCatalogRecords,
     },
@@ -389,6 +397,7 @@ export const SearchResultsController = ({
                         ? bioSampleTotal
                         : section.count;
 
+                    // For Dataset and ComputationalTool, render normal search results
                     return (
                       <AccordionContent
                         key={section.type}
