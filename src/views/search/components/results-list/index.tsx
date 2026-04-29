@@ -17,13 +17,23 @@ import {
   SampleResultsTable,
   ALL_SAMPLE_COLUMNS,
 } from './components/sample-results-table';
+import {
+  DataCollectionResultsTable,
+  ALL_DATA_COLLECTION_COLUMNS,
+} from './components/data-collection-results-table';
 import { useSearchResultsFetchedContext } from '../../context/search-results-fetched-context';
 import {
-  CustomizeColumnsPopover,
-  DEFAULT_VISIBLE_COLUMN_IDS,
-  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-  CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+  CustomizeColumnsPopover as SampleCustomizeColumnsPopover,
+  DEFAULT_VISIBLE_COLUMN_IDS as SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS,
+  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as SAMPLE_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+  CUSTOM_COLUMN_ORDER_STORAGE_KEY as SAMPLE_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
 } from './components/sample-results-table/components/CustomizeColumnsPopover';
+import {
+  CustomizeColumnsPopover as DataCollectionCustomizeColumnsPopover,
+  DEFAULT_VISIBLE_COLUMN_IDS as DC_DEFAULT_VISIBLE_COLUMN_IDS,
+  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as DC_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+  CUSTOM_COLUMN_ORDER_STORAGE_KEY as DC_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+} from './components/data-collection-results-table/components/CustomizeColumnsPopover';
 import { BIOSAMPLE_EXTRA_FILTER } from '../../hooks/useBioSampleAggregation';
 
 const RESULT_FIELDS = [
@@ -80,9 +90,16 @@ const SAMPLE_EXTRA_FIELDS = [
   'itemLocation',
 ];
 
-// Build the ColumnConfig list expected by CustomizeColumnsPopover from the
-// master column definitions in SampleResultsTable.
+const DATA_COLLECTION_EXTRA_FIELDS = ['about', 'name'];
+
+// Build the ColumnConfig list expected by each CustomizeColumnsPopover from
+// the master column definitions.
 const SAMPLE_COLUMN_CONFIGS = ALL_SAMPLE_COLUMNS.map(col => ({
+  id: col.id,
+  title: col.title,
+}));
+
+const DATA_COLLECTION_COLUMN_CONFIGS = ALL_DATA_COLLECTION_COLUMNS.map(col => ({
   id: col.id,
   title: col.title,
 }));
@@ -91,11 +108,11 @@ const SAMPLE_COLUMN_CONFIGS = ALL_SAMPLE_COLUMNS.map(col => ({
 // Falls back to the default subset when no stored value exists.
 const getInitialVisibleColumnIds = (): string[] => {
   if (typeof window === 'undefined') {
-    return DEFAULT_VISIBLE_COLUMN_IDS;
+    return SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS;
   }
   try {
     const stored = window.localStorage.getItem(
-      CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+      SAMPLE_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
     );
     if (stored) {
       const parsed = JSON.parse(stored);
@@ -110,7 +127,7 @@ const getInitialVisibleColumnIds = (): string[] => {
   } catch {
     // ignore
   }
-  return DEFAULT_VISIBLE_COLUMN_IDS;
+  return SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS;
 };
 
 // Read the persisted column order from localStorage.
@@ -120,7 +137,9 @@ const getInitialColumnOrder = (): string[] => {
     return ALL_SAMPLE_COLUMNS.map(c => c.id);
   }
   try {
-    const stored = window.localStorage.getItem(CUSTOM_COLUMN_ORDER_STORAGE_KEY);
+    const stored = window.localStorage.getItem(
+      SAMPLE_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+    );
     if (stored) {
       const parsed = JSON.parse(stored);
       if (Array.isArray(parsed) && parsed.length > 0) {
@@ -139,10 +158,61 @@ const getInitialColumnOrder = (): string[] => {
   return ALL_SAMPLE_COLUMNS.map(c => c.id);
 };
 
+const getInitialDataCollectionVisibleColumnIds = (): string[] => {
+  if (typeof window === 'undefined') {
+    return DC_DEFAULT_VISIBLE_COLUMN_IDS;
+  }
+  try {
+    const stored = window.localStorage.getItem(
+      DC_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+    );
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const allIds = ALL_DATA_COLLECTION_COLUMNS.map(c => c.id);
+        const valid = parsed.filter((id: unknown): id is string =>
+          allIds.includes(id as string),
+        );
+        if (valid.length > 0) return valid;
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return DC_DEFAULT_VISIBLE_COLUMN_IDS;
+};
+
+const getInitialDataCollectionColumnOrder = (): string[] => {
+  if (typeof window === 'undefined') {
+    return ALL_DATA_COLLECTION_COLUMNS.map(c => c.id);
+  }
+  try {
+    const stored = window.localStorage.getItem(
+      DC_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+    );
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const allIds = ALL_DATA_COLLECTION_COLUMNS.map(c => c.id);
+        const valid = parsed.filter((id: unknown): id is string =>
+          allIds.includes(id as string),
+        );
+        const missing = allIds.filter(id => !valid.includes(id));
+        if (valid.length > 0) return [...valid, ...missing];
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return ALL_DATA_COLLECTION_COLUMNS.map(c => c.id);
+};
+
 /*
 [COMPONENT INFO]:
  Search results pages displays the list of records returned by a search.
- Contains pagination and search results cards. When the active tab is the Samples tab ('s'), results are rendered as a table instead of cards.
+ Contains pagination and search results cards. When the active tab is the
+ Samples tab ('s') or the DataCollection tab ('dc'), results are rendered
+ as a table instead of cards.
 */
 
 export const SearchResults = ({
@@ -168,20 +238,32 @@ export const SearchResults = ({
   // Selected tab index is stored in context to sync with other components.
   const urlQueryParams = useSearchQueryFromURL();
 
-  // For the Samples tab, use extra fields for the table columns.
+  // For Samples and DataCollection tabs, use extra fields for the table columns.
   const isSamplesTab = id === 's';
+  const isDataCollectionTab = id === 'dc';
+
+  // Pick the correct extra fields for the active tab.
   const fields = isSamplesTab
     ? [...RESULT_FIELDS, ...SAMPLE_EXTRA_FIELDS]
+    : isDataCollectionTab
+    ? [...RESULT_FIELDS, ...DATA_COLLECTION_EXTRA_FIELDS]
     : RESULT_FIELDS;
 
-  // Column visibility state (Samples tab only)
+  // Column visibility state
   const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(
     getInitialVisibleColumnIds,
   );
 
-  // Column order state (Samples tab only)
+  // Column order state
   const [columnOrder, setColumnOrder] = useState<string[]>(
     getInitialColumnOrder,
+  );
+
+  const [dcVisibleColumnIds, setDcVisibleColumnIds] = useState<string[]>(
+    getInitialDataCollectionVisibleColumnIds,
+  );
+  const [dcColumnOrder, setDcColumnOrder] = useState<string[]>(
+    getInitialDataCollectionColumnOrder,
   );
 
   const { response, params } = useSearchResultsData(
@@ -285,7 +367,7 @@ export const SearchResults = ({
   };
 
   /**
-   * Called by SampleResultsTable when the user clicks a column sort toggle.
+   * Called by tables when the user clicks a column sort toggle.
    * Converts the API field + direction into the sort string format used
    * elsewhere (e.g. `"-name.raw"` for descending), then updates both
    * pagination state and the URL (identical to how the toolbar sort
@@ -301,16 +383,22 @@ export const SearchResults = ({
   return (
     <>
       <VStack borderRadius='semi' bg='white' px={4} py={2}>
-        {/* Toolbar controls: Sort, size, download metadata, and use metadata score (optional). For the Samples tab the "Customize Columns" button is injected via the extraActions prop so it appears to the left of Download Metadata. */}
+        {/* Toolbar controls: Sort, size, download metadata, and optional extra actions. For Samples and DataCollections tab the "Customize Columns" button is injected via the extraActions prop so it appears to the left of Download Metadata. */}
         <SearchResultsToolbar
           id={id}
           params={params}
           extraActions={
             isSamplesTab ? (
-              <CustomizeColumnsPopover
+              <SampleCustomizeColumnsPopover
                 columnsList={SAMPLE_COLUMN_CONFIGS}
                 onVisibleColumnsChange={setVisibleColumnIds}
                 onColumnOrderChange={setColumnOrder}
+              />
+            ) : isDataCollectionTab ? (
+              <DataCollectionCustomizeColumnsPopover
+                columnsList={DATA_COLLECTION_COLUMN_CONFIGS}
+                onVisibleColumnsChange={setDcVisibleColumnIds}
+                onColumnOrderChange={setDcColumnOrder}
               />
             ) : undefined
           }
@@ -336,7 +424,7 @@ export const SearchResults = ({
           </Banner>
         </Collapse>
 
-        {/* Samples tab: render a scrollable table instead of cards */}
+        {/* Samples tab */}
         {isSamplesTab ? (
           <SampleResultsTable
             results={data?.results || []}
@@ -345,6 +433,14 @@ export const SearchResults = ({
             columnOrder={columnOrder}
             currentSort={sort}
             onSortChange={handleSampleSortChange}
+          />
+        ) : isDataCollectionTab ? (
+          /* DataCollection tab */
+          <DataCollectionResultsTable
+            results={data?.results || []}
+            isLoading={!router.isReady || isLoading}
+            visibleColumnIds={dcVisibleColumnIds}
+            columnOrder={dcColumnOrder}
           />
         ) : (
           /* Dataset / ComputationalTool tabs: render result cards */
