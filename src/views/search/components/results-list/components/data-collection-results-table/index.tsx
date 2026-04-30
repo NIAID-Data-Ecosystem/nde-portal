@@ -99,6 +99,14 @@ export const ALL_DATA_COLLECTION_COLUMNS: DataCollectionColumn[] = [
     apiSortField: null,
     props: withWidth('170px'),
   },
+  {
+    id: 'topicCategory',
+    title: 'Topic Category',
+    property: 'topicCategory',
+    isSortable: false,
+    apiSortField: null,
+    props: withWidth('190px'),
+  },
 ];
 
 const REQUIRED_COLUMNS = ALL_DATA_COLLECTION_COLUMNS.filter(col =>

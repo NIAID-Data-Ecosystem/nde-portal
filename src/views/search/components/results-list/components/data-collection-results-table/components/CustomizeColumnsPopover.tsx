@@ -37,6 +37,7 @@ export const DEFAULT_VISIBLE_COLUMN_IDS = [
   'healthCondition',
   'infectiousAgent',
   'species',
+  'topicCategory',
 ];
 
 export const REQUIRED_COLUMN_IDS = ['name', 'source'];
