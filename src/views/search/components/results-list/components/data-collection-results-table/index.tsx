@@ -6,6 +6,7 @@ import { Link } from 'src/components/link';
 import { FormattedResource, IncludedInDataCatalog } from 'src/utils/api/types';
 import { getTruncatedText } from 'src/components/table/helpers';
 import { REQUIRED_COLUMN_IDS } from './components/CustomizeColumnsPopover';
+import { renderCellData } from '../sample-results-table/components/Cells';
 
 // The shared Column interface exposes `props?: any` which Table spreads onto
 // both the <Th> header cell and every <Cell> data cell in its render loop.
@@ -74,6 +75,30 @@ export const ALL_DATA_COLLECTION_COLUMNS: DataCollectionColumn[] = [
     apiSortField: null,
     props: withWidth('250px'),
   },
+  {
+    id: 'healthCondition',
+    title: 'Health Condition',
+    property: 'healthCondition',
+    isSortable: false,
+    apiSortField: null,
+    props: withWidth('160px'),
+  },
+  {
+    id: 'infectiousAgent',
+    title: 'Infectious Agent',
+    property: 'infectiousAgent',
+    isSortable: false,
+    apiSortField: null,
+    props: withWidth('160px'),
+  },
+  {
+    id: 'species',
+    title: 'Host Species',
+    property: 'species',
+    isSortable: false,
+    apiSortField: null,
+    props: withWidth('170px'),
+  },
 ];
 
 const REQUIRED_COLUMNS = ALL_DATA_COLLECTION_COLUMNS.filter(col =>
@@ -103,6 +128,7 @@ const toRow = (resource: FormattedResource): Record<string, unknown> => {
 const getCells = ({
   column,
   data,
+  isLoading,
 }: {
   column: Column;
   data: Record<string, unknown>;
@@ -164,7 +190,7 @@ const getCells = ({
     ) : null;
   }
 
-  return null;
+  return renderCellData({ column, data: value as any, isLoading });
 };
 
 interface DataCollectionResultsTableProps {

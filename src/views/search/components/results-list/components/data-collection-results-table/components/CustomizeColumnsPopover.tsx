@@ -34,6 +34,9 @@ export const DEFAULT_VISIBLE_COLUMN_IDS = [
   'conditionsOfAccess',
   'date',
   'description',
+  'healthCondition',
+  'infectiousAgent',
+  'species',
 ];
 
 export const REQUIRED_COLUMN_IDS = ['name', 'source'];
