@@ -38,6 +38,7 @@ export const DEFAULT_VISIBLE_COLUMN_IDS = [
   'infectiousAgent',
   'species',
   'topicCategory',
+  'isBasedOn',
 ];
 
 export const REQUIRED_COLUMN_IDS = ['name', 'source'];

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Text } from '@chakra-ui/react';
+import { Flex, Text } from '@chakra-ui/react';
 import { Skeleton } from 'src/components/skeleton';
 import { Table, Column } from 'src/components/table';
 import { Link } from 'src/components/link';
@@ -107,6 +107,14 @@ export const ALL_DATA_COLLECTION_COLUMNS: DataCollectionColumn[] = [
     apiSortField: null,
     props: withWidth('190px'),
   },
+  {
+    id: 'isBasedOn',
+    title: 'Based On',
+    property: 'isBasedOn',
+    isSortable: false,
+    apiSortField: null,
+    props: withWidth('200px'),
+  },
 ];
 
 const REQUIRED_COLUMNS = ALL_DATA_COLLECTION_COLUMNS.filter(col =>
@@ -198,6 +206,34 @@ const getCells = ({
     ) : null;
   }
 
+  // isBasedOn: render the name of each entry whose @type is "Action" as
+  // plain text. Multiple matching entries are stacked vertically.
+  if (column.property === 'isBasedOn') {
+    if (!value) return null;
+    const entries = Array.isArray(value) ? value : [value];
+    const actionNames = entries
+      .filter(
+        (entry: { '@type'?: string; name?: string }) =>
+          entry?.['@type'] === 'Action' && entry?.name,
+      )
+      .map((entry: { name: string }) => entry.name);
+
+    if (actionNames.length === 0) return null;
+
+    return (
+      <Flex flexDirection='column' gap={2}>
+        {actionNames.map((name: string, idx: number) => (
+          <Text key={idx} fontSize='sm'>
+            {name}
+          </Text>
+        ))}
+      </Flex>
+    );
+  }
+
+  // healthCondition, infectiousAgent, species, topicCategory, and any other
+  // DefinedTerm / QuantitativeValue fields: delegate to the shared cell
+  // renderer.
   return renderCellData({ column, data: value as any, isLoading });
 };
 
