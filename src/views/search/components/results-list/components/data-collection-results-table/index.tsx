@@ -45,7 +45,7 @@ export const ALL_DATA_COLLECTION_COLUMNS: DataCollectionColumn[] = [
   },
   {
     id: 'about',
-    title: 'About',
+    title: 'Data Type',
     property: 'about',
     isSortable: false,
     apiSortField: null,
