@@ -90,7 +90,12 @@ const SAMPLE_EXTRA_FIELDS = [
   'itemLocation',
 ];
 
-const DATA_COLLECTION_EXTRA_FIELDS = ['about', 'name', 'isBasedOn'];
+const DATA_COLLECTION_EXTRA_FIELDS = [
+  'about',
+  'name',
+  'isBasedOn',
+  'collectionSize',
+];
 
 // Build the ColumnConfig list expected by each CustomizeColumnsPopover from
 // the master column definitions.

@@ -115,6 +115,14 @@ export const ALL_DATA_COLLECTION_COLUMNS: DataCollectionColumn[] = [
     apiSortField: null,
     props: withWidth('200px'),
   },
+  {
+    id: 'collectionSize',
+    title: 'Collection Size',
+    property: 'collectionSize',
+    isSortable: false,
+    apiSortField: null,
+    props: withWidth('180px'),
+  },
 ];
 
 const REQUIRED_COLUMNS = ALL_DATA_COLLECTION_COLUMNS.filter(col =>
@@ -225,6 +233,37 @@ const getCells = ({
         {actionNames.map((name: string, idx: number) => (
           <Text key={idx} fontSize='sm'>
             {name}
+          </Text>
+        ))}
+      </Flex>
+    );
+  }
+
+  // collectionSize: renders as "<minValue>+ <unitText lowercase>" per entry.
+  // The API may return a single object or an array; both are handled.
+  // Multiple entries are stacked vertically.
+  if (column.property === 'collectionSize') {
+    if (!value) return null;
+    const entries = Array.isArray(value) ? value : [value];
+    const formatted = entries
+      .map((entry: { minValue?: number; unitText?: string }) => {
+        const numericPart =
+          entry.minValue != null ? `${entry.minValue}+` : null;
+        const unitPart = entry.unitText ? entry.unitText.toLowerCase() : null;
+        if (!numericPart && !unitPart) return null;
+        return [numericPart, unitPart].filter(Boolean).join(' ');
+      })
+      .filter((s): s is string => s !== null);
+
+    if (formatted.length === 0) return null;
+    if (formatted.length === 1) {
+      return <Text fontSize='sm'>{formatted[0]}</Text>;
+    }
+    return (
+      <Flex flexDirection='column' gap={2}>
+        {formatted.map((text, idx) => (
+          <Text key={idx} fontSize='sm'>
+            {text}
           </Text>
         ))}
       </Flex>

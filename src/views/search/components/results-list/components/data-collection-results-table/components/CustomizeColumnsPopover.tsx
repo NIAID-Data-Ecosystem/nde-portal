@@ -39,6 +39,7 @@ export const DEFAULT_VISIBLE_COLUMN_IDS = [
   'species',
   'topicCategory',
   'isBasedOn',
+  'collectionSize',
 ];
 
 export const REQUIRED_COLUMN_IDS = ['name', 'source'];
