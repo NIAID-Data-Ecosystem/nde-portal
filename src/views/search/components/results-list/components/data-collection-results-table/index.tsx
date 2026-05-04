@@ -1,30 +1,16 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Flex, Text } from '@chakra-ui/react';
-import { Skeleton } from 'src/components/skeleton';
-import { Table, Column } from 'src/components/table';
 import { Link } from 'src/components/link';
+import { Column } from 'src/components/table';
 import { FormattedResource, IncludedInDataCatalog } from 'src/utils/api/types';
 import { getTruncatedText } from 'src/components/table/helpers';
-import { REQUIRED_COLUMN_IDS } from './components/CustomizeColumnsPopover';
-import { renderCellData } from '../sample-results-table/components/Cells';
+import { ResultsTable } from '../results-table';
+import { BaseColumn } from '../results-table/types';
+import { withWidth } from '../results-table/utils';
+import { renderCellData } from '../results-table/components/Cells';
+import { DATA_COLLECTION_REQUIRED_COLUMN_IDS } from '../results-table/constants';
 
-// The shared Column interface exposes `props?: any` which Table spreads onto
-// both the <Th> header cell and every <Cell> data cell in its render loop.
-const withWidth = (width: string) => ({
-  minW: width,
-  maxW: width,
-  w: width,
-});
-
-export interface DataCollectionColumn extends Column {
-  /** Stable identifier used for localStorage persistence. */
-  id: string;
-  /**
-   * The API sort field to use when this column's sort toggle is clicked.
-   * `null` means the column is not server-sortable.
-   */
-  apiSortField: string | null;
-}
+export interface DataCollectionColumn extends BaseColumn {}
 
 export const ALL_DATA_COLLECTION_COLUMNS: DataCollectionColumn[] = [
   {
@@ -109,7 +95,7 @@ export const ALL_DATA_COLLECTION_COLUMNS: DataCollectionColumn[] = [
   },
   {
     id: 'isBasedOn',
-    title: 'Is Based On',
+    title: 'Based On',
     property: 'isBasedOn',
     isSortable: false,
     apiSortField: null,
@@ -125,20 +111,7 @@ export const ALL_DATA_COLLECTION_COLUMNS: DataCollectionColumn[] = [
   },
 ];
 
-const REQUIRED_COLUMNS = ALL_DATA_COLLECTION_COLUMNS.filter(col =>
-  REQUIRED_COLUMN_IDS.includes(col.id),
-);
-
-/**
- * Given a column `property`, return the API sort field string, or `null`
- * if the column is not server-sortable.
- */
-export const getApiSortFieldForProperty = (property: string): string | null => {
-  const col = ALL_DATA_COLLECTION_COLUMNS.find(c => c.property === property);
-  return col?.apiSortField ?? null;
-};
-
-const toRow = (resource: FormattedResource): Record<string, unknown> => {
+export const toRow = (resource: FormattedResource): Record<string, unknown> => {
   const rawCatalog = resource.includedInDataCatalog;
   const catalog: IncludedInDataCatalog | null = Array.isArray(rawCatalog)
     ? rawCatalog[0] ?? null
@@ -158,7 +131,7 @@ const toRow = (resource: FormattedResource): Record<string, unknown> => {
   };
 };
 
-const getCells = ({
+export const getCells = ({
   column,
   data,
   isLoading,
@@ -280,39 +253,23 @@ const getCells = ({
   }
 
   // healthCondition, infectiousAgent, species, topicCategory, and any other
-  // DefinedTerm / QuantitativeValue fields: delegate to the shared cell
-  // renderer.
+  // DefinedTerm / QuantitativeValue fields.
   return renderCellData({ column, data: value as any, isLoading });
-};
-
-/**
- * Derive the controlled-sort props that the generic `Table` component
- * understands from the raw API `sort` string (e.g. `"-name.raw"`).
- *
- * Return `{ controlledSortProperty, controlledSortAsc }` where
- * `controlledSortProperty` is the matching column `property` value,
- * or `null` when no column matches.
- */
-const deriveControlledSortProps = (
-  currentSort: string,
-): { controlledSortProperty: string | null; controlledSortAsc: boolean } => {
-  const isDesc = currentSort.startsWith('-');
-  const apiField = isDesc ? currentSort.slice(1) : currentSort;
-
-  const matchingColumn = ALL_DATA_COLLECTION_COLUMNS.find(
-    col => col.apiSortField === apiField,
-  );
-
-  return {
-    controlledSortProperty: matchingColumn?.property ?? null,
-    controlledSortAsc: !isDesc,
-  };
 };
 
 interface DataCollectionResultsTableProps {
   results: FormattedResource[];
   isLoading: boolean;
+  /**
+   * IDs of columns that should be visible.
+   * When undefined, all columns are shown.
+   */
   visibleColumnIds?: string[];
+  /**
+   * Full ordered list of all column IDs (visible + hidden).
+   * The table renders visible columns in this order.
+   * When undefined, the default ALL_DATA_COLLECTION_COLUMNS order is used.
+   */
   columnOrder?: string[];
   /**
    * The currently active API sort string (e.g. `"name.raw"` or `"-date"`).
@@ -336,82 +293,21 @@ export const DataCollectionResultsTable = ({
   columnOrder,
   currentSort,
   onSortChange,
-}: DataCollectionResultsTableProps) => {
-  const rows = useMemo(() => results.map(toRow), [results]);
-
-  // Build the ordered + filtered column list:
-  // 1. Start from columnOrder (if provided) or the master list order.
-  // 2. Keep only columns that are in visibleColumnIds.
-  const visibleColumns = useMemo(() => {
-    const sourceOrder =
-      columnOrder && columnOrder.length > 0
-        ? columnOrder
-            .map(id => ALL_DATA_COLLECTION_COLUMNS.find(c => c.id === id))
-            .filter((c): c is DataCollectionColumn => !!c)
-        : ALL_DATA_COLLECTION_COLUMNS;
-
-    const filtered = visibleColumnIds
-      ? sourceOrder.filter(col => visibleColumnIds.includes(col.id))
-      : sourceOrder;
-
-    return filtered.length > 0 ? filtered : REQUIRED_COLUMNS;
-  }, [visibleColumnIds, columnOrder]);
-
-  // Controlled sort: derive which column property is active and its direction.
-  const { controlledSortProperty, controlledSortAsc } = useMemo(
-    () =>
-      currentSort
-        ? deriveControlledSortProps(currentSort)
-        : { controlledSortProperty: null, controlledSortAsc: true },
-    [currentSort],
-  );
-
-  // When the user clicks a sort toggle, map the column property back to the
-  // API field and bubble the change up to the parent.
-  const handleControlledSort = useMemo(() => {
-    if (!onSortChange) return undefined;
-    return (property: string, ascending: boolean) => {
-      const apiField = getApiSortFieldForProperty(property);
-      if (apiField) {
-        onSortChange(apiField, ascending);
-      }
-    };
-  }, [onSortChange]);
-
-  return (
-    <Skeleton isLoaded={!isLoading} width='100%'>
-      <Table
-        ariaLabel='Data collection search results'
-        caption='Table of data collection search results'
-        columns={visibleColumns}
-        data={rows as any}
-        getCells={getCells as any}
-        isLoading={isLoading}
-        hasPagination={false}
-        // Opt in to sticky headers. The bounded maxHeight and overflowY give
-        // the browser a scroll boundary, which is required for position:sticky
-        // on the thead element to function correctly.
-        stickyHeader
-        // Opt in to the mirrored top horizontal scrollbar.
-        showTopScrollbar
-        tableContainerProps={{
-          overflowX: 'auto',
-          maxHeight: '70vh',
-          overflowY: 'auto',
-        }}
-        tableHeadProps={{
-          sx: {
-            th: { borderBottom: 'none' },
-            tr: { borderBottom: '1px solid', borderColor: 'gray.200' },
-          },
-        }}
-        getTableRowProps={(_, idx) => ({
-          bg: idx % 2 === 0 ? 'white' : 'page.alt',
-        })}
-        controlledSortProperty={controlledSortProperty}
-        controlledSortAsc={controlledSortAsc}
-        onControlledSort={handleControlledSort}
-      />
-    </Skeleton>
-  );
-};
+}: DataCollectionResultsTableProps) => (
+  <ResultsTable
+    columns={ALL_DATA_COLLECTION_COLUMNS}
+    results={results}
+    isLoading={isLoading}
+    toRow={toRow}
+    getCells={getCells}
+    ariaLabel='Data collection search results'
+    caption='Table of data collection search results'
+    requiredColumnIds={
+      DATA_COLLECTION_REQUIRED_COLUMN_IDS as unknown as string[]
+    }
+    visibleColumnIds={visibleColumnIds}
+    columnOrder={columnOrder}
+    currentSort={currentSort}
+    onSortChange={onSortChange}
+  />
+);

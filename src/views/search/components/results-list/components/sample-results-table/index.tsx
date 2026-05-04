@@ -1,30 +1,16 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Text } from '@chakra-ui/react';
-import { Skeleton } from 'src/components/skeleton';
-import { Table, Column } from 'src/components/table';
 import { Link } from 'src/components/link';
+import { Column } from 'src/components/table';
 import { FormattedResource, IncludedInDataCatalog } from 'src/utils/api/types';
-import { renderCellData } from './components/Cells';
 import { getTruncatedText } from 'src/components/table/helpers';
-import { REQUIRED_COLUMN_IDS } from './components/CustomizeColumnsPopover';
+import { ResultsTable } from '../results-table';
+import { BaseColumn } from '../results-table/types';
+import { withWidth } from '../results-table/utils';
+import { renderCellData } from '../results-table/components/Cells';
+import { SAMPLE_REQUIRED_COLUMN_IDS } from '../results-table/constants';
 
-// The shared Column interface exposes `props?: any` which Table spreads onto
-// both the <Th> header cell and every <Cell> data cell in its render loop.
-const withWidth = (width: string) => ({
-  minW: width,
-  maxW: width,
-  w: width,
-});
-
-export interface SampleColumn extends Column {
-  /** Stable identifier used for localStorage persistence. */
-  id: string;
-  /**
-   * The API sort field to use when this column's sort toggle is clicked.
-   * `null` means the column is not server-sortable.
-   */
-  apiSortField: string | null;
-}
+export interface SampleColumn extends BaseColumn {}
 
 const COLUMN_API_SORT_FIELDS: Record<string, string | null> = {
   identifier: null,
@@ -257,16 +243,7 @@ export const ALL_SAMPLE_COLUMNS: SampleColumn[] = [
   },
 ];
 
-/**
- * Given a column `property`, return the API sort field string, or `null`
- * if the column is not server-sortable.
- */
-export const getApiSortFieldForProperty = (property: string): string | null => {
-  const col = ALL_SAMPLE_COLUMNS.find(c => c.property === property);
-  return col?.apiSortField ?? null;
-};
-
-const toRow = (resource: FormattedResource): Record<string, unknown> => {
+export const toRow = (resource: FormattedResource): Record<string, unknown> => {
   const rawCatalog = resource.includedInDataCatalog;
   const catalog: IncludedInDataCatalog | null = Array.isArray(rawCatalog)
     ? rawCatalog[0] ?? null
@@ -297,7 +274,7 @@ const toRow = (resource: FormattedResource): Record<string, unknown> => {
   };
 };
 
-const getCells = ({
+export const getCells = ({
   column,
   data,
   isLoading,
@@ -350,15 +327,9 @@ const getCells = ({
     return value ? <Text fontSize='sm'>{String(value)}</Text> : null;
   }
 
-  // Other fields
+  // All other fields: delegate to the shared cell renderer
   return renderCellData({ column, data: value as any, isLoading });
 };
-
-// Required columns used as the fallback when visibleColumnIds resolves to
-// an empty array (e.g. during pre-hydration or after a "Clear All").
-const REQUIRED_COLUMNS = ALL_SAMPLE_COLUMNS.filter(col =>
-  REQUIRED_COLUMN_IDS.includes(col.id),
-);
 
 interface SampleResultsTableProps {
   results: FormattedResource[];
@@ -389,30 +360,6 @@ interface SampleResultsTableProps {
   onSortChange?: (apiField: string, ascending: boolean) => void;
 }
 
-/**
- * Derive the controlled-sort props that the generic `Table` component
- * understands from the raw API `sort` string (e.g. `"-name.raw"`).
- *
- * Returns `{ controlledSortProperty, controlledSortAsc }` where
- * `controlledSortProperty` is the matching column `property` value,
- * or `null` when no column matches.
- */
-const deriveControlledSortProps = (
-  currentSort: string,
-): { controlledSortProperty: string | null; controlledSortAsc: boolean } => {
-  const isDesc = currentSort.startsWith('-');
-  const apiField = isDesc ? currentSort.slice(1) : currentSort;
-
-  const matchingColumn = ALL_SAMPLE_COLUMNS.find(
-    col => col.apiSortField === apiField,
-  );
-
-  return {
-    controlledSortProperty: matchingColumn?.property ?? null,
-    controlledSortAsc: !isDesc,
-  };
-};
-
 export const SampleResultsTable = ({
   results,
   isLoading,
@@ -420,82 +367,19 @@ export const SampleResultsTable = ({
   columnOrder,
   currentSort,
   onSortChange,
-}: SampleResultsTableProps) => {
-  const rows = useMemo(() => results.map(toRow), [results]);
-
-  // Build the ordered + filtered column list:
-  // 1. Start from columnOrder (if provided) or the master list order.
-  // 2. Keep only columns that are in visibleColumnIds.
-  const visibleColumns = useMemo(() => {
-    const sourceOrder =
-      columnOrder && columnOrder.length > 0
-        ? columnOrder
-            .map(id => ALL_SAMPLE_COLUMNS.find(c => c.id === id))
-            .filter((c): c is SampleColumn => !!c)
-        : ALL_SAMPLE_COLUMNS;
-
-    const filtered = visibleColumnIds
-      ? sourceOrder.filter(col => visibleColumnIds.includes(col.id))
-      : sourceOrder;
-
-    return filtered.length > 0 ? filtered : REQUIRED_COLUMNS;
-  }, [visibleColumnIds, columnOrder]);
-
-  // Controlled sort: derive which column property is active and its direction.
-  const { controlledSortProperty, controlledSortAsc } = useMemo(
-    () =>
-      currentSort
-        ? deriveControlledSortProps(currentSort)
-        : { controlledSortProperty: null, controlledSortAsc: true },
-    [currentSort],
-  );
-
-  // When the user clicks a sort toggle, map the column property back to the
-  // API field and bubble the change up to the parent.
-  const handleControlledSort = useMemo(() => {
-    if (!onSortChange) return undefined;
-    return (property: string, ascending: boolean) => {
-      const apiField = getApiSortFieldForProperty(property);
-      if (apiField) {
-        onSortChange(apiField, ascending);
-      }
-    };
-  }, [onSortChange]);
-
-  return (
-    <Skeleton isLoaded={!isLoading} width='100%'>
-      <Table
-        ariaLabel='Sample search results'
-        caption='Table of sample search results'
-        columns={visibleColumns}
-        data={rows as any}
-        getCells={getCells as any}
-        isLoading={isLoading}
-        hasPagination={false}
-        // Opt in to sticky headers. The bounded maxHeight and overflowY give
-        // the browser a scroll boundary, which is required for position:sticky
-        // on the thead element to function correctly.
-        stickyHeader
-        // Opt in to the mirrored top horizontal scrollbar.
-        showTopScrollbar
-        tableContainerProps={{
-          overflowX: 'auto',
-          maxHeight: '70vh',
-          overflowY: 'auto',
-        }}
-        tableHeadProps={{
-          sx: {
-            th: { borderBottom: 'none' },
-            tr: { borderBottom: '1px solid', borderColor: 'gray.200' },
-          },
-        }}
-        getTableRowProps={(_, idx) => ({
-          bg: idx % 2 === 0 ? 'white' : 'page.alt',
-        })}
-        controlledSortProperty={controlledSortProperty}
-        controlledSortAsc={controlledSortAsc}
-        onControlledSort={handleControlledSort}
-      />
-    </Skeleton>
-  );
-};
+}: SampleResultsTableProps) => (
+  <ResultsTable
+    columns={ALL_SAMPLE_COLUMNS}
+    results={results}
+    isLoading={isLoading}
+    toRow={toRow}
+    getCells={getCells}
+    ariaLabel='Sample search results'
+    caption='Table of sample search results'
+    requiredColumnIds={SAMPLE_REQUIRED_COLUMN_IDS as unknown as string[]}
+    visibleColumnIds={visibleColumnIds}
+    columnOrder={columnOrder}
+    currentSort={currentSort}
+    onSortChange={onSortChange}
+  />
+);
