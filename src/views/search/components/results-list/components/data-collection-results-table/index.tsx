@@ -31,16 +31,16 @@ export const ALL_DATA_COLLECTION_COLUMNS: DataCollectionColumn[] = [
     id: 'name',
     title: 'Name',
     property: 'name',
-    isSortable: false,
-    apiSortField: null,
+    isSortable: true,
+    apiSortField: 'name.raw',
     props: withWidth('250px'),
   },
   {
     id: 'source',
     title: 'Source',
     property: 'includedInDataCatalog',
-    isSortable: false,
-    apiSortField: null,
+    isSortable: true,
+    apiSortField: 'includedInDataCatalog.name',
     props: withWidth('160px'),
   },
   {
@@ -55,16 +55,16 @@ export const ALL_DATA_COLLECTION_COLUMNS: DataCollectionColumn[] = [
     id: 'conditionsOfAccess',
     title: 'Conditions of Access',
     property: 'conditionsOfAccess',
-    isSortable: false,
-    apiSortField: null,
+    isSortable: true,
+    apiSortField: 'conditionsOfAccess',
     props: withWidth('180px'),
   },
   {
     id: 'date',
     title: 'Date',
     property: 'date',
-    isSortable: false,
-    apiSortField: null,
+    isSortable: true,
+    apiSortField: 'date',
     props: withWidth('130px'),
   },
   {
@@ -105,11 +105,11 @@ export const ALL_DATA_COLLECTION_COLUMNS: DataCollectionColumn[] = [
     property: 'topicCategory',
     isSortable: false,
     apiSortField: null,
-    props: withWidth('190px'),
+    props: withWidth('160px'),
   },
   {
     id: 'isBasedOn',
-    title: 'Based On',
+    title: 'Is Based On',
     property: 'isBasedOn',
     isSortable: false,
     apiSortField: null,
@@ -128,6 +128,15 @@ export const ALL_DATA_COLLECTION_COLUMNS: DataCollectionColumn[] = [
 const REQUIRED_COLUMNS = ALL_DATA_COLLECTION_COLUMNS.filter(col =>
   REQUIRED_COLUMN_IDS.includes(col.id),
 );
+
+/**
+ * Given a column `property`, return the API sort field string, or `null`
+ * if the column is not server-sortable.
+ */
+export const getApiSortFieldForProperty = (property: string): string | null => {
+  const col = ALL_DATA_COLLECTION_COLUMNS.find(c => c.property === property);
+  return col?.apiSortField ?? null;
+};
 
 const toRow = (resource: FormattedResource): Record<string, unknown> => {
   const rawCatalog = resource.includedInDataCatalog;
@@ -276,11 +285,48 @@ const getCells = ({
   return renderCellData({ column, data: value as any, isLoading });
 };
 
+/**
+ * Derive the controlled-sort props that the generic `Table` component
+ * understands from the raw API `sort` string (e.g. `"-name.raw"`).
+ *
+ * Return `{ controlledSortProperty, controlledSortAsc }` where
+ * `controlledSortProperty` is the matching column `property` value,
+ * or `null` when no column matches.
+ */
+const deriveControlledSortProps = (
+  currentSort: string,
+): { controlledSortProperty: string | null; controlledSortAsc: boolean } => {
+  const isDesc = currentSort.startsWith('-');
+  const apiField = isDesc ? currentSort.slice(1) : currentSort;
+
+  const matchingColumn = ALL_DATA_COLLECTION_COLUMNS.find(
+    col => col.apiSortField === apiField,
+  );
+
+  return {
+    controlledSortProperty: matchingColumn?.property ?? null,
+    controlledSortAsc: !isDesc,
+  };
+};
+
 interface DataCollectionResultsTableProps {
   results: FormattedResource[];
   isLoading: boolean;
   visibleColumnIds?: string[];
   columnOrder?: string[];
+  /**
+   * The currently active API sort string (e.g. `"name.raw"` or `"-date"`).
+   * A leading `-` indicates descending order.
+   * When provided the table header highlights the matching column and
+   * delegates sort-toggle clicks to `onSortChange` instead of sorting
+   * the page locally.
+   */
+  currentSort?: string;
+  /**
+   * Called when the user clicks a sortable column header arrow.
+   * Receives the API sort field and the desired direction.
+   */
+  onSortChange?: (apiField: string, ascending: boolean) => void;
 }
 
 export const DataCollectionResultsTable = ({
@@ -288,6 +334,8 @@ export const DataCollectionResultsTable = ({
   isLoading,
   visibleColumnIds,
   columnOrder,
+  currentSort,
+  onSortChange,
 }: DataCollectionResultsTableProps) => {
   const rows = useMemo(() => results.map(toRow), [results]);
 
@@ -308,6 +356,27 @@ export const DataCollectionResultsTable = ({
 
     return filtered.length > 0 ? filtered : REQUIRED_COLUMNS;
   }, [visibleColumnIds, columnOrder]);
+
+  // Controlled sort: derive which column property is active and its direction.
+  const { controlledSortProperty, controlledSortAsc } = useMemo(
+    () =>
+      currentSort
+        ? deriveControlledSortProps(currentSort)
+        : { controlledSortProperty: null, controlledSortAsc: true },
+    [currentSort],
+  );
+
+  // When the user clicks a sort toggle, map the column property back to the
+  // API field and bubble the change up to the parent.
+  const handleControlledSort = useMemo(() => {
+    if (!onSortChange) return undefined;
+    return (property: string, ascending: boolean) => {
+      const apiField = getApiSortFieldForProperty(property);
+      if (apiField) {
+        onSortChange(apiField, ascending);
+      }
+    };
+  }, [onSortChange]);
 
   return (
     <Skeleton isLoaded={!isLoading} width='100%'>
@@ -339,6 +408,9 @@ export const DataCollectionResultsTable = ({
         getTableRowProps={(_, idx) => ({
           bg: idx % 2 === 0 ? 'white' : 'page.alt',
         })}
+        controlledSortProperty={controlledSortProperty}
+        controlledSortAsc={controlledSortAsc}
+        onControlledSort={handleControlledSort}
       />
     </Skeleton>
   );

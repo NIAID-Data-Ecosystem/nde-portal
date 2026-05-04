@@ -92,9 +92,9 @@ const SAMPLE_EXTRA_FIELDS = [
 
 const DATA_COLLECTION_EXTRA_FIELDS = [
   'about',
-  'name',
-  'isBasedOn',
   'collectionSize',
+  'isBasedOn',
+  'name',
 ];
 
 // Build the ColumnConfig list expected by each CustomizeColumnsPopover from
@@ -378,7 +378,7 @@ export const SearchResults = ({
    * pagination state and the URL (identical to how the toolbar sort
    * dropdown works, including the reset to page 1).
    */
-  const handleSampleSortChange = (apiField: string, ascending: boolean) => {
+  const handleSortChange = (apiField: string, ascending: boolean) => {
     const newSort = ascending ? apiField : `-${apiField}`;
     const update = { sort: newSort, from: 1 };
     setPagination(id, update);
@@ -437,7 +437,7 @@ export const SearchResults = ({
             visibleColumnIds={visibleColumnIds}
             columnOrder={columnOrder}
             currentSort={sort}
-            onSortChange={handleSampleSortChange}
+            onSortChange={handleSortChange}
           />
         ) : isDataCollectionTab ? (
           /* DataCollection tab */
@@ -446,6 +446,8 @@ export const SearchResults = ({
             isLoading={!router.isReady || isLoading}
             visibleColumnIds={dcVisibleColumnIds}
             columnOrder={dcColumnOrder}
+            currentSort={sort}
+            onSortChange={handleSortChange}
           />
         ) : (
           /* Dataset / ComputationalTool tabs: render result cards */
