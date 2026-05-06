@@ -18,7 +18,10 @@ import { TabType } from '../../types';
 import { generateOtherResourcesTitle, tabs } from '../../config/tabs';
 import { getDefaultTabId } from '../../utils/get-default-tab';
 import { useDiseaseData } from '../../hooks/useDiseaseData';
-import { SHOW_SAMPLES_TAB } from 'src/utils/feature-flags';
+import {
+  SHOW_SAMPLES_TAB,
+  SHOW_DATA_COLLECTIONS_TAB,
+} from 'src/utils/feature-flags';
 import { useBioSampleAggregation } from '../../hooks/useBioSampleAggregation';
 import { queryFilterObject2String } from '../filters/utils/query-string';
 
@@ -265,11 +268,21 @@ export const SearchResultsController = ({
           ) {
             return false;
           }
+          if (
+            !SHOW_DATA_COLLECTIONS_TAB &&
+            tab.types.every(({ type }) => type === 'DataCollection')
+          ) {
+            return false;
+          }
           return true;
         })
         .map(tab => {
           const tabTypesWithCount = tab.types
-            .filter(({ type }) => type !== 'Sample' || SHOW_SAMPLES_TAB)
+            .filter(
+              ({ type }) =>
+                (type !== 'Sample' || SHOW_SAMPLES_TAB) &&
+                (type !== 'DataCollection' || SHOW_DATA_COLLECTIONS_TAB),
+            )
             .map(({ label, type }) => {
               const terms = facetData?.facets?.['@type']?.terms ?? [];
               const facet = terms.find(t => t.term === type);
@@ -316,6 +329,10 @@ export const SearchResultsController = ({
         if (section.count > 0 || section.count === 0) {
           indices.push(index);
         }
+      } else if (section.type === 'DataCollection') {
+        if (section.count > 0 || section.count === 0) {
+          indices.push(index);
+        }
       } else if (section.count > 0) {
         indices.push(index);
       }
@@ -343,6 +360,11 @@ export const SearchResultsController = ({
                   {sections.map(section => {
                     if (section.type === 'Disease') return null;
                     if (section.type === 'Sample' && !SHOW_SAMPLES_TAB)
+                      return null;
+                    if (
+                      section.type === 'DataCollection' &&
+                      !SHOW_DATA_COLLECTIONS_TAB
+                    )
                       return null;
 
                     // For ResourceCatalog, render "Other Resources" with carousel
@@ -390,7 +412,8 @@ export const SearchResultsController = ({
                       );
                     }
 
-                    // For Dataset, ComputationalTool, and Sample render normal search results.
+                    // For Dataset, ComputationalTool, Sample, and DataCollection
+                    // render normal search results.
                     // The Sample accordion title uses bioSampleTotal so it matches the tab label.
                     const sectionCount =
                       section.type === 'Sample'
