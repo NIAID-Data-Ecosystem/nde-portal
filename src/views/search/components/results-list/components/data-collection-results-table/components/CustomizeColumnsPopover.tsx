@@ -3,25 +3,30 @@ import {
   CustomizeColumnsPopover as GenericCustomizeColumnsPopover,
   ColumnConfig,
 } from '../../results-table/components/CustomizeColumnsPopover';
-import { SAMPLE_REQUIRED_COLUMN_IDS } from '../../results-table/constants';
+import { DATA_COLLECTION_REQUIRED_COLUMN_IDS } from '../../results-table/constants';
 
 export const CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY =
-  'search-visible-sample-columns';
+  'search-visible-data-collection-columns';
 
-export const CUSTOM_COLUMN_ORDER_STORAGE_KEY = 'search-sample-column-order';
+export const CUSTOM_COLUMN_ORDER_STORAGE_KEY =
+  'search-data-collection-column-order';
 
 export const DEFAULT_VISIBLE_COLUMN_IDS = [
-  'identifier',
   'name',
-  'date',
-  'includedInDataCatalog',
-  'description',
+  'source',
+  'about',
   'conditionsOfAccess',
-  'sex',
+  'date',
+  'description',
+  'healthCondition',
+  'infectiousAgent',
   'species',
+  'topicCategory',
+  'isBasedOn',
+  'collectionSize',
 ];
 
-export { SAMPLE_REQUIRED_COLUMN_IDS as REQUIRED_COLUMN_IDS };
+export { DATA_COLLECTION_REQUIRED_COLUMN_IDS as REQUIRED_COLUMN_IDS };
 
 export type { ColumnConfig };
 
@@ -32,9 +37,9 @@ interface CustomizeColumnsPopoverProps {
 }
 
 /**
- * Sample-table-specific wrapper around the generic CustomizeColumnsPopover.
- * Pre-fill all sample-specific configuration (storage keys, defaults,
- * required columns).
+ * Data-collection-table-specific wrapper around the generic
+ * CustomizeColumnsPopover. Pre-fill all data-collection-specific
+ * configuration (storage keys, defaults, required columns).
  */
 export const CustomizeColumnsPopover = ({
   columnsList,
@@ -46,7 +51,7 @@ export const CustomizeColumnsPopover = ({
     storageKeyVisible={CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY}
     storageKeyOrder={CUSTOM_COLUMN_ORDER_STORAGE_KEY}
     defaultVisibleIds={DEFAULT_VISIBLE_COLUMN_IDS}
-    requiredIds={SAMPLE_REQUIRED_COLUMN_IDS}
+    requiredIds={DATA_COLLECTION_REQUIRED_COLUMN_IDS}
     onVisibleColumnsChange={onVisibleColumnsChange}
     onColumnOrderChange={onColumnOrderChange}
   />

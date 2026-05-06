@@ -23,6 +23,9 @@ import { SHOW_VISUAL_SUMMARY } from 'src/utils/feature-flags';
 import { FILTER_CONFIGS } from '../config';
 import { useSearchResultsFetchedContext } from 'src/views/search/context/search-results-fetched-context';
 import { useSearchTabsContext } from 'src/views/search/context/search-tabs-context';
+import { useBioSampleAggregation } from 'src/views/search/hooks/useBioSampleAggregation';
+import { useComputationalToolAggregation } from 'src/views/search/hooks/useComputationalToolAggregation';
+import { useSharedDatasetAggregation } from 'src/views/search/hooks/useSharedDatasetAggregation';
 
 interface FiltersProps {
   colorScheme?: string;
@@ -54,7 +57,7 @@ export const Filters = React.memo(
     const visibleFiltersList = useMemo(
       () =>
         FILTER_CONFIGS.filter(filterConfig => {
-          // Show filter if it's in the list of visible ids (i.e. the user hasn't hidden it) and if it is part of the tabs that should be shown for the current route
+          // Show filter if it's in the list of visible ids (i.e. the user hasn't hidden it) and i
           const userHasSelectedToShow = userSelectedFilters.includes(
             filterConfig.id,
           );
@@ -66,7 +69,9 @@ export const Filters = React.memo(
       [userSelectedFilters, selectedTab.id],
     );
 
-    // Build the extra_filter query param string based on selected filters, including date if selected
+    // Build the extra_filter query param string based on selected filters.
+    // This is passed into each scoped aggregation hook so that user-selected
+    // filters are always respected on top of the type-scoping constraints.
     const filtersAggParams = useMemo(() => {
       return {
         q: queryParams.q,
@@ -81,11 +86,51 @@ export const Filters = React.memo(
       queryParams.advancedSearch,
     ]);
 
+    // Sample filters: @type:Sample AND additionalType:"BioSample"
+    // Passes extra_filter so counts respect the user's selected filters,
+    // consistent with the Shared/Dataset and Computational Tool hooks.
+    const bioSampleAgg = useBioSampleAggregation(
+      {
+        q: queryParams.q,
+        use_ai_search: queryParams.use_ai_search ?? 'false',
+        advancedSearch: queryParams.advancedSearch,
+        extra_filter: filtersAggParams.extra_filter,
+      },
+      { enabled: router.isReady },
+    );
+
+    // Computational Tool filters: @type:ComputationalTool
+    // User-selected filters are passed via extra_filter so the counts stay
+    // consistent with what the user has already narrowed down.
+    const computationalToolAgg = useComputationalToolAggregation(
+      {
+        q: queryParams.q,
+        use_ai_search: queryParams.use_ai_search ?? 'false',
+        advancedSearch: queryParams.advancedSearch,
+        extra_filter: filtersAggParams.extra_filter,
+      },
+      { enabled: router.isReady },
+    );
+
+    // Shared/Dataset filters: all types except non-BioSample Sample records
+    const sharedDatasetAgg = useSharedDatasetAggregation(
+      {
+        q: queryParams.q,
+        use_ai_search: queryParams.use_ai_search ?? 'false',
+        advancedSearch: queryParams.advancedSearch,
+        extra_filter: filtersAggParams.extra_filter,
+      },
+      { enabled: router.isReady },
+    );
+
     // Use simplified filter queries hook
     const filtersAggQuery = useFilterQueries({
       configs: visibleFiltersList,
       enabled: isFiltersFetchEnabled,
       params: filtersAggParams,
+      bioSampleAggregationData: bioSampleAgg.data,
+      computationalToolAggregationData: computationalToolAgg.data,
+      sharedDatasetAggregationData: sharedDatasetAgg.data,
     });
 
     const { results, error, isUpdating } = filtersAggQuery;

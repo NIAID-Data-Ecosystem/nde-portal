@@ -41,6 +41,20 @@ jest.mock('src/views/search/config/defaultQuery', () => ({
   getDefaultDateRange: () => ['2020-01-01', '2021-12-31'],
 }));
 
+// Mock the three scoped aggregation hooks so they don't call useQuery
+// (which requires a QueryClientProvider) in tests.
+jest.mock('src/views/search/hooks/useBioSampleAggregation', () => ({
+  useBioSampleAggregation: () => ({ data: undefined }),
+}));
+
+jest.mock('src/views/search/hooks/useComputationalToolAggregation', () => ({
+  useComputationalToolAggregation: () => ({ data: undefined }),
+}));
+
+jest.mock('src/views/search/hooks/useSharedDatasetAggregation', () => ({
+  useSharedDatasetAggregation: () => ({ data: undefined }),
+}));
+
 jest.mock('../../components/container', () => ({
   FiltersContainer: ({
     children,
