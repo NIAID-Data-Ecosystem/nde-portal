@@ -195,7 +195,9 @@ export const useFilterQueries = ({
               facet: config.property,
               groupBy:
                 (repoList as any[]).find(
-                  (r: any) => r.sourceInfo?.name === t.term,
+                  (r: any) =>
+                    r.sourceInfo?.name === t.term ||
+                    r.sourceInfo?.identifier === t.term,
                 )?.sourceInfo?.genre || 'Generalist',
             }));
           }
