@@ -12,6 +12,7 @@ const PRIORITY_ORDER = {
   ResourceCatalog: 1,
   ComputationalTool: 2,
   Sample: 3,
+  DataCollection: 4,
 };
 
 /**

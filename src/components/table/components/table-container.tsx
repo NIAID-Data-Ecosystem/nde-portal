@@ -1,11 +1,16 @@
+import React from 'react';
 import {
   TableContainer as NDETableContainer,
   TableContainerProps,
 } from '@chakra-ui/react';
 
-export const TableContainer = (props: TableContainerProps) => {
+export const TableContainer = React.forwardRef<
+  HTMLDivElement,
+  TableContainerProps
+>((props, ref) => {
   return (
     <NDETableContainer
+      ref={ref}
       sx={{
         '&::-webkit-scrollbar': {
           width: '10px',
@@ -30,4 +35,6 @@ export const TableContainer = (props: TableContainerProps) => {
       {props.children}
     </NDETableContainer>
   );
-};
+});
+
+TableContainer.displayName = 'TableContainer';

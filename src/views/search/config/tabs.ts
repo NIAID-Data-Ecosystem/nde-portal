@@ -9,6 +9,7 @@ export const TAB_LABELS = {
   DISEASE_OVERVIEW: 'Disease Overview',
   OTHER_RESOURCES: 'Other Resources',
   SAMPLE: 'Sample',
+  DATA_COLLECTION: 'Data Collection',
 } as const;
 
 // Tab configuration
@@ -46,6 +47,15 @@ export const tabs: TabType[] = [
       {
         label: `${TAB_LABELS.SAMPLE}s`,
         type: 'Sample',
+      },
+    ],
+  },
+  {
+    id: 'dc',
+    types: [
+      {
+        label: `${TAB_LABELS.DATA_COLLECTION}s`,
+        type: 'DataCollection',
       },
     ],
   },

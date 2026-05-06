@@ -122,7 +122,7 @@ export function useRepoData(options: any = {}) {
             _id: identifier,
             abstract: abstract || '',
             type: types,
-            name: name || '',
+            name: name || identifier || '',
             domain: genre,
             url,
             conditionsOfAccess: conditionsOfAccess
