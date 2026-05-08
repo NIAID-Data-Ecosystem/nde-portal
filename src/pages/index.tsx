@@ -32,10 +32,7 @@ import {
   fetchNews,
 } from 'src/views/home/components/NewsCarousel';
 import { NewsOrEventsObject, fetchEvents } from './updates';
-import {
-  TableData,
-  TableWithSearch,
-} from 'src/views/home/components/TableWithSearch/';
+import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
 import { HeroBanner } from 'src/views/home/components/HeroBanner';
 import {
@@ -44,7 +41,6 @@ import {
 } from 'src/views/features/helpers';
 import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
 import { useReadLocalStorage } from 'usehooks-ts';
-import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import {
   formatConditionsOfAccess,
   transformConditionsOfAccessLabel,

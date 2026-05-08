@@ -5,7 +5,7 @@ import { Metadata, MetadataSource } from './types';
 export type Repository = MetadataSource['sourceInfo'];
 
 export function useRepoData(options: any = {}) {
-  return useQuery<Metadata | undefined, Error, MetadataSource['sourceInfo'][]>({
+  return useQuery<Metadata | undefined, Error, Repository[]>({
     queryKey: ['metadata'],
     queryFn: async () => await fetchMetadata(),
     select: (data: Metadata | undefined) => {
@@ -35,7 +35,7 @@ export function useRepoData(options: any = {}) {
           };
         });
 
-      return repositories;
+      return repositories as Repository[];
     },
     ...options,
   });
