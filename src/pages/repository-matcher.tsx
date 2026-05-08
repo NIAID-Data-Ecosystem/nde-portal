@@ -1,10 +1,11 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Flex, Heading, Stack, Text } from '@chakra-ui/react';
 
 import { NextPage } from 'next';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { SearchInput } from 'src/components/search-input';
 import { Table } from 'src/components/table';
+import { CustomizeColumnsPopover } from 'src/views/repository-matcher/components/CustomizeColumnsPopover';
 import { useRepositoryMatcherData } from 'src/views/repository-matcher/hooks/useRepositoryMatcherData';
 import { useSearchedData } from 'src/views/repository-matcher/hooks/useSearchedData';
 import { REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
@@ -20,27 +21,57 @@ const RepositoryMatcher: NextPage = () => {
 
   const { data, isLoading } = useRepositoryMatcherData(fields);
 
-  const tableColumns = useMemo(
-    () =>
-      REPOSITORY_MATCHER_COLUMNS.map(col => ({
+  /****** Customize columns: visibility + order *****/
+  const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(() =>
+    REPOSITORY_MATCHER_COLUMNS.filter(c => c.columns?.isDefault !== false).map(
+      c => c.id,
+    ),
+  );
+  const [orderedColumnIds, setOrderedColumnIds] = useState<string[] | null>(
+    null,
+  );
+
+  // Render columns in user-chosen order, filtered to currently visible IDs.
+  const tableColumns = useMemo(() => {
+    const order = orderedColumnIds ?? REPOSITORY_MATCHER_COLUMNS.map(c => c.id);
+    const visible = new Set(visibleColumnIds);
+    return order
+      .filter(id => visible.has(id))
+      .map(id => REPOSITORY_MATCHER_COLUMNS.find(c => c.id === id))
+      .filter((col): col is (typeof REPOSITORY_MATCHER_COLUMNS)[number] =>
+        Boolean(col),
+      )
+      .map(col => ({
         title: col.label,
         property: col.id,
         isSortable: col.columns?.isSortable,
-      })),
-    [],
-  );
+      }));
+  }, [visibleColumnIds, orderedColumnIds]);
 
+  /****** Search *****/
   const [searchTerm, setSearchTerm] = useState('');
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value),
     [],
   );
+  // Search iterates ALL columns (incl. hidden), so toggling visibility
+  // doesn't drop matches that live in hidden columns.
   const searchedData = useSearchedData(data, searchTerm);
 
+  /****** Sort *****/
   const [sortProperty, setSortProperty] = useState<string>(
     REPOSITORY_MATCHER_COLUMNS[0].id,
   );
   const [sortAsc, setSortAsc] = useState(true);
+
+  // If the currently sorted column gets hidden, fall back to the first
+  // visible column so the table doesn't sort on something the user can't see.
+  useEffect(() => {
+    if (!visibleColumnIds.length) return;
+    if (!visibleColumnIds.includes(sortProperty)) {
+      setSortProperty(visibleColumnIds[0]);
+    }
+  }, [visibleColumnIds, sortProperty]);
 
   const handleSort = useCallback((property: string, ascending: boolean) => {
     setSortProperty(property);
@@ -96,6 +127,10 @@ const RepositoryMatcher: NextPage = () => {
           isResponsive={false}
           alignItems='flex-end'
           onClose={() => setSearchTerm('')}
+        />
+        <CustomizeColumnsPopover
+          onVisibleColumnsChange={setVisibleColumnIds}
+          onColumnOrderChange={setOrderedColumnIds}
         />
       </Stack>
 

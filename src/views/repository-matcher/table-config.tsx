@@ -20,6 +20,11 @@ export type RepositoryMatcherColumn<TValue = unknown> = {
   label: string;
   fields: string[];
   columns?: { isSortable?: boolean; isDefault?: boolean };
+  /**
+   * When true, the column cannot be hidden by the customize-columns popover.
+   * Default: false.
+   */
+  required?: boolean;
   transform: (item: RepositoryMatcherItem) => TValue;
   component: (props: { value: TValue; isLoading?: boolean }) => React.ReactNode;
   /**
@@ -90,6 +95,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     label: 'Name',
     fields: ['name', '_id', 'identifier', 'url', '@type', 'collectionType'],
     columns: { isSortable: true, isDefault: true },
+    required: true,
     transform: (item): NameValue => ({
       label: item.name || item._id || '',
       url: buildItemUrl(item),
