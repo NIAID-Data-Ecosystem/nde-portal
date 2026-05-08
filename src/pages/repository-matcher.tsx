@@ -1,10 +1,12 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Flex, Heading, Text } from '@chakra-ui/react';
+import { Box, Flex, Heading, Stack, Text } from '@chakra-ui/react';
 
 import { NextPage } from 'next';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
+import { SearchInput } from 'src/components/search-input';
 import { Table } from 'src/components/table';
 import { useRepositoryMatcherData } from 'src/views/repository-matcher/hooks/useRepositoryMatcherData';
+import { useSearchedData } from 'src/views/repository-matcher/hooks/useSearchedData';
 import { REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
 
 const RepositoryMatcher: NextPage = () => {
@@ -17,6 +19,7 @@ const RepositoryMatcher: NextPage = () => {
   );
 
   const { data, isLoading } = useRepositoryMatcherData(fields);
+
   const tableColumns = useMemo(
     () =>
       REPOSITORY_MATCHER_COLUMNS.map(col => ({
@@ -26,6 +29,13 @@ const RepositoryMatcher: NextPage = () => {
       })),
     [],
   );
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value),
+    [],
+  );
+  const searchedData = useSearchedData(data, searchTerm);
 
   const [sortProperty, setSortProperty] = useState<string>(
     REPOSITORY_MATCHER_COLUMNS[0].id,
@@ -38,11 +48,11 @@ const RepositoryMatcher: NextPage = () => {
   }, []);
 
   const sortedData = useMemo(() => {
-    if (!data?.length) return data;
+    if (!searchedData?.length) return searchedData;
     const col = REPOSITORY_MATCHER_COLUMNS.find(c => c.id === sortProperty);
-    if (!col) return data;
+    if (!col) return searchedData;
     const accessor = col.getSortValue ?? ((v: any) => v);
-    return [...data].sort((a, b) => {
+    return [...searchedData].sort((a, b) => {
       let va: any = accessor(a[col.id] as any);
       let vb: any = accessor(b[col.id] as any);
       va = va ?? (typeof va === 'number' ? 0 : '');
@@ -56,7 +66,7 @@ const RepositoryMatcher: NextPage = () => {
             });
       return sortAsc ? cmp : -cmp;
     });
-  }, [data, sortProperty, sortAsc]);
+  }, [searchedData, sortProperty, sortAsc]);
 
   return (
     <PageContainer meta={getPageSeoConfig('/')}>
@@ -69,6 +79,31 @@ const RepositoryMatcher: NextPage = () => {
           research domain, accepted data, and more.
         </Text>
       </Flex>
+
+      <Stack
+        direction='row'
+        spacing={2}
+        mb={2}
+        flexWrap='wrap'
+        alignItems='center'
+      >
+        <SearchInput
+          size='md'
+          placeholder='Search table'
+          ariaLabel='Search repositories and resource catalogs'
+          value={searchTerm}
+          handleChange={handleSearchChange}
+          isResponsive={false}
+          alignItems='flex-end'
+          onClose={() => setSearchTerm('')}
+        />
+      </Stack>
+
+      <Box py={2}>
+        <Text fontSize='sm' fontWeight='semibold' lineHeight='normal'>
+          {sortedData?.length ?? 0} results
+        </Text>
+      </Box>
 
       <Table
         ariaLabel='Repository matcher table'

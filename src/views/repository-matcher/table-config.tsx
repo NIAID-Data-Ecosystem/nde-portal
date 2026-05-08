@@ -27,6 +27,12 @@ export type RepositoryMatcherColumn<TValue = unknown> = {
    * columns whose display value is already a string/number.
    */
   getSortValue?: (value: TValue) => string | number;
+  /**
+   * Reduce the column's display value to text the search bar can match
+   * against. Return a string, an array of strings, or null to opt the column
+   * out of search. Omit when the display value is already string/string[].
+   */
+  getSearchValue?: (value: TValue) => string | string[] | null;
 };
 
 const itemTypes = (item: RepositoryMatcherItem): string[] => {
@@ -90,6 +96,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       _id: item._id || '',
     }),
     getSortValue: (value: NameValue) => value.label.toLowerCase(),
+    getSearchValue: (value: NameValue) => value.label,
     component: ({
       value,
       isLoading,
