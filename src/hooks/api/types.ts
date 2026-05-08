@@ -44,7 +44,7 @@ export interface MetadataSource {
     species?: DefinedTerm[];
     temporalCoverage?: TemporalCoverage[];
     topicCategory?: DefinedTerm[];
-    type?: string;
+    type?: string | string[];
     url?: string;
     usageInfo?: UsageInfo | string;
     version?: string;

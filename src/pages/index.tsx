@@ -32,7 +32,10 @@ import {
   fetchNews,
 } from 'src/views/home/components/NewsCarousel';
 import { NewsOrEventsObject, fetchEvents } from './updates';
-import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
+import {
+  TableData,
+  TableWithSearch,
+} from 'src/views/home/components/TableWithSearch/';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
 import { HeroBanner } from 'src/views/home/components/HeroBanner';
 import {
@@ -41,6 +44,12 @@ import {
 } from 'src/views/features/helpers';
 import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
 import { useReadLocalStorage } from 'usehooks-ts';
+import { FetchSearchResultsResponse } from 'src/utils/api/types';
+import {
+  formatConditionsOfAccess,
+  transformConditionsOfAccessLabel,
+} from 'src/utils/formatting/formatConditionsOfAccess';
+import { formatDomainName } from 'src/views/home/components/TableWithSearch/helpers';
 
 const Home: NextPage<{
   data: {
@@ -56,7 +65,18 @@ const Home: NextPage<{
     isLoading: resourceCatalogsIsLoading,
     data: resourceCatalogs,
     error: resourceCatalogsError,
-  } = useResourceCatalogs();
+  } = useResourceCatalogs({
+    fields: [
+      '_id',
+      '@type',
+      'abstract',
+      'collectionType',
+      'conditionsOfAccess',
+      'genre',
+      'name',
+      'url',
+    ],
+  });
 
   /****** Repository Data ******/
   const {
@@ -64,6 +84,26 @@ const Home: NextPage<{
     data: repositories,
     error: repositoriesError,
   } = useRepoData({ refetchOnWindowFocus: false, refetchOnMount: false });
+
+  const tableData = [...(resourceCatalogs || []), ...(repositories || [])].map(
+    item => {
+      const domain = item?.genre
+        ? formatDomainName(item.genre).sort((a, b) => a.localeCompare(b))
+        : '';
+
+      return {
+        _id: item._id || '',
+        abstract: item.abstract || '',
+        name: item.name,
+        conditionsOfAccess: transformConditionsOfAccessLabel(
+          formatConditionsOfAccess(item.conditionsOfAccess),
+        ),
+        domain,
+        type: item.type,
+        url: item.url || '',
+      };
+    },
+  );
 
   return (
     <PageContainer meta={getPageSeoConfig('/')} overflowX='hidden'>
@@ -225,7 +265,7 @@ const Home: NextPage<{
                 <TableWithSearch
                   ariaLabel='List of repositories and resource catalogs'
                   caption='List of repositories and resource catalogs'
-                  data={[...(resourceCatalogs || []), ...(repositories || [])]}
+                  data={tableData}
                   isLoading={repositoriesIsLoading || resourceCatalogsIsLoading}
                   columns={[
                     {

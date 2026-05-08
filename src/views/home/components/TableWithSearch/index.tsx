@@ -10,22 +10,25 @@ import {
   TagCloseButton,
   Text,
 } from '@chakra-ui/react';
-import { Repository } from 'src/hooks/api/useRepoData';
 import { Link } from 'src/components/link';
 import { Table } from 'src/components/table';
 import { SearchInput, SearchInputProps } from 'src/components/search-input';
-import { ResourceCatalog } from 'src/hooks/api/useResourceCatalogs';
 import { formatDomainName, formatTypeName } from './helpers';
 import { Filters } from './filters/';
 import useFilteredData from './hooks/useFilteredData';
 import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-string';
 import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
 
-export interface TableData
-  extends Omit<ResourceCatalog, 'type'>,
-    Omit<Repository, 'type'> {
-  type: ResourceCatalog['type'] | Repository['type'];
+export interface TableData {
+  _id: string;
+  abstract?: string;
+  name: string;
+  conditionsOfAccess: string;
+  domain: string | string[];
+  type: string[];
+  url?: string;
 }
+[];
 
 interface TableWithSearchProps {
   ariaLabel: string;
@@ -166,6 +169,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
 
           {/* <!-- Table --> */}
           <Table
+            stickyHeader
             data={isLoading ? Array(10).fill({}) : filteredData}
             tableHeadProps={{ bg: 'page.alt' }}
             getTableRowProps={(_, idx: number) => ({
@@ -275,7 +279,11 @@ export const RepositoryCells = ({
                   .join(', ')
               : '-')}
           {column.property === 'domain' &&
-            (data.domain ? formatDomainName(data.domain) : '-')}
+            (data.domain
+              ? formatDomainName(data.domain)
+                  .sort((a, b) => a.localeCompare(b))
+                  .join(', ')
+              : '-')}
           {column.property === 'conditionsOfAccess' &&
             (data['conditionsOfAccess']
               ? `${data['conditionsOfAccess']}`
