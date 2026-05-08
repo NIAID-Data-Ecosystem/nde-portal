@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import type { NextPage } from 'next';
 import {
   Box,
@@ -85,24 +85,26 @@ const Home: NextPage<{
     error: repositoriesError,
   } = useRepoData({ refetchOnWindowFocus: false, refetchOnMount: false });
 
-  const tableData = [...(resourceCatalogs || []), ...(repositories || [])].map(
-    item => {
-      const domain = item?.genre
-        ? formatDomainName(item.genre).sort((a, b) => a.localeCompare(b))
-        : '';
+  const tableData = useMemo(
+    () =>
+      [...(resourceCatalogs || []), ...(repositories || [])].map(item => {
+        const domain = item?.genre
+          ? formatDomainName(item.genre).sort((a, b) => a.localeCompare(b))
+          : '';
 
-      return {
-        _id: item._id || '',
-        abstract: item.abstract || '',
-        name: item.name,
-        conditionsOfAccess: transformConditionsOfAccessLabel(
-          formatConditionsOfAccess(item.conditionsOfAccess),
-        ),
-        domain,
-        type: item.type,
-        url: item.url || '',
-      };
-    },
+        return {
+          _id: item._id || '',
+          abstract: item.abstract || '',
+          name: item.name,
+          conditionsOfAccess: transformConditionsOfAccessLabel(
+            formatConditionsOfAccess(item.conditionsOfAccess),
+          ),
+          domain,
+          type: item.type,
+          url: item.url || '',
+        };
+      }),
+    [repositories, resourceCatalogs],
   );
 
   return (
