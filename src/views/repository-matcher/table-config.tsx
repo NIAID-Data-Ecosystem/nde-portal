@@ -3,7 +3,7 @@ import NextLink from 'next/link';
 import { HStack, SkeletonText, Tag, Text } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { Repository } from 'src/hooks/api/useRepoData';
-import { Domain, FormattedResource } from 'src/utils/api/types';
+import { DefinedTerm, Domain, FormattedResource } from 'src/utils/api/types';
 import {
   formatConditionsOfAccess,
   transformConditionsOfAccessLabel,
@@ -257,6 +257,70 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         <HStack flexWrap='wrap'>
           {value?.map((v, i) => (
             <TagCell key={i} value={v} noOfLines={1} isLoading={isLoading} />
+          ))}
+        </HStack>
+      );
+    },
+  },
+  {
+    id: 'healthCondition',
+    label: 'Health Condition',
+    fields: ['healthCondition'],
+    columns: { isSortable: true, isDefault: true },
+    transform: item => {
+      if (!item.healthCondition) return [];
+      return Array.isArray(item.healthCondition)
+        ? item.healthCondition
+        : [item.healthCondition];
+    },
+    component: ({
+      value,
+      isLoading,
+    }: {
+      value: DefinedTerm[];
+      isLoading?: boolean;
+    }) => {
+      return (
+        <HStack flexWrap='wrap'>
+          {value?.map((v, i) => (
+            <TagCell
+              key={i}
+              value={v.name || ''}
+              noOfLines={1}
+              isLoading={isLoading}
+            />
+          ))}
+        </HStack>
+      );
+    },
+  },
+  {
+    id: 'infectiousAgent',
+    label: 'Pathogen',
+    fields: ['infectiousAgent'],
+    columns: { isSortable: true, isDefault: true },
+    transform: item => {
+      if (!item.infectiousAgent) return [];
+      return Array.isArray(item.infectiousAgent)
+        ? item.infectiousAgent
+        : [item.infectiousAgent];
+    },
+    component: ({
+      value,
+      isLoading,
+    }: {
+      value: DefinedTerm[];
+      isLoading?: boolean;
+    }) => {
+      return (
+        <HStack flexWrap='wrap'>
+          {value?.map((v, i) => (
+            <TagCell
+              key={i}
+              value={v.name || ''}
+              noOfLines={1}
+              isLoading={isLoading}
+            />
           ))}
         </HStack>
       );
