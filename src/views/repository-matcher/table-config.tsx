@@ -1,9 +1,9 @@
 import React from 'react';
 import NextLink from 'next/link';
-import { SkeletonText, Text } from '@chakra-ui/react';
+import { HStack, SkeletonText, Tag, Text } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { Repository } from 'src/hooks/api/useRepoData';
-import { FormattedResource } from 'src/utils/api/types';
+import { Domain, FormattedResource } from 'src/utils/api/types';
 import {
   formatConditionsOfAccess,
   transformConditionsOfAccessLabel,
@@ -110,6 +110,21 @@ const TextCell = ({
   </SkeletonText>
 );
 
+const TagCell = ({
+  value,
+  noOfLines = 2,
+  isLoading,
+}: {
+  value: string;
+  noOfLines?: number;
+  isLoading?: boolean;
+}) => (
+  <SkeletonText isLoaded={!isLoading} noOfLines={noOfLines}>
+    <Tag fontSize='sm' variant='subtle' noOfLines={noOfLines}>
+      {value || '-'}
+    </Tag>
+  </SkeletonText>
+);
 export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   {
     id: 'name',
@@ -220,6 +235,31 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       name: 'Type',
       description: 'Filter by the kind of repository or catalog',
       getFilterValues: (value: string[]) => value ?? [],
+    },
+  },
+  {
+    id: 'researchDomain',
+    label: 'Research Domain',
+    fields: ['genre'],
+    columns: { isSortable: true, isDefault: true },
+    transform: item => {
+      if (!item.genre) return [];
+      return Array.isArray(item.genre) ? item.genre : [item.genre];
+    },
+    component: ({
+      value,
+      isLoading,
+    }: {
+      value: string[];
+      isLoading?: boolean;
+    }) => {
+      return (
+        <HStack flexWrap='wrap'>
+          {value?.map((v, i) => (
+            <TagCell key={i} value={v} noOfLines={1} isLoading={isLoading} />
+          ))}
+        </HStack>
+      );
     },
   },
 ];
