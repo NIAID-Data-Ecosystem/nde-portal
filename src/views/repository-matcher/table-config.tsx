@@ -15,6 +15,22 @@ export type RepositoryMatcherItem = Repository | FormattedResource;
 
 export type NameValue = { label: string; url: string; _id: string };
 
+export type RepositoryMatcherFilterConfig<TValue = unknown> = {
+  /** Display name shown in the filter section header. */
+  name: string;
+  /** Tooltip description for the section. */
+  description?: string;
+  /** Optional grouping passed through to FiltersList. */
+  groupBy?: { property: string; label: string }[];
+  /**
+   * Map a row's display value to the discrete filter terms it should
+   * contribute. Each returned string becomes a checkbox entry and the row
+   * matches the filter when any of its values is selected. Return [] to
+   * exclude the row from this filter's terms.
+   */
+  getFilterValues: (value: TValue) => string[];
+};
+
 export type RepositoryMatcherColumn<TValue = unknown> = {
   id: string;
   label: string;
@@ -38,6 +54,11 @@ export type RepositoryMatcherColumn<TValue = unknown> = {
    * out of search. Omit when the display value is already string/string[].
    */
   getSearchValue?: (value: TValue) => string | string[] | null;
+  /**
+   * Opts the column into the filter sidebar. Omit to leave the column out of
+   * filtering.
+   */
+  filter?: RepositoryMatcherFilterConfig<TValue>;
 };
 
 const itemTypes = (item: RepositoryMatcherItem): string[] => {
@@ -142,6 +163,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       value: string;
       isLoading?: boolean;
     }) => <TextCell value={value} isLoading={isLoading} />,
+    filter: {
+      name: 'Conditions of Access',
+      description: 'Filter by how the repository allows access to its data',
+      getFilterValues: (value: string) => (value ? [value] : []),
+    },
   },
   {
     id: 'abstract',
@@ -190,5 +216,13 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         isLoading={isLoading}
       />
     ),
+    filter: {
+      name: 'Type',
+      description: 'Filter by the kind of repository or catalog',
+      getFilterValues: (value: string[]) => value ?? [],
+    },
   },
 ];
+
+export const FILTERABLE_REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] =
+  REPOSITORY_MATCHER_COLUMNS.filter(c => Boolean(c.filter));

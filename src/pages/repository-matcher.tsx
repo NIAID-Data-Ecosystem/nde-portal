@@ -6,7 +6,12 @@ import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { SearchInput } from 'src/components/search-input';
 import { Table } from 'src/components/table';
 import { CustomizeColumnsPopover } from 'src/views/repository-matcher/components/CustomizeColumnsPopover';
+import { Filters } from 'src/views/repository-matcher/components/Filters';
 import { useRepositoryMatcherData } from 'src/views/repository-matcher/hooks/useRepositoryMatcherData';
+import {
+  SelectedRepositoryMatcherFilters,
+  useRepositoryMatcherFilters,
+} from 'src/views/repository-matcher/hooks/useRepositoryMatcherFilters';
 import { useSearchedData } from 'src/views/repository-matcher/hooks/useSearchedData';
 import { REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
 
@@ -58,6 +63,21 @@ const RepositoryMatcher: NextPage = () => {
   // doesn't drop matches that live in hidden columns.
   const searchedData = useSearchedData(data, searchTerm);
 
+  /****** Filters *****/
+  const [selectedFilters, setSelectedFilters] =
+    useState<SelectedRepositoryMatcherFilters>({});
+  // Filter terms count against the search-scoped rows so the facets stay
+  // consistent with what the table is showing.
+  const { filteredData, termsByColumnId } = useRepositoryMatcherFilters(
+    searchedData,
+    selectedFilters,
+  );
+  const handleFilterChange = useCallback(
+    (columnId: string, values: string[]) =>
+      setSelectedFilters(prev => ({ ...prev, [columnId]: values })),
+    [],
+  );
+
   /****** Sort *****/
   const [sortProperty, setSortProperty] = useState<string>(
     REPOSITORY_MATCHER_COLUMNS[0].id,
@@ -79,11 +99,11 @@ const RepositoryMatcher: NextPage = () => {
   }, []);
 
   const sortedData = useMemo(() => {
-    if (!searchedData?.length) return searchedData;
+    if (!filteredData?.length) return filteredData;
     const col = REPOSITORY_MATCHER_COLUMNS.find(c => c.id === sortProperty);
-    if (!col) return searchedData;
+    if (!col) return filteredData;
     const accessor = col.getSortValue ?? ((v: any) => v);
-    return [...searchedData].sort((a, b) => {
+    return [...filteredData].sort((a, b) => {
       let va: any = accessor(a[col.id] as any);
       let vb: any = accessor(b[col.id] as any);
       va = va ?? (typeof va === 'number' ? 0 : '');
@@ -97,7 +117,7 @@ const RepositoryMatcher: NextPage = () => {
             });
       return sortAsc ? cmp : -cmp;
     });
-  }, [searchedData, sortProperty, sortAsc]);
+  }, [filteredData, sortProperty, sortAsc]);
 
   return (
     <PageContainer meta={getPageSeoConfig('/')}>
@@ -111,65 +131,87 @@ const RepositoryMatcher: NextPage = () => {
         </Text>
       </Flex>
 
-      <Stack
-        direction='row'
-        spacing={2}
-        mb={2}
-        flexWrap='wrap'
-        alignItems='center'
+      <Flex
+        direction={{ base: 'column', md: 'row' }}
+        align='flex-start'
+        gap={4}
       >
-        <SearchInput
-          size='md'
-          placeholder='Search table'
-          ariaLabel='Search repositories and resource catalogs'
-          value={searchTerm}
-          handleChange={handleSearchChange}
-          isResponsive={false}
-          alignItems='flex-end'
-          onClose={() => setSearchTerm('')}
-        />
-        <CustomizeColumnsPopover
-          onVisibleColumnsChange={setVisibleColumnIds}
-          onColumnOrderChange={setOrderedColumnIds}
-        />
-      </Stack>
+        <Box
+          w={{ base: '100%', md: '280px' }}
+          flexShrink={0}
+          position={{ base: 'static', md: 'sticky' }}
+          top={{ md: 4 }}
+        >
+          <Filters
+            termsByColumnId={termsByColumnId}
+            selected={selectedFilters}
+            onChange={handleFilterChange}
+            isLoading={isLoading}
+          />
+        </Box>
 
-      <Box py={2}>
-        <Text fontSize='sm' fontWeight='semibold' lineHeight='normal'>
-          {sortedData?.length ?? 0} results
-        </Text>
-      </Box>
+        <Box flex={1} minW={0} w='100%'>
+          <Stack
+            direction='row'
+            spacing={2}
+            mb={2}
+            flexWrap='wrap'
+            alignItems='center'
+          >
+            <SearchInput
+              size='md'
+              placeholder='Search table'
+              ariaLabel='Search repositories and resource catalogs'
+              value={searchTerm}
+              handleChange={handleSearchChange}
+              isResponsive={false}
+              alignItems='flex-end'
+              onClose={() => setSearchTerm('')}
+            />
+            <CustomizeColumnsPopover
+              onVisibleColumnsChange={setVisibleColumnIds}
+              onColumnOrderChange={setOrderedColumnIds}
+            />
+          </Stack>
 
-      <Table
-        ariaLabel='Repository matcher table'
-        caption='Repositories and resource catalogs available for data deposit'
-        columns={tableColumns}
-        data={(isLoading ? Array(10).fill({}) : sortedData) as any}
-        isLoading={isLoading}
-        hasPagination={false}
-        stickyHeader
-        tableContainerProps={{
-          overflowX: 'auto',
-          maxHeight: '70vh',
-          overflowY: 'auto',
-        }}
-        getTableRowProps={(_, idx) => ({
-          bg: idx % 2 === 0 ? 'white' : 'page.alt',
-        })}
-        controlledSortProperty={sortProperty}
-        controlledSortAsc={sortAsc}
-        onControlledSort={handleSort}
-        getCells={({ column, data: row, isLoading: rowLoading }) => {
-          const col = REPOSITORY_MATCHER_COLUMNS.find(
-            c => c.id === column.property,
-          );
-          if (!col) return null;
-          return col.component({
-            value: row?.[col.id],
-            isLoading: rowLoading,
-          });
-        }}
-      />
+          <Box py={2}>
+            <Text fontSize='sm' fontWeight='semibold' lineHeight='normal'>
+              {sortedData?.length ?? 0} results
+            </Text>
+          </Box>
+
+          <Table
+            ariaLabel='Repository matcher table'
+            caption='Repositories and resource catalogs available for data deposit'
+            columns={tableColumns}
+            data={(isLoading ? Array(10).fill({}) : sortedData) as any}
+            isLoading={isLoading}
+            hasPagination={false}
+            stickyHeader
+            tableContainerProps={{
+              overflowX: 'auto',
+              maxHeight: '70vh',
+              overflowY: 'auto',
+            }}
+            getTableRowProps={(_, idx) => ({
+              bg: idx % 2 === 0 ? 'white' : 'page.alt',
+            })}
+            controlledSortProperty={sortProperty}
+            controlledSortAsc={sortAsc}
+            onControlledSort={handleSort}
+            getCells={({ column, data: row, isLoading: rowLoading }) => {
+              const col = REPOSITORY_MATCHER_COLUMNS.find(
+                c => c.id === column.property,
+              );
+              if (!col) return null;
+              return col.component({
+                value: row?.[col.id],
+                isLoading: rowLoading,
+              });
+            }}
+          />
+        </Box>
+      </Flex>
     </PageContainer>
   );
 };
