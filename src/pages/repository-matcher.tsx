@@ -1,5 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Flex, Heading, Stack, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Heading,
+  Stack,
+  Tag,
+  TagCloseButton,
+  TagLabel,
+  Text,
+} from '@chakra-ui/react';
 
 import { NextPage } from 'next';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
@@ -66,6 +75,7 @@ const RepositoryMatcher: NextPage = () => {
   /****** Filters *****/
   const [selectedFilters, setSelectedFilters] =
     useState<SelectedRepositoryMatcherFilters>({});
+  console.log('selectedFilters', selectedFilters);
   // Filter terms count against the search-scoped rows so the facets stay
   // consistent with what the table is showing.
   const { filteredData, termsByColumnId } = useRepositoryMatcherFilters(
@@ -118,6 +128,30 @@ const RepositoryMatcher: NextPage = () => {
       return sortAsc ? cmp : -cmp;
     });
   }, [filteredData, sortProperty, sortAsc]);
+
+  const filterTags = useMemo(() => {
+    const tags: { name: string; value: string; property: string }[] = [];
+    for (const col of REPOSITORY_MATCHER_COLUMNS) {
+      const selectedValues = selectedFilters[col.id];
+      if (selectedValues?.length) {
+        const name = col.filter?.name ?? col.label;
+        for (const value of selectedValues) {
+          tags.push({ name, value, property: col.id });
+        }
+      }
+    }
+    return tags;
+  }, [selectedFilters]);
+
+  const removeSingleFilter = useCallback((property: string, value: string) => {
+    setSelectedFilters(prev => {
+      const prevValues = prev[property] ?? [];
+      return {
+        ...prev,
+        [property]: prevValues.filter(v => v !== value),
+      };
+    });
+  }, []);
 
   return (
     <PageContainer meta={getPageSeoConfig('/')}>
@@ -173,7 +207,45 @@ const RepositoryMatcher: NextPage = () => {
               onColumnOrderChange={setOrderedColumnIds}
             />
           </Stack>
-
+          {/* <!-- Filter Tags--> */}
+          <Stack
+            direction='row'
+            spacing={2}
+            flex={1}
+            flexWrap='wrap'
+            minW='300px'
+          >
+            {filterTags.length > 0 && (
+              <Tag
+                key='clear'
+                size='lg'
+                variant='outline'
+                borderRadius='full'
+                colorScheme='primary'
+                borderColor='primary.100'
+              >
+                <TagLabel>Clear all</TagLabel>
+                <TagCloseButton onClick={() => setSelectedFilters({})} />
+              </Tag>
+            )}
+            {filterTags.map(filter => {
+              const { property, value } = filter;
+              return (
+                <Tag
+                  key={property + '-' + value}
+                  size='lg'
+                  variant='subtle'
+                  borderRadius='full'
+                  colorScheme='primary'
+                >
+                  <TagLabel fontWeight='medium'>{value}</TagLabel>
+                  <TagCloseButton
+                    onClick={() => removeSingleFilter(property, value)}
+                  />
+                </Tag>
+              );
+            })}
+          </Stack>
           <Box py={2}>
             <Text fontSize='sm' fontWeight='semibold' lineHeight='normal'>
               {sortedData?.length ?? 0} results
