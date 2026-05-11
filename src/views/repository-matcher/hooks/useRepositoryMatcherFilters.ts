@@ -58,18 +58,31 @@ export const useRepositoryMatcherFilters = (
           return rowPassesColumn(row, other, selected[other.id] ?? []);
         }),
       );
-      const counts = new Map<string, number>();
+      // If using counts, use the following code.
+      // const counts = new Map<string, number>();
+      // for (const row of scoped) {
+      //   for (const value of getRowValues(row, col)) {
+      //     counts.set(value, (counts.get(value) ?? 0) + 1);
+      //   }
+      // }
+      //  result[col.id] = Array.from(counts.entries())
+      //   .map(([term, count]) => ({ term, label: term, count }))
+      //   .sort(
+      //     (a, b) =>
+      //       b.count - a.count ||
+      //       a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }),
+      //   );
+
+      const uniqueTerms = new Set<string>();
       for (const row of scoped) {
         for (const value of getRowValues(row, col)) {
-          counts.set(value, (counts.get(value) ?? 0) + 1);
+          uniqueTerms.add(value);
         }
       }
-      result[col.id] = Array.from(counts.entries())
-        .map(([term, count]) => ({ term, label: term, count }))
-        .sort(
-          (a, b) =>
-            b.count - a.count ||
-            a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }),
+      result[col.id] = Array.from(uniqueTerms)
+        .map(term => ({ term, label: term }))
+        .sort((a, b) =>
+          a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }),
         );
     }
     return result;
