@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { Collapse, ListItem, UnorderedList, VStack } from '@chakra-ui/react';
 import Card from './components/card';
@@ -35,70 +35,77 @@ import {
   CUSTOM_COLUMN_ORDER_STORAGE_KEY as DC_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
 } from './components/data-collection-results-table/components/CustomizeColumnsPopover';
 import { BIOSAMPLE_EXTRA_FILTER } from '../../hooks/useBioSampleAggregation';
+import { FetchSearchResultsResponse } from 'src/utils/api/types';
+import {
+  RESULT_FIELDS,
+  SAMPLE_FIELDS,
+  DATA_COLLECTION_FIELDS,
+} from '../../config/fields';
 
-const RESULT_FIELDS = [
-  '_meta',
-  '@type',
-  'alternateName',
-  'applicationCategory',
-  'author',
-  'availableOnDevice',
-  'conditionsOfAccess',
-  'date',
-  'description',
-  'doi',
-  'featureList',
-  'funding',
-  'healthCondition',
-  'includedInDataCatalog',
-  'infectiousAgent',
-  'input',
-  'isAccessibleForFree',
-  'license',
-  'measurementTechnique',
-  'name',
-  'operatingSystem',
-  'output',
-  'programmingLanguage',
-  'sdPublisher',
-  'softwareHelp',
-  'softwareRequirements',
-  'softwareVersion',
-  'species',
-  'topicCategory',
-  'url',
-  'usageInfo',
-  'variableMeasured',
-];
+const readFromStorage = (key: string, fallback: string[]): string[] => {
+  if (typeof window === 'undefined') return fallback;
+  try {
+    const stored = window.localStorage.getItem(key);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {
+    // ignore
+  }
+  return fallback;
+};
 
-const SAMPLE_EXTRA_FIELDS = [
-  'identifier',
-  'alternateIdentifier',
-  'name',
-  'sampleType',
-  'instrument',
-  'sex',
-  'anatomicalStructure',
-  'anatomicalSystem',
-  'sampleAvailability',
-  'sampleQuantity',
-  'developmentalStage',
-  'associatedGenotype',
-  'associatedPhenotype',
-  'cellType',
-  'locationOfOrigin',
-  'itemLocation',
-];
+// Read the persisted visible column IDs from localStorage.
+// Falls back to the default subset when no stored value exists.
+const getInitialVisibleColumnIds = (): string[] => {
+  const stored = readFromStorage(
+    SAMPLE_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+    SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS,
+  );
+  const allIds = ALL_SAMPLE_COLUMNS.map(c => c.id);
+  const valid = stored.filter((id: string) => allIds.includes(id));
+  return valid.length > 0 ? valid : SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS;
+};
 
-const DATA_COLLECTION_EXTRA_FIELDS = [
-  'about',
-  'collectionSize',
-  'isBasedOn',
-  'name',
-];
+// Read the persisted column order from localStorage.
+// Falls back to the master column order when no stored value exists.
+const getInitialColumnOrder = (): string[] => {
+  const allIds = ALL_SAMPLE_COLUMNS.map(c => c.id);
+  const stored = readFromStorage(
+    SAMPLE_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+    allIds,
+  );
+  const valid = stored.filter((id: string) => allIds.includes(id));
+  if (valid.length > 0) {
+    const missing = allIds.filter(id => !valid.includes(id));
+    return [...valid, ...missing];
+  }
+  return allIds;
+};
 
-// Build the ColumnConfig list expected by each CustomizeColumnsPopover from
-// the master column definitions.
+const getInitialDataCollectionVisibleColumnIds = (): string[] => {
+  const stored = readFromStorage(
+    DC_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+    DC_DEFAULT_VISIBLE_COLUMN_IDS,
+  );
+  const allIds = ALL_DATA_COLLECTION_COLUMNS.map(c => c.id);
+  const valid = stored.filter((id: string) => allIds.includes(id));
+  return valid.length > 0 ? valid : DC_DEFAULT_VISIBLE_COLUMN_IDS;
+};
+
+const getInitialDataCollectionColumnOrder = (): string[] => {
+  const allIds = ALL_DATA_COLLECTION_COLUMNS.map(c => c.id);
+  const stored = readFromStorage(DC_CUSTOM_COLUMN_ORDER_STORAGE_KEY, allIds);
+  const valid = stored.filter((id: string) => allIds.includes(id));
+  if (valid.length > 0) {
+    const missing = allIds.filter(id => !valid.includes(id));
+    return [...valid, ...missing];
+  }
+  return allIds;
+};
+
+// Build the ColumnConfig list expected by each CustomizeColumnsPopover.
 const SAMPLE_COLUMN_CONFIGS = ALL_SAMPLE_COLUMNS.map(col => ({
   id: col.id,
   title: col.title,
@@ -108,109 +115,6 @@ const DATA_COLLECTION_COLUMN_CONFIGS = ALL_DATA_COLLECTION_COLUMNS.map(col => ({
   id: col.id,
   title: col.title,
 }));
-
-// Read the persisted visible column IDs from localStorage.
-// Falls back to the default subset when no stored value exists.
-const getInitialVisibleColumnIds = (): string[] => {
-  if (typeof window === 'undefined') {
-    return SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS;
-  }
-  try {
-    const stored = window.localStorage.getItem(
-      SAMPLE_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-    );
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        const allIds = ALL_SAMPLE_COLUMNS.map(c => c.id);
-        const valid = parsed.filter((id: unknown): id is string =>
-          allIds.includes(id as string),
-        );
-        if (valid.length > 0) return valid;
-      }
-    }
-  } catch {
-    // ignore
-  }
-  return SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS;
-};
-
-// Read the persisted column order from localStorage.
-// Falls back to the master column order when no stored value exists.
-const getInitialColumnOrder = (): string[] => {
-  if (typeof window === 'undefined') {
-    return ALL_SAMPLE_COLUMNS.map(c => c.id);
-  }
-  try {
-    const stored = window.localStorage.getItem(
-      SAMPLE_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
-    );
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        const allIds = ALL_SAMPLE_COLUMNS.map(c => c.id);
-        const valid = parsed.filter((id: unknown): id is string =>
-          allIds.includes(id as string),
-        );
-        // Append any columns missing from the persisted order
-        const missing = allIds.filter(id => !valid.includes(id));
-        if (valid.length > 0) return [...valid, ...missing];
-      }
-    }
-  } catch {
-    // ignore
-  }
-  return ALL_SAMPLE_COLUMNS.map(c => c.id);
-};
-
-const getInitialDataCollectionVisibleColumnIds = (): string[] => {
-  if (typeof window === 'undefined') {
-    return DC_DEFAULT_VISIBLE_COLUMN_IDS;
-  }
-  try {
-    const stored = window.localStorage.getItem(
-      DC_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-    );
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        const allIds = ALL_DATA_COLLECTION_COLUMNS.map(c => c.id);
-        const valid = parsed.filter((id: unknown): id is string =>
-          allIds.includes(id as string),
-        );
-        if (valid.length > 0) return valid;
-      }
-    }
-  } catch {
-    // ignore
-  }
-  return DC_DEFAULT_VISIBLE_COLUMN_IDS;
-};
-
-const getInitialDataCollectionColumnOrder = (): string[] => {
-  if (typeof window === 'undefined') {
-    return ALL_DATA_COLLECTION_COLUMNS.map(c => c.id);
-  }
-  try {
-    const stored = window.localStorage.getItem(
-      DC_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
-    );
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        const allIds = ALL_DATA_COLLECTION_COLUMNS.map(c => c.id);
-        const valid = parsed.filter((id: unknown): id is string =>
-          allIds.includes(id as string),
-        );
-        const missing = allIds.filter(id => !valid.includes(id));
-        if (valid.length > 0) return [...valid, ...missing];
-      }
-    }
-  } catch {
-    // ignore
-  }
-  return ALL_DATA_COLLECTION_COLUMNS.map(c => c.id);
-};
 
 /*
 [COMPONENT INFO]:
@@ -247,28 +151,54 @@ export const SearchResults = ({
   const isSamplesTab = id === 's';
   const isDataCollectionTab = id === 'dc';
 
-  // Pick the correct extra fields for the active tab.
+  // Each tab type uses a minimal, table-specific field list rather than the
+  // shared RESULT_FIELDS base (which carries many card-only fields that the
+  // tables never render).
   const fields = isSamplesTab
-    ? [...RESULT_FIELDS, ...SAMPLE_EXTRA_FIELDS]
+    ? SAMPLE_FIELDS
     : isDataCollectionTab
-    ? [...RESULT_FIELDS, ...DATA_COLLECTION_EXTRA_FIELDS]
+    ? DATA_COLLECTION_FIELDS
     : RESULT_FIELDS;
 
-  // Column visibility state
-  const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(
-    getInitialVisibleColumnIds,
+  // Only initialize column state for the tab type that this instance actually
+  // renders. Avoid paying the localStorage read cost for the other table
+  // type on every mount.
+  const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(() =>
+    isSamplesTab
+      ? getInitialVisibleColumnIds()
+      : SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS,
+  );
+  const [columnOrder, setColumnOrder] = useState<string[]>(() =>
+    isSamplesTab ? getInitialColumnOrder() : ALL_SAMPLE_COLUMNS.map(c => c.id),
+  );
+  const [dcVisibleColumnIds, setDcVisibleColumnIds] = useState<string[]>(() =>
+    isDataCollectionTab
+      ? getInitialDataCollectionVisibleColumnIds()
+      : DC_DEFAULT_VISIBLE_COLUMN_IDS,
+  );
+  const [dcColumnOrder, setDcColumnOrder] = useState<string[]>(() =>
+    isDataCollectionTab
+      ? getInitialDataCollectionColumnOrder()
+      : ALL_DATA_COLLECTION_COLUMNS.map(c => c.id),
   );
 
-  // Column order state
-  const [columnOrder, setColumnOrder] = useState<string[]>(
-    getInitialColumnOrder,
-  );
-
-  const [dcVisibleColumnIds, setDcVisibleColumnIds] = useState<string[]>(
-    getInitialDataCollectionVisibleColumnIds,
-  );
-  const [dcColumnOrder, setDcColumnOrder] = useState<string[]>(
-    getInitialDataCollectionColumnOrder,
+  const selectByType = useCallback(
+    (data: FetchSearchResultsResponse | undefined) => {
+      if (types && types.length > 0 && data) {
+        return {
+          results: data.results.filter(result =>
+            types.includes(result['@type'] as string),
+          ),
+          total: data.total,
+          facets: data.facets,
+        };
+      }
+      return data;
+    },
+    // `types` is a prop passed as a stable array literal at each call site
+    // (e.g. types={['Sample']}), so this callback only recreates when the
+    // actual type values change.
+    [types],
   );
 
   const { response, params } = useSearchResultsData(
@@ -289,19 +219,7 @@ export const SearchResults = ({
       // Only fetch data when the router is ready and the active tab is selected.
       // This prevents unnecessary data fetching when switching tabs.
       enabled: router.isReady && id === activeTabId,
-      select: data => {
-        // only return selected types if they are provided
-        if (types && types.length > 0 && data) {
-          return {
-            results: data.results.filter(result =>
-              types.includes(result['@type'] as string),
-            ),
-            total: data.total,
-            facets: data.facets,
-          };
-        }
-        return data;
-      },
+      select: selectByType,
     },
   );
 
@@ -313,9 +231,7 @@ export const SearchResults = ({
   const isActiveTab = id === activeTabId;
 
   React.useEffect(() => {
-    if (!isActiveTab) {
-      return;
-    }
+    if (!isActiveTab) return;
 
     if (isFetching) {
       markResultsFetching();
@@ -327,10 +243,10 @@ export const SearchResults = ({
     }
   }, [
     isActiveTab,
-    markResultsFetching,
-    markResultsFetched,
     isFetching,
     isFetched,
+    markResultsFetching,
+    markResultsFetched,
   ]);
 
   const numCards = useMemo(
