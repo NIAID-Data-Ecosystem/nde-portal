@@ -22,6 +22,7 @@ export interface MetadataSource {
     collectionSize?: QuantitativeValue[];
     collectionType?: string;
     conditionsOfAccess?: string;
+    creativeWorkStatus?: string;
     date?: string;
     dateModified?: string;
     datePublished?: string;

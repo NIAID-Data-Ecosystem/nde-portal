@@ -59,6 +59,7 @@ const RepositoryMatcher: NextPage = () => {
         title: col.label,
         property: col.id,
         isSortable: col.columns?.isSortable,
+        props: col.columns?.style,
       }));
   }, [visibleColumnIds, orderedColumnIds]);
 
@@ -75,7 +76,7 @@ const RepositoryMatcher: NextPage = () => {
   /****** Filters *****/
   const [selectedFilters, setSelectedFilters] =
     useState<SelectedRepositoryMatcherFilters>({});
-  console.log('selectedFilters', selectedFilters);
+
   // Filter terms count against the search-scoped rows so the facets stay
   // consistent with what the table is showing.
   const { filteredData, termsByColumnId } = useRepositoryMatcherFilters(

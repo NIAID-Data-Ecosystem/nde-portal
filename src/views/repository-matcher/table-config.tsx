@@ -1,15 +1,37 @@
 import React from 'react';
 import NextLink from 'next/link';
-import { HStack, SkeletonText, Tag, Text } from '@chakra-ui/react';
+import {
+  Badge,
+  Box,
+  Circle,
+  HStack,
+  Icon,
+  SkeletonText,
+  Tag,
+  TagLabel,
+  TagLeftIcon,
+  Text,
+  TextProps,
+  VStack,
+} from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { Repository } from 'src/hooks/api/useRepoData';
-import { DefinedTerm, Domain, FormattedResource } from 'src/utils/api/types';
+import {
+  AccessTypes,
+  DefinedTerm,
+  Domain,
+  FormattedResource,
+} from 'src/utils/api/types';
 import {
   formatConditionsOfAccess,
+  getColorScheme,
   transformConditionsOfAccessLabel,
 } from 'src/utils/formatting/formatConditionsOfAccess';
 import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-string';
 import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
+import Tooltip from 'src/components/tooltip';
+import { TagWithUrl } from 'src/components/tag-with-url';
+import { FaCheck, FaX, FaXmark } from 'react-icons/fa6';
 
 export type RepositoryMatcherItem = Repository | FormattedResource;
 
@@ -35,7 +57,11 @@ export type RepositoryMatcherColumn<TValue = unknown> = {
   id: string;
   label: string;
   fields: string[];
-  columns?: { isSortable?: boolean; isDefault?: boolean };
+  columns?: {
+    isSortable?: boolean;
+    isDefault?: boolean;
+    style?: React.CSSProperties;
+  };
   /**
    * When true, the column cannot be hidden by the customize-columns popover.
    * Default: false.
@@ -91,40 +117,59 @@ const buildItemUrl = (item: RepositoryMatcherItem): string => {
 const TextCell = ({
   value,
   isLoading,
-  noOfLines = 2,
-}: {
+  noOfLines,
+  children,
+  ...props
+}: TextProps & {
   value: string;
   isLoading?: boolean;
-  noOfLines?: number;
 }) => (
   <SkeletonText
     isLoaded={!isLoading}
     noOfLines={noOfLines}
     spacing='2'
-    fontSize='sm'
     w='100%'
   >
-    <Text fontSize='sm' noOfLines={noOfLines}>
-      {value || '-'}
+    <Text
+      noOfLines={noOfLines}
+      fontStyle={value ? 'normal' : 'italic'}
+      lineHeight='shorter'
+      {...props}
+    >
+      {children || value || 'not available'}
     </Text>
   </SkeletonText>
 );
 
 const TagCell = ({
   value,
+  url,
   noOfLines = 2,
   isLoading,
 }: {
   value: string;
+  url?: string;
   noOfLines?: number;
   isLoading?: boolean;
-}) => (
-  <SkeletonText isLoaded={!isLoading} noOfLines={noOfLines}>
-    <Tag fontSize='sm' variant='subtle' noOfLines={noOfLines}>
-      {value || '-'}
-    </Tag>
-  </SkeletonText>
-);
+}) => {
+  const label = value || '';
+
+  return (
+    <SkeletonText isLoaded={!isLoading} noOfLines={noOfLines}>
+      <Tooltip label={label} isDisabled={!value} hasArrow>
+        <Box>
+          {url ? (
+            <TagWithUrl href={url}>{label}</TagWithUrl>
+          ) : (
+            <Tag variant='subtle' noOfLines={noOfLines}>
+              <TagLabel>{label}</TagLabel>
+            </Tag>
+          )}
+        </Box>
+      </Tooltip>
+    </SkeletonText>
+  );
+};
 export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   {
     id: 'name',
@@ -162,34 +207,13 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       </SkeletonText>
     ),
   },
+
   {
-    id: 'coa',
-    label: 'Conditions of Access',
-    fields: ['conditionsOfAccess'],
+    id: 'description',
+    label: 'Description',
+    fields: ['description'],
     columns: { isSortable: true, isDefault: true },
-    transform: (item): string =>
-      transformConditionsOfAccessLabel(
-        formatConditionsOfAccess(item.conditionsOfAccess),
-      ) || '',
-    component: ({
-      value,
-      isLoading,
-    }: {
-      value: string;
-      isLoading?: boolean;
-    }) => <TextCell value={value} isLoading={isLoading} />,
-    filter: {
-      name: 'Conditions of Access',
-      description: 'Filter by how the repository allows access to its data',
-      getFilterValues: (value: string) => (value ? [value] : []),
-    },
-  },
-  {
-    id: 'abstract',
-    label: 'Abstract',
-    fields: ['abstract'],
-    columns: { isSortable: true, isDefault: true },
-    transform: (item): string => item.abstract || '',
+    transform: (item): string => item.description || '',
     component: ({
       value,
       isLoading,
@@ -199,11 +223,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     }) => <TextCell value={value} isLoading={isLoading} noOfLines={3} />,
   },
   {
-    id: 'description',
-    label: 'Description',
-    fields: ['description'],
-    columns: { isSortable: true, isDefault: true },
-    transform: (item): string => item.description || '',
+    id: 'abstract',
+    label: 'Abstract',
+    fields: ['abstract'],
+    columns: { isSortable: true, isDefault: false },
+    transform: (item): string => item.abstract || '',
     component: ({
       value,
       isLoading,
@@ -229,6 +253,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       <TextCell
         value={value && value.length ? value.join(', ') : ''}
         isLoading={isLoading}
+        fontWeight='semibold'
       />
     ),
     filter: {
@@ -263,6 +288,38 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     },
   },
   {
+    id: 'coa',
+    label: 'Conditions of Access',
+    fields: ['conditionsOfAccess'],
+    columns: { isSortable: true, isDefault: true },
+    transform: (item): string =>
+      transformConditionsOfAccessLabel(
+        formatConditionsOfAccess(item.conditionsOfAccess),
+      ) || '',
+    component: ({ value }: { value: string; isLoading?: boolean }) => {
+      const colorScheme = getColorScheme(value as AccessTypes);
+      return (
+        <Tag
+          colorScheme={colorScheme}
+          variant='subtle'
+          borderColor='transparent'
+          borderRadius='full'
+          outlineColor='transparent'
+          gap={2}
+          boxShadow='none'
+        >
+          <Circle size='8px' bg={`${colorScheme}.500`} />
+          <TagLabel>{value || '-'}</TagLabel>
+        </Tag>
+      );
+    },
+    filter: {
+      name: 'Conditions of Access',
+      description: 'Filter by how the repository allows access to its data',
+      getFilterValues: (value: string) => (value ? [value] : []),
+    },
+  },
+  {
     id: 'healthCondition',
     label: 'Health Condition',
     fields: ['healthCondition'],
@@ -286,6 +343,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
             <TagCell
               key={i}
               value={v.name || ''}
+              url={v.url || undefined}
               noOfLines={1}
               isLoading={isLoading}
             />
@@ -293,10 +351,16 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         </HStack>
       );
     },
+    filter: {
+      name: 'Health Condition',
+      description: 'Filter by the health condition studied by the repository',
+      getFilterValues: (value: DefinedTerm[]) =>
+        value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
+    },
   },
   {
     id: 'infectiousAgent',
-    label: 'Pathogen',
+    label: 'Pathogen Species',
     fields: ['infectiousAgent'],
     columns: { isSortable: true, isDefault: true },
     transform: item => {
@@ -318,6 +382,175 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
             <TagCell
               key={i}
               value={v.name || ''}
+              url={v.url || undefined}
+              noOfLines={1}
+              isLoading={isLoading}
+            />
+          ))}
+        </HStack>
+      );
+    },
+  },
+  {
+    id: 'dataAccepted',
+    label: 'Accepting Data?',
+    fields: ['creativeWorkStatus'],
+    columns: { isSortable: true, isDefault: true },
+    transform: item => item.creativeWorkStatus,
+    component: ({ value }: { value: string | null; isLoading?: boolean }) => {
+      const isAccepting = value?.toLowerCase() === 'accepting data';
+      const isNotAccepting = value?.toLowerCase() === 'retired';
+      const color = isAccepting ? 'primary.500' : 'gray.800';
+      return (
+        <HStack gap={1} color={color} opacity={isAccepting || !value ? 1 : 0.8}>
+          {isAccepting ? (
+            <Icon as={FaCheck}></Icon>
+          ) : isNotAccepting ? (
+            <Icon as={FaXmark}></Icon>
+          ) : null}
+          <TextCell
+            value={value || ''}
+            color={'inherit'}
+            fontWeight={!value ? 'normal' : 'medium'}
+          />
+        </HStack>
+      );
+    },
+    filter: {
+      name: 'Accepting Data?',
+      description: '',
+      getFilterValues: (value: string) => (value ? [value] : []),
+    },
+  },
+  {
+    id: 'collectionSize',
+    label: 'Collection Size',
+    fields: ['collectionSize'],
+    columns: {
+      isSortable: false,
+      isDefault: true,
+      style: { maxWidth: '160px', minWidth: '160px' },
+    },
+    transform: item => item.collectionSize,
+    component: ({
+      value,
+    }: {
+      value: Repository['collectionSize'] | FormattedResource['collectionSize'];
+    }) => {
+      return (
+        <VStack>
+          {value?.map((v, i) => (
+            <TextCell
+              key={i}
+              value={v.minValue ? `${v.minValue} ${v.unitText || ''}` : ''}
+              textAlign='end'
+              noOfLines={undefined}
+            >
+              <Text as='span' fontWeight='semibold' fontSize='inherit'>
+                {v.minValue?.toLocaleString() || '-'}
+              </Text>
+              <br />
+              <Text as='span' fontSize='inherit'>
+                {v.unitText}
+              </Text>
+            </TextCell>
+          ))}
+        </VStack>
+      );
+    },
+  },
+  {
+    id: 'species',
+    label: 'Host Species',
+    fields: ['species'],
+    columns: { isSortable: true, isDefault: true },
+    transform: item => {
+      if (!item.species) return [];
+      return Array.isArray(item.species) ? item.species : [item.species];
+    },
+    component: ({
+      value,
+      isLoading,
+    }: {
+      value: DefinedTerm[];
+      isLoading?: boolean;
+    }) => {
+      return (
+        <HStack flexWrap='wrap'>
+          {value?.map((v, i) => (
+            <TagCell
+              key={i}
+              value={v.name || ''}
+              url={v.url || undefined}
+              noOfLines={1}
+              isLoading={isLoading}
+            />
+          ))}
+        </HStack>
+      );
+    },
+  },
+  {
+    id: 'meas-technique',
+    label: 'Measurement Technique',
+    fields: ['measurementTechnique'],
+    columns: { isSortable: true, isDefault: true },
+    transform: item => {
+      if (!item.measurementTechnique) return [];
+      return Array.isArray(item.measurementTechnique)
+        ? item.measurementTechnique
+        : [item.measurementTechnique];
+    },
+    component: ({
+      value,
+      isLoading,
+    }: {
+      value: DefinedTerm[];
+      isLoading?: boolean;
+    }) => {
+      return (
+        <HStack flexWrap='wrap'>
+          {value?.map((v, i) => (
+            <TagCell
+              key={i}
+              value={v.name || ''}
+              url={v.url || undefined}
+              noOfLines={1}
+              isLoading={isLoading}
+            />
+          ))}
+        </HStack>
+      );
+    },
+  },
+  {
+    id: 'topic',
+    label: 'Topic Categories',
+    fields: ['topicCategory'],
+    columns: { isSortable: true, isDefault: true },
+    transform: item => {
+      if (!item.topicCategory) return [];
+      return Array.isArray(item.topicCategory)
+        ? item.topicCategory
+        : [item.topicCategory];
+    },
+    component: ({
+      value,
+      isLoading,
+    }: {
+      value: DefinedTerm[];
+      isLoading?: boolean;
+    }) => {
+      if (!value.some(v => v.name)) {
+        return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
+      }
+      return (
+        <HStack flexWrap='wrap'>
+          {value?.map((v, i) => (
+            <TagCell
+              key={i}
+              value={v.name || ''}
+              url={v.url || undefined}
               noOfLines={1}
               isLoading={isLoading}
             />
