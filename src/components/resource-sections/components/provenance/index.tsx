@@ -5,20 +5,20 @@ import {
   Divider,
   Flex,
   FlexProps,
-  Image,
   Skeleton,
   Stack,
   Tag,
   Text,
 } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
-import { getRepositoryImage } from 'src/utils/helpers';
 import { formatDate } from 'src/utils/api/helpers';
 import { FaArrowRight, FaMagnifyingGlass } from 'react-icons/fa6';
 import NextLink from 'next/link';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { Link } from 'src/components/link';
 import Tooltip from 'src/components/tooltip';
+import { getSourceLogoLinkOut } from 'src/components/source-logo/helpers';
+import { SourceLogo } from 'src/components/source-logo';
 
 interface Provenance {
   isLoading: boolean;
@@ -125,33 +125,16 @@ const Provenance: React.FC<Provenance> = ({
               ml={0}
             >
               <Flex minW='100px' mt={4}>
-                {includedInDataCatalog?.url ? (
-                  <a href={includedInDataCatalog?.url} target='_blank'>
-                    <Image
-                      width='auto'
-                      height='40px'
-                      maxH='40px'
-                      fallbackSrc='/assets/resources/empty-source.png'
-                      src={
-                        getRepositoryImage(includedInDataCatalog.name) ||
-                        undefined
-                      }
-                      alt={`Logo for ${includedInDataCatalog.name}`}
-                    />
-                  </a>
-                ) : (
-                  <Image
-                    width='auto'
-                    height='40px'
-                    maxH='40px'
-                    fallbackSrc='/assets/resources/empty-source.png'
-                    src={
-                      getRepositoryImage(includedInDataCatalog.name) ||
-                      undefined
-                    }
-                    alt={`Logo for ${includedInDataCatalog.name}`}
-                  />
-                )}
+                <SourceLogo.Component
+                  imageProps={{
+                    width: 'auto',
+                    height: 'unset',
+                    maxHeight: '80px',
+                    mb: 1,
+                  }}
+                  source={includedInDataCatalog}
+                  url={getSourceLogoLinkOut(includedInDataCatalog)}
+                />
               </Flex>
               <dl>
                 <Field label='Name'>{includedInDataCatalog.name}</Field>

@@ -20,6 +20,7 @@ export interface Params {
   size?: string | number;
   sort?: string;
   use_metadata_score?: string;
+  use_ai_search?: string;
   multi_terms_fields?: string;
   multi_terms_size?: string;
 }

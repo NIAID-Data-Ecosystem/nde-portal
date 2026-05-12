@@ -1,4 +1,4 @@
-import { Flex, Text, VStack } from '@chakra-ui/react';
+import { Flex, VStack } from '@chakra-ui/react';
 import { DiseasePageProps, TopicQueryProps } from '../types';
 import { ConditionsOfAccess } from './components/conditions-of-access';
 import { DataTypes } from './components/data-types';
@@ -6,7 +6,7 @@ import { ExternalLinksSection } from './components/external-links';
 import { PropertyTreemapLists } from './components/property-treemap-lists';
 import { Sources } from './components/sources';
 import { IntroSection } from './layouts/intro';
-import { SectionDescription, SectionWrapper } from './layouts/section';
+import { SectionWrapper } from './layouts/section';
 import { CardWrapper } from './layouts/card';
 import { PageContent } from 'src/components/page-container';
 import DISEASE_PAGE_COPY from './disease-page.json';
@@ -46,7 +46,7 @@ export const DiseaseContent: React.FC<DiseaseContentProps> = ({
         <IntroSection
           title={data?.title}
           subtitle={data?.subtitle}
-          description={data?.description}
+          topicEmphasizedDescription={data?.topicEmphasizedDescription}
           links={data?.contacts}
           image={data?.image}
           isLoading={isLoading}

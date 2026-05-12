@@ -46,6 +46,12 @@ export type AccessTypes =
   | 'Varied'
   | 'Unknown';
 
+export interface AdditionalProperty {
+  '@type'?: 'PropertyValue';
+  propertyID: string;
+  value: string;
+}
+
 export interface AdditionalType {
   name?: string;
   url?: string;
@@ -372,6 +378,63 @@ export interface FeatureListProperties {
   inDefinedTermSet?: string;
 }
 
+export interface DefinedTerm {
+  '@type'?: string;
+  identifier?: string;
+  name?: string;
+  url?: string;
+}
+
+export interface QuantitativeValue {
+  '@type'?: string;
+  maxValue?: number;
+  minValue?: number;
+  name?: string;
+  unitCode?: string;
+  unitText?: string;
+  value?: number;
+}
+
+export interface SampleAggregate {
+  '@type': 'Sample';
+  _id?: string;
+  additionalProperty?: AdditionalProperty | AdditionalProperty[];
+  anatomicalStructure?: DefinedTerm[];
+  anatomicalSystem?: DefinedTerm[];
+  associatedGenotype?: (string | DefinedTerm)[];
+  associatedPhenotype?: DefinedTerm[];
+  cellType?: DefinedTerm[];
+  collectionMethod?: string[];
+  developmentalStage?: (QuantitativeValue | DefinedTerm)[];
+  identifier?: string;
+  includedInDataCatalog?: {
+    '@type'?: string;
+    archivedAt?: string[];
+    name?: string;
+    url?: string;
+    versionDate?: string;
+  }[];
+  sampleAvailability?: boolean;
+  sampleQuantity?: QuantitativeValue | QuantitativeValue[];
+  sampleType?: {
+    name?: string;
+    url?: string;
+  }[];
+  sex?: string[];
+  url?: string;
+}
+
+export interface SampleCollection {
+  '@type': 'SampleCollection';
+  aggregateElement?: SampleAggregate;
+  itemListElement?: {
+    _id?: string;
+    identifier?: string;
+    url?: string;
+  }[];
+  numberOfItems?: QuantitativeValue;
+}
+
 // Formatting standardized resource fields
 export interface FormattedResource {
   [key: string]: any;
@@ -422,6 +485,7 @@ export interface FormattedResource {
   collectionType?: CollectionType | null;
   condition: string | null;
   conditionsOfAccess: AccessTypes | null;
+  creditText: string | null;
   date: string | null;
   dateCreated: string | null;
   dateModified: string | null;
@@ -469,6 +533,7 @@ export interface FormattedResource {
   publisher: Publisher | null;
   rawData?: any;
   sameAs: string | null;
+  sample?: SampleAggregate | SampleCollection | null;
   softwareAddOn: { identifier: string }[] | null;
   softwareHelp: { name?: string; url: string }[] | null;
   softwareRequirements: string[] | null;

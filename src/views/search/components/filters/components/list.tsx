@@ -10,7 +10,7 @@ import { VariableSizeList as List } from 'react-window';
 import { useDebounceValue } from 'usehooks-ts';
 import { SearchInput } from 'src/components/search-input';
 import { Checkbox } from './checkbox';
-import { FacetTermWithDetails, FilterConfig, FilterItem } from '../types';
+import { FilterTermType, FilterItem, FilterConfig } from '../types';
 
 // VirtualizedList component to render the list of filter terms
 const VirtualizedList = React.memo(
@@ -25,7 +25,7 @@ const VirtualizedList = React.memo(
     const listRef = useRef<any>();
     const itemRefs = useRef<number[]>(Array(items.length).fill(DEFAULT_SIZE));
     const setItemSize = useCallback((index: number, size: number) => {
-      listRef?.current?.resetAfterIndex(0);
+      listRef?.current?.resetAfterIndex?.(0);
 
       itemRefs.current[index] = size;
     }, []);
@@ -132,7 +132,7 @@ export const sortTerms = (terms: FilterItem[], selectedFilters: string[]) => {
 };
 
 export const groupTerms = (
-  terms: FacetTermWithDetails[],
+  terms: FilterTermType[],
   selectedFilters: string[],
   groupOrder?: FilterConfig['groupBy'],
 ) => {
@@ -204,7 +204,7 @@ export const groupTerms = (
 // Define the props interface for the FiltersList component
 interface FiltersListProps {
   colorScheme: string;
-  terms: FacetTermWithDetails[];
+  terms: FilterTermType[];
   searchPlaceholder: string;
   selectedFilters: string[];
   handleSelectedFilters: (arg: string[]) => void;
@@ -260,7 +260,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
     return (
       <>
         {/* Search through filter terms */}
-        <Box px={4} pt={4} pb={2}>
+        <Box p={2} pt={4}>
           {!isLoading && !isUpdating && !terms?.length ? (
             <Text fontStyle='italic' color='gray.800' mt={1} textAlign='center'>
               No results with {config.name.toLocaleLowerCase()} information.

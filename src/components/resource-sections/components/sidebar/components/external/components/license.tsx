@@ -27,7 +27,10 @@ export const License: React.FC<LicenseProps> = ({
       <HeadingWithTooltip
         label='License'
         tooltipLabel={`${
-          SCHEMA_DEFINITIONS['license']?.description?.[type || 'Dataset'] || ''
+          SCHEMA_DEFINITIONS['license']?.description?.[
+            (type ??
+              'Dataset') as keyof (typeof SCHEMA_DEFINITIONS)['license']['description']
+          ] ?? ''
         }`}
       />
 

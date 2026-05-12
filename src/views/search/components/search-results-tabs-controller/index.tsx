@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { TabPanel } from '@chakra-ui/react';
 import { useSearchTabsContext } from '../../context/search-tabs-context';
@@ -15,8 +15,15 @@ import { Carousel } from 'src/components/carousel';
 import { CarouselWrapper } from '../layout/carousel-wrapper';
 import { EmptyState } from '../results-list/components/empty';
 import { TabType } from '../../types';
+import { generateOtherResourcesTitle, tabs } from '../../config/tabs';
+import { getDefaultTabId } from '../../utils/get-default-tab';
 import { useDiseaseData } from '../../hooks/useDiseaseData';
-import { generateOtherResourcesTitle } from '../../config/tabs';
+import {
+  SHOW_SAMPLES_TAB,
+  SHOW_DATA_COLLECTIONS_TAB,
+} from 'src/utils/feature-flags';
+import { useBioSampleAggregation } from '../../hooks/useBioSampleAggregation';
+import { queryFilterObject2String } from '../filters/utils/query-string';
 
 const CAROUSEL_RESULTS_FIELDS = [
   '_meta',
@@ -42,12 +49,20 @@ export const SearchResultsController = ({
   initialData,
 }: SearchResultsControllerProps) => {
   const router = useRouter();
-  const { selectedIndex, setSelectedIndex, tabs } = useSearchTabsContext();
+  const { selectedIndex, setSelectedIndex } = useSearchTabsContext();
   const { getPagination, setPagination } = usePaginationContext();
+
+  // Track if the user has chosen a tab. When set, the auto-tab will only
+  // override the user choice if there are no results for that tab.
+  const userSelectedTabRef = useRef<string | null>(null);
 
   const handleTabChange = (index: number) => {
     setSelectedIndex(index);
     const selectedTab = tabs[index];
+
+    // Record the user choice so the auto-tab respects it.
+    userSelectedTabRef.current = selectedTab.id;
+
     const paginationState = getPagination(selectedTab.id);
 
     setPagination(selectedTab.id, paginationState);
@@ -68,18 +83,118 @@ export const SearchResultsController = ({
   };
 
   const queryParams = useSearchQueryFromURL();
-
   const searchResultsData = useSearchResultsData(
     {
       q: queryParams.q,
       filters: queryParams.filters,
       facets: ['@type'],
       facet_size: 100,
+      use_ai_search: queryParams.use_ai_search ?? 'false',
     },
-    { initialData },
+    { enabled: router.isReady },
   );
 
   const { data: facetData } = searchResultsData.response;
+
+  // Serialize the currently selected filters so the BioSample aggregation
+  // respects them.
+  const serializedFilters = useMemo(
+    () => queryFilterObject2String(queryParams.filters || {}) || '',
+    [queryParams.filters],
+  );
+
+  // Provide the accurate count for the Samples tab label and the facet
+  // counts for Sample-category filters. Runs in parallel with the main
+  // aggregation so the count is visible even when the Samples tab is not
+  // active. Passes extra_filter so user-selected filters are respected.
+  const bioSampleAgg = useBioSampleAggregation(
+    {
+      q: queryParams.q,
+      use_ai_search: queryParams.use_ai_search ?? 'false',
+      advancedSearch: queryParams.advancedSearch,
+      extra_filter: serializedFilters,
+    },
+    { enabled: router.isReady },
+  );
+
+  const bioSampleTotal = bioSampleAgg.data?.total ?? 0;
+
+  // Determine the correct tab based on actual search results
+  useEffect(() => {
+    if (!facetData?.facets || !router.isReady) return;
+    const facetCounts =
+      facetData?.facets?.['@type']?.terms?.map(term => ({
+        type: term.term,
+        count: term.count,
+      })) || [];
+
+    // Override the Sample count with the accurate BioSample-scoped total.
+    const facetCountsWithBioSample = facetCounts.map(f =>
+      f.type === 'Sample' ? { ...f, count: bioSampleTotal } : f,
+    );
+
+    // Get selected resource types from filters
+    const typeFilter = queryParams.filters?.['@type'];
+    const selectedTypes: string[] = Array.isArray(typeFilter)
+      ? typeFilter.filter((item): item is string => typeof item === 'string')
+      : [];
+
+    // If the user has selected a tab, only leave it when that tab
+    // has no associated results anymore.
+    if (userSelectedTabRef.current !== null) {
+      const currentTab = tabs[selectedIndex];
+      const currentTabHasResults = currentTab?.types.some(({ type }) =>
+        facetCountsWithBioSample.some(f => f.type === type && f.count > 0),
+      );
+
+      if (currentTabHasResults) {
+        // The user's chosen tab still has associated results. The active tab
+        // remains the same.
+        return;
+      }
+
+      // No results for the chosen tab. Use the auto-tab to select the
+      // active tab.
+      userSelectedTabRef.current = null;
+    }
+
+    // Determine the correct tab
+    const calculatedTabId = getDefaultTabId(
+      tabs,
+      facetCountsWithBioSample,
+      selectedTypes,
+    );
+
+    // Find the index for the tab
+    const calculatedIndex = tabs.findIndex(t => t.id === calculatedTabId);
+
+    // Only update if different from current
+    if (calculatedIndex !== -1 && calculatedIndex !== selectedIndex) {
+      setSelectedIndex(calculatedIndex);
+
+      // Update URL if needed
+      if (router.query.tab !== calculatedTabId) {
+        router.replace(
+          {
+            query: {
+              ...router.query,
+              tab: calculatedTabId,
+            },
+          },
+          undefined,
+          {
+            shallow: true,
+          },
+        );
+      }
+    }
+  }, [
+    facetData?.facets,
+    bioSampleTotal,
+    queryParams.filters,
+    router.isReady,
+    router.query.q,
+  ]);
 
   const hasResourceCatalogRecords = useMemo(() => {
     const terms = facetData?.facets?.['@type']?.terms ?? [];
@@ -89,14 +204,13 @@ export const SearchResultsController = ({
 
   const carouselResultsData = useSearchResultsData(
     {
-      q: queryParams.q || '',
-      filters: {
-        ...queryParams.filters,
-        '@type': ['ResourceCatalog'],
-      },
+      q: queryParams.q,
+      filters: { ...queryParams.filters, ['@type']: ['ResourceCatalog'] },
       fields: CAROUSEL_RESULTS_FIELDS,
+      facets: ['@type'],
       size: 50,
       sort: 'name.raw',
+      use_ai_search: queryParams.use_ai_search ?? 'false',
     },
     {
       enabled: hasResourceCatalogRecords,
@@ -139,35 +253,60 @@ export const SearchResultsController = ({
   }, [resourceCatalogData, matchingDiseases]);
 
   const shouldShowCarousel = hasResourceCatalogRecords || hasMatchingDiseases;
+
   const isCarouselLoading =
     (hasResourceCatalogRecords && (carouselIsLoading || carouselIsPending)) ||
     diseaseIsLoading;
 
   const tabsWithFacetCounts = useMemo(
     () =>
-      tabs.map(tab => {
-        const tabTypesWithCount = tab.types.map(({ label, type }) => {
-          const terms = facetData?.facets?.['@type']?.terms ?? [];
-          const facet = terms.find(t => t.term === type);
-          let count = facet?.count || 0;
-
-          if (type === 'Disease') {
-            count = matchingDiseases.length;
+      tabs
+        .filter(tab => {
+          if (
+            !SHOW_SAMPLES_TAB &&
+            tab.types.every(({ type }) => type === 'Sample')
+          ) {
+            return false;
           }
+          if (
+            !SHOW_DATA_COLLECTIONS_TAB &&
+            tab.types.every(({ type }) => type === 'DataCollection')
+          ) {
+            return false;
+          }
+          return true;
+        })
+        .map(tab => {
+          const tabTypesWithCount = tab.types
+            .filter(
+              ({ type }) =>
+                (type !== 'Sample' || SHOW_SAMPLES_TAB) &&
+                (type !== 'DataCollection' || SHOW_DATA_COLLECTIONS_TAB),
+            )
+            .map(({ label, type }) => {
+              const terms = facetData?.facets?.['@type']?.terms ?? [];
+              const facet = terms.find(t => t.term === type);
+              let count = facet?.count || 0;
+
+              if (type === 'Disease') {
+                count = matchingDiseases.length;
+              }
+
+              // Use the BioSample-scoped total for the Sample type so the tab
+              // label reflects only @type:Sample AND additionalType:"BioSample".
+              if (type === 'Sample') {
+                count = bioSampleTotal;
+              }
+
+              return { label, type, count };
+            });
 
           return {
-            label,
-            type,
-            count,
+            ...tab,
+            types: tabTypesWithCount,
           };
-        });
-
-        return {
-          ...tab,
-          types: tabTypesWithCount,
-        };
-      }),
-    [facetData?.facets, tabs, matchingDiseases.length],
+        }),
+    [facetData?.facets, tabs, matchingDiseases.length, bioSampleTotal],
   );
 
   const getAccordionDefaultIndices = (
@@ -183,6 +322,14 @@ export const SearchResultsController = ({
           indices.push(index);
         }
       } else if (section.type === 'ComputationalTool') {
+        if (section.count > 0 || section.count === 0) {
+          indices.push(index);
+        }
+      } else if (section.type === 'Sample') {
+        if (section.count > 0 || section.count === 0) {
+          indices.push(index);
+        }
+      } else if (section.type === 'DataCollection') {
         if (section.count > 0 || section.count === 0) {
           indices.push(index);
         }
@@ -207,19 +354,24 @@ export const SearchResultsController = ({
             return (
               <TabPanel key={tab.id}>
                 <AccordionWrapper
-                  key={`${tab.id}-${defaultIndices.join(
-                    '-',
-                  )}-${hasMatchingDiseases}-${matchingDiseases.length}`}
+                  key={`${tab.id}-${defaultIndices.join('-')}`}
                   defaultIndex={defaultIndices}
                 >
-                  {sections.map((section, idx) => {
+                  {sections.map(section => {
                     if (section.type === 'Disease') return null;
+                    if (section.type === 'Sample' && !SHOW_SAMPLES_TAB)
+                      return null;
+                    if (
+                      section.type === 'DataCollection' &&
+                      !SHOW_DATA_COLLECTIONS_TAB
+                    )
+                      return null;
 
                     // For ResourceCatalog, render "Other Resources" with carousel
                     if (section.type === 'ResourceCatalog') {
                       return (
                         <AccordionContent
-                          key='other-resources'
+                          key='resource-catalog'
                           title={generateOtherResourcesTitle(sections)}
                         >
                           {isCarouselLoading || shouldShowCarousel ? (
@@ -260,13 +412,21 @@ export const SearchResultsController = ({
                       );
                     }
 
+                    // For Dataset, ComputationalTool, Sample, and DataCollection
+                    // render normal search results.
+                    // The Sample accordion title uses bioSampleTotal so it matches the tab label.
+                    const sectionCount =
+                      section.type === 'Sample'
+                        ? bioSampleTotal
+                        : section.count;
+
                     // For Dataset and ComputationalTool, render normal search results
                     return (
                       <AccordionContent
                         key={section.type}
                         title={`${
                           section.label
-                        } (${section.count.toLocaleString()})`}
+                        } (${sectionCount.toLocaleString()})`}
                       >
                         <SearchResults
                           id={tab.id}

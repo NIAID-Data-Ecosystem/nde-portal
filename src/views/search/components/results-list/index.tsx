@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Collapse, ListItem, UnorderedList, VStack } from '@chakra-ui/react';
 import Card from './components/card';
@@ -13,7 +13,28 @@ import { usePaginationContext } from '../../context/pagination-context';
 import { updateRoute } from '../../utils/update-route';
 import { SearchResultsToolbar } from './components/toolbar';
 import Banner from 'src/components/banner';
-import { FetchSearchResultsResponse } from 'src/utils/api/types';
+import {
+  SampleResultsTable,
+  ALL_SAMPLE_COLUMNS,
+} from './components/sample-results-table';
+import {
+  DataCollectionResultsTable,
+  ALL_DATA_COLLECTION_COLUMNS,
+} from './components/data-collection-results-table';
+import { useSearchResultsFetchedContext } from '../../context/search-results-fetched-context';
+import {
+  CustomizeColumnsPopover as SampleCustomizeColumnsPopover,
+  DEFAULT_VISIBLE_COLUMN_IDS as SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS,
+  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as SAMPLE_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+  CUSTOM_COLUMN_ORDER_STORAGE_KEY as SAMPLE_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+} from './components/sample-results-table/components/CustomizeColumnsPopover';
+import {
+  CustomizeColumnsPopover as DataCollectionCustomizeColumnsPopover,
+  DEFAULT_VISIBLE_COLUMN_IDS as DC_DEFAULT_VISIBLE_COLUMN_IDS,
+  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as DC_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+  CUSTOM_COLUMN_ORDER_STORAGE_KEY as DC_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+} from './components/data-collection-results-table/components/CustomizeColumnsPopover';
+import { BIOSAMPLE_EXTRA_FILTER } from '../../hooks/useBioSampleAggregation';
 
 const RESULT_FIELDS = [
   '_meta',
@@ -49,10 +70,154 @@ const RESULT_FIELDS = [
   'usageInfo',
   'variableMeasured',
 ];
+
+const SAMPLE_EXTRA_FIELDS = [
+  'identifier',
+  'alternateIdentifier',
+  'name',
+  'sampleType',
+  'instrument',
+  'sex',
+  'anatomicalStructure',
+  'anatomicalSystem',
+  'sampleAvailability',
+  'sampleQuantity',
+  'developmentalStage',
+  'associatedGenotype',
+  'associatedPhenotype',
+  'cellType',
+  'locationOfOrigin',
+  'itemLocation',
+];
+
+const DATA_COLLECTION_EXTRA_FIELDS = [
+  'about',
+  'collectionSize',
+  'isBasedOn',
+  'name',
+];
+
+// Build the ColumnConfig list expected by each CustomizeColumnsPopover from
+// the master column definitions.
+const SAMPLE_COLUMN_CONFIGS = ALL_SAMPLE_COLUMNS.map(col => ({
+  id: col.id,
+  title: col.title,
+}));
+
+const DATA_COLLECTION_COLUMN_CONFIGS = ALL_DATA_COLLECTION_COLUMNS.map(col => ({
+  id: col.id,
+  title: col.title,
+}));
+
+// Read the persisted visible column IDs from localStorage.
+// Falls back to the default subset when no stored value exists.
+const getInitialVisibleColumnIds = (): string[] => {
+  if (typeof window === 'undefined') {
+    return SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS;
+  }
+  try {
+    const stored = window.localStorage.getItem(
+      SAMPLE_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+    );
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const allIds = ALL_SAMPLE_COLUMNS.map(c => c.id);
+        const valid = parsed.filter((id: unknown): id is string =>
+          allIds.includes(id as string),
+        );
+        if (valid.length > 0) return valid;
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS;
+};
+
+// Read the persisted column order from localStorage.
+// Falls back to the master column order when no stored value exists.
+const getInitialColumnOrder = (): string[] => {
+  if (typeof window === 'undefined') {
+    return ALL_SAMPLE_COLUMNS.map(c => c.id);
+  }
+  try {
+    const stored = window.localStorage.getItem(
+      SAMPLE_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+    );
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const allIds = ALL_SAMPLE_COLUMNS.map(c => c.id);
+        const valid = parsed.filter((id: unknown): id is string =>
+          allIds.includes(id as string),
+        );
+        // Append any columns missing from the persisted order
+        const missing = allIds.filter(id => !valid.includes(id));
+        if (valid.length > 0) return [...valid, ...missing];
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return ALL_SAMPLE_COLUMNS.map(c => c.id);
+};
+
+const getInitialDataCollectionVisibleColumnIds = (): string[] => {
+  if (typeof window === 'undefined') {
+    return DC_DEFAULT_VISIBLE_COLUMN_IDS;
+  }
+  try {
+    const stored = window.localStorage.getItem(
+      DC_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+    );
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const allIds = ALL_DATA_COLLECTION_COLUMNS.map(c => c.id);
+        const valid = parsed.filter((id: unknown): id is string =>
+          allIds.includes(id as string),
+        );
+        if (valid.length > 0) return valid;
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return DC_DEFAULT_VISIBLE_COLUMN_IDS;
+};
+
+const getInitialDataCollectionColumnOrder = (): string[] => {
+  if (typeof window === 'undefined') {
+    return ALL_DATA_COLLECTION_COLUMNS.map(c => c.id);
+  }
+  try {
+    const stored = window.localStorage.getItem(
+      DC_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+    );
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const allIds = ALL_DATA_COLLECTION_COLUMNS.map(c => c.id);
+        const valid = parsed.filter((id: unknown): id is string =>
+          allIds.includes(id as string),
+        );
+        const missing = allIds.filter(id => !valid.includes(id));
+        if (valid.length > 0) return [...valid, ...missing];
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return ALL_DATA_COLLECTION_COLUMNS.map(c => c.id);
+};
+
 /*
 [COMPONENT INFO]:
  Search results pages displays the list of records returned by a search.
- Contains pagination and search results cards.
+ Contains pagination and search results cards. When the active tab is the
+ Samples tab ('s') or the DataCollection tab ('dc'), results are rendered
+ as a table instead of cards.
 */
 
 export const SearchResults = ({
@@ -78,6 +243,34 @@ export const SearchResults = ({
   // Selected tab index is stored in context to sync with other components.
   const urlQueryParams = useSearchQueryFromURL();
 
+  // For Samples and DataCollection tabs, use extra fields for the table columns.
+  const isSamplesTab = id === 's';
+  const isDataCollectionTab = id === 'dc';
+
+  // Pick the correct extra fields for the active tab.
+  const fields = isSamplesTab
+    ? [...RESULT_FIELDS, ...SAMPLE_EXTRA_FIELDS]
+    : isDataCollectionTab
+    ? [...RESULT_FIELDS, ...DATA_COLLECTION_EXTRA_FIELDS]
+    : RESULT_FIELDS;
+
+  // Column visibility state
+  const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(
+    getInitialVisibleColumnIds,
+  );
+
+  // Column order state
+  const [columnOrder, setColumnOrder] = useState<string[]>(
+    getInitialColumnOrder,
+  );
+
+  const [dcVisibleColumnIds, setDcVisibleColumnIds] = useState<string[]>(
+    getInitialDataCollectionVisibleColumnIds,
+  );
+  const [dcColumnOrder, setDcColumnOrder] = useState<string[]>(
+    getInitialDataCollectionColumnOrder,
+  );
+
   const { response, params } = useSearchResultsData(
     {
       ...urlQueryParams,
@@ -88,7 +281,9 @@ export const SearchResults = ({
         ...urlQueryParams.filters,
         '@type': [...(urlQueryParams?.filters?.['@type'] || types || [])],
       },
-      fields: RESULT_FIELDS,
+      // For the Samples tab, append the BioSample constraint via additionalFilter.
+      additionalFilter: isSamplesTab ? BIOSAMPLE_EXTRA_FILTER : undefined,
+      fields,
     },
     {
       // Only fetch data when the router is ready and the active tab is selected.
@@ -110,7 +305,33 @@ export const SearchResults = ({
     },
   );
 
-  const { data, isLoading, isRefetching, error } = response;
+  const { data, isLoading, isRefetching, isFetching, error, isFetched } =
+    response;
+
+  const { markResultsFetching, markResultsFetched } =
+    useSearchResultsFetchedContext();
+  const isActiveTab = id === activeTabId;
+
+  React.useEffect(() => {
+    if (!isActiveTab) {
+      return;
+    }
+
+    if (isFetching) {
+      markResultsFetching();
+      return;
+    }
+
+    if (isFetched) {
+      markResultsFetched();
+    }
+  }, [
+    isActiveTab,
+    markResultsFetching,
+    markResultsFetched,
+    isFetching,
+    isFetched,
+  ]);
 
   const numCards = useMemo(
     () =>
@@ -143,11 +364,50 @@ export const SearchResults = ({
     return <EmptyState />;
   }
 
+  // Shared pagination handler used by both top and bottom pagination controls.
+  const handlePageChange = (newFrom: number) => {
+    const update = { from: newFrom };
+    setPagination(id, update);
+    updateRoute(router, update);
+  };
+
+  /**
+   * Called by tables when the user clicks a column sort toggle.
+   * Converts the API field + direction into the sort string format used
+   * elsewhere (e.g. `"-name.raw"` for descending), then updates both
+   * pagination state and the URL (identical to how the toolbar sort
+   * dropdown works, including the reset to page 1).
+   */
+  const handleSortChange = (apiField: string, ascending: boolean) => {
+    const newSort = ascending ? apiField : `-${apiField}`;
+    const update = { sort: newSort, from: 1 };
+    setPagination(id, update);
+    updateRoute(router, update);
+  };
+
   return (
     <>
       <VStack borderRadius='semi' bg='white' px={4} py={2}>
-        {/* Toolbar controls: Sort, size, download metadata, and use metadata score (optional) */}
-        <SearchResultsToolbar id={id} params={params} />
+        {/* Toolbar controls: Sort, size, download metadata, and optional extra actions. For Samples and DataCollections tab the "Customize Columns" button is injected via the extraActions prop so it appears to the left of Download Metadata. */}
+        <SearchResultsToolbar
+          id={id}
+          params={params}
+          extraActions={
+            isSamplesTab ? (
+              <SampleCustomizeColumnsPopover
+                columnsList={SAMPLE_COLUMN_CONFIGS}
+                onVisibleColumnsChange={setVisibleColumnIds}
+                onColumnOrderChange={setColumnOrder}
+              />
+            ) : isDataCollectionTab ? (
+              <DataCollectionCustomizeColumnsPopover
+                columnsList={DATA_COLLECTION_COLUMN_CONFIGS}
+                onVisibleColumnsChange={setDcVisibleColumnIds}
+                onColumnOrderChange={setDcColumnOrder}
+              />
+            ) : undefined
+          }
+        />
 
         {/* Pagination controls */}
         <Pagination
@@ -155,12 +415,7 @@ export const SearchResults = ({
           ariaLabel='Paginate through resources.'
           selectedPage={from}
           selectedPerPage={size}
-          handleSelectedPage={newFrom => {
-            const update = { from: newFrom };
-            setPagination(id, update);
-            updateRoute(router, update);
-            return;
-          }}
+          handleSelectedPage={handlePageChange}
           isLoading={isLoading || isRefetching}
           total={data?.total || 0}
         />
@@ -174,32 +429,54 @@ export const SearchResults = ({
           </Banner>
         </Collapse>
 
-        {/* Search results cards */}
-        {numCards > 0 && (
-          <VStack
-            as={UnorderedList}
-            className='search-results-cards'
-            alignItems='flex-start'
-            flex={3}
-            ml={0}
-            spacing={4}
-            w='100%'
-          >
-            {Array(numCards)
-              .fill(null)
-              .map((_, idx) => {
-                return (
-                  <ListItem key={data?.results?.[idx]._id || idx} w='100%'>
-                    <Card
-                      isLoading={!router.isReady || isLoading}
-                      data={data?.results[idx]}
-                      referrerPath={router.asPath}
-                      querystring={urlQueryParams.q}
-                    />
-                  </ListItem>
-                );
-              })}
-          </VStack>
+        {/* Samples tab */}
+        {isSamplesTab ? (
+          <SampleResultsTable
+            results={data?.results || []}
+            isLoading={!router.isReady || isLoading}
+            visibleColumnIds={visibleColumnIds}
+            columnOrder={columnOrder}
+            currentSort={sort}
+            onSortChange={handleSortChange}
+          />
+        ) : isDataCollectionTab ? (
+          /* DataCollection tab */
+          <DataCollectionResultsTable
+            results={data?.results || []}
+            isLoading={!router.isReady || isLoading}
+            visibleColumnIds={dcVisibleColumnIds}
+            columnOrder={dcColumnOrder}
+            currentSort={sort}
+            onSortChange={handleSortChange}
+          />
+        ) : (
+          /* Dataset / ComputationalTool tabs: render result cards */
+          numCards > 0 && (
+            <VStack
+              as={UnorderedList}
+              className='search-results-cards'
+              alignItems='flex-start'
+              flex={3}
+              ml={0}
+              spacing={4}
+              w='100%'
+            >
+              {Array(numCards)
+                .fill(null)
+                .map((_, idx) => {
+                  return (
+                    <ListItem key={data?.results?.[idx]._id || idx} w='100%'>
+                      <Card
+                        isLoading={!router.isReady || isLoading}
+                        data={data?.results[idx]}
+                        referrerPath={router.asPath}
+                        querystring={urlQueryParams.q}
+                      />
+                    </ListItem>
+                  );
+                })}
+            </VStack>
+          )
         )}
 
         {/* Pagination controls */}
@@ -208,12 +485,7 @@ export const SearchResults = ({
           ariaLabel='Paginate through resources.'
           selectedPage={from}
           selectedPerPage={size}
-          handleSelectedPage={newFrom => {
-            const update = { from: newFrom };
-            setPagination(id, update);
-            updateRoute(router, update);
-            return;
-          }}
+          handleSelectedPage={handlePageChange}
           isLoading={isLoading || isRefetching}
           total={data?.total || 0}
         />

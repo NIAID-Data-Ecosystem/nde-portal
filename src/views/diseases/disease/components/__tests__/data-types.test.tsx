@@ -7,6 +7,19 @@ import { useQuery } from '@tanstack/react-query';
 import { DataTypes } from '../data-types';
 import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
 
+jest.mock('src/views/diseases/chart-utils', () => ({
+  getFillColor: jest.fn((key: string) => {
+    const map: Record<string, string> = {
+      Dataset: '#111111',
+      ComputationalTool: '#222222',
+      ResourceCatalog: '#333333',
+      Sample: '#444444',
+      DataCollection: '#555555',
+    };
+
+    return map[key] || '#999999';
+  }),
+}));
 // Mock the module before importing the component that uses it
 jest.mock('@tanstack/react-query', () => ({
   ...jest.requireActual('@tanstack/react-query'),

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
+import { withtopicEmphasizedDescription } from 'src/views/diseases/helpers';
 import { DiseasePageProps } from 'src/views/diseases/types';
 import { SelectedFilterType } from 'src/views/search/components/filters/types';
-import { fetchAllDiseasePages } from 'src/views/diseases/helpers';
 
 interface UseDiseaseDataOptions {
   searchQuery: string;
@@ -53,7 +53,6 @@ const extractSearchTerms = (
 
 const fetchMatchingDiseases = async (
   searchTerms: string[],
-  showAll: boolean,
 ): Promise<DiseasePageProps[]> => {
   const strapiUrl =
     process.env.NEXT_PUBLIC_STRAPI_API_URL ||
@@ -62,11 +61,6 @@ const fetchMatchingDiseases = async (
     process.env.NEXT_PUBLIC_APP_ENV === 'production' ? 'published' : 'draft';
 
   try {
-    // If showing all diseases or no specific search terms, fetch all records
-    if (showAll || searchTerms.length === 0) {
-      return await fetchAllDiseasePages();
-    }
-
     // Build Strapi query parameters based on number of search terms
     const queryParams =
       searchTerms.length === 1
@@ -90,7 +84,7 @@ const fetchMatchingDiseases = async (
     }
 
     const apiResponse = await response.json();
-    return apiResponse.data || [];
+    return apiResponse.data.map(withtopicEmphasizedDescription);
   } catch (error) {
     console.error('Error fetching diseases:', error);
     return []; // Return empty array on error to prevent UI crashes
@@ -102,8 +96,8 @@ export const useDiseaseData = ({
   selectedFilters,
   enabled = true,
 }: UseDiseaseDataOptions) => {
-  // If no search query exists and no health condition and infectious agent filters are selected, all diseases will be shown.
-  const shouldShowAll =
+  // If no search query exists and no health condition and infectious agent filters are selected, no diseases will be shown.
+  const shouldShowNoDiseases =
     (!searchQuery || searchQuery.trim() === '__all__') &&
     !['healthCondition.name.raw', 'infectiousAgent.displayName.raw'].some(
       key => (selectedFilters[key] || []).length > 0,
@@ -118,18 +112,18 @@ export const useDiseaseData = ({
     isLoading,
     error,
   } = useQuery<DiseasePageProps[], Error>({
-    // Query key includes both showAll flag and sorted search terms for caching
-    queryKey: ['diseases', { shouldShowAll, searchTerms: searchTerms.sort() }],
-    queryFn: () => fetchMatchingDiseases(searchTerms, shouldShowAll),
-    enabled,
+    // Query key includes sorted search terms for caching
+    queryKey: ['diseases', { searchTerms: searchTerms.sort() }],
+    queryFn: () => fetchMatchingDiseases(searchTerms),
+    enabled: enabled && !shouldShowNoDiseases,
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000,
   });
 
   return {
-    diseases,
-    isLoading,
+    diseases: shouldShowNoDiseases ? [] : diseases,
+    isLoading: shouldShowNoDiseases ? false : isLoading,
     error,
-    hasMatchingDiseases: diseases.length > 0,
+    hasMatchingDiseases: shouldShowNoDiseases ? false : diseases.length > 0,
   };
 };

@@ -26,7 +26,6 @@ import { Route } from './helpers';
 import FilesTable from './components/files-table';
 import { CitedByTable } from './components/cited-by-table';
 import { DisplayHTMLContent } from '../html-content';
-import SoftwareInformation from './components/software-information';
 import {
   ExternalAccess,
   UsageInfo,
@@ -46,50 +45,14 @@ import { FaMagnifyingGlass } from 'react-icons/fa6';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { RelatedResources } from './components/related-resources';
+import { SamplesDisplay } from './components/samples';
+import { CreditText } from './components/sidebar/components/external/components/credit-text';
+import {
+  SHOW_CREDIT_TEXT_SECTION,
+  SHOULD_HIDE_SAMPLES,
+} from 'src/utils/feature-flags';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
-// Metadata displayed in each section
-export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
-  overview: [
-    'doi',
-    'healthCondition',
-    'infectiousAgent',
-    'inLanguage',
-    'license',
-    'measurementTechnique',
-    'nctid',
-    'programmingLanguage',
-    'softwareVersion',
-    'spatialCoverage',
-    'species',
-    'temporalCoverage',
-    'topicCategory',
-    'variableMeasured',
-  ],
-  softwareInformation: [
-    'applicationCategory',
-    'discussionUrl',
-    'input',
-    'output',
-    'processorRequirements',
-    'programmingLanguage',
-    'softwareAddOn',
-    'softwareHelp',
-    'softwareRequirements',
-    'softwareVersion',
-  ],
-  keywords: ['keywords'],
-  applicationCategory: ['applicationCategory'],
-  programmingLanguage: ['programmingLanguage'],
-  description: ['description'],
-  provenance: ['includedInDataCatalog', 'url', 'sdPublisher'],
-  downloads: ['distribution', 'downloadUrl'],
-  funding: ['funding'],
-  isBasedOn: ['isBasedOn'],
-  citedBy: ['citedBy'],
-  relatedResources: ['hasPart', 'isBasisFor', 'isRelatedTo', 'isPartOf'],
-  metadata: ['rawData'],
-};
 
 // use config file to show content in sections.
 const Sections = ({
@@ -109,6 +72,7 @@ const Sections = ({
         isLoading={isLoading}
         name={data?.name}
         alternateName={data?.alternateName}
+        id={data?.id}
         doi={data?.doi}
         nctid={data?.nctid}
       />
@@ -151,7 +115,7 @@ const Sections = ({
             key={section.hash}
             name={section.title}
             isLoading={isLoading}
-            isCollapsible={section.isCollapsible}
+            isCollapsible={section?.ui?.isCollapsible}
           >
             {/* for mobile viewing */}
             {section.hash === 'overview' && data && (
@@ -307,6 +271,22 @@ const Sections = ({
                     <ResourceCitations citations={data?.citation} />
                   </OverviewSectionWrapper>
                 )}
+
+                {/* Resource credit text */}
+                {SHOW_CREDIT_TEXT_SECTION && (
+                  <OverviewSectionWrapper
+                    isLoading={isLoading}
+                    label='Credit Text'
+                    tooltipLabel={getMetadataDescription(
+                      'creditText',
+                      data?.['@type'],
+                    )}
+                    my={4}
+                    scrollContainerProps={{ maxHeight: 'unset' }}
+                  >
+                    <CreditText data={data} px={2} />
+                  </OverviewSectionWrapper>
+                )}
               </>
             )}
             {/* Show keywords */}
@@ -383,13 +363,6 @@ const Sections = ({
                   )}
               </Skeleton>
             )}
-            {section.hash === 'softwareInformation' && (
-              <SoftwareInformation
-                keys={sectionMetadata[section.hash]}
-                isLoading={isLoading}
-                {...data}
-              />
-            )}
 
             {/* Show description */}
             {section.hash === 'description' &&
@@ -415,6 +388,15 @@ const Sections = ({
                   )}
                 </>
               )}
+
+            {/* Show smaples */}
+            {section.hash === 'samples' && !SHOULD_HIDE_SAMPLES('samples') && (
+              <SamplesDisplay
+                sample={data?.sample}
+                resourceIdentifier={data?.identifier ?? undefined}
+              />
+            )}
+
             {/* Show provenance */}
             {section.hash === 'provenance' && (
               <ResourceProvenance isLoading={isLoading} {...data} />

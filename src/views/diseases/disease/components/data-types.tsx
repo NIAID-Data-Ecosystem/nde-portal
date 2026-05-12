@@ -10,7 +10,6 @@ import {
   formatAPIResourceTypeForDisplay,
 } from 'src/utils/formatting/formatResourceType';
 import {
-  getFillColor,
   getSearchResultsRoute,
   trackDiseasesEvent,
 } from 'src/views/diseases/helpers';
@@ -20,6 +19,7 @@ import { DonutChart } from '../visualizations/donut-chart';
 import { LegendContainer, LegendItem } from './legend';
 import { MarkdownContent } from '../layouts/markdown-content';
 import DISEASE_PAGE_COPY from '../disease-page.json';
+import { getFillColor } from '../../chart-utils';
 
 export const DataTypes = ({ query, topic }: TopicQueryProps) => {
   // Fetch data types for query.

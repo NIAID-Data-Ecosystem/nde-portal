@@ -14,6 +14,7 @@ export enum ResourceType {
   Dataset,
   ResourceCatalog,
   ComputationalTool,
+  Sample,
 }
 
 // Array of supported resource types.
@@ -33,11 +34,15 @@ const getCustomFields = () => {
         'Type is used to categorize the nature or genre of the content of the resource.',
       ResourceCatalog:
         'Type is used to categorize the nature or genre of the content of the resource.',
+      Sample:
+        'Type is used to categorize the nature or genre of the content of the resource.',
     },
     abstract: {
       Dataset:
         'Type is used to categorize the nature or genre of the content of the resource.',
       ResourceCatalog:
+        'Type is used to categorize the nature or genre of the content of the resource.',
+      Sample:
         'Type is used to categorize the nature or genre of the content of the resource.',
     },
     isAdvancedSearchField: false,
@@ -53,10 +58,12 @@ const getCustomFields = () => {
     description: {
       Dataset: 'An area of knowledge or field(s) of study.',
       ResourceCatalog: 'An area of knowledge or field(s) of study.',
+      Sample: 'An area of knowledge or field(s) of study.',
     },
     abstract: {
       Dataset: 'An area of knowledge or field(s) of study.',
       ResourceCatalog: 'An area of knowledge or field(s) of study.',
+      Sample: 'An area of knowledge or field(s) of study.',
     },
     isAdvancedSearchField: false,
   };
@@ -93,14 +100,9 @@ const generateSchemaDefinitions = async () => {
 
 // Function to generate schema definitions and then process the data
 generateSchemaDefinitions()
-  .then(newSchemaData => {
-    fs.writeFile(OUTPUT_PATH, JSON.stringify(newSchemaData, null, 2), error => {
-      if (error) {
-        console.error('Error writing to file:', error.message);
-      } else {
-        console.log('Schema definitions updated successfully.');
-      }
-    });
+  .then(async output => {
+    await fs.promises.writeFile(OUTPUT_PATH, JSON.stringify(output, null, 2));
+    console.log('Schema definitions updated successfully.');
   })
   .catch(error => {
     // Handle errors from the entire schema generation process

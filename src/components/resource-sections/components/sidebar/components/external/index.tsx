@@ -16,6 +16,8 @@ import { AssociatedDocumentation } from './components/associated-documentation';
 import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
 import { HasDownload } from 'src/components/badges/components/HasDownload';
 import { HasAPI } from 'src/components/badges/components/HasAPI';
+import { CreditText } from './components/credit-text';
+import { SHOW_CREDIT_TEXT_SECTION } from 'src/utils/feature-flags';
 
 interface ExternalProps extends Omit<WrapperProps, 'children'> {
   data?: FormattedResource;
@@ -82,7 +84,7 @@ export const UsageInfo = ({
     <>
       <Box bg='secondary.50'>
         {/* License, usage agreement */}
-        {(data?.usageInfo || data?.license) && (
+        {(data?.usageInfo || data?.license || SHOW_CREDIT_TEXT_SECTION) && (
           <Wrapper isLoading={isLoading} label='Usage and Licensing'>
             <>
               <DataUsage
@@ -95,6 +97,9 @@ export const UsageInfo = ({
                 type={data?.['@type']}
                 license={data?.license}
               />
+              {SHOW_CREDIT_TEXT_SECTION && (
+                <CreditText label='Credit Text' data={data} />
+              )}
             </>
           </Wrapper>
         )}

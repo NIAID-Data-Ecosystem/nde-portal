@@ -145,14 +145,23 @@ export const Track = ({
 
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('mousedown', handleClick);
-    document.addEventListener('wheel', handleWheel, { passive: false });
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('mousedown', handleClick);
-      document.removeEventListener('wheel', handleWheel);
     };
-  }, [handleClick, handleResize, handleKeyDown, handleWheel, positions]);
+  }, [handleClick, handleResize, handleKeyDown, positions]);
+
+  useEffect(() => {
+    const el = node.current;
+    if (!el) return;
+
+    el.addEventListener('wheel', handleWheel, { passive: false });
+
+    return () => {
+      el.removeEventListener('wheel', handleWheel);
+    };
+  }, [handleWheel]);
 
   // Update position when activeItem changes
   useEffect(() => {

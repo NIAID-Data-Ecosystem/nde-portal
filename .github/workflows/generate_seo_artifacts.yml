@@ -1,0 +1,81 @@
+name: Generate SEO artifacts (sitemaps + schema definitions) for production
+
+on:
+  schedule:
+    # Every Tuesday at 15:00 UTC (arbitrary)
+    - cron: '0 15 * * 2'
+  workflow_dispatch: {}
+
+concurrency:
+  group: weekly-sitemaps-production
+  cancel-in-progress: false
+
+jobs:
+  generate_and_deploy_sitemaps:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout production
+        uses: actions/checkout@v4
+        with:
+          ref: production
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install
+
+      # Generate schema definitions
+      - name: Generate schema definitions
+        run: yarn generate-schema-definitions
+        env:
+          GH_API_KEY: ${{ secrets.GH_API_KEY }}
+          GITHUB_BRANCH: production
+
+      # Generate sitemaps for select resources.
+      - name: Generate dataset sitemaps
+        run: yarn generate-dataset-sitemaps
+        env:
+          GH_API_KEY: ${{ secrets.GH_API_KEY }}
+          GITHUB_BRANCH: production
+
+      # Pre-build step to generate built pages needed for sitemap generation
+      - name: Build website
+        run: yarn build
+        env:
+          GH_API_KEY: ${{ secrets.GH_API_KEY }}
+          GITHUB_BRANCH: production
+
+      #  Run next-sitemap to generate sitemaps based on built pages
+      - name: Run next-sitemap
+        run: yarn with-prod-env next-sitemap
+
+      - name: Build website again (to include next-sitemap output in out/)
+        run: yarn build
+        env:
+          GH_API_KEY: ${{ secrets.GH_API_KEY }}
+          GITHUB_BRANCH: production
+
+      - name: Sync S3
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.NDE_PORTAL_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SOURCE_DIR: './out'
+          DEST_DIR: 'production'
+
+      - name: Invalidate CloudFront distribution and wait for completion
+        uses: muratiger/invalidate-cloudfront-and-wait-for-completion-action@master
+        env:
+          DISTRIBUTION_ID: ${{ secrets.PRODUCTION_DISTRIBUTION_ID }}
+          PATHS: '/*'
+          AWS_REGION: 'us-east-1'
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

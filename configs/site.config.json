@@ -41,6 +41,17 @@
         "label": "Home"
       }
     },
+    "/login": {
+      "seo": {
+        "title": "Log In",
+        "description": "Choose an authentication provider to sign in to the NIAID Data Ecosystem Discovery Portal.",
+        "keywords": ["login", "authentication", "ORCID", "GitHub"],
+        "preventIndexing": true
+      },
+      "nav": {
+        "label": "Log In"
+      }
+    },
     "/search": {
       "seo": {
         "title": "Search Results",
@@ -119,6 +130,18 @@
         "description": "Log of updates to the NIAID Data Ecosystem Discovery Portal"
       }
     },
+    "/knowledge-center/how-to-cite-the-niaid-data-ecosystem": {
+      "seo": {
+        "title": "How to Cite",
+        "description": "How to cite the NIAID Data Ecosystem Discovery Portal and its resources",
+        "keywords": ["how to cite", "citation", "reference", "publication"],
+        "preventIndexing": true
+      },
+      "nav": {
+        "label": "How to Cite",
+        "description": "How to cite the NIAID Data Ecosystem Discovery Portal and its resources"
+      }
+    },
     "/knowledge-center": {
       "seo": {
         "title": "Knowledge Center",
@@ -174,8 +197,8 @@
     },
     "/diseases": {
       "seo": {
-        "title": "Diseases",
-        "description": "Explore datasets and research resources for diseases, including clinical, molecular, and experimental data.",
+        "title": "Diseases and Conditions",
+        "description": "Explore datasets and research resources for diseases and conditions, including clinical, molecular, and experimental data.",
         "keywords": [
           "disease",
           "clinical data",
@@ -186,7 +209,7 @@
         ]
       },
       "nav": {
-        "label": "Diseases",
+        "label": "Diseases and Conditions",
         "description": "Explore resources for NIAID priority health conditions"
       }
     },
@@ -254,6 +277,19 @@
         "description": "404 Error: Page Not Found.",
         "keywords": ["404", "page not found", "error"]
       }
+    },
+    "/api": {
+      "seo": {
+        "title": "API",
+        "description": "Programmatically access NIAID Data Ecosystem metadata through a public API.",
+        "keywords": ["NIAID", "data discovery portal", "API"]
+      },
+      "nav": {
+        "label": "API",
+        "description": "Search for resources programmatically",
+        "isExternal": true,
+        "href": "https://api.data.niaid.nih.gov/"
+      }
     }
   },
   "navigation": {
@@ -273,6 +309,9 @@
           },
           {
             "page": "/ontology-browser"
+          },
+          {
+            "page": "/api"
           }
         ]
       },
@@ -287,6 +326,9 @@
           },
           {
             "page": "/changelog"
+          },
+          {
+            "page": "/knowledge-center/how-to-cite-the-niaid-data-ecosystem"
           }
         ]
       },

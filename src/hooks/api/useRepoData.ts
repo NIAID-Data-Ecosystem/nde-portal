@@ -95,7 +95,10 @@ export function useRepoData(options: any = {}) {
       const sources = data?.src || [];
       const repositories = Object.values(sources)
         .filter(
-          source => source?.sourceInfo && !Array.isArray(source.sourceInfo),
+          source =>
+            source?.sourceInfo &&
+            !Array.isArray(source.sourceInfo) &&
+            source.sourceInfo.identifier,
         )
         .map(({ sourceInfo }) => {
           const {
@@ -119,7 +122,7 @@ export function useRepoData(options: any = {}) {
             _id: identifier,
             abstract: abstract || '',
             type: types,
-            name: name || '',
+            name: name || identifier || '',
             domain: genre,
             url,
             conditionsOfAccess: conditionsOfAccess

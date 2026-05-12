@@ -9,10 +9,13 @@ import {
 import { FormattedResource } from 'src/utils/api/types';
 import NextLink from 'next/link';
 import { FaArrowRight } from 'react-icons/fa6';
+import { SourceLogo } from 'src/components/source-logo';
 import {
-  SourceLogo,
-  getSourceDetails,
-} from 'src/views/search/components/card/source-logo';
+  formatSourcesWithLogos,
+  getAccessResourceURL,
+  getDDECatalog,
+  getSourceLogoLinkOut,
+} from 'src/components/source-logo/helpers';
 
 interface DataAccessProps {
   isLoading: boolean;
@@ -43,26 +46,23 @@ export const DataAccess: React.FC<DataAccessProps> = ({
 }) => {
   const prefersReducedMotion = usePrefersReducedMotion();
 
+  // If resource is part of a catalog, only show DDE as source
+
+  const catalogForLookup =
+    includedInDataCatalog && recordType === 'ResourceCatalog'
+      ? getDDECatalog(includedInDataCatalog) || []
+      : includedInDataCatalog || [];
+
   const sources =
     !isLoading && includedInDataCatalog
-      ? getSourceDetails(
-          recordType === 'ResourceCatalog'
-            ? (Array.isArray(includedInDataCatalog)
-                ? includedInDataCatalog.find(
-                    source => source.name === 'Data Discovery Engine',
-                  )
-                : includedInDataCatalog.name === 'Data Discovery Engine'
-                ? includedInDataCatalog
-                : null) ?? []
-            : includedInDataCatalog,
-        )
+      ? formatSourcesWithLogos(catalogForLookup)
       : [];
 
   return (
     <Stack mt={4} flexDirection='column' alignItems='flex-start' spacing={4}>
       {sources.map(source => (
         <React.Fragment key={source.name}>
-          <SourceLogo
+          <SourceLogo.Component
             imageProps={{
               width: 'auto',
               height: 'unset',
@@ -70,11 +70,7 @@ export const DataAccess: React.FC<DataAccessProps> = ({
               mb: 1,
             }}
             source={source}
-            url={
-              Array.isArray(source?.archivedAt)
-                ? source?.archivedAt[0]
-                : source?.archivedAt
-            }
+            url={getSourceLogoLinkOut(source)}
           />
           {source?.archivedAt && (
             <Flex
@@ -97,13 +93,11 @@ export const DataAccess: React.FC<DataAccessProps> = ({
               }}
             >
               <AccessResourceButton
-                url={
-                  recordType === 'ResourceCatalog'
-                    ? url ?? ''
-                    : Array.isArray(source?.archivedAt)
-                    ? source?.archivedAt[0]
-                    : source?.archivedAt
-                }
+                url={getAccessResourceURL({
+                  recordType,
+                  source,
+                  url,
+                })}
                 colorScheme={colorScheme}
               />
             </Flex>

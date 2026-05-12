@@ -8,6 +8,8 @@ export const TAB_LABELS = {
   COMPUTATIONAL_TOOL: formatAPIResourceTypeForDisplay('ComputationalTool'),
   DISEASE_OVERVIEW: 'Disease Overview',
   OTHER_RESOURCES: 'Other Resources',
+  SAMPLE: 'Sample',
+  DATA_COLLECTION: 'Data Collection',
 } as const;
 
 // Tab configuration
@@ -39,6 +41,24 @@ export const tabs: TabType[] = [
       },
     ],
   },
+  {
+    id: 's',
+    types: [
+      {
+        label: `${TAB_LABELS.SAMPLE}s`,
+        type: 'Sample',
+      },
+    ],
+  },
+  {
+    id: 'dc',
+    types: [
+      {
+        label: `${TAB_LABELS.DATA_COLLECTION}s`,
+        type: 'DataCollection',
+      },
+    ],
+  },
 ];
 
 // Helper to check if a type is part of the "Other Resources" group
@@ -57,6 +77,14 @@ export const generateOtherResourcesTitle = (
   const diseaseCount = disease?.count || 0;
   const totalCount = resourceCount + diseaseCount;
 
+  // If there are no diseases, show only Resource Catalogs
+  if (diseaseCount === 0) {
+    return `${
+      TAB_LABELS.RESOURCE_CATALOG
+    }s (${resourceCount.toLocaleString()})`;
+  }
+
+  // If there are diseases, show the full "Other Resources" breakdown
   const resourcePart = `${
     TAB_LABELS.RESOURCE_CATALOG
   }s (${resourceCount.toLocaleString()})`;

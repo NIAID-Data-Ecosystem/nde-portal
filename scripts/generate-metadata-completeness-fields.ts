@@ -17,7 +17,6 @@ const fetchMetadataCompletenessFields = async () => {
     const branch = 'main';
     const path = 'biothings-hub/files/nde-hub/scores.py';
     const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`;
-
     const response = await axios.get(url, {
       headers: {
         'Content-Type': 'application/json',
@@ -68,7 +67,7 @@ const fetchMetadataCompletenessFields = async () => {
       ],
     };
 
-    // Dataset
+    // Resource Catalog
     const ResourceCatalog = {
       required: [
         ...new Set([
@@ -84,11 +83,28 @@ const fetchMetadataCompletenessFields = async () => {
       ],
     };
 
+    // DataCollection
+    const DataCollection = {
+      required: [
+        ...new Set([
+          ...extractArray('DATA_COLLECTION_REQUIRED', data),
+          ...extractArray('DATA_COLLECTION_REQUIRED_AUGMENTED', data),
+        ]),
+      ],
+      recommended: [
+        ...new Set([
+          ...extractArray('DATA_COLLECTION_RECOMMENDED', data),
+          ...extractArray('DATA_COLLECTION_RECOMMENDED_AUGMENTED', data),
+        ]),
+      ],
+    };
+
     return {
       data: {
         ComputationalTool,
         Dataset,
         ResourceCatalog,
+        DataCollection,
       },
       error: null,
     };

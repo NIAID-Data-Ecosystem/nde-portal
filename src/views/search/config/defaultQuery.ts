@@ -45,6 +45,25 @@ export const PAGE_SIZE_OPTIONS = [
   { name: '100', value: 100 },
 ];
 
+// Default date range configuration
+export const DEFAULT_DATE_RANGE = {
+  startYear: 2000,
+  getEndYear: () => new Date().getFullYear(),
+} as const;
+
+// Generate default date filter range [startDate, endDate]
+const getDefaultDateRange = (): [string, string] => {
+  const startDate = `${DEFAULT_DATE_RANGE.startYear}-01-01`;
+  const endDate = `${DEFAULT_DATE_RANGE.getEndYear()}-12-31`;
+  return [startDate, endDate];
+};
+
+export const getDefaultDateFilter = (includeResourcesWithoutDate = true) => {
+  return includeResourcesWithoutDate
+    ? [...getDefaultDateRange(), { '-_exists_': ['date'] }]
+    : getDefaultDateRange();
+};
+
 // Default parameters for the search query.
 export type DefaultSearchQueryParams = Omit<
   SearchQueryParams,
@@ -57,4 +76,8 @@ export const defaultQuery: DefaultSearchQueryParams = {
   from: 1,
   size: PAGE_SIZE_OPTIONS[0].value,
   sort: SORT_OPTIONS[0].value,
+};
+
+export const defaultSelectedFilters = {
+  date: getDefaultDateFilter(),
 };

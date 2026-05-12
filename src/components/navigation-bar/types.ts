@@ -1,13 +1,11 @@
-export interface TransformedNavigationMenu extends NavigationItem {
-  env?: string[];
-  href?: string;
-  routes?: Array<TransformedNavigationMenu>;
-}
-
 export interface NavigationItem {
   label: string;
   description?: string;
+  icon?: React.ElementType;
   isExternal?: boolean;
+  href?: string;
+  onClick?: () => void;
+  isOpen?: boolean;
 }
 
 export interface NavigationRoute {
@@ -22,4 +20,10 @@ export interface NavigationSection {
 
 export interface Navigation {
   primary: NavigationSection[];
+}
+
+export interface TransformedNavigationDropdown extends NavigationItem {
+  env?: string[];
+  href?: string;
+  routes?: TransformedNavigationDropdown[];
 }

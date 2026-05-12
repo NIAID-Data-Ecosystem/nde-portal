@@ -19,7 +19,11 @@ export const AccessibleForFree = ({
       <BadgeWithTooltip
         colorScheme={isAccessibleForFree ? 'green' : 'gray'}
         value={isAccessibleForFree ? 'No Cost Access' : 'Paid  Access'}
-        tooltipLabel={property?.description[type]}
+        tooltipLabel={
+          property?.description?.[
+            type as keyof (typeof property)['description']
+          ] || ''
+        }
         {...props}
       />
     );

@@ -38,8 +38,7 @@ const DiseasePage: NextPage<{
   });
 
   const query = data?.query;
-  const topic =
-    data?.topic?.charAt(0).toUpperCase().concat(data.topic.slice(1)) || '';
+  const topic = data?.topic || '';
 
   // Fetch total number of results for the topic
   const params = {
@@ -65,7 +64,8 @@ const DiseasePage: NextPage<{
     enabled: params.q !== undefined && hasSlug,
   });
 
-  const pageTitle = data?.title || 'Diseases';
+  const pageTitle =
+    data?.title || siteConfig.pages['/diseases'].nav?.label || 'Diseases';
 
   return (
     <PageContainer

@@ -1,12 +1,17 @@
 import { TagInfo } from '.';
-import {
-  FilterConfig,
-  SelectedFilterType,
-  SelectedFilterTypeValue,
-} from '../../types';
+
 import { capitalize, has, isPlainObject } from 'lodash';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import {
+  FilterConfig,
+  SelectedFilterType,
+  SelectedFilterValueType,
+} from '../../types';
+import {
+  APIResourceType,
+  formatAPIResourceTypeForDisplay,
+} from 'src/utils/formatting/formatResourceType';
 
 // Constants
 const DISPLAY_NAME_SEPARATOR = ' | ';
@@ -24,7 +29,7 @@ const isObjectValue = (value: unknown): value is Record<string, unknown> =>
   isPlainObject(value);
 
 const isDateRangeValues = (
-  values: (string | SelectedFilterTypeValue)[],
+  values: (string | SelectedFilterValueType)[],
 ): values is [string, string] =>
   values.length === 2 && isStringValue(values[0]) && isStringValue(values[1]);
 
@@ -56,8 +61,8 @@ const applyConfigTransform = (value: string, config?: FilterConfig): string => {
 // Controls how a selected filter is displayed in the tag
 const getDisplayValue = (
   key: string,
-  value: string | SelectedFilterTypeValue,
-  values: (string | SelectedFilterTypeValue)[],
+  value: string | SelectedFilterValueType,
+  values: (string | SelectedFilterValueType)[],
   index: number,
   config?: FilterConfig,
 ): string => {
@@ -68,6 +73,7 @@ const getDisplayValue = (
   }
 
   // Handle date ranges (skip subsequent values in range)
+
   if (key === DATE_FILTER_KEY && isDateRangeValues(values)) {
     return index === 0 ? formatDateRange(values[0], values[1]) : '';
   }
@@ -78,10 +84,12 @@ const getDisplayValue = (
     if (key.includes('displayName')) {
       return formatDisplayName(value);
     }
-
-    // Apply config transformations for specific keys
-    if (key === '@type' || key === 'conditionsOfAccess') {
+    if (config?.transformData) {
       return applyConfigTransform(value, config);
+    }
+    // Apply type formatting for @type filters
+    if (key === '@type') {
+      return formatAPIResourceTypeForDisplay(value as APIResourceType);
     }
   }
 
@@ -89,18 +97,12 @@ const getDisplayValue = (
 };
 
 // Checks if a filter represents a date exists/not exists query
-const isDateExistsQuery = (
-  key: string,
-  values: (string | SelectedFilterTypeValue)[],
-): boolean => {
-  if (key !== DATE_FILTER_KEY || values.length !== 1) {
-    return false;
-  }
-
-  const value = values[0];
-  return (
-    isObjectValue(value) &&
-    (has(value, EXISTS_PREFIX) || has(value, NOT_EXISTS_PREFIX))
+const stripDateExistsQuery = (values: (string | SelectedFilterValueType)[]) => {
+  return values.filter(
+    value =>
+      !isObjectValue(value) &&
+      !has(value, EXISTS_PREFIX) &&
+      !has(value, NOT_EXISTS_PREFIX),
   );
 };
 
@@ -121,7 +123,7 @@ const createDateRangeTag = (
 const createValueTags = (
   key: string,
   name: string,
-  values: (string | SelectedFilterTypeValue)[],
+  values: (string | SelectedFilterValueType)[],
   config?: FilterConfig,
 ): TagInfo[] => {
   return values
@@ -165,14 +167,19 @@ export const generateTags = (
     const config = configMap[key];
     const name = generateTagName(key, config);
 
-    // Skip date exists/not exists queries (they don't display as tags)
-    if (isDateExistsQuery(key, values)) {
-      return [];
-    }
-
     // Handle date ranges as a single tag
-    if (key === DATE_FILTER_KEY && isDateRangeValues(values)) {
-      return [createDateRangeTag(key, name, values)];
+    if (key === DATE_FILTER_KEY) {
+      const cleanedDateValues = stripDateExistsQuery(values);
+
+      if (cleanedDateValues?.length === 0) {
+        return [];
+      }
+
+      if (isDateRangeValues(cleanedDateValues)) {
+        return [createDateRangeTag(key, name, cleanedDateValues)];
+      }
+      // If not a range, fall through to create individual tags
+      return createValueTags(key, name, cleanedDateValues, config);
     }
 
     // Handle all other filters
