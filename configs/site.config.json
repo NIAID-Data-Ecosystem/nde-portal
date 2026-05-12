@@ -45,7 +45,12 @@
       "seo": {
         "title": "Log In",
         "description": "Choose an authentication provider to sign in to the NIAID Data Ecosystem Discovery Portal.",
-        "keywords": ["login", "authentication", "ORCID", "GitHub"],
+        "keywords": [
+          "login",
+          "authentication",
+          "ORCID",
+          "GitHub"
+        ],
         "preventIndexing": true
       },
       "nav": {
@@ -111,7 +116,12 @@
       "seo": {
         "title": "Updates",
         "description": "View the latest NIAID Data Ecosystem updates, including new features and improvements to data discovery.",
-        "keywords": ["updates", "events", "NIAID", "data discovery portal"]
+        "keywords": [
+          "updates",
+          "events",
+          "NIAID",
+          "data discovery portal"
+        ]
       },
       "nav": {
         "label": "Updates",
@@ -122,7 +132,11 @@
       "seo": {
         "title": "Changelog",
         "description": "Changelog for the NIAID Data Ecosystem Discovery Portal, listing updates and version history.",
-        "keywords": ["changelog", "updates", "version history"],
+        "keywords": [
+          "changelog",
+          "updates",
+          "version history"
+        ],
         "preventIndexing": true
       },
       "nav": {
@@ -134,7 +148,12 @@
       "seo": {
         "title": "How to Cite",
         "description": "How to cite the NIAID Data Ecosystem Discovery Portal and its resources",
-        "keywords": ["how to cite", "citation", "reference", "publication"],
+        "keywords": [
+          "how to cite",
+          "citation",
+          "reference",
+          "publication"
+        ],
         "preventIndexing": true
       },
       "nav": {
@@ -217,7 +236,12 @@
       "seo": {
         "title": "Features",
         "description": "Explore how researchers use the NIAID Data Ecosystem to advance biomedical research. Learn from real-world use cases and topic-specific insights.",
-        "keywords": ["featured", "NIAID", "data discovery portal", "topics"]
+        "keywords": [
+          "featured",
+          "NIAID",
+          "data discovery portal",
+          "topics"
+        ]
       },
       "nav": {
         "label": "Features",
@@ -275,14 +299,22 @@
       "seo": {
         "title": "404",
         "description": "404 Error: Page Not Found.",
-        "keywords": ["404", "page not found", "error"]
+        "keywords": [
+          "404",
+          "page not found",
+          "error"
+        ]
       }
     },
     "/api": {
       "seo": {
         "title": "API",
         "description": "Programmatically access NIAID Data Ecosystem metadata through a public API.",
-        "keywords": ["NIAID", "data discovery portal", "API"]
+        "keywords": [
+          "NIAID",
+          "data discovery portal",
+          "API"
+        ]
       },
       "nav": {
         "label": "API",
