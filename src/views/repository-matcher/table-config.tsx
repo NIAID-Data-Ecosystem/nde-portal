@@ -286,6 +286,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         </HStack>
       );
     },
+    filter: {
+      name: 'Research Domain',
+      description: 'Filter by the research domain of the repository or catalog',
+      getFilterValues: (value: string[]) => value ?? [],
+    },
   },
   {
     id: 'coa',
@@ -390,6 +395,12 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         </HStack>
       );
     },
+    filter: {
+      name: 'Pathogen Species',
+      description: 'Filter by the pathogen species studied by the repository',
+      getFilterValues: (value: DefinedTerm[]) =>
+        value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
+    },
   },
   {
     id: 'dataAccepted',
@@ -489,6 +500,12 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         </HStack>
       );
     },
+    filter: {
+      name: 'Host Species',
+      description: 'Filter by the host species studied by the repository',
+      getFilterValues: (value: DefinedTerm[]) =>
+        value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
+    },
   },
   {
     id: 'meas-technique',
@@ -522,6 +539,12 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         </HStack>
       );
     },
+    filter: {
+      name: 'Measurement Technique',
+      description: 'Filter by the measurement technique used by the repository',
+      getFilterValues: (value: DefinedTerm[]) =>
+        value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
+    },
   },
   {
     id: 'topic',
@@ -541,7 +564,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       value: DefinedTerm[];
       isLoading?: boolean;
     }) => {
-      if (!value.some(v => v.name)) {
+      if (!value || !value?.some(v => v.name)) {
         return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
       }
       return (
@@ -557,6 +580,12 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
           ))}
         </HStack>
       );
+    },
+    filter: {
+      name: 'Topic Categories',
+      description: 'Filter by the topic categories studied by the repository',
+      getFilterValues: (value: DefinedTerm[]) =>
+        value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
     },
   },
 ];
