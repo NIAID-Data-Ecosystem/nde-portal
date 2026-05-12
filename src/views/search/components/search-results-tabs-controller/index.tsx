@@ -1,6 +1,7 @@
 import React, { useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { TabPanel } from '@chakra-ui/react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useSearchTabsContext } from '../../context/search-tabs-context';
 import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
 import { SearchResults } from '../results-list';
@@ -22,8 +23,14 @@ import {
   SHOW_SAMPLES_TAB,
   SHOW_DATA_COLLECTIONS_TAB,
 } from 'src/utils/feature-flags';
-import { useBioSampleAggregation } from '../../hooks/useBioSampleAggregation';
+import {
+  useBioSampleAggregation,
+  BIOSAMPLE_EXTRA_FILTER,
+} from '../../hooks/useBioSampleAggregation';
 import { queryFilterObject2String } from '../filters/utils/query-string';
+import { fetchSearchResults, Params } from 'src/utils/api';
+import { defaultQuery } from '../../config/defaultQuery';
+import { SAMPLE_FIELDS, DATA_COLLECTION_FIELDS } from '../../config/fields';
 
 const CAROUSEL_RESULTS_FIELDS = [
   '_meta',
@@ -39,6 +46,11 @@ const CAROUSEL_RESULTS_FIELDS = [
   'name',
 ];
 
+// Stable empty array used as the fallback when useDiseaseData returns no
+// diseases, so that the carouselItems memo does not see a new array reference
+// on every render.
+const EMPTY_DISEASES: never[] = [];
+
 interface SearchResultsControllerProps {
   colorScheme?: string;
   initialData: FetchSearchResultsResponse;
@@ -51,6 +63,7 @@ export const SearchResultsController = ({
   const router = useRouter();
   const { selectedIndex, setSelectedIndex } = useSearchTabsContext();
   const { getPagination, setPagination } = usePaginationContext();
+  const queryClient = useQueryClient();
 
   // Track if the user has chosen a tab. When set, the auto-tab will only
   // override the user choice if there are no results for that tab.
@@ -76,9 +89,7 @@ export const SearchResultsController = ({
         },
       },
       undefined,
-      {
-        shallow: true,
-      },
+      { shallow: true },
     );
   };
 
@@ -89,6 +100,7 @@ export const SearchResultsController = ({
       filters: queryParams.filters,
       facets: ['@type'],
       facet_size: 100,
+      size: 0,
       use_ai_search: queryParams.use_ai_search ?? 'false',
     },
     { enabled: router.isReady },
@@ -119,7 +131,69 @@ export const SearchResultsController = ({
 
   const bioSampleTotal = bioSampleAgg.data?.total ?? 0;
 
-  // Determine the correct tab based on actual search results
+  // Prefetch the Sample table query in the background.
+  useEffect(() => {
+    if (!router.isReady || !SHOW_SAMPLES_TAB) return;
+
+    const sampleExtraFilter = serializedFilters
+      ? `${serializedFilters} AND ${BIOSAMPLE_EXTRA_FILTER}`
+      : BIOSAMPLE_EXTRA_FILTER;
+
+    const sampleParams: Params = {
+      q: queryParams.q,
+      extra_filter: sampleExtraFilter,
+      facets: '',
+      fields: SAMPLE_FIELDS,
+      sort: defaultQuery.sort,
+      size: `${defaultQuery.size}`,
+      from: '0',
+      use_metadata_score: 'false',
+      use_ai_search: queryParams.use_ai_search ?? 'false',
+    };
+
+    queryClient.prefetchQuery({
+      queryKey: ['search-results', sampleParams],
+      queryFn: () => fetchSearchResults(sampleParams),
+      staleTime: 1000 * 60 * 2,
+    });
+  }, [
+    router.isReady,
+    queryParams.q,
+    serializedFilters,
+    queryParams.use_ai_search,
+    queryClient,
+  ]);
+
+  // Prefetch the DataCollection table query.
+  useEffect(() => {
+    if (!router.isReady || !SHOW_DATA_COLLECTIONS_TAB) return;
+
+    const dcParams: Params = {
+      q: queryParams.q,
+      extra_filter: serializedFilters,
+      facets: '',
+      fields: DATA_COLLECTION_FIELDS,
+      sort: defaultQuery.sort,
+      size: `${defaultQuery.size}`,
+      from: '0',
+      use_metadata_score: 'false',
+      use_ai_search: queryParams.use_ai_search ?? 'false',
+    };
+
+    queryClient.prefetchQuery({
+      queryKey: ['search-results', dcParams],
+      queryFn: () => fetchSearchResults(dcParams),
+      staleTime: 1000 * 60 * 2,
+    });
+  }, [
+    router.isReady,
+    queryParams.q,
+    serializedFilters,
+    queryParams.use_ai_search,
+    queryClient,
+  ]);
+
+  // Determine the correct tab based on actual search results.
   useEffect(() => {
     if (!facetData?.facets || !router.isReady) return;
     const facetCounts =
@@ -182,9 +256,7 @@ export const SearchResultsController = ({
             },
           },
           undefined,
-          {
-            shallow: true,
-          },
+          { shallow: true },
         );
       }
     }
@@ -229,7 +301,7 @@ export const SearchResultsController = ({
   );
 
   const {
-    diseases: matchingDiseases,
+    diseases: matchingDiseasesRaw,
     isLoading: diseaseIsLoading,
     hasMatchingDiseases,
   } = useDiseaseData({
@@ -237,6 +309,11 @@ export const SearchResultsController = ({
     selectedFilters: queryParams.filters || {},
     enabled: true,
   });
+
+  // Use a stable empty-array reference when there are no diseases so that the
+  // carouselItems memo below does not invalidate on every render.
+  const matchingDiseases =
+    matchingDiseasesRaw.length === 0 ? EMPTY_DISEASES : matchingDiseasesRaw;
 
   const carouselItems = useMemo(() => {
     const items: Array<{ type: 'resource' | 'disease'; data: any }> = [];
@@ -306,7 +383,7 @@ export const SearchResultsController = ({
             types: tabTypesWithCount,
           };
         }),
-    [facetData?.facets, tabs, matchingDiseases.length, bioSampleTotal],
+    [facetData?.facets, matchingDiseases.length, bioSampleTotal],
   );
 
   const getAccordionDefaultIndices = (
