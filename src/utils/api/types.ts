@@ -1,3 +1,4 @@
+import { CreativeWorkStatusDatasetType } from 'src/hooks/api/types';
 import {
   APIResourceType,
   CollectionType,
@@ -491,7 +492,7 @@ export interface FormattedResource {
   collectionType?: CollectionType | null;
   condition: string | null;
   conditionsOfAccess: AccessTypes | null;
-  creativeWorkStatus?: string | null;
+  creativeWorkStatus?: CreativeWorkStatusDatasetType | string | null;
   creditText: string | null;
   date: string | null;
   dateCreated: string | null;

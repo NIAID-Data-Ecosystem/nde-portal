@@ -32,6 +32,11 @@ import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils
 import Tooltip from 'src/components/tooltip';
 import { TagWithUrl } from 'src/components/tag-with-url';
 import { FaCheck, FaX, FaXmark } from 'react-icons/fa6';
+import {
+  getMetadataDescription,
+  getMetadataName,
+} from 'src/components/metadata';
+import { CreativeWorkStatusDatasetType } from 'src/hooks/api/types';
 
 export type RepositoryMatcherItem = Repository | FormattedResource;
 
@@ -173,7 +178,7 @@ const TagCell = ({
 export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   {
     id: 'name',
-    label: 'Name',
+    label: getMetadataName('name') || '',
     fields: ['name', '_id', 'identifier', 'url', '@type', 'collectionType'],
     columns: { isSortable: true, isDefault: true },
     required: true,
@@ -210,7 +215,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
 
   {
     id: 'description',
-    label: 'Description',
+    label: getMetadataName('description') || '',
     fields: ['description'],
     columns: { isSortable: true, isDefault: true },
     transform: (item): string => item.description || '',
@@ -224,7 +229,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   },
   {
     id: 'abstract',
-    label: 'Abstract',
+    label: getMetadataName('abstract') || '',
     fields: ['abstract'],
     columns: { isSortable: true, isDefault: false },
     transform: (item): string => item.abstract || '',
@@ -238,7 +243,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   },
   {
     id: 'type',
-    label: 'Type',
+    label: getMetadataName('type') || '',
     fields: ['@type', 'collectionType', 'type'],
     columns: { isSortable: true, isDefault: true },
     transform: (item): string[] => itemTypes(item),
@@ -257,14 +262,14 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       />
     ),
     filter: {
-      name: 'Type',
-      description: 'Filter by the kind of repository or catalog',
+      name: getMetadataName('type') || '',
+      description: getMetadataDescription('type') || '',
       getFilterValues: (value: string[]) => value ?? [],
     },
   },
   {
     id: 'researchDomain',
-    label: 'Research Domain',
+    label: getMetadataName('genre') || '',
     fields: ['genre'],
     columns: { isSortable: true, isDefault: true },
     transform: item => {
@@ -287,14 +292,14 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       );
     },
     filter: {
-      name: 'Research Domain',
-      description: 'Filter by the research domain of the repository or catalog',
+      name: getMetadataName('genre') || '',
+      description: getMetadataDescription('genre') || '',
       getFilterValues: (value: string[]) => value ?? [],
     },
   },
   {
     id: 'coa',
-    label: 'Conditions of Access',
+    label: getMetadataName('conditionsOfAccess') || '',
     fields: ['conditionsOfAccess'],
     columns: { isSortable: true, isDefault: true },
     transform: (item): string =>
@@ -319,14 +324,14 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       );
     },
     filter: {
-      name: 'Conditions of Access',
-      description: 'Filter by how the repository allows access to its data',
+      name: getMetadataName('conditionsOfAccess') || '',
+      description: getMetadataDescription('conditionsOfAccess') || '',
       getFilterValues: (value: string) => (value ? [value] : []),
     },
   },
   {
     id: 'healthCondition',
-    label: 'Health Condition',
+    label: getMetadataName('healthCondition') || '',
     fields: ['healthCondition'],
     columns: { isSortable: true, isDefault: true },
     transform: item => {
@@ -357,15 +362,15 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       );
     },
     filter: {
-      name: 'Health Condition',
-      description: 'Filter by the health condition studied by the repository',
+      name: getMetadataName('healthCondition') || '',
+      description: getMetadataDescription('healthCondition') || '',
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
     },
   },
   {
     id: 'infectiousAgent',
-    label: 'Pathogen Species',
+    label: getMetadataName('infectiousAgent') || '',
     fields: ['infectiousAgent'],
     columns: { isSortable: true, isDefault: true },
     transform: item => {
@@ -397,7 +402,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     },
     filter: {
       name: 'Pathogen Species',
-      description: 'Filter by the pathogen species studied by the repository',
+      description: getMetadataDescription('infectiousAgent') || '',
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
     },
@@ -408,17 +413,26 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     fields: ['creativeWorkStatus'],
     columns: { isSortable: true, isDefault: true },
     transform: item => item.creativeWorkStatus,
-    component: ({ value }: { value: string | null; isLoading?: boolean }) => {
-      const isAccepting = value?.toLowerCase() === 'accepting data';
-      const isNotAccepting = value?.toLowerCase() === 'retired';
-      const color = isAccepting ? 'primary.500' : 'gray.800';
+    component: ({
+      value,
+    }: {
+      value: CreativeWorkStatusDatasetType | null;
+      isLoading?: boolean;
+    }) => {
+      const isNotAccepting = [
+        'retired',
+        'maintenance',
+        'not accepting data',
+      ].includes(value?.toLowerCase() || '');
+      const color = isNotAccepting ? 'gray.800' : 'primary.500';
+
       return (
-        <HStack gap={1} color={color} opacity={isAccepting || !value ? 1 : 0.8}>
-          {isAccepting ? (
-            <Icon as={FaCheck}></Icon>
-          ) : isNotAccepting ? (
+        <HStack gap={1} color={color} opacity={isNotAccepting ? 0.8 : 1}>
+          {isNotAccepting ? (
             <Icon as={FaXmark}></Icon>
-          ) : null}
+          ) : (
+            <Icon as={FaCheck}></Icon>
+          )}
           <TextCell
             value={value || ''}
             color={'inherit'}
@@ -429,13 +443,13 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     },
     filter: {
       name: 'Accepting Data?',
-      description: '',
+      description: getMetadataDescription('creativeWorkStatus') || '',
       getFilterValues: (value: string) => (value ? [value] : []),
     },
   },
   {
     id: 'collectionSize',
-    label: 'Collection Size',
+    label: getMetadataName('collectionSize') || '',
     fields: ['collectionSize'],
     columns: {
       isSortable: false,
@@ -472,7 +486,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   },
   {
     id: 'species',
-    label: 'Host Species',
+    label: getMetadataName('species') || '',
     fields: ['species'],
     columns: { isSortable: true, isDefault: true },
     transform: item => {
@@ -501,15 +515,15 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       );
     },
     filter: {
-      name: 'Host Species',
-      description: 'Filter by the host species studied by the repository',
+      name: getMetadataName('species') || '',
+      description: getMetadataDescription('species') || '',
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
     },
   },
   {
     id: 'meas-technique',
-    label: 'Measurement Technique',
+    label: getMetadataName('measurementTechnique') || '',
     fields: ['measurementTechnique'],
     columns: { isSortable: true, isDefault: true },
     transform: item => {
@@ -540,15 +554,15 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       );
     },
     filter: {
-      name: 'Measurement Technique',
-      description: 'Filter by the measurement technique used by the repository',
+      name: getMetadataName('measurementTechnique') || '',
+      description: getMetadataDescription('measurementTechnique') || '',
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
     },
   },
   {
     id: 'topic',
-    label: 'Topic Categories',
+    label: getMetadataName('topicCategory') || '',
     fields: ['topicCategory'],
     columns: { isSortable: true, isDefault: true },
     transform: item => {
@@ -582,8 +596,8 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       );
     },
     filter: {
-      name: 'Topic Categories',
-      description: 'Filter by the topic categories studied by the repository',
+      name: getMetadataName('topicCategory') || '',
+      description: getMetadataDescription('topicCategory') || '',
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
     },

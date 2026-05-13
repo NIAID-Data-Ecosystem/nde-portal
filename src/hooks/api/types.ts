@@ -7,6 +7,14 @@ import {
   UsageInfo,
 } from 'src/utils/api/types';
 
+export type CreativeWorkStatusDatasetType =
+  | 'Draft'
+  | 'Active'
+  | 'Maintenance'
+  | 'Accepting Data'
+  | 'Not Accepting Data'
+  | 'Retired';
+
 export interface MetadataSource {
   code: {
     file: string;
@@ -22,7 +30,7 @@ export interface MetadataSource {
     collectionSize?: QuantitativeValue[];
     collectionType?: string;
     conditionsOfAccess?: string;
-    creativeWorkStatus?: string;
+    creativeWorkStatus?: CreativeWorkStatusDatasetType;
     date?: string;
     dateModified?: string;
     datePublished?: string;
