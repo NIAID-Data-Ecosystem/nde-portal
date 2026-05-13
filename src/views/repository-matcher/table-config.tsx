@@ -37,6 +37,7 @@ import {
   getMetadataName,
 } from 'src/components/metadata';
 import { CreativeWorkStatusDatasetType } from 'src/hooks/api/types';
+import { Skeleton } from 'src/components/skeleton';
 
 export type RepositoryMatcherItem = Repository | FormattedResource;
 
@@ -146,6 +147,35 @@ const TextCell = ({
   </SkeletonText>
 );
 
+const DefinedTermTagList = ({
+  value,
+  isLoading,
+}: {
+  value?: DefinedTerm[];
+  isLoading?: boolean;
+}) => {
+  const items: (DefinedTerm | null)[] = isLoading
+    ? Array.from({ length: 3 }, () => null)
+    : value ?? [];
+
+  if (!isLoading && items.length === 0) {
+    return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
+  }
+  return (
+    <HStack flexWrap='wrap'>
+      {items.map((v, i) => (
+        <TagCell
+          key={i}
+          value={v?.name || ''}
+          url={v?.url || undefined}
+          noOfLines={1}
+          isLoading={isLoading}
+        />
+      ))}
+    </HStack>
+  );
+};
+
 const TagCell = ({
   value,
   url,
@@ -157,22 +187,22 @@ const TagCell = ({
   noOfLines?: number;
   isLoading?: boolean;
 }) => {
+  if (isLoading) {
+    return <Skeleton isLoaded={false} width='80px' height='20px' />;
+  }
   const label = value || '';
-
   return (
-    <SkeletonText isLoaded={!isLoading} noOfLines={noOfLines}>
-      <Tooltip label={label} isDisabled={!value} hasArrow>
-        <Box>
-          {url ? (
-            <TagWithUrl href={url}>{label}</TagWithUrl>
-          ) : (
-            <Tag variant='subtle' noOfLines={noOfLines}>
-              <TagLabel>{label}</TagLabel>
-            </Tag>
-          )}
-        </Box>
-      </Tooltip>
-    </SkeletonText>
+    <Tooltip label={label} isDisabled={!value} hasArrow>
+      <Box>
+        {url ? (
+          <TagWithUrl href={url}>{label}</TagWithUrl>
+        ) : (
+          <Tag variant='subtle' noOfLines={noOfLines}>
+            <TagLabel>{label}</TagLabel>
+          </Tag>
+        )}
+      </Box>
+    </Tooltip>
   );
 };
 export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
@@ -283,9 +313,16 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       value: string[];
       isLoading?: boolean;
     }) => {
+      const items = isLoading
+        ? Array.from({ length: 3 }, () => '')
+        : value ?? [];
+
+      if (!isLoading && items.length === 0) {
+        return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
+      }
       return (
         <HStack flexWrap='wrap'>
-          {value?.map((v, i) => (
+          {items.map((v, i) => (
             <TagCell key={i} value={v} noOfLines={1} isLoading={isLoading} />
           ))}
         </HStack>
@@ -346,21 +383,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     }: {
       value: DefinedTerm[];
       isLoading?: boolean;
-    }) => {
-      return (
-        <HStack flexWrap='wrap'>
-          {value?.map((v, i) => (
-            <TagCell
-              key={i}
-              value={v.name || ''}
-              url={v.url || undefined}
-              noOfLines={1}
-              isLoading={isLoading}
-            />
-          ))}
-        </HStack>
-      );
-    },
+    }) => <DefinedTermTagList value={value} isLoading={isLoading} />,
     filter: {
       name: getMetadataName('healthCondition') || '',
       description: getMetadataDescription('healthCondition') || '',
@@ -385,21 +408,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     }: {
       value: DefinedTerm[];
       isLoading?: boolean;
-    }) => {
-      return (
-        <HStack flexWrap='wrap'>
-          {value?.map((v, i) => (
-            <TagCell
-              key={i}
-              value={v.name || ''}
-              url={v.url || undefined}
-              noOfLines={1}
-              isLoading={isLoading}
-            />
-          ))}
-        </HStack>
-      );
-    },
+    }) => <DefinedTermTagList value={value} isLoading={isLoading} />,
     filter: {
       name: 'Pathogen Species',
       description: getMetadataDescription('infectiousAgent') || '',
@@ -424,15 +433,15 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         'maintenance',
         'not accepting data',
       ].includes(value?.toLowerCase() || '');
-      const color = isNotAccepting ? 'gray.800' : 'primary.500';
+      const color = isNotAccepting || !value ? 'gray.800' : 'primary.500';
 
       return (
         <HStack gap={1} color={color} opacity={isNotAccepting ? 0.8 : 1}>
           {isNotAccepting ? (
             <Icon as={FaXmark}></Icon>
-          ) : (
+          ) : value ? (
             <Icon as={FaCheck}></Icon>
-          )}
+          ) : null}
           <TextCell
             value={value || ''}
             color={'inherit'}
@@ -499,21 +508,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     }: {
       value: DefinedTerm[];
       isLoading?: boolean;
-    }) => {
-      return (
-        <HStack flexWrap='wrap'>
-          {value?.map((v, i) => (
-            <TagCell
-              key={i}
-              value={v.name || ''}
-              url={v.url || undefined}
-              noOfLines={1}
-              isLoading={isLoading}
-            />
-          ))}
-        </HStack>
-      );
-    },
+    }) => <DefinedTermTagList value={value} isLoading={isLoading} />,
     filter: {
       name: getMetadataName('species') || '',
       description: getMetadataDescription('species') || '',
@@ -538,21 +533,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     }: {
       value: DefinedTerm[];
       isLoading?: boolean;
-    }) => {
-      return (
-        <HStack flexWrap='wrap'>
-          {value?.map((v, i) => (
-            <TagCell
-              key={i}
-              value={v.name || ''}
-              url={v.url || undefined}
-              noOfLines={1}
-              isLoading={isLoading}
-            />
-          ))}
-        </HStack>
-      );
-    },
+    }) => <DefinedTermTagList value={value} isLoading={isLoading} />,
     filter: {
       name: getMetadataName('measurementTechnique') || '',
       description: getMetadataDescription('measurementTechnique') || '',
@@ -578,22 +559,10 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       value: DefinedTerm[];
       isLoading?: boolean;
     }) => {
-      if (!value || !value?.some(v => v.name)) {
+      if (!isLoading && (!value || !value.some(v => v.name))) {
         return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
       }
-      return (
-        <HStack flexWrap='wrap'>
-          {value?.map((v, i) => (
-            <TagCell
-              key={i}
-              value={v.name || ''}
-              url={v.url || undefined}
-              noOfLines={1}
-              isLoading={isLoading}
-            />
-          ))}
-        </HStack>
-      );
+      return <DefinedTermTagList value={value} isLoading={isLoading} />;
     },
     filter: {
       name: getMetadataName('topicCategory') || '',
