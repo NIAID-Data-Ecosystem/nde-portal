@@ -305,7 +305,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     id: 'researchDomain',
     label: getMetadataName('genre') || '',
     fields: ['genre'],
-    columns: { isSortable: true, isDefault: true },
+    columns: {
+      isSortable: true,
+      isDefault: true,
+      style: { maxWidth: '225px', minWidth: '225px' },
+    },
     transform: item => {
       if (!item.genre) return [];
       return Array.isArray(item.genre) ? item.genre : [item.genre];
@@ -340,9 +344,13 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   },
   {
     id: 'coa',
-    label: getMetadataName('conditionsOfAccess') || '',
+    label: 'Access',
     fields: ['conditionsOfAccess'],
-    columns: { isSortable: true, isDefault: true },
+    columns: {
+      isSortable: true,
+      isDefault: true,
+      style: { maxWidth: '160px', minWidth: '160px' },
+    },
     transform: (item): string =>
       transformConditionsOfAccessLabel(
         formatConditionsOfAccess(item.conditionsOfAccess),
@@ -365,7 +373,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       );
     },
     filter: {
-      name: getMetadataName('conditionsOfAccess') || '',
+      name: 'Access',
       description: getMetadataDescription('conditionsOfAccess') || '',
       getFilterValues: (value: string) => (value ? [value] : []),
     },
