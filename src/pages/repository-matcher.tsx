@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
+  Divider,
   Flex,
   Heading,
   Stack,
@@ -11,7 +12,11 @@ import {
 } from '@chakra-ui/react';
 
 import { NextPage } from 'next';
-import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
+import {
+  getPageSeoConfig,
+  PageContainer,
+  PageContent,
+} from 'src/components/page-container';
 import { SearchInput } from 'src/components/search-input';
 import { Table } from 'src/components/table';
 import { CustomizeColumnsPopover } from 'src/views/repository-matcher/components/CustomizeColumnsPopover';
@@ -156,7 +161,7 @@ const RepositoryMatcher: NextPage = () => {
 
   return (
     <PageContainer meta={getPageSeoConfig('/')}>
-      <Flex direction='column' gap={4} mb={6}>
+      <Flex direction='column' gap={4} px={40} py={8}>
         <Heading as='h1' size='lg'>
           Repository Matcher
         </Heading>
@@ -165,14 +170,14 @@ const RepositoryMatcher: NextPage = () => {
           research domain, accepted data, and more.
         </Text>
       </Flex>
-
+      <Divider />
       <Flex
         direction={{ base: 'column', md: 'row' }}
         align='flex-start'
         gap={4}
       >
         <Box
-          w={{ base: '100%', md: '280px' }}
+          w={{ base: '100%', md: '320px' }}
           flexShrink={0}
           position={{ base: 'static', md: 'sticky' }}
           top={{ md: 4 }}
@@ -184,28 +189,26 @@ const RepositoryMatcher: NextPage = () => {
             isLoading={isLoading}
           />
         </Box>
-
-        <Box flex={1} minW={0} w='100%'>
+        <Box flex={1} minW={0} w='100%' px={8} mt={6}>
           <Stack
             direction='row'
             spacing={2}
             mb={2}
             flexWrap='wrap'
             alignItems='center'
+            width='80%'
           >
             <SearchInput
               size='md'
-              placeholder='Search table'
+              placeholder="Search repositories — i.e. 'IID', 'sequencing'"
               ariaLabel='Search repositories and resource catalogs'
               value={searchTerm}
               handleChange={handleSearchChange}
               isResponsive={false}
               alignItems='flex-end'
               onClose={() => setSearchTerm('')}
-            />
-            <CustomizeColumnsPopover
-              onVisibleColumnsChange={setVisibleColumnIds}
-              onColumnOrderChange={setOrderedColumnIds}
+              width='100%'
+              colorScheme='primary'
             />
           </Stack>
           {/* <!-- Filter Tags--> */}
@@ -247,11 +250,20 @@ const RepositoryMatcher: NextPage = () => {
               );
             })}
           </Stack>
-          <Box py={2}>
+          <Flex
+            w='100%'
+            py={2}
+            justifyContent='space-between'
+            alignItems='baseline'
+          >
             <Text fontSize='sm' fontWeight='semibold' lineHeight='normal'>
               {sortedData?.length ?? 0} results
             </Text>
-          </Box>
+            <CustomizeColumnsPopover
+              onVisibleColumnsChange={setVisibleColumnIds}
+              onColumnOrderChange={setOrderedColumnIds}
+            />
+          </Flex>
 
           <Table
             ariaLabel='Repository matcher table'

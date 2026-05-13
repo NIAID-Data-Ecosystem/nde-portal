@@ -42,7 +42,7 @@ export const Filters: React.FC<FiltersProps> = ({
       bg='white'
       borderWidth='1px'
       borderColor='gray.100'
-      borderRadius='md'
+      borderTop='none'
       overflow='hidden'
     >
       <Heading
@@ -52,6 +52,7 @@ export const Filters: React.FC<FiltersProps> = ({
         py={3}
         borderBottom='1px solid'
         borderBottomColor='gray.100'
+        fontWeight='semibold'
       >
         Filters
       </Heading>

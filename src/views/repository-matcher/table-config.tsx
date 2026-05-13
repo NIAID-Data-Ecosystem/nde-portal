@@ -275,7 +275,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     id: 'type',
     label: getMetadataName('type') || '',
     fields: ['@type', 'collectionType', 'type'],
-    columns: { isSortable: true, isDefault: true },
+    columns: {
+      isSortable: true,
+      isDefault: true,
+      style: { maxWidth: '180px', minWidth: '180px' },
+    },
     transform: (item): string[] => itemTypes(item),
     getSortValue: (value: string[]) => (value[0] || '').toLowerCase(),
     component: ({
@@ -420,7 +424,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     id: 'dataAccepted',
     label: 'Accepting Data?',
     fields: ['creativeWorkStatus'],
-    columns: { isSortable: true, isDefault: true },
+    columns: {
+      isSortable: true,
+      isDefault: true,
+      style: { maxWidth: '180px', minWidth: '180px' },
+    },
     transform: item => item.creativeWorkStatus,
     component: ({
       value,
