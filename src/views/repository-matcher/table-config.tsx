@@ -203,6 +203,33 @@ const TagCell = ({
     </Tooltip>
   );
 };
+
+const TextCellWithLink = ({
+  label,
+  url,
+  isLoading,
+  isExternal,
+}: {
+  label: string;
+  url?: string;
+  isLoading?: boolean;
+  isExternal?: boolean;
+}) => {
+  return (
+    <SkeletonText isLoaded={!isLoading} noOfLines={2} fontSize='sm' w='100%'>
+      {url ? (
+        <NextLink href={url} prefetch={false} passHref>
+          <Link as='div' isExternal={isExternal}>
+            {label}
+          </Link>
+        </NextLink>
+      ) : (
+        <Text fontSize='sm'>{label || '-'}</Text>
+      )}
+    </SkeletonText>
+  );
+};
+
 export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   {
     id: 'name',
@@ -224,20 +251,12 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       value: NameValue;
       isLoading?: boolean;
     }) => (
-      <SkeletonText
-        isLoaded={!isLoading && Boolean(value?._id)}
-        noOfLines={2}
-        fontSize='sm'
-        w='100%'
-      >
-        {value?.url ? (
-          <NextLink href={value.url} prefetch={false} passHref>
-            <Link as='div'>{value.label}</Link>
-          </NextLink>
-        ) : (
-          <Text fontSize='sm'>{value?.label || '-'}</Text>
-        )}
-      </SkeletonText>
+      <TextCellWithLink
+        label={value.label}
+        url={value.url}
+        isLoading={isLoading}
+        isExternal={false}
+      />
     ),
   },
 
@@ -643,6 +662,94 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       });
 
       return formatted;
+    },
+  },
+  {
+    id: 'license',
+    label: getMetadataName('license') || '',
+    fields: ['license'],
+    columns: { isSortable: true, isDefault: true },
+    transform: item => item.license || '',
+    component: ({
+      value,
+      isLoading,
+    }: {
+      value: string;
+      isLoading?: boolean;
+    }) => {
+      if (value && (value.startsWith('http') || value.startsWith('www'))) {
+        return (
+          <TextCellWithLink
+            label={value}
+            url={value}
+            isLoading={isLoading}
+            isExternal
+          />
+        );
+      }
+      return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
+    },
+  },
+  {
+    id: 'usageInfo',
+    label: getMetadataName('usageInfo') || '',
+    fields: ['usageInfo'],
+    columns: { isSortable: true, isDefault: true },
+    transform: item => item.usageInfo || '',
+    component: ({
+      value,
+      isLoading,
+    }: {
+      value: Repository['usageInfo'] | FormattedResource['usageInfo'];
+      isLoading?: boolean;
+    }) => {
+      if (typeof value === 'string') {
+        if (value.startsWith('http') || value.startsWith('www')) {
+          return (
+            <TextCellWithLink
+              label={value}
+              url={value}
+              isLoading={isLoading}
+              isExternal
+            />
+          );
+        }
+        return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
+      }
+
+      const usageDetails = Array.isArray(value) ? value : value ? [value] : [];
+
+      if (!isLoading && usageDetails.length === 0) {
+        return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
+      } else if (usageDetails.length > 0) {
+        return (
+          <VStack alignItems='flex-start'>
+            {usageDetails.map((u, i) => (
+              <Box key={i}>
+                {u.url ? (
+                  <TextCellWithLink
+                    label={u.name || u.url}
+                    url={u.url}
+                    isLoading={isLoading}
+                    isExternal
+                  />
+                ) : (
+                  <TextCell value={u.name || ''} isLoading={isLoading} />
+                )}
+                <br />
+                {u?.description && (
+                  <TextCell
+                    value={u.description}
+                    isLoading={isLoading}
+                    noOfLines={3}
+                  />
+                )}
+              </Box>
+            ))}
+          </VStack>
+        );
+      }
+      return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
     },
   },
 ];
