@@ -158,7 +158,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
     () =>
       visibleData &&
       visibleData.length > 0 &&
-      visibleData.some(d => d.count > 0),
+      visibleData.some(d => (d.count ?? 0) > 0),
     [visibleData],
   );
 
@@ -180,7 +180,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
   const yScale = useMemo(
     () =>
       scaleLinear<number>({
-        domain: [0, Math.max(...visibleData.map(d => d.count))],
+        domain: [0, Math.max(...visibleData.map(d => d.count ?? 0))],
         range: [height - 1, 0],
       }),
     [visibleData, height],
@@ -271,7 +271,8 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
                 {hasDataInRange ? (
                   <>
                     {visibleData.map((d, i) => {
-                      const { term, count } = d;
+                      const { term } = d;
+                      const count = d.count ?? 0;
                       /* Updated counts when date has changed */
                       const updatedCount =
                         updatedCounts.find(u => u.term === term)?.count || 0;
@@ -380,6 +381,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
                           onMouseOver={e =>
                             handleMouseOver(e, {
                               ...d,
+                              count: d.count ?? 0,
                               updatedCount,
                             })
                           }

@@ -252,8 +252,8 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       isLoading?: boolean;
     }) => (
       <TextCellWithLink
-        label={value.label}
-        url={value.url}
+        label={value?.label || ''}
+        url={value?.url}
         isLoading={isLoading}
         isExternal={false}
       />
