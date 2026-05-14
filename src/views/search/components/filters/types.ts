@@ -48,7 +48,8 @@ export type FilterCategory =
   | 'Shared / Dataset'
   | 'Dataset'
   | 'Computational Tool'
-  | 'Sample';
+  | 'Sample'
+  | 'Data Collection';
 
 /**
  * Configuration for individual chart types (e.g., bar, pie)

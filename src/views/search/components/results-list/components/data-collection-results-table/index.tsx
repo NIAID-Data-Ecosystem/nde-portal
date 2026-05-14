@@ -38,6 +38,14 @@ export const ALL_DATA_COLLECTION_COLUMNS: DataCollectionColumn[] = [
     props: withWidth('200px'),
   },
   {
+    id: 'exampleOfWork',
+    title: 'Asset Type',
+    property: 'exampleOfWork',
+    isSortable: false,
+    apiSortField: null,
+    props: withWidth('200px'),
+  },
+  {
     id: 'conditionsOfAccess',
     title: 'Conditions of Access',
     property: 'conditionsOfAccess',
@@ -178,6 +186,51 @@ export const getCells = ({
       .filter(Boolean)
       .join(', ');
     return names ? <Text fontSize='sm'>{names}</Text> : null;
+  }
+
+  // Example of Work: render each exampleOfWork.about[] entry as an external
+  // link (name, url), stacked vertically.
+  if (column.property === 'exampleOfWork') {
+    if (!value) return null;
+
+    // exampleOfWork is a single CreativeWork object, not an array.
+    const exampleOfWorkObj = value as {
+      about?:
+        | Array<{ displayName?: string; url?: string }>
+        | { displayName?: string; url?: string };
+    };
+
+    const aboutItems = exampleOfWorkObj.about
+      ? Array.isArray(exampleOfWorkObj.about)
+        ? exampleOfWorkObj.about
+        : [exampleOfWorkObj.about]
+      : [];
+
+    const validItems = aboutItems
+      .filter(item => item.displayName || item.url)
+      .sort((a, b) => {
+        const labelA = a.displayName || a.url || '';
+        const labelB = b.displayName || b.url || '';
+        return labelA.localeCompare(labelB);
+      });
+    if (validItems.length === 0) return null;
+
+    return (
+      <Flex flexDirection='column' gap={2}>
+        {validItems.map((item, idx) => {
+          const label = item.displayName || item.url || '';
+          return item.url ? (
+            <Link key={idx} href={item.url} isExternal fontSize='sm'>
+              {label}
+            </Link>
+          ) : (
+            <Text key={idx} fontSize='sm'>
+              {label}
+            </Text>
+          );
+        })}
+      </Flex>
+    );
   }
 
   // Conditions of Access and Date: plain text
