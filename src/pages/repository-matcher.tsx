@@ -275,7 +275,10 @@ const RepositoryMatcher: NextPage = () => {
               overflowY: 'auto',
             }}
             getTableRowProps={(_, idx) => ({
-              bg: idx % 2 === 0 ? 'white' : 'page.alt',
+              bg: idx % 2 === 0 ? 'white' : '#fafbfd',
+              _hover: {
+                bg: 'blue.50',
+              },
             })}
             controlledSortProperty={sortProperty}
             controlledSortAsc={sortAsc}

@@ -138,6 +138,7 @@ const TextCell = ({
       noOfLines={noOfLines}
       fontStyle={value ? 'normal' : 'italic'}
       lineHeight='shorter'
+      fontSize='xs'
       {...props}
     >
       {children || value || 'not available'}
@@ -193,9 +194,11 @@ const TagCell = ({
     <Tooltip label={label} isDisabled={!value} hasArrow>
       <Box>
         {url ? (
-          <TagWithUrl href={url}>{label}</TagWithUrl>
+          <TagWithUrl href={url} bg='page.alt'>
+            {label}
+          </TagWithUrl>
         ) : (
-          <Tag variant='subtle' noOfLines={noOfLines}>
+          <Tag variant='subtle' noOfLines={noOfLines} bg='page.alt'>
             <TagLabel>{label}</TagLabel>
           </Tag>
         )}
@@ -216,7 +219,7 @@ const TextCellWithLink = ({
   isExternal?: boolean;
 }) => {
   return (
-    <SkeletonText isLoaded={!isLoading} noOfLines={2} fontSize='sm' w='100%'>
+    <SkeletonText isLoaded={!isLoading} noOfLines={2} fontSize='xs' w='100%'>
       {url ? (
         <NextLink href={url} prefetch={false} passHref>
           <Link as='div' isExternal={isExternal}>
@@ -224,7 +227,7 @@ const TextCellWithLink = ({
           </Link>
         </NextLink>
       ) : (
-        <Text fontSize='sm'>{label || '-'}</Text>
+        <Text fontSize='inherit'>{label || '-'}</Text>
       )}
     </SkeletonText>
   );
@@ -653,10 +656,20 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
           ? new Date(tc.endDate).toLocaleDateString()
           : '-';
         return (
-          <VStack key={`${tc.startDate}-${tc.endDate}`} alignItems='flex-start'>
-            <Text as='span'>{start}</Text>
-            <Text as='span'>to</Text>
-            <Text as='span'>{end}</Text>
+          <VStack
+            key={`${tc.startDate}-${tc.endDate}`}
+            alignItems='flex-start'
+            fontSize='xs'
+          >
+            <Text as='span' fontSize='inherit'>
+              {start}
+            </Text>
+            <Text as='span' fontSize='inherit'>
+              to
+            </Text>
+            <Text as='span' fontSize='inherit'>
+              {end}
+            </Text>
           </VStack>
         );
       });

@@ -332,11 +332,6 @@ export const Table: React.FC<TableProps<any>> = ({
   } = (tableContainerProps || {}) as any;
 
   return (
-    // <Skeleton
-    //   isLoaded={!isLoading}
-    //   overflow='auto'
-    //   minH={isLoading ? '500px' : 'unset'}
-    // >
     <TableWrapper colorScheme={colorScheme}>
       {/* Top scrollbar */}
       {/* Rendered only when showTopScrollbar is requested AND the table
@@ -401,6 +396,5 @@ export const Table: React.FC<TableProps<any>> = ({
         />
       )}
     </TableWrapper>
-    // </Skeleton>
   );
 };
