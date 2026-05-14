@@ -1,7 +1,6 @@
 import React from 'react';
 import NextLink from 'next/link';
 import {
-  Badge,
   Box,
   Circle,
   HStack,
@@ -9,7 +8,6 @@ import {
   SkeletonText,
   Tag,
   TagLabel,
-  TagLeftIcon,
   Text,
   TextProps,
   VStack,
@@ -19,8 +17,8 @@ import { Repository } from 'src/hooks/api/useRepoData';
 import {
   AccessTypes,
   DefinedTerm,
-  Domain,
   FormattedResource,
+  TemporalCoverage,
 } from 'src/utils/api/types';
 import {
   formatConditionsOfAccess,
@@ -31,7 +29,7 @@ import { queryFilterObject2String } from 'src/views/search/components/filters/ut
 import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
 import Tooltip from 'src/components/tooltip';
 import { TagWithUrl } from 'src/components/tag-with-url';
-import { FaCheck, FaX, FaXmark } from 'react-icons/fa6';
+import { FaCheck, FaXmark } from 'react-icons/fa6';
 import {
   getMetadataDescription,
   getMetadataName,
@@ -585,6 +583,66 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       description: getMetadataDescription('topicCategory') || '',
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
+    },
+  },
+  {
+    id: 'dateModified',
+    label: getMetadataName('dateModified') || '',
+    fields: ['dateModified'],
+    columns: { isSortable: true, isDefault: true },
+    transform: item => {
+      if (!item.dateModified) return '';
+      return new Date(item.dateModified).toLocaleDateString();
+    },
+    component: ({
+      value,
+      isLoading,
+    }: {
+      value: string;
+      isLoading?: boolean;
+    }) => {
+      return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
+    },
+  },
+  {
+    id: 'temporalCoverage',
+    label: getMetadataName('temporalCoverage') || '',
+    fields: ['temporalCoverage'],
+    columns: { isSortable: true, isDefault: true },
+    transform: item => {
+      return item.temporalCoverage;
+    },
+    component: ({
+      value,
+      isLoading,
+    }: {
+      value?: TemporalCoverage[] | null | undefined;
+      isLoading?: boolean;
+    }) => {
+      if (isLoading) {
+        return <TextCell value={''} isLoading={true} noOfLines={1} />;
+      }
+      // Format temporal coverage as "startDate - endDate" or just "startDate" if endDate is missing or just endDate if startDate is missing. If multiple temporal coverages are present, separate them with commas.
+      if (!value || value.length === 0) {
+        return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
+      }
+      const formatted = value.map(tc => {
+        const start = tc.startDate
+          ? new Date(tc.startDate).toLocaleDateString()
+          : '-';
+        const end = tc.endDate
+          ? new Date(tc.endDate).toLocaleDateString()
+          : '-';
+        return (
+          <VStack key={`${tc.startDate}-${tc.endDate}`} alignItems='flex-start'>
+            <Text as='span'>{start}</Text>
+            <Text as='span'>to</Text>
+            <Text as='span'>{end}</Text>
+          </VStack>
+        );
+      });
+
+      return formatted;
     },
   },
 ];
