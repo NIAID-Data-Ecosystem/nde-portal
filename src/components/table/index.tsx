@@ -332,77 +332,69 @@ export const Table: React.FC<TableProps<any>> = ({
   } = (tableContainerProps || {}) as any;
 
   return (
-    <Skeleton
-      isLoaded={!isLoading}
-      overflow='auto'
-      minH={isLoading ? '500px' : 'unset'}
-    >
-      <TableWrapper colorScheme={colorScheme}>
-        {/* Top scrollbar */}
-        {/* Rendered only when showTopScrollbar is requested AND the table
+    <TableWrapper colorScheme={colorScheme}>
+      {/* Top scrollbar */}
+      {/* Rendered only when showTopScrollbar is requested AND the table
             content is actually wider than the container. When there is no
             overflow the div is removed from the DOM entirely. */}
-        {showTopScrollbar && hasOverflow && (
-          <div
-            ref={topScrollbarRef}
-            style={{
-              overflowX: 'auto',
-              overflowY: 'hidden',
-              height: '17px',
-              width: '100%',
-              paddingRight: `${verticalScrollbarWidth}px`,
-              boxSizing: 'border-box',
-            }}
-          >
-            {/* Phantom div (same width as the real scroll content so the top
+      {showTopScrollbar && hasOverflow && (
+        <div
+          ref={topScrollbarRef}
+          style={{
+            overflowX: 'auto',
+            overflowY: 'hidden',
+            height: '17px',
+            width: '100%',
+            paddingRight: `${verticalScrollbarWidth}px`,
+            boxSizing: 'border-box',
+          }}
+        >
+          {/* Phantom div (same width as the real scroll content so the top
                 thumb size and travel distance match the bottom thumb exactly) */}
-            <div
-              style={{
-                height: '1px',
-                width: `${tableScrollWidth}px`,
-              }}
-            />
-          </div>
-        )}
-
-        {/* Scroll container */}
-        {showTopScrollbar ? (
           <div
-            ref={bottomCallbackRef}
             style={{
-              overflowX: 'auto',
-              overflowY: overflowY ?? 'hidden',
-              maxHeight: maxHeight,
-              width: '100%',
+              height: '1px',
+              width: `${tableScrollWidth}px`,
             }}
+          />
+        </div>
+      )}
+
+      {/* Scroll container */}
+      {showTopScrollbar ? (
+        <div
+          ref={bottomCallbackRef}
+          style={{
+            overflowX: 'auto',
+            overflowY: overflowY ?? 'hidden',
+            maxHeight: maxHeight,
+            width: '100%',
+          }}
+        >
+          <TableContainer
+            {...remainingContainerProps}
+            overflowX='visible'
+            overflowY='visible'
           >
-            <TableContainer
-              {...remainingContainerProps}
-              overflowX='visible'
-              overflowY='visible'
-            >
-              {tableMarkup}
-            </TableContainer>
-          </div>
-        ) : (
-          <TableContainer {...tableContainerProps}>
             {tableMarkup}
           </TableContainer>
-        )}
+        </div>
+      ) : (
+        <TableContainer {...tableContainerProps}>{tableMarkup}</TableContainer>
+      )}
 
-        {hasPagination && numRows && (
-          <TablePagination
-            total={dataWithUniqueID.length}
-            size={size}
-            setSize={setSize}
-            from={from}
-            setFrom={setFrom}
-            pageSizeOptions={numRows}
-            colorScheme='gray'
-            __css={{ '>div': { py: 1 } }}
-          />
-        )}
-      </TableWrapper>
-    </Skeleton>
+      {hasPagination && numRows && (
+        <TablePagination
+          total={dataWithUniqueID.length}
+          size={size}
+          setSize={setSize}
+          from={from}
+          setFrom={setFrom}
+          pageSizeOptions={numRows}
+          colorScheme='gray'
+          __css={{ '>div': { py: 1 } }}
+        />
+      )}
+    </TableWrapper>
   );
 };

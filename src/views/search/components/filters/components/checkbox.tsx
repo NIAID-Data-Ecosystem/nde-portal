@@ -158,17 +158,19 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
           </Tooltip>
 
           {/* Display the count of the filter term */}
-          <Tag
-            as='span'
-            className='tag-count'
-            variant='subtle'
-            size='sm'
-            colorScheme={colorScheme}
-            borderRadius='full'
-            alignSelf='flex-start'
-          >
-            {count?.toLocaleString('en-US')}
-          </Tag>
+          {typeof count === 'number' && (
+            <Tag
+              as='span'
+              className='tag-count'
+              variant='subtle'
+              size='sm'
+              colorScheme={colorScheme}
+              borderRadius='full'
+              alignSelf='flex-start'
+            >
+              {count?.toLocaleString('en-US')}
+            </Tag>
+          )}
         </Skeleton>
       </ChakraCheckbox>
     );

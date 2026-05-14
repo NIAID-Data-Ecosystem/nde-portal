@@ -193,12 +193,15 @@ export const useFilterQueries = ({
               label: t.term,
               count: t.count,
               facet: config.property,
-              groupBy:
-                (repoList as any[]).find(
+              groupBy: (repoList as any[])
+                .find(
                   (r: any) =>
                     r.sourceInfo?.name === t.term ||
                     r.sourceInfo?.identifier === t.term,
-                )?.sourceInfo?.genre || 'Generalist',
+                )
+                ?.sourceInfo?.genre?.includes('IID')
+                ? 'IID'
+                : 'Generalist',
             }));
           }
         } else {

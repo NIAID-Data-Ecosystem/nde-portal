@@ -48,7 +48,7 @@ export const getConditionsOfAccessDescription = (
 };
 
 export const formatConditionsOfAccess = (
-  access: string | null,
+  access?: string | null,
 ): AccessTypes | null => {
   if (!access || access === undefined) {
     return null;

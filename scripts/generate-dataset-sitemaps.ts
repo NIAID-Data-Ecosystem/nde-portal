@@ -107,11 +107,16 @@ const fetchSourceIdsGroupedByDomain = async (): Promise<
       const id = src?.sourceInfo?.identifier;
       const name = src?.sourceInfo?.name;
       // Only allow known domains; default to 'Generalist' if unknown
-      const genre =
-        src?.sourceInfo?.genre === 'IID' ||
-        src?.sourceInfo?.genre === 'Generalist'
-          ? src?.sourceInfo?.genre
-          : 'Generalist';
+      const rawGenre = src?.sourceInfo?.genre;
+      const genre = Array.isArray(rawGenre)
+        ? rawGenre.includes('IID')
+          ? 'IID'
+          : rawGenre.includes('Generalist')
+          ? 'Generalist'
+          : 'Generalist'
+        : rawGenre === 'IID' || rawGenre === 'Generalist'
+        ? rawGenre
+        : 'Generalist';
 
       if (!id || OMITTED_SOURCES.includes(id)) return acc;
 

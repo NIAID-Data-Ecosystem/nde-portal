@@ -4,7 +4,7 @@
 export interface FilterTermType {
   term: string;
   label: string;
-  count: number;
+  count?: number;
   groupBy?: string;
   facet?: string;
 }
