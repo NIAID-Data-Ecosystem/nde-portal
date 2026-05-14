@@ -12,11 +12,7 @@ import {
 } from '@chakra-ui/react';
 
 import { NextPage } from 'next';
-import {
-  getPageSeoConfig,
-  PageContainer,
-  PageContent,
-} from 'src/components/page-container';
+import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { SearchInput } from 'src/components/search-input';
 import { Table } from 'src/components/table';
 import { CustomizeColumnsPopover } from 'src/views/repository-matcher/components/CustomizeColumnsPopover';
@@ -189,7 +185,7 @@ const RepositoryMatcher: NextPage = () => {
             isLoading={isLoading}
           />
         </Box>
-        <Box flex={1} minW={0} w='100%' px={8} mt={6}>
+        <Box flex={1} minW={0} w='100%' px={8} mt={6} maxWidth='2000px'>
           <Stack
             direction='row'
             spacing={2}
