@@ -402,11 +402,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     id: 'healthCondition',
     label: getMetadataName('healthCondition') || '',
     fields: ['healthCondition'],
-    columns: { isSortable: true, isDefault: true },
+    columns: { isSortable: false, isDefault: true },
     transform: item => {
       if (!item.healthCondition) return [];
       return Array.isArray(item.healthCondition)
-        ? item.healthCondition
+        ? item.healthCondition.slice(0, 10)
         : [item.healthCondition];
     },
     component: ({
@@ -427,11 +427,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     id: 'infectiousAgent',
     label: getMetadataName('infectiousAgent') || '',
     fields: ['infectiousAgent'],
-    columns: { isSortable: true, isDefault: true },
+    columns: { isSortable: false, isDefault: true },
     transform: item => {
       if (!item.infectiousAgent) return [];
       return Array.isArray(item.infectiousAgent)
-        ? item.infectiousAgent
+        ? item.infectiousAgent.slice(0, 10)
         : [item.infectiousAgent];
     },
     component: ({
@@ -533,10 +533,12 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     id: 'species',
     label: getMetadataName('species') || '',
     fields: ['species'],
-    columns: { isSortable: true, isDefault: true },
+    columns: { isSortable: false, isDefault: true },
     transform: item => {
       if (!item.species) return [];
-      return Array.isArray(item.species) ? item.species : [item.species];
+      return Array.isArray(item.species)
+        ? item.species.slice(0, 10)
+        : [item.species];
     },
     component: ({
       value,
@@ -556,11 +558,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     id: 'meas-technique',
     label: getMetadataName('measurementTechnique') || '',
     fields: ['measurementTechnique'],
-    columns: { isSortable: true, isDefault: true },
+    columns: { isSortable: false, isDefault: true },
     transform: item => {
       if (!item.measurementTechnique) return [];
       return Array.isArray(item.measurementTechnique)
-        ? item.measurementTechnique
+        ? item.measurementTechnique.slice(0, 10)
         : [item.measurementTechnique];
     },
     component: ({
@@ -581,11 +583,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     id: 'topic',
     label: getMetadataName('topicCategory') || '',
     fields: ['topicCategory'],
-    columns: { isSortable: true, isDefault: true },
+    columns: { isSortable: false, isDefault: true },
     transform: item => {
       if (!item.topicCategory) return [];
       return Array.isArray(item.topicCategory)
-        ? item.topicCategory
+        ? item.topicCategory.slice(0, 10)
         : [item.topicCategory];
     },
     component: ({

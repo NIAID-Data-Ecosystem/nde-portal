@@ -25,6 +25,12 @@ import {
 import { useSearchedData } from 'src/views/repository-matcher/hooks/useSearchedData';
 import { REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
 
+const TABLE_CONTAINER_PROPS = {
+  overflowX: 'auto' as const,
+  maxHeight: '70vh',
+  overflowY: 'auto' as const,
+};
+
 const RepositoryMatcher: NextPage = () => {
   const fields = useMemo(
     () =>
@@ -155,6 +161,41 @@ const RepositoryMatcher: NextPage = () => {
     });
   }, []);
 
+  // Stable references so the table's row-level memoization isn't defeated by
+  // new function/object identities on every page render.
+  const getTableRowProps = useCallback(
+    (_: any, idx: number) => ({
+      bg: idx % 2 === 0 ? 'white' : '#fafbfd',
+      _hover: { bg: 'blue.50' },
+    }),
+    [],
+  );
+
+  const getCells = useCallback(
+    ({
+      column,
+      data: row,
+      isLoading: rowLoading,
+    }: {
+      column: { property: string };
+      data: any;
+      isLoading?: boolean;
+    }) => {
+      const col = REPOSITORY_MATCHER_COLUMNS.find(
+        c => c.id === column.property,
+      );
+      if (!col) return null;
+      return col.component({
+        value: row?.[col.id],
+        isLoading: rowLoading,
+      });
+    },
+    [],
+  );
+
+  const LOADING_ROWS = useMemo(() => Array(10).fill({}), []);
+  const tableData = isLoading ? LOADING_ROWS : sortedData;
+
   return (
     <PageContainer meta={getPageSeoConfig('/')}>
       <Flex direction='column' gap={4} px={40} py={8}>
@@ -265,34 +306,16 @@ const RepositoryMatcher: NextPage = () => {
             ariaLabel='Repository matcher table'
             caption='Repositories and resource catalogs available for data deposit'
             columns={tableColumns}
-            data={(isLoading ? Array(10).fill({}) : sortedData) as any}
+            data={tableData as any}
             isLoading={isLoading}
             hasPagination={false}
             stickyHeader
-            tableContainerProps={{
-              overflowX: 'auto',
-              maxHeight: '70vh',
-              overflowY: 'auto',
-            }}
-            getTableRowProps={(_, idx) => ({
-              bg: idx % 2 === 0 ? 'white' : '#fafbfd',
-              _hover: {
-                bg: 'blue.50',
-              },
-            })}
+            tableContainerProps={TABLE_CONTAINER_PROPS}
+            getTableRowProps={getTableRowProps}
             controlledSortProperty={sortProperty}
             controlledSortAsc={sortAsc}
             onControlledSort={handleSort}
-            getCells={({ column, data: row, isLoading: rowLoading }) => {
-              const col = REPOSITORY_MATCHER_COLUMNS.find(
-                c => c.id === column.property,
-              );
-              if (!col) return null;
-              return col.component({
-                value: row?.[col.id],
-                isLoading: rowLoading,
-              });
-            }}
+            getCells={getCells}
           />
         </Box>
       </Flex>

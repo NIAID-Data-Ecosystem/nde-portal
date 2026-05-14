@@ -32,16 +32,24 @@ export const useRepositoryMatcherData = (fields: string[] = ['@type']) => {
       ...(resourceCatalogs || []),
       ...(repositories || []),
     ];
-    return combined.map(item => {
+    // Dedupe by _id — the same entity (e.g. VEuPathDB) can appear in both
+    // resource catalogs and repositories. First occurrence wins.
+    const seen = new Set<string>();
+    const rows: RepositoryMatcherRow[] = [];
+    combined.forEach((item, idx) => {
+      const id = item._id || `__no-id-${idx}`;
+      if (seen.has(id)) return;
+      seen.add(id);
       const row = {
         _id: item._id || '',
-        _raw: item,
+        // _raw: item,
       } as RepositoryMatcherRow;
       for (const col of REPOSITORY_MATCHER_COLUMNS) {
         row[col.id] = col.transform(item);
       }
-      return row;
+      rows.push(row);
     });
+    return rows;
   }, [resourceCatalogs, repositories, isLoading]);
 
   return {

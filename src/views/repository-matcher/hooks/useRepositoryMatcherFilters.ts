@@ -55,7 +55,7 @@ export const useRepositoryMatcherFilters = (
       const scoped = data.filter(row =>
         FILTERABLE_REPOSITORY_MATCHER_COLUMNS.every(other => {
           if (other.id === col.id) return true;
-          return rowPassesColumn(row, other, selected[other.id] ?? []);
+          return rowPassesColumn(row, other, []);
         }),
       );
       // If using counts, use the following code.
@@ -86,7 +86,7 @@ export const useRepositoryMatcherFilters = (
         );
     }
     return result;
-  }, [data, selected]);
+  }, [data]);
 
   return { filteredData, termsByColumnId };
 };
