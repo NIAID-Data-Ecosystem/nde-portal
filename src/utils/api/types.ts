@@ -507,7 +507,7 @@ export interface FormattedResource {
   downloadUrl: { name: string }[] | null;
   featureList: FeatureListProperties[] | null;
   funding: Funding[] | null;
-  genre: Domain | null;
+  genre: Domain | string[] | null;
   hasAPI: boolean | null;
   hasDownload:
     | 'All content'

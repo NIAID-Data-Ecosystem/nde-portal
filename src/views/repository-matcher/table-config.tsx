@@ -349,7 +349,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     columns: {
       isSortable: true,
       isDefault: true,
-      style: { maxWidth: '160px', minWidth: '160px' },
+      style: { maxWidth: '200px', minWidth: '200px' },
     },
     transform: (item): string =>
       transformConditionsOfAccessLabel(

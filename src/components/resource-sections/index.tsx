@@ -185,21 +185,28 @@ const Sections = ({
                             py: 0,
                           }}
                         >
-                          <TagWithUrl
-                            colorScheme='primary'
-                            href={{
-                              pathname: '/search',
-                              query: {
-                                q: `genre:"${data?.genre}"`,
-                              },
-                            }}
-                            m={0.5}
-                            leftIcon={FaMagnifyingGlass}
-                          >
-                            {data?.genre}
-                          </TagWithUrl>
+                          {(Array.isArray(data?.genre)
+                            ? data?.genre
+                            : [data?.genre]
+                          ).map((genre, index) => (
+                            <TagWithUrl
+                              key={index}
+                              colorScheme='primary'
+                              href={{
+                                pathname: '/search',
+                                query: {
+                                  q: `genre:"${genre}"`,
+                                },
+                              }}
+                              m={0.5}
+                              leftIcon={FaMagnifyingGlass}
+                            >
+                              {genre}
+                            </TagWithUrl>
+                          ))}
                         </OverviewSectionWrapper>
                       )}
+
                       {data?.about && data?.about?.length > 0 && (
                         <OverviewSectionWrapper
                           isLoading={isLoading}
