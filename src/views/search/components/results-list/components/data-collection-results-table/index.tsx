@@ -33,8 +33,8 @@ export const ALL_DATA_COLLECTION_COLUMNS: DataCollectionColumn[] = [
     id: 'about',
     title: 'Data Type',
     property: 'about',
-    isSortable: false,
-    apiSortField: null,
+    isSortable: true,
+    apiSortField: 'about.name',
     props: withWidth('200px'),
   },
   {
