@@ -196,8 +196,8 @@ export const getCells = ({
     // exampleOfWork is a single CreativeWork object, not an array.
     const exampleOfWorkObj = value as {
       about?:
-        | Array<{ displayName?: string; url?: string }>
-        | { displayName?: string; url?: string };
+        | Array<{ displayName?: string; name?: string; url?: string }>
+        | { displayName?: string; name?: string; url?: string };
     };
 
     const aboutItems = exampleOfWorkObj.about
@@ -207,10 +207,10 @@ export const getCells = ({
       : [];
 
     const validItems = aboutItems
-      .filter(item => item.displayName || item.url)
+      .filter(item => item.displayName || item.name || item.url)
       .sort((a, b) => {
-        const labelA = a.displayName || a.url || '';
-        const labelB = b.displayName || b.url || '';
+        const labelA = a.displayName || a.name || a.url || '';
+        const labelB = b.displayName || b.name || b.url || '';
         return labelA.localeCompare(labelB);
       });
     if (validItems.length === 0) return null;
@@ -218,7 +218,7 @@ export const getCells = ({
     return (
       <Flex flexDirection='column' gap={2}>
         {validItems.map((item, idx) => {
-          const label = item.displayName || item.url || '';
+          const label = item.displayName || item.name || item.url || '';
           return item.url ? (
             <Link key={idx} href={item.url} isExternal fontSize='sm'>
               {label}
