@@ -2,7 +2,11 @@
 export type { PopoverItem, PopoverItemGroup } from './types';
 
 // Hooks
-export { useSelectableList } from './hooks/useSelectableList';
+export {
+  useSelectableList,
+  resolveStoredVisibleIds,
+  resolveStoredOrderedIds,
+} from './hooks/useSelectableList';
 export type {
   UseSelectableListOptions,
   UseSelectableListResult,

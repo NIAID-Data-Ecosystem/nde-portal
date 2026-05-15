@@ -14,8 +14,16 @@ import {
 import { NextPage } from 'next';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { SearchInput } from 'src/components/search-input';
+import {
+  resolveStoredOrderedIds,
+  resolveStoredVisibleIds,
+} from 'src/components/select-and-order-popover';
 import { Table } from 'src/components/table';
-import { CustomizeColumnsPopover } from 'src/views/repository-matcher/components/CustomizeColumnsPopover';
+import {
+  CustomizeColumnsPopover,
+  CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+} from 'src/views/repository-matcher/components/CustomizeColumnsPopover';
 import { Filters } from 'src/views/repository-matcher/components/Filters';
 import { useRepositoryMatcherData } from 'src/views/repository-matcher/hooks/useRepositoryMatcherData';
 import {
@@ -31,6 +39,17 @@ const TABLE_CONTAINER_PROPS = {
   overflowY: 'auto' as const,
 };
 
+const ALL_COLUMN_IDS = REPOSITORY_MATCHER_COLUMNS.map(c => c.id);
+const DEFAULT_VISIBLE_COLUMN_IDS = REPOSITORY_MATCHER_COLUMNS.filter(
+  c => c.columns?.isDefault !== false,
+).map(c => c.id);
+const REQUIRED_COLUMN_IDS = REPOSITORY_MATCHER_COLUMNS.filter(
+  c => c.required,
+).map(c => c.id);
+
+const arraysShallowEqual = (a: string[], b: string[]): boolean =>
+  a.length === b.length && a.every((v, i) => v === b[i]);
+
 const RepositoryMatcher: NextPage = () => {
   const fields = useMemo(
     () =>
@@ -43,14 +62,37 @@ const RepositoryMatcher: NextPage = () => {
   const { data, isLoading } = useRepositoryMatcherData(fields);
 
   /****** Customize columns: visibility + order *****/
+  // Read user-stored prefs synchronously on first client render so the table
+  // mounts with the user's columns/order instead of the defaults — avoiding a
+  // second render once the popover finishes hydrating from localStorage.
   const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(() =>
-    REPOSITORY_MATCHER_COLUMNS.filter(c => c.columns?.isDefault !== false).map(
-      c => c.id,
-    ),
+    resolveStoredVisibleIds({
+      storageKey: CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+      allIds: ALL_COLUMN_IDS,
+      defaultVisibleIds: DEFAULT_VISIBLE_COLUMN_IDS,
+      requiredIds: REQUIRED_COLUMN_IDS,
+    }),
   );
   const [orderedColumnIds, setOrderedColumnIds] = useState<string[] | null>(
-    null,
+    () =>
+      resolveStoredOrderedIds({
+        storageKey: CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+        allIds: ALL_COLUMN_IDS,
+        requiredIds: REQUIRED_COLUMN_IDS,
+      }),
   );
+
+  // The popover hydrates from the same localStorage keys on mount and then
+  // fires onVisibleChange/onOrderChange with the resolved values. Bail when
+  // the values match what we already initialized so the table doesn't re-run.
+  const handleVisibleColumnsChange = useCallback((ids: string[]) => {
+    setVisibleColumnIds(prev => (arraysShallowEqual(prev, ids) ? prev : ids));
+  }, []);
+  const handleColumnOrderChange = useCallback((ids: string[]) => {
+    setOrderedColumnIds(prev =>
+      prev && arraysShallowEqual(prev, ids) ? prev : ids,
+    );
+  }, []);
 
   // Render columns in user-chosen order, filtered to currently visible IDs.
   const tableColumns = useMemo(() => {
@@ -298,8 +340,8 @@ const RepositoryMatcher: NextPage = () => {
               {sortedData?.length ?? 0} results
             </Text>
             <CustomizeColumnsPopover
-              onVisibleColumnsChange={setVisibleColumnIds}
-              onColumnOrderChange={setOrderedColumnIds}
+              onVisibleColumnsChange={handleVisibleColumnsChange}
+              onColumnOrderChange={handleColumnOrderChange}
             />
           </Flex>
 
