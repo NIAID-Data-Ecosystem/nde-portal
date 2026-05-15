@@ -94,4 +94,5 @@ export const DATA_COLLECTION_FIELDS = [
   'topicCategory',
   'isBasedOn',
   'collectionSize',
+  'exampleOfWork',
 ];
