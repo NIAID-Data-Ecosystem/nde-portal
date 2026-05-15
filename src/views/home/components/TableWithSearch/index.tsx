@@ -42,6 +42,7 @@ interface TableWithSearchProps {
     isLoading?: boolean;
   }) => React.ReactNode;
   searchInputProps?: Partial<SearchInputProps>;
+  emptyState?: React.ReactNode;
 }
 
 export const TableWithSearch: React.FC<TableWithSearchProps> = ({
@@ -49,6 +50,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
   isLoading,
   columns,
   searchInputProps,
+  emptyState,
   ...props
 }) => {
   /****** Handle Filters ******/
@@ -169,6 +171,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
 
           {/* <!-- Table --> */}
           <Table
+            emptyState={emptyState}
             stickyHeader
             data={isLoading ? Array(10).fill({}) : filteredData}
             tableHeadProps={{ bg: 'page.alt' }}

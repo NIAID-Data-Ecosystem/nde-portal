@@ -317,6 +317,14 @@ const RepositoryMatcher: NextPage = () => {
             controlledSortAsc={sortAsc}
             onControlledSort={handleSort}
             getCells={getCells}
+            emptyState={
+              <Flex direction='column' align='center' py={10}>
+                <Text fontWeight='bold'>No repositories match</Text>
+                <Text color='gray.600'>
+                  Try clearing some filters or broadening your search.
+                </Text>
+              </Flex>
+            }
           />
         </Box>
       </Flex>

@@ -86,6 +86,12 @@ export interface TableProps<TData extends Record<string, string | number>> {
    * Requires tableContainerProps.maxHeight to be a bounded value.
    */
   virtualized?: boolean;
+  /**
+   * Content rendered inside the table body when there are no rows to
+   * display (and the table is not loading). Each consumer supplies its
+   * own message since the wording is implementation-specific.
+   */
+  emptyState?: React.ReactNode;
 }
 
 // Constants for table configuration.
@@ -321,6 +327,7 @@ export const Table: React.FC<TableProps<any>> = ({
   stickyHeader = false,
   showTopScrollbar = false,
   virtualized = false,
+  emptyState,
 }) => {
   const isControlled =
     controlledSortProperty !== undefined && onControlledSort !== undefined;
@@ -469,6 +476,8 @@ export const Table: React.FC<TableProps<any>> = ({
     [hasPagination, displayData, from, size],
   );
 
+  const showEmptyState = !isLoading && rows.length === 0 && emptyState != null;
+
   // When stickyHeader is enabled, position:sticky is applied to the thead
   // element itself rather than individual th cells.
   const stickyHeadProps = stickyHeader
@@ -577,22 +586,30 @@ export const Table: React.FC<TableProps<any>> = ({
         {renderHeaderRow('tr', 'th')}
       </Box>
       <Box as='tbody' {...tableBodyProps}>
-        {rows.map((row: any, idx: number) => (
-          <Row
-            as='tr'
-            key={`table-tr-${row.key}`}
-            flexDirection='row'
-            borderColor='gray.100'
-            {...(getTableRowProps && getTableRowProps(row, idx))}
-          >
-            <MemoRowCells
-              row={row}
-              columns={columns}
-              getCells={getCells}
-              isLoading={isLoading}
-            />
-          </Row>
-        ))}
+        {showEmptyState ? (
+          <Box as='tr' role='row'>
+            <Box as='td' role='cell' colSpan={columns.length}>
+              {emptyState}
+            </Box>
+          </Box>
+        ) : (
+          rows.map((row: any, idx: number) => (
+            <Row
+              as='tr'
+              key={`table-tr-${row.key}`}
+              flexDirection='row'
+              borderColor='gray.100'
+              {...(getTableRowProps && getTableRowProps(row, idx))}
+            >
+              <MemoRowCells
+                row={row}
+                columns={columns}
+                getCells={getCells}
+                isLoading={isLoading}
+              />
+            </Row>
+          ))
+        )}
       </Box>
     </ChakraTable>
   );
@@ -637,9 +654,10 @@ export const Table: React.FC<TableProps<any>> = ({
           aria-rowcount={rows.length}
           style={{
             // Single scroll container — both axes scroll on this parent.
-            overflow: 'auto',
+            overflow: showEmptyState ? 'hidden' : 'auto',
             height: maxHeight ?? '70vh',
             width: '100%',
+            position: 'relative',
           }}
         >
           <VisuallyHidden id='table-caption' as='div'>
@@ -667,16 +685,31 @@ export const Table: React.FC<TableProps<any>> = ({
             >
               {renderHeaderRow('div', 'div')}
             </Box>
-            <VirtualizedBody
-              rows={rows}
-              columns={columns}
-              getCells={getCells}
-              getTableRowProps={getTableRowProps}
-              isLoading={isLoading}
-              height={virtualListHeight}
-              tableBodyProps={tableBodyProps}
-              listRef={virtualListRef}
-            />
+            {showEmptyState ? (
+              <Box
+                role='rowgroup'
+                position='absolute'
+                top='50%'
+                left='50%'
+                transform='translate(-50%, -50%)'
+                {...tableBodyProps}
+              >
+                <Box role='row'>
+                  <Box role='cell'>{emptyState}</Box>
+                </Box>
+              </Box>
+            ) : (
+              <VirtualizedBody
+                rows={rows}
+                columns={columns}
+                getCells={getCells}
+                getTableRowProps={getTableRowProps}
+                isLoading={isLoading}
+                height={virtualListHeight}
+                tableBodyProps={tableBodyProps}
+                listRef={virtualListRef}
+              />
+            )}
           </div>
         </div>
 
