@@ -310,6 +310,7 @@ const RepositoryMatcher: NextPage = () => {
             isLoading={isLoading}
             hasPagination={false}
             stickyHeader
+            virtualized
             tableContainerProps={TABLE_CONTAINER_PROPS}
             getTableRowProps={getTableRowProps}
             controlledSortProperty={sortProperty}

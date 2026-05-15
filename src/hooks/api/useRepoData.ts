@@ -17,7 +17,7 @@ export function useRepoData(options: any = {}) {
             !Array.isArray(source.sourceInfo) &&
             source.sourceInfo.identifier,
         )
-        .map(({ sourceInfo }) => {
+        .map(({ sourceInfo }, idx) => {
           const { identifier, name, collectionType } = sourceInfo || {};
           const type = (
             Array.isArray(collectionType)
@@ -30,7 +30,7 @@ export function useRepoData(options: any = {}) {
           return {
             ...sourceInfo,
             type: type as string[],
-            _id: identifier || '',
+            _id: `${identifier}-${name}` || '',
             name: name || identifier || '',
           };
         });
