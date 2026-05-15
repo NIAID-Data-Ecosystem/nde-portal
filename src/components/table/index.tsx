@@ -92,6 +92,12 @@ export interface TableProps<TData extends Record<string, string | number>> {
    * own message since the wording is implementation-specific.
    */
   emptyState?: React.ReactNode;
+  /**
+   * When true, the first column is pinned to the left edge of the
+   * scrolling container so it remains visible during horizontal scroll.
+   * Other column headers continue to scroll normally.
+   */
+  stickyFirstColumn?: boolean;
 }
 
 // Constants for table configuration.
@@ -111,26 +117,50 @@ interface MemoRowCellsProps {
   }) => React.ReactNode;
   isLoading?: boolean;
   cellAs?: any;
+  stickyFirstColumn?: boolean;
+  colorScheme?: string;
 }
 
 // Cells are isolated in their own memo'd component so that re-rendering a
 // row's <tr> (e.g. when its zebra-stripe parity changes after a filter) does
 // not force every cell's expensive component tree to re-render.
 const MemoRowCells = React.memo(
-  ({ row, columns, getCells, isLoading, cellAs = 'td' }: MemoRowCellsProps) => (
+  ({
+    row,
+    columns,
+    getCells,
+    isLoading,
+    cellAs = 'td',
+    stickyFirstColumn,
+    colorScheme = 'gray',
+  }: MemoRowCellsProps) => (
     <>
-      {columns.map(column => (
-        <Cell
-          key={`table-td-${row.key}-${column.property}`}
-          as={cellAs}
-          role='cell'
-          alignItems='center'
-          sx={CELL_SX}
-          {...column.props}
-        >
-          {getCells({ column, data: row, isLoading })}
-        </Cell>
-      ))}
+      {columns.map((column, idx) => {
+        const stickyProps =
+          stickyFirstColumn && idx === 0
+            ? {
+                position: 'sticky' as const,
+                left: 0,
+                zIndex: 1,
+                bg: 'inherit',
+                borderRight: '1px solid',
+                borderColor: `${colorScheme}.200`,
+              }
+            : null;
+        return (
+          <Cell
+            key={`table-td-${row.key}-${column.property}`}
+            as={cellAs}
+            role='cell'
+            alignItems='center'
+            sx={CELL_SX}
+            {...column.props}
+            {...stickyProps}
+          >
+            {getCells({ column, data: row, isLoading })}
+          </Cell>
+        );
+      })}
     </>
   ),
 );
@@ -144,6 +174,8 @@ interface VirtualizedRowItemProps {
   isLoading?: boolean;
   rowProps?: any;
   onResize: (index: number, height: number) => void;
+  stickyFirstColumn?: boolean;
+  colorScheme?: string;
 }
 
 // One virtualized row. Measures its own natural height after layout and
@@ -157,6 +189,8 @@ const VirtualizedRowItem = React.memo(
     isLoading,
     rowProps,
     onResize,
+    stickyFirstColumn,
+    colorScheme,
   }: VirtualizedRowItemProps) => {
     const ref = useRef<HTMLDivElement>(null);
     useLayoutEffect(() => {
@@ -185,6 +219,8 @@ const VirtualizedRowItem = React.memo(
             getCells={getCells}
             isLoading={isLoading}
             cellAs='div'
+            stickyFirstColumn={stickyFirstColumn}
+            colorScheme={colorScheme}
           />
         </Row>
       </div>
@@ -217,6 +253,8 @@ interface VirtualizedBodyProps {
   height: number;
   tableBodyProps?: HTMLChakraProps<'tbody'>;
   listRef?: React.MutableRefObject<VariableSizeList | null>;
+  stickyFirstColumn?: boolean;
+  colorScheme?: string;
 }
 
 // Virtualized body: only the rows in view (plus overscan) are mounted.
@@ -231,6 +269,8 @@ const VirtualizedBody: React.FC<VirtualizedBodyProps> = ({
   height,
   tableBodyProps,
   listRef: externalListRef,
+  stickyFirstColumn,
+  colorScheme,
 }) => {
   const internalListRef = useRef<VariableSizeList | null>(null);
   const setListRef = useCallback(
@@ -298,6 +338,8 @@ const VirtualizedBody: React.FC<VirtualizedBodyProps> = ({
                 isLoading={isLoading}
                 rowProps={rowProps}
                 onResize={handleResize}
+                stickyFirstColumn={stickyFirstColumn}
+                colorScheme={colorScheme}
               />
             </div>
           );
@@ -328,6 +370,7 @@ export const Table: React.FC<TableProps<any>> = ({
   showTopScrollbar = false,
   virtualized = false,
   emptyState,
+  stickyFirstColumn = false,
 }) => {
   const isControlled =
     controlledSortProperty !== undefined && onControlledSort !== undefined;
@@ -535,7 +578,7 @@ export const Table: React.FC<TableProps<any>> = ({
   // inside a <table>, so the virtualized renderer uses divs with ARIA roles.
   const renderHeaderRow = (rowAs: any, cellAs: any) => (
     <Flex as={rowAs} role='row' flex='1' w='100%'>
-      {columns.map(column => {
+      {columns.map((column, idx) => {
         const isSelected = isControlled
           ? column.property === controlledSortProperty
           : column.property === orderBy;
@@ -544,6 +587,20 @@ export const Table: React.FC<TableProps<any>> = ({
             ? 'ASC'
             : 'DESC'
           : sortBy;
+        // Pinned first column needs an opaque background (so cells in other
+        // columns don't show through during horizontal scroll) and a higher
+        // z-index than the sticky header so it sits on top at the corner.
+        const stickyProps =
+          stickyFirstColumn && idx === 0
+            ? {
+                position: 'sticky' as const,
+                left: 0,
+                zIndex: stickyHeader ? 3 : 2,
+                bg: isSelected ? 'page.alt' : 'white',
+                borderRight: '1px solid',
+                borderColor: `${colorScheme}.200`,
+              }
+            : null;
         return (
           <Th
             key={`table-col-th-${column.property}`}
@@ -564,6 +621,7 @@ export const Table: React.FC<TableProps<any>> = ({
               },
             }}
             {...column.props}
+            {...stickyProps}
           />
         );
       })}
@@ -606,6 +664,8 @@ export const Table: React.FC<TableProps<any>> = ({
                 columns={columns}
                 getCells={getCells}
                 isLoading={isLoading}
+                stickyFirstColumn={stickyFirstColumn}
+                colorScheme={colorScheme}
               />
             </Row>
           ))
@@ -708,6 +768,8 @@ export const Table: React.FC<TableProps<any>> = ({
                 height={virtualListHeight}
                 tableBodyProps={tableBodyProps}
                 listRef={virtualListRef}
+                stickyFirstColumn={stickyFirstColumn}
+                colorScheme={colorScheme}
               />
             )}
           </div>

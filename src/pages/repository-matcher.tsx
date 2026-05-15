@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
+  Checkbox,
   Divider,
   Flex,
   Heading,
@@ -239,6 +240,8 @@ const RepositoryMatcher: NextPage = () => {
   const LOADING_ROWS = useMemo(() => Array(10).fill({}), []);
   const tableData = isLoading ? LOADING_ROWS : sortedData;
 
+  const [stickyFirstColumn, setStickyFirstColumn] = useState(false);
+
   return (
     <PageContainer meta={getPageSeoConfig('/')}>
       <Flex direction='column' gap={4} px={40} py={8}>
@@ -334,15 +337,24 @@ const RepositoryMatcher: NextPage = () => {
             w='100%'
             py={2}
             justifyContent='space-between'
-            alignItems='baseline'
+            alignItems='flex-end'
           >
             <Text fontSize='sm' fontWeight='semibold' lineHeight='normal'>
               {sortedData?.length ?? 0} results
             </Text>
-            <CustomizeColumnsPopover
-              onVisibleColumnsChange={handleVisibleColumnsChange}
-              onColumnOrderChange={handleColumnOrderChange}
-            />
+            <Flex alignItems='center' gap={4}>
+              <Checkbox
+                size='sm'
+                isChecked={stickyFirstColumn}
+                onChange={e => setStickyFirstColumn(e.target.checked)}
+              >
+                Pin first column
+              </Checkbox>
+              <CustomizeColumnsPopover
+                onVisibleColumnsChange={handleVisibleColumnsChange}
+                onColumnOrderChange={handleColumnOrderChange}
+              />
+            </Flex>
           </Flex>
 
           <Table
@@ -353,6 +365,7 @@ const RepositoryMatcher: NextPage = () => {
             isLoading={isLoading}
             hasPagination={false}
             stickyHeader
+            stickyFirstColumn={stickyFirstColumn}
             virtualized
             tableContainerProps={TABLE_CONTAINER_PROPS}
             getTableRowProps={getTableRowProps}
