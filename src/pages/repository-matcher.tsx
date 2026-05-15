@@ -188,6 +188,7 @@ const RepositoryMatcher: NextPage = () => {
       return col.component({
         value: row?.[col.id],
         isLoading: rowLoading,
+        data: row,
       });
     },
     [],
