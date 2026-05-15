@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
+  Checkbox,
   Divider,
   Flex,
   Heading,
@@ -14,8 +15,16 @@ import {
 import { NextPage } from 'next';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { SearchInput } from 'src/components/search-input';
+import {
+  resolveStoredOrderedIds,
+  resolveStoredVisibleIds,
+} from 'src/components/select-and-order-popover';
 import { Table } from 'src/components/table';
-import { CustomizeColumnsPopover } from 'src/views/repository-matcher/components/CustomizeColumnsPopover';
+import {
+  CustomizeColumnsPopover,
+  CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+} from 'src/views/repository-matcher/components/CustomizeColumnsPopover';
 import { Filters } from 'src/views/repository-matcher/components/Filters';
 import { useRepositoryMatcherData } from 'src/views/repository-matcher/hooks/useRepositoryMatcherData';
 import {
@@ -24,6 +33,23 @@ import {
 } from 'src/views/repository-matcher/hooks/useRepositoryMatcherFilters';
 import { useSearchedData } from 'src/views/repository-matcher/hooks/useSearchedData';
 import { REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
+
+const TABLE_CONTAINER_PROPS = {
+  overflowX: 'auto' as const,
+  maxHeight: '70vh',
+  overflowY: 'auto' as const,
+};
+
+const ALL_COLUMN_IDS = REPOSITORY_MATCHER_COLUMNS.map(c => c.id);
+const DEFAULT_VISIBLE_COLUMN_IDS = REPOSITORY_MATCHER_COLUMNS.filter(
+  c => c.columns?.isDefault !== false,
+).map(c => c.id);
+const REQUIRED_COLUMN_IDS = REPOSITORY_MATCHER_COLUMNS.filter(
+  c => c.required,
+).map(c => c.id);
+
+const arraysShallowEqual = (a: string[], b: string[]): boolean =>
+  a.length === b.length && a.every((v, i) => v === b[i]);
 
 const RepositoryMatcher: NextPage = () => {
   const fields = useMemo(
@@ -37,14 +63,37 @@ const RepositoryMatcher: NextPage = () => {
   const { data, isLoading } = useRepositoryMatcherData(fields);
 
   /****** Customize columns: visibility + order *****/
+  // Read user-stored prefs synchronously on first client render so the table
+  // mounts with the user's columns/order instead of the defaults — avoiding a
+  // second render once the popover finishes hydrating from localStorage.
   const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(() =>
-    REPOSITORY_MATCHER_COLUMNS.filter(c => c.columns?.isDefault !== false).map(
-      c => c.id,
-    ),
+    resolveStoredVisibleIds({
+      storageKey: CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+      allIds: ALL_COLUMN_IDS,
+      defaultVisibleIds: DEFAULT_VISIBLE_COLUMN_IDS,
+      requiredIds: REQUIRED_COLUMN_IDS,
+    }),
   );
   const [orderedColumnIds, setOrderedColumnIds] = useState<string[] | null>(
-    null,
+    () =>
+      resolveStoredOrderedIds({
+        storageKey: CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+        allIds: ALL_COLUMN_IDS,
+        requiredIds: REQUIRED_COLUMN_IDS,
+      }),
   );
+
+  // The popover hydrates from the same localStorage keys on mount and then
+  // fires onVisibleChange/onOrderChange with the resolved values. Bail when
+  // the values match what we already initialized so the table doesn't re-run.
+  const handleVisibleColumnsChange = useCallback((ids: string[]) => {
+    setVisibleColumnIds(prev => (arraysShallowEqual(prev, ids) ? prev : ids));
+  }, []);
+  const handleColumnOrderChange = useCallback((ids: string[]) => {
+    setOrderedColumnIds(prev =>
+      prev && arraysShallowEqual(prev, ids) ? prev : ids,
+    );
+  }, []);
 
   // Render columns in user-chosen order, filtered to currently visible IDs.
   const tableColumns = useMemo(() => {
@@ -155,6 +204,44 @@ const RepositoryMatcher: NextPage = () => {
     });
   }, []);
 
+  // Stable references so the table's row-level memoization isn't defeated by
+  // new function/object identities on every page render.
+  const getTableRowProps = useCallback(
+    (_: any, idx: number) => ({
+      bg: idx % 2 === 0 ? 'white' : '#fafbfd',
+      _hover: { bg: 'blue.50' },
+    }),
+    [],
+  );
+
+  const getCells = useCallback(
+    ({
+      column,
+      data: row,
+      isLoading: rowLoading,
+    }: {
+      column: { property: string };
+      data: any;
+      isLoading?: boolean;
+    }) => {
+      const col = REPOSITORY_MATCHER_COLUMNS.find(
+        c => c.id === column.property,
+      );
+      if (!col) return null;
+      return col.component({
+        value: row?.[col.id],
+        isLoading: rowLoading,
+        data: row,
+      });
+    },
+    [],
+  );
+
+  const LOADING_ROWS = useMemo(() => Array(10).fill({}), []);
+  const tableData = isLoading ? LOADING_ROWS : sortedData;
+
+  const [stickyFirstColumn, setStickyFirstColumn] = useState(false);
+
   return (
     <PageContainer meta={getPageSeoConfig('/')}>
       <Flex direction='column' gap={4} px={40} py={8}>
@@ -250,49 +337,50 @@ const RepositoryMatcher: NextPage = () => {
             w='100%'
             py={2}
             justifyContent='space-between'
-            alignItems='baseline'
+            alignItems='flex-end'
           >
             <Text fontSize='sm' fontWeight='semibold' lineHeight='normal'>
               {sortedData?.length ?? 0} results
             </Text>
-            <CustomizeColumnsPopover
-              onVisibleColumnsChange={setVisibleColumnIds}
-              onColumnOrderChange={setOrderedColumnIds}
-            />
+            <Flex alignItems='center' gap={4}>
+              <Checkbox
+                size='sm'
+                isChecked={stickyFirstColumn}
+                onChange={e => setStickyFirstColumn(e.target.checked)}
+              >
+                Pin first column
+              </Checkbox>
+              <CustomizeColumnsPopover
+                onVisibleColumnsChange={handleVisibleColumnsChange}
+                onColumnOrderChange={handleColumnOrderChange}
+              />
+            </Flex>
           </Flex>
 
           <Table
             ariaLabel='Repository matcher table'
             caption='Repositories and resource catalogs available for data deposit'
             columns={tableColumns}
-            data={(isLoading ? Array(10).fill({}) : sortedData) as any}
+            data={tableData as any}
             isLoading={isLoading}
             hasPagination={false}
             stickyHeader
-            tableContainerProps={{
-              overflowX: 'auto',
-              maxHeight: '70vh',
-              overflowY: 'auto',
-            }}
-            getTableRowProps={(_, idx) => ({
-              bg: idx % 2 === 0 ? 'white' : '#fafbfd',
-              _hover: {
-                bg: 'blue.50',
-              },
-            })}
+            stickyFirstColumn={stickyFirstColumn}
+            virtualized
+            tableContainerProps={TABLE_CONTAINER_PROPS}
+            getTableRowProps={getTableRowProps}
             controlledSortProperty={sortProperty}
             controlledSortAsc={sortAsc}
             onControlledSort={handleSort}
-            getCells={({ column, data: row, isLoading: rowLoading }) => {
-              const col = REPOSITORY_MATCHER_COLUMNS.find(
-                c => c.id === column.property,
-              );
-              if (!col) return null;
-              return col.component({
-                value: row?.[col.id],
-                isLoading: rowLoading,
-              });
-            }}
+            getCells={getCells}
+            emptyState={
+              <Flex direction='column' align='center' py={10}>
+                <Text fontWeight='bold'>No repositories match</Text>
+                <Text color='gray.600'>
+                  Try clearing some filters or broadening your search.
+                </Text>
+              </Flex>
+            }
           />
         </Box>
       </Flex>

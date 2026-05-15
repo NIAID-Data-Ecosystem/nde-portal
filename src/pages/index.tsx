@@ -295,6 +295,14 @@ const Home: NextPage<{
                       props: { maxW: '150px', minW: '150px' },
                     },
                   ]}
+                  emptyState={
+                    <Flex direction='column' align='center' py={10}>
+                      <Text fontWeight='bold'>No items match</Text>
+                      <Text color='gray.600'>
+                        Try clearing some filters or broadening your search.
+                      </Text>
+                    </Flex>
+                  }
                 />
 
                 <ButtonGroup

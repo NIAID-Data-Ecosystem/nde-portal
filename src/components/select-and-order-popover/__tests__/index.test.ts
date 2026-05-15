@@ -9,6 +9,14 @@ describe('popover barrel (index.ts)', () => {
     it('exports usePopoverSearch as a function', () => {
       expect(typeof PopoverBarrel.usePopoverSearch).toBe('function');
     });
+
+    it('exports resolveStoredVisibleIds as a function', () => {
+      expect(typeof PopoverBarrel.resolveStoredVisibleIds).toBe('function');
+    });
+
+    it('exports resolveStoredOrderedIds as a function', () => {
+      expect(typeof PopoverBarrel.resolveStoredOrderedIds).toBe('function');
+    });
   });
 
   describe('components', () => {
@@ -41,6 +49,8 @@ describe('popover barrel (index.ts)', () => {
     const knownExports = new Set([
       'useSelectableList',
       'usePopoverSearch',
+      'resolveStoredVisibleIds',
+      'resolveStoredOrderedIds',
       'PopoverSearchInput',
       'PopoverSelectAll',
       'PopoverEmptyState',

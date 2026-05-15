@@ -72,7 +72,11 @@ export type RepositoryMatcherColumn<TValue = unknown> = {
    */
   required?: boolean;
   transform: (item: RepositoryMatcherItem) => TValue;
-  component: (props: { value: TValue; isLoading?: boolean }) => React.ReactNode;
+  component: (props: {
+    value: TValue;
+    isLoading?: boolean;
+    data: RepositoryMatcherItem;
+  }) => React.ReactNode;
   /**
    * Reduce the column's display value to a sortable primitive. Omit for
    * columns whose display value is already a string/number.
@@ -90,6 +94,8 @@ export type RepositoryMatcherColumn<TValue = unknown> = {
    */
   filter?: RepositoryMatcherFilterConfig<TValue>;
 };
+
+const MAX_TAGS_PER_CELL = 100; // to prevent overflowing when a cell has many tags, we limit the number shown and indicate when there are more
 
 const itemTypes = (item: RepositoryMatcherItem): string[] => {
   const t = (item as any).type;
@@ -268,28 +274,29 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     label: getMetadataName('description') || '',
     fields: ['description'],
     columns: { isSortable: true, isDefault: true },
-    transform: (item): string => item.description || '',
+    transform: (item): RepositoryMatcherItem['description'] =>
+      item.description || '',
     component: ({
       value,
       isLoading,
     }: {
-      value: string;
+      value: RepositoryMatcherItem['description'];
       isLoading?: boolean;
-    }) => <TextCell value={value} isLoading={isLoading} noOfLines={3} />,
+    }) => <TextCell value={value || ''} isLoading={isLoading} noOfLines={3} />,
   },
   {
     id: 'abstract',
     label: getMetadataName('abstract') || '',
     fields: ['abstract'],
     columns: { isSortable: true, isDefault: false },
-    transform: (item): string => item.abstract || '',
+    transform: (item): RepositoryMatcherItem['abstract'] => item.abstract || '',
     component: ({
       value,
       isLoading,
     }: {
-      value: string;
+      value: RepositoryMatcherItem['abstract'];
       isLoading?: boolean;
-    }) => <TextCell value={value} isLoading={isLoading} noOfLines={3} />,
+    }) => <TextCell value={value || ''} isLoading={isLoading} noOfLines={3} />,
   },
   {
     id: 'type',
@@ -402,12 +409,17 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     id: 'healthCondition',
     label: getMetadataName('healthCondition') || '',
     fields: ['healthCondition'],
-    columns: { isSortable: true, isDefault: true },
+    columns: { isSortable: false, isDefault: true },
     transform: item => {
       if (!item.healthCondition) return [];
       return Array.isArray(item.healthCondition)
-        ? item.healthCondition
+        ? item.healthCondition.slice(0, MAX_TAGS_PER_CELL)
         : [item.healthCondition];
+    },
+    getSearchValue: (value: DefinedTerm[]) => {
+      return (
+        value?.map(v => v.name).filter((name): name is string => !!name) ?? []
+      );
     },
     component: ({
       value,
@@ -427,12 +439,17 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     id: 'infectiousAgent',
     label: getMetadataName('infectiousAgent') || '',
     fields: ['infectiousAgent'],
-    columns: { isSortable: true, isDefault: true },
+    columns: { isSortable: false, isDefault: true },
     transform: item => {
       if (!item.infectiousAgent) return [];
       return Array.isArray(item.infectiousAgent)
-        ? item.infectiousAgent
+        ? item.infectiousAgent.slice(0, MAX_TAGS_PER_CELL)
         : [item.infectiousAgent];
+    },
+    getSearchValue: (value: DefinedTerm[]) => {
+      return (
+        value?.map(v => v.name).filter((name): name is string => !!name) ?? []
+      );
     },
     component: ({
       value,
@@ -502,10 +519,14 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       style: { maxWidth: '160px', minWidth: '160px' },
     },
     transform: item => item.collectionSize,
+    getSearchValue: (value: RepositoryMatcherItem['collectionSize']) => {
+      return value?.map(v => `${v.minValue} ${v.unitText || ''}`) || [];
+    },
     component: ({
       value,
     }: {
-      value: Repository['collectionSize'] | FormattedResource['collectionSize'];
+      value: RepositoryMatcherItem['collectionSize'];
+      isLoading?: boolean;
     }) => {
       return (
         <VStack>
@@ -533,10 +554,17 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     id: 'species',
     label: getMetadataName('species') || '',
     fields: ['species'],
-    columns: { isSortable: true, isDefault: true },
+    columns: { isSortable: false, isDefault: true },
     transform: item => {
       if (!item.species) return [];
-      return Array.isArray(item.species) ? item.species : [item.species];
+      return Array.isArray(item.species)
+        ? item.species.slice(0, MAX_TAGS_PER_CELL)
+        : [item.species];
+    },
+    getSearchValue: (value: DefinedTerm[]) => {
+      return (
+        value?.map(v => v.name).filter((name): name is string => !!name) ?? []
+      );
     },
     component: ({
       value,
@@ -556,12 +584,17 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     id: 'meas-technique',
     label: getMetadataName('measurementTechnique') || '',
     fields: ['measurementTechnique'],
-    columns: { isSortable: true, isDefault: true },
+    columns: { isSortable: false, isDefault: true },
     transform: item => {
       if (!item.measurementTechnique) return [];
       return Array.isArray(item.measurementTechnique)
-        ? item.measurementTechnique
+        ? item.measurementTechnique.slice(0, MAX_TAGS_PER_CELL)
         : [item.measurementTechnique];
+    },
+    getSearchValue: (value: DefinedTerm[]) => {
+      return (
+        value?.map(v => v.name).filter((name): name is string => !!name) ?? []
+      );
     },
     component: ({
       value,
@@ -581,12 +614,17 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     id: 'topic',
     label: getMetadataName('topicCategory') || '',
     fields: ['topicCategory'],
-    columns: { isSortable: true, isDefault: true },
+    columns: { isSortable: false, isDefault: true },
     transform: item => {
       if (!item.topicCategory) return [];
       return Array.isArray(item.topicCategory)
-        ? item.topicCategory
+        ? item.topicCategory.slice(0, MAX_TAGS_PER_CELL)
         : [item.topicCategory];
+    },
+    getSearchValue: (value: DefinedTerm[]) => {
+      return (
+        value?.map(v => v.name).filter((name): name is string => !!name) ?? []
+      );
     },
     component: ({
       value,
@@ -634,11 +672,14 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     transform: item => {
       return item.temporalCoverage;
     },
+    getSearchValue: (value: RepositoryMatcherItem['temporalCoverage']) => {
+      return value?.map(v => `${v.startDate},${v.endDate}`) ?? [];
+    },
     component: ({
       value,
       isLoading,
     }: {
-      value?: TemporalCoverage[] | null | undefined;
+      value?: RepositoryMatcherItem['temporalCoverage'];
       isLoading?: boolean;
     }) => {
       if (isLoading) {
@@ -709,6 +750,20 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     fields: ['usageInfo'],
     columns: { isSortable: true, isDefault: true },
     transform: item => item.usageInfo || '',
+    getSearchValue: (value: RepositoryMatcherItem['usageInfo']) => {
+      if (typeof value === 'string') {
+        return value;
+      }
+      if (Array.isArray(value)) {
+        return value
+          .map(v => (typeof v === 'string' ? v : v.name || v.url || ''))
+          .filter(v => v);
+      }
+      if (value && typeof value === 'object') {
+        return value.name || value.url || '';
+      }
+      return null;
+    },
     component: ({
       value,
       isLoading,
