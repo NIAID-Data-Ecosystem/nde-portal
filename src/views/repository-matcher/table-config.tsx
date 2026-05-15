@@ -91,6 +91,8 @@ export type RepositoryMatcherColumn<TValue = unknown> = {
   filter?: RepositoryMatcherFilterConfig<TValue>;
 };
 
+const MAX_TAGS_PER_CELL = 100; // to prevent overflowing when a cell has many tags, we limit the number shown and indicate when there are more
+
 const itemTypes = (item: RepositoryMatcherItem): string[] => {
   const t = (item as any).type;
   if (Array.isArray(t)) return t;
@@ -406,7 +408,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     transform: item => {
       if (!item.healthCondition) return [];
       return Array.isArray(item.healthCondition)
-        ? item.healthCondition.slice(0, 10)
+        ? item.healthCondition.slice(0, MAX_TAGS_PER_CELL)
         : [item.healthCondition];
     },
     component: ({
@@ -431,7 +433,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     transform: item => {
       if (!item.infectiousAgent) return [];
       return Array.isArray(item.infectiousAgent)
-        ? item.infectiousAgent.slice(0, 10)
+        ? item.infectiousAgent.slice(0, MAX_TAGS_PER_CELL)
         : [item.infectiousAgent];
     },
     component: ({
@@ -537,7 +539,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     transform: item => {
       if (!item.species) return [];
       return Array.isArray(item.species)
-        ? item.species.slice(0, 10)
+        ? item.species.slice(0, MAX_TAGS_PER_CELL)
         : [item.species];
     },
     component: ({
@@ -562,7 +564,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     transform: item => {
       if (!item.measurementTechnique) return [];
       return Array.isArray(item.measurementTechnique)
-        ? item.measurementTechnique.slice(0, 10)
+        ? item.measurementTechnique.slice(0, MAX_TAGS_PER_CELL)
         : [item.measurementTechnique];
     },
     component: ({
@@ -587,7 +589,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     transform: item => {
       if (!item.topicCategory) return [];
       return Array.isArray(item.topicCategory)
-        ? item.topicCategory.slice(0, 10)
+        ? item.topicCategory.slice(0, MAX_TAGS_PER_CELL)
         : [item.topicCategory];
     },
     component: ({
