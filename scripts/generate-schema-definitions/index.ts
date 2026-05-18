@@ -15,6 +15,7 @@ export enum ResourceType {
   ResourceCatalog,
   ComputationalTool,
   Sample,
+  DataCollection,
 }
 
 // Array of supported resource types.
@@ -36,6 +37,8 @@ const getCustomFields = () => {
         'Type is used to categorize the nature or genre of the content of the resource.',
       Sample:
         'Type is used to categorize the nature or genre of the content of the resource.',
+      DataCollection:
+        'Type is used to categorize the nature or genre of the content of the resource.',
     },
     abstract: {
       Dataset:
@@ -43,6 +46,8 @@ const getCustomFields = () => {
       ResourceCatalog:
         'Type is used to categorize the nature or genre of the content of the resource.',
       Sample:
+        'Type is used to categorize the nature or genre of the content of the resource.',
+      DataCollection:
         'Type is used to categorize the nature or genre of the content of the resource.',
     },
     isAdvancedSearchField: false,
@@ -59,11 +64,13 @@ const getCustomFields = () => {
       Dataset: 'An area of knowledge or field(s) of study.',
       ResourceCatalog: 'An area of knowledge or field(s) of study.',
       Sample: 'An area of knowledge or field(s) of study.',
+      DataCollection: 'An area of knowledge or field(s) of study.',
     },
     abstract: {
       Dataset: 'An area of knowledge or field(s) of study.',
       ResourceCatalog: 'An area of knowledge or field(s) of study.',
       Sample: 'An area of knowledge or field(s) of study.',
+      DataCollection: 'An area of knowledge or field(s) of study.',
     },
     isAdvancedSearchField: false,
   };
