@@ -244,7 +244,7 @@ const RepositoryMatcher: NextPage = () => {
   const [stickyFirstColumn, setStickyFirstColumn] = useState(false);
 
   return (
-    <PageContainer meta={getPageSeoConfig('/')}>
+    <PageContainer meta={getPageSeoConfig('/repository-matcher')} px={0} py={0}>
       <Flex direction='column' gap={4} px={{ base: 4, md: 40 }} py={8}>
         <Heading as='h1' size='lg'>
           Repository Matcher
