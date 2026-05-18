@@ -11,7 +11,7 @@ import { RepositoryMatcherRow } from './useRepositoryMatcherData';
 export function useSearchedData(
   data: RepositoryMatcherRow[] | undefined,
   searchTerm: string,
-  debounceMs: number = 250,
+  debounceMs: number = 150,
 ) {
   const [debouncedSearchTerm] = useDebounceValue(searchTerm, debounceMs);
 
