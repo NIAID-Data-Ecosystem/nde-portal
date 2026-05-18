@@ -10,6 +10,7 @@ import {
   TagCloseButton,
   TagLabel,
   Text,
+  VStack,
 } from '@chakra-ui/react';
 
 import { NextPage } from 'next';
@@ -36,7 +37,7 @@ import { REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-c
 
 const TABLE_CONTAINER_PROPS = {
   overflowX: 'auto' as const,
-  maxHeight: '70vh',
+  maxHeight: '60vh',
   overflowY: 'auto' as const,
 };
 
@@ -244,7 +245,7 @@ const RepositoryMatcher: NextPage = () => {
 
   return (
     <PageContainer meta={getPageSeoConfig('/')}>
-      <Flex direction='column' gap={4} px={40} py={8}>
+      <Flex direction='column' gap={4} px={{ base: 4, md: 40 }} py={8}>
         <Heading as='h1' size='lg'>
           Repository Matcher
         </Heading>
@@ -258,28 +259,38 @@ const RepositoryMatcher: NextPage = () => {
         direction={{ base: 'column', md: 'row' }}
         align='flex-start'
         gap={4}
+        mb={8}
       >
         <Box
-          w={{ base: '100%', md: '320px' }}
+          display={{ base: 'none', md: 'block' }}
+          w='320px'
           flexShrink={0}
-          position={{ base: 'static', md: 'sticky' }}
-          top={{ md: 4 }}
+          position='sticky'
+          top={4}
         >
           <Filters
             termsByColumnId={termsByColumnId}
             selected={selectedFilters}
             onChange={handleFilterChange}
+            onClearAll={() => setSelectedFilters({})}
             isLoading={isLoading}
           />
         </Box>
-        <Box flex={1} minW={0} w='100%' px={8} mt={6} maxWidth='2000px'>
+        <Box
+          flex={1}
+          minW={0}
+          w='100%'
+          px={{ base: 4, md: 8 }}
+          mt={6}
+          maxWidth='2000px'
+        >
           <Stack
             direction='row'
             spacing={2}
             mb={2}
             flexWrap='wrap'
             alignItems='center'
-            width='80%'
+            width={{ base: '100%', md: '80%' }}
           >
             <SearchInput
               size='md'
@@ -294,13 +305,32 @@ const RepositoryMatcher: NextPage = () => {
               colorScheme='primary'
             />
           </Stack>
+          <Box display={{ base: 'block', md: 'none' }} mb={3}>
+            <Filters
+              termsByColumnId={termsByColumnId}
+              selected={selectedFilters}
+              onChange={handleFilterChange}
+              onClearAll={() => setSelectedFilters({})}
+              isLoading={isLoading}
+            />
+          </Box>
           {/* <!-- Filter Tags--> */}
+          {filterTags.length > 0 && (
+            <Text
+              display={{ base: 'block', md: 'none' }}
+              fontSize='sm'
+              fontWeight='semibold'
+              mb={1}
+            >
+              Active Filters:
+            </Text>
+          )}
           <Stack
             direction='row'
             spacing={2}
             flex={1}
             flexWrap='wrap'
-            minW='300px'
+            minW={{ base: 0, md: '300px' }}
           >
             {filterTags.length > 0 && (
               <Tag
@@ -342,19 +372,19 @@ const RepositoryMatcher: NextPage = () => {
             <Text fontSize='sm' fontWeight='semibold' lineHeight='normal'>
               {sortedData?.length ?? 0} results
             </Text>
-            <Flex alignItems='center' gap={4}>
+            <VStack alignItems='flex-end'>
               <Checkbox
-                size='sm'
                 isChecked={stickyFirstColumn}
                 onChange={e => setStickyFirstColumn(e.target.checked)}
+                colorScheme='primary'
               >
-                Pin first column
+                <Text fontSize='xs'>Pin first column</Text>
               </Checkbox>
               <CustomizeColumnsPopover
                 onVisibleColumnsChange={handleVisibleColumnsChange}
                 onColumnOrderChange={handleColumnOrderChange}
               />
-            </Flex>
+            </VStack>
           </Flex>
 
           <Table

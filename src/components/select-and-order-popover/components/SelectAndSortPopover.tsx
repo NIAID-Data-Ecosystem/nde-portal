@@ -204,7 +204,13 @@ export const SelectAndSortPopover = ({
           leftIcon={<Icon as={FaSliders} boxSize={3.5} />}
           {...triggerProps}
         >
-          {copy.button}
+          <Text
+            as='span'
+            color='inherit'
+            display={{ base: 'none', sm: 'inline' }}
+          >
+            {copy.button}
+          </Text>
           {showCount ? ` (${selectedCount}/${totalCount})` : ''}
         </Button>
       </PopoverTrigger>
