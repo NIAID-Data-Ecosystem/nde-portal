@@ -36,6 +36,11 @@ export const Input: React.FC<Partial<SearchBarWithDropdownProps>> = ({
             property: '@type',
           },
           {
+            name: 'Data Collection',
+            value: 'DataCollection',
+            property: '@type',
+          },
+          {
             name: 'Dataset Repository',
             value: 'Dataset',
             property: '@type',
@@ -43,6 +48,11 @@ export const Input: React.FC<Partial<SearchBarWithDropdownProps>> = ({
           {
             name: 'Resource Catalog',
             value: 'ResourceCatalog',
+            property: '@type',
+          },
+          {
+            name: 'Sample Repository',
+            value: 'Sample',
             property: '@type',
           },
         ],
