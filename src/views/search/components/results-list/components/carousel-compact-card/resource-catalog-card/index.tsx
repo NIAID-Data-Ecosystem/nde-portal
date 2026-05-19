@@ -46,15 +46,15 @@ export const ResourceCatalogCard = ({
   };
 
   // Transform about array to string array for SearchableItems
-  const aboutItems = useMemo(
-    () =>
-      about?.map(a => ({
-        name: a.displayName,
-        value: a.displayName,
-        field: 'about.displayName',
-      })) || [],
-    [about],
-  );
+  const aboutItems = useMemo(() => {
+    if (!about) return [];
+    const aboutArray = Array.isArray(about) ? about : [about];
+    return aboutArray.map(a => ({
+      name: a.displayName,
+      value: a.displayName,
+      field: 'about.displayName',
+    }));
+  }, [about]);
 
   const shouldShowDescription = !showAllTypes;
 

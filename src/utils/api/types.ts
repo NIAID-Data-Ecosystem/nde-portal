@@ -36,6 +36,13 @@ export interface FacetTerm {
   [key: string]: NestedFacet;
 }
 
+export interface About {
+  description: string;
+  displayName: string;
+  name: string;
+  url: string;
+  inDefinedTermSet?: string;
+}
 // Conditions of access for dataset or tool.
 export type AccessTypes =
   | 'Open'
@@ -462,14 +469,7 @@ export interface FormattedResource {
   id: string;
   '@type': APIResourceType; // "Dataset" | "ComputationalTool" | "Resource Catalog"
   name: string;
-  about:
-    | {
-        description: string;
-        displayName: string;
-        name: string;
-        url: string;
-      }[]
-    | null;
+  about: About | About[] | null;
   abstract: string | null;
   aggregateRating: AggregateRating | null;
   alternateName: string | null;

@@ -200,7 +200,7 @@ const Sections = ({
                           </TagWithUrl>
                         </OverviewSectionWrapper>
                       )}
-                      {data?.about && data?.about?.length > 0 && (
+                      {data?.about && (
                         <OverviewSectionWrapper
                           isLoading={isLoading}
                           label='Content Types'
@@ -210,25 +210,40 @@ const Sections = ({
                             maxHeight: 'unset',
                           }}
                         >
-                          <SearchableItems
-                            generateButtonLabel={(
-                              limit,
-                              length,
-                              itemLabel = 'about',
-                            ) =>
-                              limit === length
-                                ? `Show fewer ${itemLabel}`
-                                : `Show all ${itemLabel} (${
-                                    length - limit
-                                  } more)`
-                            }
-                            itemLimit={20}
-                            items={data?.about.map(about => ({
-                              name: about.displayName,
-                              value: about.displayName,
-                              field: 'about.displayName',
-                            }))}
-                          />
+                          {Array.isArray(data?.about) &&
+                          data?.about.length > 0 ? (
+                            <SearchableItems
+                              generateButtonLabel={(
+                                limit,
+                                length,
+                                itemLabel = 'about',
+                              ) =>
+                                limit === length
+                                  ? `Show fewer ${itemLabel}`
+                                  : `Show all ${itemLabel} (${
+                                      length - limit
+                                    } more)`
+                              }
+                              itemLimit={20}
+                              items={data?.about.map(about => ({
+                                name: about.displayName,
+                                value: about.displayName,
+                                field: 'about.displayName',
+                              }))}
+                            />
+                          ) : !Array.isArray(data?.about) ? (
+                            <TagWithUrl
+                              key={
+                                data?.about?.displayName || data?.about?.name
+                              }
+                              colorScheme='primary'
+                              m={0.5}
+                              leftIcon={FaMagnifyingGlass}
+                              href={data?.about?.url || undefined}
+                            >
+                              {data?.about?.displayName || data?.about?.name}
+                            </TagWithUrl>
+                          ) : null}
                         </OverviewSectionWrapper>
                       )}
                     </VStack>
