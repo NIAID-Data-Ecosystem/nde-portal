@@ -3,6 +3,10 @@ import {
   SearchBarWithDropdownProps,
 } from 'src/components/search-bar';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import {
+  SHOW_DATA_COLLECTIONS_TAB,
+  SHOW_SAMPLES_TAB,
+} from 'src/utils/feature-flags';
 
 /**
  * Input component for search bar with dropdown
@@ -35,6 +39,15 @@ export const Input: React.FC<Partial<SearchBarWithDropdownProps>> = ({
             value: 'ComputationalTool',
             property: '@type',
           },
+          ...(SHOW_DATA_COLLECTIONS_TAB
+            ? [
+                {
+                  name: 'Data Collection',
+                  value: 'DataCollection',
+                  property: '@type',
+                },
+              ]
+            : []),
           {
             name: 'Dataset Repository',
             value: 'Dataset',
@@ -45,6 +58,15 @@ export const Input: React.FC<Partial<SearchBarWithDropdownProps>> = ({
             value: 'ResourceCatalog',
             property: '@type',
           },
+          ...(SHOW_SAMPLES_TAB
+            ? [
+                {
+                  name: 'Sample Repository',
+                  value: 'Sample',
+                  property: '@type',
+                },
+              ]
+            : []),
         ],
       }}
       {...rest}
