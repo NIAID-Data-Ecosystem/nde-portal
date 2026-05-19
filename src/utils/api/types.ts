@@ -54,9 +54,11 @@ export type AccessTypes =
   | 'Unknown';
 
 export interface AdditionalProperty {
-  '@type'?: 'PropertyValue';
-  propertyID: string;
-  value: string;
+  '@type'?: string;
+  name?: string;
+  propertyID?: string;
+  unitText?: string;
+  value?: string;
 }
 
 export interface AdditionalType {
@@ -383,6 +385,34 @@ export interface OutputProperties {
   inDefinedTermSet?: string;
 }
 
+interface exampleOfWorkEncodingFormat {
+  '@type': string;
+  inDefinedTermSet?: string;
+  identifier?: string;
+  name?: string;
+  url?: string;
+}
+
+export interface ExampleOfWork {
+  '@type'?: string;
+  about?: {
+    '@type': string;
+    displayName?: string;
+    inDefinedTermSet?: string;
+    name?: string;
+    termCode?: string;
+    url?: string;
+  };
+  encodingFormat?: exampleOfWorkEncodingFormat | exampleOfWorkEncodingFormat[];
+  potentialAction?: {
+    '@type'?: string;
+    name?: string;
+    target?: string;
+  };
+  schemaVersion?: string;
+  additionalProperty?: AdditionalProperty | AdditionalProperty[];
+}
+
 export interface FeatureListProperties {
   identifier?: string;
   name?: string;
@@ -503,6 +533,7 @@ export interface FormattedResource {
   distribution: Distribution[] | null;
   doi: string | null;
   downloadUrl: { name: string }[] | null;
+  exampleOfWork: ExampleOfWork | null;
   featureList: FeatureListProperties[] | null;
   funding: Funding[] | null;
   genre: Domain | null;

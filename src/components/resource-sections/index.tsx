@@ -52,6 +52,7 @@ import {
   SHOULD_HIDE_SAMPLES,
 } from 'src/utils/feature-flags';
 import { Heading } from 'src/theme/components/heading';
+import { ExampleOfWorkDisplay } from './components/example-of-work';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -494,6 +495,11 @@ const Sections = ({
                   }
                 }
               />
+            )}
+
+            {/* Display what the work on the source site looks like, ex: schema, properties */}
+            {section.hash === 'exampleOfWork' && data?.exampleOfWork && (
+              <ExampleOfWorkDisplay {...data.exampleOfWork} />
             )}
 
             {/* isBasedOn action property used for DataCollection contains an explanation of how the DataCollection was created */}

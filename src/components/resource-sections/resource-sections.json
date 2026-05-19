@@ -119,6 +119,19 @@
       }
     },
     {
+      "title": "Example of Work",
+      "hash": "exampleOfWork",
+      "properties": [
+        "exampleOfWork.encodingFormat",
+        "exampleOfWork.schemaVersion",
+        "exampleOfWork.additionalProperty"
+      ],
+      "ui": {
+        "isCollapsible": true,
+        "showInNavigation": true
+      }
+    },
+    {
       "title": "Cited By",
       "hash": "citedBy",
       "properties": ["citedBy"],
