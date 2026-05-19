@@ -32,7 +32,7 @@ import {
 } from './components/sidebar/components/external';
 import { Funding } from './components/funding';
 import { JsonViewer } from '../json-viewer';
-import BasedOnTable from './components/based-on';
+import { BasedOnTable, BasedOnActionProcess } from './components/based-on';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
 import { ResourceCatalogCollection } from './components/collection-information';
 import { DownloadMetadata } from '../download-metadata';
@@ -51,6 +51,7 @@ import {
   SHOW_CREDIT_TEXT_SECTION,
   SHOULD_HIDE_SAMPLES,
 } from 'src/utils/feature-flags';
+import { Heading } from 'src/theme/components/heading';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -65,6 +66,12 @@ const Sections = ({
   sections: Route[];
 }) => {
   const type = data?.['@type'] || 'Dataset';
+  const isBasedOn = data?.isBasedOn?.filter(item => item['@type'] !== 'Action');
+
+  const isBasedOnActionProcess =
+    (type === 'DataCollection' &&
+      data?.isBasedOn?.filter(item => item['@type'] === 'Action')) ||
+    null;
 
   return (
     <>
@@ -109,11 +116,16 @@ const Sections = ({
         )}
 
       {sections.map(section => {
+        const sectionName =
+          section.hash === 'basedOnAction' && isBasedOnActionProcess
+            ? isBasedOnActionProcess[0]?.name || section.title
+            : section.title;
+
         return (
           <Section
             id={section.hash}
             key={section.hash}
-            name={section.title}
+            name={sectionName}
             isLoading={isLoading}
             isCollapsible={section?.ui?.isCollapsible}
           >
@@ -450,13 +462,13 @@ const Sections = ({
             )}
 
             {/* Show Based On information */}
-            {section.hash === 'isBasedOn' && data?.isBasedOn && (
+            {section.hash === 'isBasedOn' && isBasedOn && (
               <BasedOnTable
                 id='software-information-is-based-on'
                 title={schema['isBasedOn']['description']?.[type]}
                 caption='Table showing resources that this resource is based on.'
                 isLoading={isLoading}
-                items={data?.isBasedOn}
+                items={isBasedOn}
               />
             )}
 
@@ -483,6 +495,13 @@ const Sections = ({
                 }
               />
             )}
+
+            {/* isBasedOn action property used for DataCollection contains an explanation of how the DataCollection was created */}
+            {section.hash === 'basedOnAction' &&
+              isBasedOnActionProcess &&
+              isBasedOnActionProcess.map((action, index) => (
+                <BasedOnActionProcess key={index} {...action} />
+              ))}
 
             {/* Show raw metadata */}
             {section.hash === 'metadata' && data?.rawData && (

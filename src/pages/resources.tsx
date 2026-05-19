@@ -222,7 +222,9 @@ const ResourcePage: NextPage = () => {
                     <Sidebar
                       data={data}
                       isLoading={isLoading}
-                      sections={sections}
+                      sections={sections.filter(
+                        section => section.ui?.showInNavigation,
+                      )}
                     />
                   </Flex>
                 </Flex>

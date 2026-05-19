@@ -213,6 +213,11 @@ export interface InteractionStatistics {
   interactionType: string | null;
 }
 
+export interface IsBasedOnActionProcess {
+  '@type': string;
+  step: string[];
+}
+
 export interface IsBasedOn {
   '@type'?: string;
   abstract?: string;
@@ -226,6 +231,7 @@ export interface IsBasedOn {
   name?: string;
   pmid?: string;
   url?: string;
+  actionProcess?: IsBasedOnActionProcess;
 }
 
 export interface IsBasisFor {

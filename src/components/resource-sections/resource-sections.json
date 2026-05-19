@@ -137,6 +137,14 @@
       }
     },
     {
+      "title": "Based On Action",
+      "hash": "basedOnAction",
+      "properties": ["isBasedOn.actionProcess"],
+      "ui": {
+        "isCollapsible": true
+      }
+    },
+    {
       "title": "Metadata",
       "hash": "metadata",
       "properties": ["rawData"],

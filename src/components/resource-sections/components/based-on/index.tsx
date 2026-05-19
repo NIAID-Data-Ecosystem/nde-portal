@@ -84,7 +84,7 @@ interface Row extends Item {
 
 type Rows = Row[];
 // BasedOnTable: Main component for rendering a paginated and sortable table
-const BasedOnTable = ({
+export const BasedOnTable = ({
   id,
   isLoading,
   caption,
@@ -369,4 +369,31 @@ const BasedOnTable = ({
   );
 };
 
-export default BasedOnTable;
+export const BasedOnActionProcess = ({
+  description,
+  actionProcess,
+}: IsBasedOn) => {
+  if (!description && (!actionProcess || !actionProcess.step))
+    return <>No details provided.</>;
+
+  const steps = Array.isArray(actionProcess?.step)
+    ? actionProcess.step
+    : actionProcess?.step
+    ? [actionProcess.step]
+    : [];
+
+  return (
+    <>
+      <Text fontWeight='semibold' lineHeight='short' mb={1}>
+        {description}
+      </Text>
+      {steps?.map((step, index) => {
+        return (
+          <Text key={index} lineHeight='short' fontSize='sm'>
+            {step || 'No action process provided'}
+          </Text>
+        );
+      })}
+    </>
+  );
+};
