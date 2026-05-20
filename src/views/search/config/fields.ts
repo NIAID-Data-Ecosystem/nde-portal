@@ -55,6 +55,7 @@ export const SAMPLE_FIELDS = [
   'date',
   'description',
   'conditionsOfAccess',
+  'creativeWorkStatus',
   'healthCondition',
   'infectiousAgent',
   'species',
