@@ -1,16 +1,13 @@
 import React from 'react';
 import { FormattedResource } from 'src/utils/api/types';
 import {
-  Box,
   Divider,
   Flex,
   ListItem,
-  SimpleGrid,
   Skeleton,
   Stack,
   StackDivider,
   UnorderedList,
-  VStack,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import {
@@ -34,14 +31,11 @@ import { Funding } from './components/funding';
 import { JsonViewer } from '../json-viewer';
 import { BasedOnTable, BasedOnActionProcess } from './components/based-on';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
-import { ResourceCatalogCollection } from './components/collection-information';
 import { DownloadMetadata } from '../download-metadata';
 import { SearchableItems } from 'src/components/searchable-items';
 import { Summary } from './components/summary';
 import { OverviewSectionWrapper } from './components/overview-section-wrapper';
 import { getMetadataDescription } from '../metadata';
-import { TagWithUrl } from '../tag-with-url';
-import { FaMagnifyingGlass } from 'react-icons/fa6';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { RelatedResources } from './components/related-resources';
@@ -51,8 +45,8 @@ import {
   SHOW_CREDIT_TEXT_SECTION,
   SHOULD_HIDE_SAMPLES,
 } from 'src/utils/feature-flags';
-import { Heading } from 'src/theme/components/heading';
 import { ExampleOfWorkDisplay } from './components/example-of-work';
+import { AboutResource } from './components/about';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -177,128 +171,28 @@ const Sections = ({
             )}
             {section.hash === 'overview' && (
               <>
+                {/* If type is DataCollection, show AboutResource above the main overview */}
+                {type === 'DataCollection' && (
+                  <AboutResource
+                    about={data?.about}
+                    collectionSize={data?.collectionSize}
+                    exampleOfWork={data?.exampleOfWork}
+                    genre={data?.genre}
+                    isLoading={isLoading}
+                  />
+                )}
+
                 <ResourceOverview isLoading={isLoading} {...data} />
                 {/* Overview secondary section */}
-                {(data?.genre ||
-                  data?.about ||
-                  data?.exampleOfWork?.about ||
-                  data?.collectionSize) && (
-                  <SimpleGrid
-                    minChildWidth={{ base: 'unset', sm: '280px', xl: '300px' }}
-                    spacingX={14}
-                    spacingY={10}
-                    mt={4}
-                    w='100%'
-                  >
-                    {/* Col 1: Genre & Content Types */}
-                    <VStack>
-                      {data?.genre && (
-                        <OverviewSectionWrapper
-                          isLoading={isLoading}
-                          label='Research Domain'
-                          scrollContainerProps={{
-                            border: 'none',
-                            py: 0,
-                          }}
-                        >
-                          <TagWithUrl
-                            colorScheme='primary'
-                            href={{
-                              pathname: '/search',
-                              query: {
-                                q: `genre:"${data?.genre}"`,
-                              },
-                            }}
-                            m={0.5}
-                            leftIcon={FaMagnifyingGlass}
-                          >
-                            {data?.genre}
-                          </TagWithUrl>
-                        </OverviewSectionWrapper>
-                      )}
-                      {(data?.about || data?.exampleOfWork?.about) && (
-                        <OverviewSectionWrapper
-                          isLoading={isLoading}
-                          label='Content Types'
-                          scrollContainerProps={{
-                            border: 'none',
-                            py: 0,
-                            maxHeight: 'unset',
-                          }}
-                        >
-                          {Array.isArray(data?.about) &&
-                          data?.about.length > 0 ? (
-                            <SearchableItems
-                              generateButtonLabel={(
-                                limit,
-                                length,
-                                itemLabel = 'about',
-                              ) =>
-                                limit === length
-                                  ? `Show fewer ${itemLabel}`
-                                  : `Show all ${itemLabel} (${
-                                      length - limit
-                                    } more)`
-                              }
-                              itemLimit={20}
-                              items={data?.about.map(about => ({
-                                name: about.displayName,
-                                value: about.displayName,
-                                field: 'about.displayName',
-                              }))}
-                            />
-                          ) : !Array.isArray(data?.about) ? (
-                            <TagWithUrl
-                              key={
-                                data?.about?.displayName || data?.about?.name
-                              }
-                              colorScheme='primary'
-                              m={0.5}
-                              leftIcon={FaMagnifyingGlass}
-                              href={data?.about?.url || undefined}
-                            >
-                              {data?.about?.displayName || data?.about?.name}
-                            </TagWithUrl>
-                          ) : null}
-
-                          {/* exampleOfWork.about is typically used for data collections to indicate the dataset or resource that the tool works with */}
-                          {data?.exampleOfWork?.about && (
-                            <TagWithUrl
-                              key={
-                                data.exampleOfWork.about.displayName ||
-                                data.exampleOfWork.about.name
-                              }
-                              colorScheme='primary'
-                              m={0.5}
-                              leftIcon={FaMagnifyingGlass}
-                              href={data.exampleOfWork.about.url || undefined}
-                            >
-                              {data.exampleOfWork.about.displayName ||
-                                data.exampleOfWork.about.name}
-                            </TagWithUrl>
-                          )}
-                        </OverviewSectionWrapper>
-                      )}
-                    </VStack>
-                    {/* Col 2: Size of collection */}
-                    {data?.collectionSize && (
-                      <OverviewSectionWrapper
-                        isLoading={isLoading}
-                        label='Collection Size Details'
-                        maxWidth={{ base: 'unset', xl: '500px' }}
-                        scrollContainerProps={{
-                          maxHeight: 'unset',
-                          py: 0,
-                        }}
-                      >
-                        <ResourceCatalogCollection
-                          collectionSize={data?.collectionSize}
-                        />
-                      </OverviewSectionWrapper>
-                    )}
-                    {/* Empty placeholder for third column at xl screens */}
-                    <Box display={{ base: 'none', xl: 'block' }} aria-hidden />
-                  </SimpleGrid>
+                {/* If type is not DataCollection, show AboutResource below the main overview */}
+                {type !== 'DataCollection' && (
+                  <AboutResource
+                    about={data?.about}
+                    collectionSize={data?.collectionSize}
+                    exampleOfWork={data?.exampleOfWork}
+                    genre={data?.genre}
+                    isLoading={isLoading}
+                  />
                 )}
 
                 {/* Resource citation(s) */}
