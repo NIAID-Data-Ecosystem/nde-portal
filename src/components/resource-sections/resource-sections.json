@@ -5,9 +5,13 @@
       "title": "Overview",
       "hash": "overview",
       "properties": [
+        "about",
         "availableOnDevice",
+        "collectionSize",
         "doi",
+        "exampleOfWork.about",
         "featureList",
+        "genre",
         "healthCondition",
         "infectiousAgent",
         "inLanguage",

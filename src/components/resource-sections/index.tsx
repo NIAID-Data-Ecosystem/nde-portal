@@ -179,7 +179,10 @@ const Sections = ({
               <>
                 <ResourceOverview isLoading={isLoading} {...data} />
                 {/* Overview secondary section */}
-                {(data?.genre || data?.about || data?.collectionSize) && (
+                {(data?.genre ||
+                  data?.about ||
+                  data?.exampleOfWork?.about ||
+                  data?.collectionSize) && (
                   <SimpleGrid
                     minChildWidth={{ base: 'unset', sm: '280px', xl: '300px' }}
                     spacingX={14}
@@ -213,7 +216,7 @@ const Sections = ({
                           </TagWithUrl>
                         </OverviewSectionWrapper>
                       )}
-                      {data?.about && (
+                      {(data?.about || data?.exampleOfWork?.about) && (
                         <OverviewSectionWrapper
                           isLoading={isLoading}
                           label='Content Types'
@@ -257,6 +260,23 @@ const Sections = ({
                               {data?.about?.displayName || data?.about?.name}
                             </TagWithUrl>
                           ) : null}
+
+                          {/* exampleOfWork.about is typically used for data collections to indicate the dataset or resource that the tool works with */}
+                          {data?.exampleOfWork?.about && (
+                            <TagWithUrl
+                              key={
+                                data.exampleOfWork.about.displayName ||
+                                data.exampleOfWork.about.name
+                              }
+                              colorScheme='primary'
+                              m={0.5}
+                              leftIcon={FaMagnifyingGlass}
+                              href={data.exampleOfWork.about.url || undefined}
+                            >
+                              {data.exampleOfWork.about.displayName ||
+                                data.exampleOfWork.about.name}
+                            </TagWithUrl>
+                          )}
                         </OverviewSectionWrapper>
                       )}
                     </VStack>
