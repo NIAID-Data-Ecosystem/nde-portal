@@ -1,6 +1,9 @@
 import { FilterConfig, ChartConfig } from './types';
 import { getMetadataDescription } from 'src/components/metadata';
-import { SHOW_SAMPLES_TAB } from 'src/utils/feature-flags';
+import {
+  SHOW_SAMPLES_TAB,
+  SHOW_DATA_COLLECTIONS_TAB,
+} from 'src/utils/feature-flags';
 import {
   formatConditionsOfAccess,
   transformConditionsOfAccessLabel,
@@ -278,13 +281,37 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     category: 'Sample',
     tabIds: ['s'],
   },
+  {
+    id: 'about.name',
+    name: 'Data Type',
+    property: 'about.name',
+    queryType: 'facet',
+    description: getMetadataDescription('about') || '',
+    chart: DEFAULT_BAR_PIE_CHART,
+    category: 'Data Collection',
+    tabIds: ['dc'],
+  },
+  {
+    id: 'exampleOfWork.about.name.raw',
+    name: 'Asset Type',
+    property: 'exampleOfWork.about.name.raw',
+    queryType: 'facet',
+    description: getMetadataDescription('exampleOfWork') || '',
+    chart: DEFAULT_BAR_PIE_CHART,
+    category: 'Data Collection',
+    tabIds: ['dc'],
+  },
 ].filter(config => {
   // If SHOW_SAMPLES_TAB is false, filter out any filters in the "Sample" category.
-  if (SHOW_SAMPLES_TAB) {
-    return config; // No filtering, return all configs
-  } else {
-    return config.category !== 'Sample' ? config : null; // Filter out "Sample" category
+  if (!SHOW_SAMPLES_TAB && config.category === 'Sample') {
+    return false;
   }
+  // If SHOW_DATA_COLLECTIONS_TAB is false, filter out any filters in the
+  // "Data Collection" category.
+  if (!SHOW_DATA_COLLECTIONS_TAB && config.category === 'Data Collection') {
+    return false;
+  }
+  return true;
 }) as FilterConfig[];
 
 /**

@@ -55,6 +55,7 @@ export const SAMPLE_FIELDS = [
   'date',
   'description',
   'conditionsOfAccess',
+  'creativeWorkStatus',
   'healthCondition',
   'infectiousAgent',
   'species',
@@ -94,4 +95,5 @@ export const DATA_COLLECTION_FIELDS = [
   'topicCategory',
   'isBasedOn',
   'collectionSize',
+  'exampleOfWork',
 ];

@@ -23,6 +23,7 @@ const COLUMN_API_SORT_FIELDS: Record<string, string | null> = {
   infectiousAgent: null,
   species: null,
   conditionsOfAccess: 'conditionsOfAccess',
+  creativeWorkStatus: 'creativeWorkStatus',
   variableMeasured: null,
   measurementTechnique: null,
   anatomicalStructure: null,
@@ -120,6 +121,14 @@ export const ALL_SAMPLE_COLUMNS: SampleColumn[] = [
     isSortable: true,
     apiSortField: COLUMN_API_SORT_FIELDS['conditionsOfAccess'],
     props: withWidth('180px'),
+  },
+  {
+    id: 'creativeWorkStatus',
+    title: 'Status',
+    property: 'creativeWorkStatus',
+    isSortable: true,
+    apiSortField: COLUMN_API_SORT_FIELDS['creativeWorkStatus'],
+    props: withWidth('150px'),
   },
   {
     id: 'variableMeasured',
