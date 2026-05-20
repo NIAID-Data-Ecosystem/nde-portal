@@ -3,4 +3,4 @@ User-agent: *
 Disallow: /
 
 # Host
-Host: https://data-staging.niaid.nih.gov
+Host: https://nde-dev.biothings.io
