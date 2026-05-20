@@ -3,6 +3,15 @@ const fs = require('fs');
 const path = require('path');
 const SITE_CONFIG = require('./configs/site.config.json');
 
+const PRODUCTION_BASE_URL = 'https://data.niaid.nih.gov';
+const BLOCKED_ROBOTS_TXT = ['User-agent: *', 'Disallow: /'].join('\n');
+const baseUrl = (process.env.BASE_URL || PRODUCTION_BASE_URL).replace(
+  /\/+$/,
+  '',
+);
+const isProduction =
+  process.env.NEXT_PUBLIC_APP_ENV === 'production' &&
+  baseUrl === PRODUCTION_BASE_URL;
 const datasetDir = path.join(__dirname, 'public/sitemaps/datasets');
 
 const getAdditionalSitemaps = () => {
@@ -11,7 +20,8 @@ const getAdditionalSitemaps = () => {
 
   return files
     .filter(file => file.endsWith('.xml'))
-    .map(file => `${process.env.BASE_URL}/sitemaps/datasets/${file}`);
+    .sort()
+    .map(file => `${baseUrl}/sitemaps/datasets/${file}`);
 };
 
 // Exclude paths that are not in production based on the site configuration.
@@ -25,19 +35,15 @@ const getExcludePaths = () => {
 };
 
 module.exports = {
-  siteUrl: process.env.BASE_URL || 'https://data.niaid.nih.gov',
+  siteUrl: baseUrl,
   generateRobotsTxt: true,
-  exclude: getExcludePaths(),
+  exclude: isProduction ? getExcludePaths() : ['*'],
   robotsTxtOptions: {
-    policies: [
-      { userAgent: '*', disallow: '/' },
-      {
-        userAgent: 'googlebot',
-        allow: '/',
-      },
-      { userAgent: 'bingbot', allow: '/' },
-      { userAgent: 'DuckDuckBot', allow: '/' },
-    ],
-    additionalSitemaps: getAdditionalSitemaps(),
+    policies: isProduction
+      ? [{ userAgent: '*', allow: '/' }]
+      : [{ userAgent: '*', disallow: '/' }],
+    additionalSitemaps: isProduction ? getAdditionalSitemaps() : [],
+    transformRobotsTxt: async (_, robotsTxt) =>
+      isProduction ? robotsTxt : `${BLOCKED_ROBOTS_TXT}\n`,
   },
 };
