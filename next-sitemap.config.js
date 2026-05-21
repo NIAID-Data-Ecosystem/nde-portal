@@ -36,19 +36,12 @@ module.exports = {
   generateIndexSitemap: false,
   exclude: isProduction ? getExcludePaths() : ['/*'],
   robotsTxtOptions: {
-    policies: isProduction
-      ? [
-          {
-            userAgent: '*',
-            allow: '/',
-          },
-        ]
-      : [
-          {
-            userAgent: '*',
-            disallow: '/',
-          },
-        ],
+    policies: [
+      {
+        userAgent: '*',
+        allow: '/',
+      },
+    ],
     additionalSitemaps: isProduction ? getAdditionalSitemaps() : [],
   },
 };
