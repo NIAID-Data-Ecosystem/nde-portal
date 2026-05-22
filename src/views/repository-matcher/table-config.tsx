@@ -465,50 +465,50 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
     },
   },
-  {
-    id: 'dataAccepted',
-    label: 'Accepting Data?',
-    fields: ['creativeWorkStatus'],
-    columns: {
-      isSortable: true,
-      isDefault: true,
-      style: { maxWidth: '180px', minWidth: '180px' },
-    },
-    transform: item => item.creativeWorkStatus,
-    component: ({
-      value,
-    }: {
-      value: CreativeWorkStatusDatasetType | null;
-      isLoading?: boolean;
-    }) => {
-      const isNotAccepting = [
-        'retired',
-        'maintenance',
-        'not accepting data',
-      ].includes(value?.toLowerCase() || '');
-      const color = isNotAccepting || !value ? 'gray.800' : 'primary.500';
+  // {
+  //   id: 'dataAccepted',
+  //   label: 'Accepting Data?',
+  //   fields: ['creativeWorkStatus'],
+  //   columns: {
+  //     isSortable: true,
+  //     isDefault: true,
+  //     style: { maxWidth: '180px', minWidth: '180px' },
+  //   },
+  //   transform: item => item.creativeWorkStatus,
+  //   component: ({
+  //     value,
+  //   }: {
+  //     value: CreativeWorkStatusDatasetType | null;
+  //     isLoading?: boolean;
+  //   }) => {
+  //     const isNotAccepting = [
+  //       'retired',
+  //       'maintenance',
+  //       'not accepting data',
+  //     ].includes(value?.toLowerCase() || '');
+  //     const color = isNotAccepting || !value ? 'gray.800' : 'primary.500';
 
-      return (
-        <HStack gap={1} color={color} opacity={isNotAccepting ? 0.8 : 1}>
-          {isNotAccepting ? (
-            <Icon as={FaXmark}></Icon>
-          ) : value ? (
-            <Icon as={FaCheck}></Icon>
-          ) : null}
-          <TextCell
-            value={value || ''}
-            color={'inherit'}
-            fontWeight={!value ? 'normal' : 'medium'}
-          />
-        </HStack>
-      );
-    },
-    filter: {
-      name: 'Accepting Data?',
-      description: getMetadataDescription('creativeWorkStatus') || '',
-      getFilterValues: (value: string) => (value ? [value] : []),
-    },
-  },
+  //     return (
+  //       <HStack gap={1} color={color} opacity={isNotAccepting ? 0.8 : 1}>
+  //         {isNotAccepting ? (
+  //           <Icon as={FaXmark}></Icon>
+  //         ) : value ? (
+  //           <Icon as={FaCheck}></Icon>
+  //         ) : null}
+  //         <TextCell
+  //           value={value || ''}
+  //           color={'inherit'}
+  //           fontWeight={!value ? 'normal' : 'medium'}
+  //         />
+  //       </HStack>
+  //     );
+  //   },
+  //   filter: {
+  //     name: 'Accepting Data?',
+  //     description: getMetadataDescription('creativeWorkStatus') || '',
+  //     getFilterValues: (value: string) => (value ? [value] : []),
+  //   },
+  // },
   {
     id: 'collectionSize',
     label: getMetadataName('collectionSize') || '',
