@@ -1,243 +1,42 @@
 import React from 'react';
-import NextLink from 'next/link';
 import {
   Box,
   Circle,
   HStack,
-  Icon,
-  SkeletonText,
   Tag,
   TagLabel,
   Text,
-  TextProps,
   VStack,
 } from '@chakra-ui/react';
-import { Link } from 'src/components/link';
 import { Repository } from 'src/hooks/api/useRepoData';
 import {
   AccessTypes,
   DefinedTerm,
   FormattedResource,
-  TemporalCoverage,
 } from 'src/utils/api/types';
 import {
   formatConditionsOfAccess,
   getColorScheme,
   transformConditionsOfAccessLabel,
 } from 'src/utils/formatting/formatConditionsOfAccess';
-import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-string';
-import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
-import Tooltip from 'src/components/tooltip';
-import { TagWithUrl } from 'src/components/tag-with-url';
-import { FaCheck, FaXmark } from 'react-icons/fa6';
 import {
   getMetadataDescription,
   getMetadataName,
 } from 'src/components/metadata';
-import { CreativeWorkStatusDatasetType } from 'src/hooks/api/types';
-import { Skeleton } from 'src/components/skeleton';
-
-export type RepositoryMatcherItem = Repository | FormattedResource;
-
-export type NameValue = { label: string; url: string; _id: string };
-
-export type RepositoryMatcherFilterConfig<TValue = unknown> = {
-  /** Display name shown in the filter section header. */
-  name: string;
-  /** Tooltip description for the section. */
-  description?: string;
-  /** Optional grouping passed through to FiltersList. */
-  groupBy?: { property: string; label: string }[];
-  /**
-   * Map a row's display value to the discrete filter terms it should
-   * contribute. Each returned string becomes a checkbox entry and the row
-   * matches the filter when any of its values is selected. Return [] to
-   * exclude the row from this filter's terms.
-   */
-  getFilterValues: (value: TValue) => string[];
-};
-
-export type RepositoryMatcherColumn<TValue = unknown> = {
-  id: string;
-  label: string;
-  fields: string[];
-  columns?: {
-    isSortable?: boolean;
-    isDefault?: boolean;
-    style?: React.CSSProperties;
-  };
-  /**
-   * When true, the column cannot be hidden by the customize-columns popover.
-   * Default: false.
-   */
-  required?: boolean;
-  transform: (item: RepositoryMatcherItem) => TValue;
-  component: (props: {
-    value: TValue;
-    isLoading?: boolean;
-    data: RepositoryMatcherItem;
-  }) => React.ReactNode;
-  /**
-   * Reduce the column's display value to a sortable primitive. Omit for
-   * columns whose display value is already a string/number.
-   */
-  getSortValue?: (value: TValue) => string | number;
-  /**
-   * Reduce the column's display value to text the search bar can match
-   * against. Return a string, an array of strings, or null to opt the column
-   * out of search. Omit when the display value is already string/string[].
-   */
-  getSearchValue?: (value: TValue) => string | string[] | null;
-  /**
-   * Opts the column into the filter sidebar. Omit to leave the column out of
-   * filtering.
-   */
-  filter?: RepositoryMatcherFilterConfig<TValue>;
-};
+import {
+  DefinedTermTagList,
+  TagCell,
+  TextCell,
+  TextCellWithLink,
+} from './components/TableCells';
+import { buildItemUrl, itemTypes } from './utils';
+import {
+  NameValue,
+  RepositoryMatcherColumn,
+  RepositoryMatcherItem,
+} from './types';
 
 const MAX_TAGS_PER_CELL = 100; // to prevent overflowing when a cell has many tags, we limit the number shown and indicate when there are more
-
-const itemTypes = (item: RepositoryMatcherItem): string[] => {
-  const t = (item as any).type;
-  if (Array.isArray(t)) return t;
-  if (typeof t === 'string') return [t];
-  return [];
-};
-
-const buildItemUrl = (item: RepositoryMatcherItem): string => {
-  const id = item._id || '';
-  if (!id) return '';
-  const types = itemTypes(item);
-  if (types.includes('Resource Catalog')) {
-    return `/resources?id=${encodeURIComponent(id)}`;
-  }
-  const filters = queryFilterObject2String({
-    'includedInDataCatalog.name': [id],
-  });
-  const params = new URLSearchParams();
-  params.set('q', '');
-  if (filters) params.set('filters', filters);
-  if (types.includes('Computational Tool Repository')) {
-    const tab = getTabIdFromTypeLabel('ComputationalTool');
-    if (tab) params.set('tab', tab);
-  }
-  return `/search?${params.toString()}`;
-};
-
-const TextCell = ({
-  value,
-  isLoading,
-  noOfLines,
-  children,
-  ...props
-}: TextProps & {
-  value: string;
-  isLoading?: boolean;
-}) => (
-  <SkeletonText
-    isLoaded={!isLoading}
-    noOfLines={noOfLines}
-    spacing='2'
-    w='100%'
-  >
-    <Text
-      noOfLines={noOfLines}
-      fontStyle={value ? 'normal' : 'italic'}
-      lineHeight='shorter'
-      fontSize='xs'
-      {...props}
-    >
-      {children || value || 'not available'}
-    </Text>
-  </SkeletonText>
-);
-
-const DefinedTermTagList = ({
-  value,
-  isLoading,
-}: {
-  value?: DefinedTerm[];
-  isLoading?: boolean;
-}) => {
-  const items: (DefinedTerm | null)[] = isLoading
-    ? Array.from({ length: 3 }, () => null)
-    : value ?? [];
-
-  if (!isLoading && items.length === 0) {
-    return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
-  }
-  return (
-    <HStack flexWrap='wrap'>
-      {items.map((v, i) => (
-        <TagCell
-          key={i}
-          value={v?.name || ''}
-          url={v?.url || undefined}
-          noOfLines={1}
-          isLoading={isLoading}
-        />
-      ))}
-    </HStack>
-  );
-};
-
-const TagCell = ({
-  value,
-  url,
-  noOfLines = 2,
-  isLoading,
-}: {
-  value: string;
-  url?: string;
-  noOfLines?: number;
-  isLoading?: boolean;
-}) => {
-  if (isLoading) {
-    return <Skeleton isLoaded={false} width='80px' height='20px' />;
-  }
-  const label = value || '';
-  return (
-    <Tooltip label={label} isDisabled={!value} hasArrow>
-      <Box>
-        {url ? (
-          <TagWithUrl href={url} bg='page.alt'>
-            {label}
-          </TagWithUrl>
-        ) : (
-          <Tag variant='subtle' noOfLines={noOfLines} bg='page.alt'>
-            <TagLabel>{label}</TagLabel>
-          </Tag>
-        )}
-      </Box>
-    </Tooltip>
-  );
-};
-
-const TextCellWithLink = ({
-  label,
-  url,
-  isLoading,
-  isExternal,
-}: {
-  label: string;
-  url?: string;
-  isLoading?: boolean;
-  isExternal?: boolean;
-}) => {
-  return (
-    <SkeletonText isLoaded={!isLoading} noOfLines={2} fontSize='xs' w='100%'>
-      {url ? (
-        <NextLink href={url} prefetch={false} passHref>
-          <Link as='div' isExternal={isExternal}>
-            {label}
-          </Link>
-        </NextLink>
-      ) : (
-        <Text fontSize='inherit'>{label || '-'}</Text>
-      )}
-    </SkeletonText>
-  );
-};
 
 export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   {

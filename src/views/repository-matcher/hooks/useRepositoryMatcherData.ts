@@ -1,10 +1,8 @@
 import { useMemo } from 'react';
 import { useRepoData } from 'src/hooks/api/useRepoData';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
-import {
-  REPOSITORY_MATCHER_COLUMNS,
-  RepositoryMatcherItem,
-} from 'src/views/repository-matcher/table-config';
+import { REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
+import { RepositoryMatcherItem } from '../types';
 
 export type RepositoryMatcherRow = {
   _id: string;

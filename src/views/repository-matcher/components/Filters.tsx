@@ -24,11 +24,9 @@ import {
   FilterConfig,
   FilterTermType,
 } from 'src/views/search/components/filters/types';
-import {
-  FILTERABLE_REPOSITORY_MATCHER_COLUMNS,
-  RepositoryMatcherColumn,
-} from 'src/views/repository-matcher/table-config';
+import { FILTERABLE_REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
 import { SelectedRepositoryMatcherFilters } from 'src/views/repository-matcher/hooks/useRepositoryMatcherFilters';
+import { RepositoryMatcherColumn } from '../types';
 
 interface FiltersProps {
   termsByColumnId: Record<string, FilterTermType[]>;
