@@ -7,10 +7,6 @@ export type RepositoryMatcherItem = Repository | FormattedResource;
 export type NameValue = { label: string; url: string; _id: string };
 
 export type RepositoryMatcherFilterConfig<TValue = unknown> = {
-  /** Display name shown in the filter section header. */
-  name: string;
-  /** Tooltip description for the section. */
-  description?: string;
   /** Optional grouping passed through to FiltersList. */
   groupBy?: { property: string; label: string }[];
   /**
@@ -58,4 +54,14 @@ export type RepositoryMatcherColumn<TValue = unknown> = {
    * filtering.
    */
   filter?: RepositoryMatcherFilterConfig<TValue>;
+  info?: {
+    description?: string;
+    /** Tooltip description for the filters section. */
+    filterDescription?: string;
+    /** Tooltip description for any sub-terms. */
+    terms?: {
+      label?: string;
+      description?: string;
+    }[];
+  };
 };

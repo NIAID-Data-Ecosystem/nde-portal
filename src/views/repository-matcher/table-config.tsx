@@ -66,8 +66,10 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         isExternal={false}
       />
     ),
+    info: {
+      filterDescription: getMetadataDescription('name') || '',
+    },
   },
-
   {
     id: 'description',
     label: getMetadataName('description') || '',
@@ -122,9 +124,35 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       />
     ),
     filter: {
-      name: getMetadataName('type') || '',
-      description: getMetadataDescription('type') || '',
       getFilterValues: (value: string[]) => value ?? [],
+    },
+    info: {
+      filterDescription: getMetadataDescription('type') || '',
+      terms: [
+        {
+          label: 'Dataset Repository',
+          description: 'A repository which holds Dataset records',
+        },
+        {
+          label: 'Sample Repository',
+          description:
+            'A repository which holds biological specimen or sample records',
+        },
+        {
+          label: 'Computational Tool Repository',
+          description:
+            'A repository which holds Computational Tool records were ingested into the portal',
+        },
+        {
+          label: 'Data Repository',
+          description: 'A repository which holds other types of records',
+        },
+        {
+          label: 'Resource Catalog',
+          description:
+            'A record about the repository/resource/portal etc. itself',
+        },
+      ],
     },
   },
   {
@@ -163,9 +191,22 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       );
     },
     filter: {
-      name: getMetadataName('genre') || '',
-      description: getMetadataDescription('genre') || '',
       getFilterValues: (value: string[]) => value ?? [],
+    },
+    info: {
+      filterDescription: getMetadataDescription('genre') || '',
+      terms: [
+        {
+          label: 'IID',
+          description:
+            'A resource specifically designed for Infectious and/or Immune-Mediated Disease content',
+        },
+        {
+          label: 'Generalist',
+          description:
+            'A resource not specifically designed for Infectious and/or Immune-Mediated Disease content',
+        },
+      ],
     },
   },
   {
@@ -199,9 +240,32 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       );
     },
     filter: {
-      name: 'Access',
-      description: getMetadataDescription('conditionsOfAccess') || '',
       getFilterValues: (value: string) => (value ? [value] : []),
+    },
+    info: {
+      description:
+        'Access-level definitions Options include open (freely available), restricted (may include restrictions such as on use), closed (requires registration to access), or embargoed (unpublished).',
+      filterDescription: getMetadataDescription('conditionsOfAccess') || '',
+      terms: [
+        {
+          label: 'Open Access',
+          description: 'The data in the repository is freely available',
+        },
+        {
+          label: 'Varied Access',
+          description:
+            'The repository contains data that varies at the record level',
+        },
+        {
+          label: 'Restricted Access',
+          description:
+            'The repository may include restrictions such as for access or use',
+        },
+        {
+          label: 'Closed Access',
+          description: 'The repository requires registration to access',
+        },
+      ],
     },
   },
   {
@@ -228,10 +292,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       isLoading?: boolean;
     }) => <DefinedTermTagList value={value} isLoading={isLoading} />,
     filter: {
-      name: getMetadataName('healthCondition') || '',
-      description: getMetadataDescription('healthCondition') || '',
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
+    },
+    info: {
+      filterDescription: getMetadataDescription('healthCondition') || '',
     },
   },
   {
@@ -258,10 +323,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       isLoading?: boolean;
     }) => <DefinedTermTagList value={value} isLoading={isLoading} />,
     filter: {
-      name: 'Pathogen Species',
-      description: getMetadataDescription('infectiousAgent') || '',
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
+    },
+    info: {
+      filterDescription: getMetadataDescription('infectiousAgent') || '',
     },
   },
   // {
@@ -373,10 +439,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       isLoading?: boolean;
     }) => <DefinedTermTagList value={value} isLoading={isLoading} />,
     filter: {
-      name: getMetadataName('species') || '',
-      description: getMetadataDescription('species') || '',
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
+    },
+    info: {
+      filterDescription: getMetadataDescription('species') || '',
     },
   },
   {
@@ -403,10 +470,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       isLoading?: boolean;
     }) => <DefinedTermTagList value={value} isLoading={isLoading} />,
     filter: {
-      name: getMetadataName('measurementTechnique') || '',
-      description: getMetadataDescription('measurementTechnique') || '',
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
+    },
+    info: {
+      filterDescription: getMetadataDescription('measurementTechnique') || '',
     },
   },
   {
@@ -438,10 +506,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       return <DefinedTermTagList value={value} isLoading={isLoading} />;
     },
     filter: {
-      name: getMetadataName('topicCategory') || '',
-      description: getMetadataDescription('topicCategory') || '',
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
+    },
+    info: {
+      filterDescription: getMetadataDescription('topicCategory') || '',
     },
   },
   {
