@@ -36,8 +36,6 @@ import {
   RepositoryMatcherItem,
 } from './types';
 
-const MAX_TAGS_PER_CELL = 100; // to prevent overflowing when a cell has many tags, we limit the number shown and indicate when there are more
-
 export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   {
     id: 'name',
@@ -276,7 +274,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     transform: item => {
       if (!item.healthCondition) return [];
       return Array.isArray(item.healthCondition)
-        ? item.healthCondition.slice(0, MAX_TAGS_PER_CELL)
+        ? item.healthCondition
         : [item.healthCondition];
     },
     getSearchValue: (value: DefinedTerm[]) => {
@@ -307,7 +305,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     transform: item => {
       if (!item.infectiousAgent) return [];
       return Array.isArray(item.infectiousAgent)
-        ? item.infectiousAgent.slice(0, MAX_TAGS_PER_CELL)
+        ? item.infectiousAgent
         : [item.infectiousAgent];
     },
     getSearchValue: (value: DefinedTerm[]) => {
@@ -422,9 +420,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     columns: { isSortable: false, isDefault: true },
     transform: item => {
       if (!item.species) return [];
-      return Array.isArray(item.species)
-        ? item.species.slice(0, MAX_TAGS_PER_CELL)
-        : [item.species];
+      return Array.isArray(item.species) ? item.species : [item.species];
     },
     getSearchValue: (value: DefinedTerm[]) => {
       return (
@@ -454,7 +450,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     transform: item => {
       if (!item.measurementTechnique) return [];
       return Array.isArray(item.measurementTechnique)
-        ? item.measurementTechnique.slice(0, MAX_TAGS_PER_CELL)
+        ? item.measurementTechnique
         : [item.measurementTechnique];
     },
     getSearchValue: (value: DefinedTerm[]) => {
@@ -485,7 +481,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     transform: item => {
       if (!item.topicCategory) return [];
       return Array.isArray(item.topicCategory)
-        ? item.topicCategory.slice(0, MAX_TAGS_PER_CELL)
+        ? item.topicCategory
         : [item.topicCategory];
     },
     getSearchValue: (value: DefinedTerm[]) => {

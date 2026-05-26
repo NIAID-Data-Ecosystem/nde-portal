@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import NextLink from 'next/link';
 import {
   Box,
+  Button,
   HStack,
   SkeletonText,
   Tag,
@@ -15,13 +16,18 @@ import Tooltip from 'src/components/tooltip';
 import { TagWithUrl } from 'src/components/tag-with-url';
 import { Skeleton } from 'src/components/skeleton';
 
+const DEFAULT_MAX_VISIBLE_TAGS = 10;
+
 export const DefinedTermTagList = ({
   value,
   isLoading,
+  maxVisible = DEFAULT_MAX_VISIBLE_TAGS,
 }: {
   value?: DefinedTerm[];
   isLoading?: boolean;
+  maxVisible?: number;
 }) => {
+  const [expanded, setExpanded] = useState(false);
   const items: (DefinedTerm | null)[] = isLoading
     ? Array.from({ length: 3 }, () => null)
     : value ?? [];
@@ -29,9 +35,15 @@ export const DefinedTermTagList = ({
   if (!isLoading && items.length === 0) {
     return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
   }
+
+  const hiddenCount = isLoading ? 0 : Math.max(0, items.length - maxVisible);
+  const shouldTruncate = hiddenCount > 0;
+  const visibleItems =
+    shouldTruncate && !expanded ? items.slice(0, maxVisible) : items;
+
   return (
     <HStack flexWrap='wrap'>
-      {items.map((v, i) => (
+      {visibleItems.map((v, i) => (
         <TagCell
           key={i}
           value={v?.name || ''}
@@ -40,6 +52,17 @@ export const DefinedTermTagList = ({
           isLoading={isLoading}
         />
       ))}
+      {shouldTruncate && (
+        <Button
+          variant='link'
+          size='xs'
+          colorScheme='primary'
+          fontWeight='medium'
+          onClick={() => setExpanded(prev => !prev)}
+        >
+          {expanded ? 'Show less' : `Show ${hiddenCount} more`}
+        </Button>
+      )}
     </HStack>
   );
 };

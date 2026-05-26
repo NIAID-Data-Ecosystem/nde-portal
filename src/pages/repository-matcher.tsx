@@ -213,7 +213,7 @@ const RepositoryMatcher: NextPage = () => {
   const getTableRowProps = useCallback(
     (_: any, idx: number) => ({
       bg: idx % 2 === 0 ? 'white' : '#fafbfd',
-      _hover: { bg: 'blue.50' },
+      _hover: { bg: 'primary.50' },
     }),
     [],
   );
