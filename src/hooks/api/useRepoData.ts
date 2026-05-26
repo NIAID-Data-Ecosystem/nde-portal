@@ -18,14 +18,22 @@ export function useRepoData(options: any = {}) {
             source.sourceInfo.identifier,
         )
         .map(({ sourceInfo }, idx) => {
-          const { identifier, name, collectionType } = sourceInfo || {};
-          const type = (
-            Array.isArray(collectionType)
+          const {
+            identifier,
+            name,
+            collectionType,
+            type: sourceInfoType,
+          } = sourceInfo || {};
+
+          // use type if available, otherwise fallback to collectionType
+          const type =
+            sourceInfoType ||
+            (Array.isArray(collectionType)
               ? collectionType
               : collectionType
               ? [collectionType]
               : []
-          ).sort((a, b) => a.localeCompare(b));
+            ).sort((a, b) => a.localeCompare(b));
 
           return {
             ...sourceInfo,
