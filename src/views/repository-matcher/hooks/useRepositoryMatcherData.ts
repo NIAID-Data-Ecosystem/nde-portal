@@ -1,10 +1,8 @@
 import { useMemo } from 'react';
 import { useRepoData } from 'src/hooks/api/useRepoData';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
-import {
-  REPOSITORY_MATCHER_COLUMNS,
-  RepositoryMatcherItem,
-} from 'src/views/repository-matcher/table-config';
+import { REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
+import { RepositoryMatcherItem } from '../types';
 
 export type RepositoryMatcherRow = {
   _id: string;
@@ -53,29 +51,35 @@ export const useRepositoryMatcherData = (fields: string[] = ['@type']) => {
     // resource catalogs and repositories. First occurrence wins.
     const seen = new Set<string>();
     const rows: RepositoryMatcherRow[] = [];
-    combined.forEach((item, idx) => {
-      const id = item._id || `__no-id-${idx}`;
-      if (seen.has(id)) return;
-      seen.add(id);
-      const row = {
-        _id: item._id || '',
-        // _raw: item,
-      } as RepositoryMatcherRow;
-      const searchParts: string[] = [];
-      for (const col of REPOSITORY_MATCHER_COLUMNS) {
-        const value = col.transform(item);
-        row[col.id] = value;
-        const searchValue = col.getSearchValue
-          ? col.getSearchValue(value)
-          : defaultSearchValue(value);
-        if (searchValue == null) continue;
-        searchParts.push(
-          Array.isArray(searchValue) ? searchValue.join(' ') : searchValue,
-        );
-      }
-      row._search = searchParts.join(' ').toLowerCase();
-      rows.push(row);
-    });
+    combined
+      .filter(item => {
+        // Exclude items that have creativeWorkStatus of 'Retired' or 'Not Accepting Data'. If not specified, include all items.
+        const status = item?.creativeWorkStatus;
+        return status !== 'Retired' && status !== 'Not Accepting Data';
+      })
+      .forEach((item, idx) => {
+        const id = item._id || `__no-id-${idx}`;
+        if (seen.has(id)) return;
+        seen.add(id);
+        const row = {
+          _id: item._id || '',
+          // _raw: item,
+        } as RepositoryMatcherRow;
+        const searchParts: string[] = [];
+        for (const col of REPOSITORY_MATCHER_COLUMNS) {
+          const value = col.transform(item);
+          row[col.id] = value;
+          const searchValue = col.getSearchValue
+            ? col.getSearchValue(value)
+            : defaultSearchValue(value);
+          if (searchValue == null) continue;
+          searchParts.push(
+            Array.isArray(searchValue) ? searchValue.join(' ') : searchValue,
+          );
+        }
+        row._search = searchParts.join(' ').toLowerCase();
+        rows.push(row);
+      });
     return rows;
   }, [resourceCatalogs, repositories, isLoading]);
 

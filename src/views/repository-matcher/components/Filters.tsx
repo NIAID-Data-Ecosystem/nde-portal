@@ -24,11 +24,9 @@ import {
   FilterConfig,
   FilterTermType,
 } from 'src/views/search/components/filters/types';
-import {
-  FILTERABLE_REPOSITORY_MATCHER_COLUMNS,
-  RepositoryMatcherColumn,
-} from 'src/views/repository-matcher/table-config';
+import { FILTERABLE_REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
 import { SelectedRepositoryMatcherFilters } from 'src/views/repository-matcher/hooks/useRepositoryMatcherFilters';
+import { RepositoryMatcherColumn } from '../types';
 
 interface FiltersProps {
   termsByColumnId: Record<string, FilterTermType[]>;
@@ -42,10 +40,10 @@ interface FiltersProps {
 // rest of FilterConfig is search-page plumbing we stub out here.
 const toFilterConfig = (col: RepositoryMatcherColumn<any>): FilterConfig => ({
   id: col.id,
-  name: col.filter?.name ?? col.label,
+  name: col.label,
   property: col.id,
   category: 'Dataset',
-  description: col.filter?.description ?? '',
+  description: col.info?.filterDescription ?? '',
   queryType: 'facet',
   groupBy: col.filter?.groupBy,
 });
@@ -59,13 +57,9 @@ const FiltersAccordion: React.FC<
   >
     {FILTERABLE_REPOSITORY_MATCHER_COLUMNS.map(col => {
       const config = toFilterConfig(col);
-      const name = col.filter?.name ?? col.label;
+      const { description, name } = config;
       return (
-        <FiltersSection
-          key={col.id}
-          name={name}
-          description={col.filter?.description ?? ''}
-        >
+        <FiltersSection key={col.id} name={name} description={description}>
           <FiltersList
             config={config}
             colorScheme='primary'

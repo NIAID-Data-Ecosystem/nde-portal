@@ -1,243 +1,40 @@
 import React from 'react';
-import NextLink from 'next/link';
 import {
   Box,
   Circle,
   HStack,
-  Icon,
-  SkeletonText,
   Tag,
   TagLabel,
   Text,
-  TextProps,
   VStack,
 } from '@chakra-ui/react';
-import { Link } from 'src/components/link';
 import { Repository } from 'src/hooks/api/useRepoData';
 import {
   AccessTypes,
   DefinedTerm,
   FormattedResource,
-  TemporalCoverage,
 } from 'src/utils/api/types';
 import {
   formatConditionsOfAccess,
   getColorScheme,
   transformConditionsOfAccessLabel,
 } from 'src/utils/formatting/formatConditionsOfAccess';
-import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-string';
-import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
-import Tooltip from 'src/components/tooltip';
-import { TagWithUrl } from 'src/components/tag-with-url';
-import { FaCheck, FaXmark } from 'react-icons/fa6';
 import {
   getMetadataDescription,
   getMetadataName,
 } from 'src/components/metadata';
-import { CreativeWorkStatusDatasetType } from 'src/hooks/api/types';
-import { Skeleton } from 'src/components/skeleton';
-
-export type RepositoryMatcherItem = Repository | FormattedResource;
-
-export type NameValue = { label: string; url: string; _id: string };
-
-export type RepositoryMatcherFilterConfig<TValue = unknown> = {
-  /** Display name shown in the filter section header. */
-  name: string;
-  /** Tooltip description for the section. */
-  description?: string;
-  /** Optional grouping passed through to FiltersList. */
-  groupBy?: { property: string; label: string }[];
-  /**
-   * Map a row's display value to the discrete filter terms it should
-   * contribute. Each returned string becomes a checkbox entry and the row
-   * matches the filter when any of its values is selected. Return [] to
-   * exclude the row from this filter's terms.
-   */
-  getFilterValues: (value: TValue) => string[];
-};
-
-export type RepositoryMatcherColumn<TValue = unknown> = {
-  id: string;
-  label: string;
-  fields: string[];
-  columns?: {
-    isSortable?: boolean;
-    isDefault?: boolean;
-    style?: React.CSSProperties;
-  };
-  /**
-   * When true, the column cannot be hidden by the customize-columns popover.
-   * Default: false.
-   */
-  required?: boolean;
-  transform: (item: RepositoryMatcherItem) => TValue;
-  component: (props: {
-    value: TValue;
-    isLoading?: boolean;
-    data: RepositoryMatcherItem;
-  }) => React.ReactNode;
-  /**
-   * Reduce the column's display value to a sortable primitive. Omit for
-   * columns whose display value is already a string/number.
-   */
-  getSortValue?: (value: TValue) => string | number;
-  /**
-   * Reduce the column's display value to text the search bar can match
-   * against. Return a string, an array of strings, or null to opt the column
-   * out of search. Omit when the display value is already string/string[].
-   */
-  getSearchValue?: (value: TValue) => string | string[] | null;
-  /**
-   * Opts the column into the filter sidebar. Omit to leave the column out of
-   * filtering.
-   */
-  filter?: RepositoryMatcherFilterConfig<TValue>;
-};
-
-const MAX_TAGS_PER_CELL = 100; // to prevent overflowing when a cell has many tags, we limit the number shown and indicate when there are more
-
-const itemTypes = (item: RepositoryMatcherItem): string[] => {
-  const t = (item as any).type;
-  if (Array.isArray(t)) return t;
-  if (typeof t === 'string') return [t];
-  return [];
-};
-
-const buildItemUrl = (item: RepositoryMatcherItem): string => {
-  const id = item._id || '';
-  if (!id) return '';
-  const types = itemTypes(item);
-  if (types.includes('Resource Catalog')) {
-    return `/resources?id=${encodeURIComponent(id)}`;
-  }
-  const filters = queryFilterObject2String({
-    'includedInDataCatalog.name': [id],
-  });
-  const params = new URLSearchParams();
-  params.set('q', '');
-  if (filters) params.set('filters', filters);
-  if (types.includes('Computational Tool Repository')) {
-    const tab = getTabIdFromTypeLabel('ComputationalTool');
-    if (tab) params.set('tab', tab);
-  }
-  return `/search?${params.toString()}`;
-};
-
-const TextCell = ({
-  value,
-  isLoading,
-  noOfLines,
-  children,
-  ...props
-}: TextProps & {
-  value: string;
-  isLoading?: boolean;
-}) => (
-  <SkeletonText
-    isLoaded={!isLoading}
-    noOfLines={noOfLines}
-    spacing='2'
-    w='100%'
-  >
-    <Text
-      noOfLines={noOfLines}
-      fontStyle={value ? 'normal' : 'italic'}
-      lineHeight='shorter'
-      fontSize='xs'
-      {...props}
-    >
-      {children || value || 'not available'}
-    </Text>
-  </SkeletonText>
-);
-
-const DefinedTermTagList = ({
-  value,
-  isLoading,
-}: {
-  value?: DefinedTerm[];
-  isLoading?: boolean;
-}) => {
-  const items: (DefinedTerm | null)[] = isLoading
-    ? Array.from({ length: 3 }, () => null)
-    : value ?? [];
-
-  if (!isLoading && items.length === 0) {
-    return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
-  }
-  return (
-    <HStack flexWrap='wrap'>
-      {items.map((v, i) => (
-        <TagCell
-          key={i}
-          value={v?.name || ''}
-          url={v?.url || undefined}
-          noOfLines={1}
-          isLoading={isLoading}
-        />
-      ))}
-    </HStack>
-  );
-};
-
-const TagCell = ({
-  value,
-  url,
-  noOfLines = 2,
-  isLoading,
-}: {
-  value: string;
-  url?: string;
-  noOfLines?: number;
-  isLoading?: boolean;
-}) => {
-  if (isLoading) {
-    return <Skeleton isLoaded={false} width='80px' height='20px' />;
-  }
-  const label = value || '';
-  return (
-    <Tooltip label={label} isDisabled={!value} hasArrow>
-      <Box>
-        {url ? (
-          <TagWithUrl href={url} bg='page.alt'>
-            {label}
-          </TagWithUrl>
-        ) : (
-          <Tag variant='subtle' noOfLines={noOfLines} bg='page.alt'>
-            <TagLabel>{label}</TagLabel>
-          </Tag>
-        )}
-      </Box>
-    </Tooltip>
-  );
-};
-
-const TextCellWithLink = ({
-  label,
-  url,
-  isLoading,
-  isExternal,
-}: {
-  label: string;
-  url?: string;
-  isLoading?: boolean;
-  isExternal?: boolean;
-}) => {
-  return (
-    <SkeletonText isLoaded={!isLoading} noOfLines={2} fontSize='xs' w='100%'>
-      {url ? (
-        <NextLink href={url} prefetch={false} passHref>
-          <Link as='div' isExternal={isExternal}>
-            {label}
-          </Link>
-        </NextLink>
-      ) : (
-        <Text fontSize='inherit'>{label || '-'}</Text>
-      )}
-    </SkeletonText>
-  );
-};
+import {
+  DefinedTermTagList,
+  TagCell,
+  TextCell,
+  TextCellWithLink,
+} from './components/TableCells';
+import { buildItemUrl, itemTypes } from './utils';
+import {
+  NameValue,
+  RepositoryMatcherColumn,
+  RepositoryMatcherItem,
+} from './types';
 
 export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   {
@@ -267,8 +64,10 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         isExternal={false}
       />
     ),
+    info: {
+      filterDescription: getMetadataDescription('name') || '',
+    },
   },
-
   {
     id: 'description',
     label: getMetadataName('description') || '',
@@ -323,9 +122,35 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       />
     ),
     filter: {
-      name: getMetadataName('type') || '',
-      description: getMetadataDescription('type') || '',
       getFilterValues: (value: string[]) => value ?? [],
+    },
+    info: {
+      filterDescription: getMetadataDescription('type') || '',
+      terms: [
+        {
+          label: 'Dataset Repository',
+          description: 'A repository which holds Dataset records',
+        },
+        {
+          label: 'Sample Repository',
+          description:
+            'A repository which holds biological specimen or sample records',
+        },
+        {
+          label: 'Computational Tool Repository',
+          description:
+            'A repository which holds Computational Tool records were ingested into the portal',
+        },
+        {
+          label: 'Data Repository',
+          description: 'A repository which holds other types of records',
+        },
+        {
+          label: 'Resource Catalog',
+          description:
+            'A record about the repository/resource/portal etc. itself',
+        },
+      ],
     },
   },
   {
@@ -364,9 +189,22 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       );
     },
     filter: {
-      name: getMetadataName('genre') || '',
-      description: getMetadataDescription('genre') || '',
       getFilterValues: (value: string[]) => value ?? [],
+    },
+    info: {
+      filterDescription: getMetadataDescription('genre') || '',
+      terms: [
+        {
+          label: 'IID',
+          description:
+            'A resource specifically designed for Infectious and/or Immune-Mediated Disease content',
+        },
+        {
+          label: 'Generalist',
+          description:
+            'A resource not specifically designed for Infectious and/or Immune-Mediated Disease content',
+        },
+      ],
     },
   },
   {
@@ -400,9 +238,32 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       );
     },
     filter: {
-      name: 'Access',
-      description: getMetadataDescription('conditionsOfAccess') || '',
       getFilterValues: (value: string) => (value ? [value] : []),
+    },
+    info: {
+      description:
+        'Access-level definitions Options include open (freely available), restricted (may include restrictions such as on use), closed (requires registration to access), or embargoed (unpublished).',
+      filterDescription: getMetadataDescription('conditionsOfAccess') || '',
+      terms: [
+        {
+          label: 'Open Access',
+          description: 'The data in the repository is freely available',
+        },
+        {
+          label: 'Varied Access',
+          description:
+            'The repository contains data that varies at the record level',
+        },
+        {
+          label: 'Restricted Access',
+          description:
+            'The repository may include restrictions such as for access or use',
+        },
+        {
+          label: 'Closed Access',
+          description: 'The repository requires registration to access',
+        },
+      ],
     },
   },
   {
@@ -413,7 +274,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     transform: item => {
       if (!item.healthCondition) return [];
       return Array.isArray(item.healthCondition)
-        ? item.healthCondition.slice(0, MAX_TAGS_PER_CELL)
+        ? item.healthCondition
         : [item.healthCondition];
     },
     getSearchValue: (value: DefinedTerm[]) => {
@@ -429,10 +290,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       isLoading?: boolean;
     }) => <DefinedTermTagList value={value} isLoading={isLoading} />,
     filter: {
-      name: getMetadataName('healthCondition') || '',
-      description: getMetadataDescription('healthCondition') || '',
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
+    },
+    info: {
+      filterDescription: getMetadataDescription('healthCondition') || '',
     },
   },
   {
@@ -443,7 +305,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     transform: item => {
       if (!item.infectiousAgent) return [];
       return Array.isArray(item.infectiousAgent)
-        ? item.infectiousAgent.slice(0, MAX_TAGS_PER_CELL)
+        ? item.infectiousAgent
         : [item.infectiousAgent];
     },
     getSearchValue: (value: DefinedTerm[]) => {
@@ -459,56 +321,57 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       isLoading?: boolean;
     }) => <DefinedTermTagList value={value} isLoading={isLoading} />,
     filter: {
-      name: 'Pathogen Species',
-      description: getMetadataDescription('infectiousAgent') || '',
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
     },
-  },
-  {
-    id: 'dataAccepted',
-    label: 'Accepting Data?',
-    fields: ['creativeWorkStatus'],
-    columns: {
-      isSortable: true,
-      isDefault: true,
-      style: { maxWidth: '180px', minWidth: '180px' },
+    info: {
+      filterDescription: getMetadataDescription('infectiousAgent') || '',
     },
-    transform: item => item.creativeWorkStatus,
-    component: ({
-      value,
-    }: {
-      value: CreativeWorkStatusDatasetType | null;
-      isLoading?: boolean;
-    }) => {
-      const isNotAccepting = [
-        'retired',
-        'maintenance',
-        'not accepting data',
-      ].includes(value?.toLowerCase() || '');
-      const color = isNotAccepting || !value ? 'gray.800' : 'primary.500';
+  },
+  // {
+  //   id: 'dataAccepted',
+  //   label: 'Accepting Data?',
+  //   fields: ['creativeWorkStatus'],
+  //   columns: {
+  //     isSortable: true,
+  //     isDefault: true,
+  //     style: { maxWidth: '180px', minWidth: '180px' },
+  //   },
+  //   transform: item => item.creativeWorkStatus,
+  //   component: ({
+  //     value,
+  //   }: {
+  //     value: CreativeWorkStatusDatasetType | null;
+  //     isLoading?: boolean;
+  //   }) => {
+  //     const isNotAccepting = [
+  //       'retired',
+  //       'maintenance',
+  //       'not accepting data',
+  //     ].includes(value?.toLowerCase() || '');
+  //     const color = isNotAccepting || !value ? 'gray.800' : 'primary.500';
 
-      return (
-        <HStack gap={1} color={color} opacity={isNotAccepting ? 0.8 : 1}>
-          {isNotAccepting ? (
-            <Icon as={FaXmark}></Icon>
-          ) : value ? (
-            <Icon as={FaCheck}></Icon>
-          ) : null}
-          <TextCell
-            value={value || ''}
-            color={'inherit'}
-            fontWeight={!value ? 'normal' : 'medium'}
-          />
-        </HStack>
-      );
-    },
-    filter: {
-      name: 'Accepting Data?',
-      description: getMetadataDescription('creativeWorkStatus') || '',
-      getFilterValues: (value: string) => (value ? [value] : []),
-    },
-  },
+  //     return (
+  //       <HStack gap={1} color={color} opacity={isNotAccepting ? 0.8 : 1}>
+  //         {isNotAccepting ? (
+  //           <Icon as={FaXmark}></Icon>
+  //         ) : value ? (
+  //           <Icon as={FaCheck}></Icon>
+  //         ) : null}
+  //         <TextCell
+  //           value={value || ''}
+  //           color={'inherit'}
+  //           fontWeight={!value ? 'normal' : 'medium'}
+  //         />
+  //       </HStack>
+  //     );
+  //   },
+  //   filter: {
+  //     name: 'Accepting Data?',
+  //     description: getMetadataDescription('creativeWorkStatus') || '',
+  //     getFilterValues: (value: string) => (value ? [value] : []),
+  //   },
+  // },
   {
     id: 'collectionSize',
     label: getMetadataName('collectionSize') || '',
@@ -557,9 +420,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     columns: { isSortable: false, isDefault: true },
     transform: item => {
       if (!item.species) return [];
-      return Array.isArray(item.species)
-        ? item.species.slice(0, MAX_TAGS_PER_CELL)
-        : [item.species];
+      return Array.isArray(item.species) ? item.species : [item.species];
     },
     getSearchValue: (value: DefinedTerm[]) => {
       return (
@@ -574,10 +435,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       isLoading?: boolean;
     }) => <DefinedTermTagList value={value} isLoading={isLoading} />,
     filter: {
-      name: getMetadataName('species') || '',
-      description: getMetadataDescription('species') || '',
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
+    },
+    info: {
+      filterDescription: getMetadataDescription('species') || '',
     },
   },
   {
@@ -588,7 +450,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     transform: item => {
       if (!item.measurementTechnique) return [];
       return Array.isArray(item.measurementTechnique)
-        ? item.measurementTechnique.slice(0, MAX_TAGS_PER_CELL)
+        ? item.measurementTechnique
         : [item.measurementTechnique];
     },
     getSearchValue: (value: DefinedTerm[]) => {
@@ -604,10 +466,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       isLoading?: boolean;
     }) => <DefinedTermTagList value={value} isLoading={isLoading} />,
     filter: {
-      name: getMetadataName('measurementTechnique') || '',
-      description: getMetadataDescription('measurementTechnique') || '',
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
+    },
+    info: {
+      filterDescription: getMetadataDescription('measurementTechnique') || '',
     },
   },
   {
@@ -618,7 +481,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     transform: item => {
       if (!item.topicCategory) return [];
       return Array.isArray(item.topicCategory)
-        ? item.topicCategory.slice(0, MAX_TAGS_PER_CELL)
+        ? item.topicCategory
         : [item.topicCategory];
     },
     getSearchValue: (value: DefinedTerm[]) => {
@@ -639,10 +502,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       return <DefinedTermTagList value={value} isLoading={isLoading} />;
     },
     filter: {
-      name: getMetadataName('topicCategory') || '',
-      description: getMetadataDescription('topicCategory') || '',
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
+    },
+    info: {
+      filterDescription: getMetadataDescription('topicCategory') || '',
     },
   },
   {

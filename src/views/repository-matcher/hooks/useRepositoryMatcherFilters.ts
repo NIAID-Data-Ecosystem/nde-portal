@@ -1,10 +1,8 @@
 import { useMemo } from 'react';
 import { FilterTermType } from 'src/views/search/components/filters/types';
-import {
-  FILTERABLE_REPOSITORY_MATCHER_COLUMNS,
-  RepositoryMatcherColumn,
-} from 'src/views/repository-matcher/table-config';
+import { FILTERABLE_REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
 import { RepositoryMatcherRow } from './useRepositoryMatcherData';
+import { RepositoryMatcherColumn } from '../types';
 
 export type SelectedRepositoryMatcherFilters = Record<string, string[]>;
 

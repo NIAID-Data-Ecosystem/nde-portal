@@ -34,13 +34,16 @@ import {
 } from 'src/views/repository-matcher/hooks/useRepositoryMatcherFilters';
 import { useSearchedData } from 'src/views/repository-matcher/hooks/useSearchedData';
 import { REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
+import { TableDefinitions } from 'src/views/repository-matcher/components/TableDefinitions';
 
 const TABLE_CONTAINER_PROPS = {
   overflowX: 'auto' as const,
   maxHeight: '60vh',
   overflowY: 'auto' as const,
 };
-
+const COLUMNS_WITH_DEFINITIONS = REPOSITORY_MATCHER_COLUMNS.filter(
+  col => col.info?.description || col.info?.terms,
+);
 const ALL_COLUMN_IDS = REPOSITORY_MATCHER_COLUMNS.map(c => c.id);
 const DEFAULT_VISIBLE_COLUMN_IDS = REPOSITORY_MATCHER_COLUMNS.filter(
   c => c.columns?.isDefault !== false,
@@ -186,7 +189,7 @@ const RepositoryMatcher: NextPage = () => {
     for (const col of REPOSITORY_MATCHER_COLUMNS) {
       const selectedValues = selectedFilters[col.id];
       if (selectedValues?.length) {
-        const name = col.filter?.name ?? col.label;
+        const name = col.label || '';
         for (const value of selectedValues) {
           tags.push({ name, value, property: col.id });
         }
@@ -210,7 +213,7 @@ const RepositoryMatcher: NextPage = () => {
   const getTableRowProps = useCallback(
     (_: any, idx: number) => ({
       bg: idx % 2 === 0 ? 'white' : '#fafbfd',
-      _hover: { bg: 'blue.50' },
+      _hover: { bg: 'primary.50' },
     }),
     [],
   );
@@ -386,7 +389,6 @@ const RepositoryMatcher: NextPage = () => {
               />
             </VStack>
           </Flex>
-
           <Table
             ariaLabel='Repository matcher table'
             caption='Repositories and resource catalogs available for data deposit'
@@ -412,6 +414,8 @@ const RepositoryMatcher: NextPage = () => {
               </Flex>
             }
           />
+          {/* Information and definitions section */}
+          <TableDefinitions columns={COLUMNS_WITH_DEFINITIONS} />
         </Box>
       </Flex>
     </PageContainer>
