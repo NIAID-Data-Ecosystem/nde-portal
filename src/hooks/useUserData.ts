@@ -66,7 +66,12 @@ const isDevMode = process.env.NODE_ENV === 'development';
 export function useUserData() {
   const [preferences, setPreferences] =
     useState<UserPreferences>(DEFAULT_PREFERENCES);
+
   const [favoriteSearches, setFavoriteSearches] = useState<FavoriteSearch[]>(
+    [],
+  );
+
+  const [favoriteDatasets, setFavoriteDatasets] = useState<FavoriteDataset[]>(
     [],
   );
 
@@ -282,6 +287,9 @@ export function useUserData() {
       if (Array.isArray(profile.favorite_searches)) {
         setFavoriteSearches(profile.favorite_searches);
       }
+      if (Array.isArray(profile.favorite_datasets)) {
+        setFavoriteDatasets(profile.favorite_datasets);
+      }
     }
     return result;
   }, [callUserDataApi]);
@@ -341,17 +349,39 @@ export function useUserData() {
   );
 
   const saveFavoriteDataset = useCallback(
-    (dataset: FavoriteDataset) => {
-      void callUserDataApi('POST', '/user/data/favorites/datasets', dataset);
+    async (dataset: FavoriteDataset) => {
+      const result = await callUserDataApi(
+        'POST',
+        '/user/data/favorites/datasets',
+        dataset,
+      );
+      if (result && 'body' in result && result.ok && result.body) {
+        const body = result.body as { favorite_datasets?: FavoriteDataset[] };
+        if (Array.isArray(body.favorite_datasets)) {
+          setFavoriteDatasets(body.favorite_datasets);
+        }
+      }
+      return result;
     },
     [callUserDataApi],
   );
 
   const removeFavoriteDataset = useCallback(
-    (datasetId: string) => {
-      void callUserDataApi('DELETE', '/user/data/favorites/datasets', {
-        dataset_id: datasetId,
-      });
+    async (datasetId: string) => {
+      const result = await callUserDataApi(
+        'DELETE',
+        '/user/data/favorites/datasets',
+        {
+          dataset_id: datasetId,
+        },
+      );
+      if (result && 'body' in result && result.ok && result.body) {
+        const body = result.body as { favorite_datasets?: FavoriteDataset[] };
+        if (Array.isArray(body.favorite_datasets)) {
+          setFavoriteDatasets(body.favorite_datasets);
+        }
+      }
+      return result;
     },
     [callUserDataApi],
   );
@@ -359,6 +389,7 @@ export function useUserData() {
   return {
     preferences,
     favoriteSearches,
+    favoriteDatasets,
     isDevMode,
     getProfile,
     updatePreferenceField,

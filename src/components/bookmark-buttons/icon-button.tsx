@@ -11,9 +11,9 @@ export const BookmarkIconButton: React.FC<
     <IconButton
       icon={
         isFavorited ? (
-          <Icon as={FaBookmark} fill='link.color' w='inherit' />
+          <Icon as={FaBookmark} fill='link.color' />
         ) : (
-          <Icon as={FaRegBookmark} fill='page.placeholder' w='inherit' />
+          <Icon as={FaRegBookmark} fill='page.placeholder' />
         )
       }
       aria-label={

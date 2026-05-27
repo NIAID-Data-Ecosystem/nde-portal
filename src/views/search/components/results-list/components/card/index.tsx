@@ -10,6 +10,7 @@ import {
   Tooltip,
   Stack,
   Highlight,
+  HStack,
 } from '@chakra-ui/react';
 import { useInView } from '@react-spring/web';
 import NextLink from 'next/link';
@@ -34,9 +35,10 @@ import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatReso
 import {
   formatSourcesWithLogos,
   getAccessResourceURL,
-  getSourceLogoLinkOut,
 } from 'src/components/source-logo/helpers';
 import { SourceLogo } from 'src/components/source-logo';
+import { BookmarkButton } from 'src/components/bookmark-buttons/button';
+import { useUserData } from 'src/hooks/useUserData';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -53,6 +55,11 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   referrerPath,
   querystring,
 }) => {
+  const { favoriteDatasets, saveFavoriteDataset, removeFavoriteDataset } =
+    useUserData();
+  const isFavorited = data?.id
+    ? favoriteDatasets.some(fd => fd.dataset_id === data.id)
+    : false;
   const {
     ['@type']: type,
     id,
@@ -516,11 +523,30 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     })}
                 </SourceLogo.Wrapper>
 
-                <Flex
+                <HStack
                   flex={{ base: 1, sm: 'unset' }}
                   mt={[2, 0]}
                   w={{ base: '100%', sm: 'unset' }}
                 >
+                  <BookmarkButton
+                    isFavorited={isFavorited}
+                    onClick={() => {
+                      if (!data?.id) return;
+                      if (isFavorited) {
+                        removeFavoriteDataset(data.id);
+                      } else {
+                        saveFavoriteDataset({
+                          dataset_id: data.id,
+                          name:
+                            data.name ||
+                            data.alternateName ||
+                            'Untitled Dataset',
+                          saved_at: new Date().toISOString(),
+                        });
+                      }
+                    }}
+                    disabled={!data?.id}
+                  />
                   {id && (
                     <NextLink
                       // referrerPath is the current path of the page - used for breadcrumbs in resources page
@@ -551,7 +577,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       </Flex>
                     </NextLink>
                   )}
-                </Flex>
+                </HStack>
               </Stack>
             </CardBody>
           </>
