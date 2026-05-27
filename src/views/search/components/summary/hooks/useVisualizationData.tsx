@@ -16,10 +16,7 @@ import {
 import { SelectedFilterValueType } from '../../filters/types';
 import { queryFilterObject2String } from '../../filters/utils/query-string';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
-import {
-  useBioSampleAggregation,
-  BIOSAMPLE_EXTRA_FILTER,
-} from 'src/views/search/hooks/useBioSampleAggregation';
+import { useBioSampleAggregation } from 'src/views/search/hooks/useBioSampleAggregation';
 import { useComputationalToolAggregation } from 'src/views/search/hooks/useComputationalToolAggregation';
 import { useSharedDatasetAggregation } from 'src/views/search/hooks/useSharedDatasetAggregation';
 import { useDataCollectionAggregation } from 'src/views/search/hooks/useDataCollectionAggregation';
@@ -173,8 +170,7 @@ export const useVisualizationData = ({
     ],
   );
 
-  // Main aggregation: used as fallback when no scoped response is available,
-  // and for the date histogram (which spans all types).
+  // Main aggregation: used as fallback when no scoped response is available
   const aggQuery = useAggregation({
     params: aggParams,
     enabled: isActive && hasChartConfig,
@@ -240,8 +236,11 @@ export const useVisualizationData = ({
   // Histogram uses facets.hist_dates (from hist=date) and keeps full bucket set.
   // Other charts use facet terms and are capped to 100 for readability/perf.
   const dateHistogramTerms = useMemo(
-    () => aggQuery.data?.facets?.hist_dates?.terms,
-    [aggQuery.data],
+    // The date histogram uses the sharedDatasetAgg response, which covers all
+    // record types but excludes Sample records that do NOT have
+    // additionalType:"BioSample".
+    () => sharedDatasetAgg.data?.facets?.hist_dates?.terms,
+    [sharedDatasetAgg.data],
   );
 
   const facetTerms = useMemo(
