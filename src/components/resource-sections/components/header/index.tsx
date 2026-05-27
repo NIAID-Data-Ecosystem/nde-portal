@@ -1,8 +1,8 @@
-import { Flex, Heading, Skeleton, Text } from '@chakra-ui/react';
+import { Heading, HStack, Skeleton, Text, VStack } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import { DisplayHTMLString } from 'src/components/html-content';
 import { TagWithUrl } from 'src/components/tag-with-url';
-import { CopyButton } from 'src/components/copy-button';
+import { CopyIconButton } from 'src/components/copy-button';
 
 interface HeaderProps {
   isLoading: boolean;
@@ -37,7 +37,7 @@ const Header = ({
         pt={4}
         pb={2}
       >
-        <Heading as='h1' fontSize='2xl' fontWeight='bold' lineHeight='short'>
+        <Heading as='h1' fontSize='xl' fontWeight='bold' lineHeight='short'>
           <DisplayHTMLString>{name || alternateName}</DisplayHTMLString>
           {!!name && alternateName && (
             <Heading
@@ -52,49 +52,50 @@ const Header = ({
             </Heading>
           )}
         </Heading>
+        <VStack alignItems='flex-start' mt={2} lineHeight='shorter'>
+          {id && (
+            <HStack
+              alignItems={{ base: 'flex-start', md: 'baseline' }}
+              flexDirection={{ base: 'column', md: 'row' }}
+              fontSize='sm'
+              gap={1}
+            >
+              <HStack>
+                <Text fontWeight='semibold' whiteSpace='nowrap'>
+                  Resource ID |
+                </Text>
+                <Text wordBreak='break-all'>{id}</Text>
+              </HStack>
+              <CopyIconButton
+                textToCopy={id}
+                buttonText='Copy ID'
+                copiedText='Resource ID copied!'
+                buttonProps={{
+                  size: 'xs',
+                  flexShrink: 0,
+                }}
+              />
+            </HStack>
+          )}
 
-        {id && (
-          <Flex
-            mt={2}
-            gap={3}
-            alignItems={{ base: 'flex-start', md: 'center' }}
-            flexDirection={{ base: 'column', md: 'row' }}
-          >
-            <Flex gap={2} alignItems='center'>
-              <Text fontWeight='semibold' whiteSpace='nowrap'>
-                Resource ID
-              </Text>
-              <Text wordBreak='break-all'>{id}</Text>
-            </Flex>
-            <CopyButton
-              textToCopy={id}
-              buttonText='Copy ID'
-              copiedText='Resource ID copied!'
-              buttonProps={{
-                size: 'sm',
-                flexShrink: 0,
-              }}
-            />
-          </Flex>
-        )}
-
-        {(nctid || doi) && (
-          <Flex mt={2} gap={2}>
-            {nctid && <TagWithUrl label='NCTID |'>{nctid}</TagWithUrl>}
-            {doi && (
-              <TagWithUrl
-                colorScheme='secondary'
-                label='DOI |'
-                href={
-                  doi.includes('http') || doi.includes('doi.org') ? doi : ''
-                }
-                isExternal
-              >
-                {doi}
-              </TagWithUrl>
-            )}
-          </Flex>
-        )}
+          {(nctid || doi) && (
+            <>
+              {nctid && <TagWithUrl label='NCTID |'>{nctid}</TagWithUrl>}
+              {doi && (
+                <TagWithUrl
+                  colorScheme='secondary'
+                  label='DOI |'
+                  href={
+                    doi.includes('http') || doi.includes('doi.org') ? doi : ''
+                  }
+                  isExternal
+                >
+                  {doi}
+                </TagWithUrl>
+              )}
+            </>
+          )}
+        </VStack>
       </Skeleton>
     </>
   );

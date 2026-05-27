@@ -1,5 +1,6 @@
-import { Button, ButtonProps, useClipboard } from '@chakra-ui/react';
-import { FaCopy } from 'react-icons/fa6';
+import { Button, ButtonProps, Icon, useClipboard } from '@chakra-ui/react';
+import { FaCopy, FaRegCopy } from 'react-icons/fa6';
+import Tooltip from '../tooltip';
 
 /*
  [COMPONENT INFO]: Reusable button that copies a string to clipboard.
@@ -30,5 +31,31 @@ export const CopyButton = ({
     >
       {hasCopied ? copiedText : buttonText}
     </Button>
+  );
+};
+
+export const CopyIconButton = ({
+  textToCopy,
+  buttonText = 'Copy',
+  copiedText = 'Copied!',
+  buttonProps,
+}: CopyButtonProps) => {
+  const { onCopy, hasCopied } = useClipboard(textToCopy);
+
+  return (
+    <Tooltip label={hasCopied ? copiedText : buttonText} closeOnClick={false}>
+      <Button
+        variant='ghost'
+        colorScheme='gray'
+        onClick={onCopy}
+        aria-label={hasCopied ? copiedText : buttonText}
+        gap={2}
+        size='sm'
+        {...buttonProps}
+      >
+        <Icon as={FaRegCopy} />
+        {hasCopied ? copiedText : ''}
+      </Button>
+    </Tooltip>
   );
 };
