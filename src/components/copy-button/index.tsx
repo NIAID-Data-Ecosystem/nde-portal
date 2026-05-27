@@ -49,7 +49,7 @@ export const CopyIconButton = ({
         colorScheme='gray'
         onClick={onCopy}
         aria-label={hasCopied ? copiedText : buttonText}
-        gap={2}
+        gap={1}
         size='sm'
         {...buttonProps}
       >

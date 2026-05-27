@@ -3,6 +3,8 @@ import { FormattedResource } from 'src/utils/api/types';
 import { DisplayHTMLString } from 'src/components/html-content';
 import { TagWithUrl } from 'src/components/tag-with-url';
 import { CopyIconButton } from 'src/components/copy-button';
+import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
+import { useUserData } from 'src/hooks/useUserData';
 
 interface HeaderProps {
   isLoading: boolean;
@@ -21,6 +23,12 @@ const Header = ({
   doi,
   nctid,
 }: HeaderProps) => {
+  const { favoriteDatasets, saveFavoriteDataset, removeFavoriteDataset } =
+    useUserData();
+  const isFavorited = id
+    ? favoriteDatasets.some(fd => fd.dataset_id === id)
+    : false;
+
   return (
     <>
       <Skeleton
@@ -37,61 +45,66 @@ const Header = ({
         pt={4}
         pb={2}
       >
-        <Heading as='h1' fontSize='xl' fontWeight='bold' lineHeight='short'>
-          <DisplayHTMLString>{name || alternateName}</DisplayHTMLString>
-          {!!name && alternateName && (
-            <Heading
-              as='span'
-              size='sm'
-              color='gray.800'
-              fontWeight='normal'
-              wordBreak='break-word'
-              my={0}
-            >
-              Alternate name: {alternateName}
-            </Heading>
-          )}
-        </Heading>
+        <HStack alignItems='flex-start' justifyContent='space-between' w='100%'>
+          <Heading as='h1' fontSize='xl' fontWeight='bold' lineHeight='short'>
+            <DisplayHTMLString>{name || alternateName}</DisplayHTMLString>
+            {!!name && alternateName && (
+              <Heading
+                as='span'
+                size='sm'
+                color='gray.800'
+                fontWeight='normal'
+                wordBreak='break-word'
+                my={0}
+              >
+                Alternate name: {alternateName}
+              </Heading>
+            )}
+          </Heading>
+          <BookmarkIconButton
+            isFavorited={isFavorited}
+            onClick={() => {
+              if (!id) return;
+              if (isFavorited) {
+                removeFavoriteDataset(id);
+              } else {
+                saveFavoriteDataset({
+                  dataset_id: id,
+                  name: name || alternateName || 'Untitled Dataset',
+                  saved_at: new Date().toISOString(),
+                });
+              }
+            }}
+            disabled={!id}
+          />
+        </HStack>
         <VStack alignItems='flex-start' mt={2} lineHeight='shorter'>
           {id && (
-            <HStack
-              alignItems={{ base: 'flex-start', md: 'baseline' }}
-              flexDirection={{ base: 'column', md: 'row' }}
-              fontSize='sm'
-              gap={1}
-            >
-              <HStack>
-                <Text fontWeight='semibold' whiteSpace='nowrap'>
-                  Resource ID |
-                </Text>
-                <Text wordBreak='break-all'>{id}</Text>
-              </HStack>
-              <CopyIconButton
-                textToCopy={id}
-                buttonText='Copy ID'
-                copiedText='Resource ID copied!'
-                buttonProps={{
-                  size: 'xs',
-                  flexShrink: 0,
-                }}
-              />
-            </HStack>
+            <IdWithCopyButton
+              id={id}
+              label='Resource ID'
+              buttonText='Copy Resource ID'
+              copiedText='Resource ID Copied!'
+            />
           )}
 
           {(nctid || doi) && (
             <>
-              {nctid && <TagWithUrl label='NCTID |'>{nctid}</TagWithUrl>}
+              {nctid && (
+                <IdWithCopyButton
+                  id={nctid}
+                  label='NCTID'
+                  buttonText='Copy NCTID'
+                  copiedText='NCTID Copied!'
+                />
+              )}
               {doi && (
-                <TagWithUrl
-                  colorScheme='secondary'
-                  label='DOI |'
-                  href={
-                    doi.includes('http') || doi.includes('doi.org') ? doi : ''
-                  }
-                  isExternal
-                >
-                  {doi}
-                </TagWithUrl>
+                <IdWithCopyButton
+                  id={doi}
+                  label='DOI'
+                  buttonText='Copy DOI'
+                  copiedText='DOI Copied!'
+                />
               )}
             </>
           )}
@@ -101,4 +114,44 @@ const Header = ({
   );
 };
 
+const IdWithCopyButton = ({
+  id,
+  label,
+  buttonText,
+  copiedText,
+}: {
+  id: string;
+  label?: string;
+  buttonText?: string;
+  copiedText?: string;
+}) => {
+  return (
+    <HStack
+      alignItems={{ base: 'flex-start', md: 'baseline' }}
+      flexDirection={{ base: 'column', md: 'row' }}
+      fontSize='sm'
+      gap={1}
+    >
+      <HStack flexWrap='wrap' spacing={1} alignItems='baseline'>
+        {label && (
+          <Text fontWeight='semibold' whiteSpace='nowrap'>
+            {label} |
+          </Text>
+        )}
+        <HStack spacing={1} alignItems='baseline'>
+          <Text>{id}</Text>
+          <CopyIconButton
+            textToCopy={id}
+            buttonText={buttonText || 'Copy ID'}
+            copiedText={copiedText || 'ID Copied!'}
+            buttonProps={{
+              size: 'xs',
+              flexShrink: 0,
+            }}
+          />
+        </HStack>
+      </HStack>
+    </HStack>
+  );
+};
 export default Header;
