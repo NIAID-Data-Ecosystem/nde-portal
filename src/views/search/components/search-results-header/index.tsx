@@ -91,6 +91,11 @@ export const SearchResultsHeader = ({
 
           {ENABLE_AUTH && (
             <BookmarkIconButton
+              aria-label={
+                isFavorited
+                  ? 'Remove bookmark for this search'
+                  : 'Bookmark this search'
+              }
               isFavorited={isFavorited}
               onClick={() =>
                 isFavorited
