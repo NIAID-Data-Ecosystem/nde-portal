@@ -1,6 +1,16 @@
-import { Flex, FlexProps, Text, TextProps, VStack } from '@chakra-ui/react';
+import {
+  Flex,
+  FlexProps,
+  HStack,
+  Text,
+  TextProps,
+  VStack,
+} from '@chakra-ui/react';
+import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
 import { Link } from 'src/components/link';
 import { AI_ASSISTED_SEARCH_KC_LINK } from 'src/components/page-container/components/search/components/ai-toggle';
+import { useUserData } from 'src/hooks/useUserData';
+import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
 export const SearchResultsHeading = ({ children, ...props }: TextProps) => {
   return (
@@ -39,6 +49,14 @@ export const SearchResultsHeader = ({
   querystring: string;
   showAIBanner: boolean | null;
 }) => {
+  const { favoriteSearches, saveFavoriteSearch, removeFavoriteSearch } =
+    useUserData();
+
+  const favoriteIndex = favoriteSearches.findIndex(
+    search => search.query === querystring,
+  );
+  const isFavorited = favoriteIndex !== -1;
+
   return (
     <VStack alignItems='flex-start' spacing={1} fontSize='sm' flex={1}>
       {showAIBanner && (
@@ -66,9 +84,25 @@ export const SearchResultsHeader = ({
       </SearchResultsHeading>
       {/* Query string */}
       {querystring !== '__all__' && (
-        <Text color='text.heading' fontSize='inherit' fontWeight='medium'>
-          {querystring.replaceAll('\\', '')}
-        </Text>
+        <HStack spacing={1} width='100%' alignItems='flex-start'>
+          <Text color='text.heading' fontSize='inherit' fontWeight='medium'>
+            {querystring.replaceAll('\\', '')}
+          </Text>
+
+          {ENABLE_AUTH && (
+            <BookmarkIconButton
+              isFavorited={isFavorited}
+              onClick={() =>
+                isFavorited
+                  ? removeFavoriteSearch(favoriteIndex)
+                  : saveFavoriteSearch({
+                      query: querystring,
+                      name: `Search: ${querystring}`,
+                    })
+              }
+            />
+          )}
+        </HStack>
       )}
     </VStack>
   );
