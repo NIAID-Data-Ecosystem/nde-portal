@@ -39,6 +39,7 @@ import {
 import { SourceLogo } from 'src/components/source-logo';
 import { BookmarkButton } from 'src/components/bookmark-buttons/button';
 import { useUserData } from 'src/hooks/useUserData';
+import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -528,25 +529,27 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   mt={[2, 0]}
                   w={{ base: '100%', sm: 'unset' }}
                 >
-                  <BookmarkButton
-                    isFavorited={isFavorited}
-                    onClick={() => {
-                      if (!data?.id) return;
-                      if (isFavorited) {
-                        removeFavoriteDataset(data.id);
-                      } else {
-                        saveFavoriteDataset({
-                          dataset_id: data.id,
-                          name:
-                            data.name ||
-                            data.alternateName ||
-                            'Untitled Dataset',
-                          saved_at: new Date().toISOString(),
-                        });
-                      }
-                    }}
-                    disabled={!data?.id}
-                  />
+                  {ENABLE_AUTH && (
+                    <BookmarkButton
+                      isFavorited={isFavorited}
+                      onClick={() => {
+                        if (!data?.id) return;
+                        if (isFavorited) {
+                          removeFavoriteDataset(data.id);
+                        } else {
+                          saveFavoriteDataset({
+                            dataset_id: data.id,
+                            name:
+                              data.name ||
+                              data.alternateName ||
+                              'Untitled Dataset',
+                            saved_at: new Date().toISOString(),
+                          });
+                        }
+                      }}
+                      disabled={!data?.id}
+                    />
+                  )}
                   {id && (
                     <NextLink
                       // referrerPath is the current path of the page - used for breadcrumbs in resources page

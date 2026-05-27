@@ -5,6 +5,7 @@ import { TagWithUrl } from 'src/components/tag-with-url';
 import { CopyIconButton } from 'src/components/copy-button';
 import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
 import { useUserData } from 'src/hooks/useUserData';
+import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
 interface HeaderProps {
   isLoading: boolean;
@@ -61,22 +62,24 @@ const Header = ({
               </Heading>
             )}
           </Heading>
-          <BookmarkIconButton
-            isFavorited={isFavorited}
-            onClick={() => {
-              if (!id) return;
-              if (isFavorited) {
-                removeFavoriteDataset(id);
-              } else {
-                saveFavoriteDataset({
-                  dataset_id: id,
-                  name: name || alternateName || 'Untitled Dataset',
-                  saved_at: new Date().toISOString(),
-                });
-              }
-            }}
-            disabled={!id}
-          />
+          {ENABLE_AUTH && (
+            <BookmarkIconButton
+              isFavorited={isFavorited}
+              onClick={() => {
+                if (!id) return;
+                if (isFavorited) {
+                  removeFavoriteDataset(id);
+                } else {
+                  saveFavoriteDataset({
+                    dataset_id: id,
+                    name: name || alternateName || 'Untitled Dataset',
+                    saved_at: new Date().toISOString(),
+                  });
+                }
+              }}
+              disabled={!id}
+            />
+          )}
         </HStack>
         <VStack alignItems='flex-start' mt={2} lineHeight='shorter'>
           {id && (
