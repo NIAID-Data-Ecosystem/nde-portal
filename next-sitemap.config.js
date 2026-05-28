@@ -3,6 +3,10 @@ const fs = require('fs');
 const path = require('path');
 const SITE_CONFIG = require('./configs/site.config.json');
 
+if (!process.env.BASE_URL) {
+  throw new Error('BASE_URL is required for sitemap generation');
+}
+
 const datasetDir = path.join(__dirname, 'public/sitemaps/datasets');
 
 const getAdditionalSitemaps = () => {
@@ -24,20 +28,20 @@ const getExcludePaths = () => {
   return excludePaths.flat();
 };
 
+const isProduction = process.env.NEXT_PUBLIC_APP_ENV === 'production';
+
 module.exports = {
   siteUrl: process.env.BASE_URL || 'https://data.niaid.nih.gov',
   generateRobotsTxt: true,
-  exclude: getExcludePaths(),
+  generateIndexSitemap: false,
+  exclude: isProduction ? getExcludePaths() : ['/*'],
   robotsTxtOptions: {
     policies: [
-      { userAgent: '*', disallow: '/' },
       {
-        userAgent: 'googlebot',
+        userAgent: '*',
         allow: '/',
       },
-      { userAgent: 'bingbot', allow: '/' },
-      { userAgent: 'DuckDuckBot', allow: '/' },
     ],
-    additionalSitemaps: getAdditionalSitemaps(),
+    additionalSitemaps: isProduction ? getAdditionalSitemaps() : [],
   },
 };

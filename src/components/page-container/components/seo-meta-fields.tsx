@@ -71,8 +71,9 @@ export const SeoMetaFields: React.FC<SeoMetaFieldsProps> = ({
       <meta name='twitter:card' content='summary_large_image' />
       {imageUrl && <meta name='twitter:image' content={imageUrl} />}
 
-      {/* Indexing */}
-      {preventIndexing && (
+      {/* Indexing, prevent indexing in non-production environments and when preventIndexing is true */}
+      {(preventIndexing ||
+        process.env.NEXT_PUBLIC_APP_ENV !== 'production') && (
         <>
           <meta name='robots' content='noindex, nofollow' />
           <meta name='googlebot' content='noindex, nofollow' />
