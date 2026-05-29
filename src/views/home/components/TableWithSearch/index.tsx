@@ -227,6 +227,7 @@ export const RepositoryCells = ({
           ...(tab && { tab }),
         },
       };
+
   return (
     <Flex id={`cell-${data._id}-${column.property}`} py={1}>
       {/* Repository/Resource Catalog name */}
