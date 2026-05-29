@@ -72,7 +72,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     id: 'description',
     label: getMetadataName('description') || '',
     fields: ['description'],
-    columns: { isSortable: true, isDefault: true },
+    columns: {
+      isSortable: true,
+      isDefault: true,
+      style: { maxWidth: 'unset', minWidth: '450px' },
+    },
     transform: (item): RepositoryMatcherItem['description'] =>
       item.description || '',
     component: ({
@@ -81,7 +85,16 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     }: {
       value: RepositoryMatcherItem['description'];
       isLoading?: boolean;
-    }) => <TextCell value={value || ''} isLoading={isLoading} noOfLines={3} />,
+    }) => {
+      return (
+        <TextCell
+          value={value || ''}
+          isLoading={isLoading}
+          noOfLines={8}
+          expandable
+        />
+      );
+    },
   },
   {
     id: 'abstract',

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import NextLink from 'next/link';
 import {
   Box,
@@ -103,29 +103,66 @@ export const TextCell = ({
   value,
   isLoading,
   noOfLines,
+  expandable = false,
   children,
   ...props
 }: TextProps & {
   value: string;
   isLoading?: boolean;
-}) => (
-  <SkeletonText
-    isLoaded={!isLoading}
-    noOfLines={noOfLines}
-    spacing='2'
-    w='100%'
-  >
-    <Text
+  // When true, the text is clamped to `noOfLines` and a "Show more"/"Show
+  // less" toggle is rendered (only if the content is actually truncated).
+  expandable?: boolean;
+}) => {
+  const [expanded, setExpanded] = useState(false);
+  const [isTruncated, setIsTruncated] = useState(false);
+  const textRef = useRef<HTMLParagraphElement>(null);
+
+  // Detect whether the clamped text overflows so the toggle is only shown
+  // when there's hidden content to reveal.
+  useLayoutEffect(() => {
+    if (!expandable || isLoading) {
+      return;
+    }
+    const el = textRef.current;
+    if (el) {
+      setIsTruncated(el.scrollHeight > el.clientHeight);
+    }
+  }, [expandable, isLoading, value, children, noOfLines]);
+
+  const clampLines = expandable && expanded ? undefined : noOfLines;
+
+  return (
+    <SkeletonText
+      isLoaded={!isLoading}
       noOfLines={noOfLines}
-      fontStyle={value ? 'normal' : 'italic'}
-      lineHeight='shorter'
-      fontSize='xs'
-      {...props}
+      spacing='2'
+      w='100%'
     >
-      {children || value || 'not available'}
-    </Text>
-  </SkeletonText>
-);
+      <Text
+        ref={textRef}
+        noOfLines={clampLines}
+        fontStyle={value ? 'normal' : 'italic'}
+        lineHeight='shorter'
+        fontSize='xs'
+        {...props}
+      >
+        {children || value || 'not available'}
+      </Text>
+      {expandable && (isTruncated || expanded) && (
+        <Button
+          variant='link'
+          size='xs'
+          colorScheme='primary'
+          fontWeight='medium'
+          mt='1'
+          onClick={() => setExpanded(prev => !prev)}
+        >
+          {expanded ? 'Show less' : 'Show more'}
+        </Button>
+      )}
+    </SkeletonText>
+  );
+};
 
 export const TextCellWithLink = ({
   label,
