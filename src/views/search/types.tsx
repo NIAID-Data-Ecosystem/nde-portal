@@ -4,6 +4,7 @@ export type TabType = {
   id: 'ct' | 'd' | 's' | 'dc';
   types: {
     label: string;
+    accordionLabel?: string;
     type: string;
   }[];
   isDefault?: boolean;
