@@ -38,6 +38,7 @@ export function useResourceCatalogs({
       const catalogs = data?.results || [];
       return catalogs.map(catalog => ({
         ...catalog,
+        identifier: catalog._id || catalog.identifier || '',
         type: ['Resource Catalog'],
       }));
     },

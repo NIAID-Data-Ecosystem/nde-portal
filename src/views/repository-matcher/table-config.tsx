@@ -29,7 +29,7 @@ import {
   TextCell,
   TextCellWithLink,
 } from './components/TableCells';
-import { buildItemUrl, itemTypes } from './utils';
+import { itemTypes } from './utils';
 import {
   NameValue,
   RepositoryMatcherColumn,
@@ -45,7 +45,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     required: true,
     transform: (item): NameValue => ({
       label: item.name || item._id || '',
-      url: buildItemUrl(item),
+      url: item?.url || '',
       _id: item._id || '',
     }),
     getSortValue: (value: NameValue) => value.label.toLowerCase(),

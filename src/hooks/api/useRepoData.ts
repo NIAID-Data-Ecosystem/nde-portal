@@ -17,7 +17,7 @@ export function useRepoData(options: any = {}) {
             !Array.isArray(source.sourceInfo) &&
             source.sourceInfo.identifier,
         )
-        .map(({ sourceInfo }, idx) => {
+        .map(({ sourceInfo }) => {
           const {
             identifier,
             name,
@@ -38,7 +38,7 @@ export function useRepoData(options: any = {}) {
           return {
             ...sourceInfo,
             type: type as string[],
-            _id: `${identifier}-${name}` || '',
+            _id: `${identifier}-${name}-${type.join(',')}`,
             name: name || identifier || '',
           };
         });
