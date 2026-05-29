@@ -1,39 +1,11 @@
 import React from 'react';
+import { Text, VStack } from '@chakra-ui/react';
+import { getMetadataName } from 'src/components/metadata';
 import {
-  Box,
-  Circle,
-  HStack,
-  Tag,
-  TagLabel,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
-import { Repository } from 'src/hooks/api/useRepoData';
-import {
-  AccessTypes,
-  DefinedTerm,
-  FormattedResource,
-} from 'src/utils/api/types';
-import {
-  formatConditionsOfAccess,
-  getColorScheme,
-  transformConditionsOfAccessLabel,
-} from 'src/utils/formatting/formatConditionsOfAccess';
-import {
-  getMetadataDescription,
-  getMetadataName,
-} from 'src/components/metadata';
-import {
-  DefinedTermTagList,
-  TagCell,
   TextCell,
   TextCellWithLink,
 } from '../repository-matcher/components/TableCells';
-import { buildItemUrl, itemTypes } from '../repository-matcher/utils';
-import {
-  NameValue,
-  RepositoryMatcherColumn,
-} from '../repository-matcher/types';
+import { NameValue } from '../repository-matcher/types';
 import {
   SavedResourceColumn,
   SavedResourceItem,
@@ -47,7 +19,6 @@ export const SAVED_RESOURCE_COLUMNS: SavedResourceColumn<any>[] = [
     label: getMetadataName('name') || '',
     fields: ['name', 'dataset_id'],
     columns: { isSortable: true, isDefault: true },
-    required: true,
     transform: (item): NameValue => ({
       label: item.name || item.dataset_id || '',
       url: `/resources?id=${item.dataset_id}`,
@@ -62,13 +33,39 @@ export const SAVED_RESOURCE_COLUMNS: SavedResourceColumn<any>[] = [
       value: NameValue;
       isLoading?: boolean;
     }) => (
-      <TextCellWithLink
-        label={value?.label || ''}
-        url={value?.url}
-        isLoading={isLoading}
-        isExternal={false}
-      />
+      <VStack align='start' spacing={1} fontSize='xs'>
+        <TextCellWithLink
+          label={value?.label || ''}
+          url={value?.url}
+          isLoading={isLoading}
+          isExternal={false}
+        />
+        <Text color='gray.700'>ID: {value?._id || ''}</Text>
+      </VStack>
     ),
+  },
+  {
+    id: 'saved_at',
+    label: 'Saved On',
+    fields: ['saved_at'],
+    columns: {
+      isSortable: true,
+      isDefault: true,
+      style: { maxWidth: '200px', minWidth: '200px' },
+    },
+    transform: item => {
+      if (!item.saved_at) return '';
+      return new Date(item.saved_at).toLocaleDateString();
+    },
+    component: ({
+      value,
+      isLoading,
+    }: {
+      value: string;
+      isLoading?: boolean;
+    }) => {
+      return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
+    },
   },
   // {
   //   id: 'type',
@@ -128,7 +125,7 @@ export const SAVED_RESOURCE_COLUMNS: SavedResourceColumn<any>[] = [
   // },
 ];
 
-const formatTableData = (data: SavedResourceItem[]) => {
+export const formatTableData = (data: SavedResourceItem[]) => {
   const rows: SavedResourceRow[] = [];
   const seen = new Set<string>();
 

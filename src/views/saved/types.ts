@@ -1,8 +1,6 @@
-export interface SavedResourceItem {
-  name: string;
-  dataset_id: string;
-  saved_at: string;
-}
+import { FavoriteDataset } from 'src/hooks/useUserData';
+
+export interface SavedResourceItem extends FavoriteDataset {}
 
 export interface SavedResourceRow {
   _id: string;
@@ -21,11 +19,7 @@ export type SavedResourceColumn<TValue = unknown> = {
     isDefault?: boolean;
     style?: React.CSSProperties;
   };
-  /**
-   * When true, the column cannot be hidden by the customize-columns popover.
-   * Default: false.
-   */
-  required?: boolean;
+
   transform: (item: SavedResourceItem) => TValue;
   component: (props: {
     value: TValue;
