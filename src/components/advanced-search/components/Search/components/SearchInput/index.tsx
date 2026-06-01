@@ -13,6 +13,16 @@ import {
   APIResourceType,
   formatAPIResourceTypeForDisplay,
 } from 'src/utils/formatting/formatResourceType';
+import {
+  SHOW_SAMPLES_TAB,
+  SHOW_DATA_COLLECTIONS_TAB,
+} from 'src/utils/feature-flags';
+
+// @type enum values that are gated behind feature flags.
+const GATED_RESOURCE_TYPES: Record<string, boolean> = {
+  Sample: SHOW_SAMPLES_TAB,
+  DataCollection: SHOW_DATA_COLLECTIONS_TAB,
+};
 
 export const SearchInput: React.FC<SearchInputProps> = ({
   defaultInputValue = '',
@@ -130,14 +140,23 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       {/* [enum]: Select/Option Component. */}
       {inputType === 'enum' ? (
         <EnumInput
-          options={selectedFieldDetails?.enum?.map((value: string) => {
-            // [@type] needs to be formatted to the terms we use in the UI.
-            if (selectedFieldDetails.property === '@type') {
-              const type = value as APIResourceType;
-              return { label: formatAPIResourceTypeForDisplay(type), value };
-            }
-            return { label: value, value };
-          })}
+          options={selectedFieldDetails?.enum
+            // When the field is @type, hide enum values that are gated behind
+            // feature flags.
+            ?.filter((value: string) => {
+              if (selectedFieldDetails.property !== '@type') return true;
+              const flag = GATED_RESOURCE_TYPES[value];
+              // If the value has no associated flag it is always visible.
+              return flag === undefined ? true : flag;
+            })
+            .map((value: string) => {
+              // [@type] needs to be formatted to the terms we use in the UI.
+              if (selectedFieldDetails.property === '@type') {
+                const type = value as APIResourceType;
+                return { label: formatAPIResourceTypeForDisplay(type), value };
+              }
+              return { label: value, value };
+            })}
           {...inputProps}
         />
       ) : (
