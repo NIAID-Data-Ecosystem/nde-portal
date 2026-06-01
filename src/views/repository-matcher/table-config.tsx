@@ -29,7 +29,7 @@ import {
   TextCell,
   TextCellWithLink,
 } from './components/TableCells';
-import { buildItemUrl, itemTypes } from './utils';
+import { itemTypes } from './utils';
 import {
   NameValue,
   RepositoryMatcherColumn,
@@ -45,7 +45,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     required: true,
     transform: (item): NameValue => ({
       label: item.name || item._id || '',
-      url: buildItemUrl(item),
+      url: item?.url || '',
       _id: item._id || '',
     }),
     getSortValue: (value: NameValue) => value.label.toLowerCase(),
@@ -72,7 +72,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     id: 'description',
     label: getMetadataName('description') || '',
     fields: ['description'],
-    columns: { isSortable: true, isDefault: true },
+    columns: {
+      isSortable: true,
+      isDefault: true,
+      style: { maxWidth: 'unset', minWidth: '450px' },
+    },
     transform: (item): RepositoryMatcherItem['description'] =>
       item.description || '',
     component: ({
@@ -81,7 +85,16 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     }: {
       value: RepositoryMatcherItem['description'];
       isLoading?: boolean;
-    }) => <TextCell value={value || ''} isLoading={isLoading} noOfLines={3} />,
+    }) => {
+      return (
+        <TextCell
+          value={value || ''}
+          isLoading={isLoading}
+          noOfLines={8}
+          expandable
+        />
+      );
+    },
   },
   {
     id: 'abstract',
@@ -125,30 +138,34 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       getFilterValues: (value: string[]) => value ?? [],
     },
     info: {
+      description:
+        'The resource type affects how records from that resource are ingested into the Discovery Portal.',
       filterDescription: getMetadataDescription('type') || '',
       terms: [
         {
           label: 'Dataset Repository',
-          description: 'A repository which holds Dataset records',
+          description:
+            'A repository which holds Dataset records. Dataset metadata records are mapped and directly ingested into the Discovery Portal on a one-to-one basis.',
         },
         {
           label: 'Sample Repository',
           description:
-            'A repository which holds biological specimen or sample records',
+            'A repository which holds biological specimen or sample records. Metadata records about samples are mapped and directly ingested into the Discovery Portal on a one-to-one basis.',
         },
         {
           label: 'Computational Tool Repository',
           description:
-            'A repository which holds Computational Tool records were ingested into the portal',
+            'A repository which holds Computational Tool records. Tool metadata records are mapped and directly ingested into the Discovery Portal on a one-to-one basis.',
         },
         {
           label: 'Data Repository',
-          description: 'A repository which holds other types of records',
+          description:
+            'A repository which holds other types of records. Records of a searchable type are aggregated from the original source and used to create Data Collection records in the Discovery Portal. Multiple records submitted to a Data Repository may end up as a single Data Collection record in the Discovery Portal.',
         },
         {
           label: 'Resource Catalog',
           description:
-            'A record about the repository/resource/portal etc. itself',
+            ' A manually curated record about the repository/resource/portal etc. itself. Repositories displayed only as Resource Catalogs in the Discovery Portal are not sources of record ingest at this time.',
         },
       ],
     },
@@ -192,6 +209,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       getFilterValues: (value: string[]) => value ?? [],
     },
     info: {
+      description: 'Categorical information about the content of a resource.',
       filterDescription: getMetadataDescription('genre') || '',
       terms: [
         {

@@ -46,6 +46,7 @@ import {
   transformConditionsOfAccessLabel,
 } from 'src/utils/formatting/formatConditionsOfAccess';
 import { formatDomainName } from 'src/views/home/components/TableWithSearch/helpers';
+import { buildItemUrl } from 'src/views/repository-matcher/utils';
 
 const Home: NextPage<{
   data: {
@@ -97,7 +98,7 @@ const Home: NextPage<{
           ),
           domain,
           type: item.type,
-          url: item.url || '',
+          url: buildItemUrl(item),
         };
       }),
     [repositories, resourceCatalogs],

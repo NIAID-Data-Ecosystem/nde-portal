@@ -210,23 +210,6 @@ export const RepositoryCells = ({
   const tab = data?.type?.includes('Computational Tool Repository')
     ? getTabIdFromTypeLabel('ComputationalTool')
     : undefined;
-  const href = data?.type?.includes('Resource Catalog')
-    ? {
-        pathname: `/resources`,
-        query: {
-          id: data._id,
-        },
-      }
-    : {
-        pathname: `/search`,
-        query: {
-          q: '',
-          filters: queryFilterObject2String({
-            'includedInDataCatalog.name': [data._id],
-          }),
-          ...(tab && { tab }),
-        },
-      };
 
   return (
     <Flex id={`cell-${data._id}-${column.property}`} py={1}>
@@ -239,8 +222,8 @@ export const RepositoryCells = ({
           w='100%'
           fontSize='sm'
         >
-          {data._id ? (
-            <NextLink href={href} prefetch={false} passHref>
+          {data?.url ? (
+            <NextLink href={data.url} prefetch={false} passHref>
               <Link as='div'>{data[column.property]}</Link>
             </NextLink>
           ) : (
