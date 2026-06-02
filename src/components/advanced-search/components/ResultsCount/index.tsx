@@ -5,6 +5,7 @@ import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { formatNumber } from 'src/utils/helpers';
 import { QueryStringError } from 'src/components/error/types';
+import { injectBioSampleScope } from '../../utils/query-helpers';
 
 interface ResultsCountProps {
   queryString: string;
@@ -17,6 +18,11 @@ export const ResultsCount: React.FC<ResultsCountProps> = ({
   handleErrors,
   setCount,
 }) => {
+  // Rewrite any @type:Sample token to (@type:Sample AND additionalType:"BioSample")
+  // so the count reflects only BioSample records, matching the scoping applied
+  // by the search results page.
+  const scopedQueryString = injectBioSampleScope(queryString);
+
   // Get total count of results based on query string.
   const { isLoading, error, data } = useQuery<
     FetchSearchResultsResponse | undefined,
@@ -27,18 +33,27 @@ export const ResultsCount: React.FC<ResultsCountProps> = ({
       queryKey: [
         'search-results',
         {
-          queryString,
+          queryString: scopedQueryString,
         },
       ],
-      queryFn: () => {
-        if (typeof queryString !== 'string' && !queryString) {
+      queryFn: ({ signal }) => {
+        if (typeof scopedQueryString !== 'string' && !scopedQueryString) {
           return;
         }
 
-        return fetchSearchResults({
-          q: queryString,
-          size: 0,
-        });
+        // Forward the AbortSignal so the in-flight request is cancelled when
+        // the component unmounts (e.g., after the user clicks Submit and the
+        // router navigates to /search). Without this, the pending fetch
+        // continues to compete for browser connections with the requests the
+        // search results page fires on mount, causing the navigation to feel
+        // slow.
+        return fetchSearchResults(
+          {
+            q: scopedQueryString,
+            size: 0,
+          },
+          signal,
+        );
       },
       enabled: !!queryString,
       retry: 1,
