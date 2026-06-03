@@ -255,7 +255,7 @@ export const BarChart = ({
                       />
 
                       {/* bar with pattern (rendered to fill the full width for hover purposes) */}
-                      {datum.info?.genre === 'IID' && (
+                      {datum.info?.genre?.includes('IID') && (
                         <Bar
                           x={barX}
                           y={barY}
@@ -334,7 +334,7 @@ export const BarChart = ({
                   {tooltipData.info?.name || tooltipData.term}
                 </TooltipTitle>
                 <TooltipSubtitle>
-                  {tooltipData.info?.genre} |{' '}
+                  {tooltipData.info?.genre?.join(', ')} |{' '}
                   {`${tooltipData.count.toLocaleString()} result${
                     tooltipData.count == 1 ? '' : 's'
                   }`}

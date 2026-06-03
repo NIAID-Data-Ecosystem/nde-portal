@@ -32,7 +32,7 @@ export const Filters = ({ data, filters, setFilters }: TableFiltersProps) => {
         data,
         property: 'domain',
         formatName: (str: TableData['domain']) =>
-          str ? formatDomainName(str) : '',
+          str ? formatDomainName(str).join(', ') : '',
       }),
     [data],
   );

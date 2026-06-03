@@ -18,8 +18,8 @@ import {
   PopoverSearchInput,
   PopoverSelectAll,
   PopoverSelectableList,
-} from 'src/components/popover';
-import type { PopoverItem } from 'src/components/popover';
+} from 'src/components/select-and-order-popover';
+import type { PopoverItem } from 'src/components/select-and-order-popover';
 
 export interface ColumnConfig {
   id: string;
