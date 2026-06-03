@@ -36,7 +36,8 @@ export const tabs: TabType[] = [
     id: 'ct',
     types: [
       {
-        label: `${TAB_LABELS.COMPUTATIONAL_TOOL}s`,
+        label: 'Tools',
+        accordionLabel: `${TAB_LABELS.COMPUTATIONAL_TOOL}s`,
         type: 'ComputationalTool',
       },
     ],
@@ -46,6 +47,7 @@ export const tabs: TabType[] = [
     types: [
       {
         label: `${TAB_LABELS.SAMPLE}s`,
+        accordionLabel: 'Samples and Specimens',
         type: 'Sample',
       },
     ],

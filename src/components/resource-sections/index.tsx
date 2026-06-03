@@ -113,7 +113,15 @@ const Sections = ({
           <Section
             id={section.hash}
             key={section.hash}
-            name={section.title}
+            name={
+              section.hash === 'samples'
+                ? data?.sample?.['@type'] === 'Sample'
+                  ? 'Population Sample'
+                  : data?.sample?.['@type'] === 'SampleCollection'
+                  ? 'Experimental Samples'
+                  : section.title
+                : section.title
+            }
             isLoading={isLoading}
             isCollapsible={section?.ui?.isCollapsible}
           >

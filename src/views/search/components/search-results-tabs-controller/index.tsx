@@ -360,7 +360,7 @@ export const SearchResultsController = ({
                 (type !== 'Sample' || SHOW_SAMPLES_TAB) &&
                 (type !== 'DataCollection' || SHOW_DATA_COLLECTIONS_TAB),
             )
-            .map(({ label, type }) => {
+            .map(({ label, accordionLabel, type }) => {
               const terms = facetData?.facets?.['@type']?.terms ?? [];
               const facet = terms.find(t => t.term === type);
               let count = facet?.count || 0;
@@ -375,7 +375,7 @@ export const SearchResultsController = ({
                 count = bioSampleTotal;
               }
 
-              return { label, type, count };
+              return { label, accordionLabel, type, count };
             });
 
           return {
@@ -498,11 +498,12 @@ export const SearchResultsController = ({
                         : section.count;
 
                     // For Dataset and ComputationalTool, render normal search results
+                    // Use accordionLabel if provided, otherwise fall back to label.
                     return (
                       <AccordionContent
                         key={section.type}
                         title={`${
-                          section.label
+                          section.accordionLabel ?? section.label
                         } (${sectionCount.toLocaleString()})`}
                       >
                         <SearchResults
