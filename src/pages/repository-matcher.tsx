@@ -64,7 +64,10 @@ const RepositoryMatcher: NextPage = () => {
     [],
   );
 
-  const { data, isLoading } = useRepositoryMatcherData(fields);
+  const { data, isLoading } = useRepositoryMatcherData([
+    ...fields,
+    'creativeWorkStatus',
+  ]);
 
   /****** Customize columns: visibility + order *****/
   // Read user-stored prefs synchronously on first client render so the table
