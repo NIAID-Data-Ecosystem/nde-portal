@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text } from '@chakra-ui/react';
+import { Flex, Text } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { Column } from 'src/components/table';
 import { FormattedResource, IncludedInDataCatalog } from 'src/utils/api/types';
@@ -252,17 +252,27 @@ export const ALL_SAMPLE_COLUMNS: SampleColumn[] = [
   },
 ];
 
+// Normalized shape stored on the row for each source entry.
+type CatalogEntry = { name: string; url: string | null };
+
 export const toRow = (resource: FormattedResource): Record<string, unknown> => {
   const rawCatalog = resource.includedInDataCatalog;
-  const catalog: IncludedInDataCatalog | null = Array.isArray(rawCatalog)
-    ? rawCatalog[0] ?? null
-    : rawCatalog ?? null;
+  // Normalize to an array regardless of whether the API returned a single
+  // object or an array.
+  const catalogs: IncludedInDataCatalog[] = Array.isArray(rawCatalog)
+    ? rawCatalog
+    : rawCatalog
+    ? [rawCatalog]
+    : [];
 
-  const archivedAt = catalog?.archivedAt;
-  const catalogUrl =
-    (Array.isArray(archivedAt) ? archivedAt[0] : archivedAt) ??
-    catalog?.url ??
-    null;
+  const catalogEntries: CatalogEntry[] = catalogs.map(catalog => {
+    const archivedAt = catalog?.archivedAt;
+    const url =
+      (Array.isArray(archivedAt) ? archivedAt[0] : archivedAt) ??
+      catalog?.url ??
+      null;
+    return { name: catalog.name ?? '', url };
+  });
 
   const rawIdentifier = (resource as any).identifier;
   const resolvedIdentifier = Array.isArray(rawIdentifier)
@@ -277,9 +287,9 @@ export const toRow = (resource: FormattedResource): Record<string, unknown> => {
       identifier: resolvedIdentifier,
       url: resource.url ?? '',
     },
-    includedInDataCatalog: catalog
-      ? { name: catalog.name ?? '', url: catalogUrl }
-      : null,
+    // Always store an array (or null when empty) so getCells can handle both
+    // single-source and multi-source records uniformly.
+    includedInDataCatalog: catalogEntries.length > 0 ? catalogEntries : null,
   };
 };
 
@@ -307,16 +317,25 @@ export const getCells = ({
     );
   }
 
-  // Source: { name, url } => link or plain text
+  // Source: Array<{ name, url }> => one link/text per catalog entry.
+  // Records with multiple sources render each on its own line.
   if (column.property === 'includedInDataCatalog') {
-    const cat = value as { name: string; url: string | null } | null;
-    if (!cat) return null;
-    return cat.url ? (
-      <Link href={cat.url} isExternal fontSize='sm'>
-        {cat.name || cat.url}
-      </Link>
-    ) : (
-      <Text fontSize='sm'>{cat.name}</Text>
+    const entries = value as CatalogEntry[] | null;
+    if (!entries || entries.length === 0) return null;
+    return (
+      <Flex flexDirection='column' gap={1}>
+        {entries.map((cat, idx) =>
+          cat.url ? (
+            <Link key={idx} href={cat.url} isExternal fontSize='sm'>
+              {cat.name || cat.url}
+            </Link>
+          ) : (
+            <Text key={idx} fontSize='sm'>
+              {cat.name}
+            </Text>
+          ),
+        )}
+      </Flex>
     );
   }
 
