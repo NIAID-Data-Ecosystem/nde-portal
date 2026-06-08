@@ -229,13 +229,13 @@ export async function getStaticProps() {
       },
     };
   } catch (err: any) {
-    console.error(`Failed to fetch metadata: ${err.message}`);
+    console.error(err.message);
     return {
       props: {
         error: {
           type: 'error',
           status: err.response?.status || 500,
-          message: err.response?.statusText || 'Unknown error',
+          message: err.message || 'Unknown error',
         },
       },
     };
