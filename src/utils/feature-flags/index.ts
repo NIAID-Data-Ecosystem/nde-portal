@@ -41,3 +41,30 @@ export const SHOW_CUSTOMIZABLE_FILTERS = !isProd;
 
 // Enable account creation and login features in non-production environments for testing/review. To enable in production, set this flag to `true`.
 export const ENABLE_AUTH = !isProd;
+
+/**
+ * Hide sample-related fields in the advanced search field dropdown in production
+ * builds until approved. To enable these fields in production, set this flag to `false`.
+ */
+export const SHOULD_HIDE_SAMPLE_FIELDS = isProd;
+
+/**
+ * The set of advanced-search field dotfields that are gated behind the
+ * SHOULD_HIDE_SAMPLE_FIELDS flag.
+ */
+export const HIDDEN_SAMPLE_FIELDS = new Set<string>([
+  'sample.aggregateElement.anatomicalStructure.name',
+  'sample.aggregateElement.associatedGenotype',
+  'sample.aggregateElement.associatedPhenotype.name',
+  'sample.aggregateElement.cellType.name',
+  'sample.aggregateElement.developmentalStage.name',
+  'sample.aggregateElement.sampleType.name',
+  'sample.aggregateElement.sex',
+  'sample.anatomicalStructure.name',
+  'sample.associatedGenotype',
+  'sample.associatedPhenotype.name',
+  'sample.cellType.name',
+  'sample.developmentalStage.name',
+  'sample.sampleType.name',
+  'sample.sex',
+]);
