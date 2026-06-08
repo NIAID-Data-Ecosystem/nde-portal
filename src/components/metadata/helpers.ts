@@ -928,6 +928,14 @@ const createVariableMeasuredContent = (
   };
 };
 
+export const getMetadataName = (property: string, accessor?: () => {}) => {
+  const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
+  const metadata = (
+    accessor ? Object.values(schema).find(accessor) : schema[property]
+  ) as SchemaDefinition | undefined;
+  return metadata?.name || property;
+};
+
 export const getMetadataDescription = (
   property: string,
   type?: APIResourceType,

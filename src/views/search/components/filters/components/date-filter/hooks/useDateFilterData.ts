@@ -32,7 +32,7 @@ export const useDateFilterData = (
   const resourcesWithNoDate = useMemo(() => {
     return (
       initialData?.filter(
-        (d: FilterTermType) => d.term === '-_exists_' && d.count > 0,
+        (d: FilterTermType) => d.term === '-_exists_' && (d.count ?? 0) > 0,
       ) || []
     );
   }, [initialData]);

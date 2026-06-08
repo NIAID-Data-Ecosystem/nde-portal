@@ -3,7 +3,7 @@
     "name": "@context",
     "dotfield": "@context",
     "property": "@context",
-    "count": 1592188,
+    "count": 1592031,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -19,7 +19,7 @@
     "name": "Type",
     "dotfield": "@type",
     "property": "@type",
-    "count": 4834476,
+    "count": 4868358,
     "type": "keyword",
     "enum": [
       "ResourceCatalog",
@@ -48,7 +48,7 @@
     "name": "_meta",
     "dotfield": "_meta",
     "property": "_meta",
-    "count": 4834476,
+    "count": 4868358,
     "type": "object",
     "isAdvancedSearchField": false
   },
@@ -56,7 +56,7 @@
     "name": "_meta Completeness",
     "dotfield": "_meta.completeness",
     "property": "completeness",
-    "count": 4834476,
+    "count": 4868358,
     "type": "object",
     "isAdvancedSearchField": false
   },
@@ -64,7 +64,7 @@
     "name": "_meta Completeness Augmented_recommended_ratio",
     "dotfield": "_meta.completeness.augmented_recommended_ratio",
     "property": "augmented_recommended_ratio",
-    "count": 4834476,
+    "count": 4868358,
     "type": "float",
     "isAdvancedSearchField": false
   },
@@ -72,7 +72,7 @@
     "name": "_meta Completeness Augmented_required_ratio",
     "dotfield": "_meta.completeness.augmented_required_ratio",
     "property": "augmented_required_ratio",
-    "count": 4834476,
+    "count": 4868358,
     "type": "float",
     "isAdvancedSearchField": false
   },
@@ -80,7 +80,7 @@
     "name": "_meta Completeness Recommended_max_score",
     "dotfield": "_meta.completeness.recommended_max_score",
     "property": "recommended_max_score",
-    "count": 4834476,
+    "count": 4868358,
     "type": "integer",
     "isAdvancedSearchField": false
   },
@@ -88,7 +88,7 @@
     "name": "_meta Completeness Recommended_score",
     "dotfield": "_meta.completeness.recommended_score",
     "property": "recommended_score",
-    "count": 4834476,
+    "count": 4868358,
     "type": "integer",
     "isAdvancedSearchField": false
   },
@@ -96,7 +96,7 @@
     "name": "_meta Completeness Recommended_score_ratio",
     "dotfield": "_meta.completeness.recommended_score_ratio",
     "property": "recommended_score_ratio",
-    "count": 4834476,
+    "count": 4868358,
     "type": "float",
     "isAdvancedSearchField": false
   },
@@ -104,7 +104,7 @@
     "name": "_meta Completeness Required_max_score",
     "dotfield": "_meta.completeness.required_max_score",
     "property": "required_max_score",
-    "count": 4834476,
+    "count": 4868358,
     "type": "integer",
     "isAdvancedSearchField": false
   },
@@ -112,7 +112,7 @@
     "name": "_meta Completeness Required_ratio",
     "dotfield": "_meta.completeness.required_ratio",
     "property": "required_ratio",
-    "count": 4834476,
+    "count": 4868358,
     "type": "float",
     "isAdvancedSearchField": false
   },
@@ -120,7 +120,7 @@
     "name": "_meta Completeness Required_score",
     "dotfield": "_meta.completeness.required_score",
     "property": "required_score",
-    "count": 4834476,
+    "count": 4868358,
     "type": "integer",
     "isAdvancedSearchField": false
   },
@@ -128,7 +128,7 @@
     "name": "_meta Completeness Total_max_score",
     "dotfield": "_meta.completeness.total_max_score",
     "property": "total_max_score",
-    "count": 4834476,
+    "count": 4868358,
     "type": "integer",
     "isAdvancedSearchField": false
   },
@@ -136,7 +136,7 @@
     "name": "_meta Completeness Total_recommended_augmented",
     "dotfield": "_meta.completeness.total_recommended_augmented",
     "property": "total_recommended_augmented",
-    "count": 4834476,
+    "count": 4868358,
     "type": "integer",
     "isAdvancedSearchField": false
   },
@@ -144,7 +144,7 @@
     "name": "_meta Completeness Total_required_augmented",
     "dotfield": "_meta.completeness.total_required_augmented",
     "property": "total_required_augmented",
-    "count": 4834476,
+    "count": 4868358,
     "type": "integer",
     "isAdvancedSearchField": false
   },
@@ -152,7 +152,7 @@
     "name": "_meta Completeness Total_score",
     "dotfield": "_meta.completeness.total_score",
     "property": "total_score",
-    "count": 4834476,
+    "count": 4868358,
     "type": "integer",
     "isAdvancedSearchField": false
   },
@@ -168,7 +168,7 @@
     "name": "_meta Lineage",
     "dotfield": "_meta.lineage",
     "property": "lineage",
-    "count": 2528653,
+    "count": 2530956,
     "type": "object",
     "isAdvancedSearchField": false
   },
@@ -176,7 +176,7 @@
     "name": "_meta Lineage Parent_taxon",
     "dotfield": "_meta.lineage.parent_taxon",
     "property": "parent_taxon",
-    "count": 2514386,
+    "count": 2516983,
     "type": "integer",
     "isAdvancedSearchField": false
   },
@@ -184,7 +184,7 @@
     "name": "_meta Lineage Taxon",
     "dotfield": "_meta.lineage.taxon",
     "property": "taxon",
-    "count": 2528653,
+    "count": 2530956,
     "type": "integer",
     "isAdvancedSearchField": false
   },
@@ -192,7 +192,7 @@
     "name": "_meta Recommended_augmented_fields",
     "dotfield": "_meta.recommended_augmented_fields",
     "property": "recommended_augmented_fields",
-    "count": 1726838,
+    "count": 1687190,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -200,7 +200,7 @@
     "name": "_meta Recommended_fields",
     "dotfield": "_meta.recommended_fields",
     "property": "recommended_fields",
-    "count": 4834225,
+    "count": 4868108,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -208,7 +208,7 @@
     "name": "_meta Required_augmented_fields",
     "dotfield": "_meta.required_augmented_fields",
     "property": "required_augmented_fields",
-    "count": 98637,
+    "count": 83336,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -216,7 +216,7 @@
     "name": "_meta Required_fields",
     "dotfield": "_meta.required_fields",
     "property": "required_fields",
-    "count": 4834476,
+    "count": 4868358,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -266,7 +266,7 @@
     "dotfield": "about.name",
     "property": "name",
     "count": 41,
-    "type": "text",
+    "type": "keyword",
     "schemaType": "string",
     "description": {
       "ResourceCatalog": "The name of the item.",
@@ -291,7 +291,7 @@
     "name": "Abstract",
     "dotfield": "abstract",
     "property": "abstract",
-    "count": 1497,
+    "count": 1536,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -468,7 +468,7 @@
     "name": "Alternate Name",
     "dotfield": "alternateName",
     "property": "alternateName",
-    "count": 14393,
+    "count": 14441,
     "type": "text",
     "description": {
       "ResourceCatalog": "An alias for the resource catalog name.",
@@ -702,6 +702,18 @@
     },
     "isAdvancedSearchField": false
   },
+  "associatedPhenotype.unitText": {
+    "name": "Associated Phenotype Unit Text",
+    "dotfield": "associatedPhenotype.unitText",
+    "property": "unitText",
+    "count": 0,
+    "type": "text",
+    "schemaType": "string",
+    "description": {
+      "Sample": "A unit associated with the value. E.g.- 'records' for the number of records in a database."
+    },
+    "isAdvancedSearchField": false
+  },
   "associatedPhenotype.url": {
     "name": "Associated Phenotype URL",
     "dotfield": "associatedPhenotype.url",
@@ -714,11 +726,23 @@
     },
     "isAdvancedSearchField": false
   },
+  "associatedPhenotype.value": {
+    "name": "Associated Phenotype Value",
+    "dotfield": "associatedPhenotype.value",
+    "property": "value",
+    "count": 0,
+    "type": "double",
+    "schemaType": "number",
+    "description": {
+      "Sample": "A numeric value for the property"
+    },
+    "isAdvancedSearchField": false
+  },
   "author": {
     "name": "Author",
     "dotfield": "author",
     "property": "author",
-    "count": 3699307,
+    "count": 3720356,
     "type": "object",
     "description": {
       "ResourceCatalog": "Author or creator of the work. The default field for the author or creator of the work.",
@@ -736,7 +760,7 @@
     "name": "Author Type",
     "dotfield": "author.@type",
     "property": "@type",
-    "count": 3699307,
+    "count": 608605,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -744,7 +768,7 @@
     "name": "Author Affiliation",
     "dotfield": "author.affiliation",
     "property": "affiliation",
-    "count": 491857,
+    "count": 504891,
     "type": "object",
     "schemaType": "object",
     "isAdvancedSearchField": false
@@ -753,7 +777,7 @@
     "name": "Author Affiliation Type",
     "dotfield": "author.affiliation.@type",
     "property": "@type",
-    "count": 139631,
+    "count": 100498,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -761,7 +785,7 @@
     "name": "Author Affiliation Name",
     "dotfield": "author.affiliation.name",
     "property": "name",
-    "count": 491857,
+    "count": 504891,
     "type": "keyword",
     "isAdvancedSearchField": true
   },
@@ -769,7 +793,7 @@
     "name": "Author Affiliation Same As",
     "dotfield": "author.affiliation.sameAs",
     "property": "sameAs",
-    "count": 64206,
+    "count": 25653,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -777,7 +801,7 @@
     "name": "Author Email",
     "dotfield": "author.email",
     "property": "email",
-    "count": 594514,
+    "count": 594505,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -793,7 +817,7 @@
     "name": "Author Family Name",
     "dotfield": "author.familyName",
     "property": "familyName",
-    "count": 311133,
+    "count": 272281,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -809,7 +833,7 @@
     "name": "Author Given Name",
     "dotfield": "author.givenName",
     "property": "givenName",
-    "count": 311484,
+    "count": 272650,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -825,7 +849,7 @@
     "name": "Author ORCID ID",
     "dotfield": "author.identifier",
     "property": "identifier",
-    "count": 225839,
+    "count": 224748,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -841,7 +865,7 @@
     "name": "Author Name",
     "dotfield": "author.name",
     "property": "name",
-    "count": 3676980,
+    "count": 3694777,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -889,7 +913,7 @@
     "name": "Author URL",
     "dotfield": "author.url",
     "property": "url",
-    "count": 11990,
+    "count": 11991,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -966,7 +990,7 @@
     "name": "Citation",
     "dotfield": "citation",
     "property": "citation",
-    "count": 512071,
+    "count": 484540,
     "type": "object",
     "description": {
       "ResourceCatalog": "The primary citation or reference about the resource catalog. Examples: a publication which describes the development of or improvements to the resource catalog. The original reference by the resource catalog developers/maintainers that should be cited when using the resource. For all other references to the resource catalog, use 'citedBy'.",
@@ -988,7 +1012,7 @@
     "name": "Citation Type",
     "dotfield": "citation.@type",
     "property": "@type",
-    "count": 512071,
+    "count": 166842,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -1012,7 +1036,7 @@
     "name": "Citation Author",
     "dotfield": "citation.author",
     "property": "author",
-    "count": 409937,
+    "count": 420000,
     "type": "object",
     "description": {
       "ResourceCatalog": "Author(s) of the referenced work",
@@ -1027,7 +1051,7 @@
     "name": "Citation Author Type",
     "dotfield": "citation.author.@type",
     "property": "@type",
-    "count": 404426,
+    "count": 414487,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -1067,7 +1091,7 @@
     "name": "Citation Author Name",
     "dotfield": "citation.author.name",
     "property": "name",
-    "count": 409937,
+    "count": 420000,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -1099,7 +1123,7 @@
     "name": "Citation Date Published",
     "dotfield": "citation.datePublished",
     "property": "datePublished",
-    "count": 386806,
+    "count": 396042,
     "type": "date",
     "schemaType": "string",
     "description": {
@@ -1131,7 +1155,7 @@
     "name": "Citation DOI",
     "dotfield": "citation.doi",
     "property": "doi",
-    "count": 42000,
+    "count": 45912,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -1154,7 +1178,7 @@
     "name": "Citation From PMID",
     "dotfield": "citation.fromPMID",
     "property": "fromPMID",
-    "count": 261609,
+    "count": 265064,
     "type": "boolean",
     "isAdvancedSearchField": false
   },
@@ -1162,7 +1186,7 @@
     "name": "Citation Identifier",
     "dotfield": "citation.identifier",
     "property": "identifier",
-    "count": 261617,
+    "count": 265074,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -1194,7 +1218,7 @@
     "name": "Citation Journal Name",
     "dotfield": "citation.journalName",
     "property": "journalName",
-    "count": 267181,
+    "count": 270636,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -1210,7 +1234,7 @@
     "name": "Citation Journal Name Abbrev",
     "dotfield": "citation.journalNameAbbrev",
     "property": "journalNameAbbrev",
-    "count": 142836,
+    "count": 149442,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -1226,7 +1250,7 @@
     "name": "Citation Title",
     "dotfield": "citation.name",
     "property": "name",
-    "count": 429782,
+    "count": 439847,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -1242,7 +1266,7 @@
     "name": "Citation Pagination",
     "dotfield": "citation.pagination",
     "property": "pagination",
-    "count": 100875,
+    "count": 105357,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -1258,7 +1282,7 @@
     "name": "Citation PMID",
     "dotfield": "citation.pmid",
     "property": "pmid",
-    "count": 268910,
+    "count": 275610,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -1281,7 +1305,7 @@
     "name": "Citation URL",
     "dotfield": "citation.url",
     "property": "url",
-    "count": 337326,
+    "count": 299501,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -1297,7 +1321,7 @@
     "name": "Citation Volume Number",
     "dotfield": "citation.volumeNumber",
     "property": "volumeNumber",
-    "count": 116416,
+    "count": 121744,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -1313,7 +1337,7 @@
     "name": "Cited By",
     "dotfield": "citedBy",
     "property": "citedBy",
-    "count": 33056,
+    "count": 33215,
     "type": "object",
     "description": {
       "ResourceCatalog": "Publications, datasets, or computational tools that cite the work. Examples: a publication which uses information or content of the resource catalog for secondary analysis, or a computational tool which relies on the content of the resource catalog. For the primary citation, use the 'citation' field.",
@@ -1328,7 +1352,7 @@
     "name": "Cited By Type",
     "dotfield": "citedBy.@type",
     "property": "@type",
-    "count": 33056,
+    "count": 15237,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -1471,7 +1495,7 @@
     "name": "Cited By DOI",
     "dotfield": "citedBy.doi",
     "property": "doi",
-    "count": 24356,
+    "count": 24386,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -1566,7 +1590,7 @@
     "name": "Cited By Name",
     "dotfield": "citedBy.name",
     "property": "name",
-    "count": 18319,
+    "count": 18349,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -1598,7 +1622,7 @@
     "name": "Cited By PMID",
     "dotfield": "citedBy.pmid",
     "property": "pmid",
-    "count": 20720,
+    "count": 20750,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -1621,7 +1645,7 @@
     "name": "Cited By URL",
     "dotfield": "citedBy.url",
     "property": "url",
-    "count": 9338,
+    "count": 9525,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -1725,7 +1749,7 @@
     "dotfield": "collectionSize.unitText",
     "property": "unitText",
     "count": 41,
-    "type": "text",
+    "type": "keyword",
     "schemaType": "string",
     "description": {
       "ResourceCatalog": "A unit associated with the value. E.g.- 'records' for the number of records in a database.",
@@ -1836,7 +1860,7 @@
     "name": "Conditions Of Access",
     "dotfield": "conditionsOfAccess",
     "property": "conditionsOfAccess",
-    "count": 264852,
+    "count": 279868,
     "type": "keyword",
     "schemaType": "string",
     "enum": [
@@ -1904,7 +1928,7 @@
     "name": "Contributor Type",
     "dotfield": "contributor.@type",
     "property": "@type",
-    "count": 2475,
+    "count": 479,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -1969,11 +1993,34 @@
     },
     "isAdvancedSearchField": true
   },
+  "creativeWorkStatus": {
+    "name": "Creative Work Status",
+    "dotfield": "creativeWorkStatus",
+    "property": "creativeWorkStatus",
+    "count": 4343,
+    "type": "keyword",
+    "schemaType": "string",
+    "enum": [
+      "Draft",
+      "Active",
+      "Maintenance",
+      "Accepting Data",
+      "Not Accepting Data",
+      "Retired"
+    ],
+    "description": {
+      "ResourceCatalog": "The status of the ResourceCatalog. Expected to be one of the following values: Draft (The resources is under development), Active (The resource is currently working and available), Maintenance (The resource is temporarily unavailable for maintenance), Accepting Data (The resource is Active AND Accepting submissions), Not Accepting Data (The resource is Active but is NOT Accepting submissions), Retired (The resource is no longer available).",
+      "Sample": "The status of the Sample. Expected to be one of the following values: Bespoke (The sample is made-to-order), Available (The sample is currently available), Backordered (The sample is temporarily unavailable or out-of-stock), Retired (The sample is no longer available).",
+      "Dataset": "The status of the Dataset. Expected to be one of the following values: Draft (The dataset is not yet ready), Active (The dataset is currently working and available), Retired (The dataset is no longer available).",
+      "ComputationalTool": "The status of the ComputationalTool. Expected to be one of the following values: Draft (The tool is under development), Active (The tool is currently working and available), Maintenance (The tool is temporarily unavailable for maintenance), Accepting Data (The tool is Active AND Accepting submissions), Not Accepting Data (The tool is Active but is NOT Accepting submissions), Retired (The tool is no longer being maintained)."
+    },
+    "isAdvancedSearchField": false
+  },
   "creator": {
     "name": "Creator",
     "dotfield": "creator",
     "property": "creator",
-    "count": 5910,
+    "count": 5951,
     "type": "object",
     "description": {
       "ResourceCatalog": "The creator/author of this work; equivalent to author. Please use author by default. Use creator if author/creator in a record of this work submitted elsewhere differs from the author/creator entered into the author field.",
@@ -1990,7 +2037,7 @@
     "name": "Creator Type",
     "dotfield": "creator.@type",
     "property": "@type",
-    "count": 5910,
+    "count": 5951,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -1998,7 +2045,7 @@
     "name": "Creator Affiliation",
     "dotfield": "creator.affiliation",
     "property": "affiliation",
-    "count": 5908,
+    "count": 5949,
     "type": "object",
     "schemaType": "object",
     "isAdvancedSearchField": false
@@ -2007,7 +2054,7 @@
     "name": "Creator Affiliation Type",
     "dotfield": "creator.affiliation.@type",
     "property": "@type",
-    "count": 5908,
+    "count": 5949,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -2015,7 +2062,7 @@
     "name": "Creator Affiliation Name",
     "dotfield": "creator.affiliation.name",
     "property": "name",
-    "count": 5908,
+    "count": 5949,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -2091,7 +2138,7 @@
     "name": "Creator Name",
     "dotfield": "creator.name",
     "property": "name",
-    "count": 5910,
+    "count": 5951,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -2106,7 +2153,7 @@
     "name": "Creator Role",
     "dotfield": "creator.role",
     "property": "role",
-    "count": 5848,
+    "count": 5889,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -2121,7 +2168,7 @@
     "name": "Creator Title",
     "dotfield": "creator.title",
     "property": "title",
-    "count": 158,
+    "count": 160,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -2151,7 +2198,7 @@
     "name": "Credit Text",
     "dotfield": "creditText",
     "property": "creditText",
-    "count": 3853,
+    "count": 3855,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -2167,7 +2214,7 @@
     "name": "Curated By",
     "dotfield": "curatedBy",
     "property": "curatedBy",
-    "count": 509968,
+    "count": 559414,
     "type": "object",
     "isAdvancedSearchField": false
   },
@@ -2175,7 +2222,7 @@
     "name": "Curated By Type",
     "dotfield": "curatedBy.@type",
     "property": "@type",
-    "count": 509968,
+    "count": 559414,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -2183,7 +2230,7 @@
     "name": "Curated By Name",
     "dotfield": "curatedBy.name",
     "property": "name",
-    "count": 509968,
+    "count": 559414,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -2191,7 +2238,7 @@
     "name": "Curated By URL",
     "dotfield": "curatedBy.url",
     "property": "url",
-    "count": 509968,
+    "count": 559414,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -2199,7 +2246,7 @@
     "name": "Curated By Version Date",
     "dotfield": "curatedBy.versionDate",
     "property": "versionDate",
-    "count": 509968,
+    "count": 559414,
     "type": "date",
     "isAdvancedSearchField": false
   },
@@ -2207,7 +2254,7 @@
     "name": "Date",
     "dotfield": "date",
     "property": "date",
-    "count": 4631813,
+    "count": 4652258,
     "type": "date",
     "schemaType": "string",
     "description": {
@@ -2242,7 +2289,7 @@
     "name": "Date Created",
     "dotfield": "dateCreated",
     "property": "dateCreated",
-    "count": 483435,
+    "count": 486264,
     "type": "date",
     "schemaType": "string",
     "description": {
@@ -2258,7 +2305,7 @@
     "name": "Date Modified",
     "dotfield": "dateModified",
     "property": "dateModified",
-    "count": 3618278,
+    "count": 3722865,
     "type": "date",
     "schemaType": "string",
     "description": {
@@ -2286,7 +2333,7 @@
     "name": "Date Published",
     "dotfield": "datePublished",
     "property": "datePublished",
-    "count": 4587407,
+    "count": 4607816,
     "type": "date",
     "schemaType": "string",
     "description": {
@@ -2302,7 +2349,7 @@
     "name": "Description",
     "dotfield": "description",
     "property": "description",
-    "count": 4725899,
+    "count": 4759511,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -2420,7 +2467,7 @@
     "name": "File",
     "dotfield": "distribution",
     "property": "distribution",
-    "count": 1094029,
+    "count": 1107192,
     "type": "object",
     "description": {
       "ResourceCatalog": "A downloadable form of the resource catalog, at a specific location, in a specific format.",
@@ -2446,7 +2493,7 @@
     "name": "File Type",
     "dotfield": "distribution.@type",
     "property": "@type",
-    "count": 1094029,
+    "count": 663197,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -2454,7 +2501,7 @@
     "name": "File Content Size",
     "dotfield": "distribution.contentSize",
     "property": "contentSize",
-    "count": 12869,
+    "count": 12870,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -2462,7 +2509,7 @@
     "name": "File Content Url",
     "dotfield": "distribution.contentUrl",
     "property": "contentUrl",
-    "count": 1073510,
+    "count": 1086685,
     "type": "text",
     "schemaType": "string",
     "isAdvancedSearchField": false
@@ -2479,7 +2526,7 @@
     "name": "File Date Modified",
     "dotfield": "distribution.dateModified",
     "property": "dateModified",
-    "count": 511536,
+    "count": 560946,
     "type": "date",
     "schemaType": "string",
     "description": {
@@ -2501,7 +2548,7 @@
     "name": "File Description",
     "dotfield": "distribution.description",
     "property": "description",
-    "count": 67172,
+    "count": 67173,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -2509,7 +2556,7 @@
     "name": "File Encoding Format",
     "dotfield": "distribution.encodingFormat",
     "property": "encodingFormat",
-    "count": 449310,
+    "count": 412780,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -2519,11 +2566,19 @@
     },
     "isAdvancedSearchField": true
   },
+  "distribution.identifier": {
+    "name": "File Identifier",
+    "dotfield": "distribution.identifier",
+    "property": "identifier",
+    "count": 25,
+    "type": "keyword",
+    "isAdvancedSearchField": false
+  },
   "distribution.name": {
     "name": "File Name",
     "dotfield": "distribution.name",
     "property": "name",
-    "count": 115443,
+    "count": 122348,
     "type": "keyword",
     "isAdvancedSearchField": true
   },
@@ -2531,7 +2586,7 @@
     "name": "DOI",
     "dotfield": "doi",
     "property": "doi",
-    "count": 2672241,
+    "count": 2683172,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -2570,9 +2625,33 @@
     "dotfield": "environmentalSystem",
     "property": "environmentalSystem",
     "count": 0,
-    "type": "text",
+    "type": "object",
     "description": {
       "Sample": "A category or description of the habitat that describes elements of an ecosystem where the sample was collected. Where possible use controlled vocabulary such as ENVO."
+    },
+    "isAdvancedSearchField": false
+  },
+  "environmentalSystem.identifier": {
+    "name": "Environmental System Identifier",
+    "dotfield": "environmentalSystem.identifier",
+    "property": "identifier",
+    "count": 0,
+    "type": "text",
+    "schemaType": "string",
+    "description": {
+      "Sample": "The identifier property represents any kind of identifier for any kind of Thing, such as ISBNs, GTIN codes, UUIDs etc. Schema.org provides dedicated properties for representing many of these, either as textual strings or as URL (URI) links. See background notes for more details."
+    },
+    "isAdvancedSearchField": false
+  },
+  "environmentalSystem.name": {
+    "name": "Environmental System Name",
+    "dotfield": "environmentalSystem.name",
+    "property": "name",
+    "count": 0,
+    "type": "text",
+    "schemaType": "string",
+    "description": {
+      "Sample": "The name of the item."
     },
     "isAdvancedSearchField": false
   },
@@ -2983,7 +3062,7 @@
     "name": "Funding",
     "dotfield": "funding",
     "property": "funding",
-    "count": 583131,
+    "count": 578424,
     "type": "object",
     "description": {
       "ResourceCatalog": "Funding that supports (sponsors) the creation or maintenance of the resource catalog through some kind of financial contribution.",
@@ -3005,7 +3084,7 @@
     "name": "Funding Type",
     "dotfield": "funding.@type",
     "property": "@type",
-    "count": 583131,
+    "count": 143353,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -3013,7 +3092,7 @@
     "name": "Funding End Date",
     "dotfield": "funding.endDate",
     "property": "endDate",
-    "count": 157412,
+    "count": 163899,
     "type": "date",
     "isAdvancedSearchField": false
   },
@@ -3021,7 +3100,7 @@
     "name": "Funding Funder",
     "dotfield": "funding.funder",
     "property": "funder",
-    "count": 581404,
+    "count": 577929,
     "type": "object",
     "description": {
       "ResourceCatalog": "An organization associated with a creator or funder of a resource catalog",
@@ -3036,7 +3115,7 @@
     "name": "Funding Funder Type",
     "dotfield": "funding.funder.@type",
     "property": "@type",
-    "count": 581404,
+    "count": 241521,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -3044,7 +3123,7 @@
     "name": "Funding Funder Alternate Name",
     "dotfield": "funding.funder.alternateName",
     "property": "alternateName",
-    "count": 255902,
+    "count": 262237,
     "type": "keyword",
     "isAdvancedSearchField": true
   },
@@ -3068,7 +3147,7 @@
     "name": "Funding Funder Employee",
     "dotfield": "funding.funder.employee",
     "property": "employee",
-    "count": 66185,
+    "count": 85787,
     "type": "object",
     "isAdvancedSearchField": false
   },
@@ -3076,7 +3155,7 @@
     "name": "Funding Funder Employee Family Name",
     "dotfield": "funding.funder.employee.familyName",
     "property": "familyName",
-    "count": 66185,
+    "count": 85787,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -3084,7 +3163,7 @@
     "name": "Funding Funder Employee Given Name",
     "dotfield": "funding.funder.employee.givenName",
     "property": "givenName",
-    "count": 66185,
+    "count": 85787,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -3092,7 +3171,7 @@
     "name": "Funding Funder Employee Name",
     "dotfield": "funding.funder.employee.name",
     "property": "name",
-    "count": 66185,
+    "count": 85787,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -3100,7 +3179,7 @@
     "name": "Funding Funder Identifier",
     "dotfield": "funding.funder.identifier",
     "property": "identifier",
-    "count": 260139,
+    "count": 264211,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -3108,7 +3187,7 @@
     "name": "Funding Funder Name",
     "dotfield": "funding.funder.name",
     "property": "name",
-    "count": 581397,
+    "count": 577929,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -3124,7 +3203,7 @@
     "name": "Funding Funder Parent Organization",
     "dotfield": "funding.funder.parentOrganization",
     "property": "parentOrganization",
-    "count": 174649,
+    "count": 180426,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -3148,7 +3227,7 @@
     "name": "Funding Funder URL",
     "dotfield": "funding.funder.url",
     "property": "url",
-    "count": 214,
+    "count": 230,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -3156,7 +3235,7 @@
     "name": "Funding Identifier",
     "dotfield": "funding.identifier",
     "property": "identifier",
-    "count": 360685,
+    "count": 357946,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -3188,7 +3267,7 @@
     "name": "Funding Name",
     "dotfield": "funding.name",
     "property": "name",
-    "count": 238326,
+    "count": 247734,
     "type": "keyword",
     "isAdvancedSearchField": true
   },
@@ -3196,7 +3275,7 @@
     "name": "Funding Project Num Split",
     "dotfield": "funding.projectNumSplit",
     "property": "projectNumSplit",
-    "count": 138630,
+    "count": 138953,
     "type": "object",
     "isAdvancedSearchField": false
   },
@@ -3204,7 +3283,7 @@
     "name": "Funding Project Num Split Activity Code",
     "dotfield": "funding.projectNumSplit.activityCode",
     "property": "activityCode",
-    "count": 138630,
+    "count": 138953,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -3212,7 +3291,7 @@
     "name": "Funding Project Num Split Appl Type Code",
     "dotfield": "funding.projectNumSplit.applTypeCode",
     "property": "applTypeCode",
-    "count": 138630,
+    "count": 138953,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -3220,7 +3299,7 @@
     "name": "Funding Project Num Split Full Support Year",
     "dotfield": "funding.projectNumSplit.fullSupportYear",
     "property": "fullSupportYear",
-    "count": 138630,
+    "count": 138953,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -3228,7 +3307,7 @@
     "name": "Funding Project Num Split Ic Code",
     "dotfield": "funding.projectNumSplit.icCode",
     "property": "icCode",
-    "count": 138630,
+    "count": 138953,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -3236,7 +3315,7 @@
     "name": "Funding Project Num Split Serial Num",
     "dotfield": "funding.projectNumSplit.serialNum",
     "property": "serialNum",
-    "count": 138630,
+    "count": 138953,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -3244,7 +3323,7 @@
     "name": "Funding Project Num Split Suffix Code",
     "dotfield": "funding.projectNumSplit.suffixCode",
     "property": "suffixCode",
-    "count": 138630,
+    "count": 138953,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -3252,7 +3331,7 @@
     "name": "Funding Project Num Split Support Year",
     "dotfield": "funding.projectNumSplit.supportYear",
     "property": "supportYear",
-    "count": 138630,
+    "count": 138953,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -3260,7 +3339,7 @@
     "name": "Funding Start Date",
     "dotfield": "funding.startDate",
     "property": "startDate",
-    "count": 157683,
+    "count": 164280,
     "type": "date",
     "isAdvancedSearchField": false
   },
@@ -3268,7 +3347,7 @@
     "name": "Funding URL",
     "dotfield": "funding.url",
     "property": "url",
-    "count": 187648,
+    "count": 183742,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -3344,7 +3423,7 @@
     "name": "Has Part",
     "dotfield": "hasPart",
     "property": "hasPart",
-    "count": 54332,
+    "count": 18860,
     "type": "object",
     "description": {
       "ResourceCatalog": "Associated materials for the resource catalog, including data dictionaries and data limitation descriptions",
@@ -3373,7 +3452,7 @@
     "name": "Has Part Type",
     "dotfield": "hasPart.@type",
     "property": "@type",
-    "count": 54332,
+    "count": 112,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -3545,7 +3624,7 @@
     "name": "Has Part Name",
     "dotfield": "hasPart.name",
     "property": "name",
-    "count": 54262,
+    "count": 18790,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -3600,7 +3679,7 @@
     "name": "Health Condition",
     "dotfield": "healthCondition",
     "property": "healthCondition",
-    "count": 678935,
+    "count": 676130,
     "type": "object",
     "description": {
       "ResourceCatalog": "The health condition(s) /infectious disease(s) which are the focus of the work (like COVID-19, coronavirus).",
@@ -3622,7 +3701,7 @@
     "name": "Health Condition Type",
     "dotfield": "healthCondition.@type",
     "property": "@type",
-    "count": 678935,
+    "count": 4369,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -3630,7 +3709,7 @@
     "name": "Health Condition Alternate Name",
     "dotfield": "healthCondition.alternateName",
     "property": "alternateName",
-    "count": 637961,
+    "count": 634952,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -3638,7 +3717,7 @@
     "name": "Health Condition Curated By",
     "dotfield": "healthCondition.curatedBy",
     "property": "curatedBy",
-    "count": 540020,
+    "count": 537279,
     "type": "object",
     "description": {
       "ResourceCatalog": "The person, organization, or catalog that curated this DefinedTerm for the metadata property",
@@ -3653,7 +3732,7 @@
     "name": "Health Condition Curated By Date Modified",
     "dotfield": "healthCondition.curatedBy.dateModified",
     "property": "dateModified",
-    "count": 538791,
+    "count": 536034,
     "type": "date",
     "schemaType": "string",
     "description": {
@@ -3669,7 +3748,7 @@
     "name": "Health Condition Curated By Name",
     "dotfield": "healthCondition.curatedBy.name",
     "property": "name",
-    "count": 540020,
+    "count": 537279,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -3685,7 +3764,7 @@
     "name": "Health Condition Curated By URL",
     "dotfield": "healthCondition.curatedBy.url",
     "property": "url",
-    "count": 540020,
+    "count": 537279,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -3701,7 +3780,7 @@
     "name": "Health Condition From EXTRACT",
     "dotfield": "healthCondition.fromEXTRACT",
     "property": "fromEXTRACT",
-    "count": 535892,
+    "count": 534370,
     "type": "boolean",
     "isAdvancedSearchField": true
   },
@@ -3709,7 +3788,7 @@
     "name": "Health Condition From PMID",
     "dotfield": "healthCondition.fromPMID",
     "property": "fromPMID",
-    "count": 110004,
+    "count": 110061,
     "type": "boolean",
     "isAdvancedSearchField": false
   },
@@ -3717,7 +3796,7 @@
     "name": "Health Condition Identifier",
     "dotfield": "healthCondition.identifier",
     "property": "identifier",
-    "count": 667319,
+    "count": 664325,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -3733,7 +3812,7 @@
     "name": "Health Condition In Defined Term Set",
     "dotfield": "healthCondition.inDefinedTermSet",
     "property": "inDefinedTermSet",
-    "count": 667544,
+    "count": 664546,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -3749,7 +3828,7 @@
     "name": "Health Condition Is Curated",
     "dotfield": "healthCondition.isCurated",
     "property": "isCurated",
-    "count": 667323,
+    "count": 664329,
     "type": "boolean",
     "schemaType": "boolean",
     "description": {
@@ -3765,7 +3844,7 @@
     "name": "Health Condition Name",
     "dotfield": "healthCondition.name",
     "property": "name",
-    "count": 678935,
+    "count": 676130,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -3781,7 +3860,7 @@
     "name": "Health Condition Original Name",
     "dotfield": "healthCondition.originalName",
     "property": "originalName",
-    "count": 560484,
+    "count": 557347,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -3797,7 +3876,7 @@
     "name": "Health Condition URL",
     "dotfield": "healthCondition.url",
     "property": "url",
-    "count": 667324,
+    "count": 664330,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -3813,7 +3892,7 @@
     "name": "Ibm Granite Embedding",
     "dotfield": "ibmGraniteEmbedding",
     "property": "ibmGraniteEmbedding",
-    "count": 4834476,
+    "count": 4868358,
     "type": "dense_vector",
     "isAdvancedSearchField": false
   },
@@ -3821,7 +3900,7 @@
     "name": "Identifier",
     "dotfield": "identifier",
     "property": "identifier",
-    "count": 4153784,
+    "count": 4184917,
     "type": "text",
     "description": {
       "ResourceCatalog": "Resource catalog identifier or accession number, such as a digital object identifier (DOI),  etc.",
@@ -3842,7 +3921,7 @@
     "name": "In Language",
     "dotfield": "inLanguage",
     "property": "inLanguage",
-    "count": 61649,
+    "count": 61650,
     "type": "object",
     "description": {
       "ResourceCatalog": "The language of the content of the resource catalog.",
@@ -3872,7 +3951,7 @@
     "name": "In Language Name",
     "dotfield": "inLanguage.name",
     "property": "name",
-    "count": 61649,
+    "count": 61650,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -3886,7 +3965,7 @@
     "name": "Source",
     "dotfield": "includedInDataCatalog",
     "property": "includedInDataCatalog",
-    "count": 4834476,
+    "count": 4868358,
     "type": "object",
     "schemaType": "object",
     "description": {
@@ -3909,7 +3988,7 @@
     "name": "Source Type",
     "dotfield": "includedInDataCatalog.@type",
     "property": "@type",
-    "count": 4834476,
+    "count": 4868346,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -3917,7 +3996,7 @@
     "name": "Source Archived At",
     "dotfield": "includedInDataCatalog.archivedAt",
     "property": "archivedAt",
-    "count": 4834476,
+    "count": 4868358,
     "type": "text",
     "description": {
       "ResourceCatalog": "The url(s) of one or more datasets, tools, resources or other items listed in a DataCatalog or ResourceCatalog",
@@ -3931,7 +4010,7 @@
     "name": "Source Name",
     "dotfield": "includedInDataCatalog.name",
     "property": "name",
-    "count": 4834476,
+    "count": 4868358,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -3946,7 +4025,7 @@
     "name": "Source URL",
     "dotfield": "includedInDataCatalog.url",
     "property": "url",
-    "count": 4834464,
+    "count": 4868346,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -3961,7 +4040,7 @@
     "name": "Source Version Date",
     "dotfield": "includedInDataCatalog.versionDate",
     "property": "versionDate",
-    "count": 4834464,
+    "count": 4868346,
     "type": "date",
     "schemaType": "string",
     "description": {
@@ -3976,7 +4055,7 @@
     "name": "Pathogen Species",
     "dotfield": "infectiousAgent",
     "property": "infectiousAgent",
-    "count": 794310,
+    "count": 810970,
     "type": "object",
     "description": {
       "ResourceCatalog": "Infectious agent(s) / pathogen(s) which are the focus of the work (like SARS-CoV-2).",
@@ -3998,7 +4077,7 @@
     "name": "Pathogen Species Type",
     "dotfield": "infectiousAgent.@type",
     "property": "@type",
-    "count": 794310,
+    "count": 66528,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -4006,7 +4085,7 @@
     "name": "Pathogen Species Alternate Name",
     "dotfield": "infectiousAgent.alternateName",
     "property": "alternateName",
-    "count": 612803,
+    "count": 625405,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -4014,7 +4093,7 @@
     "name": "Pathogen Species Common Name",
     "dotfield": "infectiousAgent.commonName",
     "property": "commonName",
-    "count": 87414,
+    "count": 90552,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -4022,7 +4101,7 @@
     "name": "Pathogen Species Curated By",
     "dotfield": "infectiousAgent.curatedBy",
     "property": "curatedBy",
-    "count": 564482,
+    "count": 581023,
     "type": "object",
     "description": {
       "ResourceCatalog": "The person, organization, or catalog that curated this DefinedTerm for the metadata property",
@@ -4037,7 +4116,7 @@
     "name": "Pathogen Species Curated By Date Modified",
     "dotfield": "infectiousAgent.curatedBy.dateModified",
     "property": "dateModified",
-    "count": 564482,
+    "count": 581023,
     "type": "date",
     "schemaType": "string",
     "description": {
@@ -4053,7 +4132,7 @@
     "name": "Pathogen Species Curated By Name",
     "dotfield": "infectiousAgent.curatedBy.name",
     "property": "name",
-    "count": 564482,
+    "count": 581023,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -4069,7 +4148,7 @@
     "name": "Pathogen Species Curated By URL",
     "dotfield": "infectiousAgent.curatedBy.url",
     "property": "url",
-    "count": 564482,
+    "count": 581023,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -4085,7 +4164,7 @@
     "name": "Pathogen Species Display Name",
     "dotfield": "infectiousAgent.displayName",
     "property": "displayName",
-    "count": 793711,
+    "count": 810376,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -4093,7 +4172,7 @@
     "name": "Pathogen Species From EXTRACT",
     "dotfield": "infectiousAgent.fromEXTRACT",
     "property": "fromEXTRACT",
-    "count": 1712,
+    "count": 2216,
     "type": "boolean",
     "isAdvancedSearchField": true
   },
@@ -4101,7 +4180,7 @@
     "name": "Pathogen Species From PMID",
     "dotfield": "infectiousAgent.fromPMID",
     "property": "fromPMID",
-    "count": 9764,
+    "count": 9669,
     "type": "boolean",
     "isAdvancedSearchField": false
   },
@@ -4109,7 +4188,7 @@
     "name": "Pathogen Species Identifier",
     "dotfield": "infectiousAgent.identifier",
     "property": "identifier",
-    "count": 793713,
+    "count": 810378,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -4125,7 +4204,7 @@
     "name": "Pathogen Species In Defined Term Set",
     "dotfield": "infectiousAgent.inDefinedTermSet",
     "property": "inDefinedTermSet",
-    "count": 794310,
+    "count": 810970,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -4141,7 +4220,7 @@
     "name": "Pathogen Species Is Curated",
     "dotfield": "infectiousAgent.isCurated",
     "property": "isCurated",
-    "count": 794310,
+    "count": 810970,
     "type": "boolean",
     "schemaType": "boolean",
     "description": {
@@ -4157,7 +4236,7 @@
     "name": "Pathogen Species Name",
     "dotfield": "infectiousAgent.name",
     "property": "name",
-    "count": 794310,
+    "count": 810970,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -4173,7 +4252,7 @@
     "name": "Pathogen Species Original Name",
     "dotfield": "infectiousAgent.originalName",
     "property": "originalName",
-    "count": 786222,
+    "count": 803015,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -4189,7 +4268,7 @@
     "name": "Pathogen Species URL",
     "dotfield": "infectiousAgent.url",
     "property": "url",
-    "count": 794310,
+    "count": 810970,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -4393,7 +4472,7 @@
     "name": "Is Accessible For Free",
     "dotfield": "isAccessibleForFree",
     "property": "isAccessibleForFree",
-    "count": 100263,
+    "count": 60006,
     "type": "boolean",
     "schemaType": "boolean",
     "description": {
@@ -4416,7 +4495,7 @@
     "name": "Is Based On",
     "dotfield": "isBasedOn",
     "property": "isBasedOn",
-    "count": 674821,
+    "count": 675482,
     "type": "object",
     "description": {
       "ResourceCatalog": "A dataset, publication, or computational tool from which this work is derived, modified, or adapted.",
@@ -4438,7 +4517,7 @@
     "name": "Is Based On Type",
     "dotfield": "isBasedOn.@type",
     "property": "@type",
-    "count": 674821,
+    "count": 636,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -4492,7 +4571,7 @@
     "name": "Is Based On Additional Type",
     "dotfield": "isBasedOn.additionalType",
     "property": "additionalType",
-    "count": 672316,
+    "count": 672355,
     "type": "object",
     "description": {
       "ComputationalTool": "Additional type of the referenced work, such as a Sample, Run, Experiment, or BioProject"
@@ -4503,7 +4582,7 @@
     "name": "Is Based On Additional Type Name",
     "dotfield": "isBasedOn.additionalType.name",
     "property": "name",
-    "count": 672316,
+    "count": 672355,
     "type": "keyword",
     "schemaType": "string",
     "isAdvancedSearchField": true
@@ -4624,7 +4703,7 @@
     "name": "Is Based On Description",
     "dotfield": "isBasedOn.description",
     "property": "description",
-    "count": 327662,
+    "count": 327698,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -4671,7 +4750,7 @@
     "name": "Is Based On Identifier",
     "dotfield": "isBasedOn.identifier",
     "property": "identifier",
-    "count": 660277,
+    "count": 660939,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -4703,7 +4782,7 @@
     "name": "Is Based On Name",
     "dotfield": "isBasedOn.name",
     "property": "name",
-    "count": 662392,
+    "count": 662431,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -4742,7 +4821,7 @@
     "name": "Is Based On URL",
     "dotfield": "isBasedOn.url",
     "property": "url",
-    "count": 674642,
+    "count": 674681,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -4773,7 +4852,7 @@
     "name": "Is Basis For Type",
     "dotfield": "isBasisFor.@type",
     "property": "@type",
-    "count": 199,
+    "count": 198,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -4971,7 +5050,7 @@
     "name": "Is Part Of",
     "dotfield": "isPartOf",
     "property": "isPartOf",
-    "count": 12720,
+    "count": 12721,
     "type": "object",
     "description": {
       "ResourceCatalog": "Indicates a broader study, project, or collection the work is part of.",
@@ -5001,7 +5080,7 @@
     "name": "Is Part Of Type",
     "dotfield": "isPartOf.@type",
     "property": "@type",
-    "count": 12720,
+    "count": 81,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -5144,7 +5223,7 @@
     "name": "Is Part Of Name",
     "dotfield": "isPartOf.name",
     "property": "name",
-    "count": 12599,
+    "count": 12600,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -5183,7 +5262,7 @@
     "name": "Is Part Of URL",
     "dotfield": "isPartOf.url",
     "property": "url",
-    "count": 12594,
+    "count": 12595,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -5199,7 +5278,7 @@
     "name": "Is Related To",
     "dotfield": "isRelatedTo",
     "property": "isRelatedTo",
-    "count": 62937,
+    "count": 63559,
     "type": "object",
     "description": {
       "ResourceCatalog": "Resources which are related to the given resource catalog. These linkages are created via human curation.",
@@ -5300,7 +5379,7 @@
     "name": "Is Related To Identifier",
     "dotfield": "isRelatedTo.identifier",
     "property": "identifier",
-    "count": 50170,
+    "count": 50792,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -5647,7 +5726,7 @@
     "name": "Keywords",
     "dotfield": "keywords",
     "property": "keywords",
-    "count": 3534454,
+    "count": 3571017,
     "type": "keyword",
     "description": {
       "ResourceCatalog": "Keywords or tags used to describe this work.",
@@ -5669,7 +5748,7 @@
     "name": "License",
     "dotfield": "license",
     "property": "license",
-    "count": 2653573,
+    "count": 2712225,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -5739,6 +5818,14 @@
     "type": "text",
     "isAdvancedSearchField": false
   },
+  "locationOfOrigin.geo.elevation": {
+    "name": "Location Of Origin Geo Elevation",
+    "dotfield": "locationOfOrigin.geo.elevation",
+    "property": "elevation",
+    "count": 0,
+    "type": "text",
+    "isAdvancedSearchField": false
+  },
   "locationOfOrigin.geo.latitude": {
     "name": "Location Of Origin Geo Latitude",
     "dotfield": "locationOfOrigin.geo.latitude",
@@ -5783,7 +5870,7 @@
     "name": "Main Entity Of Page",
     "dotfield": "mainEntityOfPage",
     "property": "mainEntityOfPage",
-    "count": 42879,
+    "count": 42881,
     "type": "text",
     "description": {
       "ResourceCatalog": "Website which describes the work and provides additional details.",
@@ -5856,7 +5943,7 @@
     "name": "Measurement Technique",
     "dotfield": "measurementTechnique",
     "property": "measurementTechnique",
-    "count": 2197158,
+    "count": 2230387,
     "type": "object",
     "description": {
       "ResourceCatalog": "A technique or technology used in a  dataset corresponding to the method used for measuring the corresponding variable(s) (described using variableMeasured). For example, if variableMeasured is molecule concentration, measurementTechnique could be: \"mass spectrometry\" or \"nmr spectroscopy\" or \"colorimetry\" or \"immunofluorescence\".",
@@ -5877,7 +5964,7 @@
     "name": "Measurement Technique Type",
     "dotfield": "measurementTechnique.@type",
     "property": "@type",
-    "count": 2197158,
+    "count": 2214713,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -5885,7 +5972,7 @@
     "name": "Measurement Technique Description",
     "dotfield": "measurementTechnique.description",
     "property": "description",
-    "count": 1542,
+    "count": 0,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -5900,7 +5987,7 @@
     "name": "Measurement Technique Identifier",
     "dotfield": "measurementTechnique.identifier",
     "property": "identifier",
-    "count": 667816,
+    "count": 2052076,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -5915,7 +6002,7 @@
     "name": "Measurement Technique In Defined Term Set",
     "dotfield": "measurementTechnique.inDefinedTermSet",
     "property": "inDefinedTermSet",
-    "count": 812188,
+    "count": 2216691,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -5930,7 +6017,7 @@
     "name": "Measurement Technique Name",
     "dotfield": "measurementTechnique.name",
     "property": "name",
-    "count": 2197151,
+    "count": 2230387,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -5945,7 +6032,7 @@
     "name": "Measurement Technique URL",
     "dotfield": "measurementTechnique.url",
     "property": "url",
-    "count": 815604,
+    "count": 2217351,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -5968,7 +6055,7 @@
     "name": "Name",
     "dotfield": "name",
     "property": "name",
-    "count": 4834473,
+    "count": 4868354,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -5984,7 +6071,7 @@
     "name": "Nctid",
     "dotfield": "nctid",
     "property": "nctid",
-    "count": 15495,
+    "count": 15572,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -6152,7 +6239,7 @@
     "name": "Same As",
     "dotfield": "sameAs",
     "property": "sameAs",
-    "count": 487405,
+    "count": 489462,
     "type": "text",
     "description": {
       "ResourceCatalog": "URL of additional sources for the work.",
@@ -6167,7 +6254,7 @@
     "name": "Sample",
     "dotfield": "sample",
     "property": "sample",
-    "count": 940261,
+    "count": 943095,
     "type": "object",
     "description": {
       "DataCollection": "The sample(s) which were used to generate the records in the data collection",
@@ -6179,7 +6266,7 @@
     "name": "Sample Type",
     "dotfield": "sample.@type",
     "property": "@type",
-    "count": 940234,
+    "count": 943066,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -6187,7 +6274,7 @@
     "name": "Sample Additional Type",
     "dotfield": "sample.additionalType",
     "property": "additionalType",
-    "count": 6314,
+    "count": 8963,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -6195,7 +6282,7 @@
     "name": "Sample Aggregate Element",
     "dotfield": "sample.aggregateElement",
     "property": "aggregateElement",
-    "count": 694251,
+    "count": 694255,
     "type": "object",
     "description": {
       "DataCollection": "Aggregate information about the samples in the Sample Collection formatted as a sample object.",
@@ -6207,7 +6294,7 @@
     "name": "Sample Aggregate Element Additional Type",
     "dotfield": "sample.aggregateElement.additionalType",
     "property": "additionalType",
-    "count": 84,
+    "count": 88,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -6215,7 +6302,7 @@
     "name": "Sample Aggregate Element Anatomical Structure",
     "dotfield": "sample.aggregateElement.anatomicalStructure",
     "property": "anatomicalStructure",
-    "count": 121797,
+    "count": 121801,
     "type": "object",
     "description": {
       "DataCollection": "Indicate the organ, tissues the sample was collected from.",
@@ -6227,7 +6314,7 @@
     "name": "Sample Aggregate Element Anatomical Structure Identifier",
     "dotfield": "sample.aggregateElement.anatomicalStructure.identifier",
     "property": "identifier",
-    "count": 83,
+    "count": 87,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -6237,17 +6324,17 @@
     "isAdvancedSearchField": false
   },
   "sample.aggregateElement.anatomicalStructure.name": {
-    "name": "Sample Aggregate Element Anatomical Structure Name",
+    "name": "Experimental Sample Body Part",
     "dotfield": "sample.aggregateElement.anatomicalStructure.name",
     "property": "name",
-    "count": 121797,
+    "count": 121801,
     "type": "keyword",
     "schemaType": "string",
     "description": {
       "DataCollection": "The name of the item.",
       "Dataset": "The name of the item."
     },
-    "isAdvancedSearchField": false
+    "isAdvancedSearchField": true
   },
   "sample.aggregateElement.anatomicalStructure.url": {
     "name": "Sample Aggregate Element Anatomical Structure URL",
@@ -6314,7 +6401,7 @@
     "isAdvancedSearchField": false
   },
   "sample.aggregateElement.associatedGenotype": {
-    "name": "Sample Aggregate Element Associated Genotype",
+    "name": "Experimental Sample Genotype",
     "dotfield": "sample.aggregateElement.associatedGenotype",
     "property": "associatedGenotype",
     "count": 294783,
@@ -6323,18 +6410,26 @@
       "DataCollection": "One or more genetic variants or molecular features observed or inferred from the sample.",
       "Dataset": "One or more genetic variants or molecular features observed or inferred from the sample."
     },
-    "isAdvancedSearchField": false
+    "isAdvancedSearchField": true
   },
   "sample.aggregateElement.associatedPhenotype": {
     "name": "Sample Aggregate Element Associated Phenotype",
     "dotfield": "sample.aggregateElement.associatedPhenotype",
     "property": "associatedPhenotype",
-    "count": 7550,
+    "count": 7552,
     "type": "object",
     "description": {
       "DataCollection": "one or more observable traits or conditions relevant to the source of the sample.",
       "Dataset": "one or more observable traits or conditions relevant to the source of the sample."
     },
+    "isAdvancedSearchField": false
+  },
+  "sample.aggregateElement.associatedPhenotype.@type": {
+    "name": "Sample Aggregate Element Associated Phenotype Type",
+    "dotfield": "sample.aggregateElement.associatedPhenotype.@type",
+    "property": "@type",
+    "count": 0,
+    "type": "keyword",
     "isAdvancedSearchField": false
   },
   "sample.aggregateElement.associatedPhenotype.identifier": {
@@ -6350,17 +6445,41 @@
     },
     "isAdvancedSearchField": false
   },
+  "sample.aggregateElement.associatedPhenotype.maxValue": {
+    "name": "Sample Aggregate Element Associated Phenotype Max Value",
+    "dotfield": "sample.aggregateElement.associatedPhenotype.maxValue",
+    "property": "maxValue",
+    "count": 0,
+    "type": "double",
+    "isAdvancedSearchField": false
+  },
+  "sample.aggregateElement.associatedPhenotype.minValue": {
+    "name": "Sample Aggregate Element Associated Phenotype Min Value",
+    "dotfield": "sample.aggregateElement.associatedPhenotype.minValue",
+    "property": "minValue",
+    "count": 0,
+    "type": "double",
+    "isAdvancedSearchField": false
+  },
   "sample.aggregateElement.associatedPhenotype.name": {
-    "name": "Sample Aggregate Element Associated Phenotype Name",
+    "name": "Experimental Sample Phenotype",
     "dotfield": "sample.aggregateElement.associatedPhenotype.name",
     "property": "name",
-    "count": 7550,
+    "count": 7552,
     "type": "keyword",
     "schemaType": "string",
     "description": {
       "DataCollection": "The name of the item.",
       "Dataset": "The name of the item."
     },
+    "isAdvancedSearchField": true
+  },
+  "sample.aggregateElement.associatedPhenotype.unitText": {
+    "name": "Sample Aggregate Element Associated Phenotype Unit Text",
+    "dotfield": "sample.aggregateElement.associatedPhenotype.unitText",
+    "property": "unitText",
+    "count": 0,
+    "type": "text",
     "isAdvancedSearchField": false
   },
   "sample.aggregateElement.associatedPhenotype.url": {
@@ -6376,11 +6495,19 @@
     },
     "isAdvancedSearchField": false
   },
+  "sample.aggregateElement.associatedPhenotype.value": {
+    "name": "Sample Aggregate Element Associated Phenotype Value",
+    "dotfield": "sample.aggregateElement.associatedPhenotype.value",
+    "property": "value",
+    "count": 0,
+    "type": "double",
+    "isAdvancedSearchField": false
+  },
   "sample.aggregateElement.cellType": {
     "name": "Sample Aggregate Element Cell Type",
     "dotfield": "sample.aggregateElement.cellType",
     "property": "cellType",
-    "count": 111171,
+    "count": 111174,
     "type": "object",
     "description": {
       "DataCollection": "The type of cell represented in or derived from the biological sample, based on morphology, lineage, or molecular markers.",
@@ -6392,7 +6519,7 @@
     "name": "Sample Aggregate Element Cell Type Identifier",
     "dotfield": "sample.aggregateElement.cellType.identifier",
     "property": "identifier",
-    "count": 49,
+    "count": 52,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -6402,17 +6529,17 @@
     "isAdvancedSearchField": false
   },
   "sample.aggregateElement.cellType.name": {
-    "name": "Sample Aggregate Element Cell Type Name",
+    "name": "Experimental Sample Cell Type",
     "dotfield": "sample.aggregateElement.cellType.name",
     "property": "name",
-    "count": 111171,
+    "count": 111174,
     "type": "keyword",
     "schemaType": "string",
     "description": {
       "DataCollection": "The name of the item.",
       "Dataset": "The name of the item."
     },
-    "isAdvancedSearchField": false
+    "isAdvancedSearchField": true
   },
   "sample.aggregateElement.cellType.url": {
     "name": "Sample Aggregate Element Cell Type URL",
@@ -6431,7 +6558,7 @@
     "name": "Sample Aggregate Element Developmental Stage",
     "dotfield": "sample.aggregateElement.developmentalStage",
     "property": "developmentalStage",
-    "count": 112318,
+    "count": 112322,
     "type": "object",
     "description": {
       "DataCollection": "A temporal subdivision of a developmental process, indicating the age or stage of the object when the sample was created.",
@@ -6443,7 +6570,7 @@
     "name": "Sample Aggregate Element Developmental Stage Max Value",
     "dotfield": "sample.aggregateElement.developmentalStage.maxValue",
     "property": "maxValue",
-    "count": 77,
+    "count": 81,
     "type": "double",
     "schemaType": "number",
     "description": {
@@ -6456,7 +6583,7 @@
     "name": "Sample Aggregate Element Developmental Stage Min Value",
     "dotfield": "sample.aggregateElement.developmentalStage.minValue",
     "property": "minValue",
-    "count": 77,
+    "count": 81,
     "type": "double",
     "schemaType": "number",
     "description": {
@@ -6466,7 +6593,7 @@
     "isAdvancedSearchField": false
   },
   "sample.aggregateElement.developmentalStage.name": {
-    "name": "Sample Aggregate Element Developmental Stage Name",
+    "name": "Experimental Sample Age/Developmental Stage",
     "dotfield": "sample.aggregateElement.developmentalStage.name",
     "property": "name",
     "count": 112228,
@@ -6476,13 +6603,13 @@
       "DataCollection": "The name of the item.",
       "Dataset": "The name of the item."
     },
-    "isAdvancedSearchField": false
+    "isAdvancedSearchField": true
   },
   "sample.aggregateElement.developmentalStage.unitCode": {
     "name": "Sample Aggregate Element Developmental Stage Unit Code",
     "dotfield": "sample.aggregateElement.developmentalStage.unitCode",
     "property": "unitCode",
-    "count": 76,
+    "count": 80,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -6490,7 +6617,7 @@
     "name": "Sample Aggregate Element Developmental Stage Unit Text",
     "dotfield": "sample.aggregateElement.developmentalStage.unitText",
     "property": "unitText",
-    "count": 89,
+    "count": 93,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -6541,7 +6668,7 @@
     "name": "Sample Aggregate Element Sample Quantity",
     "dotfield": "sample.aggregateElement.sampleQuantity",
     "property": "sampleQuantity",
-    "count": 70,
+    "count": 72,
     "type": "object",
     "description": {
       "DataCollection": "A numeric value for a measurement of the size of a sample. If completely unknown, set value = 0, and unitText = 'unknown'",
@@ -6553,7 +6680,7 @@
     "name": "Sample Aggregate Element Sample Quantity Max Value",
     "dotfield": "sample.aggregateElement.sampleQuantity.maxValue",
     "property": "maxValue",
-    "count": 55,
+    "count": 57,
     "type": "double",
     "schemaType": "number",
     "description": {
@@ -6566,7 +6693,7 @@
     "name": "Sample Aggregate Element Sample Quantity Min Value",
     "dotfield": "sample.aggregateElement.sampleQuantity.minValue",
     "property": "minValue",
-    "count": 55,
+    "count": 57,
     "type": "double",
     "schemaType": "number",
     "description": {
@@ -6579,7 +6706,7 @@
     "name": "Sample Aggregate Element Sample Quantity Name",
     "dotfield": "sample.aggregateElement.sampleQuantity.name",
     "property": "name",
-    "count": 70,
+    "count": 72,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -6601,7 +6728,7 @@
     "dotfield": "sample.aggregateElement.sampleQuantity.value",
     "property": "value",
     "count": 15,
-    "type": "integer",
+    "type": "double",
     "schemaType": "number",
     "description": {
       "DataCollection": "A numeric value for the property",
@@ -6613,7 +6740,7 @@
     "name": "Sample Aggregate Element Sample State",
     "dotfield": "sample.aggregateElement.sampleState",
     "property": "sampleState",
-    "count": 84,
+    "count": 88,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -6669,7 +6796,7 @@
     "name": "Sample Aggregate Element Sample Type",
     "dotfield": "sample.aggregateElement.sampleType",
     "property": "sampleType",
-    "count": 607763,
+    "count": 607767,
     "type": "object",
     "description": {
       "DataCollection": "The type of sample or specimen.",
@@ -6678,17 +6805,17 @@
     "isAdvancedSearchField": false
   },
   "sample.aggregateElement.sampleType.name": {
-    "name": "Sample Aggregate Element Sample Type Name",
+    "name": "Experimental Sample Type",
     "dotfield": "sample.aggregateElement.sampleType.name",
     "property": "name",
-    "count": 607763,
+    "count": 607767,
     "type": "keyword",
     "schemaType": "string",
     "description": {
       "DataCollection": "The name of the item.",
       "Dataset": "The name of the item."
     },
-    "isAdvancedSearchField": false
+    "isAdvancedSearchField": true
   },
   "sample.aggregateElement.sampleType.url": {
     "name": "Sample Aggregate Element Sample Type URL",
@@ -6704,16 +6831,16 @@
     "isAdvancedSearchField": false
   },
   "sample.aggregateElement.sex": {
-    "name": "Sample Aggregate Element Sex",
+    "name": "Experimental Sample Sex",
     "dotfield": "sample.aggregateElement.sex",
     "property": "sex",
-    "count": 107403,
+    "count": 107407,
     "type": "keyword",
     "description": {
       "DataCollection": "The biological sex of the individual from which the sample was obtained.",
       "Dataset": "The biological sex of the individual from which the sample was obtained."
     },
-    "isAdvancedSearchField": false
+    "isAdvancedSearchField": true
   },
   "sample.aggregateElement.url": {
     "name": "Sample Aggregate Element URL",
@@ -6732,7 +6859,7 @@
     "name": "Sample Anatomical Structure",
     "dotfield": "sample.anatomicalStructure",
     "property": "anatomicalStructure",
-    "count": 6338,
+    "count": 8992,
     "type": "object",
     "description": {
       "DataCollection": "Indicate the organ, tissues the sample was collected from.",
@@ -6754,17 +6881,17 @@
     "isAdvancedSearchField": false
   },
   "sample.anatomicalStructure.name": {
-    "name": "Sample Anatomical Structure Name",
+    "name": "Population Sample Body Part",
     "dotfield": "sample.anatomicalStructure.name",
     "property": "name",
-    "count": 6338,
+    "count": 8992,
     "type": "keyword",
     "schemaType": "string",
     "description": {
       "DataCollection": "The name of the item.",
       "Dataset": "The name of the item."
     },
-    "isAdvancedSearchField": false
+    "isAdvancedSearchField": true
   },
   "sample.anatomicalStructure.url": {
     "name": "Sample Anatomical Structure URL",
@@ -6831,7 +6958,7 @@
     "isAdvancedSearchField": false
   },
   "sample.associatedGenotype": {
-    "name": "Sample Associated Genotype",
+    "name": "Population Sample Genotype",
     "dotfield": "sample.associatedGenotype",
     "property": "associatedGenotype",
     "count": 0,
@@ -6840,18 +6967,26 @@
       "DataCollection": "One or more genetic variants or molecular features observed or inferred from the sample.",
       "Dataset": "One or more genetic variants or molecular features observed or inferred from the sample."
     },
-    "isAdvancedSearchField": false
+    "isAdvancedSearchField": true
   },
   "sample.associatedPhenotype": {
     "name": "Sample Associated Phenotype",
     "dotfield": "sample.associatedPhenotype",
     "property": "associatedPhenotype",
-    "count": 6504,
+    "count": 9153,
     "type": "object",
     "description": {
       "DataCollection": "one or more observable traits or conditions relevant to the source of the sample.",
       "Dataset": "one or more observable traits or conditions relevant to the source of the sample."
     },
+    "isAdvancedSearchField": false
+  },
+  "sample.associatedPhenotype.@type": {
+    "name": "Sample Associated Phenotype Type",
+    "dotfield": "sample.associatedPhenotype.@type",
+    "property": "@type",
+    "count": 9153,
+    "type": "keyword",
     "isAdvancedSearchField": false
   },
   "sample.associatedPhenotype.identifier": {
@@ -6867,17 +7002,41 @@
     },
     "isAdvancedSearchField": false
   },
+  "sample.associatedPhenotype.maxValue": {
+    "name": "Sample Associated Phenotype Max Value",
+    "dotfield": "sample.associatedPhenotype.maxValue",
+    "property": "maxValue",
+    "count": 0,
+    "type": "double",
+    "isAdvancedSearchField": false
+  },
+  "sample.associatedPhenotype.minValue": {
+    "name": "Sample Associated Phenotype Min Value",
+    "dotfield": "sample.associatedPhenotype.minValue",
+    "property": "minValue",
+    "count": 0,
+    "type": "double",
+    "isAdvancedSearchField": false
+  },
   "sample.associatedPhenotype.name": {
-    "name": "Sample Associated Phenotype Name",
+    "name": "Population Sample Phenotype",
     "dotfield": "sample.associatedPhenotype.name",
     "property": "name",
-    "count": 6504,
+    "count": 9153,
     "type": "keyword",
     "schemaType": "string",
     "description": {
       "DataCollection": "The name of the item.",
       "Dataset": "The name of the item."
     },
+    "isAdvancedSearchField": true
+  },
+  "sample.associatedPhenotype.unitText": {
+    "name": "Sample Associated Phenotype Unit Text",
+    "dotfield": "sample.associatedPhenotype.unitText",
+    "property": "unitText",
+    "count": 0,
+    "type": "text",
     "isAdvancedSearchField": false
   },
   "sample.associatedPhenotype.url": {
@@ -6891,6 +7050,14 @@
       "DataCollection": "URL of the item.",
       "Dataset": "URL of the item."
     },
+    "isAdvancedSearchField": false
+  },
+  "sample.associatedPhenotype.value": {
+    "name": "Sample Associated Phenotype Value",
+    "dotfield": "sample.associatedPhenotype.value",
+    "property": "value",
+    "count": 0,
+    "type": "double",
     "isAdvancedSearchField": false
   },
   "sample.cellType": {
@@ -6919,7 +7086,7 @@
     "isAdvancedSearchField": false
   },
   "sample.cellType.name": {
-    "name": "Sample Cell Type Name",
+    "name": "Population Sample Cell Type",
     "dotfield": "sample.cellType.name",
     "property": "name",
     "count": 0,
@@ -6929,7 +7096,7 @@
       "DataCollection": "The name of the item.",
       "Dataset": "The name of the item."
     },
-    "isAdvancedSearchField": false
+    "isAdvancedSearchField": true
   },
   "sample.cellType.url": {
     "name": "Sample Cell Type URL",
@@ -6948,7 +7115,7 @@
     "name": "Sample Developmental Stage",
     "dotfield": "sample.developmentalStage",
     "property": "developmentalStage",
-    "count": 15477,
+    "count": 18305,
     "type": "object",
     "description": {
       "DataCollection": "A temporal subdivision of a developmental process, indicating the age or stage of the object when the sample was created.",
@@ -6960,7 +7127,7 @@
     "name": "Sample Developmental Stage Max Value",
     "dotfield": "sample.developmentalStage.maxValue",
     "property": "maxValue",
-    "count": 3341,
+    "count": 3379,
     "type": "double",
     "schemaType": "number",
     "description": {
@@ -6973,7 +7140,7 @@
     "name": "Sample Developmental Stage Min Value",
     "dotfield": "sample.developmentalStage.minValue",
     "property": "minValue",
-    "count": 6273,
+    "count": 6347,
     "type": "double",
     "schemaType": "number",
     "description": {
@@ -6983,17 +7150,17 @@
     "isAdvancedSearchField": false
   },
   "sample.developmentalStage.name": {
-    "name": "Sample Developmental Stage Name",
+    "name": "Population Sample Age/Developmental Stage",
     "dotfield": "sample.developmentalStage.name",
     "property": "name",
-    "count": 8442,
+    "count": 8621,
     "type": "text",
     "schemaType": "string",
     "description": {
       "DataCollection": "The name of the item.",
       "Dataset": "The name of the item."
     },
-    "isAdvancedSearchField": false
+    "isAdvancedSearchField": true
   },
   "sample.developmentalStage.unitCode": {
     "name": "Sample Developmental Stage Unit Code",
@@ -7007,7 +7174,7 @@
     "name": "Sample Developmental Stage Unit Text",
     "dotfield": "sample.developmentalStage.unitText",
     "property": "unitText",
-    "count": 13422,
+    "count": 16145,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -7020,7 +7187,7 @@
     "name": "Sample Developmental Stage Value",
     "dotfield": "sample.developmentalStage.value",
     "property": "value",
-    "count": 6314,
+    "count": 8963,
     "type": "integer",
     "schemaType": "number",
     "description": {
@@ -7041,7 +7208,7 @@
     "name": "Sample Item List Element",
     "dotfield": "sample.itemListElement",
     "property": "itemListElement",
-    "count": 922648,
+    "count": 922652,
     "type": "object",
     "description": {
       "DataCollection": "Samples listed in the sample collection",
@@ -7061,7 +7228,7 @@
     "name": "Sample Item List Element Identifier",
     "dotfield": "sample.itemListElement.identifier",
     "property": "identifier",
-    "count": 922648,
+    "count": 922652,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -7074,7 +7241,7 @@
     "name": "Sample Item List Element URL",
     "dotfield": "sample.itemListElement.url",
     "property": "url",
-    "count": 922648,
+    "count": 922652,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -7087,7 +7254,7 @@
     "name": "Sample Number Of Items",
     "dotfield": "sample.numberOfItems",
     "property": "numberOfItems",
-    "count": 922648,
+    "count": 922652,
     "type": "object",
     "description": {
       "DataCollection": "The number of sample records in the sample collection. Min/max estimates can be used in lieu of actual number. If completely unknown, set value = 0, and unitText = 'unknown'",
@@ -7133,7 +7300,7 @@
     "name": "Sample Number Of Items Unit Text",
     "dotfield": "sample.numberOfItems.unitText",
     "property": "unitText",
-    "count": 922648,
+    "count": 922652,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -7146,7 +7313,7 @@
     "name": "Sample Number Of Items Value",
     "dotfield": "sample.numberOfItems.value",
     "property": "value",
-    "count": 922648,
+    "count": 922652,
     "type": "integer",
     "schemaType": "number",
     "description": {
@@ -7176,7 +7343,7 @@
     "name": "Sample Sample Quantity",
     "dotfield": "sample.sampleQuantity",
     "property": "sampleQuantity",
-    "count": 11248,
+    "count": 11427,
     "type": "object",
     "description": {
       "DataCollection": "A numeric value for a measurement of the size of a sample. If completely unknown, set value = 0, and unitText = 'unknown'",
@@ -7222,7 +7389,7 @@
     "name": "Sample Sample Quantity Unit Text",
     "dotfield": "sample.sampleQuantity.unitText",
     "property": "unitText",
-    "count": 11248,
+    "count": 11427,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -7235,8 +7402,8 @@
     "name": "Sample Sample Quantity Value",
     "dotfield": "sample.sampleQuantity.value",
     "property": "value",
-    "count": 11248,
-    "type": "integer",
+    "count": 11427,
+    "type": "double",
     "schemaType": "number",
     "description": {
       "DataCollection": "A numeric value for the property",
@@ -7304,7 +7471,7 @@
     "name": "Sample Sample Type",
     "dotfield": "sample.sampleType",
     "property": "sampleType",
-    "count": 14816,
+    "count": 17649,
     "type": "object",
     "description": {
       "DataCollection": "The type of sample or specimen.",
@@ -7313,23 +7480,23 @@
     "isAdvancedSearchField": false
   },
   "sample.sampleType.name": {
-    "name": "Sample Sample Type Name",
+    "name": "Population Sample Type",
     "dotfield": "sample.sampleType.name",
     "property": "name",
-    "count": 14816,
+    "count": 17649,
     "type": "keyword",
     "schemaType": "string",
     "description": {
       "DataCollection": "The name of the item.",
       "Dataset": "The name of the item."
     },
-    "isAdvancedSearchField": false
+    "isAdvancedSearchField": true
   },
   "sample.sampleType.url": {
     "name": "Sample Sample Type URL",
     "dotfield": "sample.sampleType.url",
     "property": "url",
-    "count": 8502,
+    "count": 8681,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -7339,16 +7506,16 @@
     "isAdvancedSearchField": false
   },
   "sample.sex": {
-    "name": "Sample Sex",
+    "name": "Population Sample Sex",
     "dotfield": "sample.sex",
     "property": "sex",
-    "count": 12749,
+    "count": 15473,
     "type": "keyword",
     "description": {
       "DataCollection": "The biological sex of the individual from which the sample was obtained.",
       "Dataset": "The biological sex of the individual from which the sample was obtained."
     },
-    "isAdvancedSearchField": false
+    "isAdvancedSearchField": true
   },
   "sample.url": {
     "name": "Sample URL",
@@ -7449,7 +7616,7 @@
     "dotfield": "sampleQuantity.value",
     "property": "value",
     "count": 0,
-    "type": "integer",
+    "type": "double",
     "schemaType": "number",
     "description": {
       "Sample": "A numeric value for the property"
@@ -7573,7 +7740,7 @@
     "name": "SDPublisher",
     "dotfield": "sdPublisher",
     "property": "sdPublisher",
-    "count": 2589430,
+    "count": 2643564,
     "type": "object",
     "description": {
       "ResourceCatalog": "Original publisher of the resource catalog metadata (like GenBank, ImmPort, etc.).",
@@ -7595,7 +7762,7 @@
     "name": "SDPublisher Type",
     "dotfield": "sdPublisher.@type",
     "property": "@type",
-    "count": 2589430,
+    "count": 486480,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -7603,7 +7770,7 @@
     "name": "SDPublisher Identifier",
     "dotfield": "sdPublisher.identifier",
     "property": "identifier",
-    "count": 8425,
+    "count": 8603,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -7611,7 +7778,7 @@
     "name": "SDPublisher Name",
     "dotfield": "sdPublisher.name",
     "property": "name",
-    "count": 2589140,
+    "count": 2643425,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -7627,7 +7794,7 @@
     "name": "SDPublisher URL",
     "dotfield": "sdPublisher.url",
     "property": "url",
-    "count": 233661,
+    "count": 276591,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -7799,7 +7966,7 @@
     "name": "Source Organization",
     "dotfield": "sourceOrganization",
     "property": "sourceOrganization",
-    "count": 12832,
+    "count": 13852,
     "type": "object",
     "description": {
       "ResourceCatalog": "The organization, research project, working group, or funded program on whose behalf the author/creator was working.",
@@ -7814,7 +7981,7 @@
     "name": "Source Organization Type",
     "dotfield": "sourceOrganization.@type",
     "property": "@type",
-    "count": 12832,
+    "count": 13852,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -7822,7 +7989,7 @@
     "name": "Source Organization Alternate Name",
     "dotfield": "sourceOrganization.alternateName",
     "property": "alternateName",
-    "count": 12832,
+    "count": 13852,
     "type": "keyword",
     "description": {
       "ResourceCatalog": "Alias of the name",
@@ -7837,7 +8004,7 @@
     "name": "Source Organization Description",
     "dotfield": "sourceOrganization.description",
     "property": "description",
-    "count": 12832,
+    "count": 13852,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -7845,7 +8012,7 @@
     "name": "Source Organization Name",
     "dotfield": "sourceOrganization.name",
     "property": "name",
-    "count": 12832,
+    "count": 13852,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -7861,7 +8028,7 @@
     "name": "Source Organization Parent Organization",
     "dotfield": "sourceOrganization.parentOrganization",
     "property": "parentOrganization",
-    "count": 12832,
+    "count": 13852,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -7877,7 +8044,7 @@
     "name": "Source Organization URL",
     "dotfield": "sourceOrganization.url",
     "property": "url",
-    "count": 12832,
+    "count": 13852,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -7893,7 +8060,7 @@
     "name": "Spatial Coverage",
     "dotfield": "spatialCoverage",
     "property": "spatialCoverage",
-    "count": 78812,
+    "count": 62703,
     "type": "object",
     "description": {
       "ResourceCatalog": "The place(s) which are the focus of the resource catalog.",
@@ -7913,7 +8080,7 @@
     "name": "Spatial Coverage Type",
     "dotfield": "spatialCoverage.@type",
     "property": "@type",
-    "count": 78812,
+    "count": 664,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -7953,7 +8120,7 @@
     "name": "Spatial Coverage Identifier",
     "dotfield": "spatialCoverage.identifier",
     "property": "identifier",
-    "count": 6460,
+    "count": 6535,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -7968,7 +8135,7 @@
     "name": "Spatial Coverage Name",
     "dotfield": "spatialCoverage.name",
     "property": "name",
-    "count": 78801,
+    "count": 62693,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -7983,7 +8150,7 @@
     "name": "Species",
     "dotfield": "species",
     "property": "species",
-    "count": 1950606,
+    "count": 1929141,
     "type": "object",
     "description": {
       "ResourceCatalog": "Species / host organism from which the dataset has been collected.",
@@ -8005,7 +8172,7 @@
     "name": "Species Type",
     "dotfield": "species.@type",
     "property": "@type",
-    "count": 1950606,
+    "count": 44898,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -8037,7 +8204,7 @@
     "name": "Species Alternate Name",
     "dotfield": "species.alternateName",
     "property": "alternateName",
-    "count": 1088993,
+    "count": 1110271,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -8045,7 +8212,7 @@
     "name": "Species Classification",
     "dotfield": "species.classification",
     "property": "classification",
-    "count": 1100165,
+    "count": 1121638,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -8053,7 +8220,7 @@
     "name": "Species Common Name",
     "dotfield": "species.commonName",
     "property": "commonName",
-    "count": 1001471,
+    "count": 1021915,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -8061,7 +8228,7 @@
     "name": "Species Curated By",
     "dotfield": "species.curatedBy",
     "property": "curatedBy",
-    "count": 971177,
+    "count": 991784,
     "type": "object",
     "description": {
       "ResourceCatalog": "The person, organization, or catalog that curated this DefinedTerm for the metadata property",
@@ -8076,7 +8243,7 @@
     "name": "Species Curated By Date Modified",
     "dotfield": "species.curatedBy.dateModified",
     "property": "dateModified",
-    "count": 971177,
+    "count": 991784,
     "type": "date",
     "schemaType": "string",
     "description": {
@@ -8092,7 +8259,7 @@
     "name": "Species Curated By Name",
     "dotfield": "species.curatedBy.name",
     "property": "name",
-    "count": 971177,
+    "count": 991784,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -8108,7 +8275,7 @@
     "name": "Species Curated By URL",
     "dotfield": "species.curatedBy.url",
     "property": "url",
-    "count": 971177,
+    "count": 991784,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -8124,7 +8291,7 @@
     "name": "Species Display Name",
     "dotfield": "species.displayName",
     "property": "displayName",
-    "count": 1100454,
+    "count": 1121926,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -8132,7 +8299,7 @@
     "name": "Species From EXTRACT",
     "dotfield": "species.fromEXTRACT",
     "property": "fromEXTRACT",
-    "count": 664742,
+    "count": 631414,
     "type": "boolean",
     "isAdvancedSearchField": true
   },
@@ -8140,7 +8307,7 @@
     "name": "Species From PMID",
     "dotfield": "species.fromPMID",
     "property": "fromPMID",
-    "count": 35463,
+    "count": 35107,
     "type": "boolean",
     "isAdvancedSearchField": false
   },
@@ -8148,7 +8315,7 @@
     "name": "Species Identifier",
     "dotfield": "species.identifier",
     "property": "identifier",
-    "count": 1927336,
+    "count": 1915078,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -8164,7 +8331,7 @@
     "name": "Species In Defined Term Set",
     "dotfield": "species.inDefinedTermSet",
     "property": "inDefinedTermSet",
-    "count": 1100454,
+    "count": 1121926,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -8180,7 +8347,7 @@
     "name": "Species Is Curated",
     "dotfield": "species.isCurated",
     "property": "isCurated",
-    "count": 1100454,
+    "count": 1121926,
     "type": "boolean",
     "schemaType": "boolean",
     "description": {
@@ -8196,7 +8363,7 @@
     "name": "Species Name",
     "dotfield": "species.name",
     "property": "name",
-    "count": 1950606,
+    "count": 1929141,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -8212,7 +8379,7 @@
     "name": "Species Original Name",
     "dotfield": "species.originalName",
     "property": "originalName",
-    "count": 1081316,
+    "count": 1103169,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -8228,7 +8395,7 @@
     "name": "Species URL",
     "dotfield": "species.url",
     "property": "url",
-    "count": 1100454,
+    "count": 1121926,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -8276,7 +8443,7 @@
     "name": "Temporal Coverage",
     "dotfield": "temporalCoverage",
     "property": "temporalCoverage",
-    "count": 111698,
+    "count": 68637,
     "type": "object",
     "description": {
       "ResourceCatalog": "The period of time covered within the resource catalog.",
@@ -8296,7 +8463,7 @@
     "name": "Temporal Coverage Type",
     "dotfield": "temporalCoverage.@type",
     "property": "@type",
-    "count": 111698,
+    "count": 68637,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -8319,7 +8486,7 @@
     "name": "Temporal Coverage End Date",
     "dotfield": "temporalCoverage.endDate",
     "property": "endDate",
-    "count": 89726,
+    "count": 46655,
     "type": "date",
     "schemaType": "string",
     "description": {
@@ -8349,7 +8516,7 @@
     "name": "Temporal Coverage Start Date",
     "dotfield": "temporalCoverage.startDate",
     "property": "startDate",
-    "count": 32530,
+    "count": 32607,
     "type": "date",
     "schemaType": "string",
     "description": {
@@ -8399,7 +8566,7 @@
     "name": "Topic Category",
     "dotfield": "topicCategory",
     "property": "topicCategory",
-    "count": 2792446,
+    "count": 2794437,
     "type": "object",
     "description": {
       "ResourceCatalog": "Topic of the work. This topic may be assigned by a human curator or through automated algorithms.",
@@ -8421,7 +8588,7 @@
     "name": "Topic Category Type",
     "dotfield": "topicCategory.@type",
     "property": "@type",
-    "count": 2792446,
+    "count": 2756661,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -8429,7 +8596,7 @@
     "name": "Topic Category Curated By",
     "dotfield": "topicCategory.curatedBy",
     "property": "curatedBy",
-    "count": 2611110,
+    "count": 2568754,
     "type": "object",
     "description": {
       "ResourceCatalog": "The person, organization, or catalog that curated this DefinedTerm for the metadata property",
@@ -8460,7 +8627,7 @@
     "name": "Topic Category Curated By Name",
     "dotfield": "topicCategory.curatedBy.name",
     "property": "name",
-    "count": 2611110,
+    "count": 2568754,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -8476,7 +8643,7 @@
     "name": "Topic Category Curated By URL",
     "dotfield": "topicCategory.curatedBy.url",
     "property": "url",
-    "count": 783914,
+    "count": 741558,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -8508,7 +8675,7 @@
     "name": "Topic Category Identifier",
     "dotfield": "topicCategory.identifier",
     "property": "identifier",
-    "count": 2649447,
+    "count": 2607093,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -8524,7 +8691,7 @@
     "name": "Topic Category In Defined Term Set",
     "dotfield": "topicCategory.inDefinedTermSet",
     "property": "inDefinedTermSet",
-    "count": 965193,
+    "count": 967227,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -8540,7 +8707,7 @@
     "name": "Topic Category Name",
     "dotfield": "topicCategory.name",
     "property": "name",
-    "count": 2792330,
+    "count": 2794364,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -8556,7 +8723,7 @@
     "name": "Topic Category URL",
     "dotfield": "topicCategory.url",
     "property": "url",
-    "count": 965250,
+    "count": 967240,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -8572,7 +8739,7 @@
     "name": "URL",
     "dotfield": "url",
     "property": "url",
-    "count": 4834476,
+    "count": 4868358,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -8588,7 +8755,7 @@
     "name": "Usage Info",
     "dotfield": "usageInfo",
     "property": "usageInfo",
-    "count": 146015,
+    "count": 203944,
     "type": "object",
     "description": {
       "ResourceCatalog": "Data usage agreement, specifying the terms under which the content from the resource catalog can be used. Note that this is related to but distinct from the license.",
@@ -8608,7 +8775,7 @@
     "name": "Usage Info Type",
     "dotfield": "usageInfo.@type",
     "property": "@type",
-    "count": 2921,
+    "count": 2925,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -8616,7 +8783,7 @@
     "name": "Usage Info Description",
     "dotfield": "usageInfo.description",
     "property": "description",
-    "count": 2100,
+    "count": 2104,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -8631,7 +8798,7 @@
     "name": "Usage Info Name",
     "dotfield": "usageInfo.name",
     "property": "name",
-    "count": 3088,
+    "count": 3092,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -8646,7 +8813,7 @@
     "name": "Usage Info URL",
     "dotfield": "usageInfo.url",
     "property": "url",
-    "count": 142963,
+    "count": 200888,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -8661,7 +8828,7 @@
     "name": "Variable Measured",
     "dotfield": "variableMeasured",
     "property": "variableMeasured",
-    "count": 1256795,
+    "count": 1276451,
     "type": "object",
     "description": {
       "ResourceCatalog": "Variables measured within the dataset.",
@@ -8676,7 +8843,7 @@
     "name": "Variable Measured Alternate Name",
     "dotfield": "variableMeasured.alternateName",
     "property": "alternateName",
-    "count": 42,
+    "count": 43,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -8684,7 +8851,7 @@
     "name": "Variable Measured Curated By",
     "dotfield": "variableMeasured.curatedBy",
     "property": "curatedBy",
-    "count": 644,
+    "count": 645,
     "type": "object",
     "description": {
       "ResourceCatalog": "The person, organization, or catalog that curated this DefinedTerm for the metadata property",
@@ -8698,7 +8865,7 @@
     "name": "Variable Measured Curated By Date Modified",
     "dotfield": "variableMeasured.curatedBy.dateModified",
     "property": "dateModified",
-    "count": 47,
+    "count": 48,
     "type": "date",
     "schemaType": "string",
     "description": {
@@ -8713,7 +8880,7 @@
     "name": "Variable Measured Curated By Name",
     "dotfield": "variableMeasured.curatedBy.name",
     "property": "name",
-    "count": 644,
+    "count": 645,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -8728,7 +8895,7 @@
     "name": "Variable Measured Curated By URL",
     "dotfield": "variableMeasured.curatedBy.url",
     "property": "url",
-    "count": 47,
+    "count": 48,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -8743,7 +8910,7 @@
     "name": "Variable Measured Description",
     "dotfield": "variableMeasured.description",
     "property": "description",
-    "count": 57,
+    "count": 59,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -8774,7 +8941,7 @@
     "name": "Variable Measured Identifier",
     "dotfield": "variableMeasured.identifier",
     "property": "identifier",
-    "count": 842,
+    "count": 846,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -8789,7 +8956,7 @@
     "name": "Variable Measured In Defined Term Set",
     "dotfield": "variableMeasured.inDefinedTermSet",
     "property": "inDefinedTermSet",
-    "count": 143175,
+    "count": 149785,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -8804,7 +8971,7 @@
     "name": "Variable Measured Is Curated",
     "dotfield": "variableMeasured.isCurated",
     "property": "isCurated",
-    "count": 805,
+    "count": 806,
     "type": "boolean",
     "schemaType": "boolean",
     "description": {
@@ -8819,7 +8986,7 @@
     "name": "Variable Measured Name",
     "dotfield": "variableMeasured.name",
     "property": "name",
-    "count": 1256795,
+    "count": 1276451,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -8849,7 +9016,7 @@
     "name": "Variable Measured URL",
     "dotfield": "variableMeasured.url",
     "property": "url",
-    "count": 143772,
+    "count": 150382,
     "type": "text",
     "schemaType": "string",
     "description": {

@@ -109,7 +109,6 @@ describe('CompatibilityBadge', () => {
     const { container } = render(
       <CompatibilityBadge
         width={5}
-        height={100}
         data={{} as MetadataSource['sourceInfo']['metadata_completeness']}
       />,
     );
@@ -118,7 +117,7 @@ describe('CompatibilityBadge', () => {
 
   it('renders the heatmap', async () => {
     const { container } = render(
-      <CompatibilityBadge width={500} height={500} data={mockData} />,
+      <CompatibilityBadge width={500} data={mockData} />,
     );
 
     expect(container.querySelector('svg')).toBeInTheDocument();
@@ -129,7 +128,7 @@ describe('CompatibilityBadge', () => {
 
   it('shows the correct number of heatmap cells for required and recommended fields', () => {
     const { container } = render(
-      <CompatibilityBadge width={500} height={500} data={mockData} />,
+      <CompatibilityBadge width={500} data={mockData} />,
     );
 
     // 9 required fields + 10 recommended fields = 19 cells
@@ -138,40 +137,49 @@ describe('CompatibilityBadge', () => {
   });
 
   it('renders default margins if margin prop is not provided', () => {
-    const [width, height] = [500, 500];
     const { container } = render(
-      <CompatibilityBadge width={width} height={height} data={mockData} />,
+      <CompatibilityBadge width={500} data={mockData} />,
     );
 
     const svg = container.querySelector('svg');
     expect(svg).toBeInTheDocument();
-    // / Check the position of the first Group element to ensure default margins are applied
-    const groupEl = svg?.querySelector('g');
-    const y = height / 2 - defaultMargin.bottom - defaultMargin.top;
-    const x = defaultMargin.left;
-    expect(groupEl).toHaveAttribute('transform', `translate(${x}, ${y})`);
+    // The required-fields group is rendered at the top margin offset.
+    const requiredGroup = svg?.querySelector('.required-fields');
+    expect(requiredGroup).toHaveAttribute(
+      'transform',
+      `translate(${defaultMargin.left}, ${defaultMargin.top})`,
+    );
   });
 
   it('renders custom margins when prop is provided', () => {
-    const [width, height] = [500, 500];
     const margin = { top: 20, right: 10, bottom: 15, left: 5 };
 
     const { container } = render(
-      <CompatibilityBadge
-        width={width}
-        height={height}
-        data={mockData}
-        margin={margin}
-      />,
+      <CompatibilityBadge width={500} data={mockData} margin={margin} />,
     );
 
     const svg = container.querySelector('svg');
     expect(svg).toBeInTheDocument();
-    // / Check the position of the first Group element to ensure custom margins are applied
-    const groupEl = svg?.querySelector('g');
-    const y = height / 2 - margin.bottom - margin.top;
-    const x = margin.left;
-    expect(groupEl).toHaveAttribute('transform', `translate(${x}, ${y})`);
+    const requiredGroup = svg?.querySelector('.required-fields');
+    expect(requiredGroup).toHaveAttribute(
+      'transform',
+      `translate(${margin.left}, ${margin.top})`,
+    );
+  });
+
+  it('wraps bins to additional rows and grows the svg height when bins exceed width', () => {
+    // 17px bin + 2px gap → roughly 5 bins fit in 100px. 10 recommended fields
+    // should wrap onto multiple rows, producing a taller svg than at 500px.
+    const narrow = render(<CompatibilityBadge width={100} data={mockData} />);
+    const wide = render(<CompatibilityBadge width={500} data={mockData} />);
+
+    const narrowSvg = narrow.container.querySelector('svg');
+    const wideSvg = wide.container.querySelector('svg');
+
+    const narrowHeight = Number(narrowSvg?.getAttribute('height'));
+    const wideHeight = Number(wideSvg?.getAttribute('height'));
+
+    expect(narrowHeight).toBeGreaterThan(wideHeight);
   });
 
   it('handles case where required fields data is empty', () => {
@@ -183,7 +191,7 @@ describe('CompatibilityBadge', () => {
     } as MetadataSource['sourceInfo']['metadata_completeness'];
 
     const { container } = render(
-      <CompatibilityBadge width={500} height={500} data={mockData} />,
+      <CompatibilityBadge width={500} data={mockData} />,
     );
 
     const rects = container.querySelectorAll('rect');
@@ -192,7 +200,7 @@ describe('CompatibilityBadge', () => {
 
   test('displays tooltip on mouse hover for recommended fields', () => {
     const { container } = render(
-      <CompatibilityBadge width={500} height={500} data={mockData} />,
+      <CompatibilityBadge width={500} data={mockData} />,
     );
 
     // Select all rect elements within the .recommended-fields group
@@ -210,7 +218,7 @@ describe('CompatibilityBadge', () => {
 
   test('displays tooltip on mouse hover for required fields', () => {
     const { container } = render(
-      <CompatibilityBadge width={500} height={500} data={mockData} />,
+      <CompatibilityBadge width={500} data={mockData} />,
     );
 
     // Select all rect elements within the .required-fields group
@@ -229,7 +237,7 @@ describe('CompatibilityBadge', () => {
 
   it('handles augmented data display correctly', () => {
     const { container } = render(
-      <CompatibilityBadge width={500} height={500} data={mockData} />,
+      <CompatibilityBadge width={500} data={mockData} />,
     );
 
     // Select all rect elements within the .required-fields group
@@ -266,10 +274,10 @@ describe('CompatibilityBadge', () => {
   });
 
   it('clears tooltip on mouse leave', () => {
-    render(<CompatibilityBadge width={500} height={500} data={mockData} />);
+    render(<CompatibilityBadge width={500} data={mockData} />);
 
     const { container } = render(
-      <CompatibilityBadge width={500} height={500} data={mockData} />,
+      <CompatibilityBadge width={500} data={mockData} />,
     );
 
     const rects = container.querySelectorAll('rect');

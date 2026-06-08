@@ -14,7 +14,7 @@ describe('use query hook', () => {
       timeout: 5000,
     });
 
-    const { _id, abstract, conditionsOfAccess, name, type, url, domain } =
+    const { _id, abstract, conditionsOfAccess, name, type, url } =
       result.current.data[0];
 
     expect(result.current.data).toEqual(
@@ -24,7 +24,6 @@ describe('use query hook', () => {
           abstract,
           type,
           name: name || '',
-          domain,
           url,
           conditionsOfAccess: conditionsOfAccess || '',
         }),

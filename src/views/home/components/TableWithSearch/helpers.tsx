@@ -6,16 +6,19 @@ export const formatTypeName = (type: TableData['type'][number]) => {
 
 export const formatDomainName = (domain: TableData['domain']) => {
   if (!domain) {
-    return '';
+    return [];
   }
-  const type_lower = domain.toLowerCase();
-  if (type_lower === 'iid') {
-    return 'IID';
-  } else if (type_lower === 'generalist') {
-    return 'Generalist';
-  } else {
-    return type_lower.charAt(0).toUpperCase() + type_lower.slice(1);
-  }
+  const domains = Array.isArray(domain) ? domain : [domain];
+  return domains.map(domain => {
+    const type_lower = domain.toLowerCase();
+    if (type_lower === 'iid') {
+      return 'IID';
+    } else if (type_lower === 'generalist') {
+      return 'Generalist';
+    } else {
+      return domain.charAt(0).toUpperCase() + domain.slice(1);
+    }
+  });
 };
 
 export const getFilterData = <T extends keyof TableData>({

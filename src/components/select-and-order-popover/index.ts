@@ -2,7 +2,11 @@
 export type { PopoverItem, PopoverItemGroup } from './types';
 
 // Hooks
-export { useSelectableList } from './hooks/useSelectableList';
+export {
+  useSelectableList,
+  resolveStoredVisibleIds,
+  resolveStoredOrderedIds,
+} from './hooks/useSelectableList';
 export type {
   UseSelectableListOptions,
   UseSelectableListResult,
@@ -20,3 +24,8 @@ export { PopoverSelectAll } from './components/PopoverSelectAll';
 export { PopoverEmptyState } from './components/PopoverEmptyState';
 export { PopoverListItem } from './components/PopoverListItem';
 export { PopoverSelectableList } from './components/PopoverSelectableList';
+export { SelectAndSortPopover } from './components/SelectAndSortPopover';
+export type {
+  SelectAndSortPopoverProps,
+  SelectAndSortPopoverCopy,
+} from './components/SelectAndSortPopover';

@@ -115,6 +115,62 @@ const ensureRequired = (
   ...ids,
 ];
 
+/**
+ * Synchronously resolve the visible-IDs set the popover would hydrate to.
+ * Exposed so consumers can lazy-initialize their own state from the same
+ * storage key on the client's first render — avoiding a re-render once the
+ * popover finishes hydrating from localStorage.
+ */
+export const resolveStoredVisibleIds = ({
+  storageKey,
+  allIds,
+  defaultVisibleIds,
+  requiredIds = [],
+}: {
+  storageKey: string | null;
+  allIds: string[];
+  defaultVisibleIds?: string[];
+  requiredIds?: string[];
+}): string[] => {
+  const defaults = (defaultVisibleIds ?? allIds).filter(id =>
+    allIds.includes(id),
+  );
+  const stored = readFromStorage(storageKey);
+  let resolved: string[];
+  if (stored) {
+    const valid = stored.filter(id => allIds.includes(id));
+    resolved = valid.length > 0 ? valid : defaults;
+  } else {
+    resolved = defaults;
+  }
+  return ensureRequired(resolved, requiredIds, allIds);
+};
+
+/**
+ * Synchronously resolve the column-order list the popover would hydrate to.
+ * Counterpart to [[resolveStoredVisibleIds]] for ordering.
+ */
+export const resolveStoredOrderedIds = ({
+  storageKey,
+  allIds,
+  requiredIds = [],
+}: {
+  storageKey: string | null;
+  allIds: string[];
+  requiredIds?: string[];
+}): string[] => {
+  const stored = readFromStorage(storageKey);
+  let resolved: string[];
+  if (stored) {
+    const valid = stored.filter(id => allIds.includes(id));
+    const missing = allIds.filter(id => !valid.includes(id));
+    resolved = [...valid, ...missing];
+  } else {
+    resolved = allIds;
+  }
+  return pinRequired(resolved, requiredIds);
+};
+
 export const useSelectableList = ({
   items,
   requiredIds = [],
@@ -135,32 +191,23 @@ export const useSelectableList = ({
 
   // Hydrate from localStorage once on mount.
   useEffect(() => {
-    const storedVisible = readFromStorage(storageKeyVisible);
-    let resolvedVisible: string[];
-
-    if (storedVisible) {
-      const valid = storedVisible.filter(id => allIds.includes(id));
-      resolvedVisible =
-        valid.length > 0 ? valid : defaults.filter(id => allIds.includes(id));
-    } else {
-      resolvedVisible = defaults.filter(id => allIds.includes(id));
-    }
-
-    setSelectedIds(ensureRequired(resolvedVisible, requiredIds, allIds));
+    setSelectedIds(
+      resolveStoredVisibleIds({
+        storageKey: storageKeyVisible,
+        allIds,
+        defaultVisibleIds: defaults,
+        requiredIds,
+      }),
+    );
 
     if (enableOrdering) {
-      const storedOrder = readFromStorage(storageKeyOrder ?? null);
-      let resolvedOrder: string[];
-
-      if (storedOrder) {
-        const valid = storedOrder.filter(id => allIds.includes(id));
-        const missing = allIds.filter(id => !valid.includes(id));
-        resolvedOrder = [...valid, ...missing];
-      } else {
-        resolvedOrder = allIds;
-      }
-
-      setOrder(pinRequired(resolvedOrder, requiredIds));
+      setOrder(
+        resolveStoredOrderedIds({
+          storageKey: storageKeyOrder ?? null,
+          allIds,
+          requiredIds,
+        }),
+      );
     }
 
     setIsReady(true);

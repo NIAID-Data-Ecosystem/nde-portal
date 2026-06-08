@@ -111,16 +111,26 @@ const Sections = ({
         )}
 
       {sections.map(section => {
-        const sectionName =
-          section.hash === 'basedOnAction' && isBasedOnActionProcess
-            ? isBasedOnActionProcess[0]?.name || section.title
-            : section.title;
-
+        const getSectionName = () => {
+          if (section.hash === 'samples') {
+            if (data?.sample?.['@type'] === 'Sample') {
+              return 'Population Sample';
+            } else if (data?.sample?.['@type'] === 'SampleCollection') {
+              return 'Experimental Samples';
+            }
+          } else if (
+            section.hash === 'basedOnAction' &&
+            isBasedOnActionProcess
+          ) {
+            return isBasedOnActionProcess[0]?.name || section.title;
+          }
+          return section.title;
+        };
         return (
           <Section
             id={section.hash}
             key={section.hash}
-            name={sectionName}
+            name={getSectionName()}
             isLoading={isLoading}
             isCollapsible={section?.ui?.isCollapsible}
           >

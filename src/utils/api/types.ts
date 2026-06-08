@@ -1,3 +1,4 @@
+import { CreativeWorkStatusDatasetType } from 'src/hooks/api/types';
 import {
   APIResourceType,
   CollectionType,
@@ -314,7 +315,7 @@ export interface SourceOrganization {
   url?: string;
 }
 
-interface SpatialCoverage {
+export interface SpatialCoverage {
   identifier?: string;
   geo?: {
     latitude?: number;
@@ -342,7 +343,7 @@ export interface Species extends PropertyWithPubtator {
   displayName: string;
 }
 
-interface TemporalCoverage {
+export interface TemporalCoverage {
   duration?: string[];
   endDate?: string;
   name?: string;
@@ -426,6 +427,7 @@ export interface DefinedTerm {
   identifier?: string;
   name?: string;
   url?: string;
+  inDefinedTermSet?: string;
 }
 
 export interface QuantitativeValue {
@@ -477,7 +479,11 @@ export interface SampleCollection {
   }[];
   numberOfItems?: QuantitativeValue;
 }
-
+export interface UsageInfo {
+  name?: string | null;
+  url?: string | null;
+  description?: string | null;
+}
 // Formatting standardized resource fields
 export interface FormattedResource {
   [key: string]: any;
@@ -502,6 +508,7 @@ export interface FormattedResource {
     recommended_fields: string[];
     required_fields: string[];
   };
+  _id: string;
   id: string;
   '@type': APIResourceType; // "Dataset" | "ComputationalTool" | "Resource Catalog"
   name: string;
@@ -521,6 +528,7 @@ export interface FormattedResource {
   collectionType?: CollectionType | null;
   condition: string | null;
   conditionsOfAccess: AccessTypes | null;
+  creativeWorkStatus?: CreativeWorkStatusDatasetType | string | null;
   creditText: string | null;
   date: string | null;
   dateCreated: string | null;
@@ -536,7 +544,7 @@ export interface FormattedResource {
   exampleOfWork: ExampleOfWork | null;
   featureList: FeatureListProperties[] | null;
   funding: Funding[] | null;
-  genre: Domain | null;
+  genre: Domain | string[] | null;
   hasAPI: boolean | null;
   hasDownload:
     | 'All content'
@@ -582,17 +590,7 @@ export interface FormattedResource {
   temporalCoverage: TemporalCoverage[] | null;
   topicCategory: TopicCategory[] | null;
   url: string | null; // link to dataset in the source repo.
-  usageInfo?:
-    | {
-        name?: string | null;
-        url?: string | null;
-        description?: string | null;
-      }
-    | {
-        name?: string | null;
-        url?: string | null;
-        description?: string | null;
-      }[];
+  usageInfo?: UsageInfo | UsageInfo[];
   variableMeasured:
     | string[]
     | {

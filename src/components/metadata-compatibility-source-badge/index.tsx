@@ -19,11 +19,9 @@ export const MetadataCompatibilitySourceBadge: React.FC<{
       >
         Metadata Compatibility
       </TooltipWithLink>
-      <Box w='350px' h='70px'>
+      <Box w='350px'>
         <ParentSize>
-          {({ width, height }) => (
-            <CompatibilityBadge width={width} height={height} data={data} />
-          )}
+          {({ width }) => <CompatibilityBadge width={width} data={data} />}
         </ParentSize>
       </Box>
     </>

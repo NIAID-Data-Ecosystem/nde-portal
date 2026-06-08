@@ -72,6 +72,17 @@
         "description": "Search for resources using basic queries"
       }
     },
+    "/repository-matcher": {
+      "seo": {
+        "title": "Repository Matcher",
+        "description": "Find a suitable repository to deposit your data using the NIAID Data Ecosystem Discovery Portal.",
+        "keywords": []
+      },
+      "nav": {
+        "label": "Respository Matcher",
+        "description": "Find a suitable repository to deposit your data"
+      }
+    },
     "/advanced-search": {
       "seo": {
         "title": "Advanced Search",
@@ -312,6 +323,9 @@
           },
           {
             "page": "/api"
+          },
+          {
+            "page": "/repository-matcher"
           }
         ]
       },
