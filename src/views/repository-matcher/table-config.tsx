@@ -1,19 +1,6 @@
 import React from 'react';
-import {
-  Box,
-  Circle,
-  HStack,
-  Tag,
-  TagLabel,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
-import { Repository } from 'src/hooks/api/useRepoData';
-import {
-  AccessTypes,
-  DefinedTerm,
-  FormattedResource,
-} from 'src/utils/api/types';
+import { Circle, HStack, Tag, TagLabel, Text, VStack } from '@chakra-ui/react';
+import { AccessTypes, DefinedTerm } from 'src/utils/api/types';
 import {
   formatConditionsOfAccess,
   getColorScheme,
