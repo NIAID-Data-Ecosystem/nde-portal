@@ -13,7 +13,9 @@ export type RepositoryMatcherRow = {
   _search: string;
 } & Record<string, unknown>;
 
-const defaultSearchValue = (value: unknown): string | string[] | null => {
+export const defaultSearchValue = (
+  value: unknown,
+): string | string[] | null => {
   if (value == null) return null;
   if (typeof value === 'string') return value;
   if (typeof value === 'number') return String(value);

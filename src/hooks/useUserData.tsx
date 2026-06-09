@@ -21,6 +21,43 @@ export type FavoriteDataset = {
   saved_at?: string;
 };
 
+/**
+ * Mock favorite datasets used to populate the user's saved resources in
+ * development mode.
+ */
+export const MOCK_FAVORITE_DATASETS: FavoriteDataset[] = [
+  {
+    dataset_id: 'figshare_25077557',
+    name: 'S1 Data -',
+    saved_at: '2026-05-28T20:52:16.015Z',
+  },
+  {
+    dataset_id: 'biotools_123fastq',
+    name: '123FASTQ',
+    saved_at: '2026-05-21T20:52:22.978Z',
+  },
+  {
+    dataset_id: 'figshare_25077596',
+    name: 'Descriptive statistics and correlation matrix.',
+    saved_at: '2026-05-27T20:52:16.714Z',
+  },
+  {
+    dataset_id: 'figshare_25077600',
+    name: 'Summary of the distribution, host plants and molecular data for the non-native psyllid taxa of the central Macaronesian islands.',
+    saved_at: '2026-05-23T20:52:20.978Z',
+  },
+  {
+    dataset_id: 'figshare_25077606',
+    name: 'Primer combinations used to amplify cox1 with reference, sequence, annealing temperature, and amplicon length.',
+    saved_at: '2026-05-22T20:52:21.978Z',
+  },
+  {
+    dataset_id: 'figshare_25077693',
+    name: 'Institutional-level dispositions limiting glaucoma care.',
+    saved_at: '2026-05-21T20:52:22.978Z',
+  },
+];
+
 export type UserProfile = UserPreferences & {
   username: string;
   oauth_provider: string;
@@ -46,7 +83,7 @@ const DEFAULT_MOCK_PROFILE: UserProfile = {
   linked_accounts: [],
   ai_toggle_preference: false,
   favorite_searches: [],
-  favorite_datasets: [],
+  favorite_datasets: MOCK_FAVORITE_DATASETS,
   name: process.env.NEXT_PUBLIC_MOCK_AUTH_NAME || 'Mock User',
   email: process.env.NEXT_PUBLIC_MOCK_AUTH_EMAIL || 'user@email.com',
   beta: true,
@@ -76,7 +113,13 @@ export function useUserData() {
   );
 
   const mockUserDataRef = useRef<{ profile: UserProfile }>({
-    profile: { ...DEFAULT_MOCK_PROFILE },
+    // Clone the arrays so the mock API's push/filter operations don't mutate
+    // the shared DEFAULT_MOCK_PROFILE / MOCK_FAVORITE_DATASETS constants.
+    profile: {
+      ...DEFAULT_MOCK_PROFILE,
+      favorite_searches: [...DEFAULT_MOCK_PROFILE.favorite_searches],
+      favorite_datasets: [...DEFAULT_MOCK_PROFILE.favorite_datasets],
+    },
   });
 
   const logApiResult = useCallback(
