@@ -188,7 +188,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     },
     info: {
       description:
-        'Access-level definitions Options include open (freely available), restricted (may include restrictions such as on use), closed (requires registration to access), or embargoed (unpublished).',
+        'Access-level definitions Options include open (freely available), controlled (may include restrictions such as on use), or registered (requires registration to access).',
       filterDescription: getMetadataDescription('conditionsOfAccess') || '',
       tooltip: getMetadataDescription('conditionsOfAccess') || '',
       terms: [
@@ -202,12 +202,12 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
             'The repository contains data that varies at the record level',
         },
         {
-          label: 'Restricted Access',
+          label: 'Controlled Access',
           description:
             'The repository may include restrictions such as for access or use',
         },
         {
-          label: 'Closed Access',
+          label: 'Registered Access',
           description: 'The repository requires registration to access',
         },
       ],
