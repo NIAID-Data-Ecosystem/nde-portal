@@ -1,8 +1,8 @@
-import { FavoriteDataset, FavoriteSearch } from 'src/hooks/useUserData';
+import { SavedDataset, SavedQuery } from 'src/hooks/useUserData/types';
 
 /** Items the saved page can render in a table. */
-export type SavedItem = FavoriteDataset | FavoriteSearch;
-export interface SavedResourceItem extends FavoriteDataset {}
+export type SavedItem = SavedDataset | SavedQuery;
+export interface SavedResourceItem extends SavedDataset {}
 
 /**
  * A formatted table row. Each column's transformed value is keyed by column

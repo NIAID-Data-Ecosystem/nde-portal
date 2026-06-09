@@ -52,10 +52,9 @@ export const SearchResultsHeader = ({
 }) => {
   const { user, login } = useAuth();
 
-  const { favoriteSearches, saveFavoriteSearch, removeFavoriteSearch } =
-    useUserData();
+  const { savedQueries, addSavedQuery, removeSavedQuery } = useUserData();
 
-  const favoriteIndex = favoriteSearches.findIndex(
+  const favoriteIndex = savedQueries.findIndex(
     search => search.query === querystring,
   );
   const isFavorited = favoriteIndex !== -1;
@@ -106,10 +105,11 @@ export const SearchResultsHeader = ({
                   return;
                 }
                 return isFavorited
-                  ? removeFavoriteSearch(favoriteIndex)
-                  : saveFavoriteSearch({
+                  ? removeSavedQuery(favoriteIndex)
+                  : addSavedQuery({
                       query: querystring,
                       name: `Search: ${querystring}`,
+                      filters: {},
                     });
               }}
             />

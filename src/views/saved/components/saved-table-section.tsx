@@ -32,6 +32,10 @@ interface SavedTableSectionProps<TItem> {
   tableAriaLabel: string;
   caption: string;
   emptyState?: React.ReactNode;
+  tableContainerProps?: Omit<
+    React.ComponentProps<typeof Table>['tableContainerProps'],
+    'children'
+  >;
 }
 
 /**
@@ -50,6 +54,7 @@ export function SavedTableSection<TItem>({
   searchPlaceholder,
   searchAriaLabel,
   tableAriaLabel,
+  tableContainerProps = TABLE_CONTAINER_PROPS,
   caption,
   emptyState,
 }: SavedTableSectionProps<TItem>) {
@@ -185,7 +190,7 @@ export function SavedTableSection<TItem>({
         hasPagination={true}
         stickyHeader
         virtualized
-        tableContainerProps={TABLE_CONTAINER_PROPS}
+        tableContainerProps={tableContainerProps}
         getTableRowProps={getTableRowProps}
         controlledSortProperty={sortProperty}
         controlledSortAsc={sortAsc}

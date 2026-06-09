@@ -7,23 +7,20 @@ import {
 } from '../repository-matcher/components/TableCells';
 import { SavedColumn, SavedResourceItem, SavedRow } from './types';
 import { defaultSearchValue } from '../repository-matcher/hooks/useRepositoryMatcherData';
-import {
-  FavoriteDataset,
-  FavoriteSearch,
-  useUserData,
-} from 'src/hooks/useUserData';
-import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
 
-const SavedNameCell = ({
+import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
+import { SavedDataset, SavedQuery } from 'src/hooks/useUserData/types';
+import { useUserData } from 'src/hooks/useUserData';
+
+const SavedResourceNameCell = ({
   value,
   isLoading,
 }: {
-  value: FavoriteDataset & { url: string };
+  value: SavedDataset & { url: string };
   isLoading?: boolean;
 }) => {
-  const { favoriteDatasets, saveFavoriteDataset, removeFavoriteDataset } =
-    useUserData();
-  const isFavorited = !!favoriteDatasets.find(
+  const { savedDatasets, addSavedDataset, removeSavedDataset } = useUserData();
+  const isFavorited = !!savedDatasets.find(
     ds => ds.dataset_id === value.dataset_id,
   );
   return (
@@ -32,8 +29,8 @@ const SavedNameCell = ({
         isFavorited={isFavorited}
         onClick={() =>
           isFavorited
-            ? removeFavoriteDataset(value.dataset_id)
-            : saveFavoriteDataset(value)
+            ? removeSavedDataset(value.dataset_id)
+            : addSavedDataset(value)
         }
       />
       <VStack alignItems='flex-start' spacing={1} fontSize='xs'>
@@ -49,41 +46,33 @@ const SavedNameCell = ({
   );
 };
 
-const SavedSearchNameCell = ({
+const SavedQueryNameCell = ({
   value,
   isLoading,
 }: {
-  value: FavoriteSearch & { url: string };
+  value: SavedQuery & { url: string };
   isLoading?: boolean;
 }) => {
-  const { favoriteSearches, saveFavoriteSearch, removeFavoriteSearch } =
-    useUserData();
-  const favoriteIndex = favoriteSearches.findIndex(
+  const { savedQueries, addSavedQuery, removeSavedQuery } = useUserData();
+  const favoriteIndex = savedQueries.findIndex(
     search => search.query === value.query,
   );
   const isFavorited = favoriteIndex !== -1;
   return (
-    <HStack alignItems='flex-start'>
+    <HStack alignItems='center'>
       <BookmarkIconButton
         isFavorited={isFavorited}
-        aria-label={isFavorited ? 'Remove saved search' : 'Save search'}
+        aria-label={isFavorited ? 'Remove saved query' : 'Save query'}
         onClick={() =>
-          isFavorited
-            ? removeFavoriteSearch(favoriteIndex)
-            : saveFavoriteSearch({ query: value.query, name: value.name })
+          isFavorited ? removeSavedQuery(favoriteIndex) : addSavedQuery(value)
         }
       />
-      <VStack alignItems='flex-start' spacing={1} fontSize='xs'>
-        <TextCellWithLink
-          label={value?.name || ''}
-          url={value?.url}
-          isLoading={isLoading}
-          isExternal={false}
-        />
-        <Text color='gray.700' noOfLines={1}>
-          {value?.query}
-        </Text>
-      </VStack>
+      <TextCellWithLink
+        label={value?.query || ''}
+        url={value?.url}
+        isLoading={isLoading}
+        isExternal={false}
+      />
     </HStack>
   );
 };
@@ -94,13 +83,13 @@ export const SAVED_RESOURCE_COLUMNS: SavedColumn<SavedResourceItem, any>[] = [
     label: getMetadataName('name') || '',
     fields: ['name', 'dataset_id'],
     columns: { isSortable: true, isDefault: true },
-    transform: (item): FavoriteDataset & { url: string } => ({
+    transform: (item): SavedDataset & { url: string } => ({
       ...item,
       url: `/resources?id=${item.dataset_id}`,
     }),
-    getSortValue: (value: FavoriteDataset) => value.name.toLowerCase(),
-    getSearchValue: (value: FavoriteDataset) => value.name,
-    component: SavedNameCell,
+    getSortValue: (value: SavedDataset) => value.name.toLowerCase(),
+    getSearchValue: (value: SavedDataset) => value.name,
+    component: SavedResourceNameCell,
   },
   {
     id: 'saved_at',
@@ -183,19 +172,19 @@ export const SAVED_RESOURCE_COLUMNS: SavedColumn<SavedResourceItem, any>[] = [
   // },
 ];
 
-export const FAVORITE_SEARCH_COLUMNS: SavedColumn<FavoriteSearch, any>[] = [
+export const FAVORITE_SEARCH_COLUMNS: SavedColumn<SavedQuery, any>[] = [
   {
     id: 'name',
     label: 'Name',
     fields: ['name', 'query'],
     columns: { isSortable: true, isDefault: true },
-    transform: (item): FavoriteSearch & { url: string } => ({
+    transform: (item): SavedQuery & { url: string } => ({
       ...item,
       url: `/search?q=${encodeURIComponent(item.query)}`,
     }),
-    getSortValue: (value: FavoriteSearch) => value.name.toLowerCase(),
-    getSearchValue: (value: FavoriteSearch) => `${value.name} ${value.query}`,
-    component: SavedSearchNameCell,
+    getSortValue: (value: SavedQuery) => value.name.toLowerCase(),
+    getSearchValue: (value: SavedQuery) => `${value.name} ${value.query}`,
+    component: SavedQueryNameCell,
   },
   {
     id: 'saved_at',

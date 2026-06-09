@@ -11,6 +11,7 @@ export type SavedQuery = {
   query: string;
   name: string;
   saved_at?: string;
+  filters: Record<string, any>;
 };
 
 export type SavedDataset = {

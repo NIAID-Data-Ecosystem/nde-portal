@@ -7,6 +7,7 @@ import {
   UserPreferencesKeys,
   UserProfile,
 } from './types';
+import { MOCK_SAVED_QUERIES } from './mocks/saved_queries';
 
 const DEFAULT_PREFERENCES: UserPreferences = {
   ai_toggle_preference: false,
@@ -20,7 +21,7 @@ const DEFAULT_MOCK_PROFILE: UserProfile = {
   oauth_provider: process.env.NEXT_PUBLIC_MOCK_AUTH_PROVIDER || 'github',
   linked_accounts: [],
   ai_toggle_preference: false,
-  favorite_searches: [],
+  favorite_searches: MOCK_SAVED_QUERIES,
   favorite_datasets: MOCK_SAVED_DATASETS,
   name: process.env.NEXT_PUBLIC_MOCK_AUTH_NAME || 'Mock User',
   email: process.env.NEXT_PUBLIC_MOCK_AUTH_EMAIL || 'user@email.com',
@@ -42,9 +43,9 @@ export function useUserData() {
   const [preferences, setPreferences] =
     useState<UserPreferences>(DEFAULT_PREFERENCES);
 
-  const [favoriteSearches, setFavoriteSearches] = useState<SavedQuery[]>([]);
+  const [savedQueries, setSavedQueries] = useState<SavedQuery[]>([]);
 
-  const [favoriteDatasets, setFavoriteDatasets] = useState<SavedDataset[]>([]);
+  const [savedDatasets, setSavedDatasets] = useState<SavedDataset[]>([]);
 
   const mockUserDataRef = useRef<{ profile: UserProfile }>({
     // Clone the arrays so the mock API's push/filter operations don't mutate
@@ -110,6 +111,7 @@ export function useUserData() {
         store.profile.favorite_searches.push({
           query: payload.query,
           name: payload.name,
+          filters: payload.filters,
           saved_at: now,
         });
         store.profile.updated = now;
@@ -262,10 +264,10 @@ export function useUserData() {
       }));
 
       if (Array.isArray(profile.favorite_searches)) {
-        setFavoriteSearches(profile.favorite_searches);
+        setSavedQueries(profile.favorite_searches);
       }
       if (Array.isArray(profile.favorite_datasets)) {
-        setFavoriteDatasets(profile.favorite_datasets);
+        setSavedDatasets(profile.favorite_datasets);
       }
     }
     return result;
@@ -289,7 +291,7 @@ export function useUserData() {
     [callUserDataApi, preferences],
   );
 
-  const saveFavoriteSearch = useCallback(
+  const addSavedQuery = useCallback(
     async (search: SavedQuery) => {
       const result = await callUserDataApi(
         'POST',
@@ -299,7 +301,7 @@ export function useUserData() {
       if (result && 'body' in result && result.ok && result.body) {
         const body = result.body as { favorite_searches?: SavedQuery[] };
         if (Array.isArray(body.favorite_searches)) {
-          setFavoriteSearches(body.favorite_searches);
+          setSavedQueries(body.favorite_searches);
         }
       }
       return result;
@@ -307,7 +309,7 @@ export function useUserData() {
     [callUserDataApi],
   );
 
-  const removeFavoriteSearch = useCallback(
+  const removeSavedQuery = useCallback(
     async (index: number) => {
       const result = await callUserDataApi(
         'DELETE',
@@ -317,7 +319,7 @@ export function useUserData() {
       if (result && 'body' in result && result.ok && result.body) {
         const body = result.body as { favorite_searches?: SavedQuery[] };
         if (Array.isArray(body.favorite_searches)) {
-          setFavoriteSearches(body.favorite_searches);
+          setSavedQueries(body.favorite_searches);
         }
       }
       return result;
@@ -325,7 +327,7 @@ export function useUserData() {
     [callUserDataApi],
   );
 
-  const saveFavoriteDataset = useCallback(
+  const addSavedDataset = useCallback(
     async (dataset: SavedDataset) => {
       const result = await callUserDataApi(
         'POST',
@@ -335,7 +337,7 @@ export function useUserData() {
       if (result && 'body' in result && result.ok && result.body) {
         const body = result.body as { favorite_datasets?: SavedDataset[] };
         if (Array.isArray(body.favorite_datasets)) {
-          setFavoriteDatasets(body.favorite_datasets);
+          setSavedDatasets(body.favorite_datasets);
         }
       }
       return result;
@@ -343,7 +345,7 @@ export function useUserData() {
     [callUserDataApi],
   );
 
-  const removeFavoriteDataset = useCallback(
+  const removeSavedDataset = useCallback(
     async (datasetId: string) => {
       const result = await callUserDataApi(
         'DELETE',
@@ -355,7 +357,7 @@ export function useUserData() {
       if (result && 'body' in result && result.ok && result.body) {
         const body = result.body as { favorite_datasets?: SavedDataset[] };
         if (Array.isArray(body.favorite_datasets)) {
-          setFavoriteDatasets(body.favorite_datasets);
+          setSavedDatasets(body.favorite_datasets);
         }
       }
       return result;
@@ -365,14 +367,14 @@ export function useUserData() {
 
   return {
     preferences,
-    favoriteSearches,
-    favoriteDatasets,
+    savedQueries,
+    savedDatasets,
     isDevMode,
     getProfile,
     updatePreferenceField,
-    saveFavoriteSearch,
-    removeFavoriteSearch,
-    saveFavoriteDataset,
-    removeFavoriteDataset,
+    addSavedQuery,
+    removeSavedQuery,
+    addSavedDataset,
+    removeSavedDataset,
   };
 }

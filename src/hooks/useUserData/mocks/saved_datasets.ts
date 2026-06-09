@@ -1,4 +1,4 @@
-import { SavedDataset } from '..';
+import { SavedDataset } from '../types';
 
 /**
  * Mock saved datasets used to populate the user's saved resources in

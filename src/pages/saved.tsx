@@ -6,18 +6,18 @@ import { Box, Heading, Text, Flex, Divider } from '@chakra-ui/react';
 import { useAuth } from 'src/hooks/useAuth';
 import { withAuth } from 'src/components/auth/withAuth';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
-import { useUserData } from 'src/hooks/useUserData';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
 import {
   FAVORITE_SEARCH_COLUMNS,
   SAVED_RESOURCE_COLUMNS,
 } from 'src/views/saved/table-config';
 import { SavedTableSection } from 'src/views/saved/components/saved-table-section';
+import { useUserData } from 'src/hooks/useUserData';
 
 const SavedPage = () => {
   const { user } = useAuth();
-  const { favoriteDatasets, favoriteSearches, isDevMode } = useUserData();
-  console.log('favoriteSearches', favoriteSearches);
+  const { savedDatasets, savedQueries, isDevMode } = useUserData();
+  console.log('savedQueries', savedQueries);
   if (!user || !ENABLE_AUTH) return null;
   return (
     <PageContainer meta={getPageSeoConfig('/saved')} px={0} py={0}>
@@ -47,27 +47,41 @@ const SavedPage = () => {
       <Divider />
       <SavedTableSection
         title='Saved Queries'
-        description='A saved collection of searches you have bookmarked.'
+        description='A saved collection of frequently used queries.'
         columns={FAVORITE_SEARCH_COLUMNS}
-        data={favoriteSearches}
+        data={savedQueries}
         getRowId={(item, idx) => item.query || `__no-id-${idx}`}
-        unit={{ singular: 'query', plural: 'queries' }}
+        unit={{ singular: 'item', plural: 'items' }}
         searchPlaceholder='Search saved queries'
         searchAriaLabel='Search saved queries'
         tableAriaLabel='Saved queries table'
         caption='Saved queries are searches that you have bookmarked.'
+        tableContainerProps={{
+          overflowX: 'auto' as const,
+          maxHeight: '300px',
+          w: '100%',
+          bg: 'white',
+          overflowY: 'auto' as const,
+        }}
       />
       <SavedTableSection
         title='Saved Resources'
         description='A saved collection of datasets, computational tools, and other records.'
         columns={SAVED_RESOURCE_COLUMNS}
-        data={favoriteDatasets}
+        data={savedDatasets}
         getRowId={(item, idx) => item.dataset_id || `__no-id-${idx}`}
         unit={{ singular: 'item', plural: 'items' }}
         searchPlaceholder='Search saved resources'
         searchAriaLabel='Search saved resources'
         tableAriaLabel='Saved resources table'
         caption='Saved resources include datasets, computational tools, and other records that you have favorited.'
+        tableContainerProps={{
+          overflowX: 'auto' as const,
+          maxHeight: '350px',
+          w: '100%',
+          bg: 'white',
+          overflowY: 'auto' as const,
+        }}
       />
     </PageContainer>
   );
