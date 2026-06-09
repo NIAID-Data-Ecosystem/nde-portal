@@ -360,7 +360,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   // },
   {
     id: 'species',
-    label: getMetadataName('species') || '',
+    label: 'Host Species',
     fields: ['species'],
     columns: { isSortable: false, isDefault: true },
     transform: item => {
