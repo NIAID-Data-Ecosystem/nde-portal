@@ -256,8 +256,8 @@ const RepositoryMatcher: NextPage = () => {
           Repository Matcher
         </Heading>
         <Text fontSize='md' lineHeight='short'>
-          Find a suitable repository to deposit your data. Filter by type,
-          research domain, accepted data, and more.
+          Find a suitable repository that accepts research data deposits. Filter
+          by research domain, repository type, and other criteria.
         </Text>
       </Flex>
       <Divider />
