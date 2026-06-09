@@ -138,6 +138,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     info: {
       description: 'Categorical information about the content of a resource.',
       filterDescription: getMetadataDescription('genre') || '',
+      tooltip: getMetadataDescription('genre') || '',
       terms: [
         {
           label: 'IID',
@@ -189,6 +190,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       description:
         'Access-level definitions Options include open (freely available), restricted (may include restrictions such as on use), closed (requires registration to access), or embargoed (unpublished).',
       filterDescription: getMetadataDescription('conditionsOfAccess') || '',
+      tooltip: getMetadataDescription('conditionsOfAccess') || '',
       terms: [
         {
           label: 'Open Access',
@@ -240,6 +242,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     },
     info: {
       filterDescription: getMetadataDescription('healthCondition') || '',
+      tooltip: getMetadataDescription('healthCondition') || '',
     },
   },
   {
@@ -271,6 +274,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     },
     info: {
       filterDescription: getMetadataDescription('infectiousAgent') || '',
+      tooltip: getMetadataDescription('infectiousAgent') || '',
     },
   },
   // {
@@ -385,6 +389,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     },
     info: {
       filterDescription: getMetadataDescription('species') || '',
+      tooltip: getMetadataDescription('species') || '',
     },
   },
   {
@@ -416,6 +421,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     },
     info: {
       filterDescription: getMetadataDescription('measurementTechnique') || '',
+      tooltip: getMetadataDescription('measurementTechnique') || '',
     },
   },
   {
@@ -452,6 +458,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     },
     info: {
       filterDescription: getMetadataDescription('topicCategory') || '',
+      tooltip: getMetadataDescription('topicCategory') || '',
     },
   },
   // {
@@ -526,6 +533,9 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
 
       return formatted;
     },
+    info: {
+      tooltip: getMetadataDescription('temporalCoverage') || '',
+    },
   },
   {
     id: 'license',
@@ -551,6 +561,9 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         );
       }
       return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
+    },
+    info: {
+      tooltip: getMetadataDescription('license') || '',
     },
   },
   {
@@ -584,6 +597,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       description:
         'Type is a Portal-specific classification that indicates how repository content is organized and displayed within the Portal.',
       filterDescription: getMetadataDescription('type') || '',
+      tooltip: getMetadataDescription('type') || '',
       terms: [
         {
           label: 'Dataset Repository',

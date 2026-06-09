@@ -116,6 +116,7 @@ const RepositoryMatcher: NextPage = () => {
         title: col.label,
         property: col.id,
         isSortable: col.columns?.isSortable,
+        tooltip: col.info?.tooltip || '',
         props: col.columns?.style,
       }));
   }, [visibleColumnIds, orderedColumnIds]);
