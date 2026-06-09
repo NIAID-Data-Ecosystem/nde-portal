@@ -320,55 +320,7 @@ const RepositoryMatcher: NextPage = () => {
               isLoading={isLoading}
             />
           </Box>
-          {/* <!-- Filter Tags--> */}
-          {filterTags.length > 0 && (
-            <Text
-              display={{ base: 'block', md: 'none' }}
-              fontSize='sm'
-              fontWeight='semibold'
-              mb={1}
-            >
-              Active Filters:
-            </Text>
-          )}
-          <Stack
-            direction='row'
-            spacing={2}
-            flex={1}
-            flexWrap='wrap'
-            minW={{ base: 0, md: '300px' }}
-          >
-            {filterTags.length > 0 && (
-              <Tag
-                key='clear'
-                size='lg'
-                variant='outline'
-                borderRadius='full'
-                colorScheme='primary'
-                borderColor='primary.100'
-              >
-                <TagLabel>Clear all</TagLabel>
-                <TagCloseButton onClick={() => setSelectedFilters({})} />
-              </Tag>
-            )}
-            {filterTags.map(filter => {
-              const { property, value } = filter;
-              return (
-                <Tag
-                  key={property + '-' + value}
-                  size='lg'
-                  variant='subtle'
-                  borderRadius='full'
-                  colorScheme='primary'
-                >
-                  <TagLabel fontWeight='medium'>{value}</TagLabel>
-                  <TagCloseButton
-                    onClick={() => removeSingleFilter(property, value)}
-                  />
-                </Tag>
-              );
-            })}
-          </Stack>
+
           <Flex
             w='100%'
             py={2}
@@ -417,6 +369,56 @@ const RepositoryMatcher: NextPage = () => {
               </Flex>
             }
           />
+          {/* <!-- Filter Tags--> */}
+          {filterTags.length > 0 && (
+            <Text
+              display={{ base: 'block', md: 'none' }}
+              fontSize='sm'
+              fontWeight='semibold'
+              mt={4}
+            >
+              Active Filters:
+            </Text>
+          )}
+          <Stack
+            direction='row'
+            spacing={2}
+            flex={1}
+            flexWrap='wrap'
+            minW={{ base: 0, md: '300px' }}
+            my={4}
+          >
+            {filterTags.length > 0 && (
+              <Tag
+                key='clear'
+                size='lg'
+                variant='outline'
+                borderRadius='full'
+                colorScheme='primary'
+                borderColor='primary.100'
+              >
+                <TagLabel>Clear all</TagLabel>
+                <TagCloseButton onClick={() => setSelectedFilters({})} />
+              </Tag>
+            )}
+            {filterTags.map(filter => {
+              const { property, value } = filter;
+              return (
+                <Tag
+                  key={property + '-' + value}
+                  size='lg'
+                  variant='subtle'
+                  borderRadius='full'
+                  colorScheme='primary'
+                >
+                  <TagLabel fontWeight='medium'>{value}</TagLabel>
+                  <TagCloseButton
+                    onClick={() => removeSingleFilter(property, value)}
+                  />
+                </Tag>
+              );
+            })}
+          </Stack>
           {/* Information and definitions section */}
           <TableDefinitions columns={COLUMNS_WITH_DEFINITIONS} />
         </Box>

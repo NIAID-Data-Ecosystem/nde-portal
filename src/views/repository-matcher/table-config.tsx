@@ -139,7 +139,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     },
     info: {
       description:
-        'The resource type affects how records from that resource are ingested into the Discovery Portal.',
+        'Type is a Portal-specific classification that indicates how repository content is organized and displayed within the Portal.',
       filterDescription: getMetadataDescription('type') || '',
       terms: [
         {
