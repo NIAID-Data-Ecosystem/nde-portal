@@ -2,129 +2,25 @@
  * User Favorites Page - Protected route requiring authentication
  */
 
-import {
-  Box,
-  Heading,
-  Text,
-  Flex,
-  Divider,
-  Stack,
-  VStack,
-} from '@chakra-ui/react';
+import { Box, Heading, Text, Flex, Divider } from '@chakra-ui/react';
 import { useAuth } from 'src/hooks/useAuth';
 import { withAuth } from 'src/components/auth/withAuth';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { useUserData } from 'src/hooks/useUserData';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
-import { Table } from 'src/components/table';
 import {
-  formatTableData,
+  FAVORITE_SEARCH_COLUMNS,
   SAVED_RESOURCE_COLUMNS,
 } from 'src/views/saved/table-config';
-import { useCallback, useMemo, useState } from 'react';
-import { useSearchedData } from 'src/views/repository-matcher/hooks/useSearchedData';
-import { SearchInput } from 'src/components/search-input';
+import { SavedTableSection } from 'src/views/saved/components/saved-table-section';
 
-const TABLE_CONTAINER_PROPS = {
-  overflowX: 'auto' as const,
-  maxHeight: '350px',
-  w: '100%',
-  bg: 'white',
-  overflowY: 'auto' as const,
-};
-
-function UserFavouritesPage() {
+const SavedPage = () => {
   const { user } = useAuth();
-  const { favoriteDatasets, isDevMode } = useUserData();
-
-  const savedResourcesColumns = useMemo(() => {
-    return SAVED_RESOURCE_COLUMNS.map(col => ({
-      title: col.label,
-      property: col.id,
-      isSortable: col.columns?.isSortable,
-      props: col.columns?.style,
-    }));
-  }, []);
-
-  /****** Search *****/
-  const [searchTerm, setSearchTerm] = useState('');
-  const handleSearchChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value),
-    [],
-  );
-  // Search iterates ALL columns (incl. hidden), so toggling visibility
-  // doesn't drop matches that live in hidden columns.
-  const searchedData = useSearchedData(
-    formatTableData(favoriteDatasets),
-    searchTerm,
-  );
-
-  /****** Sort *****/
-  const [sortProperty, setSortProperty] = useState<string>(
-    SAVED_RESOURCE_COLUMNS[0].id,
-  );
-  const [sortAsc, setSortAsc] = useState(true);
-
-  const handleSort = useCallback((property: string, ascending: boolean) => {
-    setSortProperty(property);
-    setSortAsc(ascending);
-  }, []);
-
-  const savedResourcesData = useMemo(() => {
-    if (!searchedData?.length) return searchedData;
-    const col = SAVED_RESOURCE_COLUMNS.find(c => c.id === sortProperty);
-    if (!col) return searchedData;
-    const accessor = col.getSortValue ?? ((v: any) => v);
-    return [...searchedData].sort((a, b) => {
-      let va: any = accessor((a as any)[col.id]);
-      let vb: any = accessor((b as any)[col.id]);
-      va = va ?? (typeof va === 'number' ? 0 : '');
-      vb = vb ?? (typeof vb === 'number' ? 0 : '');
-      const cmp =
-        typeof va === 'number' && typeof vb === 'number'
-          ? va - vb
-          : String(va).localeCompare(String(vb), undefined, {
-              sensitivity: 'base',
-              numeric: true,
-            });
-      return sortAsc ? cmp : -cmp;
-    });
-  }, [searchedData, sortProperty, sortAsc]);
-
-  // Stable references so the table's row-level memoization isn't defeated by
-  // new function/object identities on every page render.
-  const getTableRowProps = useCallback(
-    (_: any, idx: number) => ({
-      bg: idx % 2 === 0 ? 'white' : '#fafbfd',
-      _hover: { bg: 'primary.50' },
-    }),
-    [],
-  );
-
-  const getCells = useCallback(
-    ({
-      column,
-      data: row,
-      isLoading: rowLoading,
-    }: {
-      column: { property: string };
-      data: any;
-      isLoading?: boolean;
-    }) => {
-      const col = SAVED_RESOURCE_COLUMNS.find(c => c.id === column.property);
-      if (!col) return null;
-      return col.component({
-        value: row?.[col.id],
-        isLoading: rowLoading,
-        data: row,
-      });
-    },
-    [],
-  );
-
+  const { favoriteDatasets, favoriteSearches, isDevMode } = useUserData();
+  console.log('favoriteSearches', favoriteSearches);
   if (!user || !ENABLE_AUTH) return null;
   return (
-    <PageContainer meta={getPageSeoConfig('/favorites')} px={0} py={0}>
+    <PageContainer meta={getPageSeoConfig('/saved')} px={0} py={0}>
       <Flex direction='column' gap={4} px={{ base: 4, lg: 40 }} py={8}>
         <Heading as='h1' size='lg'>
           Saved
@@ -149,72 +45,33 @@ function UserFavouritesPage() {
         )}
       </Flex>
       <Divider />
-      <Flex direction='column' gap={4} px={{ base: 4, lg: 40 }} py={8}>
-        <Stack
-          direction='row'
-          spacing={6}
-          justifyContent='space-between'
-          flexWrap='wrap'
-        >
-          <VStack align='start' gap={0.5} fontSize='sm' fontWeight='normal'>
-            <Text fontWeight='semibold'>
-              Saved Resources
-              <Text as='span' color='gray.700' fontWeight='medium' ml={2}>
-                {favoriteDatasets.length}{' '}
-                {favoriteDatasets.length === 1 ? 'item' : 'items'}
-              </Text>
-            </Text>
-            <Text lineHeight='short'>
-              A saved collection of datasets, computational tools, and other
-              records.
-            </Text>
-          </VStack>
-          <Flex
-            maxWidth={{ base: 'unset', lg: '350px' }}
-            minWidth='300px'
-            flex={1}
-            width='100%'
-          >
-            <SearchInput
-              size='sm'
-              placeholder='Search saved resources'
-              ariaLabel='Search saved resources'
-              value={searchTerm}
-              handleChange={handleSearchChange}
-              isResponsive={false}
-              alignItems='flex-end'
-              onClose={() => setSearchTerm('')}
-              width='100%'
-              colorScheme='primary'
-            />
-          </Flex>
-        </Stack>
-        <Table
-          ariaLabel='Saved resources table'
-          caption='Saved resources include datasets, computational tools, and other records that you have favorited.'
-          columns={savedResourcesColumns}
-          data={savedResourcesData as any}
-          isLoading={false}
-          hasPagination={true}
-          stickyHeader
-          virtualized
-          tableContainerProps={TABLE_CONTAINER_PROPS}
-          getTableRowProps={getTableRowProps}
-          controlledSortProperty={sortProperty}
-          controlledSortAsc={sortAsc}
-          onControlledSort={handleSort}
-          getCells={getCells}
-          emptyState={
-            <Flex direction='column' align='center' py={10}>
-              <Text fontWeight='bold'>No matches</Text>
-              <Text color='gray.700'>Try broadening your search.</Text>
-            </Flex>
-          }
-        />
-      </Flex>
+      <SavedTableSection
+        title='Saved Queries'
+        description='A saved collection of searches you have bookmarked.'
+        columns={FAVORITE_SEARCH_COLUMNS}
+        data={favoriteSearches}
+        getRowId={(item, idx) => item.query || `__no-id-${idx}`}
+        unit={{ singular: 'query', plural: 'queries' }}
+        searchPlaceholder='Search saved queries'
+        searchAriaLabel='Search saved queries'
+        tableAriaLabel='Saved queries table'
+        caption='Saved queries are searches that you have bookmarked.'
+      />
+      <SavedTableSection
+        title='Saved Resources'
+        description='A saved collection of datasets, computational tools, and other records.'
+        columns={SAVED_RESOURCE_COLUMNS}
+        data={favoriteDatasets}
+        getRowId={(item, idx) => item.dataset_id || `__no-id-${idx}`}
+        unit={{ singular: 'item', plural: 'items' }}
+        searchPlaceholder='Search saved resources'
+        searchAriaLabel='Search saved resources'
+        tableAriaLabel='Saved resources table'
+        caption='Saved resources include datasets, computational tools, and other records that you have favorited.'
+      />
     </PageContainer>
   );
-}
+};
 
 // Wrap with auth protection - shows login prompt if not authenticated
-export default withAuth(UserFavouritesPage);
+export default withAuth(SavedPage);

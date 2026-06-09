@@ -5,13 +5,13 @@ import {
   TextCell,
   TextCellWithLink,
 } from '../repository-matcher/components/TableCells';
-import {
-  SavedResourceColumn,
-  SavedResourceItem,
-  SavedResourceRow,
-} from './types';
+import { SavedColumn, SavedResourceItem, SavedRow } from './types';
 import { defaultSearchValue } from '../repository-matcher/hooks/useRepositoryMatcherData';
-import { FavoriteDataset, useUserData } from 'src/hooks/useUserData';
+import {
+  FavoriteDataset,
+  FavoriteSearch,
+  useUserData,
+} from 'src/hooks/useUserData';
 import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
 
 const SavedNameCell = ({
@@ -49,7 +49,46 @@ const SavedNameCell = ({
   );
 };
 
-export const SAVED_RESOURCE_COLUMNS: SavedResourceColumn<any>[] = [
+const SavedSearchNameCell = ({
+  value,
+  isLoading,
+}: {
+  value: FavoriteSearch & { url: string };
+  isLoading?: boolean;
+}) => {
+  const { favoriteSearches, saveFavoriteSearch, removeFavoriteSearch } =
+    useUserData();
+  const favoriteIndex = favoriteSearches.findIndex(
+    search => search.query === value.query,
+  );
+  const isFavorited = favoriteIndex !== -1;
+  return (
+    <HStack alignItems='flex-start'>
+      <BookmarkIconButton
+        isFavorited={isFavorited}
+        aria-label={isFavorited ? 'Remove saved search' : 'Save search'}
+        onClick={() =>
+          isFavorited
+            ? removeFavoriteSearch(favoriteIndex)
+            : saveFavoriteSearch({ query: value.query, name: value.name })
+        }
+      />
+      <VStack alignItems='flex-start' spacing={1} fontSize='xs'>
+        <TextCellWithLink
+          label={value?.name || ''}
+          url={value?.url}
+          isLoading={isLoading}
+          isExternal={false}
+        />
+        <Text color='gray.700' noOfLines={1}>
+          {value?.query}
+        </Text>
+      </VStack>
+    </HStack>
+  );
+};
+
+export const SAVED_RESOURCE_COLUMNS: SavedColumn<SavedResourceItem, any>[] = [
   {
     id: 'name',
     label: getMetadataName('name') || '',
@@ -144,19 +183,65 @@ export const SAVED_RESOURCE_COLUMNS: SavedResourceColumn<any>[] = [
   // },
 ];
 
-export const formatTableData = (data: SavedResourceItem[]) => {
-  const rows: SavedResourceRow[] = [];
+export const FAVORITE_SEARCH_COLUMNS: SavedColumn<FavoriteSearch, any>[] = [
+  {
+    id: 'name',
+    label: 'Name',
+    fields: ['name', 'query'],
+    columns: { isSortable: true, isDefault: true },
+    transform: (item): FavoriteSearch & { url: string } => ({
+      ...item,
+      url: `/search?q=${encodeURIComponent(item.query)}`,
+    }),
+    getSortValue: (value: FavoriteSearch) => value.name.toLowerCase(),
+    getSearchValue: (value: FavoriteSearch) => `${value.name} ${value.query}`,
+    component: SavedSearchNameCell,
+  },
+  {
+    id: 'saved_at',
+    label: 'Saved On',
+    fields: ['saved_at'],
+    columns: {
+      isSortable: true,
+      isDefault: true,
+      style: { maxWidth: '200px', minWidth: '200px' },
+    },
+    transform: item => {
+      if (!item.saved_at) return '';
+      return new Date(item.saved_at).toLocaleDateString();
+    },
+    component: ({
+      value,
+      isLoading,
+    }: {
+      value: string;
+      isLoading?: boolean;
+    }) => {
+      return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
+    },
+  },
+];
+
+/**
+ * Builds table rows from saved items: applies each column's `transform`,
+ * dedupes by `getRowId`, and prebuilds a lowercase `_search` blob so search
+ * matches against every column (including hidden ones).
+ */
+export const formatTableData = <TItem,>(
+  data: TItem[],
+  columns: SavedColumn<TItem, any>[],
+  getRowId: (item: TItem, index: number) => string,
+) => {
+  const rows: SavedRow[] = [];
   const seen = new Set<string>();
 
   data.forEach((item, idx) => {
-    const id = item.dataset_id || `__no-id-${idx}`;
+    const id = getRowId(item, idx) || `__no-id-${idx}`;
     if (seen.has(id)) return;
     seen.add(id);
-    const row = {
-      _id: item.dataset_id || '',
-    } as SavedResourceRow & Record<string, any>;
+    const row = { _id: id } as SavedRow;
     const searchParts: string[] = [];
-    for (const col of SAVED_RESOURCE_COLUMNS) {
+    for (const col of columns) {
       const value = col.transform(item);
       row[col.id] = value;
       const searchValue = col.getSearchValue

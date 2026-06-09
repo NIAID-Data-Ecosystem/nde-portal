@@ -1,16 +1,20 @@
-import { FavoriteDataset } from 'src/hooks/useUserData';
+import { FavoriteDataset, FavoriteSearch } from 'src/hooks/useUserData';
 
+/** Items the saved page can render in a table. */
+export type SavedItem = FavoriteDataset | FavoriteSearch;
 export interface SavedResourceItem extends FavoriteDataset {}
 
-export interface SavedResourceRow {
+/**
+ * A formatted table row. Each column's transformed value is keyed by column
+ * id; `_id` dedupes rows and `_search` is the prebuilt search blob.
+ */
+export interface SavedRow {
   _id: string;
-  name: string;
-  dataset_id: string;
-  saved_at: string;
   _search: string;
+  [key: string]: unknown;
 }
 
-export type SavedResourceColumn<TValue = unknown> = {
+export type SavedColumn<TItem = SavedItem, TValue = unknown> = {
   id: string;
   label: string;
   fields: string[];
@@ -20,11 +24,11 @@ export type SavedResourceColumn<TValue = unknown> = {
     style?: React.CSSProperties;
   };
 
-  transform: (item: SavedResourceItem) => TValue;
+  transform: (item: TItem) => TValue;
   component: (props: {
     value: TValue;
     isLoading?: boolean;
-    data: SavedResourceItem;
+    data: TItem;
   }) => React.ReactNode;
   /**
    * Reduce the column's display value to a sortable primitive. Omit for
@@ -37,8 +41,4 @@ export type SavedResourceColumn<TValue = unknown> = {
    * out of search. Omit when the display value is already string/string[].
    */
   getSearchValue?: (value: TValue) => string | string[] | null;
-  /**
-   * Opts the column into the filter sidebar. Omit to leave the column out of
-   * filtering.
-   */
 };
