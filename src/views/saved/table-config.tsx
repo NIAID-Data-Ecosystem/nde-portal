@@ -5,7 +5,6 @@ import {
   TextCell,
   TextCellWithLink,
 } from '../repository-matcher/components/TableCells';
-import { NameValue } from '../repository-matcher/types';
 import {
   SavedResourceColumn,
   SavedResourceItem,
@@ -14,6 +13,41 @@ import {
 import { defaultSearchValue } from '../repository-matcher/hooks/useRepositoryMatcherData';
 import { FavoriteDataset, useUserData } from 'src/hooks/useUserData';
 import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
+
+const SavedNameCell = ({
+  value,
+  isLoading,
+}: {
+  value: FavoriteDataset & { url: string };
+  isLoading?: boolean;
+}) => {
+  const { favoriteDatasets, saveFavoriteDataset, removeFavoriteDataset } =
+    useUserData();
+  const isFavorited = !!favoriteDatasets.find(
+    ds => ds.dataset_id === value.dataset_id,
+  );
+  return (
+    <HStack alignItems='flex-start'>
+      <BookmarkIconButton
+        isFavorited={isFavorited}
+        onClick={() =>
+          isFavorited
+            ? removeFavoriteDataset(value.dataset_id)
+            : saveFavoriteDataset(value)
+        }
+      />
+      <VStack alignItems='flex-start' spacing={1} fontSize='xs'>
+        <TextCellWithLink
+          label={value?.name || ''}
+          url={value?.url}
+          isLoading={isLoading}
+          isExternal={false}
+        />
+        <Text color='gray.700'>ID: {value?.dataset_id || ''}</Text>
+      </VStack>
+    </HStack>
+  );
+};
 
 export const SAVED_RESOURCE_COLUMNS: SavedResourceColumn<any>[] = [
   {
@@ -27,40 +61,7 @@ export const SAVED_RESOURCE_COLUMNS: SavedResourceColumn<any>[] = [
     }),
     getSortValue: (value: FavoriteDataset) => value.name.toLowerCase(),
     getSearchValue: (value: FavoriteDataset) => value.name,
-    component: ({
-      value,
-      isLoading,
-    }: {
-      value: FavoriteDataset & { url: string };
-      isLoading?: boolean;
-    }) => {
-      const { favoriteDatasets, saveFavoriteDataset, removeFavoriteDataset } =
-        useUserData();
-      const isFavorited = !!favoriteDatasets.find(
-        ds => ds.dataset_id === value.dataset_id,
-      );
-      return (
-        <HStack alignItems='flex-start'>
-          <BookmarkIconButton
-            isFavorited={isFavorited}
-            onClick={() =>
-              isFavorited
-                ? removeFavoriteDataset(value.dataset_id)
-                : saveFavoriteDataset(value)
-            }
-          />
-          <VStack alignItems='flex-start' spacing={1} fontSize='xs'>
-            <TextCellWithLink
-              label={value?.name || ''}
-              url={value?.url}
-              isLoading={isLoading}
-              isExternal={false}
-            />
-            <Text color='gray.700'>ID: {value?.dataset_id || ''}</Text>
-          </VStack>
-        </HStack>
-      );
-    },
+    component: SavedNameCell,
   },
   {
     id: 'saved_at',
