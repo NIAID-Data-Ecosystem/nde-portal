@@ -56,8 +56,15 @@ export const useRepositoryMatcherData = (fields: string[] = ['@type']) => {
     combined
       .filter(item => {
         // Exclude items that have creativeWorkStatus of 'Retired' or 'Not Accepting Data'. If not specified, include all items.
-        const status = item?.creativeWorkStatus;
-        return status === 'Accepting Data';
+        const statusIsAcceptingData =
+          item?.creativeWorkStatus === 'Accepting Data';
+
+        // Exclude items with type "Data Repository" or "Sample Repository"
+        const isDataOrSampleRepo =
+          item['type'].includes('Data Repository') ||
+          item['type'].includes('Sample Repository');
+
+        return statusIsAcceptingData && !isDataOrSampleRepo;
       })
       .forEach((item, idx) => {
         const id = item._id || `__no-id-${idx}`;

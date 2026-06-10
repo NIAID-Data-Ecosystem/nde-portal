@@ -27,6 +27,11 @@ export interface Column {
   title: string;
   property: string;
   isSortable?: boolean;
+  /**
+   * Optional descriptive text shown on a tooltip column header label.
+   * Omit to render the header without a tooltip.
+   */
+  tooltip?: string;
   props?: any;
   renderCell?: (props: {
     column: Column;
@@ -606,6 +611,7 @@ export const Table: React.FC<TableProps<any>> = ({
             key={`table-col-th-${column.property}`}
             as={cellAs}
             label={column.title}
+            tooltip={column.tooltip}
             isSelected={isSelected}
             borderBottomColor={`${colorScheme}.200`}
             isSortable={column.isSortable}
