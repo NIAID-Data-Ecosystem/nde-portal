@@ -188,7 +188,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     },
     info: {
       description:
-        'Access-level definitions Options include open (freely available), controlled (may include restrictions such as on use), or registered (requires registration to access).',
+        'Access-level definitions options include open (freely available), controlled (may include restrictions such as on use), or registered (requires registration to access).',
       filterDescription: getMetadataDescription('conditionsOfAccess') || '',
       tooltip: getMetadataDescription('conditionsOfAccess') || '',
       terms: [
