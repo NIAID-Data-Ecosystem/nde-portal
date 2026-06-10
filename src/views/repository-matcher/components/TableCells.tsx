@@ -47,7 +47,6 @@ export const DefinedTermTagList = ({
         <TagCell
           key={i}
           value={v?.name || ''}
-          // url={v?.url || undefined}
           noOfLines={1}
           isLoading={isLoading}
         />
@@ -69,12 +68,10 @@ export const DefinedTermTagList = ({
 
 export const TagCell = ({
   value,
-  url,
   noOfLines = 2,
   isLoading,
 }: {
   value: string;
-  url?: string;
   noOfLines?: number;
   isLoading?: boolean;
 }) => {
@@ -102,15 +99,15 @@ export const TagCell = ({
   return (
     <Tooltip label={label} isDisabled={!value || !isTruncated} hasArrow>
       <Box>
-        {url ? (
-          <TagWithUrl href={url} bg='page.alt'>
-            {label}
-          </TagWithUrl>
-        ) : (
-          <Tag variant='subtle' noOfLines={noOfLines} bg='page.alt'>
-            <TagLabel ref={labelRef}>{label}</TagLabel>
-          </Tag>
-        )}
+        <Tag
+          variant='subtle'
+          noOfLines={noOfLines}
+          borderRadius='full'
+          bg='page.alt'
+          color='text.body'
+        >
+          <TagLabel ref={labelRef}>{label}</TagLabel>
+        </Tag>
       </Box>
     </Tooltip>
   );
