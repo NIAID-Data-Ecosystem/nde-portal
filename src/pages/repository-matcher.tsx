@@ -34,7 +34,7 @@ import {
 } from 'src/views/repository-matcher/hooks/useRepositoryMatcherFilters';
 import { useSearchedData } from 'src/views/repository-matcher/hooks/useSearchedData';
 import { REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
-import { TableDefinitions } from 'src/views/repository-matcher/components/TableDefinitions';
+import { DataDictionary } from 'src/views/repository-matcher/components/DataDictionary';
 
 const TABLE_CONTAINER_PROPS = {
   overflowX: 'auto' as const,
@@ -421,7 +421,7 @@ const RepositoryMatcher: NextPage = () => {
           />
 
           {/* Information and definitions section */}
-          <TableDefinitions columns={COLUMNS_WITH_DEFINITIONS} />
+          <DataDictionary columns={COLUMNS_WITH_DEFINITIONS} />
         </Box>
       </Flex>
     </PageContainer>

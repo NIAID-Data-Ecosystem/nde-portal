@@ -141,14 +141,14 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       tooltip: getMetadataDescription('genre') || '',
       terms: [
         {
-          label: 'IID',
-          description:
-            'A resource specifically designed for Infectious and/or Immune-Mediated Disease content',
-        },
-        {
           label: 'Generalist',
           description:
             'A resource not specifically designed for Infectious and/or Immune-Mediated Disease content',
+        },
+        {
+          label: 'IID',
+          description:
+            'A resource specifically designed for Infectious and/or Immune-Mediated Disease content',
         },
       ],
     },
@@ -193,22 +193,22 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       tooltip: getMetadataDescription('conditionsOfAccess') || '',
       terms: [
         {
-          label: 'Open Access',
-          description: 'The data in the repository is freely available',
-        },
-        {
-          label: 'Varied Access',
-          description:
-            'The repository contains data that varies at the record level',
-        },
-        {
           label: 'Controlled Access',
           description:
             'The repository may include restrictions such as for access or use',
         },
         {
+          label: 'Open Access',
+          description: 'The data in the repository is freely available',
+        },
+        {
           label: 'Registered Access',
           description: 'The repository requires registration to access',
+        },
+        {
+          label: 'Varied Access',
+          description:
+            'The repository contains data that varies at the record level',
         },
       ],
     },
@@ -241,6 +241,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
     },
     info: {
+      description: getMetadataDescription('healthCondition') || '',
       filterDescription: getMetadataDescription('healthCondition') || '',
       tooltip: getMetadataDescription('healthCondition') || '',
     },
@@ -273,6 +274,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
     },
     info: {
+      description: getMetadataDescription('infectiousAgent') || '',
       filterDescription: getMetadataDescription('infectiousAgent') || '',
       tooltip: getMetadataDescription('infectiousAgent') || '',
     },
@@ -388,6 +390,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
     },
     info: {
+      description: getMetadataDescription('species') || '',
       filterDescription: getMetadataDescription('species') || '',
       tooltip: getMetadataDescription('species') || '',
     },
@@ -420,6 +423,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
     },
     info: {
+      description: getMetadataDescription('measurementTechnique') || '',
       filterDescription: getMetadataDescription('measurementTechnique') || '',
       tooltip: getMetadataDescription('measurementTechnique') || '',
     },
@@ -457,6 +461,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
     },
     info: {
+      description: getMetadataDescription('topicCategory') || '',
       filterDescription: getMetadataDescription('topicCategory') || '',
       tooltip: getMetadataDescription('topicCategory') || '',
     },
@@ -534,6 +539,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       return formatted;
     },
     info: {
+      description: getMetadataDescription('temporalCoverage') || '',
       tooltip: getMetadataDescription('temporalCoverage') || '',
     },
   },
@@ -563,6 +569,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
     },
     info: {
+      description: getMetadataDescription('license') || '',
       tooltip: getMetadataDescription('license') || '',
     },
   },
@@ -605,25 +612,25 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
             'A repository which holds Dataset records. Dataset metadata records are mapped and directly ingested into the Discovery Portal on a one-to-one basis.',
         },
         {
-          label: 'Sample Repository',
-          description:
-            'A repository which holds biological specimen or sample records. Metadata records about samples are mapped and directly ingested into the Discovery Portal on a one-to-one basis.',
-        },
-        {
-          label: 'Computational Tool Repository',
-          description:
-            'A repository which holds Computational Tool records. Tool metadata records are mapped and directly ingested into the Discovery Portal on a one-to-one basis.',
-        },
-        {
-          label: 'Data Repository',
-          description:
-            'A repository which holds other types of records. Records of a searchable type are aggregated from the original source and used to create Data Collection records in the Discovery Portal. Multiple records submitted to a Data Repository may end up as a single Data Collection record in the Discovery Portal.',
-        },
-        {
           label: 'Resource Catalog',
           description:
             ' A manually curated record about the repository/resource/portal etc. itself. Repositories displayed only as Resource Catalogs in the Discovery Portal are not sources of record ingest at this time.',
         },
+        // {
+        //   label: 'Computational Tool Repository',
+        //   description:
+        //   'A repository which holds Computational Tool records. Tool metadata records are mapped and directly ingested into the Discovery Portal on a one-to-one basis.',
+        // },
+        // {
+        //   label: 'Sample Repository',
+        //   description:
+        //     'A repository which holds biological specimen or sample records. Metadata records about samples are mapped and directly ingested into the Discovery Portal on a one-to-one basis.',
+        // },
+        // {
+        //   label: 'Data Repository',
+        //   description:
+        //     'A repository which holds other types of records. Records of a searchable type are aggregated from the original source and used to create Data Collection records in the Discovery Portal. Multiple records submitted to a Data Repository may end up as a single Data Collection record in the Discovery Portal.',
+        // },
       ],
     },
   },
