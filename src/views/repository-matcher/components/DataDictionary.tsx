@@ -19,10 +19,10 @@ export const DataDictionary: React.FC<DataDictionaryProps> = ({ columns }) => {
     >
       <VStack p={4} alignItems='flex-start'>
         <Heading as='h2' fontSize='lg'>
-          Data Dictionary
+          Table Dictionary
         </Heading>
         <Text lineHeight='short'>
-          [Descriptive text about the data dictionary]
+          Definitions of fields and values used in the Repository Matcher
         </Text>
       </VStack>
       {columns
