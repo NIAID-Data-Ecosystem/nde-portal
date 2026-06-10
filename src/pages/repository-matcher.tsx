@@ -321,55 +321,6 @@ const RepositoryMatcher: NextPage = () => {
               isLoading={isLoading}
             />
           </Box>
-
-          <Flex
-            w='100%'
-            py={2}
-            justifyContent='space-between'
-            alignItems='flex-end'
-          >
-            <Text fontSize='sm' fontWeight='semibold' lineHeight='normal'>
-              {sortedData?.length ?? 0} results
-            </Text>
-            <VStack alignItems='flex-end'>
-              <Checkbox
-                isChecked={stickyFirstColumn}
-                onChange={e => setStickyFirstColumn(e.target.checked)}
-                colorScheme='primary'
-              >
-                <Text fontSize='xs'>Pin first column</Text>
-              </Checkbox>
-              <CustomizeColumnsPopover
-                onVisibleColumnsChange={handleVisibleColumnsChange}
-                onColumnOrderChange={handleColumnOrderChange}
-              />
-            </VStack>
-          </Flex>
-          <Table
-            ariaLabel='Repository matcher table'
-            caption='Repositories and resource catalogs available for data deposit'
-            columns={tableColumns}
-            data={tableData as any}
-            isLoading={isLoading}
-            hasPagination={false}
-            stickyHeader
-            stickyFirstColumn={stickyFirstColumn}
-            virtualized
-            tableContainerProps={TABLE_CONTAINER_PROPS}
-            getTableRowProps={getTableRowProps}
-            controlledSortProperty={sortProperty}
-            controlledSortAsc={sortAsc}
-            onControlledSort={handleSort}
-            getCells={getCells}
-            emptyState={
-              <Flex direction='column' align='center' py={10}>
-                <Text fontWeight='bold'>No repositories match</Text>
-                <Text color='gray.600'>
-                  Try clearing some filters or broadening your search.
-                </Text>
-              </Flex>
-            }
-          />
           {/* <!-- Filter Tags--> */}
           {filterTags.length > 0 && (
             <Text
@@ -420,6 +371,55 @@ const RepositoryMatcher: NextPage = () => {
               );
             })}
           </Stack>
+          <Flex
+            w='100%'
+            py={2}
+            justifyContent='space-between'
+            alignItems='flex-end'
+          >
+            <Text fontSize='sm' fontWeight='semibold' lineHeight='normal'>
+              {sortedData?.length ?? 0} results
+            </Text>
+            <VStack alignItems='flex-end'>
+              <Checkbox
+                isChecked={stickyFirstColumn}
+                onChange={e => setStickyFirstColumn(e.target.checked)}
+                colorScheme='primary'
+              >
+                <Text fontSize='xs'>Pin first column</Text>
+              </Checkbox>
+              <CustomizeColumnsPopover
+                onVisibleColumnsChange={handleVisibleColumnsChange}
+                onColumnOrderChange={handleColumnOrderChange}
+              />
+            </VStack>
+          </Flex>
+          <Table
+            ariaLabel='Repository matcher table'
+            caption='Repositories and resource catalogs available for data deposit'
+            columns={tableColumns}
+            data={tableData as any}
+            isLoading={isLoading}
+            hasPagination={false}
+            stickyHeader
+            stickyFirstColumn={stickyFirstColumn}
+            virtualized
+            tableContainerProps={TABLE_CONTAINER_PROPS}
+            getTableRowProps={getTableRowProps}
+            controlledSortProperty={sortProperty}
+            controlledSortAsc={sortAsc}
+            onControlledSort={handleSort}
+            getCells={getCells}
+            emptyState={
+              <Flex direction='column' align='center' py={10}>
+                <Text fontWeight='bold'>No repositories match</Text>
+                <Text color='gray.600'>
+                  Try clearing some filters or broadening your search.
+                </Text>
+              </Flex>
+            }
+          />
+
           {/* Information and definitions section */}
           <TableDefinitions columns={COLUMNS_WITH_DEFINITIONS} />
         </Box>
