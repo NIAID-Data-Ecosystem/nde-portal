@@ -17,6 +17,11 @@ const ACCOUNTS_CONFIG = {
       description: 'Set site preferences',
       href: '/settings',
     },
+    {
+      label: 'Saved Searches',
+      description: 'View your saved resources and queries',
+      href: '/saved',
+    },
   ],
 };
 
