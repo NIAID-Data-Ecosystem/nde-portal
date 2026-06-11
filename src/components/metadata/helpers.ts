@@ -1,4 +1,8 @@
-import { FormattedResource } from 'src/utils/api/types';
+import {
+  FormattedResource,
+  SampleAggregate,
+  SampleCollection,
+} from 'src/utils/api/types';
 import { formatLicense } from 'src/utils/helpers';
 import { OntologyButtonProps, SearchButtonProps } from './components/buttons';
 import { uniqueId } from 'lodash';
@@ -16,6 +20,7 @@ export const SORT_ORDER = [
   'healthCondition',
   'measurementTechnique',
   'variableMeasured',
+  'sample',
   'funding',
   'license',
   'usageInfo',
@@ -131,6 +136,8 @@ export const generateMetadataContent = (
           data?.infectiousAgent,
           showItems,
         );
+      case 'sample':
+        return createSampleContent(id, property, data?.sample, showItems);
       case 'species':
         return createSpeciesContent(id, property, data?.species, showItems);
       case 'topicCategory':
@@ -657,6 +664,65 @@ const createOutputContent = (
               },
             };
           })
+        : [],
+  };
+};
+
+// Generates content specific to sample data.
+// - SampleAggregate (@type: 'Sample') is displayed as "Population Sample (n)"
+//   where n is sampleQuantity.value when it is a single QuantitativeValue and
+//   the value field is present; falls back to "Population Sample" otherwise.
+// - SampleCollection (@type: 'SampleCollection') is displayed as
+//   "Experimental Samples (n)" when numberOfItems.value is present,
+//   or "Experimental Samples" when it is absent.
+const createSampleContent = (
+  id: FormattedResource['id'],
+  property: string,
+  sample?: FormattedResource['sample'],
+  showItems = true,
+) => {
+  const getSampleDisplayName = (
+    sample: SampleAggregate | SampleCollection,
+  ): string => {
+    if (sample['@type'] === 'SampleCollection') {
+      const sampleCollection = sample as SampleCollection;
+      const count = sampleCollection.numberOfItems?.value;
+      return count !== undefined
+        ? `Experimental Samples (${count.toLocaleString()})`
+        : 'Experimental Samples';
+    }
+    const sampleAggregate = sample as SampleAggregate;
+    if (
+      sampleAggregate.sampleQuantity &&
+      !Array.isArray(sampleAggregate.sampleQuantity) &&
+      sampleAggregate.sampleQuantity.value !== undefined
+    ) {
+      return `Population Sample (${sampleAggregate.sampleQuantity.value.toLocaleString()})`;
+    }
+    return 'Population Sample';
+  };
+
+  const displayName = sample ? getSampleDisplayName(sample) : undefined;
+
+  // Build the resource URL for the #samples anchor so MetadataContent can
+  // render it as a link.
+  const resourceUrl = id ? `/resources?id=${id}#samples` : undefined;
+
+  return {
+    id: `${property}-${id}`,
+    label: 'Sample',
+    property,
+    glyph: property,
+    isDisabled: !sample,
+    url: resourceUrl,
+    items:
+      showItems && displayName
+        ? [
+            {
+              key: uniqueId(`${property}-${id}-label`),
+              name: displayName,
+            },
+          ]
         : [],
   };
 };

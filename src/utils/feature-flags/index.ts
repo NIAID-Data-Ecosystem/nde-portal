@@ -68,3 +68,7 @@ export const HIDDEN_SAMPLE_FIELDS = new Set<string>([
   'sample.sampleType.name',
   'sample.sex',
 ]);
+
+// Show the Sample UI pill and corresponding metadata accordion section on dataset cards
+// in non-production environments. To enable in production, set this flag to `true`.
+export const SHOW_SAMPLE_UI_PILL = !isProd;
