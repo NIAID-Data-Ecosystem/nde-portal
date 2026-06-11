@@ -1,7 +1,8 @@
 import React from 'react';
-import { HStack, Tag, TagLabel, Text, VStack } from '@chakra-ui/react';
+import { Button, HStack, Tag, TagLabel, Text, VStack } from '@chakra-ui/react';
 import { getMetadataName } from 'src/components/metadata';
 import {
+  TagCell,
   TextCell,
   TextCellWithLink,
 } from '../repository-matcher/components/TableCells';
@@ -229,14 +230,11 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
     label: 'Applied Filters',
     fields: ['filters'],
     columns: {
-      isSortable: true,
+      isSortable: false,
       isDefault: true,
       style: { maxWidth: '200px', minWidth: '200px' },
     },
-    transform: item => {
-      const tags = generateTags(item.filters, configMap);
-      return tags;
-    },
+    transform: item => generateTags(item.filters, configMap),
     component: ({
       value: tags,
       isLoading,
@@ -250,13 +248,24 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
       }[];
       isLoading?: boolean;
     }) => {
-      if (!tags || !tags.length) return null;
-      console.log('tags');
-      return tags.map(({ key, name, displayValue }) => (
-        <Tag key={key}>
-          <TagLabel>{`${name}: ${displayValue}`}</TagLabel>
-        </Tag>
-      ));
+      if (!tags || !tags.length)
+        return <TextCell value='' isLoading={isLoading} />;
+      return (
+        <HStack flexWrap='wrap' spacing={1}>
+          {tags.map((tag, i) => {
+            const str = `${tag.name}: ${tag.displayValue}`;
+            return (
+              <TagCell
+                key={str}
+                colorScheme='secondary'
+                value={str}
+                noOfLines={1}
+                isLoading={isLoading}
+              />
+            );
+          })}
+        </HStack>
+      );
     },
   },
 ];

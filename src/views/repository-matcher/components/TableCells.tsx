@@ -7,21 +7,22 @@ import {
   SkeletonText,
   Tag,
   TagLabel,
+  TagProps,
   Text,
   TextProps,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { DefinedTerm } from 'src/utils/api/types';
 import Tooltip from 'src/components/tooltip';
-import { TagWithUrl } from 'src/components/tag-with-url';
 import { Skeleton } from 'src/components/skeleton';
 
 const DEFAULT_MAX_VISIBLE_TAGS = 10;
 
-export const DefinedTermTagList = ({
+export const TagCellList = ({
   value,
   isLoading,
   maxVisible = DEFAULT_MAX_VISIBLE_TAGS,
+  ...tagProps
 }: {
   value?: DefinedTerm[];
   isLoading?: boolean;
@@ -49,6 +50,7 @@ export const DefinedTermTagList = ({
           value={v?.name || ''}
           noOfLines={1}
           isLoading={isLoading}
+          {...tagProps}
         />
       ))}
       {shouldTruncate && (
@@ -70,11 +72,12 @@ export const TagCell = ({
   value,
   noOfLines = 2,
   isLoading,
+  ...props
 }: {
   value: string;
   noOfLines?: number;
   isLoading?: boolean;
-}) => {
+} & TagProps) => {
   const [isTruncated, setIsTruncated] = useState(false);
   const labelRef = useRef<HTMLSpanElement>(null);
 
@@ -103,8 +106,7 @@ export const TagCell = ({
           variant='subtle'
           noOfLines={noOfLines}
           borderRadius='full'
-          bg='page.alt'
-          color='text.body'
+          {...props}
         >
           <TagLabel ref={labelRef}>{label}</TagLabel>
         </Tag>

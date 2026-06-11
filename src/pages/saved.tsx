@@ -14,6 +14,16 @@ import {
 import { SavedTableSection } from 'src/views/saved/components/saved-table-section';
 import { useUserData } from 'src/hooks/useUserData';
 
+const SAVED_PAGE_COPY = {
+  heading: 'Saved',
+  description: 'Manage saved queries and resources.',
+  devModeWarning: {
+    title: 'Using mock user data in development mode',
+    description:
+      'In development mode, the page uses mock data to simulate saved queries and resources. This allows you to see how the page will look and function without needing real user data. In production, you will see your actual saved queries and resources.',
+  },
+};
+
 const SavedPage = () => {
   const { user } = useAuth();
   const { savedDatasets, savedQueries, isDevMode } = useUserData();
@@ -23,10 +33,10 @@ const SavedPage = () => {
     <PageContainer meta={getPageSeoConfig('/saved')} px={0} py={0}>
       <Flex direction='column' gap={4} px={{ base: 4, lg: 40 }} py={8}>
         <Heading as='h1' size='lg'>
-          Saved
+          {SAVED_PAGE_COPY.heading}
         </Heading>
         <Text fontSize='md' lineHeight='short'>
-          Manage saved queries and resources.
+          {SAVED_PAGE_COPY.description}
         </Text>
         {isDevMode && (
           <Box
@@ -38,8 +48,11 @@ const SavedPage = () => {
             py={2}
             mb={3}
           >
-            <Text fontSize='sm' color='orange.800'>
-              Using mock user data in development mode
+            <Text fontSize='sm' color='orange.800' fontWeight='semibold'>
+              {SAVED_PAGE_COPY.devModeWarning.title}
+            </Text>
+            <Text fontSize='sm' color='orange.800' lineHeight='short'>
+              {SAVED_PAGE_COPY.devModeWarning.description}
             </Text>
           </Box>
         )}

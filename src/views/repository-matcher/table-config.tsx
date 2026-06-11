@@ -11,7 +11,7 @@ import {
   getMetadataName,
 } from 'src/components/metadata';
 import {
-  DefinedTermTagList,
+  TagCellList,
   TagCell,
   TextCell,
   TextCellWithLink,
@@ -23,6 +23,10 @@ import {
   RepositoryMatcherItem,
 } from './types';
 
+const tagCellStyles = {
+  bg: 'page.alt',
+  color: 'text.body',
+};
 export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   {
     id: 'name',
@@ -127,7 +131,13 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       return (
         <HStack flexWrap='wrap'>
           {items.map((v, i) => (
-            <TagCell key={i} value={v} noOfLines={1} isLoading={isLoading} />
+            <TagCell
+              key={i}
+              value={v}
+              noOfLines={1}
+              isLoading={isLoading}
+              {...tagCellStyles}
+            />
           ))}
         </HStack>
       );
@@ -235,7 +245,9 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     }: {
       value: DefinedTerm[];
       isLoading?: boolean;
-    }) => <DefinedTermTagList value={value} isLoading={isLoading} />,
+    }) => (
+      <TagCellList value={value} isLoading={isLoading} {...tagCellStyles} />
+    ),
     filter: {
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
@@ -268,7 +280,9 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     }: {
       value: DefinedTerm[];
       isLoading?: boolean;
-    }) => <DefinedTermTagList value={value} isLoading={isLoading} />,
+    }) => (
+      <TagCellList value={value} isLoading={isLoading} {...tagCellStyles} />
+    ),
     filter: {
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
@@ -384,7 +398,9 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     }: {
       value: DefinedTerm[];
       isLoading?: boolean;
-    }) => <DefinedTermTagList value={value} isLoading={isLoading} />,
+    }) => (
+      <TagCellList value={value} isLoading={isLoading} {...tagCellStyles} />
+    ),
     filter: {
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
@@ -417,7 +433,9 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     }: {
       value: DefinedTerm[];
       isLoading?: boolean;
-    }) => <DefinedTermTagList value={value} isLoading={isLoading} />,
+    }) => (
+      <TagCellList value={value} isLoading={isLoading} {...tagCellStyles} />
+    ),
     filter: {
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
@@ -454,7 +472,9 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       if (!isLoading && (!value || !value.some(v => v.name))) {
         return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
       }
-      return <DefinedTermTagList value={value} isLoading={isLoading} />;
+      return (
+        <TagCellList value={value} isLoading={isLoading} {...tagCellStyles} />
+      );
     },
     filter: {
       getFilterValues: (value: DefinedTerm[]) =>
