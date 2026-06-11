@@ -234,25 +234,47 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
       isDefault: true,
       style: { maxWidth: '200px', minWidth: '200px' },
     },
-    transform: item => generateTags(item.filters, configMap),
-    component: ({
-      value: tags,
-      isLoading,
-    }: {
-      value: {
+    getSearchValue: (value: {
+      tags: {
         key: string;
         filterKey: string;
         name: string;
         value: string[];
         displayValue: string;
       }[];
+    }) => {
+      const str = value?.tags
+        ?.map(tag => `${tag.name}: ${tag.displayValue}`)
+        .join(' ');
+      return str || '';
+    },
+    transform: item => {
+      return {
+        tags: generateTags(item.filters, configMap),
+        filtersObj: item.filters,
+      };
+    },
+    component: ({
+      value,
+      isLoading,
+    }: {
+      value: {
+        tags: {
+          key: string;
+          filterKey: string;
+          name: string;
+          value: string[];
+          displayValue: string;
+        }[];
+      };
       isLoading?: boolean;
     }) => {
+      const { tags } = value;
       if (!tags || !tags.length)
         return <TextCell value='' isLoading={isLoading} />;
       return (
         <HStack flexWrap='wrap' spacing={1}>
-          {tags.map((tag, i) => {
+          {tags.map(tag => {
             const str = `${tag.name}: ${tag.displayValue}`;
             return (
               <TagCell
