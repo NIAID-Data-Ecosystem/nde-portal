@@ -12,6 +12,7 @@ import { AI_ASSISTED_SEARCH_KC_LINK } from 'src/components/page-container/compon
 import { useAuth } from 'src/hooks/useAuth';
 import { useUserData } from 'src/hooks/useUserData';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
+import { SelectedFilterType } from '../filters';
 
 export const SearchResultsHeading = ({ children, ...props }: TextProps) => {
   return (
@@ -46,9 +47,11 @@ const AIBanner: React.FC<FlexProps & { colorScheme?: string }> = ({
 export const SearchResultsHeader = ({
   querystring,
   showAIBanner,
+  selectedFilters,
 }: {
   querystring: string;
   showAIBanner: boolean | null;
+  selectedFilters: SelectedFilterType;
 }) => {
   const { user, login } = useAuth();
 
@@ -58,7 +61,6 @@ export const SearchResultsHeader = ({
     search => search.query === querystring,
   );
   const isFavorited = favoriteIndex !== -1;
-
   return (
     <VStack alignItems='flex-start' spacing={1} fontSize='sm' flex={1}>
       {showAIBanner && (
@@ -109,7 +111,7 @@ export const SearchResultsHeader = ({
                   : addSavedQuery({
                       query: querystring,
                       name: `Search: ${querystring}`,
-                      filters: {},
+                      filters: selectedFilters,
                     });
               }}
             />

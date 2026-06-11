@@ -1,5 +1,5 @@
 import React from 'react';
-import { HStack, Text, VStack } from '@chakra-ui/react';
+import { HStack, Tag, TagLabel, Text, VStack } from '@chakra-ui/react';
 import { getMetadataName } from 'src/components/metadata';
 import {
   TextCell,
@@ -11,6 +11,11 @@ import { defaultSearchValue } from '../repository-matcher/hooks/useRepositoryMat
 import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
 import { SavedDataset, SavedQuery } from 'src/hooks/useUserData/types';
 import { useUserData } from 'src/hooks/useUserData';
+import {
+  FILTER_CONFIGS,
+  queryFilterObject2String,
+} from '../search/components/filters';
+import { generateTags } from '../search/components/filters/components/tag/utils';
 
 const SavedResourceNameCell = ({
   value,
@@ -172,16 +177,26 @@ export const SAVED_RESOURCE_COLUMNS: SavedColumn<SavedResourceItem, any>[] = [
   // },
 ];
 
-export const FAVORITE_SEARCH_COLUMNS: SavedColumn<SavedQuery, any>[] = [
+// Convert filter config list to map for quick access
+const configMap = Object.fromEntries(
+  FILTER_CONFIGS.map(cfg => [cfg.property, cfg]),
+);
+
+export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
   {
     id: 'name',
     label: 'Name',
     fields: ['name', 'query'],
     columns: { isSortable: true, isDefault: true },
-    transform: (item): SavedQuery & { url: string } => ({
-      ...item,
-      url: `/search?q=${encodeURIComponent(item.query)}`,
-    }),
+    transform: (item): SavedQuery & { url: string } => {
+      const filter_string = queryFilterObject2String(item.filters) || '';
+      return {
+        ...item,
+        url: `/search?q=${encodeURIComponent(
+          item.query,
+        )}&filters=${encodeURIComponent(filter_string)}`,
+      };
+    },
     getSortValue: (value: SavedQuery) => value.name.toLowerCase(),
     getSearchValue: (value: SavedQuery) => `${value.name} ${value.query}`,
     component: SavedQueryNameCell,
@@ -207,6 +222,41 @@ export const FAVORITE_SEARCH_COLUMNS: SavedColumn<SavedQuery, any>[] = [
       isLoading?: boolean;
     }) => {
       return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
+    },
+  },
+  {
+    id: 'filters',
+    label: 'Applied Filters',
+    fields: ['filters'],
+    columns: {
+      isSortable: true,
+      isDefault: true,
+      style: { maxWidth: '200px', minWidth: '200px' },
+    },
+    transform: item => {
+      const tags = generateTags(item.filters, configMap);
+      return tags;
+    },
+    component: ({
+      value: tags,
+      isLoading,
+    }: {
+      value: {
+        key: string;
+        filterKey: string;
+        name: string;
+        value: string[];
+        displayValue: string;
+      }[];
+      isLoading?: boolean;
+    }) => {
+      if (!tags || !tags.length) return null;
+      console.log('tags');
+      return tags.map(({ key, name, displayValue }) => (
+        <Tag key={key}>
+          <TagLabel>{`${name}: ${displayValue}`}</TagLabel>
+        </Tag>
+      ));
     },
   },
 ];

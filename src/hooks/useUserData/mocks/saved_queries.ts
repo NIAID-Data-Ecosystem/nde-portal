@@ -32,7 +32,16 @@ export const MOCK_SAVED_QUERIES: SavedQuery[] = [
   {
     name: `Search: "Malaria" OR "Plasmodium falciparum" OR "Plasmodium malariae" OR "Plasmodium ovale curtisi" OR "Plasmodium ovale wallikeri" OR "Plasmodium vivax" OR "Plasmodium knowlesi"`,
     query: `"Malaria" OR "Plasmodium falciparum" OR "Plasmodium malariae" OR "Plasmodium ovale curtisi" OR "Plasmodium ovale wallikeri" OR "Plasmodium vivax" OR "Plasmodium knowlesi"`,
-    filters: {},
+    filters: {
+      date: [
+        '2000-01-01',
+        '2026-12-31',
+        {
+          '-_exists_': ['date'],
+        },
+      ],
+      'species.displayName.raw': ['Human | Homo sapiens'],
+    },
     saved_at: '2026-06-09T16:21:42+00:00',
   },
   {

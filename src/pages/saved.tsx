@@ -8,7 +8,7 @@ import { withAuth } from 'src/components/auth/withAuth';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
 import {
-  FAVORITE_SEARCH_COLUMNS,
+  SAVED_QUERY_COLUMNS,
   SAVED_RESOURCE_COLUMNS,
 } from 'src/views/saved/table-config';
 import { SavedTableSection } from 'src/views/saved/components/saved-table-section';
@@ -17,7 +17,7 @@ import { useUserData } from 'src/hooks/useUserData';
 const SavedPage = () => {
   const { user } = useAuth();
   const { savedDatasets, savedQueries, isDevMode } = useUserData();
-  console.log('savedQueries', savedQueries);
+
   if (!user || !ENABLE_AUTH) return null;
   return (
     <PageContainer meta={getPageSeoConfig('/saved')} px={0} py={0}>
@@ -48,7 +48,7 @@ const SavedPage = () => {
       <SavedTableSection
         title='Saved Queries'
         description='A saved collection of frequently used queries.'
-        columns={FAVORITE_SEARCH_COLUMNS}
+        columns={SAVED_QUERY_COLUMNS}
         data={savedQueries}
         getRowId={(item, idx) => item.query || `__no-id-${idx}`}
         unit={{ singular: 'item', plural: 'items' }}
