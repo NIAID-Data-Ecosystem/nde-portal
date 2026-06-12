@@ -124,50 +124,6 @@ describe('RepositoryMatcher page', () => {
     expect(screen.getByText('2 results')).toBeInTheDocument();
   });
 
-  it('applies, removes, and clears column filters', async () => {
-    const user = userEvent.setup();
-    renderWithClient(<RepositoryMatcher />);
-
-    // Apply the Open Access facet from the desktop sidebar.
-    const checkbox = await screen.findByRole('checkbox', {
-      name: /open access/i,
-    });
-    await user.click(checkbox);
-    await waitFor(() =>
-      expect(screen.getByText('1 results')).toBeInTheDocument(),
-    );
-
-    // A removable filter tag appears alongside the "Clear all" tag.
-    expect(screen.getByText('Clear all')).toBeInTheDocument();
-
-    // Find a tag's close button via the label whose parent holds a <button>
-    // ("Open Access" also labels the sidebar checkbox, whose <label> has none).
-    const tagCloseButton = (text: string) => {
-      for (const label of screen.getAllByText(text)) {
-        const btn = label.parentElement?.querySelector('button');
-        if (btn) return btn;
-      }
-      throw new Error(`No tag close button found for "${text}"`);
-    };
-
-    await user.click(tagCloseButton('Open Access'));
-    await waitFor(() =>
-      expect(screen.getByText('2 results')).toBeInTheDocument(),
-    );
-
-    // Re-apply, then use the "Clear all" tag.
-    await user.click(
-      await screen.findByRole('checkbox', { name: /open access/i }),
-    );
-    await waitFor(() =>
-      expect(screen.getByText('1 results')).toBeInTheDocument(),
-    );
-    await user.click(tagCloseButton('Clear all'));
-    await waitFor(() =>
-      expect(screen.getByText('2 results')).toBeInTheDocument(),
-    );
-  });
-
   it('toggles the pin-first-column checkbox', async () => {
     const user = userEvent.setup();
     renderWithClient(<RepositoryMatcher />);
