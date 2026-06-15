@@ -289,29 +289,6 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
     component: SavedQueryNameCell,
   },
   {
-    id: 'saved_at',
-    label: 'Saved On',
-    fields: ['saved_at'],
-    columns: {
-      isSortable: true,
-      isDefault: true,
-      style: { maxWidth: '200px', minWidth: '200px' },
-    },
-    transform: item => {
-      if (!item.saved_at) return '';
-      return new Date(item.saved_at).toLocaleDateString();
-    },
-    component: ({
-      value,
-      isLoading,
-    }: {
-      value: string;
-      isLoading?: boolean;
-    }) => {
-      return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
-    },
-  },
-  {
     id: 'filters',
     label: 'Applied Filters',
     fields: ['filters'],
@@ -374,6 +351,29 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
           })}
         </HStack>
       );
+    },
+  },
+  {
+    id: 'saved_at',
+    label: 'Saved On',
+    fields: ['saved_at'],
+    columns: {
+      isSortable: true,
+      isDefault: true,
+      style: { maxWidth: '200px', minWidth: '200px' },
+    },
+    transform: item => {
+      if (!item.saved_at) return '';
+      return new Date(item.saved_at).toLocaleDateString();
+    },
+    component: ({
+      value,
+      isLoading,
+    }: {
+      value: string;
+      isLoading?: boolean;
+    }) => {
+      return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
     },
   },
 ];
