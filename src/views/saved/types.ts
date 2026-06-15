@@ -1,9 +1,16 @@
 import { SavedDataset, SavedQuery } from 'src/hooks/useUserData/types';
+import { SavedResourceAdditionalMetadata } from './hooks/useBatchResourcesData';
 
 /** Items the saved page can render in a table. */
 export type SavedItem = SavedDataset | SavedQuery;
-export interface SavedResourceItem extends SavedDataset {}
 
+/**
+ * A saved dataset enriched with metadata fetched from the API by `_id`
+ * (see `useBatchResourcesData`).
+ */
+export interface SavedResourceItem
+  extends SavedDataset,
+    SavedResourceAdditionalMetadata {}
 /**
  * A formatted table row. Each column's transformed value is keyed by column
  * id; `_id` dedupes rows and `_search` is the prebuilt search blob.

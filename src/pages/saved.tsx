@@ -2,6 +2,7 @@
  * User Favorites Page - Protected route requiring authentication
  */
 
+import { useMemo } from 'react';
 import { Box, Heading, Text, Flex, Divider } from '@chakra-ui/react';
 import { useAuth } from 'src/hooks/useAuth';
 import { withAuth } from 'src/components/auth/withAuth';
@@ -13,6 +14,8 @@ import {
 } from 'src/views/saved/table-config';
 import { SavedTableSection } from 'src/views/saved/components/saved-table-section';
 import { useUserData } from 'src/hooks/useUserData';
+import { useBatchResourcesData } from 'src/views/saved/hooks/useBatchResourcesData';
+import { SavedResourceItem } from 'src/views/saved/types';
 
 const SAVED_PAGE_COPY = {
   heading: 'Saved',
@@ -27,6 +30,21 @@ const SAVED_PAGE_COPY = {
 const SavedPage = () => {
   const { user } = useAuth();
   const { savedDatasets, savedQueries, isDevMode } = useUserData();
+
+  // Hydrate each saved resource with type / source / dateModified fetched by id.
+  const datasetIds = useMemo(
+    () => savedDatasets.map(dataset => dataset.dataset_id),
+    [savedDatasets],
+  );
+  const { data: resourceData } = useBatchResourcesData(datasetIds);
+  const enrichedDatasets = useMemo<SavedResourceItem[]>(
+    () =>
+      savedDatasets.map(dataset => ({
+        ...dataset,
+        ...resourceData?.[dataset.dataset_id],
+      })),
+    [savedDatasets, resourceData],
+  );
 
   if (!user || !ENABLE_AUTH) return null;
   return (
@@ -81,7 +99,7 @@ const SavedPage = () => {
         title='Saved Resources'
         description='A saved collection of datasets, computational tools, and other records.'
         columns={SAVED_RESOURCE_COLUMNS}
-        data={savedDatasets}
+        data={enrichedDatasets}
         getRowId={(item, idx) => item.dataset_id || `__no-id-${idx}`}
         unit={{ singular: 'item', plural: 'items' }}
         searchPlaceholder='Search saved resources'

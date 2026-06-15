@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, HStack, Tag, TagLabel, Text, VStack } from '@chakra-ui/react';
+import { HStack, Text, VStack } from '@chakra-ui/react';
 import { getMetadataName } from 'src/components/metadata';
 import {
   TagCell,
@@ -17,6 +17,7 @@ import {
   queryFilterObject2String,
 } from '../search/components/filters';
 import { generateTags } from '../search/components/filters/components/tag/utils';
+import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 
 const SavedResourceNameCell = ({
   value,
@@ -88,7 +89,10 @@ export const SAVED_RESOURCE_COLUMNS: SavedColumn<SavedResourceItem, any>[] = [
     id: 'name',
     label: getMetadataName('name') || '',
     fields: ['name', 'dataset_id'],
-    columns: { isSortable: true, isDefault: true },
+    columns: {
+      isSortable: true,
+      isDefault: true,
+    },
     transform: (item): SavedDataset & { url: string } => ({
       ...item,
       url: `/resources?id=${item.dataset_id}`,
@@ -96,6 +100,88 @@ export const SAVED_RESOURCE_COLUMNS: SavedColumn<SavedResourceItem, any>[] = [
     getSortValue: (value: SavedDataset) => value.name.toLowerCase(),
     getSearchValue: (value: SavedDataset) => value.name,
     component: SavedResourceNameCell,
+  },
+
+  {
+    id: 'type',
+    label: getMetadataName('type') || 'Type',
+    fields: ['@type'],
+    columns: {
+      isSortable: true,
+      isDefault: true,
+      style: { maxWidth: '180px', minWidth: '160px' },
+    },
+    getSortValue: (value: string) => value.toLowerCase(),
+    transform: (item): string => {
+      if (!item.type) return '';
+      return formatAPIResourceTypeForDisplay(item.type) ?? '';
+    },
+    component: ({
+      value,
+      isLoading,
+    }: {
+      value: string;
+      isLoading?: boolean;
+    }) => {
+      if (!isLoading && (!value || !value.length))
+        return <TextCell value='' isLoading={isLoading} noOfLines={1} />;
+      return (
+        <TextCell
+          value={value}
+          isLoading={isLoading}
+          noOfLines={2}
+          fontWeight='semibold'
+        />
+      );
+    },
+  },
+  {
+    id: 'source',
+    label: 'Source',
+    fields: ['includedInDataCatalog.name'],
+    columns: {
+      isSortable: true,
+      isDefault: true,
+      style: { maxWidth: '220px', minWidth: '160px' },
+    },
+    transform: (item): string[] => item.source ?? [],
+    getSortValue: (value: string[]) => (value[0] || '').toLowerCase(),
+    component: ({
+      value,
+      isLoading,
+    }: {
+      value: string[];
+      isLoading?: boolean;
+    }) => (
+      <TextCell
+        value={value && value.length ? value.join(', ') : ''}
+        isLoading={isLoading}
+        noOfLines={2}
+      />
+    ),
+  },
+  {
+    id: 'dateModified',
+    label: 'Updated On',
+    fields: ['dateModified'],
+    columns: {
+      isSortable: true,
+      isDefault: true,
+      style: { maxWidth: '200px', minWidth: '160px' },
+    },
+    transform: item => {
+      if (!item.dateModified) return '';
+      return new Date(item.dateModified).toLocaleDateString();
+    },
+    component: ({
+      value,
+      isLoading,
+    }: {
+      value: string;
+      isLoading?: boolean;
+    }) => {
+      return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
+    },
   },
   {
     id: 'saved_at',
