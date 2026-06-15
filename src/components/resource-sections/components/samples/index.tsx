@@ -59,6 +59,7 @@ export const SamplesDisplay = ({
               resourceIdentifier ??
               ''
             }
+            fallbackSampleCollection={sample as SampleCollection}
           />
         )}
       </Box>
