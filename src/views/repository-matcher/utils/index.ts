@@ -17,7 +17,8 @@ export const buildItemUrl = (item: RepositoryMatcherItem): string => {
     return `/resources?id=${encodeURIComponent(id)}`;
   }
   const filters = queryFilterObject2String({
-    'includedInDataCatalog.name': [id],
+    'includedInDataCatalog.name':
+      id === 'accessclinicaldata@NIAID' ? ['AccessClinicalData@NIAID'] : [id],
   });
   const params = new URLSearchParams();
   params.set('q', '');

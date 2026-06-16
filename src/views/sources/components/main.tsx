@@ -162,7 +162,10 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                       query: {
                         q: '',
                         filters: queryFilterObject2String({
-                          'includedInDataCatalog.name': [sourceObj.id],
+                          'includedInDataCatalog.name':
+                            sourceObj.id === 'accessclinicaldata@NIAID'
+                              ? ['AccessClinicalData@NIAID']
+                              : [sourceObj.id],
                         }),
                       },
                     }}
