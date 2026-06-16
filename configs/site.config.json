@@ -301,6 +301,13 @@
         "isExternal": true,
         "href": "https://api.data.niaid.nih.gov/"
       }
+    },
+    "/saved": {
+      "seo": {
+        "title": "Saved Searches",
+        "description": "View and manage your saved searches within the NIAID Data Ecosystem."
+      },
+      "env": ["dev", "staging"]
     }
   },
   "navigation": {
