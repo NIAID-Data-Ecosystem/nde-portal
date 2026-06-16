@@ -9,6 +9,14 @@ describe('popover barrel (index.ts)', () => {
     it('exports usePopoverSearch as a function', () => {
       expect(typeof PopoverBarrel.usePopoverSearch).toBe('function');
     });
+
+    it('exports resolveStoredVisibleIds as a function', () => {
+      expect(typeof PopoverBarrel.resolveStoredVisibleIds).toBe('function');
+    });
+
+    it('exports resolveStoredOrderedIds as a function', () => {
+      expect(typeof PopoverBarrel.resolveStoredOrderedIds).toBe('function');
+    });
   });
 
   describe('components', () => {
@@ -31,17 +39,24 @@ describe('popover barrel (index.ts)', () => {
     it('exports PopoverSelectableList as a function (React component)', () => {
       expect(typeof PopoverBarrel.PopoverSelectableList).toBe('function');
     });
+
+    it('exports SelectAndSortPopover as a function (React component)', () => {
+      expect(typeof PopoverBarrel.SelectAndSortPopover).toBe('function');
+    });
   });
 
   it('does not export unexpected names', () => {
     const knownExports = new Set([
       'useSelectableList',
       'usePopoverSearch',
+      'resolveStoredVisibleIds',
+      'resolveStoredOrderedIds',
       'PopoverSearchInput',
       'PopoverSelectAll',
       'PopoverEmptyState',
       'PopoverListItem',
       'PopoverSelectableList',
+      'SelectAndSortPopover',
     ]);
 
     const unexpected = Object.keys(PopoverBarrel).filter(

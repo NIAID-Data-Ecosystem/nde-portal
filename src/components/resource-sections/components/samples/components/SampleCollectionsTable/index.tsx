@@ -2,18 +2,22 @@ import { Skeleton } from '@chakra-ui/react';
 import { SampleTable } from '../SampleTable';
 import { Cell } from '../SampleTable/Cells';
 import { useSampleCollectionItems } from '../../hooks/useSampleCollectionItems';
+import { SAMPLE_COLLECTION_TABLE_CONFIG } from '../../config';
 import {
   getSampleCollectionItemsColumns,
   getSampleCollectionItemsRows,
 } from '../../helpers';
+import { SampleCollection } from 'src/utils/api/types';
 
 interface SampleCollectionItemsTableProps {
   /** The identifier of the parent Dataset/SampleCollection used for the API query. */
   parentIdentifier: string;
+  fallbackSampleCollection?: SampleCollection;
 }
 
 export const SampleCollectionItemsTable = ({
   parentIdentifier,
+  fallbackSampleCollection,
 }: SampleCollectionItemsTableProps) => {
   const { data: samples, isLoading } = useSampleCollectionItems(
     parentIdentifier,
@@ -33,6 +37,28 @@ export const SampleCollectionItemsTable = ({
   }
 
   if (!samples || samples.length === 0) {
+    if (fallbackSampleCollection?.itemListElement?.length) {
+      return (
+        <SampleTable
+          label={SAMPLE_COLLECTION_TABLE_CONFIG.label}
+          caption={SAMPLE_COLLECTION_TABLE_CONFIG.caption}
+          tableProps={{
+            columns: SAMPLE_COLLECTION_TABLE_CONFIG.getColumns(
+              fallbackSampleCollection,
+            ),
+            data: SAMPLE_COLLECTION_TABLE_CONFIG.getRows(
+              fallbackSampleCollection,
+            ),
+            getCells: props => {
+              const data = props.data?.[props.column.property];
+              return Cell.renderCellData?.({ ...props, data });
+            },
+            ...SAMPLE_COLLECTION_TABLE_CONFIG.tableProps,
+          }}
+        />
+      );
+    }
+
     return null;
   }
 

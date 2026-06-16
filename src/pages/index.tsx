@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import type { NextPage } from 'next';
 import {
   Box,
@@ -41,6 +41,12 @@ import {
 } from 'src/views/features/helpers';
 import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
 import { useReadLocalStorage } from 'usehooks-ts';
+import {
+  formatConditionsOfAccess,
+  transformConditionsOfAccessLabel,
+} from 'src/utils/formatting/formatConditionsOfAccess';
+import { formatDomainName } from 'src/views/home/components/TableWithSearch/helpers';
+import { buildItemUrl } from 'src/views/repository-matcher/utils';
 
 const Home: NextPage<{
   data: {
@@ -56,7 +62,18 @@ const Home: NextPage<{
     isLoading: resourceCatalogsIsLoading,
     data: resourceCatalogs,
     error: resourceCatalogsError,
-  } = useResourceCatalogs();
+  } = useResourceCatalogs({
+    fields: [
+      '_id',
+      '@type',
+      'abstract',
+      'collectionType',
+      'conditionsOfAccess',
+      'genre',
+      'name',
+      'url',
+    ],
+  });
 
   /****** Repository Data ******/
   const {
@@ -64,6 +81,28 @@ const Home: NextPage<{
     data: repositories,
     error: repositoriesError,
   } = useRepoData({ refetchOnWindowFocus: false, refetchOnMount: false });
+
+  const tableData = useMemo(
+    () =>
+      [...(resourceCatalogs || []), ...(repositories || [])].map(item => {
+        const domain = item?.genre
+          ? formatDomainName(item.genre).sort((a, b) => a.localeCompare(b))
+          : '';
+
+        return {
+          _id: item._id || '',
+          abstract: item.abstract || '',
+          name: item.name,
+          conditionsOfAccess: transformConditionsOfAccessLabel(
+            formatConditionsOfAccess(item.conditionsOfAccess),
+          ),
+          domain,
+          type: item.type,
+          url: buildItemUrl(item),
+        };
+      }),
+    [repositories, resourceCatalogs],
+  );
 
   return (
     <PageContainer meta={getPageSeoConfig('/')} overflowX='hidden'>
@@ -225,7 +264,7 @@ const Home: NextPage<{
                 <TableWithSearch
                   ariaLabel='List of repositories and resource catalogs'
                   caption='List of repositories and resource catalogs'
-                  data={[...(resourceCatalogs || []), ...(repositories || [])]}
+                  data={tableData}
                   isLoading={repositoriesIsLoading || resourceCatalogsIsLoading}
                   columns={[
                     {
@@ -257,6 +296,14 @@ const Home: NextPage<{
                       props: { maxW: '150px', minW: '150px' },
                     },
                   ]}
+                  emptyState={
+                    <Flex direction='column' align='center' py={10}>
+                      <Text fontWeight='bold'>No items match</Text>
+                      <Text color='gray.600'>
+                        Try clearing some filters or broadening your search.
+                      </Text>
+                    </Flex>
+                  }
                 />
 
                 <ButtonGroup

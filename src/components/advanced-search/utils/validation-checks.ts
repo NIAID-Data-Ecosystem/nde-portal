@@ -84,21 +84,30 @@ export const checkMissingUnion = (str: string): ValidationConfig => {
   );
 
   let isMissingUnion = false;
+
+  // Tokenize fielded quoted terms as a single token, e.g. field:"Omics Discovery Index (OmicsDI)".
+  const regex = /[a-zA-Z0-9_.]+:"[^"]*"|"[^"]*"|\(|\)|AND|OR|NOT|[^\s()]+/g;
+  const queryWords = str.match(regex) || [];
+
+  const isUnionOperator = (token: string) =>
+    token === 'AND' || token === 'OR' || token === 'NOT';
+
   // if a closed parenthesis is immediately followed by an open parenthesis, then there is no union operator between them
-  if (str.replace(/\s/g, '').includes(')(')) {
+  if (
+    queryWords.some((token, i) => token === ')' && queryWords[i + 1] === '(')
+  ) {
     return { isValid: false, error };
   }
-  var regex = /"([^"]*)"|(\S+)/g;
-  var queryWords = (str.match(regex) || []).map(m => m.replace(regex, '$1$2'));
+
   queryWords.forEach((item, i) => {
     if (item.startsWith('(') && i > 0 && queryWords[i - 1]) {
       const prevWord = queryWords[i - 1];
-      // if previous word ends in a colon or is a union operator, then there is no error. Not the most robust check, but it works for now.
+
+      // If a grouped clause starts after a normal term, a union operator is missing.
       if (
         prevWord.charAt(prevWord.length - 1) !== ':' &&
-        prevWord !== 'AND' &&
-        prevWord !== 'OR' &&
-        prevWord !== 'NOT'
+        prevWord !== '(' &&
+        !isUnionOperator(prevWord)
       ) {
         isMissingUnion = true;
       }
@@ -109,7 +118,7 @@ export const checkMissingUnion = (str: string): ValidationConfig => {
       queryWords[i + 1]
     ) {
       const nextWord = queryWords[i + 1];
-      if (nextWord !== 'AND' && nextWord !== 'OR' && nextWord !== 'NOT') {
+      if (nextWord !== ')' && !isUnionOperator(nextWord)) {
         isMissingUnion = true;
       }
     }

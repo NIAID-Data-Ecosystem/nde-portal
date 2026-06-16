@@ -26,6 +26,7 @@ import { useSearchTabsContext } from 'src/views/search/context/search-tabs-conte
 import { useBioSampleAggregation } from 'src/views/search/hooks/useBioSampleAggregation';
 import { useComputationalToolAggregation } from 'src/views/search/hooks/useComputationalToolAggregation';
 import { useSharedDatasetAggregation } from 'src/views/search/hooks/useSharedDatasetAggregation';
+import { useDataCollectionAggregation } from 'src/views/search/hooks/useDataCollectionAggregation';
 
 interface FiltersProps {
   colorScheme?: string;
@@ -57,7 +58,7 @@ export const Filters = React.memo(
     const visibleFiltersList = useMemo(
       () =>
         FILTER_CONFIGS.filter(filterConfig => {
-          // Show filter if it's in the list of visible ids (i.e. the user hasn't hidden it) and i
+          // Show filter if it's in the list of visible ids (i.e. the user hasn't hidden it)
           const userHasSelectedToShow = userSelectedFilters.includes(
             filterConfig.id,
           );
@@ -123,6 +124,17 @@ export const Filters = React.memo(
       { enabled: router.isReady },
     );
 
+    // Data Collection filters: @type:DataCollection
+    const dataCollectionAgg = useDataCollectionAggregation(
+      {
+        q: queryParams.q,
+        use_ai_search: queryParams.use_ai_search ?? 'false',
+        advancedSearch: queryParams.advancedSearch,
+        extra_filter: filtersAggParams.extra_filter,
+      },
+      { enabled: router.isReady },
+    );
+
     // Use simplified filter queries hook
     const filtersAggQuery = useFilterQueries({
       configs: visibleFiltersList,
@@ -131,6 +143,7 @@ export const Filters = React.memo(
       bioSampleAggregationData: bioSampleAgg.data,
       computationalToolAggregationData: computationalToolAgg.data,
       sharedDatasetAggregationData: sharedDatasetAgg.data,
+      dataCollectionAggregationData: dataCollectionAgg.data,
     });
 
     const { results, error, isUpdating } = filtersAggQuery;

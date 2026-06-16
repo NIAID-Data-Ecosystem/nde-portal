@@ -1,17 +1,5 @@
 # *
 User-agent: *
-Disallow: /
-
-# googlebot
-User-agent: googlebot
-Allow: /
-
-# bingbot
-User-agent: bingbot
-Allow: /
-
-# DuckDuckBot
-User-agent: DuckDuckBot
 Allow: /
 
 # Host
@@ -32,6 +20,10 @@ Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/microbiomedb.xml
 Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/ndex.xml
 Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/nichd_dash.xml
 Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/omics_discovery_index__omicsdi_.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/project_tycho.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/protein_data_bank-01.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/protein_data_bank-02.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/protein_data_bank-03.xml
 Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/qiita.xml
 Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/radx_data_hub.xml
 Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/reframedb.xml

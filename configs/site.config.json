@@ -72,6 +72,17 @@
         "description": "Search for resources using basic queries"
       }
     },
+    "/repository-matcher": {
+      "seo": {
+        "title": "Repository Matcher",
+        "description": "Find a suitable repository that accepts research data deposits using the NIAID Data Ecosystem Discovery Portal.",
+        "keywords": []
+      },
+      "nav": {
+        "label": "Repository Matcher",
+        "description": "Find a suitable repository that accepts research data deposits."
+      }
+    },
     "/advanced-search": {
       "seo": {
         "title": "Advanced Search",
@@ -290,6 +301,13 @@
         "isExternal": true,
         "href": "https://api.data.niaid.nih.gov/"
       }
+    },
+    "/saved": {
+      "seo": {
+        "title": "Saved Searches",
+        "description": "View and manage your saved searches within the NIAID Data Ecosystem."
+      },
+      "env": ["dev", "staging"]
     }
   },
   "navigation": {
@@ -312,6 +330,9 @@
           },
           {
             "page": "/api"
+          },
+          {
+            "page": "/repository-matcher"
           }
         ]
       },

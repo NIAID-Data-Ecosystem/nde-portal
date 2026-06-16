@@ -37,6 +37,11 @@ interface UseFilterQueriesOptions {
    * Used for Shared/Dataset filter facet counts.
    */
   sharedDatasetAggregationData?: FetchSearchResultsResponse | undefined;
+  /**
+   * Pre-fetched DataCollection-scoped aggregation response.
+   * Used for Data Collection filter facet counts.
+   */
+  dataCollectionAggregationData?: FetchSearchResultsResponse | undefined;
 }
 
 export interface UseFilterQueriesResult {
@@ -50,9 +55,10 @@ export interface UseFilterQueriesResult {
  * Selects the correct aggregation response for a given filter config.
  *
  * Routing rules:
- *   - "Sample" category:  bioSampleAggregationData
+ *   - "Sample" category: bioSampleAggregationData
  *   - "Computational Tool": computationalToolAggregationData
  *   - "Shared / Dataset": sharedDatasetAggregationData
+ *   - "Data Collection": dataCollectionAggregationData
  *   - anything else: fallback main aggregation response
  */
 const selectAggregationForFilter = (
@@ -61,6 +67,7 @@ const selectAggregationForFilter = (
   bioSampleAggregationData: FetchSearchResultsResponse | undefined,
   computationalToolAggregationData: FetchSearchResultsResponse | undefined,
   sharedDatasetAggregationData: FetchSearchResultsResponse | undefined,
+  dataCollectionAggregationData: FetchSearchResultsResponse | undefined,
 ): FetchSearchResultsResponse | undefined => {
   switch (config.category) {
     case 'Sample':
@@ -69,6 +76,8 @@ const selectAggregationForFilter = (
       return computationalToolAggregationData ?? mainResponse;
     case 'Shared / Dataset':
       return sharedDatasetAggregationData ?? mainResponse;
+    case 'Data Collection':
+      return dataCollectionAggregationData ?? mainResponse;
     default:
       return mainResponse;
   }
@@ -81,9 +90,10 @@ const selectAggregationForFilter = (
  * then derives per-filter results from the response.
  *
  * Each filter category is routed to its appropriate scoped aggregation:
- *   - Shared/Dataset:sharedDatasetAggregationData (all types except non-BioSample Samples)
+ *   - Shared/Dataset: sharedDatasetAggregationData (all types except non-BioSample Samples)
  *   - Computational Tool: computationalToolAggregationData (@type:ComputationalTool only)
  *   - Sample: bioSampleAggregationData (@type:Sample AND additionalType:"BioSample")
+ *   - Data Collection: dataCollectionAggregationData (@type:DataCollection only)
  */
 export const useFilterQueries = ({
   configs,
@@ -92,6 +102,7 @@ export const useFilterQueries = ({
   bioSampleAggregationData,
   computationalToolAggregationData,
   sharedDatasetAggregationData,
+  dataCollectionAggregationData,
 }: UseFilterQueriesOptions): UseFilterQueriesResult => {
   const router = useRouter();
   const queriesEnabled = router.isReady && enabled;
@@ -155,6 +166,7 @@ export const useFilterQueries = ({
         bioSampleAggregationData,
         computationalToolAggregationData,
         sharedDatasetAggregationData,
+        dataCollectionAggregationData,
       );
 
       if (activeResponse?.facets) {
@@ -193,12 +205,15 @@ export const useFilterQueries = ({
               label: t.term,
               count: t.count,
               facet: config.property,
-              groupBy:
-                (repoList as any[]).find(
+              groupBy: (repoList as any[])
+                .find(
                   (r: any) =>
                     r.sourceInfo?.name === t.term ||
                     r.sourceInfo?.identifier === t.term,
-                )?.sourceInfo?.genre || 'Generalist',
+                )
+                ?.sourceInfo?.genre?.includes('IID')
+                ? 'IID'
+                : 'Generalist',
             }));
           }
         } else {
@@ -271,6 +286,7 @@ export const useFilterQueries = ({
     bioSampleAggregationData,
     computationalToolAggregationData,
     sharedDatasetAggregationData,
+    dataCollectionAggregationData,
     isLoading,
     isUpdating,
     metadataQuery.data,

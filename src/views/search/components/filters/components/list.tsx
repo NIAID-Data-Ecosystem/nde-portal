@@ -125,7 +125,7 @@ export const sortTerms = (terms: FilterItem[], selectedFilters: string[]) => {
       return a.term.includes('_exists_') ? -1 : 1;
 
     // Sort by count in descending order
-    if (a.count !== b.count) return b.count - a.count;
+    if (a.count !== b.count) return (b.count ?? 0) - (a.count ?? 0);
 
     return a.label.localeCompare(b.label, undefined, { sensitivity: 'base' });
   });
