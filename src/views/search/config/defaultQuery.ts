@@ -78,6 +78,16 @@ export const defaultQuery: DefaultSearchQueryParams = {
   sort: SORT_OPTIONS[0].value,
 };
 
+// Tabs that should default to a larger page size. Any tab not listed here
+// falls back to defaultQuery.size (10).
+export const DEFAULT_SIZE_BY_TAB: Record<string, number> = {
+  s: 50, // Samples
+  dc: 50, // Data Collections
+};
+
+export const getDefaultSizeForTab = (tabId: string): number =>
+  DEFAULT_SIZE_BY_TAB[tabId] ?? defaultQuery.size;
+
 export const defaultSelectedFilters = {
   date: getDefaultDateFilter(),
 };

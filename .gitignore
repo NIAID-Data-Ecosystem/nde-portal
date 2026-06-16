@@ -52,5 +52,6 @@ serve.json
 
 .vscode/
 .claude/
+CLAUDE.md
 
 src/pages/wip.tsx

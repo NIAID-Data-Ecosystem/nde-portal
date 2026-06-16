@@ -28,13 +28,14 @@ interface DateFilterProps {
   showDateControls?: boolean;
   enabled: boolean;
   updatedAggregateQueryData: UseFilterQueriesResult;
+  initialAggregateQueryData?: UseFilterQueriesResult;
 }
 
 /**
- * Prepares query parameters by removing the date filter.
- * This ensures we get all possible results for the histogram display.
+ * Prepares query parameters by removing the date filter to
+ * ensures all possible results are available for the histogram display.
  */
-const prepareInitialParams = (queryParams: SearchQueryParams) => {
+export const prepareInitialParams = (queryParams: SearchQueryParams) => {
   const filtersObject = queryParams.extra_filter
     ? queryFilterString2Object(queryParams.extra_filter)
     : {};
@@ -120,19 +121,24 @@ const DateFilterContent: React.FC<
 /**
  * DateFilter Component
  *
- * Provides date-based filtering with histogram visualization and calendar controls.
- * Uses the shared aggregation query for filtered data (cache hit with main filters)
- * and a separate aggregation query for initial (unfiltered) date data.
+ * Provides date-based filtering with histogram visualization and calendar
+ * controls.
  */
 export const DateFilter: React.FC<DateFilterProps> = props => {
-  const { queryParams, selectedDates, updatedAggregateQueryData } = props;
+  const {
+    queryParams,
+    selectedDates,
+    updatedAggregateQueryData,
+    initialAggregateQueryData,
+  } = props;
   // Prepare params without date filter for initial data
   const initialParams = useMemo(
     () => prepareInitialParams(queryParams),
     [queryParams],
   );
 
-  // Build aggregation params for initial query (without date filter) - separate API call
+  // Build aggregation params for initial query (without date filter);
+  // separate API call used only when initialAggregateQueryData is not provided.
   const initialAggParams = useMemo(
     () => ({
       ...initialParams,
@@ -141,22 +147,29 @@ export const DateFilter: React.FC<DateFilterProps> = props => {
     [initialParams],
   );
 
-  // Initial data (without date filter) - separate API call
+  // Initial data (without date filter): only fetched when the caller has not
+  // supplied initialAggregateQueryData (i.e., filters sidebar usage).
   const initialAggQuery = useFilterQueries({
     configs: DATE_FILTER_CONFIG,
-    enabled: props.enabled,
+    enabled: props.enabled && !initialAggregateQueryData,
     params: initialAggParams,
   });
 
+  // Use caller-supplied initial data when available, otherwise fall back to the
+  // internally-fetched query. This allows DateHistogram to pass in a
+  // sharedDataset-scoped response so that background and foreground bar heights
+  // use the same record-type scoping.
+  const resolvedInitialAggQuery = initialAggregateQueryData ?? initialAggQuery;
+
   const initialResults = useMemo(
-    () => initialAggQuery?.results,
-    [initialAggQuery?.results],
+    () => resolvedInitialAggQuery?.results,
+    [resolvedInitialAggQuery?.results],
   );
   const updatedResults = useMemo(
     () => updatedAggregateQueryData?.results,
     [updatedAggregateQueryData?.results],
   );
-  const initialLoading = initialAggQuery?.isLoading;
+  const initialLoading = resolvedInitialAggQuery?.isLoading;
   const isLoading = updatedAggregateQueryData?.isLoading;
   const isUpdating =
     (!isLoading && updatedAggregateQueryData?.isUpdating) || false;

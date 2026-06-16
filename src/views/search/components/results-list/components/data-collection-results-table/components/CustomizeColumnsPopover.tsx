@@ -15,6 +15,7 @@ export const DEFAULT_VISIBLE_COLUMN_IDS = [
   'name',
   'source',
   'about',
+  'exampleOfWork',
   'conditionsOfAccess',
   'date',
   'description',
@@ -38,7 +39,7 @@ interface CustomizeColumnsPopoverProps {
 
 /**
  * Data-collection-table-specific wrapper around the generic
- * CustomizeColumnsPopover. Pre-fill all data-collection-specific
+ * CustomizeColumnsPopover. Pre-fills all data-collection-specific
  * configuration (storage keys, defaults, required columns).
  */
 export const CustomizeColumnsPopover = ({

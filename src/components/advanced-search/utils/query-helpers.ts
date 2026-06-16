@@ -106,21 +106,8 @@ export const convertObject2QueryString = (items: TreeItem[]) => {
         if (field) {
           str += `${field}:`;
         }
-        let formattedTerm = querystring ? querystring.trim() : term.trim();
-
-        const containsUnion = unionOptions.some(union =>
-          formattedTerm.includes(union),
-        );
-        // 1. if the term is wrapped in quotes, do nothing.
-        if (
-          formattedTerm.startsWith('"') &&
-          formattedTerm.endsWith('"') &&
-          !containsUnion
-        ) {
-          str += formattedTerm;
-        } else {
-          str += formattedTerm;
-        }
+        const formattedTerm = querystring ? querystring.trim() : term.trim();
+        str += formattedTerm;
 
         // wrap querystring in parenthesis if a field is selected so that the term is applied to the field.
         r += `${union}${str}`;
@@ -150,8 +137,14 @@ export const convertQueryString2Object = (str: string) => {
     var array = [];
     var current = '';
     var depth = 0;
+    let inQuotes = false;
     for (var i = 0; i < string.length; i++) {
-      if (string[i] === '(') {
+      const char = string[i];
+
+      if (char === '"') {
+        inQuotes = !inQuotes;
+        current += char;
+      } else if (!inQuotes && char === '(') {
         depth++;
         if (depth === 1) {
           if (current !== '') {
@@ -161,7 +154,7 @@ export const convertQueryString2Object = (str: string) => {
         } else {
           current += '(';
         }
-      } else if (string[i] === ')') {
+      } else if (!inQuotes && char === ')') {
         depth--;
         if (depth === 0) {
           if (current !== '') {
@@ -172,7 +165,7 @@ export const convertQueryString2Object = (str: string) => {
           current += ')';
         }
       } else {
-        current += string[i];
+        current += char;
       }
     }
     if (current !== '') {
@@ -276,5 +269,37 @@ const isValidField = (field: string) => {
 
   return (
     fieldInSchemaIndex > -1 || field === '_exists_' || field === '-_exists_'
+  );
+};
+
+/**
+ * [injectBioSampleScope]
+ *
+ * Rewrites every `@type:Sample` token in a query string to
+ * `(@type:Sample AND additionalType:"BioSample")` so that count requests
+ * sent from ResultsCount and EditableQueryText reflect only BioSample records,
+ * matching the scoping applied by the search results page.
+ *
+ * Token boundaries are asserted with lookbehind/lookahead so the rewrite does
+ * not match types that begin with "Sample" (e.g. `@type:SampleSet`). The
+ * query builder display and the submitted URL are never touched; only the
+ * internal count fetch uses the rewritten string.
+ *
+ * If the BioSample scoping constraint ever changes, this is the single place
+ * to update it for all count displays in the advanced search page.
+ *
+ * @param queryString - The raw query string from the advanced-search query
+ *   builder (e.g. `"@type:Sample OR @type:ResourceCatalog"`).
+ * @returns The rewritten query string, or the original if no Sample token is
+ *   found.
+ */
+export const injectBioSampleScope = (queryString: string): string => {
+  if (!queryString) return queryString;
+  // Lookbehind asserts start-of-string or whitespace or '('.
+  // Lookahead asserts end-of-string or whitespace or ')'.
+  // Both are zero-width so the surrounding characters are preserved as-is.
+  return queryString.replace(
+    /(?<=^|[\s(])@type:Sample(?=$|[\s)])/g,
+    '(@type:Sample AND additionalType:"BioSample")',
   );
 };

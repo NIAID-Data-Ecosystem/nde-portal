@@ -1,4 +1,19 @@
-import { Domain } from 'src/utils/api/types';
+import {
+  DefinedTerm,
+  Domain,
+  QuantitativeValue,
+  SpatialCoverage,
+  TemporalCoverage,
+  UsageInfo,
+} from 'src/utils/api/types';
+
+export type CreativeWorkStatusDatasetType =
+  | 'Draft'
+  | 'Active'
+  | 'Maintenance'
+  | 'Accepting Data'
+  | 'Not Accepting Data'
+  | 'Retired';
 
 export interface MetadataSource {
   code: {
@@ -9,12 +24,39 @@ export interface MetadataSource {
     url: string;
   };
   sourceInfo: {
+    _id: string;
+    abstract?: string;
+    alternateName?: string[];
+    collectionSize?: QuantitativeValue[];
+    collectionType?: string;
+    conditionsOfAccess?: string;
+    creativeWorkStatus?: CreativeWorkStatusDatasetType;
+    date?: string;
+    dateModified?: string;
+    datePublished?: string;
+    description?: string;
+    genre?: (string | Domain)[];
+    hasAPI?: string;
+    hasDownload?: string;
+    healthCondition?: DefinedTerm[];
+    identifier?: string;
+    infectiousAgent?: DefinedTerm[];
+    inLanguage?: string;
+    isAccessibleForFree?: string;
+    license?: string;
+    measurementTechnique?: DefinedTerm[];
     name: string;
-    abstract: string;
-    description: string;
+    parentCollection?: { id: string };
+    schedule?: string;
     schema: Object | null;
-    url: string;
-    identifier: string;
+    spatialCoverage?: SpatialCoverage[];
+    species?: DefinedTerm[];
+    temporalCoverage?: TemporalCoverage[];
+    topicCategory?: DefinedTerm[];
+    type?: string | string[];
+    url?: string;
+    usageInfo?: UsageInfo | string;
+    version?: string;
     metadata_completeness: {
       avg_augmented_recommended_ratio: number;
       avg_augmented_required_ratio: number;
@@ -65,10 +107,6 @@ export interface MetadataSource {
       percent_required_fields: number;
       percent_recommended_fields: number;
     };
-    conditionsOfAccess?: string;
-    genre?: Domain;
-    parentCollection?: { id: string };
-    type: string;
   };
   stats: { [key: string]: number };
   version: string;
