@@ -47,7 +47,6 @@ export const DefinedTermTagList = ({
         <TagCell
           key={i}
           value={v?.name || ''}
-          url={v?.url || undefined}
           noOfLines={1}
           isLoading={isLoading}
         />
@@ -69,31 +68,46 @@ export const DefinedTermTagList = ({
 
 export const TagCell = ({
   value,
-  url,
   noOfLines = 2,
   isLoading,
 }: {
   value: string;
-  url?: string;
   noOfLines?: number;
   isLoading?: boolean;
 }) => {
+  const [isTruncated, setIsTruncated] = useState(false);
+  const labelRef = useRef<HTMLSpanElement>(null);
+
+  const label = value || '';
+
+  // Only show the tooltip when the label is actually clamped/overflowing.
+  useLayoutEffect(() => {
+    if (isLoading) {
+      return;
+    }
+    const el = labelRef.current;
+    if (el) {
+      setIsTruncated(
+        el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth,
+      );
+    }
+  }, [isLoading, label, noOfLines]);
+
   if (isLoading) {
     return <Skeleton isLoaded={false} width='80px' height='20px' />;
   }
-  const label = value || '';
   return (
-    <Tooltip label={label} isDisabled={!value} hasArrow>
+    <Tooltip label={label} isDisabled={!value || !isTruncated} hasArrow>
       <Box>
-        {url ? (
-          <TagWithUrl href={url} bg='page.alt'>
-            {label}
-          </TagWithUrl>
-        ) : (
-          <Tag variant='subtle' noOfLines={noOfLines} bg='page.alt'>
-            <TagLabel>{label}</TagLabel>
-          </Tag>
-        )}
+        <Tag
+          variant='subtle'
+          noOfLines={noOfLines}
+          borderRadius='full'
+          bg='page.alt'
+          color='text.body'
+        >
+          <TagLabel ref={labelRef}>{label}</TagLabel>
+        </Tag>
       </Box>
     </Tooltip>
   );

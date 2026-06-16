@@ -56,6 +56,7 @@ export type RepositoryMatcherColumn<TValue = unknown> = {
   filter?: RepositoryMatcherFilterConfig<TValue>;
   info?: {
     description?: string;
+    tooltip?: string;
     /** Tooltip description for the filters section. */
     filterDescription?: string;
     /** Tooltip description for any sub-terms. */

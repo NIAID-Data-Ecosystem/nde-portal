@@ -51,6 +51,10 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     chart: DEFAULT_BAR_PIE_CHART,
     category: 'Shared / Dataset',
     tabIds: ['d', 'ct'],
+    transformData: (item: { count: number; term: string; label?: string }) => ({
+      ...item,
+      label: item.term,
+    }),
   },
   {
     id: 'sourceOrganization.name',

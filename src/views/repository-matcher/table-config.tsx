@@ -1,19 +1,6 @@
 import React from 'react';
-import {
-  Box,
-  Circle,
-  HStack,
-  Tag,
-  TagLabel,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
-import { Repository } from 'src/hooks/api/useRepoData';
-import {
-  AccessTypes,
-  DefinedTerm,
-  FormattedResource,
-} from 'src/utils/api/types';
+import { Circle, HStack, Tag, TagLabel, Text, VStack } from '@chakra-ui/react';
+import { AccessTypes, DefinedTerm } from 'src/utils/api/types';
 import {
   formatConditionsOfAccess,
   getColorScheme,
@@ -96,80 +83,20 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       );
     },
   },
-  {
-    id: 'abstract',
-    label: getMetadataName('abstract') || '',
-    fields: ['abstract'],
-    columns: { isSortable: true, isDefault: false },
-    transform: (item): RepositoryMatcherItem['abstract'] => item.abstract || '',
-    component: ({
-      value,
-      isLoading,
-    }: {
-      value: RepositoryMatcherItem['abstract'];
-      isLoading?: boolean;
-    }) => <TextCell value={value || ''} isLoading={isLoading} noOfLines={3} />,
-  },
-  {
-    id: 'type',
-    label: getMetadataName('type') || '',
-    fields: ['@type', 'collectionType', 'type'],
-    columns: {
-      isSortable: true,
-      isDefault: true,
-      style: { maxWidth: '180px', minWidth: '180px' },
-    },
-    transform: (item): string[] => itemTypes(item),
-    getSortValue: (value: string[]) => (value[0] || '').toLowerCase(),
-    component: ({
-      value,
-      isLoading,
-    }: {
-      value: string[];
-      isLoading?: boolean;
-    }) => (
-      <TextCell
-        value={value && value.length ? value.join(', ') : ''}
-        isLoading={isLoading}
-        fontWeight='semibold'
-      />
-    ),
-    filter: {
-      getFilterValues: (value: string[]) => value ?? [],
-    },
-    info: {
-      description:
-        'The resource type affects how records from that resource are ingested into the Discovery Portal.',
-      filterDescription: getMetadataDescription('type') || '',
-      terms: [
-        {
-          label: 'Dataset Repository',
-          description:
-            'A repository which holds Dataset records. Dataset metadata records are mapped and directly ingested into the Discovery Portal on a one-to-one basis.',
-        },
-        {
-          label: 'Sample Repository',
-          description:
-            'A repository which holds biological specimen or sample records. Metadata records about samples are mapped and directly ingested into the Discovery Portal on a one-to-one basis.',
-        },
-        {
-          label: 'Computational Tool Repository',
-          description:
-            'A repository which holds Computational Tool records. Tool metadata records are mapped and directly ingested into the Discovery Portal on a one-to-one basis.',
-        },
-        {
-          label: 'Data Repository',
-          description:
-            'A repository which holds other types of records. Records of a searchable type are aggregated from the original source and used to create Data Collection records in the Discovery Portal. Multiple records submitted to a Data Repository may end up as a single Data Collection record in the Discovery Portal.',
-        },
-        {
-          label: 'Resource Catalog',
-          description:
-            ' A manually curated record about the repository/resource/portal etc. itself. Repositories displayed only as Resource Catalogs in the Discovery Portal are not sources of record ingest at this time.',
-        },
-      ],
-    },
-  },
+  // {
+  //   id: 'abstract',
+  //   label: getMetadataName('abstract') || '',
+  //   fields: ['abstract'],
+  //   columns: { isSortable: true, isDefault: false },
+  //   transform: (item): RepositoryMatcherItem['abstract'] => item.abstract || '',
+  //   component: ({
+  //     value,
+  //     isLoading,
+  //   }: {
+  //     value: RepositoryMatcherItem['abstract'];
+  //     isLoading?: boolean;
+  //   }) => <TextCell value={value || ''} isLoading={isLoading} noOfLines={3} />,
+  // },
   {
     id: 'researchDomain',
     label: getMetadataName('genre') || '',
@@ -211,16 +138,17 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     info: {
       description: 'Categorical information about the content of a resource.',
       filterDescription: getMetadataDescription('genre') || '',
+      tooltip: getMetadataDescription('genre') || '',
       terms: [
-        {
-          label: 'IID',
-          description:
-            'A resource specifically designed for Infectious and/or Immune-Mediated Disease content',
-        },
         {
           label: 'Generalist',
           description:
             'A resource not specifically designed for Infectious and/or Immune-Mediated Disease content',
+        },
+        {
+          label: 'IID',
+          description:
+            'A resource specifically designed for Infectious and/or Immune-Mediated Disease content',
         },
       ],
     },
@@ -260,26 +188,27 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     },
     info: {
       description:
-        'Access-level definitions Options include open (freely available), restricted (may include restrictions such as on use), closed (requires registration to access), or embargoed (unpublished).',
+        'Access-level definitions options include open (freely available), controlled (may include restrictions such as on use), or registered (requires registration to access).',
       filterDescription: getMetadataDescription('conditionsOfAccess') || '',
+      tooltip: getMetadataDescription('conditionsOfAccess') || '',
       terms: [
+        {
+          label: 'Controlled Access',
+          description:
+            'The repository may include restrictions such as for access or use',
+        },
         {
           label: 'Open Access',
           description: 'The data in the repository is freely available',
         },
         {
+          label: 'Registered Access',
+          description: 'The repository requires registration to access',
+        },
+        {
           label: 'Varied Access',
           description:
             'The repository contains data that varies at the record level',
-        },
-        {
-          label: 'Restricted Access',
-          description:
-            'The repository may include restrictions such as for access or use',
-        },
-        {
-          label: 'Closed Access',
-          description: 'The repository requires registration to access',
         },
       ],
     },
@@ -312,7 +241,9 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
     },
     info: {
+      description: getMetadataDescription('healthCondition') || '',
       filterDescription: getMetadataDescription('healthCondition') || '',
+      tooltip: getMetadataDescription('healthCondition') || '',
     },
   },
   {
@@ -343,7 +274,9 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
     },
     info: {
+      description: getMetadataDescription('infectiousAgent') || '',
       filterDescription: getMetadataDescription('infectiousAgent') || '',
+      tooltip: getMetadataDescription('infectiousAgent') || '',
     },
   },
   // {
@@ -390,50 +323,50 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   //     getFilterValues: (value: string) => (value ? [value] : []),
   //   },
   // },
-  {
-    id: 'collectionSize',
-    label: getMetadataName('collectionSize') || '',
-    fields: ['collectionSize'],
-    columns: {
-      isSortable: false,
-      isDefault: true,
-      style: { maxWidth: '160px', minWidth: '160px' },
-    },
-    transform: item => item.collectionSize,
-    getSearchValue: (value: RepositoryMatcherItem['collectionSize']) => {
-      return value?.map(v => `${v.minValue} ${v.unitText || ''}`) || [];
-    },
-    component: ({
-      value,
-    }: {
-      value: RepositoryMatcherItem['collectionSize'];
-      isLoading?: boolean;
-    }) => {
-      return (
-        <VStack>
-          {value?.map((v, i) => (
-            <TextCell
-              key={i}
-              value={v.minValue ? `${v.minValue} ${v.unitText || ''}` : ''}
-              textAlign='end'
-              noOfLines={undefined}
-            >
-              <Text as='span' fontWeight='semibold' fontSize='inherit'>
-                {v.minValue?.toLocaleString() || '-'}
-              </Text>
-              <br />
-              <Text as='span' fontSize='inherit'>
-                {v.unitText}
-              </Text>
-            </TextCell>
-          ))}
-        </VStack>
-      );
-    },
-  },
+  // {
+  //   id: 'collectionSize',
+  //   label: getMetadataName('collectionSize') || '',
+  //   fields: ['collectionSize'],
+  //   columns: {
+  //     isSortable: false,
+  //     isDefault: true,
+  //     style: { maxWidth: '160px', minWidth: '160px' },
+  //   },
+  //   transform: item => item.collectionSize,
+  //   getSearchValue: (value: RepositoryMatcherItem['collectionSize']) => {
+  //     return value?.map(v => `${v.minValue} ${v.unitText || ''}`) || [];
+  //   },
+  //   component: ({
+  //     value,
+  //   }: {
+  //     value: RepositoryMatcherItem['collectionSize'];
+  //     isLoading?: boolean;
+  //   }) => {
+  //     return (
+  //       <VStack>
+  //         {value?.map((v, i) => (
+  //           <TextCell
+  //             key={i}
+  //             value={v.minValue ? `${v.minValue} ${v.unitText || ''}` : ''}
+  //             textAlign='end'
+  //             noOfLines={undefined}
+  //           >
+  //             <Text as='span' fontWeight='semibold' fontSize='inherit'>
+  //               {v.minValue?.toLocaleString() || '-'}
+  //             </Text>
+  //             <br />
+  //             <Text as='span' fontSize='inherit'>
+  //               {v.unitText}
+  //             </Text>
+  //           </TextCell>
+  //         ))}
+  //       </VStack>
+  //     );
+  //   },
+  // },
   {
     id: 'species',
-    label: getMetadataName('species') || '',
+    label: 'Host Species',
     fields: ['species'],
     columns: { isSortable: false, isDefault: true },
     transform: item => {
@@ -457,7 +390,9 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
     },
     info: {
+      description: getMetadataDescription('species') || '',
       filterDescription: getMetadataDescription('species') || '',
+      tooltip: getMetadataDescription('species') || '',
     },
   },
   {
@@ -488,7 +423,9 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
     },
     info: {
+      description: getMetadataDescription('measurementTechnique') || '',
       filterDescription: getMetadataDescription('measurementTechnique') || '',
+      tooltip: getMetadataDescription('measurementTechnique') || '',
     },
   },
   {
@@ -524,28 +461,30 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
     },
     info: {
+      description: getMetadataDescription('topicCategory') || '',
       filterDescription: getMetadataDescription('topicCategory') || '',
+      tooltip: getMetadataDescription('topicCategory') || '',
     },
   },
-  {
-    id: 'dateModified',
-    label: getMetadataName('dateModified') || '',
-    fields: ['dateModified'],
-    columns: { isSortable: true, isDefault: true },
-    transform: item => {
-      if (!item.dateModified) return '';
-      return new Date(item.dateModified).toLocaleDateString();
-    },
-    component: ({
-      value,
-      isLoading,
-    }: {
-      value: string;
-      isLoading?: boolean;
-    }) => {
-      return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
-    },
-  },
+  // {
+  //   id: 'dateModified',
+  //   label: getMetadataName('dateModified') || '',
+  //   fields: ['dateModified'],
+  //   columns: { isSortable: true, isDefault: true },
+  //   transform: item => {
+  //     if (!item.dateModified) return '';
+  //     return new Date(item.dateModified).toLocaleDateString();
+  //   },
+  //   component: ({
+  //     value,
+  //     isLoading,
+  //   }: {
+  //     value: string;
+  //     isLoading?: boolean;
+  //   }) => {
+  //     return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
+  //   },
+  // },
   {
     id: 'temporalCoverage',
     label: getMetadataName('temporalCoverage') || '',
@@ -555,7 +494,12 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       return item.temporalCoverage;
     },
     getSearchValue: (value: RepositoryMatcherItem['temporalCoverage']) => {
-      return value?.map(v => `${v.startDate},${v.endDate}`) ?? [];
+      return (
+        value?.map(v => {
+          if (!v.startDate && !v.endDate && v.name) return v.name;
+          return `${v.startDate},${v.endDate}`;
+        }) ?? []
+      );
     },
     component: ({
       value,
@@ -572,6 +516,13 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
       }
       const formatted = value.map(tc => {
+        if (!tc.startDate && !tc.endDate && tc.name) {
+          return (
+            <Text key={tc.name} as='span' fontSize='xs'>
+              {tc.name}
+            </Text>
+          );
+        }
         const start = tc.startDate
           ? new Date(tc.startDate).toLocaleDateString()
           : '-';
@@ -599,6 +550,10 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
 
       return formatted;
     },
+    info: {
+      description: getMetadataDescription('temporalCoverage') || '',
+      tooltip: getMetadataDescription('temporalCoverage') || '',
+    },
   },
   {
     id: 'license',
@@ -625,83 +580,148 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       }
       return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
     },
+    info: {
+      description: getMetadataDescription('license') || '',
+      tooltip: getMetadataDescription('license') || '',
+    },
   },
   {
-    id: 'usageInfo',
-    label: getMetadataName('usageInfo') || '',
-    fields: ['usageInfo'],
-    columns: { isSortable: true, isDefault: true },
-    transform: item => item.usageInfo || '',
-    getSearchValue: (value: RepositoryMatcherItem['usageInfo']) => {
-      if (typeof value === 'string') {
-        return value;
-      }
-      if (Array.isArray(value)) {
-        return value
-          .map(v => (typeof v === 'string' ? v : v.name || v.url || ''))
-          .filter(v => v);
-      }
-      if (value && typeof value === 'object') {
-        return value.name || value.url || '';
-      }
-      return null;
+    id: 'type',
+    label: getMetadataName('type') || '',
+    fields: ['@type', 'collectionType', 'type'],
+    columns: {
+      isSortable: true,
+      isDefault: true,
+      style: { maxWidth: '180px', minWidth: '180px' },
     },
+    transform: (item): string[] => itemTypes(item),
+    getSortValue: (value: string[]) => (value[0] || '').toLowerCase(),
     component: ({
       value,
       isLoading,
     }: {
-      value: Repository['usageInfo'] | FormattedResource['usageInfo'];
+      value: string[];
       isLoading?: boolean;
-    }) => {
-      if (typeof value === 'string') {
-        if (value.startsWith('http') || value.startsWith('www')) {
-          return (
-            <TextCellWithLink
-              label={value}
-              url={value}
-              isLoading={isLoading}
-              isExternal
-            />
-          );
-        }
-        return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
-      }
-
-      const usageDetails = Array.isArray(value) ? value : value ? [value] : [];
-
-      if (!isLoading && usageDetails.length === 0) {
-        return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
-      } else if (usageDetails.length > 0) {
-        return (
-          <VStack alignItems='flex-start'>
-            {usageDetails.map((u, i) => (
-              <Box key={i}>
-                {u.url ? (
-                  <TextCellWithLink
-                    label={u.name || u.url}
-                    url={u.url}
-                    isLoading={isLoading}
-                    isExternal
-                  />
-                ) : (
-                  <TextCell value={u.name || ''} isLoading={isLoading} />
-                )}
-                <br />
-                {u?.description && (
-                  <TextCell
-                    value={u.description}
-                    isLoading={isLoading}
-                    noOfLines={3}
-                  />
-                )}
-              </Box>
-            ))}
-          </VStack>
-        );
-      }
-      return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
+    }) => (
+      <TextCell
+        value={value && value.length ? value.join(', ') : ''}
+        isLoading={isLoading}
+        fontWeight='semibold'
+      />
+    ),
+    filter: {
+      getFilterValues: (value: string[]) => value ?? [],
+    },
+    info: {
+      description:
+        'Type is a Portal-specific classification that indicates how repository content is organized and displayed within the Portal.',
+      filterDescription: getMetadataDescription('type') || '',
+      tooltip: getMetadataDescription('type') || '',
+      terms: [
+        {
+          label: 'Dataset Repository',
+          description:
+            'A repository which holds Dataset records. Dataset metadata records are mapped and directly ingested into the Discovery Portal on a one-to-one basis.',
+        },
+        {
+          label: 'Resource Catalog',
+          description:
+            ' A manually curated record about the repository/resource/portal etc. itself. Repositories displayed only as Resource Catalogs in the Discovery Portal are not sources of record ingest at this time.',
+        },
+        // {
+        //   label: 'Computational Tool Repository',
+        //   description:
+        //   'A repository which holds Computational Tool records. Tool metadata records are mapped and directly ingested into the Discovery Portal on a one-to-one basis.',
+        // },
+        // {
+        //   label: 'Sample Repository',
+        //   description:
+        //     'A repository which holds biological specimen or sample records. Metadata records about samples are mapped and directly ingested into the Discovery Portal on a one-to-one basis.',
+        // },
+        // {
+        //   label: 'Data Repository',
+        //   description:
+        //     'A repository which holds other types of records. Records of a searchable type are aggregated from the original source and used to create Data Collection records in the Discovery Portal. Multiple records submitted to a Data Repository may end up as a single Data Collection record in the Discovery Portal.',
+        // },
+      ],
     },
   },
+  // {
+  //   id: 'usageInfo',
+  //   label: getMetadataName('usageInfo') || '',
+  //   fields: ['usageInfo'],
+  //   columns: { isSortable: true, isDefault: true },
+  //   transform: item => item.usageInfo || '',
+  //   getSearchValue: (value: RepositoryMatcherItem['usageInfo']) => {
+  //     if (typeof value === 'string') {
+  //       return value;
+  //     }
+  //     if (Array.isArray(value)) {
+  //       return value
+  //         .map(v => (typeof v === 'string' ? v : v.name || v.url || ''))
+  //         .filter(v => v);
+  //     }
+  //     if (value && typeof value === 'object') {
+  //       return value.name || value.url || '';
+  //     }
+  //     return null;
+  //   },
+  //   component: ({
+  //     value,
+  //     isLoading,
+  //   }: {
+  //     value: Repository['usageInfo'] | FormattedResource['usageInfo'];
+  //     isLoading?: boolean;
+  //   }) => {
+  //     if (typeof value === 'string') {
+  //       if (value.startsWith('http') || value.startsWith('www')) {
+  //         return (
+  //           <TextCellWithLink
+  //             label={value}
+  //             url={value}
+  //             isLoading={isLoading}
+  //             isExternal
+  //           />
+  //         );
+  //       }
+  //       return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
+  //     }
+
+  //     const usageDetails = Array.isArray(value) ? value : value ? [value] : [];
+
+  //     if (!isLoading && usageDetails.length === 0) {
+  //       return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
+  //     } else if (usageDetails.length > 0) {
+  //       return (
+  //         <VStack alignItems='flex-start'>
+  //           {usageDetails.map((u, i) => (
+  //             <Box key={i}>
+  //               {u.url ? (
+  //                 <TextCellWithLink
+  //                   label={u.name || u.url}
+  //                   url={u.url}
+  //                   isLoading={isLoading}
+  //                   isExternal
+  //                 />
+  //               ) : (
+  //                 <TextCell value={u.name || ''} isLoading={isLoading} />
+  //               )}
+  //               <br />
+  //               {u?.description && (
+  //                 <TextCell
+  //                   value={u.description}
+  //                   isLoading={isLoading}
+  //                   noOfLines={3}
+  //                 />
+  //               )}
+  //             </Box>
+  //           ))}
+  //         </VStack>
+  //       );
+  //     }
+  //     return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
+  //   },
+  // },
 ];
 
 export const FILTERABLE_REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] =

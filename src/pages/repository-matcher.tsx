@@ -34,7 +34,7 @@ import {
 } from 'src/views/repository-matcher/hooks/useRepositoryMatcherFilters';
 import { useSearchedData } from 'src/views/repository-matcher/hooks/useSearchedData';
 import { REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
-import { TableDefinitions } from 'src/views/repository-matcher/components/TableDefinitions';
+import { DataDictionary } from 'src/views/repository-matcher/components/DataDictionary';
 
 const TABLE_CONTAINER_PROPS = {
   overflowX: 'auto' as const,
@@ -116,6 +116,7 @@ const RepositoryMatcher: NextPage = () => {
         title: col.label,
         property: col.id,
         isSortable: col.columns?.isSortable,
+        tooltip: col.info?.description || '',
         props: col.columns?.style,
       }));
   }, [visibleColumnIds, orderedColumnIds]);
@@ -244,6 +245,27 @@ const RepositoryMatcher: NextPage = () => {
     [],
   );
 
+  // The set of term labels actually present in the data for each column with a
+  // dictionary definition. Computed against the full (unfiltered) dataset so
+  // the dictionary stays a stable reference regardless of search/filter state.
+  // Based on feedback that users want to see definitions for terms actually
+  // present in the table: https://github.com/NIAID-Data-Ecosystem/niaid-feedback/issues/276#issuecomment-4674101195
+  const presentTermsByColumnId = useMemo(() => {
+    const result: Record<string, Set<string>> = {};
+    if (!data?.length) return result;
+    for (const col of COLUMNS_WITH_DEFINITIONS) {
+      if (!col.info?.terms || !col.filter) continue;
+      const values = new Set<string>();
+      for (const row of data) {
+        for (const value of col.filter.getFilterValues(row[col.id])) {
+          values.add(value);
+        }
+      }
+      result[col.id] = values;
+    }
+    return result;
+  }, [data]);
+
   const LOADING_ROWS = useMemo(() => Array(10).fill({}), []);
   const tableData = isLoading ? LOADING_ROWS : sortedData;
 
@@ -256,8 +278,8 @@ const RepositoryMatcher: NextPage = () => {
           Repository Matcher
         </Heading>
         <Text fontSize='md' lineHeight='short'>
-          Find a suitable repository to deposit your data. Filter by type,
-          research domain, accepted data, and more.
+          Find a suitable repository that accepts research data deposits. Filter
+          by research domain, repository type, and other criteria.
         </Text>
       </Flex>
       <Divider />
@@ -326,7 +348,7 @@ const RepositoryMatcher: NextPage = () => {
               display={{ base: 'block', md: 'none' }}
               fontSize='sm'
               fontWeight='semibold'
-              mb={1}
+              mt={4}
             >
               Active Filters:
             </Text>
@@ -337,6 +359,7 @@ const RepositoryMatcher: NextPage = () => {
             flex={1}
             flexWrap='wrap'
             minW={{ base: 0, md: '300px' }}
+            my={4}
           >
             {filterTags.length > 0 && (
               <Tag
@@ -417,8 +440,12 @@ const RepositoryMatcher: NextPage = () => {
               </Flex>
             }
           />
+
           {/* Information and definitions section */}
-          <TableDefinitions columns={COLUMNS_WITH_DEFINITIONS} />
+          <DataDictionary
+            columns={COLUMNS_WITH_DEFINITIONS}
+            presentTermsByColumnId={presentTermsByColumnId}
+          />
         </Box>
       </Flex>
     </PageContainer>

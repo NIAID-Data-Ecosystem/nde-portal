@@ -75,12 +75,12 @@
     "/repository-matcher": {
       "seo": {
         "title": "Repository Matcher",
-        "description": "Find a suitable repository to deposit your data using the NIAID Data Ecosystem Discovery Portal.",
+        "description": "Find a suitable repository that accepts research data deposits using the NIAID Data Ecosystem Discovery Portal.",
         "keywords": []
       },
       "nav": {
-        "label": "Respository Matcher",
-        "description": "Find a suitable repository to deposit your data"
+        "label": "Repository Matcher",
+        "description": "Find a suitable repository that accepts research data deposits."
       }
     },
     "/advanced-search": {

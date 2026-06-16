@@ -9,6 +9,7 @@ import {
 import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
 import { Link } from 'src/components/link';
 import { AI_ASSISTED_SEARCH_KC_LINK } from 'src/components/page-container/components/search/components/ai-toggle';
+import { useAuth } from 'src/hooks/useAuth';
 import { useUserData } from 'src/hooks/useUserData';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
@@ -49,6 +50,8 @@ export const SearchResultsHeader = ({
   querystring: string;
   showAIBanner: boolean | null;
 }) => {
+  const { user, login } = useAuth();
+
   const { favoriteSearches, saveFavoriteSearch, removeFavoriteSearch } =
     useUserData();
 
@@ -97,14 +100,18 @@ export const SearchResultsHeader = ({
                   : 'Bookmark this search'
               }
               isFavorited={isFavorited}
-              onClick={() =>
-                isFavorited
+              onClick={() => {
+                if (!user) {
+                  login();
+                  return;
+                }
+                return isFavorited
                   ? removeFavoriteSearch(favoriteIndex)
                   : saveFavoriteSearch({
                       query: querystring,
                       name: `Search: ${querystring}`,
-                    })
-              }
+                    });
+              }}
             />
           )}
         </HStack>
