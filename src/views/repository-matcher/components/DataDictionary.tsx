@@ -4,9 +4,13 @@ import { RepositoryMatcherColumn } from '../types';
 
 interface DataDictionaryProps {
   columns: RepositoryMatcherColumn[];
+  presentTermsByColumnId?: Record<string, Set<string>>;
 }
 
-export const DataDictionary: React.FC<DataDictionaryProps> = ({ columns }) => {
+export const DataDictionary: React.FC<DataDictionaryProps> = ({
+  columns,
+  presentTermsByColumnId,
+}) => {
   return (
     <Box
       my={6}
@@ -27,9 +31,15 @@ export const DataDictionary: React.FC<DataDictionaryProps> = ({ columns }) => {
       </VStack>
       {columns
         .sort((a, b) => a.label.localeCompare(b.label))
-        .map(({ label, info }) => {
+        .map(({ id, label, info }) => {
           if (!info) return null;
           const { description, terms } = info;
+          // Restrict the listed terms to those present in the data when we
+          // have a value set for this column; otherwise list all terms.
+          const presentTerms = presentTermsByColumnId?.[id];
+          const visibleTerms = presentTerms
+            ? terms?.filter(term => presentTerms.has(term.label || ''))
+            : terms;
           return (
             <Box key={label} lineHeight='tall' width='100%'>
               <Box
@@ -52,9 +62,9 @@ export const DataDictionary: React.FC<DataDictionaryProps> = ({ columns }) => {
                 )}
                 {description && <Text color='gray.800'>{description}</Text>}
               </Box>
-              {terms && (
+              {visibleTerms && visibleTerms.length > 0 && (
                 <VStack mx={6} my={4} alignItems='flex-start'>
-                  {terms?.map(term => (
+                  {visibleTerms.map(term => (
                     <Box key={term.label}>
                       <Text fontWeight='semibold'>{term.label}</Text>
                       <Text as='span' fontWeight='normal'>

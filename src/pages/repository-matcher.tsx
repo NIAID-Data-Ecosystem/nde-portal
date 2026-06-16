@@ -245,6 +245,27 @@ const RepositoryMatcher: NextPage = () => {
     [],
   );
 
+  // The set of term labels actually present in the data for each column with a
+  // dictionary definition. Computed against the full (unfiltered) dataset so
+  // the dictionary stays a stable reference regardless of search/filter state.
+  // Based on feedback that users want to see definitions for terms actually
+  // present in the table: https://github.com/NIAID-Data-Ecosystem/niaid-feedback/issues/276#issuecomment-4674101195
+  const presentTermsByColumnId = useMemo(() => {
+    const result: Record<string, Set<string>> = {};
+    if (!data?.length) return result;
+    for (const col of COLUMNS_WITH_DEFINITIONS) {
+      if (!col.info?.terms || !col.filter) continue;
+      const values = new Set<string>();
+      for (const row of data) {
+        for (const value of col.filter.getFilterValues(row[col.id])) {
+          values.add(value);
+        }
+      }
+      result[col.id] = values;
+    }
+    return result;
+  }, [data]);
+
   const LOADING_ROWS = useMemo(() => Array(10).fill({}), []);
   const tableData = isLoading ? LOADING_ROWS : sortedData;
 
@@ -421,7 +442,10 @@ const RepositoryMatcher: NextPage = () => {
           />
 
           {/* Information and definitions section */}
-          <DataDictionary columns={COLUMNS_WITH_DEFINITIONS} />
+          <DataDictionary
+            columns={COLUMNS_WITH_DEFINITIONS}
+            presentTermsByColumnId={presentTermsByColumnId}
+          />
         </Box>
       </Flex>
     </PageContainer>

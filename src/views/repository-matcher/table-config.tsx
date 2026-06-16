@@ -514,7 +514,12 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       return item.temporalCoverage;
     },
     getSearchValue: (value: RepositoryMatcherItem['temporalCoverage']) => {
-      return value?.map(v => `${v.startDate},${v.endDate}`) ?? [];
+      return (
+        value?.map(v => {
+          if (!v.startDate && !v.endDate && v.name) return v.name;
+          return `${v.startDate},${v.endDate}`;
+        }) ?? []
+      );
     },
     component: ({
       value,
@@ -531,6 +536,13 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
       }
       const formatted = value.map(tc => {
+        if (!tc.startDate && !tc.endDate && tc.name) {
+          return (
+            <Text key={tc.name} as='span' fontSize='xs'>
+              {tc.name}
+            </Text>
+          );
+        }
         const start = tc.startDate
           ? new Date(tc.startDate).toLocaleDateString()
           : '-';
