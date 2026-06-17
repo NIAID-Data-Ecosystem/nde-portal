@@ -40,6 +40,7 @@ import { SourceLogo } from 'src/components/source-logo';
 import { BookmarkButton } from 'src/components/bookmark-buttons/button';
 import { useUserData } from 'src/hooks/useUserData';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
+import { useAuth } from 'src/hooks/useAuth';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -56,6 +57,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   referrerPath,
   querystring,
 }) => {
+  const { user, login } = useAuth();
+
   const { favoriteDatasets, saveFavoriteDataset, removeFavoriteDataset } =
     useUserData();
   const isFavorited = data?.id
@@ -534,6 +537,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       isFavorited={isFavorited}
                       onClick={() => {
                         if (!data?.id) return;
+                        if (!user) {
+                          login();
+                          return;
+                        }
                         if (isFavorited) {
                           removeFavoriteDataset(data.id);
                         } else {

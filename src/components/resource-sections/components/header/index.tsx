@@ -6,6 +6,7 @@ import { CopyIconButton } from 'src/components/copy-button';
 import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
 import { useUserData } from 'src/hooks/useUserData';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
+import { useAuth } from 'src/hooks/useAuth';
 
 interface HeaderProps {
   isLoading: boolean;
@@ -24,11 +25,16 @@ const Header = ({
   doi,
   nctid,
 }: HeaderProps) => {
+  const { user, login } = useAuth();
+
   const { favoriteDatasets, saveFavoriteDataset, removeFavoriteDataset } =
     useUserData();
+
   const isFavorited = id
     ? favoriteDatasets.some(fd => fd.dataset_id === id)
     : false;
+
+  const showBookmarkButton = ENABLE_AUTH;
 
   return (
     <>
@@ -62,10 +68,15 @@ const Header = ({
               </Heading>
             )}
           </Heading>
-          {ENABLE_AUTH && (
+          {showBookmarkButton && (
             <BookmarkIconButton
               isFavorited={isFavorited}
               onClick={() => {
+                // Redirect logged-out users to the login page.
+                if (!user) {
+                  login();
+                  return;
+                }
                 if (!id) return;
                 if (isFavorited) {
                   removeFavoriteDataset(id);

@@ -259,7 +259,7 @@ export const RepositoryCells = ({
           noOfLines={2}
         >
           {column.property === 'type' &&
-            (data.type
+            (data.type && data.type.length > 0
               ? data.type
                   .map(type => formatTypeName(type))
                   .sort((a, b) => a.localeCompare(b))

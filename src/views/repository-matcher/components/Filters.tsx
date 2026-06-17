@@ -43,7 +43,7 @@ const toFilterConfig = (col: RepositoryMatcherColumn<any>): FilterConfig => ({
   name: col.label,
   property: col.id,
   category: 'Dataset',
-  description: col.info?.filterDescription ?? '',
+  description: col.info?.description ?? '',
   queryType: 'facet',
   groupBy: col.filter?.groupBy,
 });

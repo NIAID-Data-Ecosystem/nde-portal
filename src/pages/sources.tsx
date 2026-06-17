@@ -61,7 +61,7 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
   } = useQuery({
     queryKey: ['metadata'],
     queryFn: fetchMetadata,
-    placeholderData: () => data.sourceMetadata.data,
+    placeholderData: () => data?.sourceMetadata?.data,
     select: res => {
       const sources = res.src;
       const sourceDetails = Object.entries(sources).map(([key, source]) => {
@@ -229,13 +229,13 @@ export async function getStaticProps() {
       },
     };
   } catch (err: any) {
-    console.error(`Failed to fetch metadata: ${err.message}`);
+    console.error(err.message);
     return {
       props: {
         error: {
           type: 'error',
           status: err.response?.status || 500,
-          message: err.response?.statusText || 'Unknown error',
+          message: err.message || 'Unknown error',
         },
       },
     };

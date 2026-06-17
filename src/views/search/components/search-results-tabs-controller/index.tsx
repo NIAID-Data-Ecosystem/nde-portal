@@ -29,7 +29,7 @@ import {
 } from '../../hooks/useBioSampleAggregation';
 import { queryFilterObject2String } from '../filters/utils/query-string';
 import { fetchSearchResults, Params } from 'src/utils/api';
-import { defaultQuery } from '../../config/defaultQuery';
+import { defaultQuery, getDefaultSizeForTab } from '../../config/defaultQuery';
 import { SAMPLE_FIELDS, DATA_COLLECTION_FIELDS } from '../../config/fields';
 
 const CAROUSEL_RESULTS_FIELDS = [
@@ -145,7 +145,7 @@ export const SearchResultsController = ({
       facets: '',
       fields: SAMPLE_FIELDS,
       sort: defaultQuery.sort,
-      size: `${defaultQuery.size}`,
+      size: `${getDefaultSizeForTab('s')}`,
       from: '0',
       use_metadata_score: 'false',
       use_ai_search: queryParams.use_ai_search ?? 'false',
@@ -174,7 +174,7 @@ export const SearchResultsController = ({
       facets: '',
       fields: DATA_COLLECTION_FIELDS,
       sort: defaultQuery.sort,
-      size: `${defaultQuery.size}`,
+      size: `${getDefaultSizeForTab('dc')}`,
       from: '0',
       use_metadata_score: 'false',
       use_ai_search: queryParams.use_ai_search ?? 'false',
