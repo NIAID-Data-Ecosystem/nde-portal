@@ -97,11 +97,24 @@ const AIToggleTooltip: React.FC<AIToggleTooltipProps> = ({
       {...tooltipProps}
     >
       <PopoverTrigger>
+        {/*
+          PopoverTrigger injects aria-expanded / aria-haspopup="dialog" onto its
+          child, so the child needs a role that supports those states. role=
+          "button" + tabIndex makes the ARIA valid and the help tooltip keyboard-
+          focusable; focus/blur mirror the hover handlers so keyboard users can
+          open it too. (A native <button> can't be used here — the child renders
+          a <label>, which is invalid inside a button.)
+        */}
         <Flex
           alignItems='center'
           cursor='help'
+          role='button'
+          tabIndex={0}
+          aria-label='More information about AI-assisted search'
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
+          onFocus={handleMouseEnter}
+          onBlur={handleMouseLeave}
         >
           {children}
         </Flex>
