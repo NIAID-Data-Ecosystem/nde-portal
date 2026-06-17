@@ -232,6 +232,7 @@ const Search: NextPage<{
                     {/* Heading: Showing results for... */}
                     <SearchResultsHeader
                       querystring={queryParams.q}
+                      selectedFilters={selectedFilters}
                       showAIBanner={
                         SHOW_AI_ASSISTED_SEARCH &&
                         router.query.use_ai_search === 'true'

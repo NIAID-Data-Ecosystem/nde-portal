@@ -24,6 +24,8 @@ import { Link } from 'src/components/link';
 import { useLocalStorage } from 'usehooks-ts';
 import { useRouter } from 'next/router';
 import { useEffect, useRef } from 'react';
+import { useAuth } from 'src/hooks/useAuth';
+import { useUserData } from 'src/hooks/useUserData';
 
 const HOVER_OPEN_DELAY = 200; // ms before showing
 const HOVER_CLOSE_DELAY = 120; // ms before hiding
@@ -180,11 +182,12 @@ export const AIToggle: React.FC<AIToggleProps> = ({
   ...rest
 }) => {
   const router = useRouter();
+  const { preferences } = useUserData();
 
   // Store the whether AI search is enabled in local storage.
   const [enableAiSearch, setEnableAiSearch] = useLocalStorage<boolean>(
     'enableAISearch',
-    false,
+    false, // default to false if no preference is set
     { initializeWithValue: false },
   );
 
@@ -213,20 +216,27 @@ export const AIToggle: React.FC<AIToggleProps> = ({
     }
 
     /**
-     * On all other routes, DO NOT override the user’s saved preference from localStorage.
-     *
-     * However, if a URL explicitly includes `use_ai_search`, honor it.
+     * On all other routes, an explicit URL flag wins.
      * This allows pages like:
      *    /something?use_ai_search=true
      * to intentionally preset the toggle.
      */
     if (typeof useAiSearchValue === 'string') {
       setEnableAiSearch(useAiSearchValue === 'true');
+      return;
     }
+
+    /**
+     * Otherwise, fall back to the user's saved account preference.
+     * `ai_toggle_preference` loads asynchronously from the user's profile;
+     * including it in the dependencies re-applies the toggle once it resolves.
+     */
+    setEnableAiSearch(preferences.ai_toggle_preference);
   }, [
     router.isReady,
     router.query.use_ai_search,
     router.pathname,
+    preferences.ai_toggle_preference,
     setEnableAiSearch,
   ]);
 

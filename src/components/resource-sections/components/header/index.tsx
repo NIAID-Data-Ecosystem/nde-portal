@@ -27,11 +27,10 @@ const Header = ({
 }: HeaderProps) => {
   const { user, login } = useAuth();
 
-  const { favoriteDatasets, saveFavoriteDataset, removeFavoriteDataset } =
-    useUserData();
+  const { savedDatasets, addSavedDataset, removeSavedDataset } = useUserData();
 
   const isFavorited = id
-    ? favoriteDatasets.some(fd => fd.dataset_id === id)
+    ? savedDatasets.some(fd => fd.dataset_id === id)
     : false;
 
   const showBookmarkButton = ENABLE_AUTH;
@@ -79,9 +78,9 @@ const Header = ({
                 }
                 if (!id) return;
                 if (isFavorited) {
-                  removeFavoriteDataset(id);
+                  removeSavedDataset(id);
                 } else {
-                  saveFavoriteDataset({
+                  addSavedDataset({
                     dataset_id: id,
                     name: name || alternateName || 'Untitled Dataset',
                     saved_at: new Date().toISOString(),

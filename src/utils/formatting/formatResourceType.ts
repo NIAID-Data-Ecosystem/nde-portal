@@ -77,8 +77,3 @@ export const formatResourceTypeForAPI = (
     return str;
   }
 };
-
-// Type guard to check if a type is an API resource type
-export const isAPIResourceType = (type: string): type is APIResourceType => {
-  return ['Dataset', 'ResourceCatalog', 'ComputationalTool'].includes(type);
-};

@@ -16,8 +16,9 @@ import {
 import { useAuth } from 'src/hooks/useAuth';
 import { withAuth } from 'src/components/auth/withAuth';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
-import { UserPreferencesKeys, useUserData } from 'src/hooks/useUserData';
+import { UserPreferencesKeys } from 'src/hooks/useUserData/types';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
+import { useUserData } from 'src/hooks/useUserData';
 
 const SETTINGS_COPY = {
   page: {
