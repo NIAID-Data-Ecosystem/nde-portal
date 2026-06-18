@@ -59,6 +59,12 @@ export const ResourceCatalogCard = ({
 
   const shouldShowDescription = !showAllTypes;
 
+  // Retired ResourceCatalog cards use a gray treatment throughout to
+  // visually communicate that the resource is no longer active.
+  const isRetired =
+    type === 'ResourceCatalog' && creativeWorkStatus === 'Retired';
+  const cardBg = isRetired ? 'gray.100' : 'white';
+
   const linkProps = id
     ? {
         href: {
@@ -70,12 +76,13 @@ export const ResourceCatalogCard = ({
     : undefined;
 
   return (
-    <CompactCard.Base isLoading={isLoading}>
+    <CompactCard.Base isLoading={isLoading} bg={cardBg}>
       <CompactCard.Banner
         label={formatAPIResourceTypeForDisplay(type || 'ResourceCatalog')}
         type={type || 'ResourceCatalog'}
         isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
         isLoading={isLoading}
+        creativeWorkStatus={creativeWorkStatus}
       />
 
       <CompactCard.Header isLoading={isLoading}>
@@ -91,7 +98,7 @@ export const ResourceCatalogCard = ({
         <Skeleton isLoaded={!isLoading} minHeight='30px'>
           {date && (
             <Flex
-              bg='white'
+              bg={cardBg}
               fontWeight='semibold'
               whiteSpace='nowrap'
               alignItems='flex-start'
@@ -150,7 +157,7 @@ export const ResourceCatalogCard = ({
         {/* Content types */}
         <Skeleton isLoaded={!isLoading} px={-1}>
           {aboutItems.length > 0 && (
-            <Flex bg='white' direction='column'>
+            <Flex bg={cardBg} direction='column'>
               <MetadataLabel label='Content Types' />
               <ScrollContainer overflow='auto' maxHeight='200px'>
                 <SearchableItems
