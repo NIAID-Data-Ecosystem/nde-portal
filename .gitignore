@@ -60,5 +60,6 @@ serve.json
 
 # claude
 .claude/settings.local.json
+CLAUDE.local.md
 
 src/pages/wip.tsx
