@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Flex, Tooltip, Text, Button } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
-import { ConditionsOfAccess } from 'src/components/badges';
+import { ConditionsOfAccess, CreativeWorkStatus } from 'src/components/badges';
 import { HasAPI } from 'src/components/badges/components/HasAPI';
 import { MetadataLabel } from 'src/components/metadata';
 import { ScrollContainer } from 'src/components/scroll-container';
@@ -33,6 +33,7 @@ export const ResourceCatalogCard = ({
     date,
     conditionsOfAccess,
     hasAPI,
+    creativeWorkStatus,
     about,
     description,
   } = data || {};
@@ -107,7 +108,9 @@ export const ResourceCatalogCard = ({
               >
                 <Text fontSize='13px'>{date}</Text>
               </Tooltip>
-              {(conditionsOfAccess || hasAPI) && (
+              {(conditionsOfAccess ||
+                hasAPI ||
+                creativeWorkStatus === 'Retired') && (
                 <Flex
                   justifyContent={['flex-start']}
                   alignItems='center'
@@ -132,6 +135,12 @@ export const ResourceCatalogCard = ({
                       size='sm'
                     />
                   )}
+                  <CreativeWorkStatus
+                    creativeWorkStatus={creativeWorkStatus}
+                    type={data?.['@type']}
+                    mx={0.5}
+                    size='sm'
+                  />
                 </Flex>
               )}
             </Flex>
