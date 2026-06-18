@@ -27,6 +27,7 @@ import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
+import { SHOW_SAMPLE_UI_PILL } from 'src/utils/feature-flags';
 
 const MetadataBlock = dynamic(
   () => import('src/components/metadata').then(mod => mod.MetadataBlock),
@@ -88,6 +89,8 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
           funding: data?.funding,
           license: data?.license,
           measurementTechnique: data?.measurementTechnique,
+          // Include sample data only when the feature flag is enabled.
+          ...(SHOW_SAMPLE_UI_PILL ? { sample: data?.sample } : {}),
           species: data?.species,
           usageInfo: data?.usageInfo,
           variableMeasured: data?.variableMeasured,
@@ -224,6 +227,23 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                                       );
                                     })}
                                 </MetadataList>
+                                {/* For the sample property, render a bullet-free
+                                    "Show more details" link below the list using
+                                    the top-level url set by createSampleContent. */}
+                                {props.property === 'sample' && url && (
+                                  <NextLink href={url}>
+                                    <Link
+                                      as='div'
+                                      lineHeight='short'
+                                      display='flex'
+                                      ml={4}
+                                    >
+                                      <Text fontSize='xs' lineHeight='short'>
+                                        Show more details
+                                      </Text>
+                                    </Link>
+                                  </NextLink>
+                                )}
                                 {items.length > 3 && (
                                   <NextLink
                                     href={{
