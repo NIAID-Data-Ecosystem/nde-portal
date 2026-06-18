@@ -57,7 +57,8 @@ notes.txt
 serve.json
 
 .vscode/
-.claude/
-CLAUDE.md
+
+# claude
+.claude/settings.local.json
 
 src/pages/wip.tsx
