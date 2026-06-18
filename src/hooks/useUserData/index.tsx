@@ -8,6 +8,7 @@ import {
   UserProfile,
 } from './types';
 import { MOCK_SAVED_QUERIES } from './mocks/saved_queries';
+import { formatSavedQueryFilters, parseSavedQueries } from './helpers';
 
 const DEFAULT_PREFERENCES: UserPreferences = {
   ai_toggle_preference: false,
@@ -276,7 +277,7 @@ export function useUserData() {
       }));
 
       if (Array.isArray(profile.favorite_searches)) {
-        setSavedQueries(profile.favorite_searches);
+        setSavedQueries(parseSavedQueries(profile.favorite_searches));
       }
       if (Array.isArray(profile.favorite_datasets)) {
         setSavedDatasets(profile.favorite_datasets);
@@ -308,12 +309,12 @@ export function useUserData() {
       const result = await callUserDataApi(
         'POST',
         '/user/data/favorites/searches',
-        search,
+        { ...search, filters: formatSavedQueryFilters(search.filters) },
       );
       if (result && 'body' in result && result.ok && result.body) {
         const body = result.body as { favorite_searches?: SavedQuery[] };
         if (Array.isArray(body.favorite_searches)) {
-          setSavedQueries(body.favorite_searches);
+          setSavedQueries(parseSavedQueries(body.favorite_searches));
         }
       }
       return result;
@@ -331,7 +332,7 @@ export function useUserData() {
       if (result && 'body' in result && result.ok && result.body) {
         const body = result.body as { favorite_searches?: SavedQuery[] };
         if (Array.isArray(body.favorite_searches)) {
-          setSavedQueries(body.favorite_searches);
+          setSavedQueries(parseSavedQueries(body.favorite_searches));
         }
       }
       return result;
