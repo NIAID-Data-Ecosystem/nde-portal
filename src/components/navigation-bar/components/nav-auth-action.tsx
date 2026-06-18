@@ -13,6 +13,11 @@ const ACCOUNTS_CONFIG = {
   logout: 'Log Out',
   routes: [
     {
+      label: 'Saved Searches',
+      description: 'View your saved resources and queries',
+      href: '/saved',
+    },
+    {
       label: 'Account Settings',
       description: 'Set site preferences',
       href: '/settings',
