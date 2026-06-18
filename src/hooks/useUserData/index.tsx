@@ -108,19 +108,24 @@ export function useUserData() {
       ) {
         const now = new Date().toISOString();
         const payload = body as SavedQuery;
-        store.profile.favorite_searches.push({
-          query: payload.query,
-          name: payload.name,
-          filters: payload.filters,
-          saved_at: now,
-        });
-        store.profile.updated = now;
+        // Build a new array (rather than mutating in place) so the returned
+        // reference differs and React re-renders consumers.
+        const favorite_searches = [
+          ...store.profile.favorite_searches,
+          {
+            query: payload.query,
+            name: payload.name,
+            filters: payload.filters,
+            saved_at: now,
+          },
+        ];
+        store.profile = { ...store.profile, favorite_searches, updated: now };
         result = {
           status: 200,
           ok: true,
           body: {
             message: 'Mock favorite search saved',
-            favorite_searches: store.profile.favorite_searches,
+            favorite_searches,
           },
         };
       } else if (
@@ -130,14 +135,16 @@ export function useUserData() {
         const now = new Date().toISOString();
         const payload = body as { index: number };
         if (typeof payload?.index === 'number' && payload.index >= 0) {
-          store.profile.favorite_searches.splice(payload.index, 1);
-          store.profile.updated = now;
+          const favorite_searches = store.profile.favorite_searches.filter(
+            (_, i) => i !== payload.index,
+          );
+          store.profile = { ...store.profile, favorite_searches, updated: now };
           result = {
             status: 200,
             ok: true,
             body: {
               message: 'Mock favorite search removed',
-              favorite_searches: store.profile.favorite_searches,
+              favorite_searches,
             },
           };
         } else {
@@ -153,18 +160,23 @@ export function useUserData() {
       ) {
         const now = new Date().toISOString();
         const payload = body as SavedDataset;
-        store.profile.favorite_datasets.push({
-          dataset_id: payload.dataset_id,
-          name: payload.name,
-          saved_at: now,
-        });
-        store.profile.updated = now;
+        // Build a new array (rather than mutating in place) so the returned
+        // reference differs and React re-renders consumers.
+        const favorite_datasets = [
+          ...store.profile.favorite_datasets,
+          {
+            dataset_id: payload.dataset_id,
+            name: payload.name,
+            saved_at: now,
+          },
+        ];
+        store.profile = { ...store.profile, favorite_datasets, updated: now };
         result = {
           status: 200,
           ok: true,
           body: {
             message: 'Mock favorite dataset saved',
-            favorite_datasets: store.profile.favorite_datasets,
+            favorite_datasets,
           },
         };
       } else if (
