@@ -14,6 +14,30 @@ import { useUserData } from 'src/hooks/useUserData';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
 import { SelectedFilterType } from '../filters';
 
+/**
+ * Stringify a value with object keys sorted recursively, so that two
+ * structurally-equal filter objects compare equal regardless of key order.
+ * Array order is preserved (it is meaningful for filters such as
+ * `date: [start, end, ...]`).
+ */
+const stableStringify = (value: unknown): string => {
+  if (Array.isArray(value)) {
+    return `[${value.map(stableStringify).join(',')}]`;
+  }
+  if (value && typeof value === 'object') {
+    const entries = Object.keys(value as Record<string, unknown>)
+      .sort()
+      .map(
+        key =>
+          `${JSON.stringify(key)}:${stableStringify(
+            (value as Record<string, unknown>)[key],
+          )}`,
+      );
+    return `{${entries.join(',')}}`;
+  }
+  return JSON.stringify(value) ?? 'null';
+};
+
 export const SearchResultsHeading = ({ children, ...props }: TextProps) => {
   return (
     <Text fontSize='sm' fontWeight='normal' opacity='0.8' {...props}>
@@ -58,7 +82,9 @@ export const SearchResultsHeader = ({
   const { savedQueries, addSavedQuery, removeSavedQuery } = useUserData();
 
   const favoriteIndex = savedQueries.findIndex(
-    search => search.query === querystring,
+    search =>
+      search.query === querystring &&
+      stableStringify(search.filters) === stableStringify(selectedFilters),
   );
   const isFavorited = favoriteIndex !== -1;
   return (
