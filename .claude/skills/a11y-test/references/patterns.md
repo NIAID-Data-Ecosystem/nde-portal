@@ -37,6 +37,27 @@ the failing state clearly. Use `page.route` to make each state deterministic.
 Drop a state only when it genuinely cannot occur for the route. Be especially
 reluctant to skip the error state.
 
+## When a state can't be reached (SSR / getStaticProps routes)
+
+This is a Pages Router static-export app, so some routes render data before the
+browser runs and a given state is genuinely unreachable from a spec. Two rules:
+
+- **Only client-side requests are interceptable.** `page.route` runs in the
+  browser, so it can mock the client-side TanStack Query refetch but **not** a
+  `getStaticProps` / `getServerSideProps` fetch — that happens in the Next dev
+  server, out of reach. Always wait for text that only your mocked fixture
+  renders, so you know you're scanning the mocked DOM and not the SSR seed.
+- **Seeded content suppresses loading and error UI.** When a page seeds its
+  state from `getStaticProps` props on first paint (e.g. `src/pages/about.tsx`),
+  no skeleton renders while the client query is in flight, and an error block
+  guarded by `error && !content` never shows because `content` is already
+  truthy. Those states are unreachable, not skipped.
+
+When you omit a state for these reasons, **document why in a comment at the top
+of the spec** (see the state-coverage note in `about.spec.ts`) rather than
+dropping it silently — a reviewer must be able to tell "unreachable" from
+"forgotten".
+
 ## Waiting for the right state
 
 Always wait for visible proof that the page is in the intended state _before_
