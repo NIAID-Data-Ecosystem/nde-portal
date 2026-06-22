@@ -159,10 +159,12 @@ export function SavedTableSection<TItem>({
               {data.length} {data.length === 1 ? unit.singular : unit.plural}
             </Text>
           </Text>
-          <Text lineHeight='short'>{description}</Text>
+          <Text lineHeight='short' width='400px'>
+            {description}
+          </Text>
         </VStack>
         <Flex
-          maxWidth={{ base: 'unset', lg: '350px' }}
+          maxWidth={{ base: 'unset', xl: '350px' }}
           minWidth='300px'
           flex={1}
           width='100%'

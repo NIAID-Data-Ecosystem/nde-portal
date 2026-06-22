@@ -118,6 +118,7 @@ export function useUserData() {
             name: payload.name,
             filters: payload.filters,
             saved_at: now,
+            total: payload.total,
           },
         ];
         store.profile = { ...store.profile, favorite_searches, updated: now };
@@ -305,7 +306,7 @@ export function useUserData() {
   );
 
   const addSavedQuery = useCallback(
-    async (search: SavedQuery) => {
+    async (search: Omit<SavedQuery, 'total'>) => {
       const result = await callUserDataApi(
         'POST',
         '/user/data/favorites/searches',

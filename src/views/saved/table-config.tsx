@@ -39,6 +39,8 @@ const SavedResourceNameCell = ({
             ? removeSavedDataset(value.dataset_id)
             : addSavedDataset(value)
         }
+        alignItems='flex-start'
+        mt={1}
       />
       <VStack alignItems='flex-start' spacing={1} fontSize='xs'>
         <TextCellWithLink
@@ -66,13 +68,15 @@ const SavedQueryNameCell = ({
   );
   const isFavorited = favoriteIndex !== -1;
   return (
-    <HStack alignItems='center'>
+    <HStack alignItems='flex-start'>
       <BookmarkIconButton
         isFavorited={isFavorited}
         aria-label={isFavorited ? 'Remove saved query' : 'Save query'}
         onClick={() =>
           isFavorited ? removeSavedQuery(favoriteIndex) : addSavedQuery(value)
         }
+        alignItems='flex-start'
+        mt={1}
       />
       <TextCellWithLink
         label={value?.query || ''}
@@ -270,6 +274,35 @@ const configMap = Object.fromEntries(
 );
 
 export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
+  {
+    id: 'total_count',
+    label: 'Total',
+    fields: ['total'],
+    columns: {
+      style: { maxWidth: '100px', minWidth: '100px' },
+    },
+    transform: (item): number => {
+      if (!item.total) return 0;
+      return item.total;
+    },
+    getSortValue: (value: number) => value,
+    component: ({
+      value,
+      isLoading,
+    }: {
+      value: number;
+      isLoading?: boolean;
+    }) => {
+      return (
+        <TextCell
+          fontWeight='semibold'
+          value={value.toLocaleString()}
+          isLoading={isLoading}
+          noOfLines={1}
+        />
+      );
+    },
+  },
   {
     id: 'name',
     label: 'Name',
