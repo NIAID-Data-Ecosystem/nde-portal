@@ -63,7 +63,7 @@ export const ResourceCatalogCard = ({
   // visually communicate that the resource is no longer active.
   const isRetired =
     type === 'ResourceCatalog' && creativeWorkStatus === 'Retired';
-  const cardBg = isRetired ? 'gray.100' : 'white';
+  const cardBg = isRetired ? 'page.alt' : 'white';
 
   const linkProps = id
     ? {
