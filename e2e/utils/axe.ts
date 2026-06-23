@@ -28,14 +28,19 @@ export type Impact = (typeof BLOCKING_IMPACTS)[number];
  *
  * @param page    The Playwright page (already navigated to the target route).
  * @param options.include  Optional CSS selector(s) to scope the scan.
+ * @param options.exclude  Optional CSS selector(s) to omit from the scan, e.g.
+ *   a third-party widget whose markup this app does not own.
  */
 export async function analyzeA11y(
   page: Page,
-  options: { include?: string | string[] } = {},
+  options: { include?: string | string[]; exclude?: string | string[] } = {},
 ) {
   let builder = new AxeBuilder({ page }).withTags(WCAG_AA_TAGS);
   if (options.include) {
     builder = builder.include(options.include as any);
+  }
+  if (options.exclude) {
+    builder = builder.exclude(options.exclude as any);
   }
   return builder.analyze();
 }
