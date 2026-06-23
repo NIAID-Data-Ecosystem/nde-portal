@@ -8,6 +8,7 @@ export type UserPreferences = {
 export type UserPreferencesKeys = keyof UserPreferences;
 
 export type SavedQuery = {
+  total: number;
   query: string;
   name: string;
   saved_at?: string;

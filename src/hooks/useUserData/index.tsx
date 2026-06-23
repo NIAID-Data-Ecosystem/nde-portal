@@ -8,6 +8,7 @@ import {
   UserProfile,
 } from './types';
 import { MOCK_SAVED_QUERIES } from './mocks/saved_queries';
+import { formatSavedQueryFilters, parseSavedQueries } from './helpers';
 
 const DEFAULT_PREFERENCES: UserPreferences = {
   ai_toggle_preference: false,
@@ -108,19 +109,25 @@ export function useUserData() {
       ) {
         const now = new Date().toISOString();
         const payload = body as SavedQuery;
-        store.profile.favorite_searches.push({
-          query: payload.query,
-          name: payload.name,
-          filters: payload.filters,
-          saved_at: now,
-        });
-        store.profile.updated = now;
+        // Build a new array (rather than mutating in place) so the returned
+        // reference differs and React re-renders consumers.
+        const favorite_searches = [
+          ...store.profile.favorite_searches,
+          {
+            query: payload.query,
+            name: payload.name,
+            filters: payload.filters,
+            saved_at: now,
+            total: payload.total,
+          },
+        ];
+        store.profile = { ...store.profile, favorite_searches, updated: now };
         result = {
           status: 200,
           ok: true,
           body: {
             message: 'Mock favorite search saved',
-            favorite_searches: store.profile.favorite_searches,
+            favorite_searches,
           },
         };
       } else if (
@@ -130,14 +137,16 @@ export function useUserData() {
         const now = new Date().toISOString();
         const payload = body as { index: number };
         if (typeof payload?.index === 'number' && payload.index >= 0) {
-          store.profile.favorite_searches.splice(payload.index, 1);
-          store.profile.updated = now;
+          const favorite_searches = store.profile.favorite_searches.filter(
+            (_, i) => i !== payload.index,
+          );
+          store.profile = { ...store.profile, favorite_searches, updated: now };
           result = {
             status: 200,
             ok: true,
             body: {
               message: 'Mock favorite search removed',
-              favorite_searches: store.profile.favorite_searches,
+              favorite_searches,
             },
           };
         } else {
@@ -153,18 +162,23 @@ export function useUserData() {
       ) {
         const now = new Date().toISOString();
         const payload = body as SavedDataset;
-        store.profile.favorite_datasets.push({
-          dataset_id: payload.dataset_id,
-          name: payload.name,
-          saved_at: now,
-        });
-        store.profile.updated = now;
+        // Build a new array (rather than mutating in place) so the returned
+        // reference differs and React re-renders consumers.
+        const favorite_datasets = [
+          ...store.profile.favorite_datasets,
+          {
+            dataset_id: payload.dataset_id,
+            name: payload.name,
+            saved_at: now,
+          },
+        ];
+        store.profile = { ...store.profile, favorite_datasets, updated: now };
         result = {
           status: 200,
           ok: true,
           body: {
             message: 'Mock favorite dataset saved',
-            favorite_datasets: store.profile.favorite_datasets,
+            favorite_datasets,
           },
         };
       } else if (
@@ -264,7 +278,7 @@ export function useUserData() {
       }));
 
       if (Array.isArray(profile.favorite_searches)) {
-        setSavedQueries(profile.favorite_searches);
+        setSavedQueries(parseSavedQueries(profile.favorite_searches));
       }
       if (Array.isArray(profile.favorite_datasets)) {
         setSavedDatasets(profile.favorite_datasets);
@@ -292,16 +306,16 @@ export function useUserData() {
   );
 
   const addSavedQuery = useCallback(
-    async (search: SavedQuery) => {
+    async (search: Omit<SavedQuery, 'total'>) => {
       const result = await callUserDataApi(
         'POST',
         '/user/data/favorites/searches',
-        search,
+        { ...search, filters: formatSavedQueryFilters(search.filters) },
       );
       if (result && 'body' in result && result.ok && result.body) {
         const body = result.body as { favorite_searches?: SavedQuery[] };
         if (Array.isArray(body.favorite_searches)) {
-          setSavedQueries(body.favorite_searches);
+          setSavedQueries(parseSavedQueries(body.favorite_searches));
         }
       }
       return result;
@@ -319,7 +333,7 @@ export function useUserData() {
       if (result && 'body' in result && result.ok && result.body) {
         const body = result.body as { favorite_searches?: SavedQuery[] };
         if (Array.isArray(body.favorite_searches)) {
-          setSavedQueries(body.favorite_searches);
+          setSavedQueries(parseSavedQueries(body.favorite_searches));
         }
       }
       return result;
