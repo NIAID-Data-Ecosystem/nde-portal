@@ -62,6 +62,7 @@ const AIToggleTooltip: React.FC<AIToggleTooltipProps> = ({
 
   const openTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const clearTimers = () => {
     if (openTimeoutRef.current) {
@@ -74,18 +75,28 @@ const AIToggleTooltip: React.FC<AIToggleTooltipProps> = ({
     }
   };
 
-  const handleMouseEnter = () => {
+  const handleOpen = () => {
     clearTimers();
     openTimeoutRef.current = setTimeout(() => {
       onOpen();
     }, HOVER_OPEN_DELAY);
   };
 
-  const handleMouseLeave = () => {
+  const handleClose = () => {
     clearTimers();
     closeTimeoutRef.current = setTimeout(() => {
       onClose();
     }, HOVER_CLOSE_DELAY);
+  };
+
+  // Keyboard: keep the popover open while focus moves between the trigger and
+  // the popover content (e.g. tabbing to the "Read more" link). Only schedule a
+  // close once focus lands outside the content. When focus moves back to the
+  // trigger, the trigger's onFocus re-opens (its clearTimers cancels this close).
+  const handleBlur = (e: React.FocusEvent) => {
+    const next = e.relatedTarget as Node | null;
+    if (next && contentRef.current?.contains(next)) return;
+    handleClose();
   };
 
   return (
@@ -94,6 +105,12 @@ const AIToggleTooltip: React.FC<AIToggleTooltipProps> = ({
       onOpen={onOpen}
       onClose={onClose}
       closeOnBlur
+      // This is a hover/focus tooltip, not a dialog: don't let Chakra move focus
+      // into the popover on open or yank it back to the trigger on close. Those
+      // focus moves fight the onFocus/onBlur handlers below and create an
+      // open → blur → close → focus → open loop.
+      autoFocus={false}
+      returnFocusOnClose={false}
       {...tooltipProps}
     >
       <PopoverTrigger>
@@ -111,20 +128,22 @@ const AIToggleTooltip: React.FC<AIToggleTooltipProps> = ({
           role='button'
           tabIndex={0}
           aria-label='More information about AI-assisted search'
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          onFocus={handleMouseEnter}
-          onBlur={handleMouseLeave}
+          onMouseEnter={handleOpen}
+          onMouseLeave={handleClose}
+          onFocus={handleOpen}
+          onBlur={handleBlur}
         >
           {children}
         </Flex>
       </PopoverTrigger>
 
       <PopoverContent
+        ref={contentRef}
         maxW='sm'
         _focus={{ boxShadow: 'md' }}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        onMouseEnter={handleOpen}
+        onMouseLeave={handleClose}
+        onBlur={handleBlur}
       >
         <PopoverArrow />
         <PopoverBody>{content}</PopoverBody>
