@@ -1,0 +1,60 @@
+name: Accessibility (a11y) Tests
+
+# Runs Playwright + @axe-core/playwright accessibility scans against the
+# repository-matcher route. The scans report every violation but only FAIL
+# the build on `serious` or `critical` impact (enforced in the test specs).
+
+on:
+  pull_request:
+    branches:
+      - main
+      - dev
+      - staging
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+# Cancel superseded runs on the same ref to save CI minutes.
+concurrency:
+  group: a11y-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  accessibility:
+    runs-on: ubuntu-latest
+    env:
+      CI: 'true'
+      # The route renders (and is accessible) in its loading state without a
+      # live API, but we provide env so the dev server boots cleanly and can
+      # fetch real content when the secret/API are reachable.
+      NEXT_PUBLIC_APP_ENV: staging
+      NEXT_PUBLIC_API_URL: https://api-staging.data.niaid.nih.gov/v1
+      NEXT_PUBLIC_STRAPI_API_URL: https://data-staging.niaid.nih.gov/strapi
+      NEXT_PUBLIC_AUTH_PROVIDERS: 'github,orcid'
+      BASE_URL: http://localhost:3000
+      GH_API_KEY: ${{ secrets.GH_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Install Playwright browser (chromium)
+        run: npx playwright install --with-deps chromium
+
+      - name: Run accessibility tests
+        run: yarn test:a11y
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-a11y-report
+          path: playwright-report/
+          retention-days: 14
