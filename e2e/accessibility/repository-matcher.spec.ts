@@ -1,5 +1,27 @@
-import { test, expect } from '@playwright/test';
+/**
+ * Accessibility tests for the Repository Matcher route (`/repository-matcher`).
+ *
+ * Strategy: run @axe-core/playwright WCAG 2.0/2.1 Level A + AA scans against the
+ * rendered page. We report every violation in the HTML report but only FAIL the
+ * build on `serious` or `critical` impact, so minor/moderate noise doesn't block
+ * CI. See e2e/utils/axe.ts and the canonical about.spec.ts.
+ *
+ * The route reads two client-side endpoints, both mocked per state so the page
+ * is deterministic and never touches the live network:
+ *   - `**​/query*`    — ResourceCatalog search (useResourceCatalogs)
+ *   - `**​/metadata*` — repository metadata (useRepoData)
+ *
+ * State coverage note — this route covers loading / empty / populated but NOT a
+ * distinct error state. `src/pages/repository-matcher.tsx` destructures only
+ * `{ data, isLoading }` from `useRepositoryMatcherData` and ignores the hook's
+ * `error`. When a request fails, `data` resolves to `[]` and `isLoading`
+ * becomes false, so the page renders the same "No repositories match" empty UI
+ * — there is no error-specific surface (alert, retry) to scan. The empty-state
+ * scan below already covers that DOM, so a separate error describe would only
+ * re-scan the empty state (with added retry-backoff flakiness).
+ */
 import AxeBuilder from '@axe-core/playwright';
+import { test, expect, type Page, type TestInfo } from '@playwright/test';
 import {
   analyzeA11y,
   attachA11yReport,
@@ -8,21 +30,17 @@ import {
   WCAG_AA_TAGS,
 } from '../utils/axe';
 
-/**
- * Accessibility tests for the Repository Matcher route.
- *
- * Strategy: run @axe-core/playwright WCAG 2.0/2.1 Level A + AA scans against
- * the rendered page. We report every violation in the HTML report but only
- * FAIL the build on `serious` or `critical` impact, so minor/moderate noise
- * doesn't block CI.
- *
- * Covered concerns: forms, buttons, headings, landmarks, and color contrast —
- * all of which are part of the WCAG AA rule set scanned below, with extra
- * structural assertions to catch regressions early and give clearer failures.
- */
+// --- Per-route configuration -------------------------------------------------
 
 const ROUTE = '/repository-matcher';
 
+// External API(s) this route depends on (NOT under `/api/` — they're the NDE
+// query + metadata endpoints). Mock both so the page never hits the network.
+const API_GLOBS = ['**/query*', '**/metadata*'];
+
+// A ResourceCatalog hit (served from `**/query*`). It survives the route's
+// enrichment filter (`creativeWorkStatus === 'Accepting Data'`, not a
+// Data/Sample Repository) so it renders as a populated table row.
 const RESOURCE_CATALOG_FIXTURE = {
   _id: 'catalog-accessibility-fixture',
   '@type': 'ResourceCatalog',
@@ -42,6 +60,8 @@ const RESOURCE_CATALOG_FIXTURE = {
   license: 'CC-BY-4.0',
 };
 
+// A repository source (served from `**/metadata*`). Also `Accepting Data` and
+// neither a Data nor Sample Repository, so it survives enrichment too.
 const METADATA_FIXTURE = {
   build_date: '2026-06-17T00:00:00Z',
   src: {
@@ -68,120 +88,120 @@ const METADATA_FIXTURE = {
   },
 };
 
-function runRepositoryMatcherA11yTests() {
-  test('has no serious or critical WCAG AA violations', async ({
-    page,
-  }, testInfo) => {
-    const results = await analyzeA11y(page);
+// --- Shared checks run in every state ---------------------------------------
 
-    await attachA11yReport(testInfo, 'full-page', results.violations);
+async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
+  // Full-page WCAG A/AA scan. The helper's tag set (WCAG_AA_TAGS) already
+  // includes color-contrast and the landmark/heading-order best-practice
+  // rules, so this single scan is the backbone of the check.
+  const results = await analyzeA11y(page);
+  await attachA11yReport(testInfo, state, results.violations);
 
-    const blocking = blockingViolations(results.violations);
-    expect(
+  const blocking = blockingViolations(results.violations);
+  expect(
+    blocking,
+    `Serious/critical accessibility violations found:\n${formatViolations(
       blocking,
-      `Serious/critical accessibility violations found:\n${formatViolations(
-        blocking,
-      )}`,
-    ).toEqual([]);
-  });
+    )}`,
+  ).toEqual([]);
 
-  test('has no serious or critical color-contrast violations', async ({
-    page,
-  }, testInfo) => {
-    // Scoped scan that runs ONLY the color-contrast rule for a focused report.
-    const results = await new AxeBuilder({ page })
-      .withTags(WCAG_AA_TAGS)
-      .options({ runOnly: { type: 'rule', values: ['color-contrast'] } })
-      .analyze();
+  // Focused color-contrast scan, reported separately so contrast regressions
+  // are easy to triage in the HTML report. There is no helper for this — run
+  // the single color-contrast rule inline, matching the canonical spec.
+  const contrast = await new AxeBuilder({ page })
+    .withTags(WCAG_AA_TAGS)
+    .options({ runOnly: { type: 'rule', values: ['color-contrast'] } })
+    .analyze();
+  await attachA11yReport(testInfo, `${state} — contrast`, contrast.violations);
 
-    await attachA11yReport(testInfo, 'color-contrast', results.violations);
+  const blockingContrast = blockingViolations(contrast.violations);
+  expect(
+    blockingContrast,
+    `Color-contrast violations found:\n${formatViolations(blockingContrast)}`,
+  ).toEqual([]);
 
-    const blocking = blockingViolations(results.violations);
-    expect(
-      blocking,
-      `Color-contrast violations found:\n${formatViolations(blocking)}`,
-    ).toEqual([]);
-  });
+  // Structural sanity — also proves the page rendered the intended chrome.
+  await expect(page.getByRole('main')).toBeVisible();
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Repository Matcher' }),
+  ).toBeVisible();
 
-  test('search form control has an accessible name', async ({ page }) => {
-    // Forms: the search input is the primary form control on the route and
-    // must be programmatically labelled.
-    const search = page.getByRole('textbox', {
-      name: /search repositories/i,
-    });
-    await expect(search).toBeVisible();
-    await expect(search).toBeEditable();
-  });
+  // Forms: the search input is the primary form control on the route and must
+  // be programmatically labelled (ariaLabel on the SearchInput).
+  const search = page.getByRole('textbox', { name: /search repositories/i });
+  await expect(search).toBeVisible();
+  await expect(search).toBeEditable();
 
-  test('buttons and links expose accessible names', async ({
-    page,
-  }, testInfo) => {
-    // Buttons/links: at least one button must render, and every button/link
-    // must have an accessible name. axe's `button-name` / `link-name` rules
-    // handle aria-label, aria-labelledby, text content, and titled icons, so
-    // we delegate the authoritative check to axe rather than reimplementing
-    // accessible-name computation here.
-    await expect(page.getByRole('button').first()).toBeVisible();
+  // Buttons/links: every button/link must expose an accessible name. axe's
+  // `button-name` / `link-name` rules handle aria-label, aria-labelledby, text
+  // content and titled icons, so we delegate the authoritative check to axe.
+  const names = await new AxeBuilder({ page })
+    .withTags(WCAG_AA_TAGS)
+    .options({
+      runOnly: { type: 'rule', values: ['button-name', 'link-name'] },
+    })
+    .analyze();
+  await attachA11yReport(
+    testInfo,
+    `${state} — button-link-name`,
+    names.violations,
+  );
 
-    const results = await new AxeBuilder({ page })
-      .withTags(WCAG_AA_TAGS)
-      .options({
-        runOnly: { type: 'rule', values: ['button-name', 'link-name'] },
-      })
-      .analyze();
+  const blockingNames = blockingViolations(names.violations);
+  expect(
+    blockingNames,
+    `Button/link name violations found:\n${formatViolations(blockingNames)}`,
+  ).toEqual([]);
 
-    await attachA11yReport(testInfo, 'button-link-name', results.violations);
-
-    const blocking = blockingViolations(results.violations);
-    expect(
-      blocking,
-      `Button/link name violations found:\n${formatViolations(blocking)}`,
-    ).toEqual([]);
+  // Screenshot into the HTML report so reviewers can see the scanned state.
+  await testInfo.attach(`${state}-screenshot`, {
+    body: await page.screenshot({ fullPage: true }),
+    contentType: 'image/png',
   });
 }
 
-test.describe('Repository Matcher — loading state accessibility', () => {
-  test.beforeEach(async ({ page }, testInfo) => {
-    // Keep both data endpoints pending so the route remains in its intentional
-    // skeleton/loading state for this describe block.
-    await page.route('**/query*', () => new Promise<void>(() => {}));
-    await page.route('**/metadata*', () => new Promise<void>(() => {}));
+// --- Loading -----------------------------------------------------------------
 
+test.describe('a11y: Repository Matcher — loading', () => {
+  test('passes axe while loading', async ({ page }, testInfo) => {
+    // Keep both data endpoints pending so the route stays in its skeleton state.
+    for (const glob of API_GLOBS) {
+      await page.route(glob, () => new Promise<void>(() => {}));
+    }
     await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
 
+    // Wait for the heading plus a skeleton row. Skeletons render through
+    // src/components/skeleton with `.custom-skeleton-loading` and have no
+    // accessible surface, so a CSS selector is acceptable for that marker only.
     await expect(
       page.getByRole('heading', { level: 1, name: 'Repository Matcher' }),
     ).toBeVisible();
     await expect(
       page.locator('.custom-skeleton-loading').first(),
     ).toBeVisible();
+    // Prove we're not already in the empty or populated DOM.
     await expect(page.getByText('No repositories match')).toHaveCount(0);
     await expect(
       page.getByRole('link', { name: 'Accessibility Fixture Catalog' }),
     ).toHaveCount(0);
 
-    await testInfo.attach('loading-page — screenshot', {
-      body: await page.screenshot({ fullPage: true }),
-      contentType: 'image/png',
-    });
+    await runSharedChecks(page, testInfo, 'loading');
   });
-
-  runRepositoryMatcherA11yTests();
 });
 
-test.describe('Repository Matcher — empty state accessibility', () => {
-  test.beforeEach(async ({ page }, testInfo) => {
-    // Resolve both data endpoints with empty payloads so the route renders its
-    // completed no-results UI instead of either skeletons or enriched rows.
+// --- Empty -------------------------------------------------------------------
+
+test.describe('a11y: Repository Matcher — empty', () => {
+  test('passes axe with no matching repositories', async ({
+    page,
+  }, testInfo) => {
+    // Resolve both endpoints with empty payloads so the route renders its
+    // completed no-results UI instead of skeletons or enriched rows.
     await page.route('**/query*', route =>
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({
-          hits: [],
-          total: 0,
-          facets: null,
-        }),
+        body: JSON.stringify({ hits: [], total: 0, facets: null }),
       }),
     );
     await page.route('**/metadata*', route =>
@@ -197,36 +217,24 @@ test.describe('Repository Matcher — empty state accessibility', () => {
 
     await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
 
-    await expect(
-      page.getByRole('heading', { level: 1, name: 'Repository Matcher' }),
-    ).toBeVisible();
+    // Wait for the user-facing empty-state message.
     await expect(page.getByText('0 results')).toBeVisible();
     await expect(page.getByText('No repositories match')).toBeVisible();
     await expect(
       page.getByText('Try clearing some filters or broadening your search.'),
     ).toBeVisible();
     await expect(page.locator('.custom-skeleton-loading')).toHaveCount(0);
-    await expect(
-      page.getByRole('link', { name: 'Accessibility Fixture Catalog' }),
-    ).toHaveCount(0);
 
-    await testInfo.attach('empty-page — screenshot', {
-      body: await page.screenshot({ fullPage: true }),
-      contentType: 'image/png',
-    });
+    await runSharedChecks(page, testInfo, 'empty');
   });
-
-  runRepositoryMatcherA11yTests();
 });
 
-test.describe('Repository Matcher — enriched state accessibility', () => {
-  test.beforeEach(async ({ page }, testInfo) => {
-    // Stub the two external data endpoints the route depends on so the page
-    // reaches a deterministic, fully-loaded state with NO external network
-    // dependency. These fixtures survive the repository-matcher enrichment
-    // filter (`Accepting Data`, not Data/Sample Repository), so axe scans and
-    // report screenshots cover the populated table rather than the skeleton
-    // shell or empty state.
+// --- Populated ---------------------------------------------------------------
+
+test.describe('a11y: Repository Matcher — populated', () => {
+  test('passes axe with enriched table data', async ({ page }, testInfo) => {
+    // Fulfill both endpoints with fixtures that survive the enrichment filter
+    // so the page reaches a deterministic, fully-loaded populated table.
     await page.route('**/query*', route =>
       route.fulfill({
         status: 200,
@@ -248,11 +256,8 @@ test.describe('Repository Matcher — enriched state accessibility', () => {
 
     await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
 
-    // Wait for the route's primary heading and for enriched data rows to
-    // render, so scans and report screenshots capture the real populated UI.
-    await expect(
-      page.getByRole('heading', { level: 1, name: 'Repository Matcher' }),
-    ).toBeVisible();
+    // Wait for both enriched rows (1 catalog + 1 repository) so scans and the
+    // report screenshot capture the real populated UI, not the skeleton shell.
     await expect(page.getByText('2 results')).toBeVisible();
     await expect(
       page.getByRole('link', { name: 'Accessibility Fixture Catalog' }),
@@ -263,11 +268,6 @@ test.describe('Repository Matcher — enriched state accessibility', () => {
     await expect(page.getByText('No repositories match')).toHaveCount(0);
     await expect(page.locator('.custom-skeleton-loading')).toHaveCount(0);
 
-    await testInfo.attach('enriched-page — screenshot', {
-      body: await page.screenshot({ fullPage: true }),
-      contentType: 'image/png',
-    });
+    await runSharedChecks(page, testInfo, 'populated');
   });
-
-  runRepositoryMatcherA11yTests();
 });
