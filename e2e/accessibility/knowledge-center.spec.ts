@@ -1,0 +1,395 @@
+/**
+ * Accessibility tests for the Knowledge Center route
+ * (`src/pages/knowledge-center/[[...slug]].tsx`).
+ *
+ * Strategy: run @axe-core/playwright WCAG 2.0/2.1 Level A + AA scans against the
+ * rendered page. We report every violation in the HTML report but only FAIL the
+ * build on `serious` or `critical` impact, so minor/moderate noise doesn't block
+ * CI. See e2e/utils/axe.ts and the canonical repository-matcher.spec.ts.
+ *
+ * This single spec covers both shapes the catch-all route renders:
+ *
+ *   - The NO-SLUG INDEX (`/knowledge-center`) — the category grid and the
+ *     page-level empty state. `getStaticProps` returns `{ slug: '', data: {} }`
+ *     for the index WITHOUT any server fetch, so the index is driven entirely by
+ *     the client-side `['docs']` query (`fetchCategories` → `**\/api/categories*`),
+ *     which `page.route` can mock deterministically.
+ *
+ *   - A DOC PAGE (`/knowledge-center/<slug>`) — loading, and a populated body
+ *     rendered from a deliberately MDX-RICH fixture so the markdown renderer's
+ *     full component set (`src/components/mdx/components`) is scanned: anchored
+ *     headings (`HeadingWithLink`), links, inline code, ordered/unordered lists,
+ *     the three themed blockquote callouts (info / 🚧 warning / 🚨 error — the
+ *     color-contrast-sensitive ones), an image with alt text, a horizontal rule,
+ *     and the `<details>`/`<summary>` disclosure (`Details`). The doc body is
+ *     gated on `props.data?.id` from `getStaticProps` (server-side, out of reach
+ *     of `page.route`), so — as in about.spec.ts — we navigate a REAL slug so the
+ *     dev server seeds an id, then mock the client-side `**\/api/docs*` refetch
+ *     with our fixture and wait for the fixture's own heading before scanning, so
+ *     the mock (not the SSR seed) owns the DOM we scan.
+ *
+ * Endpoints mocked (client-side, both Strapi CMS, both interceptable):
+ *   - `**\/api/categories*` — sidebar nav + index category grid (`fetchCategories`,
+ *     the `['docs']` query). A failure here renders the page-level `<Error>`.
+ *   - `**\/api/docs*` — the doc page body (`fetchDocumentation` inside
+ *     MainContent; also the unused docs search box).
+ *
+ * State coverage notes:
+ *   - LOADING is scanned on the DOC route only: keeping both requests pending
+ *     holds the sidebar's Chakra `SkeletonText` loaders on screen. The no-slug
+ *     index renders no sidebar and no skeleton (the category `SimpleGrid` maps an
+ *     `undefined` list to nothing until the query resolves), so its "loading"
+ *     frame is just static hero + search chrome — no distinct accessible surface
+ *     to wait on. It is documented here rather than dropped silently.
+ *   - ERROR is scanned once: a 5xx on `**\/api/categories*` makes the `['docs']`
+ *     query throw a truthy `err.response`, so the page swaps its whole content
+ *     area for the shared `<Error>` block. That path is route-agnostic (it
+ *     replaces both the index grid and a slug route's MainContent), so a single
+ *     error scan covers both shapes.
+ *   - The index has no reachable EMPTY-via-MainContent state, and a slug route
+ *     never shows the index's empty grid; each shape is scanned in the state it
+ *     can actually reach.
+ */
+import AxeBuilder from '@axe-core/playwright';
+import { test, expect, type Page, type TestInfo } from '@playwright/test';
+import {
+  analyzeA11y,
+  attachA11yReport,
+  blockingViolations,
+  formatViolations,
+  WCAG_AA_TAGS,
+} from '../utils/axe';
+
+// --- Per-route configuration -------------------------------------------------
+
+const INDEX_ROUTE = '/knowledge-center';
+
+// A real, published doc slug. `getStaticProps` fetches it server-side so
+// `props.data.id` is truthy and MainContent renders; the client-side refetch is
+// then mocked below, so the rendered body is our fixture, not the live record.
+// (`metadata-completeness-score` is avoided — the page redirects away from it.)
+const DOC_SLUG = 'frequently-asked-questions';
+const DOC_ROUTE = `/knowledge-center/${DOC_SLUG}`;
+
+const CATEGORIES_GLOB = '**/api/categories*'; // sidebar nav + index category grid
+const DOCS_GLOB = '**/api/docs*'; // doc page body (and the unused search box)
+const API_GLOBS = [CATEGORIES_GLOB, DOCS_GLOB];
+
+// The hero h1 ("Knowledge Center") is static page chrome, present in every
+// state. The MDX doc page renders a SECOND h1 (the doc name), so structural
+// checks match the hero by exact name to avoid a strict-mode multiple-match.
+const HERO_HEADING = 'Knowledge Center';
+
+// Category payload. `fetchCategories` reads `data.data`; the page maps each
+// category's `docs` into nav items and drops categories with no docs. Rendered
+// as an h2 per category and a link per doc on the index, and as the sidebar nav
+// on a slug route.
+const CATEGORIES_FIXTURE = {
+  data: [
+    {
+      id: 1,
+      name: 'Getting Started',
+      docs: [
+        {
+          id: 101,
+          name: 'Discovery Portal quick start guide',
+          slug: 'getting-started',
+          description: 'A quick start guide for the Discovery Portal.',
+        },
+        {
+          id: 102,
+          name: 'Searching for resources',
+          slug: 'searching-for-datasets',
+          description: 'How to search the portal.',
+        },
+      ],
+    },
+    {
+      id: 2,
+      name: 'Contributing Data',
+      docs: [
+        {
+          id: 201,
+          name: 'Adding individual datasets',
+          slug: 'adding-individual-datasets-to-the-discovery-portal',
+          description: 'How to add datasets to the portal.',
+        },
+      ],
+    },
+  ],
+};
+
+// A successful response carrying no categories — drives the page-level empty
+// state ("No documentation currently available.").
+const EMPTY_CATEGORIES_FIXTURE = { data: [] };
+
+// MDX-rich doc-body payload. `fetchDocumentation` reads `data.data` and
+// `useDocumentation` selects `[0]`. The `name` is deliberately distinct from the
+// live record's name so waiting for it proves the client mock — not the
+// getStaticProps seed — owns the DOM. The `description` exercises the full MDX
+// component set so the markdown renderer is scanned end-to-end.
+const MDX_DOC_NAME = 'Knowledge Center component showcase';
+const DOC_FIXTURE = {
+  data: [
+    {
+      id: 999,
+      name: MDX_DOC_NAME,
+      subtitle: 'A fixture page that renders every Knowledge Center MDX block.',
+      description: [
+        '## Overview',
+        '',
+        'This page exercises the Knowledge Center **markdown components**. It',
+        'links to the [search guide](/knowledge-center/searching-for-datasets)',
+        'and to the [WCAG standard](https://www.w3.org/WAI/standards-guidelines/wcag/).',
+        'Inline configuration such as `NEXT_PUBLIC_API_URL` renders as code.',
+        '',
+        '---',
+        '',
+        '### Steps to get started',
+        '',
+        '1. Open the Discovery Portal.',
+        '2. Search for a dataset.',
+        '3. Review the metadata.',
+        '',
+        'Key concepts:',
+        '',
+        '- Datasets and computational tools',
+        '- Repositories and data sources',
+        '',
+        '> ℹ️ Informational callout: this tip helps new users get oriented.',
+        '',
+        '> 🚧 Under construction: this section is still being written.',
+        '',
+        '> 🚨 Important: review the access requirements before downloading.',
+        '',
+        '![Diagram of the NIAID Data Ecosystem architecture.](data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==)',
+        '',
+        '<details>',
+        '<summary>What is the NIAID Data Ecosystem?</summary>',
+        '',
+        'It is a discovery platform for finding NIAID-related datasets and tools.',
+        '',
+        '</details>',
+      ].join('\n'),
+      slug: DOC_SLUG,
+      createdAt: '2026-06-17T00:00:00Z',
+      publishedAt: '2026-06-17T00:00:00Z',
+      updatedAt: '2026-06-17T00:00:00Z',
+    },
+  ],
+};
+
+const fulfillJson = (body: unknown) => ({
+  status: 200,
+  contentType: 'application/json',
+  body: JSON.stringify(body),
+});
+
+// --- Shared checks run in every state ---------------------------------------
+
+async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
+  // Full-page WCAG A/AA scan. The helper's tag set (WCAG_AA_TAGS) already
+  // includes color-contrast and the landmark/heading-order best-practice
+  // rules, so this single scan is the backbone of the check.
+  const results = await analyzeA11y(page);
+  await attachA11yReport(testInfo, state, results.violations);
+
+  const blocking = blockingViolations(results.violations);
+  expect(
+    blocking,
+    `Serious/critical accessibility violations found:\n${formatViolations(
+      blocking,
+    )}`,
+  ).toEqual([]);
+
+  // Focused color-contrast scan, reported separately so contrast regressions
+  // are easy to triage in the HTML report. There is no helper for this — run
+  // the single color-contrast rule inline, matching the canonical spec. This is
+  // the check that exercises the themed blockquote callouts on the MDX page.
+  const contrast = await new AxeBuilder({ page })
+    .withTags(WCAG_AA_TAGS)
+    .options({ runOnly: { type: 'rule', values: ['color-contrast'] } })
+    .analyze();
+  await attachA11yReport(testInfo, `${state} — contrast`, contrast.violations);
+
+  const blockingContrast = blockingViolations(contrast.violations);
+  expect(
+    blockingContrast,
+    `Color-contrast violations found:\n${formatViolations(blockingContrast)}`,
+  ).toEqual([]);
+
+  // Structural sanity — also proves the page rendered the intended chrome. The
+  // hero h1 ("Knowledge Center") is present in every state; match it by exact
+  // name so it does not collide with MainContent's doc-name h1 on the MDX page.
+  await expect(page.getByRole('main')).toBeVisible();
+  await expect(
+    page.getByRole('heading', { level: 1, name: HERO_HEADING, exact: true }),
+  ).toBeVisible();
+
+  // Forms: the Knowledge Center search bar renders on this route and its control
+  // must be programmatically labelled (the input carries aria-label
+  // "Search Knowledge Center").
+  const search = page.getByRole('textbox', {
+    name: /search knowledge center/i,
+  });
+  await expect(search).toBeVisible();
+  await expect(search).toBeEditable();
+
+  // Buttons/links: every button/link must expose an accessible name. axe's
+  // `button-name` / `link-name` rules handle aria-label, aria-labelledby, text
+  // content and titled icons, so we delegate the authoritative check to axe.
+  const names = await new AxeBuilder({ page })
+    .withTags(WCAG_AA_TAGS)
+    .options({
+      runOnly: { type: 'rule', values: ['button-name', 'link-name'] },
+    })
+    .analyze();
+  await attachA11yReport(
+    testInfo,
+    `${state} — button-link-name`,
+    names.violations,
+  );
+
+  const blockingNames = blockingViolations(names.violations);
+  expect(
+    blockingNames,
+    `Button/link name violations found:\n${formatViolations(blockingNames)}`,
+  ).toEqual([]);
+
+  // Screenshot into the HTML report so reviewers can see the scanned state.
+  await testInfo.attach(`${state}-screenshot`, {
+    body: await page.screenshot({ fullPage: true }),
+    contentType: 'image/png',
+  });
+}
+
+// --- Index: populated --------------------------------------------------------
+
+test.describe('a11y: Knowledge Center index — populated', () => {
+  test('passes axe with a populated category grid', async ({
+    page,
+  }, testInfo) => {
+    await page.route(CATEGORIES_GLOB, route =>
+      route.fulfill(fulfillJson(CATEGORIES_FIXTURE)),
+    );
+    await page.goto(INDEX_ROUTE, { waitUntil: 'domcontentloaded' });
+
+    // Wait for content only the fixture renders — a category h2 and a doc link —
+    // so we know the `['docs']` query resolved and we're scanning the populated
+    // grid, not an empty loading frame.
+    await expect(
+      page.getByRole('heading', { level: 2, name: 'Getting Started' }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Discovery Portal quick start guide' }),
+    ).toBeVisible();
+
+    await runSharedChecks(page, testInfo, 'index-populated');
+  });
+});
+
+// --- Index: empty ------------------------------------------------------------
+
+test.describe('a11y: Knowledge Center index — empty', () => {
+  test('passes axe with no documentation available', async ({
+    page,
+  }, testInfo) => {
+    await page.route(CATEGORIES_GLOB, route =>
+      route.fulfill(fulfillJson(EMPTY_CATEGORIES_FIXTURE)),
+    );
+    await page.goto(INDEX_ROUTE, { waitUntil: 'domcontentloaded' });
+
+    // Wait for the user-facing empty-state message rendered by <Empty>.
+    await expect(
+      page.getByText(/no documentation currently available/i),
+    ).toBeVisible();
+
+    await runSharedChecks(page, testInfo, 'index-empty');
+  });
+});
+
+// --- Doc page: loading -------------------------------------------------------
+
+test.describe('a11y: Knowledge Center doc page — loading', () => {
+  test('passes axe while the sidebar loads', async ({ page }, testInfo) => {
+    // Keep both requests pending so the sidebar's skeleton loaders stay on
+    // screen and the body never resolves to fixture content.
+    for (const glob of API_GLOBS) {
+      await page.route(glob, () => new Promise<void>(() => {}));
+    }
+    await page.goto(DOC_ROUTE, { waitUntil: 'domcontentloaded' });
+
+    // The SidebarDesktop renders Chakra `SkeletonText` (`.chakra-skeleton`)
+    // while `isLoading` — a CSS selector is acceptable here only because
+    // skeletons have no accessible surface to target.
+    await expect(page.locator('.chakra-skeleton').first()).toBeVisible();
+
+    await runSharedChecks(page, testInfo, 'doc-loading');
+  });
+});
+
+// --- Doc page: populated (rich MDX) ------------------------------------------
+
+test.describe('a11y: Knowledge Center doc page — populated', () => {
+  test('passes axe with a fixture exercising every MDX block', async ({
+    page,
+  }, testInfo) => {
+    await page.route(CATEGORIES_GLOB, route =>
+      route.fulfill(fulfillJson(CATEGORIES_FIXTURE)),
+    );
+    await page.route(DOCS_GLOB, route =>
+      route.fulfill(fulfillJson(DOC_FIXTURE)),
+    );
+    await page.goto(DOC_ROUTE, { waitUntil: 'domcontentloaded' });
+
+    // Wait for content only the fixture renders — the doc-name h1, the first MDX
+    // heading (anchored via HeadingWithLink, so matched as a substring), an MDX
+    // link, and the <details> summary — so we know the client `['doc']` query
+    // resolved and we're scanning the mocked MDX DOM, not the SSR seed.
+    await expect(
+      page.getByRole('heading', { level: 1, name: MDX_DOC_NAME }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('heading', { level: 2, name: 'Overview' }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'WCAG standard' }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(/what is the niaid data ecosystem\?/i),
+    ).toBeVisible();
+
+    await runSharedChecks(page, testInfo, 'doc-populated');
+  });
+});
+
+// --- Error (shared page-level <Error>, route-agnostic) -----------------------
+
+test.describe('a11y: Knowledge Center — error', () => {
+  test('passes axe in the error state', async ({ page }, testInfo) => {
+    // A 5xx makes the `['docs']` query throw a truthy `err.response`, so the page
+    // swaps its content area for the shared <Error> block. (A bare abort would
+    // throw `undefined`, which react-query does not register as an error.) This
+    // path replaces both the index grid and a slug route's MainContent; we scan
+    // it on the doc route so the replacement of MainContent is exercised too.
+    for (const glob of API_GLOBS) {
+      await page.route(glob, route =>
+        route.fulfill({
+          status: 500,
+          contentType: 'application/json',
+          body: JSON.stringify({ error: 'Internal Server Error' }),
+        }),
+      );
+    }
+    await page.goto(DOC_ROUTE, { waitUntil: 'domcontentloaded' });
+
+    // The shared <Error> renders an h2 "Something went wrong." plus the route's
+    // "API Request:" detail text.
+    await expect(
+      page.getByRole('heading', { name: /something went wrong/i }),
+    ).toBeVisible();
+    await expect(page.getByText(/API Request:/i)).toBeVisible();
+
+    await runSharedChecks(page, testInfo, 'error');
+  });
+});
