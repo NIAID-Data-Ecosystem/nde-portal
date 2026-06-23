@@ -54,11 +54,19 @@ export const getAccessResourceURL = ({
   recordType,
   source,
   url,
+  creativeWorkStatus,
 }: {
   recordType: string | null | undefined;
   source: IncludedInDataCatalog;
   url?: FormattedResource['url'];
+  creativeWorkStatus?: FormattedResource['creativeWorkStatus'];
 }) => {
+  // Retired ResourceCatalogs should send users to the retired resources
+  // page in the Knowledge Center instead of the usual external/source link.
+  if (recordType === 'ResourceCatalog' && creativeWorkStatus === 'Retired') {
+    return '/knowledge-center/retired-resources';
+  }
+
   return recordType === 'ResourceCatalog'
     ? url ?? ''
     : getSourceLogoLinkOut(source);
