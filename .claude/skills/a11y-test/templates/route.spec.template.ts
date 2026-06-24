@@ -177,3 +177,17 @@ test.describe('a11y: <route or feature> — error', () => {
     await runSharedChecks(page, testInfo, 'error');
   });
 });
+
+// --- Interaction states ------------------------------------------------------
+//
+// The four states above scan the page AT REST. If this feature has interactive
+// surfaces a user opens — select/combobox menus, predictive/autocomplete
+// dropdowns, drag overlays, inline validation errors, modals — add a describe
+// block per surface here too: that markup doesn't exist on first paint, so the
+// resting scans never see it, and it's where a11y regressions hide. Drive the
+// interaction, wait for the surface's own accessible proof (an open `option`, a
+// suggestion item, the error text, a drag live-region announcement), then run
+// the SAME axe scans. Extract them into a `runAxeScans(page, testInfo, state)`
+// helper that runSharedChecks also calls, so an open portal covering the page
+// chrome doesn't flake the resting-layout `toBeVisible` asserts.
+//

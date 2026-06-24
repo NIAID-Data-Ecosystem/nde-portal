@@ -52,8 +52,23 @@ yarn test:a11y:report                                   # open the HTML report
    `formatViolations` as the expect message. Add the focused color-contrast scan
    the same way. Keep these in one helper called from each state's describe
    block.
-7. **Run it**: `yarn test:a11y e2e/accessibility/<route-or-feature>.spec.ts`,
+7. **Scan interaction states too, not just the page at rest.** For any
+   interactive feature, add a `test.describe` block per transient surface a user
+   opens — select/combobox menus, predictive/autocomplete dropdowns, drag
+   overlays, inline validation errors, modals. These markup trees don't exist on
+   first paint, so the resting-state scans never see them, and they're where a11y
+   regressions hide. Drive the interaction, wait for the surface's accessible
+   proof, then run the same axe scans. See the interaction-states section of
+   `references/patterns.md` for the per-surface recipes and gotchas (the
+   `<nextjs-portal>` click-interception workaround, react-select, keyboard
+   drag-and-drop). `advanced-search.spec.ts` is the canonical example.
+8. **Run it**: `yarn test:a11y e2e/accessibility/<route-or-feature>.spec.ts`,
    then check the HTML report.
+
+Interaction scans often surface **real** serious violations the resting states
+miss. Don't loosen the scan to go green — fix the app, or `test.fixme` that one
+scan with a comment naming the violation and the fix (see the failure-threshold
+section of `references/patterns.md`).
 
 Available helpers (from `e2e/utils/axe.ts`, do not invent others):
 `analyzeA11y`, `blockingViolations`, `formatViolations`, `attachA11yReport`,
@@ -62,5 +77,6 @@ Available helpers (from `e2e/utils/axe.ts`, do not invent others):
 ## Detail
 
 See `references/patterns.md` for the full state matrix (loading / empty /
-populated / error), the per-scan checklist, the serious/critical failure
-threshold, and troubleshooting. Don't duplicate that depth here.
+populated / error), interaction states (menus / dropdowns / drag / inline
+errors), the per-scan checklist, the serious/critical failure threshold, and
+troubleshooting. Don't duplicate that depth here.

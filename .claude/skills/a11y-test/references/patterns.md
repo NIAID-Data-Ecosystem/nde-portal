@@ -58,6 +58,64 @@ of the spec** (see the state-coverage note in `about.spec.ts`) rather than
 dropping it silently — a reviewer must be able to tell "unreachable" from
 "forgotten".
 
+## Interaction states (menus, dropdowns, drag, inline errors)
+
+The loading/empty/populated/error matrix scans the page **at rest**. But a11y
+regressions hide most often in the transient surfaces a user _opens_ while using
+a feature — combobox/select menus, predictive/autocomplete dropdowns, drag
+overlays, inline validation errors, modals, popovers, expanded accordions. These
+markup trees don't exist on first paint, so a resting-state scan never sees
+them. For any interactive feature, add **interaction scans** on top of the
+resting states. `e2e/accessibility/advanced-search.spec.ts` is the canonical
+example (field-select menu, predictive dropdown, validation error, keyboard
+drag-and-drop).
+
+Rules for interaction scans:
+
+- **One `test.describe` block per surface**, named for the interaction
+  (`— field select menu`, `— predictive suggestions`, `— validation error`,
+  `— drag and drop`), so the HTML report names the failing surface.
+- **Reuse the same axe scans, drop the resting-layout asserts.** Extract a
+  `runAxeScans(page, testInfo, state)` helper (full WCAG scan + focused
+  color-contrast + button/link-name + screenshot) and have `runSharedChecks`
+  call it after its `main`/`h1`/form-control assertions. Interaction scans call
+  `runAxeScans` directly — an open portal can cover the page chrome and flake
+  the `toBeVisible` structure/form checks, but the axe scan still covers the
+  whole DOM including the open surface.
+- **Drive the interaction deterministically, then wait for the surface's own
+  accessible proof before scanning:** an open `option`/`listbox`, a rendered
+  suggestion item, the error text, or the drag live-region announcement. Same
+  rule as every state — scan the intended DOM, not the moment before it renders.
+- **Mock any endpoint the interaction fires.** Predictive/autocomplete inputs
+  hit the API on their own (often the same `**/query*` glob) — fulfill it with
+  deterministic suggestions and wait for one to appear. A select whose options
+  come from a static config fires nothing; mock defensively anyway.
+
+Interaction-specific gotchas:
+
+- **The Next.js dev overlay (`<nextjs-portal>`) intercepts real pointer clicks**
+  while a route is still compiling, so `locator.click()` can time out
+  ("`<nextjs-portal> intercepts pointer events`"). Fire the React handler
+  directly with `locator.dispatchEvent('click')`, or use the keyboard, for
+  clicks that only need to trigger an `onClick`.
+- **react-select**: open with `getByRole('combobox', { name })` + `.click()`,
+  narrow the list with `.pressSequentially('…')`, choose with
+  `getByRole('option', { name })`. Its menu/options are a portal.
+- **Drag-and-drop**: prefer the **keyboard** flow over pointer drags (which are
+  flaky). For dnd-kit: focus the drag handle (give it an `aria-label`), press
+  `Space` to pick up, then scan the "picked up" state — the `DragOverlay` clone
+  plus the live-region announcement (`getByText(/picked up/i)`) are the
+  screen-reader surface worth scanning. Press `Escape` to cancel afterwards.
+- **Validation errors**: trigger the real validation path (submit an invalid
+  value, e.g. unbalanced punctuation) and wait for the error text, rather than
+  forcing error state through internals.
+
+Interaction scans frequently surface **real** serious violations that the
+resting states miss (the advanced-search interaction scans found four). When
+they do, treat them like any other real violation — see the failure-threshold
+section below: fix the app, or skip-and-document. Do not exclude the surface or
+loosen the scan to go green.
+
 ## Waiting for the right state
 
 Always wait for visible proof that the page is in the intended state _before_
@@ -75,24 +133,42 @@ example.
 2. `attachA11yReport(testInfo, state, results.violations)`.
 3. Assert `blockingViolations(results.violations)` is empty, using
    `formatViolations` as the expect message.
-4. Run a focused color-contrast scan and assert the same way. There is no
-   helper for this; run the single rule inline exactly as the canonical spec
-   does:
+4. Run a focused color-contrast scan and assert the same way. There is no helper
+   for this; run the single rule inline exactly as the canonical spec does:
    `new AxeBuilder({ page }).withTags(WCAG_AA_TAGS).options({ runOnly: { type: 'rule', values: ['color-contrast'] } })`.
 5. Structural sanity: a `main` landmark and a single `h1` are a reasonable
    baseline — adjust per route. (axe best-practice rules also evaluate these.)
 6. Attach a full-page screenshot per state.
 
 Put steps 1–6 in one helper function inside the spec (see the template) so each
-state calls the identical checks.
+state calls the identical checks. When the spec also has interaction states,
+split the axe-only steps (1, 2, 4, 6 — full scan, contrast, button/link-name,
+screenshot) into a `runAxeScans` helper and have `runSharedChecks` call it after
+the resting-layout asserts (3, 5), so interaction scans can reuse the scans
+without the structure/form `toBeVisible` checks. See the interaction-states
+section above.
 
 ## Failure threshold
 
 Fail only on `serious` and `critical` via `blockingViolations`. Minor/moderate
 violations are attached to the report but do not fail the build by design. Do
-**not** widen `BLOCKING_IMPACTS` or skip a violation to make a spec pass without
-a recorded product decision — a real violation that is hard to fix is still a
-real violation.
+**not** widen `BLOCKING_IMPACTS`, exclude the offending element, or skip a
+violation to make a spec pass without a recorded product decision — a real
+violation that is hard to fix is still a real violation.
+
+When a scan finds a real serious/critical violation, surface it — don't bury it.
+The choices, in order of preference:
+
+1. **Fix the app** so the scan passes legitimately (best).
+2. **Skip-and-document** when the fix is out of scope or needs a separate
+   decision: mark that one scan `test.fixme(...)` with a comment naming the
+   violation, the offending element/component, and the fix. This keeps the suite
+   green while the finding stays recorded in the spec for a follow-up, instead
+   of being hidden by loosening the scan.
+
+Either way, when a decision is made to defer, **state it** — to the developer
+and in the spec. A silently excluded element reads as "covered and clean" when
+it is neither.
 
 ## Screenshots
 
