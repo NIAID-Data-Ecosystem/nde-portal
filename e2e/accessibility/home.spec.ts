@@ -81,7 +81,15 @@ const METADATA_FIXTURE = {
 
 // --- Shared checks run in every state ---------------------------------------
 
-async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
+/**
+ * The axe scans every state runs: a full WCAG A/AA scan, a focused
+ * color-contrast scan, and a focused button/link-name scan, each reported
+ * separately, plus a screenshot. Split out from runSharedChecks so the
+ * interaction state (open filter popover) can run the same scans without the
+ * resting-layout structure/form assertions, which can flake when a portal is
+ * covering the page chrome.
+ */
+async function runAxeScans(page: Page, testInfo: TestInfo, state: string) {
   // Full-page WCAG A/AA scan. WCAG_AA_TAGS already includes color-contrast and
   // the landmark/heading-order best-practice rules, so this single scan is the
   // backbone of the check.
@@ -110,19 +118,6 @@ async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
     `Color-contrast violations found:\n${formatViolations(blockingContrast)}`,
   ).toEqual([]);
 
-  // Structural sanity — also proves the page rendered the intended chrome.
-  await expect(page.getByRole('main')).toBeVisible();
-  await expect(
-    page.getByRole('heading', { level: 1, name: HERO_H1 }),
-  ).toBeVisible();
-
-  // Forms: the site-wide hero search bar must be programmatically labelled.
-  // (The in-table "Search table" input is a separate control with its own name,
-  // so this name stays unique across states.)
-  const search = page.getByRole('textbox', { name: /search for resources/i });
-  await expect(search).toBeVisible();
-  await expect(search).toBeEditable();
-
   // Buttons/links: every button/link must expose an accessible name. axe's
   // `button-name` / `link-name` rules handle aria-label, aria-labelledby, text
   // content and titled icons, so we delegate the authoritative check to axe.
@@ -149,6 +144,23 @@ async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
     body: await page.screenshot({ fullPage: true }),
     contentType: 'image/png',
   });
+}
+
+async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
+  // Structural sanity — also proves the page rendered the intended chrome.
+  await expect(page.getByRole('main')).toBeVisible();
+  await expect(
+    page.getByRole('heading', { level: 1, name: HERO_H1 }),
+  ).toBeVisible();
+
+  // Forms: the site-wide hero search bar must be programmatically labelled.
+  // (The in-table "Search table" input is a separate control with its own name,
+  // so this name stays unique across states.)
+  const search = page.getByRole('textbox', { name: /search for resources/i });
+  await expect(search).toBeVisible();
+  await expect(search).toBeEditable();
+
+  await runAxeScans(page, testInfo, state);
 }
 
 // --- Loading -----------------------------------------------------------------
@@ -259,5 +271,58 @@ test.describe('a11y: Home — error', () => {
     ).toBeVisible();
 
     await runSharedChecks(page, testInfo, 'error');
+  });
+});
+
+// --- Interaction states ------------------------------------------------------
+//
+// The states above scan the page at rest. The "Explore Resources" table exposes
+// three filter popovers (Type / Research Domain / Access), all the same
+// src/components/checkbox-list Popover — mounted-on-open markup a resting scan
+// never sees (axe skips hidden nodes). We scan ONE (Research Domain) as the
+// representative significant state change; the other two are the identical
+// component with different option lists.
+//
+// NOT separately scanned: the news carousel (advancing it re-renders the same
+// card markup — "more of the same") and the applied-filter tags (plain Chakra
+// Tag/close buttons covered by the resting button-name scan).
+
+// --- Filter popover (CheckboxList) -------------------------------------------
+
+test.describe('a11y: Home — filter popover', () => {
+  test('passes axe with a table filter popover open', async ({
+    page,
+  }, testInfo) => {
+    await page.route(QUERY_GLOB, route =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(QUERY_FIXTURE),
+      }),
+    );
+    await page.route(METADATA_GLOB, route =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(METADATA_FIXTURE),
+      }),
+    );
+    await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
+
+    // Wait for the populated table, then open the "Research Domain" filter
+    // (label is unique to the table, so it can't collide with the search bar).
+    await expect(
+      page.getByRole('link', { name: 'Fixture Resource Catalog' }),
+    ).toBeVisible();
+    await page
+      .getByRole('button', { name: 'Research Domain', exact: true })
+      .click();
+    // The popover's checkbox group only exists once open; the fixtures' genre
+    // ('IID') is one of the options.
+    await expect(
+      page.getByRole('checkbox', { name: /IID/i }).first(),
+    ).toBeVisible();
+
+    await runAxeScans(page, testInfo, 'filter-popover');
   });
 });
