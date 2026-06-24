@@ -1224,3 +1224,16 @@ test.describe('a11y: Resource — populated', () => {
     });
   }
 });
+
+// --- Interaction states ------------------------------------------------------
+//
+// Assessed and intentionally none added. The resource detail page's only
+// distinct mounted-on-open surface is the Download Metadata format menu
+// (src/components/download-metadata), which is the SAME component already scanned
+// open in search.spec.ts ("download metadata menu") — re-scanning it here would
+// add no new coverage. The remaining interactions are not distinct markup worth a
+// separate axe pass: the metadata/heading tooltips are minor hover hints, the
+// "read more"/"read less" cell toggles and the search-history Collapse just
+// reveal more of the same already-scanned text/markup, and the based-on table
+// sort/pagination re-render existing rows. Each resting-state scan above already
+// covers the relevant DOM.

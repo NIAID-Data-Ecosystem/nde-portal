@@ -90,7 +90,15 @@ const METADATA_FIXTURE = {
 
 // --- Shared checks run in every state ---------------------------------------
 
-async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
+/**
+ * The axe scans every state runs: a full WCAG A/AA scan, a focused
+ * color-contrast scan, and a focused button/link-name scan, each reported
+ * separately, plus a screenshot. Split out from runSharedChecks so the
+ * interaction states (open popover, expanded filter) can run the same scans
+ * without the resting-layout structure/form assertions, which can flake when a
+ * portal is covering the page chrome.
+ */
+async function runAxeScans(page: Page, testInfo: TestInfo, state: string) {
   // Full-page WCAG A/AA scan. The helper's tag set (WCAG_AA_TAGS) already
   // includes color-contrast and the landmark/heading-order best-practice
   // rules, so this single scan is the backbone of the check.
@@ -120,18 +128,6 @@ async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
     `Color-contrast violations found:\n${formatViolations(blockingContrast)}`,
   ).toEqual([]);
 
-  // Structural sanity — also proves the page rendered the intended chrome.
-  await expect(page.getByRole('main')).toBeVisible();
-  await expect(
-    page.getByRole('heading', { level: 1, name: 'Repository Matcher' }),
-  ).toBeVisible();
-
-  // Forms: the search input is the primary form control on the route and must
-  // be programmatically labelled (ariaLabel on the SearchInput).
-  const search = page.getByRole('textbox', { name: /search repositories/i });
-  await expect(search).toBeVisible();
-  await expect(search).toBeEditable();
-
   // Buttons/links: every button/link must expose an accessible name. axe's
   // `button-name` / `link-name` rules handle aria-label, aria-labelledby, text
   // content and titled icons, so we delegate the authoritative check to axe.
@@ -158,6 +154,49 @@ async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
     body: await page.screenshot({ fullPage: true }),
     contentType: 'image/png',
   });
+}
+
+async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
+  // Structural sanity — also proves the page rendered the intended chrome.
+  await expect(page.getByRole('main')).toBeVisible();
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Repository Matcher' }),
+  ).toBeVisible();
+
+  // Forms: the search input is the primary form control on the route and must
+  // be programmatically labelled (ariaLabel on the SearchInput).
+  const search = page.getByRole('textbox', { name: /search repositories/i });
+  await expect(search).toBeVisible();
+  await expect(search).toBeEditable();
+
+  await runAxeScans(page, testInfo, state);
+}
+
+/** Fulfill both endpoints with the populated fixtures and wait for the enriched
+ * table — the shared setup for the interaction scans below. */
+async function gotoPopulated(page: Page) {
+  await page.route('**/query*', route =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        hits: [RESOURCE_CATALOG_FIXTURE],
+        total: 1,
+        facets: null,
+      }),
+    }),
+  );
+  await page.route('**/metadata*', route =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(METADATA_FIXTURE),
+    }),
+  );
+  await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
+  await expect(
+    page.getByRole('link', { name: 'Accessibility Fixture Catalog' }),
+  ).toBeVisible();
 }
 
 // --- Loading -----------------------------------------------------------------
@@ -269,5 +308,36 @@ test.describe('a11y: Repository Matcher — populated', () => {
     await expect(page.locator('.custom-skeleton-loading')).toHaveCount(0);
 
     await runSharedChecks(page, testInfo, 'populated');
+  });
+});
+
+// --- Interaction states ------------------------------------------------------
+//
+// The states above scan the table at rest. This scans distinct markup that only
+// exists after a user action and that a resting scan never sees (axe skips
+// hidden nodes; the popover is mounted-on-open). We scan the open popover at
+// rest; we don't drive a keyboard drag inside it — the dnd-kit drag-overlay
+// a11y surface is already covered (as a known issue) by advanced-search.spec.ts.
+//
+// NOT scanned: the Filters panel. Its sections render EXPANDED by default in the
+// populated state, so their checkbox term lists are already in the resting DOM
+// and covered by the populated scan above — expanding another is "more of the
+// same".
+
+// --- Customize Columns popover (SelectAndSortPopover) -------------------------
+
+test.describe('a11y: Repository Matcher — customize columns popover', () => {
+  test('passes axe with the customize-columns popover open', async ({
+    page,
+  }, testInfo) => {
+    await gotoPopulated(page);
+
+    // The toolbar's "Customize Columns (n/n)" button opens a Popover
+    // (src/components/select-and-order-popover) whose checkbox + reorder list is
+    // not in the DOM until opened.
+    await page.getByRole('button', { name: /customize columns/i }).click();
+    await expect(page.getByPlaceholder('Search columns')).toBeVisible();
+
+    await runAxeScans(page, testInfo, 'customize-columns-popover');
   });
 });

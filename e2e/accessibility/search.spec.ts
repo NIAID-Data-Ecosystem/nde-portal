@@ -109,7 +109,15 @@ const EMPTY_FIXTURE = {
 
 // --- Shared checks run in every state ---------------------------------------
 
-async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
+/**
+ * The axe scans every state runs: a full WCAG A/AA scan, a focused
+ * color-contrast scan, and a focused button/link-name scan, each reported
+ * separately, plus a screenshot. Split out from runSharedChecks so the
+ * interaction states (open menus/dropdowns/popovers) can run the same scans
+ * without the resting-layout structure/form assertions, which can flake when a
+ * portal is covering the page chrome.
+ */
+async function runAxeScans(page: Page, testInfo: TestInfo, state: string) {
   // Full-page WCAG A/AA scan. The helper's tag set (WCAG_AA_TAGS) already
   // includes color-contrast and the landmark/heading-order best-practice
   // rules, so this single scan is the backbone of the check.
@@ -139,20 +147,6 @@ async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
     `Color-contrast violations found:\n${formatViolations(blockingContrast)}`,
   ).toEqual([]);
 
-  // Structural sanity — also proves the page rendered the intended chrome. The
-  // search results header renders the page's single h1 ("Showing all results")
-  // in every state, above the results region that varies by state.
-  await expect(page.getByRole('main')).toBeVisible();
-  await expect(
-    page.getByRole('heading', { level: 1, name: /showing all results/i }),
-  ).toBeVisible();
-
-  // Forms: the site-wide search bar is rendered on this route
-  // (`includeSearchBar`) and its control must be programmatically labelled.
-  const search = page.getByRole('textbox', { name: /search for resources/i });
-  await expect(search).toBeVisible();
-  await expect(search).toBeEditable();
-
   // Buttons/links: every button/link must expose an accessible name. axe's
   // `button-name` / `link-name` rules handle aria-label, aria-labelledby, text
   // content and titled icons, so we delegate the authoritative check to axe.
@@ -179,6 +173,24 @@ async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
     body: await page.screenshot({ fullPage: true }),
     contentType: 'image/png',
   });
+}
+
+async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
+  // Structural sanity — also proves the page rendered the intended chrome. The
+  // search results header renders the page's single h1 ("Showing all results")
+  // in every state, above the results region that varies by state.
+  await expect(page.getByRole('main')).toBeVisible();
+  await expect(
+    page.getByRole('heading', { level: 1, name: /showing all results/i }),
+  ).toBeVisible();
+
+  // Forms: the site-wide search bar is rendered on this route
+  // (`includeSearchBar`) and its control must be programmatically labelled.
+  const search = page.getByRole('textbox', { name: /search for resources/i });
+  await expect(search).toBeVisible();
+  await expect(search).toBeEditable();
+
+  await runAxeScans(page, testInfo, state);
 }
 
 // --- Loading -----------------------------------------------------------------
@@ -305,5 +317,91 @@ test.describe('a11y: Search — error', () => {
     ).toBeVisible();
 
     await runSharedChecks(page, testInfo, 'error');
+  });
+});
+
+// --- Interaction states ------------------------------------------------------
+//
+// The states above scan the page at rest. These scan distinct markup that only
+// exists after a user action — surfaces axe never sees in a resting scan because
+// they're mounted-on-open (portals) and axe skips hidden nodes. We scan each
+// once via runAxeScans (no resting-layout asserts — an open portal can cover the
+// page chrome). We deliberately DON'T re-scan "more of the same" surfaces: the
+// predictive-search dropdown (same InputWithDropdown already scanned in
+// advanced-search.spec.ts), sibling result tabs (re-render the same card list),
+// or per-card metadata accordions (same metadata-grid markup already on the
+// card). The Customize Columns popover lives only on the Samples/DataCollections
+// table tabs (feature-gated) — covered by the repository-matcher spec's table
+// popover, the same SelectAndSortPopover component.
+
+/** Put the page into the populated, results-rendered state used by the
+ * interaction scans below (mirrors the populated describe block). */
+async function gotoPopulated(page: Page) {
+  await page.route('**/query*', route =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(POPULATED_FIXTURE),
+    }),
+  );
+  await page.route('**/metadata*', route =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ build_date: '2026-06-17T00:00:00Z', src: {} }),
+    }),
+  );
+  await page.route('**/api/diseases*', route =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ data: [] }),
+    }),
+  );
+  await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
+  // Results rendered — the toolbar (Download Metadata) and search bar are present.
+  await expect(
+    page.getByRole('link', { name: new RegExp(DATASET_NAME, 'i') }).first(),
+  ).toBeVisible();
+}
+
+// --- Search bar "Type" options menu (CheckboxList popover) --------------------
+
+test.describe('a11y: Search — type options menu', () => {
+  test('passes axe with the search-bar type popover open', async ({
+    page,
+  }, testInfo) => {
+    await gotoPopulated(page);
+
+    // The search bar renders a "Type" options menu (src/components/checkbox-list
+    // → Chakra Popover). Exact name avoids matching filter sections like "Data
+    // Type". Opening it reveals a checkbox group that doesn't exist until open.
+    await page.getByRole('button', { name: 'Type', exact: true }).click();
+    await expect(
+      page.getByRole('checkbox', { name: /dataset repository/i }),
+    ).toBeVisible();
+
+    await runAxeScans(page, testInfo, 'type-options-menu');
+  });
+});
+
+// --- Download Metadata format menu -------------------------------------------
+
+test.describe('a11y: Search — download metadata menu', () => {
+  test('passes axe with the download format list open', async ({
+    page,
+  }, testInfo) => {
+    await gotoPopulated(page);
+
+    // The Download Metadata button (results toolbar) toggles a Collapse list of
+    // JSON/CSV options that isn't in the DOM until opened. Just toggling fires
+    // no request (the download query is enabled only once a format is chosen).
+    await page
+      .getByRole('button', { name: /download metadata/i })
+      .first()
+      .click();
+    await expect(page.getByText(/json format/i)).toBeVisible();
+
+    await runAxeScans(page, testInfo, 'download-metadata-menu');
   });
 });

@@ -293,3 +293,12 @@ test.describe('a11y: Updates — populated', () => {
     await runSharedChecks(page, testInfo, 'populated');
   });
 });
+
+// --- Interaction states ------------------------------------------------------
+//
+// Assessed and intentionally none added. The Updates page has no mounted-on-open
+// distinct markup (no menus, popovers, modals, dropdowns, or drag surfaces). Its
+// only interaction is the per-section "Show More" button
+// (src/views/news/components/Section.tsx), which simply renders more of the same
+// SectionCard markup already covered by the populated scan above — "more of the
+// same", so a separate axe pass would add no coverage.

@@ -187,7 +187,15 @@ const fulfillJson = (body: unknown) => ({
 
 // --- Shared checks run in every state ---------------------------------------
 
-async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
+/**
+ * The axe scans every state runs: a full WCAG A/AA scan, a focused
+ * color-contrast scan, and a focused button/link-name scan, each reported
+ * separately, plus a screenshot. Split out from runSharedChecks so the
+ * interaction state (open mobile menu) can run the same scans without the
+ * resting-layout structure/form assertions, which can flake when a portal
+ * covers the page chrome (and the search bar layout differs on mobile).
+ */
+async function runAxeScans(page: Page, testInfo: TestInfo, state: string) {
   // Full-page WCAG A/AA scan. The helper's tag set (WCAG_AA_TAGS) already
   // includes color-contrast and the landmark/heading-order best-practice
   // rules, so this single scan is the backbone of the check.
@@ -218,23 +226,6 @@ async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
     `Color-contrast violations found:\n${formatViolations(blockingContrast)}`,
   ).toEqual([]);
 
-  // Structural sanity — also proves the page rendered the intended chrome. The
-  // hero h1 ("Knowledge Center") is present in every state; match it by exact
-  // name so it does not collide with MainContent's doc-name h1 on the MDX page.
-  await expect(page.getByRole('main')).toBeVisible();
-  await expect(
-    page.getByRole('heading', { level: 1, name: HERO_HEADING, exact: true }),
-  ).toBeVisible();
-
-  // Forms: the Knowledge Center search bar renders on this route and its control
-  // must be programmatically labelled (the input carries aria-label
-  // "Search Knowledge Center").
-  const search = page.getByRole('textbox', {
-    name: /search knowledge center/i,
-  });
-  await expect(search).toBeVisible();
-  await expect(search).toBeEditable();
-
   // Buttons/links: every button/link must expose an accessible name. axe's
   // `button-name` / `link-name` rules handle aria-label, aria-labelledby, text
   // content and titled icons, so we delegate the authoritative check to axe.
@@ -261,6 +252,27 @@ async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
     body: await page.screenshot({ fullPage: true }),
     contentType: 'image/png',
   });
+}
+
+async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
+  // Structural sanity — also proves the page rendered the intended chrome. The
+  // hero h1 ("Knowledge Center") is present in every state; match it by exact
+  // name so it does not collide with MainContent's doc-name h1 on the MDX page.
+  await expect(page.getByRole('main')).toBeVisible();
+  await expect(
+    page.getByRole('heading', { level: 1, name: HERO_HEADING, exact: true }),
+  ).toBeVisible();
+
+  // Forms: the Knowledge Center search bar renders on this route and its control
+  // must be programmatically labelled (the input carries aria-label
+  // "Search Knowledge Center").
+  const search = page.getByRole('textbox', {
+    name: /search knowledge center/i,
+  });
+  await expect(search).toBeVisible();
+  await expect(search).toBeEditable();
+
+  await runAxeScans(page, testInfo, state);
 }
 
 // --- Index: populated --------------------------------------------------------
@@ -391,5 +403,48 @@ test.describe('a11y: Knowledge Center — error', () => {
     await expect(page.getByText(/API Request:/i)).toBeVisible();
 
     await runSharedChecks(page, testInfo, 'error');
+  });
+});
+
+// --- Interaction states ------------------------------------------------------
+//
+// The states above scan the page at rest. On a doc route below Chakra's `sm`
+// breakpoint the desktop sidebar is replaced by a Chakra `Menu` (SidebarMobile),
+// whose MenuList — category groups + doc-link menuitems — is a portal mounted
+// only on open, so a resting scan never sees it (axe skips hidden nodes).
+//
+// NOT separately scanned: the docs search-bar dropdown (the same
+// src/components/input-with-dropdown predictive component already scanned in
+// advanced-search.spec.ts) and the desktop sidebar collapse toggle (it hides the
+// already-scanned nav — "more of the same", no new markup).
+
+// --- Mobile navigation menu (Chakra Menu) ------------------------------------
+
+test.describe('a11y: Knowledge Center doc page — mobile menu', () => {
+  test('passes axe with the mobile nav menu open', async ({
+    page,
+  }, testInfo) => {
+    // Below `sm` (30em) the page renders SidebarMobile instead of the desktop
+    // sidebar. Set a phone viewport before navigating so the mobile menu mounts.
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.route(CATEGORIES_GLOB, route =>
+      route.fulfill(fulfillJson(CATEGORIES_FIXTURE)),
+    );
+    await page.route(DOCS_GLOB, route =>
+      route.fulfill(fulfillJson(DOC_FIXTURE)),
+    );
+    await page.goto(DOC_ROUTE, { waitUntil: 'domcontentloaded' });
+
+    // The menu button shows "Documentation Menu" (the FAQ slug isn't in the
+    // category fixture, so `menuTitle` is empty and the fallback label renders).
+    await page.getByRole('button', { name: /documentation menu/i }).click();
+    // The MenuList's doc-link menuitems only exist once the menu is open.
+    await expect(
+      page.getByRole('menuitem', {
+        name: /discovery portal quick start guide/i,
+      }),
+    ).toBeVisible();
+
+    await runAxeScans(page, testInfo, 'mobile-menu');
   });
 });
