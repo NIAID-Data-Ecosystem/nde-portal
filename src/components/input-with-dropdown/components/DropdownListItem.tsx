@@ -66,7 +66,7 @@ export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
             styles={{
               fontWeight: 'bold',
               textDecoration: 'underline',
-              color: `${colorScheme}.400`,
+              color: `${colorScheme}.600`,
               bg: 'transparent',
             }}
           >
