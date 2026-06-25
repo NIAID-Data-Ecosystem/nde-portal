@@ -58,6 +58,48 @@ of the spec** (see the state-coverage note in `about.spec.ts`) rather than
 dropping it silently — a reviewer must be able to tell "unreachable" from
 "forgotten".
 
+## Favor mocked data over live data
+
+A scan is only as trustworthy as the DOM it runs against. **Never let a state's
+DOM come from the live API.** Live data is non-deterministic: the scan result
+changes with whatever the API returns, the test fails when the network is down
+or in CI, and — worst — it can go **green while rendering the wrong DOM**, hiding
+the very content the scan was meant to cover.
+
+Rules, in priority order:
+
+1. **Mock every request each state depends on** with `page.route` and a fixed
+   fixture. This is the default and covers most routes (client-side TanStack
+   Query hooks hitting `**/query*`, `**/metadata*`, `**/api/*`).
+2. **If the only data path is a server-side `getStaticProps`/`getServerSideProps`
+   fetch** that `page.route` can't intercept, don't settle for scanning live.
+   Prefer making the data client-fetchable — e.g. add a client-side `useQuery`
+   seeded from the props (`placeholderData: () => props.data`) — so the refetch
+   becomes interceptable and the populated/error states become deterministic and
+   mockable. `program-collections.tsx` does exactly this; `about.tsx` and
+   `knowledge-center` are the seed-from-props + client-refetch pattern to copy.
+3. **Only if neither is possible**, scan live as a last resort and **document the
+   live-data dependency** in the spec's header comment so a reviewer knows the
+   scan is non-deterministic by necessity, not by oversight.
+
+Two traps this guards against, both seen in real specs:
+
+- **`placeholderData` false positives.** When a client query is seeded from
+  `getStaticProps` props, the live seed renders on first paint and can satisfy
+  your `getByRole`/`getByText` waits *before* the mock resolves — the test goes
+  green, but the screenshot shows the mock's (possibly broken) DOM, or vice
+  versa. Always wait for a value that **only the mocked fixture** produces (a
+  distinctive count like `"3 results."`, a fixture-only name) so you know the
+  mock — not the seed — owns the scanned DOM. Attach and **eyeball the
+  screenshot**: a passing test with the wrong content on screen means the wait
+  matched the seed, not the mock.
+- **axios encodes spaces as `+`, not `%20`.** When a mock handler matches on the
+  request URL (e.g. branching the NDE `/query` endpoint on its `q` param), axios's
+  default serializer turns spaces into `+`, and `decodeURIComponent` leaves `+`
+  untouched. Normalize before matching: `decodeURIComponent(url).replace(/\+/g, ' ')`.
+  Otherwise the match silently fails, the handler returns empty, and the page
+  renders a degraded fallback that you then scan by mistake.
+
 ## Interaction states (menus, dropdowns, drag, inline errors)
 
 The loading/empty/populated/error matrix scans the page **at rest**. But a11y

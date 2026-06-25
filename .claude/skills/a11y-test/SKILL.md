@@ -41,7 +41,14 @@ yarn test:a11y:report                                   # open the HTML report
    populated-state fixture.
 4. **Wire up the route mock** with `page.route(glob, ...)` per state so the page
    is deterministic and never hits the live network (the canonical spec mocks
-   `**/query*` and `**/metadata*`).
+   `**/query*` and `**/metadata*`). **Always favor mocked fixtures over live
+   data** — a scan against the live API is non-deterministic and produces false
+   passes/failures (it can even go green while rendering the wrong DOM). If a
+   route's only data path is a server-side `getStaticProps`/`getServerSideProps`
+   fetch that `page.route` can't intercept, prefer making the data client-fetchable
+   (e.g. a client-side `useQuery` seeded from props) so it can be mocked, rather
+   than scanning live. See the "Favor mocked data over live data" section of
+   `references/patterns.md`.
 5. **Wait for state-specific UI before scanning** — a user-facing `getByRole` /
    `getByText` for loaded/empty/error states; an implementation selector (e.g.
    `.custom-skeleton-loading`) only for loading markers with no accessible
