@@ -157,3 +157,55 @@ export const getSelectedFilterDisplay = (
     return value;
   });
 };
+
+/**
+ * Resolves mutual exclusivity between "Any" (_exists_) / "No" (-_exists_)
+ * and a facet's other values:
+ *   - Checking "Any" or "No" deselects every other value for that facet,
+ *     including the opposite of itself.
+ *   - Checking a normal value while "Any"/"No" is still active drops
+ *     "Any"/"No" so only the real value(s) remain.
+ *
+ * The second rule is a no-op for the sidebar checkbox list (FiltersList),
+ * since once "Any"/"No" is checked there, every other checkbox is hidden
+ * and can't be clicked until "Any"/"No" is unchecked first. It's load-bearing
+ * for the Visual Summary charts, though: chart slices aren't hidden the same
+ * way, so a user can click a real value's slice (e.g. "Influenza") while
+ * "Any"/"No" is still selected from the sidebar, producing exactly the
+ * mixed state this rule cleans up.
+ *
+ * `values` is the full new set of checked values for the facet (as emitted
+ * by the checkbox group or chart click handler); `prevValues` is what was
+ * selected before this change. Works for both plain string values and the
+ * `{ [key]: string[] }` object form used for _exists_/-_exists_ in
+ * SelectedFilterType.
+ */
+export const sanitizeExistsFilterValues = <T extends SelectedFilterValueType>(
+  values: T[],
+  prevValues: T[],
+): T[] => {
+  const normalize = (v: T): string =>
+    typeof v === 'object' ? Object.keys(v)[0] : v;
+
+  const isExistsType = (v: T) => {
+    const key = normalize(v);
+    return key === '_exists_' || key === '-_exists_';
+  };
+
+  const prevKeys = prevValues.map(normalize);
+  const added = values.filter(v => !prevKeys.includes(normalize(v)));
+  const addedExists = added.find(isExistsType);
+
+  // "Any"/"No" was just checked: it overrides every other selection.
+  if (addedExists) {
+    return [addedExists];
+  }
+
+  // A normal value is checked while "Any"/"No" is still present from a
+  // previous selection (only reachable via Visual Summary charts): drop "Any"/"No" so only the normal value(s) remain.
+  if (values.some(v => !isExistsType(v)) && values.some(isExistsType)) {
+    return values.filter(v => !isExistsType(v));
+  }
+
+  return values;
+};

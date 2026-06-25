@@ -225,14 +225,26 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
     terms: resultTerms,
   }) => {
     // filter out terms that are undefined or null or empty strings
-    const terms = useMemo(
-      () =>
+    const terms = useMemo(() => {
+      const filteredTerms =
         resultTerms?.filter(
           term =>
             term.term !== undefined && term.term !== null && term.term !== '',
-        ) || [],
-      [resultTerms],
-    );
+        ) || [];
+
+      // If the user has checked "Any <filter>" (_exists_) or
+      // "No <filter>" (-_exists_), the other facet values (and the opposite
+      // exists/not-exists option) are no longer relevant to choose from, so
+      // hide them and only show the one option the user selected.
+      if (selectedFilters.includes('_exists_')) {
+        return filteredTerms.filter(term => term.term === '_exists_');
+      }
+      if (selectedFilters.includes('-_exists_')) {
+        return filteredTerms.filter(term => term.term === '-_exists_');
+      }
+
+      return filteredTerms;
+    }, [resultTerms, selectedFilters]);
 
     const [searchTerm, setSearchTerm] = useState('');
     const [debouncedSearchTerm] = useDebounceValue(searchTerm, 300);
