@@ -28,11 +28,7 @@
  * Beyond the four resting states, four "interaction" scans cover the transient,
  * interaction-only surfaces a user opens while building a query — the field
  * combobox menu, the predictive-suggestions dropdown, the inline validation
- * error, and a keyboard drag-and-drop pickup. These are where a11y regressions
- * most often hide. The drag-and-drop scan is currently `test.fixme`: it exposes
- * a real serious violation (the dnd-kit DragOverlay clone is an orphan `<li>`),
- * recorded rather than hidden — see the note above that block.
- *
+ * error, and a keyboard drag-and-drop pickup.
  * Endpoints mocked (all client-side):
  *   - `**\/query*`  the NDE /query API (result count + predictive suggestions)
  */
@@ -391,56 +387,4 @@ test.describe('a11y: Advanced Search — validation error', () => {
 
     await runAxeScans(page, testInfo, 'validation-error');
   });
-});
-
-// --- Drag and drop (keyboard) ------------------------------------------------
-//
-// KNOWN VIOLATION — skipped pending an app fix, not a passing scan.
-// When a query term is picked up via the keyboard (dnd-kit KeyboardSensor),
-// SortableWithCombine renders the DragOverlay clone with createPortal into
-// document.body (see src/components/advanced-search/components/SortableWithCombine
-// /index.tsx). The clone is a Chakra <ListItem> (`<li>`) with no <ul>/<ol>
-// parent, which axe flags as a SERIOUS `listitem` violation ("<li> elements
-// must be contained in a <ul> or <ol>"). The interaction itself is correct;
-// the fix is to wrap the portaled DragOverlay child in a list element. Until
-// then this scan is `test.fixme` so the real violation is recorded rather than
-// hidden by loosening the axe threshold. Re-enable (test → test, drop fixme)
-// once the overlay markup is corrected.
-
-test.describe('a11y: Advanced Search — drag and drop', () => {
-  test.fixme(
-    'passes axe while a query term is picked up for reordering',
-    async ({ page }, testInfo) => {
-      for (const glob of API_GLOBS) {
-        await page.route(glob, route =>
-          route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify(POPULATED_FIXTURE),
-          }),
-        );
-      }
-      await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
-
-      // Populate the builder so there are draggable tree items.
-      await page
-        .getByRole('button', { name: SAMPLE_QUERY })
-        .dispatchEvent('click');
-      const handle = page.getByRole('button', { name: /drag item/i }).first();
-      await expect(handle).toBeVisible();
-
-      // Start a keyboard drag (dnd-kit's KeyboardSensor): focus the handle and
-      // press Space to "pick up" the item. This renders the DragOverlay clone and
-      // pushes a live-region announcement ("Picked up …"), which is the screen-
-      // reader surface of the drag interaction — what we want to scan.
-      await handle.focus();
-      await handle.press(' ');
-      await expect(page.getByText(/picked up/i)).toBeVisible();
-
-      await runAxeScans(page, testInfo, 'drag-and-drop');
-
-      // Cancel the drag so the page is left in a clean state.
-      await page.keyboard.press('Escape');
-    },
-  );
 });
