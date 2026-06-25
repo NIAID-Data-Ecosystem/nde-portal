@@ -7,34 +7,29 @@
  * CI. See e2e/utils/axe.ts and the canonical repository-matcher.spec.ts.
  *
  * What this route is — `src/pages/sources.tsx` lists every NDE data source. It
- * seeds its source data from `getStaticProps` (server-side: live `/metadata` +
- * per-source GitHub commit dates) and then refetches the SAME NDE `/metadata`
- * endpoint client-side via `useQuery(['metadata'])`, with the getStaticProps
- * result as `placeholderData`. The view renders a left `nav` sidebar of source
- * names and a main column of source cards (`src/views/sources`).
+ * may seed its source data from `getStaticProps` (server-side: live `/metadata`
+ * + per-source GitHub commit dates) but always (re)fetches the SAME NDE
+ * `/metadata` endpoint client-side via `useQuery(['metadata'])`, with any
+ * getStaticProps result as `placeholderData`. The view renders a left `nav`
+ * sidebar of source names and a main column of source cards (`src/views/sources`).
  *
- * State coverage — only the client-side `/metadata` request is interceptable
+ * State coverage — the page now owns ALL of its states client-side. As of the
+ * getStaticProps refactor, a server-side prefetch failure no longer renders an
+ * SSR Error block: getStaticProps returns empty props and the page falls back to
+ * the client query, so the route always loads content client-side and the only
+ * Error UI is driven by the client query's `metadataError`. We therefore drive
+ * every state through the interceptable client-side `/metadata` request
  * (`page.route` runs in the browser; the getStaticProps fetch happens in the
- * Next dev server, out of reach — same limitation documented in about.spec.ts).
- * The client query always runs on mount, so we drive all four states through it:
+ * Next dev server and is out of reach, but it can no longer gate the view):
  *   - loading   — `/metadata` kept pending → skeleton cards/text (`isFetching`)
  *   - empty     — `/metadata` resolved with no sources → "0 results."
  *   - populated — `/metadata` resolved with fixture sources → source cards
  *   - error     — `/metadata` aborted → the page's Error block (Retry button)
  *
- * The loading/empty/populated states (and the schema-table interaction) assume
- * getStaticProps itself succeeded server-side, so the `error` prop is null and
- * the view — not the server-rendered Error block — owns the DOM. getStaticProps
- * fetches the live `/metadata` from the Node dev server, which is NOT
- * interceptable. When that server has no outbound network (some sandboxes),
- * the page hard-renders its Error block from the `error` prop and the
- * data-driven states are genuinely unreachable. Those tests therefore call
- * `skipIfServerRenderedError`, which runtime-`test.skip`s them (with a reason in
- * the report) when the SSR Error block is present, rather than failing on an
- * environment limitation — the harness/network-limit case in e2e/README. Where
- * the server can fetch (CI, networked dev) the guard is a no-op and the full
- * scan runs. The error-state scan always runs: both the server `error` prop and
- * the client `metadataError` converge on the same Error UI.
+ * Because getStaticProps no longer hard-renders an Error block, no state is
+ * unreachable here and there is no SSR-error guard to skip data-driven scans —
+ * a getStaticProps failure just means no `placeholderData`, and the mocked
+ * client query drives the state regardless.
  *
  * Beyond the resting states, one interaction scan covers the per-source schema
  * "property transformation" table — a transient surface a user expands, with a
@@ -204,33 +199,6 @@ async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
   await runAxeScans(page, testInfo, state);
 }
 
-/**
- * getStaticProps fetches `/metadata` server-side and gates the whole view on
- * the resulting `error` prop, which `page.route` cannot intercept. When the
- * Node dev server has no outbound network, the page renders its Error block on
- * first paint and the data-driven states below cannot be reached. Detect that
- * (the server-rendered Retry button is in the initial HTML, before any client
- * query resolves) and skip with a reason, rather than failing on an environment
- * limitation. No-op where the server can fetch (CI, networked dev).
- */
-async function skipIfServerRenderedError(page: Page) {
-  // The Error block (and its Retry button) is in the initial server HTML when
-  // getStaticProps failed. Wait a bounded moment for it rather than a one-shot
-  // isVisible() check, which races hydration/paint. In a healthy environment
-  // the button never appears and this just times out, then proceeds.
-  const serverErrored = await page
-    .getByRole('button', { name: /retry/i })
-    .waitFor({ state: 'visible', timeout: 2000 })
-    .then(() => true)
-    .catch(() => false);
-  test.skip(
-    serverErrored,
-    'getStaticProps could not reach the NDE /metadata API server-side, so the ' +
-      'page hard-rendered its Error block and the data state is unreachable in ' +
-      'this environment.',
-  );
-}
-
 // --- Loading -----------------------------------------------------------------
 
 test.describe('a11y: Sources — loading', () => {
@@ -240,8 +208,6 @@ test.describe('a11y: Sources — loading', () => {
       await page.route(glob, () => new Promise<void>(() => {}));
     }
     await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
-    await skipIfServerRenderedError(page);
-
     // Proof of the loading state. The view's SkeletonText/Skeleton render
     // through Chakra with the `chakra-skeleton` class while `isFetching` is
     // true — a CSS selector is acceptable here only because skeletons have no
@@ -266,8 +232,6 @@ test.describe('a11y: Sources — empty', () => {
       );
     }
     await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
-    await skipIfServerRenderedError(page);
-
     // The SectionSearch result counter reads the filtered source list. With no
     // sources it renders "0 results." — proof the client query resolved empty
     // (not the placeholder/SSR seed, which would show a non-zero count).
@@ -291,8 +255,6 @@ test.describe('a11y: Sources — populated', () => {
       );
     }
     await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
-    await skipIfServerRenderedError(page);
-
     // Wait for a fixture source name (rendered as a card title and a sidebar
     // heading) that only appears once the mocked query resolves, so we scan the
     // populated DOM and not the loading or SSR-seed state.
@@ -324,9 +286,16 @@ test.describe('a11y: Sources — error', () => {
 
     // Wait for the error UI. The Error component has no `alert` role, so we
     // wait for its heading and the Retry control that prove the error path.
+    //
+    // This takes longer than the 15s default expect timeout: surfacing the
+    // error means exhausting two layered retry policies — fetchMetadata's own
+    // loop (MAX_RETRIES=3, ~2.1s backoff per call; see src/hooks/api/helpers.ts)
+    // wrapped by react-query's default 3 retries (1s+2s+4s backoff). That is
+    // ~16-18s end to end, so wait explicitly within the 60s per-test budget.
+    const ERROR_TIMEOUT = 40_000;
     await expect(
       page.getByRole('heading', { name: /something went wrong/i }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: ERROR_TIMEOUT });
     await expect(page.getByRole('button', { name: /retry/i })).toBeVisible();
 
     // The error state has no h1 or source-search input, so assert only the
@@ -360,8 +329,6 @@ test.describe('a11y: Sources — schema property table', () => {
       );
     }
     await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
-    await skipIfServerRenderedError(page);
-
     // Wait for the populated card, then expand its schema table. dispatchEvent
     // fires the toggle's React onClick directly, bypassing the Next.js dev
     // overlay (`<nextjs-portal>`) that can intercept real clicks while the route
@@ -380,6 +347,27 @@ test.describe('a11y: Sources — schema property table', () => {
     await expect(
       page.getByText(`${FIXTURE_SOURCE_NAME} Property`),
     ).toBeVisible();
+
+    // The table lives inside a Chakra <Collapse>, which fades the wrapper's
+    // opacity 0→1 as it expands. axe computes color-contrast against the
+    // *rendered* (alpha-blended) background, so scanning mid-fade reports false
+    // contrast failures — a half-opaque dark table (#374151) over the white page
+    // reads as a mid-gray (~#8c929b) and fails the 4.5:1 check. At rest the fade
+    // has settled and the same cells pass comfortably. Wait until no ancestor of
+    // the header cell is still partially transparent before scanning, so axe
+    // sees the final, opaque colors and the scan is deterministic.
+    await page.waitForFunction(() => {
+      const header = Array.from(document.querySelectorAll('th')).find(cell =>
+        /Property/i.test(cell.textContent || ''),
+      );
+      if (!header) return false;
+      let el: Element | null = header;
+      while (el) {
+        if (parseFloat(getComputedStyle(el).opacity) < 1) return false;
+        el = el.parentElement;
+      }
+      return true;
+    });
 
     await runAxeScans(page, testInfo, 'schema-table');
   });
