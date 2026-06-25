@@ -32,6 +32,7 @@ import { useActiveVizIds } from 'src/views/search/components/summary/hooks/useAc
 import {
   queryFilterString2Object,
   queryFilterObject2String,
+  sanitizeExistsFilterValues,
 } from 'src/views/search/components/filters/utils/query-string';
 import { FilterTags } from 'src/views/search/components/filters/components/tag';
 import { SearchResultsFetchedProvider } from 'src/views/search/context/search-results-fetched-context';
@@ -125,9 +126,15 @@ const Search: NextPage<{
       //     : value,
       // );
 
+      const prevValues = selectedFilters[facet] || [];
+
+      // Checking "Any"/"No" clears everything else for this facet, and
+      // checking a normal value clears "Any"/"No" if it was active.
+      const sanitizedValues = sanitizeExistsFilterValues(values, prevValues);
+
       const updatedFilterString = queryFilterObject2String({
         ...selectedFilters,
-        [facet]: values,
+        [facet]: sanitizedValues,
       });
 
       handleUpdate({

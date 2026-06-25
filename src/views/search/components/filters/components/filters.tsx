@@ -9,7 +9,10 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { useFilterQueries } from '../hooks/useFilterQueries';
-import { queryFilterObject2String } from '../utils/query-string';
+import {
+  queryFilterObject2String,
+  sanitizeExistsFilterValues,
+} from '../utils/query-string';
 import { SelectedFilterType } from '../types';
 import { useRouter } from 'next/router';
 import { FiltersSection } from './section';
@@ -197,7 +200,16 @@ export const Filters = React.memo(
 
     const handleSelectedFilters = useCallback(
       (values: string[], facet: string) => {
-        const updatedValues = values.map(value => {
+        // Normalize the facet's previous selection to plain strings, mirroring
+        // how `selected` is derived for each filter section below.
+        const prevValues = (selectedFilters[facet] || []).map(value =>
+          typeof value === 'object' ? Object.keys(value)[0] : value,
+        );
+
+        // Checking "Any"/"No" clears everything else for this facet.
+        const sanitizedValues = sanitizeExistsFilterValues(values, prevValues);
+
+        const updatedValues = sanitizedValues.map(value => {
           // return object with inverted facet + key for exists values
           if (value === '-_exists_' || value === '_exists_') {
             return { [value]: [facet] };
