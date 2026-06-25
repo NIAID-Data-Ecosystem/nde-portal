@@ -265,7 +265,12 @@ test.describe('a11y: Sources — populated', () => {
         name: new RegExp(`Search for ${FIXTURE_SOURCE_NAME} resources`, 'i'),
       }),
     ).toBeVisible();
-
+    // The CTA is a Chakra solid button (primary.500, #0B8484 — 4.52:1 on white,
+    // clearing AA only just) inside a <Skeleton> card that fades its contents
+    // in. Scanning mid-fade composites the teal through the still-transparent
+    // card and reads a lighter ~#128787 (4.33:1) — a false contrast failure.
+    // analyzeA11y waits for that fade to settle (waitForAnimationsSettled), so
+    // no per-test opacity wait is needed here.
     await runSharedChecks(page, testInfo, 'populated');
   });
 });
@@ -352,23 +357,9 @@ test.describe('a11y: Sources — schema property table', () => {
     // opacity 0→1 as it expands. axe computes color-contrast against the
     // *rendered* (alpha-blended) background, so scanning mid-fade reports false
     // contrast failures — a half-opaque dark table (#374151) over the white page
-    // reads as a mid-gray (~#8c929b) and fails the 4.5:1 check. At rest the fade
-    // has settled and the same cells pass comfortably. Wait until no ancestor of
-    // the header cell is still partially transparent before scanning, so axe
-    // sees the final, opaque colors and the scan is deterministic.
-    await page.waitForFunction(() => {
-      const header = Array.from(document.querySelectorAll('th')).find(cell =>
-        /Property/i.test(cell.textContent || ''),
-      );
-      if (!header) return false;
-      let el: Element | null = header;
-      while (el) {
-        if (parseFloat(getComputedStyle(el).opacity) < 1) return false;
-        el = el.parentElement;
-      }
-      return true;
-    });
-
+    // reads as a mid-gray (~#8c929b) and fails the 4.5:1 check. analyzeA11y (via
+    // runAxeScans) waits for that <Collapse> fade to settle before scanning, so
+    // no per-test opacity wait is needed here.
     await runAxeScans(page, testInfo, 'schema-table');
   });
 });
