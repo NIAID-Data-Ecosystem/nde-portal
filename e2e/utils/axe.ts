@@ -24,7 +24,56 @@ export const BLOCKING_IMPACTS = ['serious', 'critical'] as const;
 export type Impact = (typeof BLOCKING_IMPACTS)[number];
 
 /**
+ * Wait for in-flight CSS transitions and finite animations to finish before a
+ * scan runs.
+ *
+ * Why this matters for axe: Chakra fades many surfaces in by animating opacity
+ * 0→1 — `<Skeleton>` reveals its loaded contents, `<Collapse>` expands a panel,
+ * cards fade up on mount. axe-core computes color-contrast against the
+ * *rendered*, alpha-blended colors, so a scan that lands mid-fade composites
+ * foreground/background through a still-transparent ancestor and reports false
+ * contrast failures. (Concretely: the Sources CTA button is teal `#0B8484` at
+ * 4.52:1 on white at rest, but composites to a lighter `#128787` at 4.33:1
+ * while its card is still fading in.) Letting animations settle first means
+ * every scan sees the final, opaque colors and is deterministic.
+ *
+ * Infinite animations (skeleton shimmer, spinners) never finish, so they are
+ * treated as already settled rather than waited on — otherwise the loading
+ * state would hang here. The wait is best-effort and bounded: if nothing
+ * settles within `timeout` we scan anyway, so this can only make scans more
+ * stable, never hang a previously-passing test.
+ */
+export async function waitForAnimationsSettled(page: Page, timeout = 5000) {
+  try {
+    await page.waitForFunction(
+      () =>
+        document.getAnimations().every(animation => {
+          // A pending animation hasn't committed its first frame yet — wait.
+          if (animation.pending) return false;
+          const timing = animation.effect?.getComputedTiming?.();
+          // Infinite loops (shimmer/spinner) never finish: treat as settled.
+          if (timing?.iterations === Infinity) return true;
+          return (
+            animation.playState === 'finished' || animation.playState === 'idle'
+          );
+        }),
+      undefined,
+      { timeout },
+    );
+  } catch {
+    // Best-effort: a stuck or unusually long finite animation must not fail the
+    // scan. Falling through scans the current frame, matching prior behavior.
+  }
+}
+
+/**
  * Run an axe-core WCAG AA scan against the current page state.
+ *
+ * Before scanning, this waits for in-flight transitions/finite animations to
+ * settle (see `waitForAnimationsSettled`) so contrast is computed against the
+ * final, opaque colors rather than a mid-fade frame. Because every spec scans
+ * through this helper, that stabilization applies to all current and future
+ * a11y tests automatically — no per-spec wait needed.
  *
  * @param page    The Playwright page (already navigated to the target route).
  * @param options.include  Optional CSS selector(s) to scope the scan.
@@ -35,6 +84,7 @@ export async function analyzeA11y(
   page: Page,
   options: { include?: string | string[]; exclude?: string | string[] } = {},
 ) {
+  await waitForAnimationsSettled(page);
   let builder = new AxeBuilder({ page }).withTags(WCAG_AA_TAGS);
   if (options.include) {
     builder = builder.include(options.include as any);

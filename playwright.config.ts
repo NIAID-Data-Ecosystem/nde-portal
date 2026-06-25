@@ -25,12 +25,18 @@ export default defineConfig({
   reporter: isCI
     ? [['github'], ['html', { open: 'never' }], ['list']]
     : [['html', { open: 'never' }], ['list']],
-  timeout: 60_000,
+  // Generous overall budget: `next dev` compiles a route on first hit, and with
+  // workers running in parallel those cold compiles serialize on the dev server
+  // (a single route can take 15s+ to build the first time). 120s leaves room for
+  // a cold navigation plus the axe scans without flaking on first paint.
+  timeout: 120_000,
   expect: { timeout: 15_000 },
   use: {
     baseURL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    // `page.goto` defaults to 30s, which a cold parallel compile can exceed.
+    navigationTimeout: 60_000,
   },
   projects: [
     {

@@ -8,7 +8,14 @@ sync with `e2e/README.md` and `e2e/utils/axe.ts` if conventions change.
 
 - `analyzeA11y(page, { include? })` — runs an axe scan with `WCAG_AA_TAGS`
   (wcag2a/aa, wcag21a/aa, plus `best-practice`) and **returns the results**. It
-  does not assert; the spec decides what fails.
+  does not assert; the spec decides what fails. Before scanning it calls
+  `waitForAnimationsSettled` so the scan sees final, opaque colors (see below).
+- `waitForAnimationsSettled(page, timeout?)` — waits for in-flight CSS
+  transitions and **finite** animations to finish; infinite ones (skeleton
+  shimmer, spinners) are treated as settled so loading states don't hang. It is
+  bounded and best-effort (scans anyway on timeout). `analyzeA11y` already calls
+  it, so you rarely call it directly — only when you scan _without_ going
+  through `analyzeA11y`.
 - `blockingViolations(violations)` — filters to serious/critical
   (`BLOCKING_IMPACTS`). Minor/moderate are reported but do not fail the build.
 - `formatViolations(violations)` — readable summary; pass it as the second arg
@@ -63,30 +70,31 @@ dropping it silently — a reviewer must be able to tell "unreachable" from
 A scan is only as trustworthy as the DOM it runs against. **Never let a state's
 DOM come from the live API.** Live data is non-deterministic: the scan result
 changes with whatever the API returns, the test fails when the network is down
-or in CI, and — worst — it can go **green while rendering the wrong DOM**, hiding
-the very content the scan was meant to cover.
+or in CI, and — worst — it can go **green while rendering the wrong DOM**,
+hiding the very content the scan was meant to cover.
 
 Rules, in priority order:
 
 1. **Mock every request each state depends on** with `page.route` and a fixed
    fixture. This is the default and covers most routes (client-side TanStack
    Query hooks hitting `**/query*`, `**/metadata*`, `**/api/*`).
-2. **If the only data path is a server-side `getStaticProps`/`getServerSideProps`
-   fetch** that `page.route` can't intercept, don't settle for scanning live.
-   Prefer making the data client-fetchable — e.g. add a client-side `useQuery`
-   seeded from the props (`placeholderData: () => props.data`) — so the refetch
-   becomes interceptable and the populated/error states become deterministic and
-   mockable. `program-collections.tsx` does exactly this; `about.tsx` and
+2. **If the only data path is a server-side
+   `getStaticProps`/`getServerSideProps` fetch** that `page.route` can't
+   intercept, don't settle for scanning live. Prefer making the data
+   client-fetchable — e.g. add a client-side `useQuery` seeded from the props
+   (`placeholderData: () => props.data`) — so the refetch becomes interceptable
+   and the populated/error states become deterministic and mockable.
+   `program-collections.tsx` does exactly this; `about.tsx` and
    `knowledge-center` are the seed-from-props + client-refetch pattern to copy.
-3. **Only if neither is possible**, scan live as a last resort and **document the
-   live-data dependency** in the spec's header comment so a reviewer knows the
-   scan is non-deterministic by necessity, not by oversight.
+3. **Only if neither is possible**, scan live as a last resort and **document
+   the live-data dependency** in the spec's header comment so a reviewer knows
+   the scan is non-deterministic by necessity, not by oversight.
 
 Two traps this guards against, both seen in real specs:
 
 - **`placeholderData` false positives.** When a client query is seeded from
   `getStaticProps` props, the live seed renders on first paint and can satisfy
-  your `getByRole`/`getByText` waits *before* the mock resolves — the test goes
+  your `getByRole`/`getByText` waits _before_ the mock resolves — the test goes
   green, but the screenshot shows the mock's (possibly broken) DOM, or vice
   versa. Always wait for a value that **only the mocked fixture** produces (a
   distinctive count like `"3 results."`, a fixture-only name) so you know the
@@ -94,11 +102,12 @@ Two traps this guards against, both seen in real specs:
   screenshot**: a passing test with the wrong content on screen means the wait
   matched the seed, not the mock.
 - **axios encodes spaces as `+`, not `%20`.** When a mock handler matches on the
-  request URL (e.g. branching the NDE `/query` endpoint on its `q` param), axios's
-  default serializer turns spaces into `+`, and `decodeURIComponent` leaves `+`
-  untouched. Normalize before matching: `decodeURIComponent(url).replace(/\+/g, ' ')`.
-  Otherwise the match silently fails, the handler returns empty, and the page
-  renders a degraded fallback that you then scan by mistake.
+  request URL (e.g. branching the NDE `/query` endpoint on its `q` param),
+  axios's default serializer turns spaces into `+`, and `decodeURIComponent`
+  leaves `+` untouched. Normalize before matching:
+  `decodeURIComponent(url).replace(/\+/g, ' ')`. Otherwise the match silently
+  fails, the handler returns empty, and the page renders a degraded fallback
+  that you then scan by mistake.
 
 ## Interaction states (menus, dropdowns, drag, inline errors)
 
@@ -169,6 +178,16 @@ Prefer user-facing locators in this order: `getByRole`, `getByLabel`,
 state markers with no accessible surface — a skeleton loader is the canonical
 example.
 
+You do **not** need a per-test wait for fade/transition animations. Chakra fades
+many surfaces in by animating opacity 0→1 (`<Skeleton>` reveals, `<Collapse>`
+expansions, mount fades), and axe computes color-contrast against the rendered,
+alpha-blended colors — so a scan mid-fade composites foreground through a
+still-transparent ancestor and reports a false contrast failure. `analyzeA11y`
+calls `waitForAnimationsSettled` first, so this is handled centrally; don't
+reintroduce ad-hoc `waitForFunction(... opacity < 1 ...)` blocks in new specs.
+Still wait for a state's content proof (above) — settling animations is not the
+same as waiting for the right DOM to exist.
+
 ## What every scan must do
 
 1. Run `analyzeA11y(page)` and capture the results.
@@ -237,3 +256,11 @@ No build step is needed; Playwright starts `next dev` from
 - **Flaky populated state** — make sure the fixture is fully resolved JSON and
   that the wait targets an element that only exists once data renders, not a
   container that mounts immediately.
+- **Intermittent `color-contrast` failure on an element that looks fine** —
+  almost always a scan landing mid-fade: the element (or an ancestor) is still
+  animating opacity 0→1, so axe sees an alpha-blended, lower-contrast color. The
+  console clue is that the element's resting `getComputedStyle` color differs
+  from the color axe reports. `analyzeA11y` calls `waitForAnimationsSettled` to
+  prevent this, so if you still see it, you're likely scanning _without_ going
+  through `analyzeA11y` (e.g. a raw `AxeBuilder`) — route that scan through the
+  helper, or call `waitForAnimationsSettled(page)` first.
