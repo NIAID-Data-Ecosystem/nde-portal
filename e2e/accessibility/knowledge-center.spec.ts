@@ -18,10 +18,13 @@
  *   - A DOC PAGE (`/knowledge-center/<slug>`) — loading, and a populated body
  *     rendered from a deliberately MDX-RICH fixture so the markdown renderer's
  *     full component set (`src/components/mdx/components`) is scanned: anchored
- *     headings (`HeadingWithLink`), links, inline code, ordered/unordered lists,
- *     the three themed blockquote callouts (info / 🚧 warning / 🚨 error — the
- *     color-contrast-sensitive ones), an image with alt text, a horizontal rule,
- *     and the `<details>`/`<summary>` disclosure (`Details`). The doc body is
+ *     headings (`HeadingWithLink` h2/h3) and the deeper h4/h5/h6 headings, a hard
+ *     line break (`br`), links, inline code, ordered/unordered lists, the three
+ *     themed blockquote callouts (info / 🚧 warning / 🚨 error — the
+ *     color-contrast-sensitive ones), an image with alt text, a `<figure>` with a
+ *     `<figcaption>`, a `/uploads` video (`img` → `<video>` with an aria-label),
+ *     the `right-image` layout (`section` branch), a horizontal rule, and the
+ *     `<details>`/`<summary>` disclosure (`Details`). The doc body is
  *     gated on `props.data?.id` from `getStaticProps` (server-side, out of reach
  *     of `page.route`), so — as in about.spec.ts — we navigate a REAL slug so the
  *     dev server seeds an id, then mock the client-side `**\/api/docs*` refetch
@@ -155,6 +158,43 @@ const DOC_FIXTURE = {
         '',
         '- Datasets and computational tools',
         '- Repositories and data sources',
+        '',
+        // Deeper heading levels (h4/h5/h6) plus a hard line break (`br`) — these
+        // MDX components are not exercised by any other fixture. Kept in
+        // ascending order (h3 above → h4 → h5 → h6) so heading-order stays valid.
+        '#### Field reference',
+        '',
+        'Field names render as level-four headings.  ',
+        'A hard line break separates this sentence from the previous one.',
+        '',
+        '##### Data types',
+        '',
+        'A level-five subheading groups related fields.',
+        '',
+        '###### Notes',
+        '',
+        'A level-six heading carries fine-print notes.',
+        '',
+        // A <figure>/<figcaption> (the `figcaption` MDX component) via raw HTML,
+        // exercised by rehypeRaw.
+        '<figure>',
+        '  <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Schematic of a dataset record." />',
+        '  <figcaption>Figure 1. A schematic of a dataset record.</figcaption>',
+        '</figure>',
+        '',
+        // A video upload — the `img` component routes `/uploads` `.mp4`/`.webm`
+        // sources to a <video> with an aria-label from the alt text.
+        '![Walkthrough of the NIAID Data Ecosystem.](https://example.org/uploads/walkthrough.mp4)',
+        '',
+        // The right-image layout (the `section` component branch keyed on the
+        // `right-image` class) via raw HTML wrapping markdown content.
+        '<section class="right-image">',
+        '',
+        'Text content sits beside the image in the right-image layout.',
+        '',
+        '![Right-aligned schematic.](data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==)',
+        '',
+        '</section>',
         '',
         '> ℹ️ Informational callout: this tip helps new users get oriented.',
         '',
@@ -367,6 +407,12 @@ test.describe('a11y: Knowledge Center doc page — populated', () => {
     await expect(
       page.getByRole('link', { name: 'WCAG standard' }),
     ).toBeVisible();
+    // Proof the deeper-heading / figure blocks rendered, so the scan sees the
+    // newly-exercised MDX components (h4–h6, figcaption) and not the SSR seed.
+    await expect(
+      page.getByRole('heading', { level: 4, name: 'Field reference' }),
+    ).toBeVisible();
+    await expect(page.getByText(/^Figure 1\./)).toBeVisible();
     await expect(
       page.getByText(/what is the niaid data ecosystem\?/i),
     ).toBeVisible();
