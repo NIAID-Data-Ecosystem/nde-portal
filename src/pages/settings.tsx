@@ -49,7 +49,11 @@ const SETTINGS_COPY = {
       description: (
         <>
           Turn on AI-assisted search by default.{' '}
-          <Link color='blue.600' textDecoration='underline'>
+          <Link
+            color='blue.600'
+            textDecoration='underline'
+            href='/knowledge-center/ai-assisted-search'
+          >
             Learn about AI-assisted search
           </Link>
           .
