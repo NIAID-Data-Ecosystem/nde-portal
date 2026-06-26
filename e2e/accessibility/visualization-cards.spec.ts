@@ -38,6 +38,7 @@ import { test, expect, type Page, type TestInfo } from '@playwright/test';
 import {
   analyzeA11y,
   attachA11yReport,
+  attachScreenshot,
   blockingViolations,
   formatViolations,
   WCAG_AA_TAGS,
@@ -253,10 +254,7 @@ async function runAxeScans(page: Page, testInfo: TestInfo, state: string) {
     `Button/link name violations found:\n${formatViolations(blockingNames)}`,
   ).toEqual([]);
 
-  await testInfo.attach(`${state}-screenshot`, {
-    body: await page.screenshot({ fullPage: true }),
-    contentType: 'image/png',
-  });
+  await attachScreenshot(page, testInfo, state);
 }
 
 async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {

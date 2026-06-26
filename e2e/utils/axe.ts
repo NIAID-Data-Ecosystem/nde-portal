@@ -137,3 +137,36 @@ export async function attachA11yReport(
     contentType: 'text/plain',
   });
 }
+
+/**
+ * Attach a screenshot of the scanned state to the HTML report.
+ *
+ * This is diagnostic only — it runs after the axe assertions, so it must never
+ * fail an otherwise-passing scan. A `fullPage` screenshot composites the entire
+ * scrollable height into a single bitmap, which can crash the Chromium renderer
+ * (SIGSEGV / "Target crashed") under software rendering (SwiftShader) on
+ * GPU-less hosts such as WSL2 and CI when a page is very tall. So we prefer the
+ * full-page capture, fall back to a viewport-only screenshot, and finally
+ * swallow the error rather than turning a green scan red.
+ */
+export async function attachScreenshot(
+  page: Page,
+  testInfo: TestInfo,
+  name: string,
+) {
+  try {
+    await testInfo.attach(`${name}-screenshot`, {
+      body: await page.screenshot({ fullPage: true }),
+      contentType: 'image/png',
+    });
+  } catch {
+    try {
+      await testInfo.attach(`${name}-screenshot`, {
+        body: await page.screenshot(),
+        contentType: 'image/png',
+      });
+    } catch {
+      // Screenshot capture is best-effort; ignore failures entirely.
+    }
+  }
+}

@@ -43,6 +43,7 @@ import { test, expect, type Page, type TestInfo } from '@playwright/test';
 import {
   analyzeA11y,
   attachA11yReport,
+  attachScreenshot,
   blockingViolations,
   formatViolations,
   WCAG_AA_TAGS,
@@ -168,10 +169,7 @@ async function runAxeScans(page: Page, testInfo: TestInfo, state: string) {
   ).toEqual([]);
 
   // Screenshot into the HTML report so reviewers can see the scanned state.
-  await testInfo.attach(`${state}-screenshot`, {
-    body: await page.screenshot({ fullPage: true }),
-    contentType: 'image/png',
-  });
+  await attachScreenshot(page, testInfo, state);
 }
 
 /**
