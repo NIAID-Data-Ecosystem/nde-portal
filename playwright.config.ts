@@ -21,7 +21,12 @@ export default defineConfig({
   retries: isCI ? 1 : 0,
   // a11y scans are independent — run them in parallel.
   fullyParallel: true,
-  workers: isCI ? 1 : undefined,
+  // CI pins 1 worker. Locally, Playwright's default (half the CPU cores) spawns
+  // too many Chromium instances against the single `next dev` server: 4+ workers
+  // on an 8-core box exhaust memory while scanning large DOMs (the renderer
+  // crashes with "Target crashed") and serialize cold route compiles past the
+  // 15s first-paint timeout. Cap at 2 (override with PLAYWRIGHT_WORKERS).
+  workers: isCI ? 1 : Number(process.env.PLAYWRIGHT_WORKERS) || 2,
   reporter: isCI
     ? [['github'], ['html', { open: 'never' }], ['list']]
     : [['html', { open: 'never' }], ['list']],
