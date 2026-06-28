@@ -1,7 +1,7 @@
 import React from 'react';
 import { Flex, FlexProps, Icon, Text } from '@chakra-ui/react';
 import { FaRegClock } from 'react-icons/fa6';
-import { FormattedResource } from 'src/utils/api/types';
+import { FormattedResource, SourceOrganization } from 'src/utils/api/types';
 import { StyledLabel } from './styles';
 import { APIResourceType } from 'src/utils/formatting/formatResourceType';
 import Tooltip from 'src/components/tooltip';
@@ -14,16 +14,40 @@ export interface TypeBannerProps extends FlexProps {
   sourceName?: string[] | null;
   isNiaidFunded?: boolean;
   creativeWorkStatus?: FormattedResource['creativeWorkStatus'];
+  // True when this ResourceCatalog has a non-empty sourceOrganization.
+  // Renders as "Program Resource" with cyan styling instead of the
+  // default ResourceCatalog treatment.
+  isProgramResource?: boolean;
 }
+
+// Determines whether a record's sourceOrganization should be treated as
+// "present" for the Program Resource banner override (i.e. not null/undefined
+// and, if an array, non-empty).
+export const hasSourceOrganization = (
+  sourceOrganization?: SourceOrganization[] | SourceOrganization | null,
+): boolean => {
+  if (sourceOrganization == null) return false;
+  if (Array.isArray(sourceOrganization)) {
+    return sourceOrganization.length > 0;
+  }
+  return true;
+};
 
 export const getTypeColor = (
   type?: APIResourceType | string,
   isRetired?: boolean,
+  isProgramResource?: boolean,
 ) => {
   // Retired ResourceCatalogs use a gray treatment instead of the usual
   // per-type colors.
   if (isRetired) {
     return { lt: 'gray.800', dk: 'gray.300' };
+  }
+
+  // ResourceCatalogs with a sourceOrganization are displayed as
+  // "Program Resource" and use a distinct cyan treatment.
+  if (isProgramResource) {
+    return { lt: 'cyan.900', dk: 'cyan.600' };
   }
 
   const typeLower = type?.toLowerCase();
@@ -55,13 +79,14 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
   pl,
   isNiaidFunded,
   creativeWorkStatus,
+  isProgramResource,
   ...props
 }) => {
   // Retired ResourceCatalogs get the gray banner treatment; every other
   // type/status combination keeps its standard per-type colors.
   const isRetired =
     type === 'ResourceCatalog' && creativeWorkStatus === 'Retired';
-  const colorScheme = getTypeColor(type, isRetired);
+  const colorScheme = getTypeColor(type, isRetired, isProgramResource);
   const abstract = SCHEMA_DEFINITIONS['@type']?.['abstract'];
   const description = SCHEMA_DEFINITIONS['@type']?.['description'];
 
@@ -74,6 +99,13 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
     description && type && type in description
       ? (description as Record<string, string>)[type]
       : '';
+
+  // ResourceCatalogs that have a sourceOrganization are labeled
+  // "Program Resource" instead of the default type label.
+  const displayLabel =
+    isProgramResource && type === 'ResourceCatalog'
+      ? 'Program Resource'
+      : label;
 
   return (
     <Flex
@@ -104,7 +136,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
               whiteSpace='nowrap'
               textTransform='uppercase'
             >
-              {label || 'Unknown'}
+              {displayLabel || 'Unknown'}
             </Text>
           </Tooltip>
         </StyledLabel>

@@ -10,6 +10,7 @@ import { SearchableItems } from 'src/components/searchable-items';
 import { Skeleton } from 'src/components/skeleton';
 import { CompactCard } from '../compact-card';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+import { hasSourceOrganization } from 'src/components/resource-sections/components/type-banner';
 
 interface ResourceCatalogCardProps {
   data?: FormattedResource | null;
@@ -36,7 +37,14 @@ export const ResourceCatalogCard = ({
     creativeWorkStatus,
     about,
     description,
+    sourceOrganization,
   } = data || {};
+
+  // ResourceCatalogs with a non-null sourceOrganization are displayed as
+  // "Program Resource" with cyan banner styling instead of the default
+  // ResourceCatalog treatment.
+  const isProgramResource =
+    type === 'ResourceCatalog' && hasSourceOrganization(sourceOrganization);
 
   const handleTypesToggle = (expanded: boolean) => {
     setShowAllTypes(expanded);
@@ -83,6 +91,7 @@ export const ResourceCatalogCard = ({
         isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
         isLoading={isLoading}
         creativeWorkStatus={creativeWorkStatus}
+        isProgramResource={isProgramResource}
       />
 
       <CompactCard.Header isLoading={isLoading}>
