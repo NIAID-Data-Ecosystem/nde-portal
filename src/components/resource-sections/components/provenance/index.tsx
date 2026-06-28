@@ -27,6 +27,12 @@ interface Provenance {
   sourceOrganization?: FormattedResource['sourceOrganization'];
 }
 
+// Builds the anchor slug used to link a sourceOrganization's name to its
+// matching section on the Program Collections page (e.g. "NIAID ACTG Network"
+// -> "niaid-actg-network").
+const generateProgramCollectionSlug = (name: string) =>
+  name.trim().toLowerCase().replace(/\s+/g, '-');
+
 const Provenance: React.FC<Provenance> = ({
   includedInDataCatalog,
   isLoading,
@@ -42,7 +48,9 @@ const Provenance: React.FC<Provenance> = ({
 
   interface BlockProps extends FlexProps {
     children: React.ReactNode;
-    label?: string;
+    // Accepts a ReactNode so the label can be plain text (e.g. "Provided By")
+    // or a richer node such as a link (e.g. the sourceOrganization name).
+    label?: React.ReactNode;
   }
 
   const Block = ({ children, label, ...props }: BlockProps) => {
@@ -208,10 +216,23 @@ const Provenance: React.FC<Provenance> = ({
               w='100%'
             >
               {sourceOrganization.map(organization => {
+                // Anchor slug linking this organization's name to its
+                // matching section on the Program Collections page.
+                const programCollectionSlug = generateProgramCollectionSlug(
+                  organization.name,
+                );
+
                 return (
                   <Block
                     key={organization.name}
-                    label={organization.name}
+                    label={
+                      <Link
+                        as={NextLink}
+                        href={`/program-collections#${programCollectionSlug}`}
+                      >
+                        {organization.name}
+                      </Link>
+                    }
                     w='100%'
                     minW='unset'
                     maxW='600px'
