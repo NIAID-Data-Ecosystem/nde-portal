@@ -56,3 +56,10 @@ export const HIDDEN_SAMPLE_FIELDS = new Set<string>([
 // Show the Sample UI pill and corresponding metadata accordion section on dataset cards
 // in non-production environments. To enable in production, set this flag to `true`.
 export const SHOW_SAMPLE_UI_PILL = !isProd;
+
+// Show the distinct "Retired" treatment for ResourceCatalog resources (gray
+// type banner, gray card background, Retired badge, and the Access Resource
+// link redirecting to the knowledge-center/retired-resources page) in
+// non-production environments for testing/review. To enable in production,
+// set this flag to `true`.
+export const SHOW_RETIRED_RESOURCE_CATALOG_UI = !isProd;
