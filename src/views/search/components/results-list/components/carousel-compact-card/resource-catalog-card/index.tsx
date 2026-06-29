@@ -10,6 +10,7 @@ import { SearchableItems } from 'src/components/searchable-items';
 import { Skeleton } from 'src/components/skeleton';
 import { CompactCard } from '../compact-card';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+import { SHOW_RETIRED_RESOURCE_CATALOG_UI } from 'src/utils/feature-flags';
 
 interface ResourceCatalogCardProps {
   data?: FormattedResource | null;
@@ -60,9 +61,12 @@ export const ResourceCatalogCard = ({
   const shouldShowDescription = !showAllTypes;
 
   // Retired ResourceCatalog cards use a gray treatment throughout to
-  // visually communicate that the resource is no longer active.
+  // visually communicate that the resource is no longer active. Gated
+  // behind SHOW_RETIRED_RESOURCE_CATALOG_UI until approved for production.
   const isRetired =
-    type === 'ResourceCatalog' && creativeWorkStatus === 'Retired';
+    SHOW_RETIRED_RESOURCE_CATALOG_UI &&
+    type === 'ResourceCatalog' &&
+    creativeWorkStatus === 'Retired';
   const cardBg = isRetired ? 'page.alt' : 'white';
 
   const linkProps = id
