@@ -1,5 +1,6 @@
 import { SelectedFilterType, SelectedFilterValueType } from '../types';
 import { formatResourceTypeForAPI } from 'src/utils/formatting/formatResourceType';
+import { SHOW_FILTER_ANY_NO_EXCLUSIVITY } from 'src/utils/feature-flags';
 
 // Regex to split filter values by quoted/bare OR and TO separators.
 // Matches: " OR ", OR, " TO ", TO (used in both date ranges and multi-value filters)
@@ -179,11 +180,19 @@ export const getSelectedFilterDisplay = (
  * selected before this change. Works for both plain string values and the
  * `{ [key]: string[] }` object form used for _exists_/-_exists_ in
  * SelectedFilterType.
+ *
+ * Behind the SHOW_FILTER_ANY_NO_EXCLUSIVITY feature flag: until approved for
+ * production, this function is a no-op and "Any"/"No" behaves like any other
+ * checkbox value (no auto-deselection of other values).
  */
 export const sanitizeExistsFilterValues = <T extends SelectedFilterValueType>(
   values: T[],
   prevValues: T[],
 ): T[] => {
+  if (!SHOW_FILTER_ANY_NO_EXCLUSIVITY) {
+    return values;
+  }
+
   const normalize = (v: T): string =>
     typeof v === 'object' ? Object.keys(v)[0] : v;
 
