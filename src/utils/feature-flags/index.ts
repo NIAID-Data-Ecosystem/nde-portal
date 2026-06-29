@@ -23,22 +23,6 @@ export const SHOW_CREDIT_TEXT_SECTION = !isProd;
 // Show AI-assisted search toggle and related components (e.g. banner) in non-production environments for testing/review. To enable in production, set this flag to `true`.
 export const SHOW_AI_ASSISTED_SEARCH = true;
 
-// Show visual summary section in non-production environments for testing/review. To enable in production, set this flag to `true`.
-export const SHOW_VISUAL_SUMMARY = true;
-
-/**
- * Check if visual summary features/elements should be shown on the search page.
- *
- * @param pathname - Current route pathname (e.g., router.pathname)
- * @returns true if visual summary features should be enabled for the given route
- */
-export const shouldEnableInVisualSummaryPage = (pathname: string): boolean => {
-  return SHOW_VISUAL_SUMMARY && pathname === '/visual-summary';
-};
-
-// Show filter menu so that user can customize the filter display in the search page. To enable in production, set this flag to `true`.
-export const SHOW_CUSTOMIZABLE_FILTERS = !isProd;
-
 // Enable account creation and login features in non-production environments for testing/review. To enable in production, set this flag to `true`.
 export const ENABLE_AUTH = !isProd;
 
