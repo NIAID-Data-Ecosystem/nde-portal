@@ -81,7 +81,9 @@ const SavedPage = () => {
         description='A saved collection of frequently used queries.'
         columns={SAVED_QUERY_COLUMNS}
         data={savedQueries}
-        getRowId={(item, idx) => item.query || `__no-id-${idx}`}
+        getRowId={(item, idx) =>
+          item.query + JSON.stringify(item.filters) || `__no-id-${idx}`
+        }
         unit={{ singular: 'item', plural: 'items' }}
         searchPlaceholder='Search saved queries'
         searchAriaLabel='Search saved queries'
