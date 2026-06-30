@@ -16,6 +16,7 @@ import {
   defaultSelectedFilters,
 } from 'src/views/search/config/defaultQuery';
 import { SearchResultsHeader } from 'src/views/search/components/search-results-header';
+import { SavedDataErrorToast } from 'src/views/saved/components/saved-data-error-toast';
 import { PaginationProvider } from 'src/views/search/context/pagination-context';
 import { SearchResultsController } from 'src/views/search/components/search-results-tabs-controller';
 import { fetchSearchResults } from 'src/utils/api';
@@ -224,6 +225,7 @@ const Search: NextPage<{
                   borderColor='gray.100'
                   spacing={2}
                 >
+                  <SavedDataErrorToast />
                   <Flex flex={1} flexDirection='column' width='100%'>
                     <Flex flex={1} justifyContent='flex-end'>
                       <OntologyBrowserPopup
