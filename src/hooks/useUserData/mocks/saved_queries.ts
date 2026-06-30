@@ -13,6 +13,7 @@ export const MOCK_SAVED_QUERIES: SavedQuery[] = [
       '-_exists_': ['date'],
     },
     saved_at: '2026-06-30T19:59:21.733Z',
+    total: 12085524,
   },
   {
     total: 1234,
