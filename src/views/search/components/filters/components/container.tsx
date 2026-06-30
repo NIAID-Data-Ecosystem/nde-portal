@@ -20,7 +20,6 @@ import { FaFilter } from 'react-icons/fa6';
 import { FilterConfig } from '../types';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { CustomizeFiltersPopover } from './customize-filters-popover';
-import { SHOW_VISUAL_SUMMARY } from 'src/utils/feature-flags';
 
 export interface FiltersContainerProps {
   title?: string;
@@ -103,12 +102,10 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
       >
         {/* Popover for customizing visible filters */}
         <Flex gap={2} justifyContent='space-between'>
-          {SHOW_VISUAL_SUMMARY && (
-            <CustomizeFiltersPopover
-              filtersList={filtersList}
-              onVisibleFiltersChange={onVisibleFiltersChange}
-            />
-          )}
+          <CustomizeFiltersPopover
+            filtersList={filtersList}
+            onVisibleFiltersChange={onVisibleFiltersChange}
+          />
           {/* {title && (
             <Heading
               size='sm'

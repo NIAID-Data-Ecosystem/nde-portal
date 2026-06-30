@@ -2,7 +2,6 @@ import React from 'react';
 import dynamic from 'next/dynamic';
 import { Flex, Spinner, Text } from '@chakra-ui/react';
 import { FilterTermType } from '../../../types';
-import { SHOW_VISUAL_SUMMARY } from 'src/utils/feature-flags';
 
 const Histogram = dynamic(() => import('./histogram'), {
   ssr: false,
@@ -36,13 +35,12 @@ export const HistogramSection: React.FC<HistogramSectionProps> = ({
       flexDirection='column'
       alignItems='center'
       py={2}
-      px={SHOW_VISUAL_SUMMARY ? 4 : 10}
-      mt={SHOW_VISUAL_SUMMARY ? undefined : -1.5}
+      px={4}
       position='relative'
       minHeight='180px'
       height='100%'
     >
-      {!SHOW_VISUAL_SUMMARY && (isLoading || isUpdating) && (
+      {(isLoading || isUpdating) && (
         <Flex
           position='absolute'
           top={0}

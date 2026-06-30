@@ -75,6 +75,8 @@ const Sections = ({
         id={data?.id}
         doi={data?.doi}
         nctid={data?.nctid}
+        type={data?.['@type']}
+        creativeWorkStatus={data?.creativeWorkStatus}
       />
       {/* Banner showing data type and publish date. For computational tools, operating system info is displayed when available. */}
       {data?.author && <ResourceAuthors authors={data.author} />}
