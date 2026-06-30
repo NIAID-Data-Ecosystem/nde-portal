@@ -6,6 +6,22 @@ import { SHOW_FILTER_ANY_NO_EXCLUSIVITY } from 'src/utils/feature-flags';
 // Matches: " OR ", OR, " TO ", TO (used in both date ranges and multi-value filters)
 const VALUE_SPLIT_PATTERN = /(?:" OR ")| OR |(?:" TO ")| TO /;
 
+const coerceFilterValues = (values: unknown): SelectedFilterValueType[] => {
+  if (Array.isArray(values)) {
+    return values;
+  }
+
+  if (typeof values === 'string') {
+    return values ? [values] : [];
+  }
+
+  if (values && typeof values === 'object') {
+    return [values as { [key: string]: string[] }];
+  }
+
+  return [];
+};
+
 /**
  * Convert a filters object to an API-compatible query string.
  *
@@ -18,8 +34,12 @@ export const queryFilterObject2String = (
   selectedFilters?: SelectedFilterType,
 ): string | null => {
   const filterParts = Object.entries(selectedFilters || {})
-    .filter(([_, values]) => values.length > 0)
-    .map(([filterName, values]) => {
+    .map(([filterName, rawValues]) => {
+      const values = coerceFilterValues(rawValues);
+      if (values.length === 0) {
+        return null;
+      }
+
       const stringValues = values.filter(
         (v): v is string => typeof v === 'string' && v !== '',
       );

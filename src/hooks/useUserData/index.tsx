@@ -12,7 +12,7 @@ import { formatSavedQueryFilters, parseSavedQueries } from './helpers';
 
 const DEFAULT_PREFERENCES: UserPreferences = {
   ai_toggle_preference: false,
-  beta: true,
+  beta: false,
   contact_preference: false,
   feedback_preference: false,
 };

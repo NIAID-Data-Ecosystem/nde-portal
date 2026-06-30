@@ -31,6 +31,14 @@ describe('filters/utils/query-string', () => {
     expect(queryFilterObject2String({ topic: [], date: [] })).toBeNull();
   });
 
+  it('handles a selected filter value that is unexpectedly a string', () => {
+    const result = queryFilterObject2String({
+      topic: 'alpha',
+    } as unknown as Parameters<typeof queryFilterObject2String>[0]);
+
+    expect(result).toBe('(topic:("alpha"))');
+  });
+
   it('parses query strings back to filter objects', () => {
     const parsed = queryFilterString2Object(
       '(topic:("alpha" OR "beta")) AND (date:["2020-01-01" TO "2021-12-31"])',
