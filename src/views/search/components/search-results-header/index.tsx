@@ -2,6 +2,7 @@ import {
   Flex,
   FlexProps,
   HStack,
+  Stack,
   Text,
   TextProps,
   VStack,
@@ -83,17 +84,23 @@ export const SearchResultsHeader = ({
         </AIBanner>
       )}
       {/* Heading: Showing results for... */}
-      <SearchResultsHeading as='h1' fontSize='inherit'>
-        {querystring === '__all__'
-          ? 'Showing all results'
-          : 'Showing results for: '}
-      </SearchResultsHeading>
-      {/* Query string */}
-      {querystring !== '__all__' && (
+      <Stack
+        // Use row layout for "All Results" and column layout for other queries
+        flexDirection={querystring === '__all__' ? 'row' : 'column'}
+        spacing={1}
+      >
+        <SearchResultsHeading as='h1' fontSize='inherit' whiteSpace='nowrap'>
+          {querystring === '__all__'
+            ? 'Showing all results'
+            : 'Showing results for: '}
+        </SearchResultsHeading>
+        {/* Query string */}
         <HStack spacing={1} width='100%' alignItems='flex-start'>
-          <Text color='text.heading' fontSize='inherit' fontWeight='medium'>
-            {querystring.replaceAll('\\', '')}
-          </Text>
+          {querystring !== '__all__' && (
+            <Text color='text.heading' fontSize='inherit' fontWeight='medium'>
+              {querystring.replaceAll('\\', '')}
+            </Text>
+          )}
 
           {ENABLE_AUTH && (
             <BookmarkIconButton
@@ -115,14 +122,16 @@ export const SearchResultsHeader = ({
                     })
                   : addSavedQuery({
                       query: querystring,
-                      name: `Search: ${querystring}`,
+                      name: `${
+                        querystring === '__all__' ? 'All results' : querystring
+                      }`,
                       filters: selectedFilters,
                     });
               }}
             />
           )}
         </HStack>
-      )}
+      </Stack>
     </VStack>
   );
 };

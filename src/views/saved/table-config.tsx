@@ -79,7 +79,7 @@ const SavedQueryNameCell = ({
         mt={1}
       />
       <TextCellWithLink
-        label={value?.query || ''}
+        label={value?.name || ''}
         url={value?.url}
         isLoading={isLoading}
         isExternal={false}
