@@ -1,5 +1,5 @@
 import React from 'react';
-import { HStack, Text, VStack } from '@chakra-ui/react';
+import { Flex, HStack, Text, VStack } from '@chakra-ui/react';
 import { getMetadataName } from 'src/components/metadata';
 import {
   TagCell,
@@ -40,10 +40,8 @@ const SavedResourceNameCell = ({
             ? removeSavedDataset(value.dataset_id)
             : addSavedDataset(value)
         }
-        alignItems='flex-start'
-        mt={1}
       />
-      <VStack alignItems='flex-start' spacing={1} fontSize='xs'>
+      <VStack alignItems='flex-start' spacing={1} fontSize='xs' pt={1}>
         <TextCellWithLink
           label={value?.name || ''}
           url={value?.url}
@@ -75,15 +73,15 @@ const SavedQueryNameCell = ({
         onClick={() =>
           isFavorited ? removeSavedQuery(value) : addSavedQuery(value)
         }
-        alignItems='flex-start'
-        mt={1}
       />
-      <TextCellWithLink
-        label={value?.name || ''}
-        url={value?.url}
-        isLoading={isLoading}
-        isExternal={false}
-      />
+      <Flex pt={1}>
+        <TextCellWithLink
+          label={value?.name || ''}
+          url={value?.url}
+          isLoading={isLoading}
+          isExternal={false}
+        />
+      </Flex>
     </HStack>
   );
 };
