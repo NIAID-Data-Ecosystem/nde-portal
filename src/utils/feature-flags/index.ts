@@ -63,3 +63,12 @@ export const SHOW_SAMPLE_UI_PILL = !isProd;
 // non-production environments for testing/review. To enable in production,
 // set this flag to `true`.
 export const SHOW_RETIRED_RESOURCE_CATALOG_UI = !isProd;
+
+// Show the mutual-exclusivity behavior for the "Any <filter>" (_exists_) and
+// "No <filter>" (-_exists_) filter checkboxes in the search filters panel in
+// non-production environments for testing/review. When enabled: checking
+// "Any"/"No" hides all other options/facets for that filter, checking
+// "Any"/"No" deselects any previously selected values for that filter, and
+// checking a normal value while "Any"/"No" is active drops "Any"/"No". To
+// enable in production, set this flag to `true`.
+export const SHOW_FILTER_ANY_NO_EXCLUSIVITY = !isProd;
