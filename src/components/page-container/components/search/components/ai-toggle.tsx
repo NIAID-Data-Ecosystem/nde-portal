@@ -24,6 +24,8 @@ import { Link } from 'src/components/link';
 import { useLocalStorage } from 'usehooks-ts';
 import { useRouter } from 'next/router';
 import { useEffect, useRef } from 'react';
+import { useAuth } from 'src/hooks/useAuth';
+import { useUserData } from 'src/hooks/useUserData';
 
 const HOVER_OPEN_DELAY = 200; // ms before showing
 const HOVER_CLOSE_DELAY = 120; // ms before hiding
@@ -60,6 +62,7 @@ const AIToggleTooltip: React.FC<AIToggleTooltipProps> = ({
 
   const openTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const clearTimers = () => {
     if (openTimeoutRef.current) {
@@ -72,18 +75,28 @@ const AIToggleTooltip: React.FC<AIToggleTooltipProps> = ({
     }
   };
 
-  const handleMouseEnter = () => {
+  const handleOpen = () => {
     clearTimers();
     openTimeoutRef.current = setTimeout(() => {
       onOpen();
     }, HOVER_OPEN_DELAY);
   };
 
-  const handleMouseLeave = () => {
+  const handleClose = () => {
     clearTimers();
     closeTimeoutRef.current = setTimeout(() => {
       onClose();
     }, HOVER_CLOSE_DELAY);
+  };
+
+  // Keyboard: keep the popover open while focus moves between the trigger and
+  // the popover content (e.g. tabbing to the "Read more" link). Only schedule a
+  // close once focus lands outside the content. When focus moves back to the
+  // trigger, the trigger's onFocus re-opens (its clearTimers cancels this close).
+  const handleBlur = (e: React.FocusEvent) => {
+    const next = e.relatedTarget as Node | null;
+    if (next && contentRef.current?.contains(next)) return;
+    handleClose();
   };
 
   return (
@@ -92,24 +105,45 @@ const AIToggleTooltip: React.FC<AIToggleTooltipProps> = ({
       onOpen={onOpen}
       onClose={onClose}
       closeOnBlur
+      // This is a hover/focus tooltip, not a dialog: don't let Chakra move focus
+      // into the popover on open or yank it back to the trigger on close. Those
+      // focus moves fight the onFocus/onBlur handlers below and create an
+      // open → blur → close → focus → open loop.
+      autoFocus={false}
+      returnFocusOnClose={false}
       {...tooltipProps}
     >
       <PopoverTrigger>
+        {/*
+          PopoverTrigger injects aria-expanded / aria-haspopup="dialog" onto its
+          child, so the child needs a role that supports those states. role=
+          "button" + tabIndex makes the ARIA valid and the help tooltip keyboard-
+          focusable; focus/blur mirror the hover handlers so keyboard users can
+          open it too. (A native <button> can't be used here — the child renders
+          a <label>, which is invalid inside a button.)
+        */}
         <Flex
           alignItems='center'
           cursor='help'
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          role='button'
+          tabIndex={0}
+          aria-label='More information about AI-assisted search'
+          onMouseEnter={handleOpen}
+          onMouseLeave={handleClose}
+          onFocus={handleOpen}
+          onBlur={handleBlur}
         >
           {children}
         </Flex>
       </PopoverTrigger>
 
       <PopoverContent
+        ref={contentRef}
         maxW='sm'
         _focus={{ boxShadow: 'md' }}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        onMouseEnter={handleOpen}
+        onMouseLeave={handleClose}
+        onBlur={handleBlur}
       >
         <PopoverArrow />
         <PopoverBody>{content}</PopoverBody>
@@ -180,11 +214,12 @@ export const AIToggle: React.FC<AIToggleProps> = ({
   ...rest
 }) => {
   const router = useRouter();
+  const { preferences } = useUserData();
 
   // Store the whether AI search is enabled in local storage.
   const [enableAiSearch, setEnableAiSearch] = useLocalStorage<boolean>(
     'enableAISearch',
-    false,
+    false, // default to false if no preference is set
     { initializeWithValue: false },
   );
 
@@ -213,20 +248,27 @@ export const AIToggle: React.FC<AIToggleProps> = ({
     }
 
     /**
-     * On all other routes, DO NOT override the user’s saved preference from localStorage.
-     *
-     * However, if a URL explicitly includes `use_ai_search`, honor it.
+     * On all other routes, an explicit URL flag wins.
      * This allows pages like:
      *    /something?use_ai_search=true
      * to intentionally preset the toggle.
      */
     if (typeof useAiSearchValue === 'string') {
       setEnableAiSearch(useAiSearchValue === 'true');
+      return;
     }
+
+    /**
+     * Otherwise, fall back to the user's saved account preference.
+     * `ai_toggle_preference` loads asynchronously from the user's profile;
+     * including it in the dependencies re-applies the toggle once it resolves.
+     */
+    setEnableAiSearch(preferences.ai_toggle_preference);
   }, [
     router.isReady,
     router.query.use_ai_search,
     router.pathname,
+    preferences.ai_toggle_preference,
     setEnableAiSearch,
   ]);
 

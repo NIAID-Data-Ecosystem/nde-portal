@@ -85,6 +85,7 @@ export const ChartContent = ({
               options={chartOptions}
               onChange={onChartTypeChange}
               isDisabled={!isActive}
+              label={label}
             />
           )}
         </Flex>

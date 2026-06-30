@@ -6,6 +6,7 @@ import { StyledLabel } from './styles';
 import { APIResourceType } from 'src/utils/formatting/formatResourceType';
 import Tooltip from 'src/components/tooltip';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { SHOW_RETIRED_RESOURCE_CATALOG_UI } from 'src/utils/feature-flags';
 
 export interface TypeBannerProps extends FlexProps {
   label: string;
@@ -13,9 +14,19 @@ export interface TypeBannerProps extends FlexProps {
   date?: FormattedResource['date'];
   sourceName?: string[] | null;
   isNiaidFunded?: boolean;
+  creativeWorkStatus?: FormattedResource['creativeWorkStatus'];
 }
 
-export const getTypeColor = (type?: APIResourceType | string) => {
+export const getTypeColor = (
+  type?: APIResourceType | string,
+  isRetired?: boolean,
+) => {
+  // Retired ResourceCatalogs use a gray treatment instead of the usual
+  // per-type colors.
+  if (isRetired) {
+    return { lt: 'gray.800', dk: 'gray.300' };
+  }
+
   const typeLower = type?.toLowerCase();
   let lt = 'status.info';
   let dk = 'niaid.500';
@@ -44,9 +55,17 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
   children,
   pl,
   isNiaidFunded,
+  creativeWorkStatus,
   ...props
 }) => {
-  const colorScheme = getTypeColor(type);
+  // Retired ResourceCatalogs get the gray banner treatment; every other
+  // type/status combination keeps its standard per-type colors. Gated
+  // behind SHOW_RETIRED_RESOURCE_CATALOG_UI until approved for production.
+  const isRetired =
+    SHOW_RETIRED_RESOURCE_CATALOG_UI &&
+    type === 'ResourceCatalog' &&
+    creativeWorkStatus === 'Retired';
+  const colorScheme = getTypeColor(type, isRetired);
   const abstract = SCHEMA_DEFINITIONS['@type']?.['abstract'];
   const description = SCHEMA_DEFINITIONS['@type']?.['description'];
 
@@ -97,7 +116,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
         {isNiaidFunded && (
           <StyledLabel
             _before={{
-              bg: colorScheme['dk'],
+              bg: isRetired ? colorScheme['lt'] : colorScheme['dk'],
             }}
           >
             <Text

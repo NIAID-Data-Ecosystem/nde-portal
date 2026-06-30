@@ -32,4 +32,5 @@ export {
   queryFilterString2Object,
   normalizeFilterValues,
   getSelectedFilterDisplay,
+  sanitizeExistsFilterValues,
 } from './utils/query-string';
