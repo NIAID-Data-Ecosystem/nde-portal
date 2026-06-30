@@ -12,6 +12,7 @@ import { defaultSearchValue } from '../repository-matcher/hooks/useRepositoryMat
 import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
 import { SavedDataset, SavedQuery } from 'src/hooks/useUserData/types';
 import { useUserData } from 'src/hooks/useUserData';
+import { findSavedQueryIndex } from 'src/hooks/useUserData/helpers';
 import {
   FILTER_CONFIGS,
   queryFilterObject2String,
@@ -63,17 +64,16 @@ const SavedQueryNameCell = ({
   isLoading?: boolean;
 }) => {
   const { savedQueries, addSavedQuery, removeSavedQuery } = useUserData();
-  const favoriteIndex = savedQueries.findIndex(
-    search => search.query === value.query,
-  );
-  const isFavorited = favoriteIndex !== -1;
+  // Match on query AND filters: the same query string can be saved more than
+  // once with different filters, and each must be favorited/removed on its own.
+  const isFavorited = findSavedQueryIndex(savedQueries, value) !== -1;
   return (
     <HStack alignItems='flex-start'>
       <BookmarkIconButton
         isFavorited={isFavorited}
         aria-label={isFavorited ? 'Remove saved query' : 'Save query'}
         onClick={() =>
-          isFavorited ? removeSavedQuery(favoriteIndex) : addSavedQuery(value)
+          isFavorited ? removeSavedQuery(value) : addSavedQuery(value)
         }
         alignItems='flex-start'
         mt={1}

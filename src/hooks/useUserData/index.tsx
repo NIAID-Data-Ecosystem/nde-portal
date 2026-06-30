@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  ReactNode,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { MOCK_SAVED_DATASETS } from './mocks/saved_datasets';
 import {
   SavedDataset,
@@ -8,7 +16,11 @@ import {
   UserProfile,
 } from './types';
 import { MOCK_SAVED_QUERIES } from './mocks/saved_queries';
-import { formatSavedQueryFilters, parseSavedQueries } from './helpers';
+import {
+  findSavedQueryIndex,
+  formatSavedQueryFilters,
+  parseSavedQueries,
+} from './helpers';
 
 const DEFAULT_PREFERENCES: UserPreferences = {
   ai_toggle_preference: false,
@@ -40,13 +52,18 @@ const apiUrl =
 const API_BASE_URL = apiUrl.replace(/\/v1$/, '');
 const isDevMode = process.env.NODE_ENV === 'development';
 
-export function useUserData() {
+function useUserDataState() {
   const [preferences, setPreferences] =
     useState<UserPreferences>(DEFAULT_PREFERENCES);
 
   const [savedQueries, setSavedQueries] = useState<SavedQuery[]>([]);
 
   const [savedDatasets, setSavedDatasets] = useState<SavedDataset[]>([]);
+
+  // Mirror the latest savedQueries so identity-based deletes resolve the index
+  // from the freshest list (never a stale render closure). Updated every render.
+  const savedQueriesRef = useRef<SavedQuery[]>(savedQueries);
+  savedQueriesRef.current = savedQueries;
 
   const mockUserDataRef = useRef<{ profile: UserProfile }>({
     // Clone the arrays so the mock API's push/filter operations don't mutate
@@ -324,7 +341,19 @@ export function useUserData() {
   );
 
   const removeSavedQuery = useCallback(
-    async (index: number) => {
+    async (search: Pick<SavedQuery, 'query' | 'filters'>) => {
+      // Resolve the index from the freshest list at call time. The favorites API
+      // deletes by index, so a stale index (e.g. computed before a prior delete
+      // shrank the list) would return "Index out of range".
+      const index = findSavedQueryIndex(savedQueriesRef.current, search);
+      if (index === -1) {
+        // Already gone (e.g. removed by another action) — nothing to do.
+        return {
+          status: 200,
+          ok: true,
+          body: { favorite_searches: savedQueriesRef.current },
+        };
+      }
       const result = await callUserDataApi(
         'DELETE',
         '/user/data/favorites/searches',
@@ -391,4 +420,34 @@ export function useUserData() {
     addSavedDataset,
     removeSavedDataset,
   };
+}
+
+type UserDataContextValue = ReturnType<typeof useUserDataState>;
+
+const UserDataContext = createContext<UserDataContextValue | undefined>(
+  undefined,
+);
+
+/**
+ * Holds the single source of truth for the signed-in user's saved data
+ * (preferences, saved queries, saved datasets). Mounting this once (in `_app`)
+ * means every consumer shares one fetched-and-mutated state, so a delete in one
+ * component re-syncs the rest. Without it, each `useUserData()` call kept its own
+ * copy and index-based deletes drifted out of range.
+ */
+export function UserDataProvider({ children }: { children: ReactNode }) {
+  const value = useUserDataState();
+  return (
+    <UserDataContext.Provider value={value}>
+      {children}
+    </UserDataContext.Provider>
+  );
+}
+
+export function useUserData() {
+  const context = useContext(UserDataContext);
+  if (context === undefined) {
+    throw new Error('useUserData must be used within a UserDataProvider');
+  }
+  return context;
 }

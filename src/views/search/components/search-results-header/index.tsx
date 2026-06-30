@@ -11,32 +11,9 @@ import { Link } from 'src/components/link';
 import { AI_ASSISTED_SEARCH_KC_LINK } from 'src/components/page-container/components/search/components/ai-toggle';
 import { useAuth } from 'src/hooks/useAuth';
 import { useUserData } from 'src/hooks/useUserData';
+import { findSavedQueryIndex } from 'src/hooks/useUserData/helpers';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
 import { SelectedFilterType } from '../filters';
-
-/**
- * Stringify a value with object keys sorted recursively, so that two
- * structurally-equal filter objects compare equal regardless of key order.
- * Array order is preserved (it is meaningful for filters such as
- * `date: [start, end, ...]`).
- */
-const stableStringify = (value: unknown): string => {
-  if (Array.isArray(value)) {
-    return `[${value.map(stableStringify).join(',')}]`;
-  }
-  if (value && typeof value === 'object') {
-    const entries = Object.keys(value as Record<string, unknown>)
-      .sort()
-      .map(
-        key =>
-          `${JSON.stringify(key)}:${stableStringify(
-            (value as Record<string, unknown>)[key],
-          )}`,
-      );
-    return `{${entries.join(',')}}`;
-  }
-  return JSON.stringify(value) ?? 'null';
-};
 
 export const SearchResultsHeading = ({ children, ...props }: TextProps) => {
   return (
@@ -81,12 +58,11 @@ export const SearchResultsHeader = ({
 
   const { savedQueries, addSavedQuery, removeSavedQuery } = useUserData();
 
-  const favoriteIndex = savedQueries.findIndex(
-    search =>
-      search.query === querystring &&
-      stableStringify(search.filters) === stableStringify(selectedFilters),
-  );
-  const isFavorited = favoriteIndex !== -1;
+  const isFavorited =
+    findSavedQueryIndex(savedQueries, {
+      query: querystring,
+      filters: selectedFilters,
+    }) !== -1;
   return (
     <VStack alignItems='flex-start' spacing={1} fontSize='sm' flex={1}>
       {showAIBanner && (
@@ -133,7 +109,10 @@ export const SearchResultsHeader = ({
                   return;
                 }
                 return isFavorited
-                  ? removeSavedQuery(favoriteIndex)
+                  ? removeSavedQuery({
+                      query: querystring,
+                      filters: selectedFilters,
+                    })
                   : addSavedQuery({
                       query: querystring,
                       name: `Search: ${querystring}`,
