@@ -52,6 +52,11 @@ const apiUrl =
 const API_BASE_URL = apiUrl.replace(/\/v1$/, '');
 const isDevMode = process.env.NODE_ENV === 'development';
 
+// Keep item labels in error banners short so a long query/title doesn't blow out
+// the banner.
+const truncateLabel = (text: string, max = 60) =>
+  text.length > max ? `${text.slice(0, max - 1)}…` : text;
+
 function useUserDataState() {
   const [preferences, setPreferences] =
     useState<UserPreferences>(DEFAULT_PREFERENCES);
@@ -69,6 +74,11 @@ function useUserDataState() {
   // from the freshest list (never a stale render closure). Updated every render.
   const savedQueriesRef = useRef<SavedQuery[]>(savedQueries);
   savedQueriesRef.current = savedQueries;
+
+  // Mirror savedDatasets too, so a failed dataset removal can name the dataset
+  // (which the caller identifies only by id) in its error message.
+  const savedDatasetsRef = useRef<SavedDataset[]>(savedDatasets);
+  savedDatasetsRef.current = savedDatasets;
 
   const mockUserDataRef = useRef<{ profile: UserProfile }>({
     // Clone the arrays so the mock API's push/filter operations don't mutate
@@ -280,7 +290,8 @@ function useUserDataState() {
 
   const getProfile = useCallback(async () => {
     const result = await callUserDataApi('GET', '/user/data');
-    if (result && 'body' in result && result.ok && result.body) {
+    if (result && 'body' in result && result.ok) {
+      setError(null);
       const profile = result.body as Partial<UserProfile>;
       const keys: (keyof UserProfile)[] = [
         'ai_toggle_preference',
@@ -305,6 +316,14 @@ function useUserDataState() {
       if (Array.isArray(profile.favorite_datasets)) {
         setSavedDatasets(profile.favorite_datasets);
       }
+    } else if (result && 'status' in result && result.status !== 401) {
+      // A 401 just means the user isn't logged in (expected on public pages) —
+      // stay silent. Any other HTTP error is a real failure to load saved data.
+      // Network errors (no `status`) are left silent too, matching how auth
+      // treats them (e.g. expected CORS failures in dev).
+      setError(
+        'Unable to load your saved queries and resources. Please refresh to try again.',
+      );
     }
     return result;
   }, [callUserDataApi]);
@@ -341,7 +360,11 @@ function useUserDataState() {
           setSavedQueries(parseSavedQueries(body.favorite_searches));
         }
       } else {
-        setError('Unable to save this query. Please try again.');
+        setError(
+          `Couldn't save the search "${truncateLabel(
+            search.query,
+          )}". Please try again.`,
+        );
       }
       return result;
     },
@@ -375,7 +398,11 @@ function useUserDataState() {
           setSavedQueries(parseSavedQueries(body.favorite_searches));
         }
       } else {
-        setError('Unable to remove this saved query. Please try again.');
+        setError(
+          `Couldn't remove the saved search "${truncateLabel(
+            search.query,
+          )}". Please try again.`,
+        );
       }
       return result;
     },
@@ -396,7 +423,9 @@ function useUserDataState() {
           setSavedDatasets(body.favorite_datasets);
         }
       } else {
-        setError('Unable to save this resource. Please try again.');
+        setError(
+          `Couldn't save "${truncateLabel(dataset.name)}". Please try again.`,
+        );
       }
       return result;
     },
@@ -419,7 +448,14 @@ function useUserDataState() {
           setSavedDatasets(body.favorite_datasets);
         }
       } else {
-        setError('Unable to remove this saved resource. Please try again.');
+        const name = savedDatasetsRef.current.find(
+          dataset => dataset.dataset_id === datasetId,
+        )?.name;
+        setError(
+          `Couldn't remove ${
+            name ? `"${truncateLabel(name)}"` : 'this saved resource'
+          }. Please try again.`,
+        );
       }
       return result;
     },

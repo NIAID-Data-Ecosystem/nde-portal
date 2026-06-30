@@ -200,7 +200,7 @@ describe('useUserData', () => {
     });
     await waitFor(() =>
       expect(result.current.error).toBe(
-        'Unable to remove this saved query. Please try again.',
+        `Couldn't remove the saved search "malaria". Please try again.`,
       ),
     );
 
@@ -231,7 +231,7 @@ describe('useUserData', () => {
     });
     await waitFor(() =>
       expect(result.current.error).toBe(
-        'Unable to remove this saved resource. Please try again.',
+        `Couldn't remove this saved resource. Please try again.`,
       ),
     );
 
@@ -239,6 +239,83 @@ describe('useUserData', () => {
       result.current.clearError();
     });
     expect(result.current.error).toBeNull();
+  });
+
+  it('names the dataset in the error when a dataset removal fails', async () => {
+    const dataset = { dataset_id: 'ds-1', name: 'Malaria Atlas' };
+    const fetchMock = jest.fn((url: string, init?: RequestInit) => {
+      const path = url.replace(/^https?:\/\/[^/]+/, '');
+      const method = init?.method ?? 'GET';
+      if (path === '/user/data' && method === 'GET') {
+        return Promise.resolve({
+          status: 200,
+          ok: true,
+          text: async () =>
+            JSON.stringify({
+              favorite_searches: [],
+              favorite_datasets: [dataset],
+            }),
+        } as Response);
+      }
+      // Fail the delete.
+      return Promise.resolve({
+        status: 500,
+        ok: false,
+        text: async () => JSON.stringify({ error: 'server error' }),
+      } as Response);
+    });
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    const { result } = renderHook(() => useUserData(), { wrapper });
+    await waitFor(() => expect(result.current.savedDatasets).toHaveLength(1));
+
+    await act(async () => {
+      await result.current.removeSavedDataset('ds-1');
+    });
+
+    await waitFor(() =>
+      expect(result.current.error).toBe(
+        `Couldn't remove "Malaria Atlas". Please try again.`,
+      ),
+    );
+  });
+
+  it('stays silent when the profile request returns 401 (logged out)', async () => {
+    const fetchMock = jest.fn(() =>
+      Promise.resolve({
+        status: 401,
+        ok: false,
+        text: async () => JSON.stringify({ error: 'unauthorized' }),
+      } as Response),
+    );
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    const { result } = renderHook(() => useUserData(), { wrapper });
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    // Flush any state updates from getProfile before asserting it stayed silent.
+    await act(async () => {});
+    expect(result.current.error).toBeNull();
+    expect(result.current.savedQueries).toHaveLength(0);
+  });
+
+  it('surfaces an error when the profile request fails with a non-401 status', async () => {
+    const fetchMock = jest.fn(() =>
+      Promise.resolve({
+        status: 500,
+        ok: false,
+        text: async () => JSON.stringify({ error: 'server error' }),
+      } as Response),
+    );
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    const { result } = renderHook(() => useUserData(), { wrapper });
+
+    await waitFor(() =>
+      expect(result.current.error).toBe(
+        'Unable to load your saved queries and resources. Please refresh to try again.',
+      ),
+    );
   });
 
   it('no-ops (no fetch) when removing a query that is not saved', async () => {

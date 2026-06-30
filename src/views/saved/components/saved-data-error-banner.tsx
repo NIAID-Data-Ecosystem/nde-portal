@@ -17,6 +17,7 @@ export const SavedDataErrorBanner = () => {
   return (
     <Flex
       role='alert'
+      width='100%'
       px={2}
       py={2}
       borderLeft='0.5rem solid'
