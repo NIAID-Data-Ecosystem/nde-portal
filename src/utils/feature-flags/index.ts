@@ -24,7 +24,7 @@ export const SHOW_CREDIT_TEXT_SECTION = !isProd;
 export const SHOW_AI_ASSISTED_SEARCH = true;
 
 // Enable account creation and login features in non-production environments for testing/review. To enable in production, set this flag to `true`.
-export const ENABLE_AUTH = !isProd;
+export const ENABLE_AUTH = true;
 
 /**
  * Hide sample-related fields in the advanced search field dropdown in production
