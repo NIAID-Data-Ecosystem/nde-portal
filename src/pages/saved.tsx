@@ -13,6 +13,7 @@ import {
   SAVED_RESOURCE_COLUMNS,
 } from 'src/views/saved/table-config';
 import { SavedTableSection } from 'src/views/saved/components/saved-table-section';
+import { SavedDataErrorBanner } from 'src/views/saved/components/saved-data-error-banner';
 import { useUserData } from 'src/hooks/useUserData';
 import { useBatchResourcesData } from 'src/views/saved/hooks/useBatchResourcesData';
 import { SavedResourceItem } from 'src/views/saved/types';
@@ -98,6 +99,7 @@ const SavedPage = () => {
             </Text>
           </Box>
         )}
+        <SavedDataErrorBanner />
       </Flex>
       <Divider />
       <SavedTableSection

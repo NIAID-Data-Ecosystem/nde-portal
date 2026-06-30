@@ -60,6 +60,11 @@ function useUserDataState() {
 
   const [savedDatasets, setSavedDatasets] = useState<SavedDataset[]>([]);
 
+  // Last failed saved-items mutation, surfaced to the UI as an error banner.
+  // Cleared whenever a subsequent mutation succeeds (or on manual dismiss).
+  const [error, setError] = useState<string | null>(null);
+  const clearError = useCallback(() => setError(null), []);
+
   // Mirror the latest savedQueries so identity-based deletes resolve the index
   // from the freshest list (never a stale render closure). Updated every render.
   const savedQueriesRef = useRef<SavedQuery[]>(savedQueries);
@@ -329,11 +334,14 @@ function useUserDataState() {
         '/user/data/favorites/searches',
         { ...search, filters: formatSavedQueryFilters(search.filters) },
       );
-      if (result && 'body' in result && result.ok && result.body) {
+      if (result && 'body' in result && result.ok) {
+        setError(null);
         const body = result.body as { favorite_searches?: SavedQuery[] };
         if (Array.isArray(body.favorite_searches)) {
           setSavedQueries(parseSavedQueries(body.favorite_searches));
         }
+      } else {
+        setError('Unable to save this query. Please try again.');
       }
       return result;
     },
@@ -348,6 +356,7 @@ function useUserDataState() {
       const index = findSavedQueryIndex(savedQueriesRef.current, search);
       if (index === -1) {
         // Already gone (e.g. removed by another action) — nothing to do.
+        setError(null);
         return {
           status: 200,
           ok: true,
@@ -359,11 +368,14 @@ function useUserDataState() {
         '/user/data/favorites/searches',
         { index },
       );
-      if (result && 'body' in result && result.ok && result.body) {
+      if (result && 'body' in result && result.ok) {
+        setError(null);
         const body = result.body as { favorite_searches?: SavedQuery[] };
         if (Array.isArray(body.favorite_searches)) {
           setSavedQueries(parseSavedQueries(body.favorite_searches));
         }
+      } else {
+        setError('Unable to remove this saved query. Please try again.');
       }
       return result;
     },
@@ -377,11 +389,14 @@ function useUserDataState() {
         '/user/data/favorites/datasets',
         dataset,
       );
-      if (result && 'body' in result && result.ok && result.body) {
+      if (result && 'body' in result && result.ok) {
+        setError(null);
         const body = result.body as { favorite_datasets?: SavedDataset[] };
         if (Array.isArray(body.favorite_datasets)) {
           setSavedDatasets(body.favorite_datasets);
         }
+      } else {
+        setError('Unable to save this resource. Please try again.');
       }
       return result;
     },
@@ -397,11 +412,14 @@ function useUserDataState() {
           dataset_id: datasetId,
         },
       );
-      if (result && 'body' in result && result.ok && result.body) {
+      if (result && 'body' in result && result.ok) {
+        setError(null);
         const body = result.body as { favorite_datasets?: SavedDataset[] };
         if (Array.isArray(body.favorite_datasets)) {
           setSavedDatasets(body.favorite_datasets);
         }
+      } else {
+        setError('Unable to remove this saved resource. Please try again.');
       }
       return result;
     },
@@ -413,6 +431,8 @@ function useUserDataState() {
     savedQueries,
     savedDatasets,
     isDevMode,
+    error,
+    clearError,
     getProfile,
     updatePreferenceField,
     addSavedQuery,

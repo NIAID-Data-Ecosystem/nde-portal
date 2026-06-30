@@ -164,6 +164,83 @@ describe('useUserData', () => {
     });
   });
 
+  it('sets an error when a delete fails, and clears it on the next success', async () => {
+    const queryA = makeQuery('malaria', 10);
+    const queryB = makeQuery('influenza', 20);
+    const server = createServerFetch([queryA, queryB]);
+    // Force the first DELETE to fail like the real API can.
+    const failingFetch = jest.fn((url: string, init?: RequestInit) => {
+      const path = url.replace(/^https?:\/\/[^/]+/, '');
+      if (
+        path === '/user/data/favorites/searches' &&
+        init?.method === 'DELETE'
+      ) {
+        failingFetch.mockImplementation(server.fetchMock); // subsequent calls succeed
+        return Promise.resolve({
+          status: 400,
+          ok: false,
+          text: async () =>
+            JSON.stringify({
+              code: 400,
+              success: false,
+              error: 'Bad request.',
+            }),
+        } as Response);
+      }
+      return server.fetchMock(url, init);
+    });
+    global.fetch = failingFetch as unknown as typeof fetch;
+
+    const { result } = renderHook(() => useUserData(), { wrapper });
+    await waitFor(() => expect(result.current.savedQueries).toHaveLength(2));
+
+    // Failing delete → error banner message is set.
+    await act(async () => {
+      await result.current.removeSavedQuery(queryA);
+    });
+    await waitFor(() =>
+      expect(result.current.error).toBe(
+        'Unable to remove this saved query. Please try again.',
+      ),
+    );
+
+    // A subsequent successful delete clears the error.
+    await act(async () => {
+      await result.current.removeSavedQuery(queryA);
+    });
+    await waitFor(() => expect(result.current.error).toBeNull());
+  });
+
+  it('clearError dismisses the current error', async () => {
+    const server = createServerFetch([]);
+    global.fetch = server.fetchMock as unknown as typeof fetch;
+    const { result } = renderHook(() => useUserData(), { wrapper });
+
+    // Removing a dataset that doesn't exist still calls DELETE; point fetch at a
+    // failing response to populate the error, then dismiss it.
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        status: 500,
+        ok: false,
+        text: async () => JSON.stringify({ error: 'server error' }),
+      } as Response),
+    ) as unknown as typeof fetch;
+
+    await act(async () => {
+      await result.current.removeSavedDataset('does-not-exist');
+    });
+    await waitFor(() =>
+      expect(result.current.error).toBe(
+        'Unable to remove this saved resource. Please try again.',
+      ),
+    );
+
+    act(() => {
+      result.current.clearError();
+    });
+    expect(result.current.error).toBeNull();
+  });
+
   it('no-ops (no fetch) when removing a query that is not saved', async () => {
     const server = createServerFetch([makeQuery('malaria', 10)]);
     global.fetch = server.fetchMock as unknown as typeof fetch;
