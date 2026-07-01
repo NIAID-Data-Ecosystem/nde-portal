@@ -61,23 +61,13 @@ export const SearchResultsHeader = ({
   selectedFilters: SelectedFilterType;
 }) => {
   const { user, login } = useAuth();
-  const router = useRouter();
 
   const { savedQueries, addSavedQuery, removeSavedQuery } = useUserData();
-
-  // When the user has opted out of the default date range, persist that intent
-  // as a reserved key inside the saved query's filters so it round-trips and
-  // stays a distinct saved query. Used consistently for identity, add, and
-  // remove so they always reference the same stored shape.
-  const persistedFilters: Record<string, any> =
-    router.query[APPLY_DEFAULT_DATE_PARAM] === 'false'
-      ? { ...selectedFilters, [APPLY_DEFAULT_DATE_FILTER_KEY]: false }
-      : selectedFilters;
 
   const isFavorited =
     findSavedQueryIndex(savedQueries, {
       query: querystring,
-      filters: persistedFilters,
+      filters: selectedFilters,
     }) !== -1;
   return (
     <VStack alignItems='flex-start' spacing={1} fontSize='sm' flex={1}>
@@ -133,14 +123,14 @@ export const SearchResultsHeader = ({
                 return isFavorited
                   ? removeSavedQuery({
                       query: querystring,
-                      filters: persistedFilters,
+                      filters: selectedFilters,
                     })
                   : addSavedQuery({
                       query: querystring,
                       name: `${
                         querystring === '__all__' ? 'All results' : querystring
                       }`,
-                      filters: persistedFilters,
+                      filters: selectedFilters,
                     });
               }}
             />

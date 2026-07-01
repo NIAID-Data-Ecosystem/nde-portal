@@ -8,7 +8,6 @@ import {
 } from '../repository-matcher/components/TableCells';
 import { SavedColumn, SavedResourceItem, SavedRow } from './types';
 import { defaultSearchValue } from '../repository-matcher/hooks/useRepositoryMatcherData';
-
 import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
 import { SavedDataset, SavedQuery } from 'src/hooks/useUserData/types';
 import { useUserData } from 'src/hooks/useUserData';
@@ -342,11 +341,14 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
     transform: (item): SavedQuery & { url: string } => {
       // The reserved opt-out marker is stored inside the saved filters but must
       // travel as a URL param, not inside the serialized filter string.
-      const { [APPLY_DEFAULT_DATE_FILTER_KEY]: applyDefaultDate, ...filters } =
-        item.filters || {};
+      const filters = item.filters || {};
       const filter_string = queryFilterObject2String(filters) || '';
+      // If no explicit date is present and the user has opted out of the default date range, add the opt-out param to the URL so it doesn't add the default date.
       const applyDefaultDateParam =
-        applyDefaultDate === false ? `&${APPLY_DEFAULT_DATE_PARAM}=false` : '';
+        !filters.date || filters[APPLY_DEFAULT_DATE_FILTER_KEY] === false
+          ? `&${APPLY_DEFAULT_DATE_PARAM}=false`
+          : '';
+
       return {
         ...item,
         url: `/search?q=${encodeURIComponent(
