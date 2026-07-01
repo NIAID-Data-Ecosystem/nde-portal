@@ -20,6 +20,24 @@ import {
 import { generateTags } from '../search/components/filters/components/tag/utils';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 
+type DateCellValue = { display: string; raw: number } | null;
+
+const formatDateCellValue = (date?: string): DateCellValue => {
+  if (!date) return null;
+  const timestamp = Date.parse(date);
+  if (Number.isNaN(timestamp)) return null;
+  return {
+    display: new Date(timestamp).toLocaleDateString(),
+    raw: timestamp,
+  };
+};
+
+const normalizeNameSortValue = (value?: string) =>
+  (value ?? '')
+    .trim()
+    .replace(/^[`'"]+/, '')
+    .toLowerCase();
+
 const SavedResourceNameCell = ({
   value,
   isLoading,
@@ -99,7 +117,7 @@ export const SAVED_RESOURCE_COLUMNS: SavedColumn<SavedResourceItem, any>[] = [
       ...item,
       url: `/resources?id=${item.dataset_id}`,
     }),
-    getSortValue: (value: SavedDataset) => value.name.toLowerCase(),
+    getSortValue: (value: SavedDataset) => normalizeNameSortValue(value.name),
     getSearchValue: (value: SavedDataset) => value.name,
     component: SavedResourceNameCell,
   },
@@ -171,18 +189,23 @@ export const SAVED_RESOURCE_COLUMNS: SavedColumn<SavedResourceItem, any>[] = [
       isDefault: true,
       style: { maxWidth: '200px', minWidth: '160px' },
     },
-    transform: item => {
-      if (!item.dateModified) return '';
-      return new Date(item.dateModified).toLocaleDateString();
-    },
+    transform: item => formatDateCellValue(item.dateModified),
+    getSearchValue: (value: DateCellValue) => value?.display ?? '',
+    getSortValue: (value: DateCellValue) => value?.raw ?? 0,
     component: ({
       value,
       isLoading,
     }: {
-      value: string;
+      value: DateCellValue;
       isLoading?: boolean;
     }) => {
-      return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
+      return (
+        <TextCell
+          value={value?.display ?? ''}
+          isLoading={isLoading}
+          noOfLines={1}
+        />
+      );
     },
   },
   {
@@ -194,18 +217,23 @@ export const SAVED_RESOURCE_COLUMNS: SavedColumn<SavedResourceItem, any>[] = [
       isDefault: true,
       style: { maxWidth: '200px', minWidth: '200px' },
     },
-    transform: item => {
-      if (!item.saved_at) return '';
-      return new Date(item.saved_at).toLocaleDateString();
-    },
+    transform: item => formatDateCellValue(item.saved_at),
+    getSearchValue: (value: DateCellValue) => value?.display ?? '',
+    getSortValue: (value: DateCellValue) => value?.raw ?? 0,
     component: ({
       value,
       isLoading,
     }: {
-      value: string;
+      value: DateCellValue;
       isLoading?: boolean;
     }) => {
-      return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
+      return (
+        <TextCell
+          value={value?.display ?? ''}
+          isLoading={isLoading}
+          noOfLines={1}
+        />
+      );
     },
   },
   // {
@@ -315,7 +343,8 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
         )}&filters=${encodeURIComponent(filter_string)}`,
       };
     },
-    getSortValue: (value: SavedQuery) => value.name.toLowerCase(),
+    getSortValue: (value: SavedQuery) =>
+      normalizeNameSortValue(value.name || value.query),
     getSearchValue: (value: SavedQuery) => `${value.name} ${value.query}`,
     component: SavedQueryNameCell,
   },
@@ -326,7 +355,7 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
     columns: {
       isSortable: false,
       isDefault: true,
-      style: { maxWidth: '200px', minWidth: '200px' },
+      style: { minWidth: '200px' },
     },
     getSearchValue: (value: {
       tags: {
@@ -393,18 +422,23 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
       isDefault: true,
       style: { maxWidth: '200px', minWidth: '200px' },
     },
-    transform: item => {
-      if (!item.saved_at) return '';
-      return new Date(item.saved_at).toLocaleDateString();
-    },
+    transform: item => formatDateCellValue(item.saved_at),
+    getSearchValue: (value: DateCellValue) => value?.display ?? '',
+    getSortValue: (value: DateCellValue) => value?.raw ?? 0,
     component: ({
       value,
       isLoading,
     }: {
-      value: string;
+      value: DateCellValue;
       isLoading?: boolean;
     }) => {
-      return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
+      return (
+        <TextCell
+          value={value?.display ?? ''}
+          isLoading={isLoading}
+          noOfLines={1}
+        />
+      );
     },
   },
 ];
