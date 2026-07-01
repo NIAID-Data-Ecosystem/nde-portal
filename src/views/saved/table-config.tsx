@@ -50,7 +50,7 @@ const SavedResourceNameCell = ({
     ds => ds.dataset_id === value.dataset_id,
   );
   return (
-    <HStack alignItems='flex-start'>
+    <HStack alignItems='flex-start' mt={-1}>
       <BookmarkIconButton
         isFavorited={isFavorited}
         onClick={() =>
@@ -84,7 +84,7 @@ const SavedQueryNameCell = ({
   // once with different filters, and each must be favorited/removed on its own.
   const isFavorited = findSavedQueryIndex(savedQueries, value) !== -1;
   return (
-    <HStack alignItems='flex-start'>
+    <HStack alignItems='flex-start' mt={-1}>
       <BookmarkIconButton
         isFavorited={isFavorited}
         aria-label={isFavorited ? 'Remove saved query' : 'Save query'}
@@ -325,6 +325,7 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
           value={value.toLocaleString()}
           isLoading={isLoading}
           noOfLines={1}
+          mt={0.5}
         />
       );
     },
