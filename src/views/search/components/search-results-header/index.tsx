@@ -7,6 +7,7 @@ import {
   TextProps,
   VStack,
 } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
 import { Link } from 'src/components/link';
 import { AI_ASSISTED_SEARCH_KC_LINK } from 'src/components/page-container/components/search/components/ai-toggle';
@@ -14,6 +15,10 @@ import { useAuth } from 'src/hooks/useAuth';
 import { useUserData } from 'src/hooks/useUserData';
 import { findSavedQueryIndex } from 'src/hooks/useUserData/helpers';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
+import {
+  APPLY_DEFAULT_DATE_FILTER_KEY,
+  APPLY_DEFAULT_DATE_PARAM,
+} from 'src/views/search/config/defaultQuery';
 import { SelectedFilterType } from '../filters';
 
 export const SearchResultsHeading = ({ children, ...props }: TextProps) => {
@@ -56,13 +61,23 @@ export const SearchResultsHeader = ({
   selectedFilters: SelectedFilterType;
 }) => {
   const { user, login } = useAuth();
+  const router = useRouter();
 
   const { savedQueries, addSavedQuery, removeSavedQuery } = useUserData();
+
+  // When the user has opted out of the default date range, persist that intent
+  // as a reserved key inside the saved query's filters so it round-trips and
+  // stays a distinct saved query. Used consistently for identity, add, and
+  // remove so they always reference the same stored shape.
+  const persistedFilters: Record<string, any> =
+    router.query[APPLY_DEFAULT_DATE_PARAM] === 'false'
+      ? { ...selectedFilters, [APPLY_DEFAULT_DATE_FILTER_KEY]: false }
+      : selectedFilters;
 
   const isFavorited =
     findSavedQueryIndex(savedQueries, {
       query: querystring,
-      filters: selectedFilters,
+      filters: persistedFilters,
     }) !== -1;
   return (
     <VStack alignItems='flex-start' spacing={1} fontSize='sm' flex={1}>
@@ -118,14 +133,14 @@ export const SearchResultsHeader = ({
                 return isFavorited
                   ? removeSavedQuery({
                       query: querystring,
-                      filters: selectedFilters,
+                      filters: persistedFilters,
                     })
                   : addSavedQuery({
                       query: querystring,
                       name: `${
                         querystring === '__all__' ? 'All results' : querystring
                       }`,
-                      filters: selectedFilters,
+                      filters: persistedFilters,
                     });
               }}
             />

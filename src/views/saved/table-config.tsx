@@ -17,6 +17,10 @@ import {
   FILTER_CONFIGS,
   queryFilterObject2String,
 } from '../search/components/filters';
+import {
+  APPLY_DEFAULT_DATE_FILTER_KEY,
+  APPLY_DEFAULT_DATE_PARAM,
+} from '../search/config/defaultQuery';
 import { generateTags } from '../search/components/filters/components/tag/utils';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 
@@ -336,12 +340,20 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
     fields: ['name', 'query'],
     columns: { isSortable: true, isDefault: true },
     transform: (item): SavedQuery & { url: string } => {
-      const filter_string = queryFilterObject2String(item.filters) || '';
+      // The reserved opt-out marker is stored inside the saved filters but must
+      // travel as a URL param, not inside the serialized filter string.
+      const { [APPLY_DEFAULT_DATE_FILTER_KEY]: applyDefaultDate, ...filters } =
+        item.filters || {};
+      const filter_string = queryFilterObject2String(filters) || '';
+      const applyDefaultDateParam =
+        applyDefaultDate === false ? `&${APPLY_DEFAULT_DATE_PARAM}=false` : '';
       return {
         ...item,
         url: `/search?q=${encodeURIComponent(
           item.query,
-        )}&filters=${encodeURIComponent(filter_string)}`,
+        )}&filters=${encodeURIComponent(
+          filter_string,
+        )}${applyDefaultDateParam}`,
       };
     },
     getSortValue: (value: SavedQuery) =>
