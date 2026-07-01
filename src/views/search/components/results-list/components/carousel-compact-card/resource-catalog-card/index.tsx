@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Flex, Tooltip, Text, Button } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
-import { ConditionsOfAccess, CreativeWorkStatus } from 'src/components/badges';
+import { ConditionsOfAccess } from 'src/components/badges';
 import { HasAPI } from 'src/components/badges/components/HasAPI';
 import { MetadataLabel } from 'src/components/metadata';
 import { ScrollContainer } from 'src/components/scroll-container';
@@ -10,7 +10,6 @@ import { SearchableItems } from 'src/components/searchable-items';
 import { Skeleton } from 'src/components/skeleton';
 import { CompactCard } from '../compact-card';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
-import { SHOW_RETIRED_RESOURCE_CATALOG_UI } from 'src/utils/feature-flags';
 
 interface ResourceCatalogCardProps {
   data?: FormattedResource | null;
@@ -34,7 +33,6 @@ export const ResourceCatalogCard = ({
     date,
     conditionsOfAccess,
     hasAPI,
-    creativeWorkStatus,
     about,
     description,
   } = data || {};
@@ -60,15 +58,6 @@ export const ResourceCatalogCard = ({
 
   const shouldShowDescription = !showAllTypes;
 
-  // Retired ResourceCatalog cards use a gray treatment throughout to
-  // visually communicate that the resource is no longer active. Gated
-  // behind SHOW_RETIRED_RESOURCE_CATALOG_UI until approved for production.
-  const isRetired =
-    SHOW_RETIRED_RESOURCE_CATALOG_UI &&
-    type === 'ResourceCatalog' &&
-    creativeWorkStatus === 'Retired';
-  const cardBg = isRetired ? 'page.alt' : 'white';
-
   const linkProps = id
     ? {
         href: {
@@ -80,13 +69,12 @@ export const ResourceCatalogCard = ({
     : undefined;
 
   return (
-    <CompactCard.Base isLoading={isLoading} bg={cardBg}>
+    <CompactCard.Base isLoading={isLoading}>
       <CompactCard.Banner
         label={formatAPIResourceTypeForDisplay(type || 'ResourceCatalog')}
         type={type || 'ResourceCatalog'}
         isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
         isLoading={isLoading}
-        creativeWorkStatus={creativeWorkStatus}
       />
 
       <CompactCard.Header isLoading={isLoading}>
@@ -102,7 +90,7 @@ export const ResourceCatalogCard = ({
         <Skeleton isLoaded={!isLoading} minHeight='30px'>
           {date && (
             <Flex
-              bg={cardBg}
+              bg='white'
               fontWeight='semibold'
               whiteSpace='nowrap'
               alignItems='flex-start'
@@ -119,9 +107,7 @@ export const ResourceCatalogCard = ({
               >
                 <Text fontSize='13px'>{date}</Text>
               </Tooltip>
-              {(conditionsOfAccess ||
-                hasAPI ||
-                creativeWorkStatus === 'Retired') && (
+              {(conditionsOfAccess || hasAPI) && (
                 <Flex
                   justifyContent={['flex-start']}
                   alignItems='center'
@@ -146,12 +132,6 @@ export const ResourceCatalogCard = ({
                       size='sm'
                     />
                   )}
-                  <CreativeWorkStatus
-                    creativeWorkStatus={creativeWorkStatus}
-                    type={data?.['@type']}
-                    mx={0.5}
-                    size='sm'
-                  />
                 </Flex>
               )}
             </Flex>
@@ -161,7 +141,7 @@ export const ResourceCatalogCard = ({
         {/* Content types */}
         <Skeleton isLoaded={!isLoading} px={-1}>
           {aboutItems.length > 0 && (
-            <Flex bg={cardBg} direction='column'>
+            <Flex bg='white' direction='column'>
               <MetadataLabel label='Content Types' />
               <ScrollContainer overflow='auto' maxHeight='200px'>
                 <SearchableItems

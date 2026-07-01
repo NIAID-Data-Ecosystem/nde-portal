@@ -8,12 +8,6 @@
 # testing
 /coverage
 
-# playwright
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
-
 # next.js
 /.next/
 /out/
@@ -57,9 +51,7 @@ notes.txt
 serve.json
 
 .vscode/
-
-# claude
-.claude/settings.local.json
-CLAUDE.local.md
+.claude/
+CLAUDE.md
 
 src/pages/wip.tsx

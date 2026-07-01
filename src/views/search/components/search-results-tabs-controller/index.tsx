@@ -39,7 +39,6 @@ const CAROUSEL_RESULTS_FIELDS = [
   'about',
   'alternateName',
   'conditionsOfAccess',
-  'creativeWorkStatus',
   'date',
   'description',
   'hasAPI',

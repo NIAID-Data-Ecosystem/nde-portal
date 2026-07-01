@@ -16,9 +16,8 @@ import {
 import { useAuth } from 'src/hooks/useAuth';
 import { withAuth } from 'src/components/auth/withAuth';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
-import { UserPreferencesKeys } from 'src/hooks/useUserData/types';
+import { UserPreferencesKeys, useUserData } from 'src/hooks/useUserData';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
-import { useUserData } from 'src/hooks/useUserData';
 
 const SETTINGS_COPY = {
   page: {
@@ -49,11 +48,7 @@ const SETTINGS_COPY = {
       description: (
         <>
           Turn on AI-assisted search by default.{' '}
-          <Link
-            color='blue.600'
-            textDecoration='underline'
-            href='/knowledge-center/ai-assisted-search'
-          >
+          <Link color='blue.600' textDecoration='underline'>
             Learn about AI-assisted search
           </Link>
           .

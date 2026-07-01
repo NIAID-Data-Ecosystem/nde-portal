@@ -22,14 +22,16 @@ import { fetchSearchResults } from 'src/utils/api';
 import { TabType } from 'src/views/search/types';
 import { tabs } from 'src/views/search/config/tabs';
 import { OntologyBrowserPopup } from 'src/views/ontology-browser/components/popup';
-import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
+import {
+  SHOW_AI_ASSISTED_SEARCH,
+  SHOW_VISUAL_SUMMARY,
+} from 'src/utils/feature-flags';
 import SummaryGrid from 'src/views/search/components/summary';
 import { updateRoute } from 'src/views/search/utils/update-route';
 import { useActiveVizIds } from 'src/views/search/components/summary/hooks/useActiveVizIds';
 import {
   queryFilterString2Object,
   queryFilterObject2String,
-  sanitizeExistsFilterValues,
 } from 'src/views/search/components/filters/utils/query-string';
 import { FilterTags } from 'src/views/search/components/filters/components/tag';
 import { SearchResultsFetchedProvider } from 'src/views/search/context/search-results-fetched-context';
@@ -123,15 +125,9 @@ const Search: NextPage<{
       //     : value,
       // );
 
-      const prevValues = selectedFilters[facet] || [];
-
-      // Checking "Any"/"No" clears everything else for this facet, and
-      // checking a normal value clears "Any"/"No" if it was active.
-      const sanitizedValues = sanitizeExistsFilterValues(values, prevValues);
-
       const updatedFilterString = queryFilterObject2String({
         ...selectedFilters,
-        [facet]: sanitizedValues,
+        [facet]: values,
       });
 
       handleUpdate({
@@ -236,7 +232,6 @@ const Search: NextPage<{
                     {/* Heading: Showing results for... */}
                     <SearchResultsHeader
                       querystring={queryParams.q}
-                      selectedFilters={selectedFilters}
                       showAIBanner={
                         SHOW_AI_ASSISTED_SEARCH &&
                         router.query.use_ai_search === 'true'
@@ -254,21 +249,23 @@ const Search: NextPage<{
                     />
                   )}
                 </VStack>
-                <SummaryGrid
-                  searchParams={{
-                    ...queryParams,
-                    from: 0,
-                    size: 0,
-                    sort: '',
-                  }}
-                  onFilterUpdate={(values, facet) => {
-                    handleSelectedFilters(values, facet);
-                  }}
-                  activeVizIds={activeVizIds}
-                  removeActiveVizId={toggleViz}
-                  configs={FILTER_CONFIGS}
-                  selectedFilters={selectedFilters}
-                />
+                {SHOW_VISUAL_SUMMARY && (
+                  <SummaryGrid
+                    searchParams={{
+                      ...queryParams,
+                      from: 0,
+                      size: 0,
+                      sort: '',
+                    }}
+                    onFilterUpdate={(values, facet) => {
+                      handleSelectedFilters(values, facet);
+                    }}
+                    activeVizIds={activeVizIds}
+                    removeActiveVizId={toggleViz}
+                    configs={FILTER_CONFIGS}
+                    selectedFilters={selectedFilters}
+                  />
+                )}
                 {/* Search Results */}
                 <SearchResultsController initialData={initialData} />
               </Box>

@@ -117,7 +117,6 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
 
           {/* Mobile */}
           <Select
-            aria-label={ariaLabel || 'Select page'}
             borderColor='gray.200'
             cursor='pointer'
             display={{ base: 'block', md: 'none' }}

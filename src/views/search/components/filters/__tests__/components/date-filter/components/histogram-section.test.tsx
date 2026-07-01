@@ -10,6 +10,10 @@ jest.mock('next/router', () => ({
   useRouter: () => ({ pathname: '/search' }),
 }));
 
+jest.mock('src/utils/feature-flags', () => ({
+  SHOW_VISUAL_SUMMARY: false,
+}));
+
 describe('histogram-section', () => {
   it('shows loading overlay while loading', () => {
     render(

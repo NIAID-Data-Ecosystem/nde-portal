@@ -59,9 +59,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 }) => {
   const { user, login } = useAuth();
 
-  const { savedDatasets, addSavedDataset, removeSavedDataset } = useUserData();
+  const { favoriteDatasets, saveFavoriteDataset, removeFavoriteDataset } =
+    useUserData();
   const isFavorited = data?.id
-    ? savedDatasets.some(fd => fd.dataset_id === data.id)
+    ? favoriteDatasets.some(fd => fd.dataset_id === data.id)
     : false;
   const {
     ['@type']: type,
@@ -541,9 +542,9 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           return;
                         }
                         if (isFavorited) {
-                          removeSavedDataset(data.id);
+                          removeFavoriteDataset(data.id);
                         } else {
-                          addSavedDataset({
+                          saveFavoriteDataset({
                             dataset_id: data.id,
                             name:
                               data.name ||

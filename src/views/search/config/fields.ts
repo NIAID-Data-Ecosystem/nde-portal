@@ -29,7 +29,6 @@ export const RESULT_FIELDS = [
   'operatingSystem',
   'output',
   'programmingLanguage',
-  'sample',
   'sdPublisher',
   'softwareHelp',
   'softwareRequirements',

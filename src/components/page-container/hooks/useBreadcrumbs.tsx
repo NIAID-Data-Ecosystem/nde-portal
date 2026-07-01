@@ -13,26 +13,12 @@ export const useBreadcrumbs = (pageTitle?: string): BreadcrumbSegment[] => {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Defer breadcrumb computation until after mount to avoid hydration
-  // mismatches. The statically-exported 404 page is served for arbitrary
-  // unmatched URLs, so the server renders it with `usePathname()` === '/404'
-  // while the client computes segments from the real URL. The differing
-  // segment counts shift which crumb is the "current page" (rendered as a
-  // <span> instead of an <a>), which trips React's hydration check. Rendering
-  // nothing on the server and first client render keeps them in sync; the real
-  // breadcrumbs appear once mounted. This also makes the document.title
-  // fallback below client-only, removing another source of mismatch.
-  const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   // Use a state to hold the fallback title in case pageTitle is not provided
   const fallbackTitle =
     !pageTitle && typeof document !== 'undefined' ? document.title : '';
 
   const segments = useMemo(() => {
-    if (!isMounted || !pathname) return [];
+    if (!pathname) return [];
 
     const parts = pathname.split('/').filter(Boolean);
     let mapped = parts.map((slug, idx) => {
@@ -68,13 +54,7 @@ export const useBreadcrumbs = (pageTitle?: string): BreadcrumbSegment[] => {
           : segment.name,
       isCurrentPage: idx === arr.length - 1,
     }));
-  }, [
-    isMounted,
-    pathname,
-    router.query.referrerPath,
-    pageTitle,
-    fallbackTitle,
-  ]);
+  }, [pathname, router.query.referrerPath, pageTitle, fallbackTitle]);
 
   return segments;
 };

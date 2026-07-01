@@ -53,9 +53,8 @@ export const fetchAllDocumentationSlugs = async (): Promise<
 > => {
   try {
     const { data } = await axios.get(
-      `${baseUrl}/api/docs?fields[0]=slug&status=${status}&pagination[pageSize]=100`,
+      `${baseUrl}/api/docs?fields[0]=slug&status=${status}`,
     );
-
     return data.data;
   } catch (err: any) {
     throw err;

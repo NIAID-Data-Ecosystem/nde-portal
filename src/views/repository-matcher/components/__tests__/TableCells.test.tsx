@@ -3,7 +3,7 @@ import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithClient } from 'src/__tests__/mocks/utils';
 import {
-  TagCellList,
+  DefinedTermTagList,
   TagCell,
   TextCell,
   TextCellWithLink,
@@ -22,9 +22,9 @@ const stubOverflow = () => {
   return () => spies.forEach(s => s.mockRestore());
 };
 
-describe('TagCellList', () => {
+describe('DefinedTermTagList', () => {
   it('renders skeleton tags while loading', () => {
-    const { container } = renderWithClient(<TagCellList isLoading />);
+    const { container } = renderWithClient(<DefinedTermTagList isLoading />);
     // Three loading TagCells render as custom skeletons, no placeholder text.
     expect(container.querySelectorAll('.custom-skeleton-loading').length).toBe(
       3,
@@ -33,18 +33,18 @@ describe('TagCellList', () => {
   });
 
   it('renders a placeholder cell when there are no terms', () => {
-    renderWithClient(<TagCellList value={[]} />);
+    renderWithClient(<DefinedTermTagList value={[]} />);
     expect(screen.getByText('not available')).toBeInTheDocument();
   });
 
   it('falls back to an empty list when value is undefined', () => {
-    renderWithClient(<TagCellList value={undefined} />);
+    renderWithClient(<DefinedTermTagList value={undefined} />);
     expect(screen.getByText('not available')).toBeInTheDocument();
   });
 
   it('renders a tag per defined term', () => {
     renderWithClient(
-      <TagCellList value={[{ name: 'Malaria' }, { name: 'Flu' }]} />,
+      <DefinedTermTagList value={[{ name: 'Malaria' }, { name: 'Flu' }]} />,
     );
     expect(screen.getByText('Malaria')).toBeInTheDocument();
     expect(screen.getByText('Flu')).toBeInTheDocument();
@@ -53,7 +53,7 @@ describe('TagCellList', () => {
   it('truncates beyond maxVisible and toggles show more/less', async () => {
     const user = userEvent.setup();
     renderWithClient(
-      <TagCellList
+      <DefinedTermTagList
         value={[{ name: 'One' }, { name: 'Two' }, { name: 'Three' }]}
         maxVisible={1}
       />,
