@@ -67,7 +67,6 @@ export const ExternalAccess = ({
           includedInDataCatalog={data?.includedInDataCatalog}
           url={data?.url}
           recordType={data?.['@type']}
-          creativeWorkStatus={data?.creativeWorkStatus}
         />
       </Wrapper>
     </>

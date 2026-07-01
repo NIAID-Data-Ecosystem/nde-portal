@@ -45,11 +45,7 @@ describe('use query hook', () => {
     const { result } = renderHook(() => useRepoData(), {
       wrapper: createWrapper(),
     });
-    // fetchMetadata retries 5xx responses with exponential backoff
-    // (300 + 600 + 1200ms), so allow more than the default 1000ms timeout.
-    await waitFor(() => expect(result.current.isError).toBe(true), {
-      timeout: 5000,
-    });
+    await waitFor(() => expect(result.current.isError).toBe(true));
 
     expect(result.current.error).toBeDefined();
     console.error = originalConsoleError;

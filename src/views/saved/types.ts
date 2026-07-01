@@ -1,27 +1,16 @@
-import { SavedDataset, SavedQuery } from 'src/hooks/useUserData/types';
-import { SavedResourceAdditionalMetadata } from './hooks/useBatchResourcesData';
+import { FavoriteDataset } from 'src/hooks/useUserData';
 
-/** Items the saved page can render in a table. */
-export type SavedItem = SavedDataset | SavedQuery;
+export interface SavedResourceItem extends FavoriteDataset {}
 
-/**
- * A saved dataset enriched with metadata fetched from the API by `_id`
- * (see `useBatchResourcesData`).
- */
-export interface SavedResourceItem
-  extends SavedDataset,
-    SavedResourceAdditionalMetadata {}
-/**
- * A formatted table row. Each column's transformed value is keyed by column
- * id; `_id` dedupes rows and `_search` is the prebuilt search blob.
- */
-export interface SavedRow {
+export interface SavedResourceRow {
   _id: string;
+  name: string;
+  dataset_id: string;
+  saved_at: string;
   _search: string;
-  [key: string]: unknown;
 }
 
-export type SavedColumn<TItem = SavedItem, TValue = unknown> = {
+export type SavedResourceColumn<TValue = unknown> = {
   id: string;
   label: string;
   fields: string[];
@@ -31,11 +20,11 @@ export type SavedColumn<TItem = SavedItem, TValue = unknown> = {
     style?: React.CSSProperties;
   };
 
-  transform: (item: TItem) => TValue;
+  transform: (item: SavedResourceItem) => TValue;
   component: (props: {
     value: TValue;
     isLoading?: boolean;
-    data: TItem;
+    data: SavedResourceItem;
   }) => React.ReactNode;
   /**
    * Reduce the column's display value to a sortable primitive. Omit for
@@ -48,4 +37,8 @@ export type SavedColumn<TItem = SavedItem, TValue = unknown> = {
    * out of search. Omit when the display value is already string/string[].
    */
   getSearchValue?: (value: TValue) => string | string[] | null;
+  /**
+   * Opts the column into the filter sidebar. Omit to leave the column out of
+   * filtering.
+   */
 };

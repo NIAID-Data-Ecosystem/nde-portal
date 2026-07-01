@@ -2,32 +2,28 @@ import React from 'react';
 import { HStack, Text, VStack } from '@chakra-ui/react';
 import { getMetadataName } from 'src/components/metadata';
 import {
-  TagCell,
   TextCell,
   TextCellWithLink,
 } from '../repository-matcher/components/TableCells';
-import { SavedColumn, SavedResourceItem, SavedRow } from './types';
-import { defaultSearchValue } from '../repository-matcher/hooks/useRepositoryMatcherData';
-
-import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
-import { SavedDataset, SavedQuery } from 'src/hooks/useUserData/types';
-import { useUserData } from 'src/hooks/useUserData';
 import {
-  FILTER_CONFIGS,
-  queryFilterObject2String,
-} from '../search/components/filters';
-import { generateTags } from '../search/components/filters/components/tag/utils';
-import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+  SavedResourceColumn,
+  SavedResourceItem,
+  SavedResourceRow,
+} from './types';
+import { defaultSearchValue } from '../repository-matcher/hooks/useRepositoryMatcherData';
+import { FavoriteDataset, useUserData } from 'src/hooks/useUserData';
+import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
 
-const SavedResourceNameCell = ({
+const SavedNameCell = ({
   value,
   isLoading,
 }: {
-  value: SavedDataset & { url: string };
+  value: FavoriteDataset & { url: string };
   isLoading?: boolean;
 }) => {
-  const { savedDatasets, addSavedDataset, removeSavedDataset } = useUserData();
-  const isFavorited = !!savedDatasets.find(
+  const { favoriteDatasets, saveFavoriteDataset, removeFavoriteDataset } =
+    useUserData();
+  const isFavorited = !!favoriteDatasets.find(
     ds => ds.dataset_id === value.dataset_id,
   );
   return (
@@ -36,11 +32,9 @@ const SavedResourceNameCell = ({
         isFavorited={isFavorited}
         onClick={() =>
           isFavorited
-            ? removeSavedDataset(value.dataset_id)
-            : addSavedDataset(value)
+            ? removeFavoriteDataset(value.dataset_id)
+            : saveFavoriteDataset(value)
         }
-        alignItems='flex-start'
-        mt={1}
       />
       <VStack alignItems='flex-start' spacing={1} fontSize='xs'>
         <TextCellWithLink
@@ -55,137 +49,19 @@ const SavedResourceNameCell = ({
   );
 };
 
-const SavedQueryNameCell = ({
-  value,
-  isLoading,
-}: {
-  value: SavedQuery & { url: string };
-  isLoading?: boolean;
-}) => {
-  const { savedQueries, addSavedQuery, removeSavedQuery } = useUserData();
-  const favoriteIndex = savedQueries.findIndex(
-    search => search.query === value.query,
-  );
-  const isFavorited = favoriteIndex !== -1;
-  return (
-    <HStack alignItems='flex-start'>
-      <BookmarkIconButton
-        isFavorited={isFavorited}
-        aria-label={isFavorited ? 'Remove saved query' : 'Save query'}
-        onClick={() =>
-          isFavorited ? removeSavedQuery(favoriteIndex) : addSavedQuery(value)
-        }
-        alignItems='flex-start'
-        mt={1}
-      />
-      <TextCellWithLink
-        label={value?.query || ''}
-        url={value?.url}
-        isLoading={isLoading}
-        isExternal={false}
-      />
-    </HStack>
-  );
-};
-
-export const SAVED_RESOURCE_COLUMNS: SavedColumn<SavedResourceItem, any>[] = [
+export const SAVED_RESOURCE_COLUMNS: SavedResourceColumn<any>[] = [
   {
     id: 'name',
     label: getMetadataName('name') || '',
     fields: ['name', 'dataset_id'],
-    columns: {
-      isSortable: true,
-      isDefault: true,
-    },
-    transform: (item): SavedDataset & { url: string } => ({
+    columns: { isSortable: true, isDefault: true },
+    transform: (item): FavoriteDataset & { url: string } => ({
       ...item,
       url: `/resources?id=${item.dataset_id}`,
     }),
-    getSortValue: (value: SavedDataset) => value.name.toLowerCase(),
-    getSearchValue: (value: SavedDataset) => value.name,
-    component: SavedResourceNameCell,
-  },
-
-  {
-    id: 'type',
-    label: getMetadataName('type') || 'Type',
-    fields: ['@type'],
-    columns: {
-      isSortable: true,
-      isDefault: true,
-      style: { maxWidth: '180px', minWidth: '160px' },
-    },
-    getSortValue: (value: string) => value.toLowerCase(),
-    transform: (item): string => {
-      if (!item.type) return '';
-      return formatAPIResourceTypeForDisplay(item.type) ?? '';
-    },
-    component: ({
-      value,
-      isLoading,
-    }: {
-      value: string;
-      isLoading?: boolean;
-    }) => {
-      if (!isLoading && (!value || !value.length))
-        return <TextCell value='' isLoading={isLoading} noOfLines={1} />;
-      return (
-        <TextCell
-          value={value}
-          isLoading={isLoading}
-          noOfLines={2}
-          fontWeight='semibold'
-        />
-      );
-    },
-  },
-  {
-    id: 'source',
-    label: 'Source',
-    fields: ['includedInDataCatalog.name'],
-    columns: {
-      isSortable: true,
-      isDefault: true,
-      style: { maxWidth: '220px', minWidth: '160px' },
-    },
-    transform: (item): string[] => item.source ?? [],
-    getSortValue: (value: string[]) => (value[0] || '').toLowerCase(),
-    component: ({
-      value,
-      isLoading,
-    }: {
-      value: string[];
-      isLoading?: boolean;
-    }) => (
-      <TextCell
-        value={value && value.length ? value.join(', ') : ''}
-        isLoading={isLoading}
-        noOfLines={2}
-      />
-    ),
-  },
-  {
-    id: 'dateModified',
-    label: 'Updated On',
-    fields: ['dateModified'],
-    columns: {
-      isSortable: true,
-      isDefault: true,
-      style: { maxWidth: '200px', minWidth: '160px' },
-    },
-    transform: item => {
-      if (!item.dateModified) return '';
-      return new Date(item.dateModified).toLocaleDateString();
-    },
-    component: ({
-      value,
-      isLoading,
-    }: {
-      value: string;
-      isLoading?: boolean;
-    }) => {
-      return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
-    },
+    getSortValue: (value: FavoriteDataset) => value.name.toLowerCase(),
+    getSearchValue: (value: FavoriteDataset) => value.name,
+    component: SavedNameCell,
   },
   {
     id: 'saved_at',
@@ -268,169 +144,19 @@ export const SAVED_RESOURCE_COLUMNS: SavedColumn<SavedResourceItem, any>[] = [
   // },
 ];
 
-// Convert filter config list to map for quick access
-const configMap = Object.fromEntries(
-  FILTER_CONFIGS.map(cfg => [cfg.property, cfg]),
-);
-
-export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
-  {
-    id: 'total_count',
-    label: 'Total',
-    fields: ['total'],
-    columns: {
-      style: { maxWidth: '100px', minWidth: '100px' },
-    },
-    transform: (item): number => {
-      if (!item.total) return 0;
-      return item.total;
-    },
-    getSortValue: (value: number) => value,
-    component: ({
-      value,
-      isLoading,
-    }: {
-      value: number;
-      isLoading?: boolean;
-    }) => {
-      return (
-        <TextCell
-          fontWeight='semibold'
-          value={value.toLocaleString()}
-          isLoading={isLoading}
-          noOfLines={1}
-        />
-      );
-    },
-  },
-  {
-    id: 'name',
-    label: 'Name',
-    fields: ['name', 'query'],
-    columns: { isSortable: true, isDefault: true },
-    transform: (item): SavedQuery & { url: string } => {
-      const filter_string = queryFilterObject2String(item.filters) || '';
-      return {
-        ...item,
-        url: `/search?q=${encodeURIComponent(
-          item.query,
-        )}&filters=${encodeURIComponent(filter_string)}`,
-      };
-    },
-    getSortValue: (value: SavedQuery) => value.name.toLowerCase(),
-    getSearchValue: (value: SavedQuery) => `${value.name} ${value.query}`,
-    component: SavedQueryNameCell,
-  },
-  {
-    id: 'filters',
-    label: 'Applied Filters',
-    fields: ['filters'],
-    columns: {
-      isSortable: false,
-      isDefault: true,
-      style: { maxWidth: '200px', minWidth: '200px' },
-    },
-    getSearchValue: (value: {
-      tags: {
-        key: string;
-        filterKey: string;
-        name: string;
-        value: string[];
-        displayValue: string;
-      }[];
-    }) => {
-      const str = value?.tags
-        ?.map(tag => `${tag.name}: ${tag.displayValue}`)
-        .join(' ');
-      return str || '';
-    },
-    transform: item => {
-      return {
-        tags: generateTags(item.filters, configMap),
-        filtersObj: item.filters,
-      };
-    },
-    component: ({
-      value,
-      isLoading,
-    }: {
-      value: {
-        tags: {
-          key: string;
-          filterKey: string;
-          name: string;
-          value: string[];
-          displayValue: string;
-        }[];
-      };
-      isLoading?: boolean;
-    }) => {
-      const { tags } = value;
-      if (!tags || !tags.length)
-        return <TextCell value='' isLoading={isLoading} />;
-      return (
-        <HStack flexWrap='wrap' spacing={1}>
-          {tags.map(tag => {
-            const str = `${tag.name}: ${tag.displayValue}`;
-            return (
-              <TagCell
-                key={str}
-                colorScheme='secondary'
-                value={str}
-                noOfLines={1}
-                isLoading={isLoading}
-              />
-            );
-          })}
-        </HStack>
-      );
-    },
-  },
-  {
-    id: 'saved_at',
-    label: 'Saved On',
-    fields: ['saved_at'],
-    columns: {
-      isSortable: true,
-      isDefault: true,
-      style: { maxWidth: '200px', minWidth: '200px' },
-    },
-    transform: item => {
-      if (!item.saved_at) return '';
-      return new Date(item.saved_at).toLocaleDateString();
-    },
-    component: ({
-      value,
-      isLoading,
-    }: {
-      value: string;
-      isLoading?: boolean;
-    }) => {
-      return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
-    },
-  },
-];
-
-/**
- * Builds table rows from saved items: applies each column's `transform`,
- * dedupes by `getRowId`, and prebuilds a lowercase `_search` blob so search
- * matches against every column (including hidden ones).
- */
-export const formatTableData = <TItem,>(
-  data: TItem[],
-  columns: SavedColumn<TItem, any>[],
-  getRowId: (item: TItem, index: number) => string,
-) => {
-  const rows: SavedRow[] = [];
+export const formatTableData = (data: SavedResourceItem[]) => {
+  const rows: SavedResourceRow[] = [];
   const seen = new Set<string>();
 
   data.forEach((item, idx) => {
-    const id = getRowId(item, idx) || `__no-id-${idx}`;
+    const id = item.dataset_id || `__no-id-${idx}`;
     if (seen.has(id)) return;
     seen.add(id);
-    const row = { _id: id } as SavedRow;
+    const row = {
+      _id: item.dataset_id || '',
+    } as SavedResourceRow & Record<string, any>;
     const searchParts: string[] = [];
-    for (const col of columns) {
+    for (const col of SAVED_RESOURCE_COLUMNS) {
       const value = col.transform(item);
       row[col.id] = value;
       const searchValue = col.getSearchValue

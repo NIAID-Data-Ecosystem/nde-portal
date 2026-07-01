@@ -5,10 +5,10 @@ import {
   AccordionButton,
   AccordionPanel,
   Box,
-  Flex,
   Text,
 } from '@chakra-ui/react';
 import Tooltip from 'src/components/tooltip';
+import { SHOW_VISUAL_SUMMARY } from 'src/utils/feature-flags';
 import { FiltersChartToggle } from './filters-chart-toggle';
 
 interface FiltersSectionProps {
@@ -39,12 +39,16 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
           return (
             <>
               <h2>
-                <Flex
-                  alignItems='center'
+                <AccordionButton
+                  as='span'
+                  role='button'
+                  px={{ base: 4, md: 3 }}
+                  gap={2}
                   borderLeft='4px solid'
                   borderBottom='0.5px solid'
                   borderRadius='sm'
-                  pr={{ base: 4, md: 3 }}
+                  flexDirection={SHOW_VISUAL_SUMMARY ? 'row' : 'row-reverse'}
+                  py={{ base: isExpanded ? 3 : 2.5, md: isExpanded ? 1.5 : 1 }}
                   bg={isExpanded ? 'secondary.50' : 'transparent'}
                   borderTopColor={isExpanded ? 'secondary.100' : 'gray.100'}
                   borderBottomColor={isExpanded ? 'transparent' : 'gray.100'}
@@ -53,40 +57,24 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                     bg: isExpanded ? 'secondary.50' : 'gray.50',
                   }}
                 >
-                  <AccordionButton
-                    flex={1}
-                    bg='transparent'
-                    _hover={{ bg: 'transparent' }}
-                    px={{ base: 4, md: 3 }}
-                    gap={2}
-                    borderRadius='sm'
-                    flexDirection='row'
-                    py={{
-                      base: isExpanded ? 3 : 2.5,
-                      md: isExpanded ? 1.5 : 1,
-                    }}
+                  <Tooltip
+                    label={
+                      description.charAt(0).toUpperCase() + description.slice(1)
+                    }
                   >
-                    <Tooltip
-                      label={
-                        description.charAt(0).toUpperCase() +
-                        description.slice(1)
-                      }
+                    <Text
+                      as='span'
+                      flex={1}
+                      textAlign='left'
+                      fontSize='sm'
+                      color='gray.800'
+                      mr={2}
+                      fontWeight='medium'
                     >
-                      <Text
-                        as='span'
-                        flex={1}
-                        textAlign='left'
-                        fontSize='sm'
-                        color='gray.800'
-                        mr={2}
-                        fontWeight='medium'
-                      >
-                        {name}
-                      </Text>
-                    </Tooltip>
-                    <AccordionIcon />
-                  </AccordionButton>
-                  {filterId && (
+                      {name}
+                    </Text>
+                  </Tooltip>
+                  {filterId && SHOW_VISUAL_SUMMARY && (
                     <Tooltip
                       label={
                         isVizActive
@@ -98,14 +86,16 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                         <FiltersChartToggle
                           isActive={!!isVizActive}
                           name={name}
-                          onClick={() => {
+                          onClick={e => {
+                            e.stopPropagation(); // Prevent accordion toggle
                             onToggleViz && onToggleViz(filterId);
                           }}
                         />
                       </Box>
                     </Tooltip>
                   )}
-                </Flex>
+                  <AccordionIcon />
+                </AccordionButton>
               </h2>
               {isExpanded ? (
                 <AccordionPanel

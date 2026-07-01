@@ -1,12 +1,12 @@
 import { Heading, HStack, Skeleton, Text, VStack } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import { DisplayHTMLString } from 'src/components/html-content';
+import { TagWithUrl } from 'src/components/tag-with-url';
 import { CopyIconButton } from 'src/components/copy-button';
+import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
 import { useUserData } from 'src/hooks/useUserData';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
 import { useAuth } from 'src/hooks/useAuth';
-import { CreativeWorkStatus } from 'src/components/badges';
-import { BookmarkButton } from 'src/components/bookmark-buttons/button';
 
 interface HeaderProps {
   isLoading: boolean;
@@ -15,8 +15,6 @@ interface HeaderProps {
   id?: FormattedResource['id'];
   doi?: FormattedResource['doi'];
   nctid?: FormattedResource['nctid'];
-  type?: FormattedResource['@type'];
-  creativeWorkStatus?: FormattedResource['creativeWorkStatus'];
 }
 
 const Header = ({
@@ -26,21 +24,17 @@ const Header = ({
   id,
   doi,
   nctid,
-  type,
-  creativeWorkStatus,
 }: HeaderProps) => {
   const { user, login } = useAuth();
 
-  const { savedDatasets, addSavedDataset, removeSavedDataset } = useUserData();
+  const { favoriteDatasets, saveFavoriteDataset, removeFavoriteDataset } =
+    useUserData();
 
   const isFavorited = id
-    ? savedDatasets.some(fd => fd.dataset_id === id)
+    ? favoriteDatasets.some(fd => fd.dataset_id === id)
     : false;
 
   const showBookmarkButton = ENABLE_AUTH;
-
-  const isRetiredResourceCatalog =
-    type === 'ResourceCatalog' && creativeWorkStatus === 'Retired';
 
   return (
     <>
@@ -75,7 +69,7 @@ const Header = ({
             )}
           </Heading>
           {showBookmarkButton && (
-            <BookmarkButton
+            <BookmarkIconButton
               isFavorited={isFavorited}
               onClick={() => {
                 // Redirect logged-out users to the login page.
@@ -85,9 +79,9 @@ const Header = ({
                 }
                 if (!id) return;
                 if (isFavorited) {
-                  removeSavedDataset(id);
+                  removeFavoriteDataset(id);
                 } else {
-                  addSavedDataset({
+                  saveFavoriteDataset({
                     dataset_id: id,
                     name: name || alternateName || 'Untitled Dataset',
                     saved_at: new Date().toISOString(),
@@ -127,15 +121,6 @@ const Header = ({
                 />
               )}
             </>
-          )}
-
-          {/* Retired badge for ResourceCatalog records that have been retired. */}
-          {isRetiredResourceCatalog && (
-            <CreativeWorkStatus
-              creativeWorkStatus={creativeWorkStatus}
-              type={type}
-              mt={1}
-            />
           )}
         </VStack>
       </Skeleton>
