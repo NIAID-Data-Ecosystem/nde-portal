@@ -11,6 +11,7 @@ import { MOCK_SAVED_DATASETS } from './mocks/saved_datasets';
 import {
   SavedDataset,
   SavedQuery,
+  UserAccount,
   UserPreferences,
   UserPreferencesKeys,
   UserProfile,
@@ -37,7 +38,7 @@ const DEFAULT_MOCK_PROFILE: UserProfile = {
   favorite_searches: MOCK_SAVED_QUERIES,
   favorite_datasets: MOCK_SAVED_DATASETS,
   name: process.env.NEXT_PUBLIC_MOCK_AUTH_NAME || 'Mock User',
-  email: process.env.NEXT_PUBLIC_MOCK_AUTH_EMAIL || 'user@email.com',
+  email: process.env.NEXT_PUBLIC_MOCK_AUTH_EMAIL,
   beta: true,
   contact_preference: false,
   feedback_preference: false,
@@ -64,6 +65,12 @@ function useUserDataState() {
   const [savedQueries, setSavedQueries] = useState<SavedQuery[]>([]);
 
   const [savedDatasets, setSavedDatasets] = useState<SavedDataset[]>([]);
+
+  // Account-level fields from the /user/data route (not the auth user_info
+  // route) — email, name, linked accounts, etc. Used for account/settings
+  // display, e.g. deciding whether email-dependent settings (email updates)
+  // can be enabled.
+  const [account, setAccount] = useState<UserAccount | null>(null);
 
   // Last failed saved-items mutation, surfaced to the UI as an error banner.
   // Cleared whenever a subsequent mutation succeeds (or on manual dismiss).
@@ -310,6 +317,16 @@ function useUserDataState() {
         ...updates,
       }));
 
+      setAccount({
+        created: profile.created ?? '',
+        email: profile.email ?? '',
+        linked_accounts: profile.linked_accounts ?? [],
+        name: profile.name ?? '',
+        oauth_provider: profile.oauth_provider ?? '',
+        updated: profile.updated ?? '',
+        username: profile.username ?? '',
+      });
+
       if (Array.isArray(profile.favorite_searches)) {
         setSavedQueries(parseSavedQueries(profile.favorite_searches));
       }
@@ -464,6 +481,7 @@ function useUserDataState() {
 
   return {
     preferences,
+    account,
     savedQueries,
     savedDatasets,
     isDevMode,

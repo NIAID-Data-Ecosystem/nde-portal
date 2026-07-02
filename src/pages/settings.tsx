@@ -34,6 +34,24 @@ const SETTINGS_COPY = {
       label: 'Email Updates',
       description:
         'Receive emails about new features and updates to the Discovery Portal.',
+
+      alerts: {
+        missingEmail: (
+          <>
+            Email updates are unavailable because your account does not have an
+            email address on record. Please add an email to your account to
+            enable this setting.
+          </>
+        ),
+        missingOrcidEmail: (
+          <>
+            We couldn’t access a public email address from your ORCID record. To
+            enable email updates, your ORCID record must include a verified
+            email address with visibility set to Everyone. You can update this
+            in your ORCID account settings.
+          </>
+        ),
+      },
     },
     feedbackTesting: {
       label: 'Feedback and Testing',
@@ -112,12 +130,16 @@ function SettingToggle({
   isChecked,
   onChange,
   showBorder,
+  alert,
+  isDisabled,
 }: {
   label: string;
   description: ReactNode;
   isChecked: boolean;
   onChange: (checked: boolean) => void;
   showBorder?: boolean;
+  alert?: ReactNode;
+  isDisabled?: boolean;
 }) {
   return (
     <HStack
@@ -129,13 +151,32 @@ function SettingToggle({
     >
       <VStack alignItems='start' gap={1} flex={1}>
         <Text fontWeight='medium'>{label}</Text>
+
         <Text fontSize='sm' color='gray.800'>
           {description}
         </Text>
+
+        {/* If alert is provided, render it */}
+
+        {alert && (
+          <Box
+            bg='orange.50'
+            border='1px'
+            borderColor='orange.200'
+            borderRadius='md'
+            px={3}
+            py={2}
+          >
+            <Text fontSize='sm' color='orange.800' lineHeight='short'>
+              {alert}
+            </Text>
+          </Box>
+        )}
       </VStack>
       <Switch
         colorScheme='primary'
         isChecked={isChecked}
+        isDisabled={isDisabled}
         onChange={e => onChange(e.target.checked)}
       />
     </HStack>
@@ -144,7 +185,31 @@ function SettingToggle({
 
 function UserSettingsPage() {
   const { logout } = useAuth();
-  const { preferences, updatePreferenceField } = useUserData();
+  const { preferences, updatePreferenceField, account } = useUserData();
+
+  // Email updates require an email on the record. When one is missing the toggle
+  // is disabled and an explanatory alert is shown — ORCID accounts get a variant
+  // pointing them to their ORCID email visibility settings.
+  const hasEmail = Boolean(account?.email);
+  const isOrcid = account?.oauth_provider?.toUpperCase() === 'ORCID';
+
+  const emailUpdatesAlert = hasEmail
+    ? undefined
+    : isOrcid
+    ? SETTINGS_COPY.toggles.emailUpdates.alerts.missingOrcidEmail
+    : SETTINGS_COPY.toggles.emailUpdates.alerts.missingEmail;
+
+  // Per-toggle alerts to render, keyed by toggle. Keeps the render loop generic
+  // rather than special-casing individual toggles inline.
+  const toggleAlerts: Partial<Record<ToggleKey, ReactNode>> = {
+    emailUpdates: emailUpdatesAlert,
+  };
+
+  // Toggles that can't be enabled given the account state. Email updates require
+  // an email on the record.
+  const toggleDisabled: Partial<Record<ToggleKey, boolean>> = {
+    emailUpdates: !hasEmail,
+  };
 
   // Map UI toggle keys to API preference fields
   const TOGGLE_TO_PREF: Record<ToggleKey, UserPreferencesKeys> = {
@@ -193,6 +258,8 @@ function UserSettingsPage() {
                 isChecked={getChecked(key)}
                 onChange={() => updateSetting(key)}
                 showBorder={index < section.toggleKeys.length - 1}
+                alert={toggleAlerts[key]}
+                isDisabled={toggleDisabled[key]}
               />
             ))}
           </SettingsSection>
