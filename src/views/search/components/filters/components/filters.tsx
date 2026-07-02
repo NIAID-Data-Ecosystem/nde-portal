@@ -25,7 +25,6 @@ import { usePaginationContext } from '../../../context/pagination-context';
 import { FILTER_CONFIGS } from '../config';
 import { APPLY_DEFAULT_DATE_PARAM } from 'src/views/search/config/defaultQuery';
 import { useSearchResultsFetchedContext } from 'src/views/search/context/search-results-fetched-context';
-import { useSearchTabsContext } from 'src/views/search/context/search-tabs-context';
 import { useBioSampleAggregation } from 'src/views/search/hooks/useBioSampleAggregation';
 import { useComputationalToolAggregation } from 'src/views/search/hooks/useComputationalToolAggregation';
 import { useSharedDatasetAggregation } from 'src/views/search/hooks/useSharedDatasetAggregation';
@@ -50,7 +49,6 @@ export const Filters = React.memo(
     isVizActive,
   }: FiltersProps) => {
     const router = useRouter();
-    const { selectedTab } = useSearchTabsContext();
     const queryParams = useSearchQueryFromURL();
     const { resetPagination } = usePaginationContext();
     const filterIds = FILTER_CONFIGS.map(config => config.id);
@@ -65,12 +63,10 @@ export const Filters = React.memo(
           const userHasSelectedToShow = userSelectedFilters.includes(
             filterConfig.id,
           );
-          const isRelevantForTab = filterConfig?.tabIds?.includes(
-            selectedTab.id,
-          );
-          return userHasSelectedToShow && isRelevantForTab;
+
+          return userHasSelectedToShow;
         }),
-      [userSelectedFilters, selectedTab.id],
+      [userSelectedFilters],
     );
 
     // Build the extra_filter query param string based on selected filters.
