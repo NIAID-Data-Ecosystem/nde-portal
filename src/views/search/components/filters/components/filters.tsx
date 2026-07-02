@@ -23,6 +23,7 @@ import { updateRoute } from '../../../utils/update-route';
 import { useSearchQueryFromURL } from '../../../hooks/useSearchQueryFromURL';
 import { usePaginationContext } from '../../../context/pagination-context';
 import { FILTER_CONFIGS } from '../config';
+import { APPLY_DEFAULT_DATE_PARAM } from 'src/views/search/config/defaultQuery';
 import { useSearchResultsFetchedContext } from 'src/views/search/context/search-results-fetched-context';
 import { useSearchTabsContext } from 'src/views/search/context/search-tabs-context';
 import { useBioSampleAggregation } from 'src/views/search/hooks/useBioSampleAggregation';
@@ -222,6 +223,9 @@ export const Filters = React.memo(
         handleUpdate({
           from: 1,
           filters: updatedFilterString,
+          // Touching the date filter (including the reset button, which passes
+          // an empty value) opts out of the default range so it isn't re-seeded.
+          ...(facet === 'date' ? { [APPLY_DEFAULT_DATE_PARAM]: 'false' } : {}),
         });
       },
       [selectedFilters, handleUpdate],

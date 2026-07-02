@@ -8,7 +8,6 @@ import {
 } from '../repository-matcher/components/TableCells';
 import { SavedColumn, SavedResourceItem, SavedRow } from './types';
 import { defaultSearchValue } from '../repository-matcher/hooks/useRepositoryMatcherData';
-
 import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
 import { SavedDataset, SavedQuery } from 'src/hooks/useUserData/types';
 import { useUserData } from 'src/hooks/useUserData';
@@ -17,6 +16,10 @@ import {
   FILTER_CONFIGS,
   queryFilterObject2String,
 } from '../search/components/filters';
+import {
+  APPLY_DEFAULT_DATE_FILTER_KEY,
+  APPLY_DEFAULT_DATE_PARAM,
+} from '../search/config/defaultQuery';
 import { generateTags } from '../search/components/filters/components/tag/utils';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 
@@ -50,7 +53,7 @@ const SavedResourceNameCell = ({
     ds => ds.dataset_id === value.dataset_id,
   );
   return (
-    <HStack alignItems='flex-start'>
+    <HStack alignItems='flex-start' mt={-1}>
       <BookmarkIconButton
         isFavorited={isFavorited}
         onClick={() =>
@@ -84,7 +87,7 @@ const SavedQueryNameCell = ({
   // once with different filters, and each must be favorited/removed on its own.
   const isFavorited = findSavedQueryIndex(savedQueries, value) !== -1;
   return (
-    <HStack alignItems='flex-start'>
+    <HStack alignItems='flex-start' mt={-1}>
       <BookmarkIconButton
         isFavorited={isFavorited}
         aria-label={isFavorited ? 'Remove saved query' : 'Save query'}
@@ -325,6 +328,7 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
           value={value.toLocaleString()}
           isLoading={isLoading}
           noOfLines={1}
+          mt={0.5}
         />
       );
     },
@@ -335,12 +339,23 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
     fields: ['name', 'query'],
     columns: { isSortable: true, isDefault: true },
     transform: (item): SavedQuery & { url: string } => {
-      const filter_string = queryFilterObject2String(item.filters) || '';
+      // The reserved opt-out marker is stored inside the saved filters but must
+      // travel as a URL param, not inside the serialized filter string.
+      const filters = item.filters || {};
+      const filter_string = queryFilterObject2String(filters) || '';
+      // If no explicit date is present and the user has opted out of the default date range, add the opt-out param to the URL so it doesn't add the default date.
+      const applyDefaultDateParam =
+        !filters.date || filters[APPLY_DEFAULT_DATE_FILTER_KEY] === false
+          ? `&${APPLY_DEFAULT_DATE_PARAM}=false`
+          : '';
+
       return {
         ...item,
         url: `/search?q=${encodeURIComponent(
           item.query,
-        )}&filters=${encodeURIComponent(filter_string)}`,
+        )}&filters=${encodeURIComponent(
+          filter_string,
+        )}${applyDefaultDateParam}`,
       };
     },
     getSortValue: (value: SavedQuery) =>

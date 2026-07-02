@@ -12,8 +12,10 @@ import {
   SelectedFilterValueType,
 } from 'src/views/search/components/filters/types';
 import {
+  APPLY_DEFAULT_DATE_PARAM,
   defaultQuery,
   defaultSelectedFilters,
+  shouldApplyDefaultDate,
 } from 'src/views/search/config/defaultQuery';
 import { SearchResultsHeader } from 'src/views/search/components/search-results-header';
 import { SavedDataErrorToast } from 'src/views/saved/components/saved-data-error-toast';
@@ -87,11 +89,14 @@ const Search: NextPage<{
     [router],
   );
 
-  // Reset the filters to the default.
+  // Clear all filters, including the default date range. Setting
+  // `applyDefaultDate=false` keeps the cleared state sticky so the default
+  // range isn't re-seeded on the next render/reload.
   const removeAllFilters = useCallback(() => {
     return handleRouteUpdate({
       from: defaultQuery.from,
       filters: defaultFilters,
+      [APPLY_DEFAULT_DATE_PARAM]: 'false',
     });
   }, [handleRouteUpdate]);
 
@@ -138,21 +143,29 @@ const Search: NextPage<{
       handleUpdate({
         from: 1,
         filters: updatedFilterString,
+        // Touching the date filter opts out of the default range: from here the
+        // date value (empty or explicit) is authoritative.
+        ...(facet === 'date' ? { [APPLY_DEFAULT_DATE_PARAM]: 'false' } : {}),
       });
     },
     [selectedFilters, handleUpdate],
   );
 
-  // Apply default date filter on first load only
+  // Apply default date filter on first load only — but not when the user has
+  // opted out (`applyDefaultDate=false`) or already has a date filter applied.
   useEffect(() => {
     if (!router.isReady) return;
 
-    handleRouteUpdate({
-      filters: queryFilterObject2String({
-        ...defaultSelectedFilters,
-        ...selectedFilters,
-      }),
-    });
+    if (
+      shouldApplyDefaultDate(router.query.applyDefaultDate, selectedFilters)
+    ) {
+      handleRouteUpdate({
+        filters: queryFilterObject2String({
+          ...defaultSelectedFilters,
+          ...selectedFilters,
+        }),
+      });
+    }
 
     hasInitialized.current = true;
   }, [router.isReady]);

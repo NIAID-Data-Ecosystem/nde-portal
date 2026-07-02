@@ -31,6 +31,24 @@ describe('filters/utils/query-string', () => {
     expect(queryFilterObject2String({ topic: [], date: [] })).toBeNull();
   });
 
+  it('never serializes the reserved _applyDefaultDate marker', () => {
+    const result = queryFilterObject2String({
+      topic: ['alpha'],
+      _applyDefaultDate: false,
+    } as unknown as Parameters<typeof queryFilterObject2String>[0]);
+
+    expect(result).toBe('(topic:("alpha"))');
+    expect(result).not.toContain('_applyDefaultDate');
+  });
+
+  it('returns null when only the reserved _applyDefaultDate marker is present', () => {
+    expect(
+      queryFilterObject2String({
+        _applyDefaultDate: false,
+      } as unknown as Parameters<typeof queryFilterObject2String>[0]),
+    ).toBeNull();
+  });
+
   it('handles a selected filter value that is unexpectedly a string', () => {
     const result = queryFilterObject2String({
       topic: 'alpha',
