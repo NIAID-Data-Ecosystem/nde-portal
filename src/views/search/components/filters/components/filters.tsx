@@ -219,9 +219,15 @@ export const Filters = React.memo(
         handleUpdate({
           from: 1,
           filters: updatedFilterString,
-          // Touching the date filter (including the reset button, which passes
-          // an empty value) opts out of the default range so it isn't re-seeded.
-          ...(facet === 'date' ? { [APPLY_DEFAULT_DATE_PARAM]: 'false' } : {}),
+          // Touching the date filter makes the date value authoritative. The
+          // reset button passes an empty value → opt out of the default range;
+          // a real value drops the param (the value already suppresses it).
+          ...(facet === 'date'
+            ? {
+                [APPLY_DEFAULT_DATE_PARAM]:
+                  updatedValues.length > 0 ? undefined : 'false',
+              }
+            : {}),
         });
       },
       [selectedFilters, handleUpdate],
