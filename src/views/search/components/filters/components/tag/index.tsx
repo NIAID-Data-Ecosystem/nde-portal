@@ -12,7 +12,10 @@ import {
   SelectedFilterType,
   SelectedFilterValueType,
 } from '../../types';
-import { defaultQuery } from 'src/views/search/config/defaultQuery';
+import {
+  APPLY_DEFAULT_DATE_PARAM,
+  defaultQuery,
+} from 'src/views/search/config/defaultQuery';
 import { isEqual } from 'lodash';
 import { generateTags } from './utils';
 import { SearchResultsHeading } from '../../../search-results-header';
@@ -95,6 +98,11 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
       handleRouteUpdate({
         from: defaultQuery.from,
         filters: queryFilterObject2String(updatedFilters),
+        // Removing the date tag opts out of the default range so it isn't
+        // re-seeded on the next render/reload.
+        ...(filterKey === 'date'
+          ? { [APPLY_DEFAULT_DATE_PARAM]: 'false' }
+          : {}),
       });
     };
 

@@ -7,6 +7,7 @@ import {
   TextProps,
   VStack,
 } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
 import { Link } from 'src/components/link';
 import { AI_ASSISTED_SEARCH_KC_LINK } from 'src/components/page-container/components/search/components/ai-toggle';
@@ -14,6 +15,10 @@ import { useAuth } from 'src/hooks/useAuth';
 import { useUserData } from 'src/hooks/useUserData';
 import { findSavedQueryIndex } from 'src/hooks/useUserData/helpers';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
+import {
+  APPLY_DEFAULT_DATE_FILTER_KEY,
+  APPLY_DEFAULT_DATE_PARAM,
+} from 'src/views/search/config/defaultQuery';
 import { SelectedFilterType } from '../filters';
 
 export const SearchResultsHeading = ({ children, ...props }: TextProps) => {
