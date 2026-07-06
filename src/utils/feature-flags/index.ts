@@ -4,8 +4,7 @@
 const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
 
 // Hide samples section in production builds until approved. To enable section in production, set this flag to return `false`.
-export const SHOULD_HIDE_SAMPLES = (hash: string) =>
-  hash === 'samples' && isProd;
+export const SHOULD_HIDE_SAMPLES = (hash: string) => false;
 
 // Hide the samples tab on the search results page in production builds until
 // approved. To enable tab in production, set this flag to `true`.
@@ -30,7 +29,7 @@ export const ENABLE_AUTH = true;
  * Hide sample-related fields in the advanced search field dropdown in production
  * builds until approved. To enable these fields in production, set this flag to `false`.
  */
-export const SHOULD_HIDE_SAMPLE_FIELDS = isProd;
+export const SHOULD_HIDE_SAMPLE_FIELDS = false;
 
 /**
  * The set of advanced-search field dotfields that are gated behind the
@@ -55,7 +54,7 @@ export const HIDDEN_SAMPLE_FIELDS = new Set<string>([
 
 // Show the Sample UI pill and corresponding metadata accordion section on dataset cards
 // in non-production environments. To enable in production, set this flag to `true`.
-export const SHOW_SAMPLE_UI_PILL = !isProd;
+export const SHOW_SAMPLE_UI_PILL = true;
 
 // Show the distinct "Retired" treatment for ResourceCatalog resources (gray
 // type banner, gray card background, Retired badge, and the Access Resource

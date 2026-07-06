@@ -68,6 +68,32 @@ describe('tag/utils', () => {
     ).toEqual([]);
   });
 
+  it('creates a tag when filter values are unexpectedly a string', () => {
+    expect(
+      generateTags({ conditionsOfAccess: 'restricted' } as any, configMap),
+    ).toEqual([
+      {
+        key: 'conditionsOfAccess-0',
+        filterKey: 'conditionsOfAccess',
+        name: 'Conditions',
+        value: 'restricted',
+        displayValue: 'coa-restricted',
+      },
+    ]);
+  });
+
+  it('creates a date tag when date values are unexpectedly a string', () => {
+    expect(generateTags({ date: '2020-01-01' } as any, configMap)).toEqual([
+      {
+        key: 'date-0',
+        filterKey: 'date',
+        name: 'Date',
+        value: '2020-01-01',
+        displayValue: '2020-01-01',
+      },
+    ]);
+  });
+
   it('creates transformed, display-name, and exists tags', () => {
     const tags = generateTags(
       {

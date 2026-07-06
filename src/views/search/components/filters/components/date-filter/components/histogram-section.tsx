@@ -1,6 +1,6 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
-import { Flex, Spinner, Text } from '@chakra-ui/react';
+import { Flex, Text } from '@chakra-ui/react';
 import { FilterTermType } from '../../../types';
 
 const Histogram = dynamic(() => import('./histogram'), {
@@ -40,26 +40,6 @@ export const HistogramSection: React.FC<HistogramSectionProps> = ({
       minHeight='180px'
       height='100%'
     >
-      {(isLoading || isUpdating) && (
-        <Flex
-          position='absolute'
-          top={0}
-          width='100%'
-          height='100%'
-          bg='whiteAlpha.600'
-          zIndex={1000}
-          alignItems='center'
-          justifyContent='center'
-        >
-          <Spinner
-            color='accent.600'
-            emptyColor='white'
-            position='absolute'
-            size='md'
-            thickness='2px'
-          />
-        </Flex>
-      )}
       {hasData ? (
         <Histogram updatedData={data || []} handleClick={onDateSelect} />
       ) : (
