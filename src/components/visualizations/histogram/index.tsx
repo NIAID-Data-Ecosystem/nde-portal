@@ -88,8 +88,14 @@ export const DateHistogram = (props: DateHistogramProps) => {
       handleUpdate({
         from: 1,
         filters: updatedFilterString,
-        // Adjusting the date via the histogram opts out of the default range.
-        ...(facet === 'date' ? { [APPLY_DEFAULT_DATE_PARAM]: 'false' } : {}),
+        // Adjusting the date makes the date value authoritative: opt out of the
+        // default range when cleared to empty; drop the param when a value stays.
+        ...(facet === 'date'
+          ? {
+              [APPLY_DEFAULT_DATE_PARAM]:
+                updatedValues.length > 0 ? undefined : 'false',
+            }
+          : {}),
       });
     },
     [selectedFilters, handleUpdate],

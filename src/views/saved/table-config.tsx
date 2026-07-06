@@ -308,7 +308,7 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
     label: 'Total',
     fields: ['total'],
     columns: {
-      style: { maxWidth: '100px', minWidth: '100px' },
+      style: { minWidth: '100px', maxWidth: '100px' },
     },
     transform: (item): number => {
       if (!item.total) return 0;
@@ -329,6 +329,7 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
           isLoading={isLoading}
           noOfLines={1}
           mt={0.5}
+          ml={-0.5}
         />
       );
     },

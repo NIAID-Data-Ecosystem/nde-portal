@@ -143,9 +143,15 @@ const Search: NextPage<{
       handleUpdate({
         from: 1,
         filters: updatedFilterString,
-        // Touching the date filter opts out of the default range: from here the
-        // date value (empty or explicit) is authoritative.
-        ...(facet === 'date' ? { [APPLY_DEFAULT_DATE_PARAM]: 'false' } : {}),
+        // Touching the date filter makes the date value authoritative. Opt out
+        // of the default range when cleared to empty; drop the param when a real
+        // value remains (the value itself already suppresses the default).
+        ...(facet === 'date'
+          ? {
+              [APPLY_DEFAULT_DATE_PARAM]:
+                sanitizedValues.length > 0 ? undefined : 'false',
+            }
+          : {}),
       });
     },
     [selectedFilters, handleUpdate],
