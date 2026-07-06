@@ -47,8 +47,15 @@ const SETTINGS_COPY = {
           <>
             We couldn’t access a public email address from your ORCID record. To
             enable email updates, your ORCID record must include a verified
-            email address with visibility set to Everyone. You can update this
-            in your ORCID account settings.
+            email address with visibility set to{' '}
+            <Text as='span' fontWeight='bold' color='inherit'>
+              Everyone
+            </Text>
+            . You can update this in{' '}
+            <Link href={'https://orcid.org/account'} textDecoration='underline'>
+              the email notification settings of your ORCID account
+            </Link>
+            .
           </>
         ),
       },
