@@ -24,7 +24,6 @@ import { Link } from 'src/components/link';
 import { useLocalStorage } from 'usehooks-ts';
 import { useRouter } from 'next/router';
 import { useEffect, useRef } from 'react';
-import { useAuth } from 'src/hooks/useAuth';
 import { useUserData } from 'src/hooks/useUserData';
 
 const HOVER_OPEN_DELAY = 200; // ms before showing

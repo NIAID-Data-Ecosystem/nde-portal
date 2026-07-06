@@ -30,6 +30,7 @@ export const BookmarkIconButton: React.FC<
         isRound={true}
         borderRadius='50%'
         size='sm'
+        colorScheme='blue'
         {...props}
       />
     </Tooltip>

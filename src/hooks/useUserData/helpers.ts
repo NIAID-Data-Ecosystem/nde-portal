@@ -116,3 +116,45 @@ export const parseSavedQueries = (queries: SavedQuery[]): SavedQuery[] =>
     ...query,
     filters: parseSavedQueryFilters(query.filters),
   }));
+
+/**
+ * Stringify a value with object keys sorted recursively, so that two
+ * structurally-equal filter objects compare equal regardless of key order.
+ * Array order is preserved (it is meaningful for filters such as
+ * `date: [start, end, ...]`).
+ */
+export const stableStringify = (value: unknown): string => {
+  if (Array.isArray(value)) {
+    return `[${value.map(stableStringify).join(',')}]`;
+  }
+  if (value && typeof value === 'object') {
+    const entries = Object.keys(value as Record<string, unknown>)
+      .sort()
+      .map(
+        key =>
+          `${JSON.stringify(key)}:${stableStringify(
+            (value as Record<string, unknown>)[key],
+          )}`,
+      );
+    return `{${entries.join(',')}}`;
+  }
+  return JSON.stringify(value) ?? 'null';
+};
+
+/**
+ * Locate a saved query by identity (`query` string + structurally-equal
+ * `filters`) rather than by position. Deleting by index is fragile: the
+ * favorites API removes by index, so any stale index (e.g. computed before a
+ * prior delete shrank the list) can point past the end of the server array and
+ * return "Index out of range". Resolving the index from the freshest list at
+ * call time keeps deletes correct regardless of order. Returns -1 if absent.
+ */
+export const findSavedQueryIndex = (
+  queries: SavedQuery[],
+  target: Pick<SavedQuery, 'query' | 'filters'>,
+): number =>
+  queries.findIndex(
+    query =>
+      query.query === target.query &&
+      stableStringify(query.filters) === stableStringify(target.filters),
+  );

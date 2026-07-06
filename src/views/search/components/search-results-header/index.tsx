@@ -2,41 +2,24 @@ import {
   Flex,
   FlexProps,
   HStack,
+  Stack,
   Text,
   TextProps,
   VStack,
 } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
 import { Link } from 'src/components/link';
 import { AI_ASSISTED_SEARCH_KC_LINK } from 'src/components/page-container/components/search/components/ai-toggle';
 import { useAuth } from 'src/hooks/useAuth';
 import { useUserData } from 'src/hooks/useUserData';
+import { findSavedQueryIndex } from 'src/hooks/useUserData/helpers';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
+import {
+  APPLY_DEFAULT_DATE_FILTER_KEY,
+  APPLY_DEFAULT_DATE_PARAM,
+} from 'src/views/search/config/defaultQuery';
 import { SelectedFilterType } from '../filters';
-
-/**
- * Stringify a value with object keys sorted recursively, so that two
- * structurally-equal filter objects compare equal regardless of key order.
- * Array order is preserved (it is meaningful for filters such as
- * `date: [start, end, ...]`).
- */
-const stableStringify = (value: unknown): string => {
-  if (Array.isArray(value)) {
-    return `[${value.map(stableStringify).join(',')}]`;
-  }
-  if (value && typeof value === 'object') {
-    const entries = Object.keys(value as Record<string, unknown>)
-      .sort()
-      .map(
-        key =>
-          `${JSON.stringify(key)}:${stableStringify(
-            (value as Record<string, unknown>)[key],
-          )}`,
-      );
-    return `{${entries.join(',')}}`;
-  }
-  return JSON.stringify(value) ?? 'null';
-};
 
 export const SearchResultsHeading = ({ children, ...props }: TextProps) => {
   return (
@@ -81,12 +64,11 @@ export const SearchResultsHeader = ({
 
   const { savedQueries, addSavedQuery, removeSavedQuery } = useUserData();
 
-  const favoriteIndex = savedQueries.findIndex(
-    search =>
-      search.query === querystring &&
-      stableStringify(search.filters) === stableStringify(selectedFilters),
-  );
-  const isFavorited = favoriteIndex !== -1;
+  const isFavorited =
+    findSavedQueryIndex(savedQueries, {
+      query: querystring,
+      filters: selectedFilters,
+    }) !== -1;
   return (
     <VStack alignItems='flex-start' spacing={1} fontSize='sm' flex={1}>
       {showAIBanner && (
@@ -107,17 +89,23 @@ export const SearchResultsHeader = ({
         </AIBanner>
       )}
       {/* Heading: Showing results for... */}
-      <SearchResultsHeading as='h1' fontSize='inherit'>
-        {querystring === '__all__'
-          ? 'Showing all results'
-          : 'Showing results for: '}
-      </SearchResultsHeading>
-      {/* Query string */}
-      {querystring !== '__all__' && (
+      <Stack
+        // Use row layout for "All Results" and column layout for other queries
+        flexDirection={querystring === '__all__' ? 'row' : 'column'}
+        spacing={1}
+      >
+        <SearchResultsHeading as='h1' fontSize='inherit' whiteSpace='nowrap'>
+          {querystring === '__all__'
+            ? 'Showing all results'
+            : 'Showing results for: '}
+        </SearchResultsHeading>
+        {/* Query string */}
         <HStack spacing={1} width='100%' alignItems='flex-start'>
-          <Text color='text.heading' fontSize='inherit' fontWeight='medium'>
-            {querystring.replaceAll('\\', '')}
-          </Text>
+          {querystring !== '__all__' && (
+            <Text color='text.heading' fontSize='inherit' fontWeight='medium'>
+              {querystring.replaceAll('\\', '')}
+            </Text>
+          )}
 
           {ENABLE_AUTH && (
             <BookmarkIconButton
@@ -133,17 +121,22 @@ export const SearchResultsHeader = ({
                   return;
                 }
                 return isFavorited
-                  ? removeSavedQuery(favoriteIndex)
+                  ? removeSavedQuery({
+                      query: querystring,
+                      filters: selectedFilters,
+                    })
                   : addSavedQuery({
                       query: querystring,
-                      name: `Search: ${querystring}`,
+                      name: `${
+                        querystring === '__all__' ? 'All results' : querystring
+                      }`,
                       filters: selectedFilters,
                     });
               }}
             />
           )}
         </HStack>
-      )}
+      </Stack>
     </VStack>
   );
 };
