@@ -1,74 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-
-export type UserPreferences = {
-  ai_toggle_preference: boolean;
-  beta: boolean;
-  contact_preference: boolean;
-  feedback_preference: boolean;
-};
-
-export type UserPreferencesKeys = keyof UserPreferences;
-
-export type FavoriteSearch = {
-  query: string;
-  name: string;
-  saved_at?: string;
-};
-
-export type FavoriteDataset = {
-  dataset_id: string;
-  name: string;
-  saved_at?: string;
-};
-
-/**
- * Mock favorite datasets used to populate the user's saved resources in
- * development mode.
- */
-export const MOCK_FAVORITE_DATASETS: FavoriteDataset[] = [
-  {
-    dataset_id: 'figshare_25077557',
-    name: 'S1 Data -',
-    saved_at: '2026-05-28T20:52:16.015Z',
-  },
-  {
-    dataset_id: 'biotools_123fastq',
-    name: '123FASTQ',
-    saved_at: '2026-05-21T20:52:22.978Z',
-  },
-  {
-    dataset_id: 'figshare_25077596',
-    name: 'Descriptive statistics and correlation matrix.',
-    saved_at: '2026-05-27T20:52:16.714Z',
-  },
-  {
-    dataset_id: 'figshare_25077600',
-    name: 'Summary of the distribution, host plants and molecular data for the non-native psyllid taxa of the central Macaronesian islands.',
-    saved_at: '2026-05-23T20:52:20.978Z',
-  },
-  {
-    dataset_id: 'figshare_25077606',
-    name: 'Primer combinations used to amplify cox1 with reference, sequence, annealing temperature, and amplicon length.',
-    saved_at: '2026-05-22T20:52:21.978Z',
-  },
-  {
-    dataset_id: 'figshare_25077693',
-    name: 'Institutional-level dispositions limiting glaucoma care.',
-    saved_at: '2026-05-21T20:52:22.978Z',
-  },
-];
-
-export type UserProfile = UserPreferences & {
-  username: string;
-  oauth_provider: string;
-  linked_accounts: string[];
-  favorite_searches: FavoriteSearch[];
-  favorite_datasets: FavoriteDataset[];
-  created: string;
-  updated: string;
-  name: string;
-  email: string;
-};
+import { MOCK_SAVED_DATASETS } from './mocks/saved_datasets';
+import {
+  SavedDataset,
+  SavedQuery,
+  UserPreferences,
+  UserPreferencesKeys,
+  UserProfile,
+} from './types';
+import { MOCK_SAVED_QUERIES } from './mocks/saved_queries';
+import { formatSavedQueryFilters, parseSavedQueries } from './helpers';
 
 const DEFAULT_PREFERENCES: UserPreferences = {
   ai_toggle_preference: false,
@@ -82,8 +22,8 @@ const DEFAULT_MOCK_PROFILE: UserProfile = {
   oauth_provider: process.env.NEXT_PUBLIC_MOCK_AUTH_PROVIDER || 'github',
   linked_accounts: [],
   ai_toggle_preference: false,
-  favorite_searches: [],
-  favorite_datasets: MOCK_FAVORITE_DATASETS,
+  favorite_searches: MOCK_SAVED_QUERIES,
+  favorite_datasets: MOCK_SAVED_DATASETS,
   name: process.env.NEXT_PUBLIC_MOCK_AUTH_NAME || 'Mock User',
   email: process.env.NEXT_PUBLIC_MOCK_AUTH_EMAIL || 'user@email.com',
   beta: true,
@@ -104,13 +44,9 @@ export function useUserData() {
   const [preferences, setPreferences] =
     useState<UserPreferences>(DEFAULT_PREFERENCES);
 
-  const [favoriteSearches, setFavoriteSearches] = useState<FavoriteSearch[]>(
-    [],
-  );
+  const [savedQueries, setSavedQueries] = useState<SavedQuery[]>([]);
 
-  const [favoriteDatasets, setFavoriteDatasets] = useState<FavoriteDataset[]>(
-    [],
-  );
+  const [savedDatasets, setSavedDatasets] = useState<SavedDataset[]>([]);
 
   const mockUserDataRef = useRef<{ profile: UserProfile }>({
     // Clone the arrays so the mock API's push/filter operations don't mutate
@@ -172,19 +108,26 @@ export function useUserData() {
         method === 'POST'
       ) {
         const now = new Date().toISOString();
-        const payload = body as FavoriteSearch;
-        store.profile.favorite_searches.push({
-          query: payload.query,
-          name: payload.name,
-          saved_at: now,
-        });
-        store.profile.updated = now;
+        const payload = body as SavedQuery;
+        // Build a new array (rather than mutating in place) so the returned
+        // reference differs and React re-renders consumers.
+        const favorite_searches = [
+          ...store.profile.favorite_searches,
+          {
+            query: payload.query,
+            name: payload.name,
+            filters: payload.filters,
+            saved_at: now,
+            total: payload.total,
+          },
+        ];
+        store.profile = { ...store.profile, favorite_searches, updated: now };
         result = {
           status: 200,
           ok: true,
           body: {
             message: 'Mock favorite search saved',
-            favorite_searches: store.profile.favorite_searches,
+            favorite_searches,
           },
         };
       } else if (
@@ -194,14 +137,16 @@ export function useUserData() {
         const now = new Date().toISOString();
         const payload = body as { index: number };
         if (typeof payload?.index === 'number' && payload.index >= 0) {
-          store.profile.favorite_searches.splice(payload.index, 1);
-          store.profile.updated = now;
+          const favorite_searches = store.profile.favorite_searches.filter(
+            (_, i) => i !== payload.index,
+          );
+          store.profile = { ...store.profile, favorite_searches, updated: now };
           result = {
             status: 200,
             ok: true,
             body: {
               message: 'Mock favorite search removed',
-              favorite_searches: store.profile.favorite_searches,
+              favorite_searches,
             },
           };
         } else {
@@ -216,19 +161,24 @@ export function useUserData() {
         method === 'POST'
       ) {
         const now = new Date().toISOString();
-        const payload = body as FavoriteDataset;
-        store.profile.favorite_datasets.push({
-          dataset_id: payload.dataset_id,
-          name: payload.name,
-          saved_at: now,
-        });
-        store.profile.updated = now;
+        const payload = body as SavedDataset;
+        // Build a new array (rather than mutating in place) so the returned
+        // reference differs and React re-renders consumers.
+        const favorite_datasets = [
+          ...store.profile.favorite_datasets,
+          {
+            dataset_id: payload.dataset_id,
+            name: payload.name,
+            saved_at: now,
+          },
+        ];
+        store.profile = { ...store.profile, favorite_datasets, updated: now };
         result = {
           status: 200,
           ok: true,
           body: {
             message: 'Mock favorite dataset saved',
-            favorite_datasets: store.profile.favorite_datasets,
+            favorite_datasets,
           },
         };
       } else if (
@@ -328,10 +278,10 @@ export function useUserData() {
       }));
 
       if (Array.isArray(profile.favorite_searches)) {
-        setFavoriteSearches(profile.favorite_searches);
+        setSavedQueries(parseSavedQueries(profile.favorite_searches));
       }
       if (Array.isArray(profile.favorite_datasets)) {
-        setFavoriteDatasets(profile.favorite_datasets);
+        setSavedDatasets(profile.favorite_datasets);
       }
     }
     return result;
@@ -355,17 +305,17 @@ export function useUserData() {
     [callUserDataApi, preferences],
   );
 
-  const saveFavoriteSearch = useCallback(
-    async (search: FavoriteSearch) => {
+  const addSavedQuery = useCallback(
+    async (search: Omit<SavedQuery, 'total'>) => {
       const result = await callUserDataApi(
         'POST',
         '/user/data/favorites/searches',
-        search,
+        { ...search, filters: formatSavedQueryFilters(search.filters) },
       );
       if (result && 'body' in result && result.ok && result.body) {
-        const body = result.body as { favorite_searches?: FavoriteSearch[] };
+        const body = result.body as { favorite_searches?: SavedQuery[] };
         if (Array.isArray(body.favorite_searches)) {
-          setFavoriteSearches(body.favorite_searches);
+          setSavedQueries(parseSavedQueries(body.favorite_searches));
         }
       }
       return result;
@@ -373,7 +323,7 @@ export function useUserData() {
     [callUserDataApi],
   );
 
-  const removeFavoriteSearch = useCallback(
+  const removeSavedQuery = useCallback(
     async (index: number) => {
       const result = await callUserDataApi(
         'DELETE',
@@ -381,9 +331,9 @@ export function useUserData() {
         { index },
       );
       if (result && 'body' in result && result.ok && result.body) {
-        const body = result.body as { favorite_searches?: FavoriteSearch[] };
+        const body = result.body as { favorite_searches?: SavedQuery[] };
         if (Array.isArray(body.favorite_searches)) {
-          setFavoriteSearches(body.favorite_searches);
+          setSavedQueries(parseSavedQueries(body.favorite_searches));
         }
       }
       return result;
@@ -391,17 +341,17 @@ export function useUserData() {
     [callUserDataApi],
   );
 
-  const saveFavoriteDataset = useCallback(
-    async (dataset: FavoriteDataset) => {
+  const addSavedDataset = useCallback(
+    async (dataset: SavedDataset) => {
       const result = await callUserDataApi(
         'POST',
         '/user/data/favorites/datasets',
         dataset,
       );
       if (result && 'body' in result && result.ok && result.body) {
-        const body = result.body as { favorite_datasets?: FavoriteDataset[] };
+        const body = result.body as { favorite_datasets?: SavedDataset[] };
         if (Array.isArray(body.favorite_datasets)) {
-          setFavoriteDatasets(body.favorite_datasets);
+          setSavedDatasets(body.favorite_datasets);
         }
       }
       return result;
@@ -409,7 +359,7 @@ export function useUserData() {
     [callUserDataApi],
   );
 
-  const removeFavoriteDataset = useCallback(
+  const removeSavedDataset = useCallback(
     async (datasetId: string) => {
       const result = await callUserDataApi(
         'DELETE',
@@ -419,9 +369,9 @@ export function useUserData() {
         },
       );
       if (result && 'body' in result && result.ok && result.body) {
-        const body = result.body as { favorite_datasets?: FavoriteDataset[] };
+        const body = result.body as { favorite_datasets?: SavedDataset[] };
         if (Array.isArray(body.favorite_datasets)) {
-          setFavoriteDatasets(body.favorite_datasets);
+          setSavedDatasets(body.favorite_datasets);
         }
       }
       return result;
@@ -431,14 +381,14 @@ export function useUserData() {
 
   return {
     preferences,
-    favoriteSearches,
-    favoriteDatasets,
+    savedQueries,
+    savedDatasets,
     isDevMode,
     getProfile,
     updatePreferenceField,
-    saveFavoriteSearch,
-    removeFavoriteSearch,
-    saveFavoriteDataset,
-    removeFavoriteDataset,
+    addSavedQuery,
+    removeSavedQuery,
+    addSavedDataset,
+    removeSavedDataset,
   };
 }
