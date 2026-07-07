@@ -6,9 +6,18 @@ sync with `e2e/README.md` and `e2e/utils/axe.ts` if conventions change.
 
 ## The shared helpers (e2e/utils/axe)
 
-- `analyzeA11y(page, { include? })` — runs an axe scan with `WCAG_AA_TAGS`
-  (wcag2a/aa, wcag21a/aa, plus `best-practice`) and **returns the results**. It
-  does not assert; the spec decides what fails. Before scanning it calls
+- `runAxeScans(page, testInfo, state, { include?, exclude? })` — **the canonical
+  per-state scan**, used by every spec. Runs ONE `analyzeA11y` traversal, then
+  attaches + asserts three report sections from that single result: the full
+  WCAG scan, a focused color-contrast section, and a button/link-name section
+  (the latter two are derived by filtering the one result's violations by rule
+  id — no extra DOM walks), plus a screenshot. Asserts only serious/critical.
+  Call it from `runSharedChecks` after the structural/form asserts, and directly
+  from interaction-state tests.
+- `analyzeA11y(page, { include?, exclude? })` — runs a single axe scan with
+  `WCAG_AA_TAGS` (wcag2a/aa, wcag21a/aa, plus `best-practice`) and **returns the
+  results** without asserting. `runAxeScans` calls this internally; reach for it
+  directly only when you need a bespoke scan. Before scanning it calls
   `waitForAnimationsSettled` so the scan sees final, opaque colors (see below).
 - `waitForAnimationsSettled(page, timeout?)` — waits for in-flight CSS
   transitions and **finite** animations to finish; infinite ones (skeleton
@@ -21,12 +30,17 @@ sync with `e2e/README.md` and `e2e/utils/axe.ts` if conventions change.
 - `formatViolations(violations)` — readable summary; pass it as the second arg
   to `expect()` so failures print actionable context.
 - `attachA11yReport(testInfo, name, violations)` — attaches JSON + text reports
-  to the HTML report. Call it for every scan, passing or failing.
+  to the HTML report. `runAxeScans` calls this for each section.
+- `attachScreenshot(page, testInfo, name)` — best-effort full-page screenshot
+  (falls back to viewport, then no-op) so a green scan never fails on a
+  screenshot error. `runAxeScans` calls it last.
 
 Because `WCAG_AA_TAGS` already includes color-contrast and the landmark /
-heading-order best-practice rules, a single `analyzeA11y` scan is the backbone
-of every check. The separate focused contrast scan is for clearer triage, not
-because the main scan misses contrast.
+heading-order best-practice rules, a single traversal covers everything — which
+is exactly why `runAxeScans` walks the DOM once and *filters* that result into
+the contrast and button/link-name sections rather than re-scanning. Those
+sections exist for clearer triage in the report, not because the main scan
+misses them.
 
 ## The state matrix
 
@@ -44,16 +58,27 @@ the failing state clearly. Use `page.route` to make each state deterministic.
 Drop a state only when it genuinely cannot occur for the route. Be especially
 reluctant to skip the error state.
 
-## When a state can't be reached (SSR / getStaticProps routes)
+## Server-side data (getStaticProps / getStaticPaths) and the static export
 
-This is a Pages Router static-export app, so some routes render data before the
-browser runs and a given state is genuinely unreachable from a spec. Two rules:
+This is a Pages Router static-export app. The a11y suite runs against a prebuilt
+`out/`, so `getStaticProps`/`getStaticPaths` run **once at build time** (during
+`yarn build:a11y`), not per request. Two consequences:
 
-- **Only client-side requests are interceptable.** `page.route` runs in the
-  browser, so it can mock the client-side TanStack Query refetch but **not** a
-  `getStaticProps` / `getServerSideProps` fetch — that happens in the Next dev
-  server, out of reach. Always wait for text that only your mocked fixture
-  renders, so you know you're scanning the mocked DOM and not the SSR seed.
+- **`page.route` can't touch build-time fetches.** `page.route` runs in the
+  browser, so it mocks the client-side TanStack Query refetch but **not** a
+  `getStaticProps`/`getStaticPaths` fetch. For Strapi CMS data those fetches hit
+  the **mock Strapi server** (`e2e/mock-strapi-server.js`), which serves
+  deterministic fixtures at build time. Add a fixture there if a route's
+  server-side code reads a new Strapi endpoint. Always still wait for text that
+  only your *client* `page.route` fixture renders, so you're scanning the mocked
+  DOM and not the build-time seed.
+- **Dynamic routes must be pre-generated.** With `fallback: false`, only slugs
+  emitted by `getStaticPaths` exist in `out/`. A spec navigating to
+  `/diseases/<slug>`, `/knowledge-center/<slug>`, or `/features/<slug>` requires
+  that slug to come back from the mock Strapi fixtures — otherwise the page isn't
+  built and the nav 404s. `diseases.spec.ts` (slug `asthma`) and
+  `knowledge-center.spec.ts` (slug `frequently-asked-questions`) are the
+  examples; their slugs live in `e2e/mock-strapi-server.js`.
 - **Seeded content suppresses loading and error UI.** When a page seeds its
   state from `getStaticProps` props on first paint (e.g. `src/pages/about.tsx`),
   no skeleton renders while the client query is in flight, and an error block
@@ -78,14 +103,17 @@ Rules, in priority order:
 1. **Mock every request each state depends on** with `page.route` and a fixed
    fixture. This is the default and covers most routes (client-side TanStack
    Query hooks hitting `**/query*`, `**/metadata*`, `**/api/*`).
-2. **If the only data path is a server-side
-   `getStaticProps`/`getServerSideProps` fetch** that `page.route` can't
-   intercept, don't settle for scanning live. Prefer making the data
-   client-fetchable — e.g. add a client-side `useQuery` seeded from the props
-   (`placeholderData: () => props.data`) — so the refetch becomes interceptable
-   and the populated/error states become deterministic and mockable.
-   `program-collections.tsx` does exactly this; `about.tsx` and
-   `knowledge-center` are the seed-from-props + client-refetch pattern to copy.
+2. **If the only data path is a server-side `getStaticProps`/`getStaticPaths`
+   fetch** that `page.route` can't intercept: for **Strapi CMS** endpoints, add
+   a deterministic fixture to the **mock Strapi server**
+   (`e2e/mock-strapi-server.js`) — it feeds those build-time fetches. For other
+   server-side data, prefer making it client-fetchable instead — e.g. a
+   client-side `useQuery` seeded from props (`placeholderData: () => props.data`)
+   — so the refetch becomes interceptable and the populated/error states become
+   deterministic and mockable. `program-collections.tsx` does exactly this;
+   `about.tsx` and `knowledge-center` are the seed-from-props + client-refetch
+   pattern to copy. Either way, wait for client-fixture-only content so the scan
+   targets the mocked DOM, not the build-time seed.
 3. **Only if neither is possible**, scan live as a last resort and **document
    the live-data dependency** in the spec's header comment so a reviewer knows
    the scan is non-deterministic by necessity, not by oversight.

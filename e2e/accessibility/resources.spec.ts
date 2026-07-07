@@ -33,16 +33,8 @@
  * raw "JSON Metadata" section is excluded from the scan — see
  * JSON_VIEWER_EXCLUDE for why.
  */
-import AxeBuilder from '@axe-core/playwright';
 import { test, expect, type Page, type TestInfo } from '@playwright/test';
-import {
-  analyzeA11y,
-  attachA11yReport,
-  attachScreenshot,
-  blockingViolations,
-  formatViolations,
-  WCAG_AA_TAGS,
-} from '../utils/axe';
+import { runAxeScans } from '../utils/axe';
 
 // --- Per-route configuration -------------------------------------------------
 
@@ -1104,36 +1096,6 @@ const escapeRegExp = (value: string) =>
 // --- Shared checks run in every state ---------------------------------------
 
 async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
-  // Full-page WCAG A/AA scan. The helper's tag set (WCAG_AA_TAGS) already
-  // includes color-contrast and the landmark/heading-order best-practice
-  // rules, so this single scan is the backbone of the check. The raw JSON
-  // metadata tree is excluded — see JSON_VIEWER_EXCLUDE.
-  const results = await analyzeA11y(page, { exclude: JSON_VIEWER_EXCLUDE });
-  await attachA11yReport(testInfo, state, results.violations);
-
-  const blocking = blockingViolations(results.violations);
-  expect(
-    blocking,
-    `Serious/critical accessibility violations found:\n${formatViolations(
-      blocking,
-    )}`,
-  ).toEqual([]);
-
-  // Focused color-contrast scan, reported separately so contrast regressions
-  // are easy to triage in the HTML report. There is no helper for this — run
-  // the single color-contrast rule inline, matching the canonical spec.
-  const contrast = await new AxeBuilder({ page })
-    .withTags(WCAG_AA_TAGS)
-    .options({ runOnly: { type: 'rule', values: ['color-contrast'] } })
-    .analyze();
-  await attachA11yReport(testInfo, `${state} — contrast`, contrast.violations);
-
-  const blockingContrast = blockingViolations(contrast.violations);
-  expect(
-    blockingContrast,
-    `Color-contrast violations found:\n${formatViolations(blockingContrast)}`,
-  ).toEqual([]);
-
   // Structural sanity — the `main` landmark proves the page chrome rendered.
   // The h1 (the resource name) only exists once data resolves, so it is asserted
   // per state by the caller rather than here.
@@ -1145,29 +1107,7 @@ async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
   await expect(search).toBeVisible();
   await expect(search).toBeEditable();
 
-  // Buttons/links: every button/link must expose an accessible name. axe's
-  // `button-name` / `link-name` rules handle aria-label, aria-labelledby, text
-  // content and titled icons, so we delegate the authoritative check to axe.
-  const names = await new AxeBuilder({ page })
-    .withTags(WCAG_AA_TAGS)
-    .options({
-      runOnly: { type: 'rule', values: ['button-name', 'link-name'] },
-    })
-    .analyze();
-  await attachA11yReport(
-    testInfo,
-    `${state} — button-link-name`,
-    names.violations,
-  );
-
-  const blockingNames = blockingViolations(names.violations);
-  expect(
-    blockingNames,
-    `Button/link name violations found:\n${formatViolations(blockingNames)}`,
-  ).toEqual([]);
-
-  // Screenshot into the HTML report so reviewers can see the scanned state.
-  await attachScreenshot(page, testInfo, state);
+  await runAxeScans(page, testInfo, state, { exclude: JSON_VIEWER_EXCLUDE });
 }
 
 // --- Loading -----------------------------------------------------------------

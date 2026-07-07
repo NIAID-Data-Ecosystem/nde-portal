@@ -16,16 +16,8 @@
  * The only meaningful, reachable state is the populated changelog content, which
  * is what we scan below.
  */
-import AxeBuilder from '@axe-core/playwright';
 import { test, expect, type Page, type TestInfo } from '@playwright/test';
-import {
-  analyzeA11y,
-  attachA11yReport,
-  attachScreenshot,
-  blockingViolations,
-  formatViolations,
-  WCAG_AA_TAGS,
-} from '../utils/axe';
+import { runAxeScans } from '../utils/axe';
 
 // --- Per-route configuration -------------------------------------------------
 
@@ -34,35 +26,6 @@ const ROUTE = '/changelog';
 // --- Shared checks run in every state ---------------------------------------
 
 async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
-  // Full-page WCAG A/AA scan. The helper's tag set (WCAG_AA_TAGS) already
-  // includes color-contrast and the landmark/heading-order best-practice
-  // rules, so this single scan is the backbone of the check.
-  const results = await analyzeA11y(page);
-  await attachA11yReport(testInfo, state, results.violations);
-
-  const blocking = blockingViolations(results.violations);
-  expect(
-    blocking,
-    `Serious/critical accessibility violations found:\n${formatViolations(
-      blocking,
-    )}`,
-  ).toEqual([]);
-
-  // Focused color-contrast scan, reported separately so contrast regressions
-  // are easy to triage in the HTML report. There is no helper for this — run
-  // the single color-contrast rule inline, matching the canonical spec.
-  const contrast = await new AxeBuilder({ page })
-    .withTags(WCAG_AA_TAGS)
-    .options({ runOnly: { type: 'rule', values: ['color-contrast'] } })
-    .analyze();
-  await attachA11yReport(testInfo, `${state} — contrast`, contrast.violations);
-
-  const blockingContrast = blockingViolations(contrast.violations);
-  expect(
-    blockingContrast,
-    `Color-contrast violations found:\n${formatViolations(blockingContrast)}`,
-  ).toEqual([]);
-
   // Structural sanity — also proves the page rendered the intended chrome. The
   // page renders exactly one h1 ("Changelog"); the markdown's own `# Changelog`
   // title is suppressed by the component, and every version entry is an h2/h3.
@@ -75,31 +38,7 @@ async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
   // `includeSearchBar` defaults to false and Changelog does not opt in), so
   // there is no primary form control to assert here.
 
-  // Buttons/links: every button/link must expose an accessible name. axe's
-  // `button-name` / `link-name` rules handle aria-label, aria-labelledby, text
-  // content and titled icons, so we delegate the authoritative check to axe.
-  // The changelog body renders many GitHub compare links, so this is the most
-  // exercised check on the page.
-  const names = await new AxeBuilder({ page })
-    .withTags(WCAG_AA_TAGS)
-    .options({
-      runOnly: { type: 'rule', values: ['button-name', 'link-name'] },
-    })
-    .analyze();
-  await attachA11yReport(
-    testInfo,
-    `${state} — button-link-name`,
-    names.violations,
-  );
-
-  const blockingNames = blockingViolations(names.violations);
-  expect(
-    blockingNames,
-    `Button/link name violations found:\n${formatViolations(blockingNames)}`,
-  ).toEqual([]);
-
-  // Screenshot into the HTML report so reviewers can see the scanned state.
-  await attachScreenshot(page, testInfo, state);
+  await runAxeScans(page, testInfo, state);
 }
 
 // --- Populated ---------------------------------------------------------------

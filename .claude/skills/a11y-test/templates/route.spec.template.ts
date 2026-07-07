@@ -1,24 +1,20 @@
 /**
  * Accessibility spec template.
  *
- * Copy to e2e/accessibility/<route-or-feature>.spec.ts and replace every
- * REPLACE_ME. Uses the real e2e/utils/axe helpers: analyzeA11y runs the scan
- * and RETURNS results (it does not assert), so the spec decides what blocks
- * via blockingViolations (serious/critical only).
+ * Copy to e2e/accessibility/<route-or-feature>.spec.ts, fix the import path to
+ * `../utils/axe`, and replace every REPLACE_ME. The scan itself is done by the
+ * shared `runAxeScans` helper: it runs ONE axe traversal and internally
+ * attaches + asserts the full WCAG scan, the focused color-contrast section,
+ * the button/link-name section, and a screenshot (serious/critical block; see
+ * blockingViolations). You only write the structural/form assertions and the
+ * per-state setup.
  *
  * The four describe blocks map to the four states every data-driven route
  * should cover. Delete a state only if it genuinely cannot occur — and think
  * twice before dropping the error state.
  */
-import AxeBuilder from '@axe-core/playwright';
 import { test, expect, type Page, type TestInfo } from '@playwright/test';
-import {
-  analyzeA11y,
-  attachA11yReport,
-  blockingViolations,
-  formatViolations,
-  WCAG_AA_TAGS,
-} from '../../../../e2e/utils/axe';
+import { runAxeScans } from '../../../../e2e/utils/axe';
 
 // --- Per-route configuration -------------------------------------------------
 
@@ -39,29 +35,6 @@ const POPULATED_FIXTURE = {
 // --- Shared checks run in every state ---------------------------------------
 
 async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
-  // Full-page WCAG A/AA scan. The helper's tag set (WCAG_AA_TAGS) already
-  // includes color-contrast and the landmark/heading-order best-practice
-  // rules, so this single scan is the backbone of the check.
-  const results = await analyzeA11y(page);
-  await attachA11yReport(testInfo, state, results.violations);
-
-  const blocking = blockingViolations(results.violations);
-  expect(blocking, formatViolations(blocking)).toEqual([]);
-
-  // Focused color-contrast scan, reported separately so contrast regressions
-  // are easy to triage in the HTML report. (Covered by the scan above too, but
-  // called out explicitly per the team's checklist.) There is no helper for
-  // this — run the single color-contrast rule inline, matching the canonical
-  // repository-matcher spec.
-  const contrast = await new AxeBuilder({ page })
-    .withTags(WCAG_AA_TAGS)
-    .options({ runOnly: { type: 'rule', values: ['color-contrast'] } })
-    .analyze();
-  await attachA11yReport(testInfo, `${state} — contrast`, contrast.violations);
-
-  const blockingContrast = blockingViolations(contrast.violations);
-  expect(blockingContrast, formatViolations(blockingContrast)).toEqual([]);
-
   // Structural sanity — also proves the page rendered the intended chrome.
   await expect(page.getByRole('main')).toBeVisible();
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
@@ -74,29 +47,11 @@ async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
   await expect(search).toBeVisible();
   await expect(search).toBeEditable();
 
-  // Buttons/links: every button/link must expose an accessible name. axe's
-  // `button-name` / `link-name` rules handle aria-label, aria-labelledby, text
-  // content and titled icons, so delegate the authoritative check to axe.
-  const names = await new AxeBuilder({ page })
-    .withTags(WCAG_AA_TAGS)
-    .options({
-      runOnly: { type: 'rule', values: ['button-name', 'link-name'] },
-    })
-    .analyze();
-  await attachA11yReport(
-    testInfo,
-    `${state} — button-link-name`,
-    names.violations,
-  );
-
-  const blockingNames = blockingViolations(names.violations);
-  expect(blockingNames, formatViolations(blockingNames)).toEqual([]);
-
-  // Screenshot into the HTML report so reviewers can see the scanned state.
-  await testInfo.attach(`${state}-screenshot`, {
-    body: await page.screenshot({ fullPage: true }),
-    contentType: 'image/png',
-  });
+  // One axe traversal → full WCAG A/AA scan + focused color-contrast section +
+  // button/link-name section + screenshot, each attached to the HTML report,
+  // asserting only serious/critical impacts. Pass { include }/{ exclude } to
+  // scope the scan (e.g. exclude a third-party widget's markup).
+  await runAxeScans(page, testInfo, state);
 }
 
 // --- Loading -----------------------------------------------------------------
@@ -186,8 +141,8 @@ test.describe('a11y: <route or feature> — error', () => {
 // block per surface here too: that markup doesn't exist on first paint, so the
 // resting scans never see it, and it's where a11y regressions hide. Drive the
 // interaction, wait for the surface's own accessible proof (an open `option`, a
-// suggestion item, the error text, a drag live-region announcement), then run
-// the SAME axe scans. Extract them into a `runAxeScans(page, testInfo, state)`
-// helper that runSharedChecks also calls, so an open portal covering the page
-// chrome doesn't flake the resting-layout `toBeVisible` asserts.
+// suggestion item, the error text, a drag live-region announcement), then call
+// the shared `runAxeScans(page, testInfo, state)` DIRECTLY (not runSharedChecks)
+// — an open portal covering the page chrome would flake the resting-layout
+// `toBeVisible` asserts, but the axe scan still covers the whole DOM.
 //

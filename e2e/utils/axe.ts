@@ -1,4 +1,4 @@
-import type { Page, TestInfo } from '@playwright/test';
+import { expect, type Page, type TestInfo } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import type { Result } from 'axe-core';
 
@@ -169,4 +169,69 @@ export async function attachScreenshot(
       // Screenshot capture is best-effort; ignore failures entirely.
     }
   }
+}
+
+/**
+ * The canonical per-state axe check shared by every a11y spec.
+ *
+ * Runs a SINGLE full WCAG A/AA traversal, then derives the focused
+ * color-contrast and button/link-name report sections by filtering that one
+ * result by rule id. Because `WCAG_AA_TAGS` already includes the
+ * `color-contrast`, `button-name`, and `link-name` rules, filtering the full
+ * result is exactly equivalent to re-running axe with `runOnly` for those
+ * rules — but walks the DOM once instead of three times. Each section is still
+ * attached separately to the HTML report for easy triage, and a screenshot of
+ * the scanned state is attached last (best-effort, never fails a green scan).
+ *
+ * Only `serious`/`critical` impacts fail the build (see `blockingViolations`);
+ * minor/moderate noise is reported but non-blocking.
+ *
+ * @param options  Optional `include`/`exclude` selectors forwarded to
+ *   `analyzeA11y` to scope the scan (e.g. excluding a third-party widget).
+ */
+export async function runAxeScans(
+  page: Page,
+  testInfo: TestInfo,
+  state: string,
+  options: { include?: string | string[]; exclude?: string | string[] } = {},
+) {
+  // Full-page WCAG A/AA scan — the backbone check. This single traversal also
+  // evaluates color-contrast and button/link-name, which we slice out below.
+  const results = await analyzeA11y(page, options);
+  await attachA11yReport(testInfo, state, results.violations);
+
+  const blocking = blockingViolations(results.violations);
+  expect(
+    blocking,
+    `Serious/critical accessibility violations found:\n${formatViolations(
+      blocking,
+    )}`,
+  ).toEqual([]);
+
+  // Focused color-contrast section, reported separately for easy triage.
+  const contrast = results.violations.filter(v => v.id === 'color-contrast');
+  await attachA11yReport(testInfo, `${state} — contrast`, contrast);
+
+  const blockingContrast = blockingViolations(contrast);
+  expect(
+    blockingContrast,
+    `Color-contrast violations found:\n${formatViolations(blockingContrast)}`,
+  ).toEqual([]);
+
+  // Buttons/links: every button/link must expose an accessible name. axe's
+  // `button-name`/`link-name` rules handle aria-label, aria-labelledby, text
+  // content and titled icons.
+  const names = results.violations.filter(
+    v => v.id === 'button-name' || v.id === 'link-name',
+  );
+  await attachA11yReport(testInfo, `${state} — button-link-name`, names);
+
+  const blockingNames = blockingViolations(names);
+  expect(
+    blockingNames,
+    `Button/link name violations found:\n${formatViolations(blockingNames)}`,
+  ).toEqual([]);
+
+  // Screenshot into the HTML report so reviewers can see the scanned state.
+  await attachScreenshot(page, testInfo, state);
 }

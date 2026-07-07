@@ -61,16 +61,8 @@
  *     is best-practice/moderate and does not block; the missing h1 on the error
  *     page is a pre-existing minor gap, out of scope here.)
  */
-import AxeBuilder from '@axe-core/playwright';
-import { test, expect, type Page, type TestInfo } from '@playwright/test';
-import {
-  analyzeA11y,
-  attachA11yReport,
-  attachScreenshot,
-  blockingViolations,
-  formatViolations,
-  WCAG_AA_TAGS,
-} from '../utils/axe';
+import { test, expect } from '@playwright/test';
+import { runAxeScans } from '../utils/axe';
 
 // --- Per-route configuration -------------------------------------------------
 
@@ -874,69 +866,6 @@ const fail500 = (route: import('@playwright/test').Route) =>
     contentType: 'application/json',
     body: JSON.stringify({ error: 'Internal Server Error' }),
   });
-
-// --- Shared axe scans --------------------------------------------------------
-
-/**
- * The axe scans every state runs: a full WCAG A/AA scan, a focused
- * color-contrast scan, and a focused button/link-name scan, each reported
- * separately, plus a screenshot. Kept separate from the per-state structural
- * assertions because the disease shapes vary (the error state has no h1, the
- * disease page has no on-page form), so each describe block asserts its own
- * landmarks/headings/forms and then calls this.
- */
-async function runAxeScans(page: Page, testInfo: TestInfo, state: string) {
-  // Full-page WCAG A/AA scan. WCAG_AA_TAGS already includes color-contrast and
-  // the landmark/heading-order best-practice rules, so this is the backbone.
-  const results = await analyzeA11y(page);
-  await attachA11yReport(testInfo, state, results.violations);
-
-  const blocking = blockingViolations(results.violations);
-  expect(
-    blocking,
-    `Serious/critical accessibility violations found:\n${formatViolations(
-      blocking,
-    )}`,
-  ).toEqual([]);
-
-  // Focused color-contrast scan, reported separately for easy triage. No helper
-  // exists for this — run the single rule inline, matching the canonical spec.
-  const contrast = await new AxeBuilder({ page })
-    .withTags(WCAG_AA_TAGS)
-    .options({ runOnly: { type: 'rule', values: ['color-contrast'] } })
-    .analyze();
-  await attachA11yReport(testInfo, `${state} — contrast`, contrast.violations);
-
-  const blockingContrast = blockingViolations(contrast.violations);
-  expect(
-    blockingContrast,
-    `Color-contrast violations found:\n${formatViolations(blockingContrast)}`,
-  ).toEqual([]);
-
-  // Buttons/links: every button/link must expose an accessible name. axe's
-  // `button-name`/`link-name` rules cover aria-label, text content, titled
-  // icons, etc., so we delegate the authoritative check to axe.
-  const names = await new AxeBuilder({ page })
-    .withTags(WCAG_AA_TAGS)
-    .options({
-      runOnly: { type: 'rule', values: ['button-name', 'link-name'] },
-    })
-    .analyze();
-  await attachA11yReport(
-    testInfo,
-    `${state} — button-link-name`,
-    names.violations,
-  );
-
-  const blockingNames = blockingViolations(names.violations);
-  expect(
-    blockingNames,
-    `Button/link name violations found:\n${formatViolations(blockingNames)}`,
-  ).toEqual([]);
-
-  // Screenshot into the HTML report so reviewers can see the scanned state.
-  await attachScreenshot(page, testInfo, state);
-}
 
 // =============================================================================
 // Index (`/diseases`, no slug) — TableOfContents

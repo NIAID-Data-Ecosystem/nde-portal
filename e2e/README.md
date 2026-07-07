@@ -14,7 +14,7 @@ yarn test:a11y
 Run one spec:
 
 ```sh
-yarn test:a11y e2e/accessibility/repository-matcher.spec.ts
+yarn test:a11y:nobuild e2e/accessibility/repository-matcher.spec.ts
 ```
 
 Open the Playwright HTML report after a run:
@@ -23,9 +23,28 @@ Open the Playwright HTML report after a run:
 yarn test:a11y:report
 ```
 
-You do not need to build the app first. Playwright starts `next dev` using the
-settings in `playwright.config.ts`. If a local server is already running on the
-configured port, Playwright reuses it outside CI.
+These tests run against a **production static export** (`out/`) served as plain
+files — not `next dev`. A prebuilt export is far faster: `next dev`
+cold-compiles each route on first hit and re-runs `getStaticProps` on every
+request, while the export serves instantly with no server-side work at runtime.
+All meaningful states are still driven client-side via `page.route`, which is
+unaffected by how the HTML was produced.
+
+- `yarn test:a11y` first runs `yarn build:a11y` (builds `out/` with the mock
+  Strapi server up), then `playwright test`. This is what CI runs.
+- `yarn test:a11y:nobuild` skips the build and reuses the existing `out/` —
+  use it for fast local iteration after you've built once. Rebuild with
+  `yarn build:a11y` whenever you change app source.
+
+Playwright serves `out/` with `serve` and boots the mock Strapi server, per
+`playwright.config.ts`. Outside CI it reuses a server already on the port.
+
+> **Dynamic routes must exist in `out/`.** Because the app is a static export
+> with `fallback: false`, only routes generated at build time exist. A spec that
+> navigates to `/diseases/<slug>` or `/knowledge-center/<slug>` requires that
+> slug to be produced by `getStaticPaths` — which is fed by the mock Strapi
+> fixtures. If you add a spec for a new dynamic route, add its slug to
+> `e2e/mock-strapi-server.js` or the build won't emit the page and the nav 404s.
 
 ## Accessibility test pattern
 
@@ -91,11 +110,31 @@ Please follow the existing e2e/accessibility patterns:
 - reuse e2e/utils/axe helpers
 - attach a screenshot for each state in the HTML report
 - include role/label assertions for key forms, buttons, links, headings, and landmarks
-- run the new spec with yarn test:a11y <spec path>
+- run the new spec with yarn test:a11y:nobuild <spec path> (after yarn build:a11y)
 
 Do not rely on live network data, and do not loosen axe failures unless there is
 a documented product decision.
 ```
+
+## Mock Strapi server
+
+Some routes fetch data from Strapi CMS in `getStaticProps`/`getStaticPaths`
+(server-side), which `page.route` cannot intercept. A lightweight mock Strapi
+server (`e2e/mock-strapi-server.js`) serves deterministic fixture responses for
+those endpoints.
+
+Because the app is a static export, `getStaticProps`/`getStaticPaths` run **at
+build time**. `yarn build:a11y` (scripts/build-a11y.mjs) starts the mock server,
+runs `next build` with `NEXT_PUBLIC_STRAPI_API_URL` pointed at it, then stops it.
+`NEXT_PUBLIC_*` is inlined at build time, so that URL is baked into `out/`; the
+mock server is therefore also started by Playwright's `webServer` at test time
+so any client-side Strapi call a spec does not `page.route` still resolves.
+
+The mock server listens on port 1337 by default (configurable via
+`MOCK_STRAPI_PORT`); set `MOCK_STRAPI_DEBUG=1` to log each request. Specs that
+test routes with client-side Strapi refetches should still add `page.route`
+interceptions to cover the browser-side `useQuery` calls, and dynamic-route
+specs depend on the fixture slugs (see the note under "Running tests").
 
 ## Troubleshooting
 

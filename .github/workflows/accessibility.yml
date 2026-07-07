@@ -1,8 +1,10 @@
 name: Accessibility (a11y) Tests
 
-# Runs Playwright + @axe-core/playwright accessibility scans against the
-# repository-matcher route. The scans report every violation but only FAIL
-# the build on `serious` or `critical` impact (enforced in the test specs).
+# Runs Playwright + @axe-core/playwright accessibility scans across the app's
+# routes. The suite runs against a PRODUCTION STATIC EXPORT (`out/`) served as
+# plain files — not `next dev` — so it is fast and deterministic. The scans
+# report every violation but only FAIL the build on `serious` or `critical`
+# impact (enforced in the test specs). See e2e/README.md.
 
 on:
   pull_request:
@@ -25,9 +27,11 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: 'true'
-      # The route renders (and is accessible) in its loading state without a
-      # live API, but we provide env so the dev server boots cleanly and can
-      # fetch real content when the secret/API are reachable.
+      # Static-export env. `build:a11y` runs `next build` with the mock Strapi
+      # server up (it overrides NEXT_PUBLIC_STRAPI_API_URL to the mock at build
+      # time), so these values seed the client bundle for endpoints the specs
+      # don't intercept. GH_API_KEY is unused by `build:a11y` (it runs
+      # `next build` directly, skipping the GitHub-fetching build:core steps).
       NEXT_PUBLIC_APP_ENV: staging
       NEXT_PUBLIC_API_URL: https://api-staging.data.niaid.nih.gov/v1
       NEXT_PUBLIC_STRAPI_API_URL: https://data-staging.niaid.nih.gov/strapi
@@ -48,8 +52,14 @@ jobs:
       - name: Install Playwright browser (chromium)
         run: npx playwright install --with-deps chromium
 
+      # Build the static export first (as its own step so a build failure is
+      # distinct from a test failure in the CI log). Starts the mock Strapi
+      # server, runs `next build` → `out/`, then stops the mock.
+      - name: Build static export (a11y)
+        run: yarn build:a11y
+
       - name: Run accessibility tests
-        run: yarn test:a11y
+        run: yarn test:a11y:nobuild
 
       - name: Upload Playwright report
         if: ${{ !cancelled() }}
