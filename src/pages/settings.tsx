@@ -131,6 +131,7 @@ function SettingToggle({
       </VStack>
       <Switch
         colorScheme='primary'
+        aria-label={label}
         isChecked={isChecked}
         onChange={e => onChange(e.target.checked)}
       />
