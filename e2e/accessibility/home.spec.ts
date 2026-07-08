@@ -29,6 +29,10 @@
  */
 import { test, expect, type Page, type TestInfo } from '@playwright/test';
 import { runAxeScans } from '../utils/axe';
+import {
+  expectKeyboardOpens,
+  expectEscapeReturnsFocus,
+} from '../utils/keyboard';
 
 // --- Per-route configuration -------------------------------------------------
 
@@ -374,5 +378,40 @@ test.describe('a11y: Home — filter popover', () => {
     ).toBeVisible();
 
     await runAxeScans(page, testInfo, 'filter-popover');
+  });
+
+  test('filter popover is keyboard operable and restores focus', async ({
+    page,
+  }) => {
+    // The scan above covers the open popover markup; this proves it's reachable
+    // and dismissible by keyboard with correct focus return (WCAG 2.1.1 / 2.4.3),
+    // which a static axe scan cannot verify.
+    await mockStrapiRoutes(page);
+    await page.route(QUERY_GLOB, route =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(QUERY_FIXTURE),
+      }),
+    );
+    await page.route(METADATA_GLOB, route =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(METADATA_FIXTURE),
+      }),
+    );
+    await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
+    await expect(
+      page.getByRole('link', { name: 'Fixture Resource Catalog' }),
+    ).toBeVisible();
+
+    const trigger = page.getByRole('button', {
+      name: 'Research Domain',
+      exact: true,
+    });
+    const surface = page.getByRole('checkbox', { name: /IID/i }).first();
+    await expectKeyboardOpens(trigger, surface);
+    await expectEscapeReturnsFocus(page, trigger, surface);
   });
 });

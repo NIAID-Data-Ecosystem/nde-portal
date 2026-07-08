@@ -21,6 +21,10 @@
  */
 import { test, expect, type Page, type TestInfo } from '@playwright/test';
 import { runAxeScans } from '../utils/axe';
+import {
+  expectKeyboardOpens,
+  expectEscapeReturnsFocus,
+} from '../utils/keyboard';
 
 // --- Per-route configuration -------------------------------------------------
 
@@ -5955,6 +5959,19 @@ test.describe('a11y: Search — type options menu', () => {
     ).toBeVisible();
 
     await runAxeScans(page, testInfo, 'type-options-menu');
+  });
+
+  test('is keyboard operable and restores focus on close', async ({ page }) => {
+    // axe scans the OPEN popover above but can't prove it's keyboard-operable.
+    // Drive the real keyboard path: focus the trigger, open with Enter, then
+    // Escape and confirm focus returns to the trigger (WCAG 2.1.1 / 2.4.3).
+    await gotoPopulated(page);
+    const trigger = page.getByRole('button', { name: 'Type', exact: true });
+    const surface = page.getByRole('checkbox', {
+      name: /dataset repository/i,
+    });
+    await expectKeyboardOpens(trigger, surface);
+    await expectEscapeReturnsFocus(page, trigger, surface);
   });
 });
 
