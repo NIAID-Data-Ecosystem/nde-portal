@@ -55,8 +55,40 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Install Playwright browser (chromium)
+      # Cache the Playwright browser binaries so we don't re-download Chromium
+      # (~130MB) every run. Keyed on the installed Playwright version; on a hit we
+      # only need the OS-level deps (fast), not the browser download.
+      - name: Get Playwright version
+        id: playwright-version
+        run: echo "version=$(node -e "console.log(require('@playwright/test/package.json').version)")" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+
+      - name: Install Playwright browser + deps (cache miss)
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium
+
+      - name: Install Playwright OS deps (cache hit)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+
+      # Cache Next.js's incremental compile cache (`.next/cache`). `next build`
+      # keeps its SWC/webpack cache here even with `output: 'export'`, so
+      # restoring it lets the build recompile only what changed. Keyed on the
+      # lockfile + source so a source change reuses the closest prior cache
+      # (restore-keys) rather than starting cold.
+      - name: Cache Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.next/cache
+          key: nextjs-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('src/**/*.{js,jsx,ts,tsx}') }}
+          restore-keys: |
+            nextjs-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}-
 
       # Build the static export first (as its own step so a build failure is
       # distinct from a test failure in the CI log). Starts the mock Strapi
