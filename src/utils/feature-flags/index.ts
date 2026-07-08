@@ -4,8 +4,7 @@
 const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
 
 // Hide samples section in production builds until approved. To enable section in production, set this flag to return `false`.
-export const SHOULD_HIDE_SAMPLES = (hash: string) =>
-  hash === 'samples' && isProd;
+export const SHOULD_HIDE_SAMPLES = (hash: string) => false;
 
 // Hide the samples tab on the search results page in production builds until
 // approved. To enable tab in production, set this flag to `true`.
@@ -23,30 +22,14 @@ export const SHOW_CREDIT_TEXT_SECTION = !isProd;
 // Show AI-assisted search toggle and related components (e.g. banner) in non-production environments for testing/review. To enable in production, set this flag to `true`.
 export const SHOW_AI_ASSISTED_SEARCH = true;
 
-// Show visual summary section in non-production environments for testing/review. To enable in production, set this flag to `true`.
-export const SHOW_VISUAL_SUMMARY = true;
-
-/**
- * Check if visual summary features/elements should be shown on the search page.
- *
- * @param pathname - Current route pathname (e.g., router.pathname)
- * @returns true if visual summary features should be enabled for the given route
- */
-export const shouldEnableInVisualSummaryPage = (pathname: string): boolean => {
-  return SHOW_VISUAL_SUMMARY && pathname === '/visual-summary';
-};
-
-// Show filter menu so that user can customize the filter display in the search page. To enable in production, set this flag to `true`.
-export const SHOW_CUSTOMIZABLE_FILTERS = !isProd;
-
 // Enable account creation and login features in non-production environments for testing/review. To enable in production, set this flag to `true`.
-export const ENABLE_AUTH = !isProd;
+export const ENABLE_AUTH = true;
 
 /**
  * Hide sample-related fields in the advanced search field dropdown in production
  * builds until approved. To enable these fields in production, set this flag to `false`.
  */
-export const SHOULD_HIDE_SAMPLE_FIELDS = isProd;
+export const SHOULD_HIDE_SAMPLE_FIELDS = false;
 
 /**
  * The set of advanced-search field dotfields that are gated behind the
@@ -71,4 +54,20 @@ export const HIDDEN_SAMPLE_FIELDS = new Set<string>([
 
 // Show the Sample UI pill and corresponding metadata accordion section on dataset cards
 // in non-production environments. To enable in production, set this flag to `true`.
-export const SHOW_SAMPLE_UI_PILL = !isProd;
+export const SHOW_SAMPLE_UI_PILL = true;
+
+// Show the distinct "Retired" treatment for ResourceCatalog resources (gray
+// type banner, gray card background, Retired badge, and the Access Resource
+// link redirecting to the knowledge-center/retired-resources page) in
+// non-production environments for testing/review. To enable in production,
+// set this flag to `true`.
+export const SHOW_RETIRED_RESOURCE_CATALOG_UI = !isProd;
+
+// Show the mutual-exclusivity behavior for the "Any <filter>" (_exists_) and
+// "No <filter>" (-_exists_) filter checkboxes in the search filters panel in
+// non-production environments for testing/review. When enabled: checking
+// "Any"/"No" hides all other options/facets for that filter, checking
+// "Any"/"No" deselects any previously selected values for that filter, and
+// checking a normal value while "Any"/"No" is active drops "Any"/"No". To
+// enable in production, set this flag to `true`.
+export const SHOW_FILTER_ANY_NO_EXCLUSIVITY = !isProd;

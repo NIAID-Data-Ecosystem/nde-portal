@@ -6,6 +6,7 @@ import { StyledLabel } from './styles';
 import { APIResourceType } from 'src/utils/formatting/formatResourceType';
 import Tooltip from 'src/components/tooltip';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { SHOW_RETIRED_RESOURCE_CATALOG_UI } from 'src/utils/feature-flags';
 
 export interface TypeBannerProps extends FlexProps {
   label: string;
@@ -58,9 +59,12 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
   ...props
 }) => {
   // Retired ResourceCatalogs get the gray banner treatment; every other
-  // type/status combination keeps its standard per-type colors.
+  // type/status combination keeps its standard per-type colors. Gated
+  // behind SHOW_RETIRED_RESOURCE_CATALOG_UI until approved for production.
   const isRetired =
-    type === 'ResourceCatalog' && creativeWorkStatus === 'Retired';
+    SHOW_RETIRED_RESOURCE_CATALOG_UI &&
+    type === 'ResourceCatalog' &&
+    creativeWorkStatus === 'Retired';
   const colorScheme = getTypeColor(type, isRetired);
   const abstract = SCHEMA_DEFINITIONS['@type']?.['abstract'];
   const description = SCHEMA_DEFINITIONS['@type']?.['description'];

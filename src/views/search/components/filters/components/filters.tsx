@@ -9,7 +9,10 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { useFilterQueries } from '../hooks/useFilterQueries';
-import { queryFilterObject2String } from '../utils/query-string';
+import {
+  queryFilterObject2String,
+  sanitizeExistsFilterValues,
+} from '../utils/query-string';
 import { SelectedFilterType } from '../types';
 import { useRouter } from 'next/router';
 import { FiltersSection } from './section';
@@ -19,10 +22,9 @@ import { DateFilter } from './date-filter';
 import { updateRoute } from '../../../utils/update-route';
 import { useSearchQueryFromURL } from '../../../hooks/useSearchQueryFromURL';
 import { usePaginationContext } from '../../../context/pagination-context';
-import { SHOW_VISUAL_SUMMARY } from 'src/utils/feature-flags';
 import { FILTER_CONFIGS } from '../config';
+import { APPLY_DEFAULT_DATE_PARAM } from 'src/views/search/config/defaultQuery';
 import { useSearchResultsFetchedContext } from 'src/views/search/context/search-results-fetched-context';
-import { useSearchTabsContext } from 'src/views/search/context/search-tabs-context';
 import { useBioSampleAggregation } from 'src/views/search/hooks/useBioSampleAggregation';
 import { useComputationalToolAggregation } from 'src/views/search/hooks/useComputationalToolAggregation';
 import { useSharedDatasetAggregation } from 'src/views/search/hooks/useSharedDatasetAggregation';
@@ -47,7 +49,6 @@ export const Filters = React.memo(
     isVizActive,
   }: FiltersProps) => {
     const router = useRouter();
-    const { selectedTab } = useSearchTabsContext();
     const queryParams = useSearchQueryFromURL();
     const { resetPagination } = usePaginationContext();
     const filterIds = FILTER_CONFIGS.map(config => config.id);
@@ -62,12 +63,10 @@ export const Filters = React.memo(
           const userHasSelectedToShow = userSelectedFilters.includes(
             filterConfig.id,
           );
-          const isRelevantForTab =
-            SHOW_VISUAL_SUMMARY ||
-            filterConfig?.tabIds?.includes(selectedTab.id);
-          return userHasSelectedToShow && isRelevantForTab;
+
+          return userHasSelectedToShow;
         }),
-      [userSelectedFilters, selectedTab.id],
+      [userSelectedFilters],
     );
 
     // Build the extra_filter query param string based on selected filters.
@@ -197,7 +196,16 @@ export const Filters = React.memo(
 
     const handleSelectedFilters = useCallback(
       (values: string[], facet: string) => {
-        const updatedValues = values.map(value => {
+        // Normalize the facet's previous selection to plain strings, mirroring
+        // how `selected` is derived for each filter section below.
+        const prevValues = (selectedFilters[facet] || []).map(value =>
+          typeof value === 'object' ? Object.keys(value)[0] : value,
+        );
+
+        // Checking "Any"/"No" clears everything else for this facet.
+        const sanitizedValues = sanitizeExistsFilterValues(values, prevValues);
+
+        const updatedValues = sanitizedValues.map(value => {
           // return object with inverted facet + key for exists values
           if (value === '-_exists_' || value === '_exists_') {
             return { [value]: [facet] };
@@ -211,6 +219,15 @@ export const Filters = React.memo(
         handleUpdate({
           from: 1,
           filters: updatedFilterString,
+          // Touching the date filter makes the date value authoritative. The
+          // reset button passes an empty value → opt out of the default range;
+          // a real value drops the param (the value already suppresses it).
+          ...(facet === 'date'
+            ? {
+                [APPLY_DEFAULT_DATE_PARAM]:
+                  updatedValues.length > 0 ? undefined : 'false',
+              }
+            : {}),
         });
       },
       [selectedFilters, handleUpdate],
@@ -231,7 +248,6 @@ export const Filters = React.memo(
     // Determine visibility based on route
     // On search page: show both histogram and controls when visual summary is enabled
     // On visual-summary page: show only controls (histogram is in the grid)
-    const showHistogram = !SHOW_VISUAL_SUMMARY;
     const showDateControls = true; // Always show controls in filters
     return (
       <FiltersContainer
@@ -314,7 +330,7 @@ export const Filters = React.memo(
                               selectedDates={selected || []}
                               updatedAggregateQueryData={filtersAggQuery}
                               queryParams={filtersAggParams}
-                              showHistogram={showHistogram}
+                              showHistogram={false}
                               showDateControls={showDateControls}
                               enabled={isFiltersFetchEnabled}
                             />

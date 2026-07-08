@@ -6,6 +6,7 @@ import { GoogleTagManager } from '@next/third-parties/google';
 import { fonts } from 'lib/fonts';
 import { ChakraProvider } from '@chakra-ui/react';
 import { AuthProvider } from 'src/hooks/useAuth';
+import { UserDataProvider } from 'src/hooks/useUserData';
 
 // Creates an instance of react-query for the app.
 const queryClient = new QueryClient();
@@ -35,7 +36,9 @@ function App({ Component, pageProps }: AppProps) {
       <QueryClientProvider client={queryClient}>
         <ChakraProvider theme={theme}>
           <AuthProvider>
-            <Component {...pageProps} />
+            <UserDataProvider>
+              <Component {...pageProps} />
+            </UserDataProvider>
           </AuthProvider>
         </ChakraProvider>
       </QueryClientProvider>

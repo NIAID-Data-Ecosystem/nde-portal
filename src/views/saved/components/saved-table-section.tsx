@@ -118,7 +118,8 @@ export function SavedTableSection<TItem>({
   const getTableRowProps = useCallback(
     (_: any, idx: number) => ({
       bg: idx % 2 === 0 ? 'white' : '#fafbfd',
-      _hover: { bg: 'secondary.50' },
+      py: 1,
+      // _hover: { bg: 'secondary.50' },
     }),
     [],
   );

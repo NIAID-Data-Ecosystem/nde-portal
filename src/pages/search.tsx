@@ -12,26 +12,27 @@ import {
   SelectedFilterValueType,
 } from 'src/views/search/components/filters/types';
 import {
+  APPLY_DEFAULT_DATE_PARAM,
   defaultQuery,
   defaultSelectedFilters,
+  shouldApplyDefaultDate,
 } from 'src/views/search/config/defaultQuery';
 import { SearchResultsHeader } from 'src/views/search/components/search-results-header';
+import { SavedDataErrorToast } from 'src/views/saved/components/saved-data-error-toast';
 import { PaginationProvider } from 'src/views/search/context/pagination-context';
 import { SearchResultsController } from 'src/views/search/components/search-results-tabs-controller';
 import { fetchSearchResults } from 'src/utils/api';
 import { TabType } from 'src/views/search/types';
 import { tabs } from 'src/views/search/config/tabs';
 import { OntologyBrowserPopup } from 'src/views/ontology-browser/components/popup';
-import {
-  SHOW_AI_ASSISTED_SEARCH,
-  SHOW_VISUAL_SUMMARY,
-} from 'src/utils/feature-flags';
+import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
 import SummaryGrid from 'src/views/search/components/summary';
 import { updateRoute } from 'src/views/search/utils/update-route';
 import { useActiveVizIds } from 'src/views/search/components/summary/hooks/useActiveVizIds';
 import {
   queryFilterString2Object,
   queryFilterObject2String,
+  sanitizeExistsFilterValues,
 } from 'src/views/search/components/filters/utils/query-string';
 import { FilterTags } from 'src/views/search/components/filters/components/tag';
 import { SearchResultsFetchedProvider } from 'src/views/search/context/search-results-fetched-context';
@@ -88,11 +89,14 @@ const Search: NextPage<{
     [router],
   );
 
-  // Reset the filters to the default.
+  // Clear all filters, including the default date range. Setting
+  // `applyDefaultDate=false` keeps the cleared state sticky so the default
+  // range isn't re-seeded on the next render/reload.
   const removeAllFilters = useCallback(() => {
     return handleRouteUpdate({
       from: defaultQuery.from,
       filters: defaultFilters,
+      [APPLY_DEFAULT_DATE_PARAM]: 'false',
     });
   }, [handleRouteUpdate]);
 
@@ -125,29 +129,49 @@ const Search: NextPage<{
       //     : value,
       // );
 
+      const prevValues = selectedFilters[facet] || [];
+
+      // Checking "Any"/"No" clears everything else for this facet, and
+      // checking a normal value clears "Any"/"No" if it was active.
+      const sanitizedValues = sanitizeExistsFilterValues(values, prevValues);
+
       const updatedFilterString = queryFilterObject2String({
         ...selectedFilters,
-        [facet]: values,
+        [facet]: sanitizedValues,
       });
 
       handleUpdate({
         from: 1,
         filters: updatedFilterString,
+        // Touching the date filter makes the date value authoritative. Opt out
+        // of the default range when cleared to empty; drop the param when a real
+        // value remains (the value itself already suppresses the default).
+        ...(facet === 'date'
+          ? {
+              [APPLY_DEFAULT_DATE_PARAM]:
+                sanitizedValues.length > 0 ? undefined : 'false',
+            }
+          : {}),
       });
     },
     [selectedFilters, handleUpdate],
   );
 
-  // Apply default date filter on first load only
+  // Apply default date filter on first load only — but not when the user has
+  // opted out (`applyDefaultDate=false`) or already has a date filter applied.
   useEffect(() => {
     if (!router.isReady) return;
 
-    handleRouteUpdate({
-      filters: queryFilterObject2String({
-        ...defaultSelectedFilters,
-        ...selectedFilters,
-      }),
-    });
+    if (
+      shouldApplyDefaultDate(router.query.applyDefaultDate, selectedFilters)
+    ) {
+      handleRouteUpdate({
+        filters: queryFilterObject2String({
+          ...defaultSelectedFilters,
+          ...selectedFilters,
+        }),
+      });
+    }
 
     hasInitialized.current = true;
   }, [router.isReady]);
@@ -220,6 +244,7 @@ const Search: NextPage<{
                   borderColor='gray.100'
                   spacing={2}
                 >
+                  <SavedDataErrorToast />
                   <Flex flex={1} flexDirection='column' width='100%'>
                     <Flex flex={1} justifyContent='flex-end'>
                       <OntologyBrowserPopup
@@ -250,23 +275,21 @@ const Search: NextPage<{
                     />
                   )}
                 </VStack>
-                {SHOW_VISUAL_SUMMARY && (
-                  <SummaryGrid
-                    searchParams={{
-                      ...queryParams,
-                      from: 0,
-                      size: 0,
-                      sort: '',
-                    }}
-                    onFilterUpdate={(values, facet) => {
-                      handleSelectedFilters(values, facet);
-                    }}
-                    activeVizIds={activeVizIds}
-                    removeActiveVizId={toggleViz}
-                    configs={FILTER_CONFIGS}
-                    selectedFilters={selectedFilters}
-                  />
-                )}
+                <SummaryGrid
+                  searchParams={{
+                    ...queryParams,
+                    from: 0,
+                    size: 0,
+                    sort: '',
+                  }}
+                  onFilterUpdate={(values, facet) => {
+                    handleSelectedFilters(values, facet);
+                  }}
+                  activeVizIds={activeVizIds}
+                  removeActiveVizId={toggleViz}
+                  configs={FILTER_CONFIGS}
+                  selectedFilters={selectedFilters}
+                />
                 {/* Search Results */}
                 <SearchResultsController initialData={initialData} />
               </Box>
