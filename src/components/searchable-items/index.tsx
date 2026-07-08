@@ -114,6 +114,7 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
           variant='link'
           justifyContent='flex-end'
           m={1}
+          color={`${colorScheme}.500`}
           onClick={toggleLimit}
         >
           {buttonLabel}

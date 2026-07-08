@@ -61,6 +61,9 @@ export const DocumentItem = ({
             lineHeight='tall'
             color={color}
             bg={bg}
+            // While loading the item name is hidden by the skeleton, so give the
+            // link an accessible name to satisfy link-name.
+            aria-label={isLoading ? 'Loading' : undefined}
             _hover={{
               bg: isSelected ? bg : 'blackAlpha.50',
               borderRadius: 'base',
