@@ -252,7 +252,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                         ) : (
                           <Empty
                             message='No updates to display'
-                            color='page.placeholder'
+                            color='text.body'
                             headingProps={{ size: 'sm' }}
                             iconProps={{
                               color: 'page.placeholder',
@@ -298,7 +298,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                         ) : (
                           <Empty
                             message='No events to display'
-                            color='page.placeholder'
+                            color='text.body'
                             headingProps={{ size: 'sm' }}
                             iconProps={{
                               color: 'page.placeholder',
@@ -311,7 +311,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                           {/* Upcoming events */}
                           {upcomingEvents && upcomingEvents?.length > 0 && (
                             <>
-                              <Heading as='h3' size='sm' color='gray.600'>
+                              <Heading as='h3' size='sm' color='gray.800'>
                                 Upcoming
                               </Heading>
                               {upcomingEvents

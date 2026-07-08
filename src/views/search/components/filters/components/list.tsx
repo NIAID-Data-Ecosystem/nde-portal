@@ -11,6 +11,7 @@ import { useDebounceValue } from 'usehooks-ts';
 import { SearchInput } from 'src/components/search-input';
 import { Checkbox } from './checkbox';
 import { FilterTermType, FilterItem, FilterConfig } from '../types';
+import { SHOW_FILTER_ANY_NO_EXCLUSIVITY } from 'src/utils/feature-flags';
 
 // VirtualizedList component to render the list of filter terms
 const VirtualizedList = React.memo(
@@ -231,6 +232,13 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
           term =>
             term.term !== undefined && term.term !== null && term.term !== '',
         ) || [];
+
+      // Behind the SHOW_FILTER_ANY_NO_EXCLUSIVITY feature flag: until
+      // approved for production, checking "Any"/"No" does not hide the
+      // other options for this filter.
+      if (!SHOW_FILTER_ANY_NO_EXCLUSIVITY) {
+        return filteredTerms;
+      }
 
       // If the user has checked "Any <filter>" (_exists_) or
       // "No <filter>" (-_exists_), the other facet values (and the opposite

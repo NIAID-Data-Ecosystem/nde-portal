@@ -132,7 +132,7 @@ const Provenance: React.FC<Provenance> = ({
               mr={3}
               ml={0}
             >
-              <Flex minW='100px' mt={4}>
+              <Flex minW='100px' mt={4} bg='#fff'>
                 <SourceLogo.Component
                   imageProps={{
                     width: 'auto',

@@ -9,7 +9,6 @@ import {
   Text,
 } from '@chakra-ui/react';
 import Tooltip from 'src/components/tooltip';
-import { SHOW_VISUAL_SUMMARY } from 'src/utils/feature-flags';
 import { FiltersChartToggle } from './filters-chart-toggle';
 
 interface FiltersSectionProps {
@@ -61,7 +60,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                     px={{ base: 4, md: 3 }}
                     gap={2}
                     borderRadius='sm'
-                    flexDirection={SHOW_VISUAL_SUMMARY ? 'row' : 'row-reverse'}
+                    flexDirection='row'
                     py={{
                       base: isExpanded ? 3 : 2.5,
                       md: isExpanded ? 1.5 : 1,
@@ -87,7 +86,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                     </Tooltip>
                     <AccordionIcon />
                   </AccordionButton>
-                  {filterId && SHOW_VISUAL_SUMMARY && (
+                  {filterId && (
                     <Tooltip
                       label={
                         isVizActive

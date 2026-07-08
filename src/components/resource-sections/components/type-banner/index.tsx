@@ -6,6 +6,7 @@ import { StyledLabel } from './styles';
 import { APIResourceType } from 'src/utils/formatting/formatResourceType';
 import Tooltip from 'src/components/tooltip';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { SHOW_RETIRED_RESOURCE_CATALOG_UI } from 'src/utils/feature-flags';
 
 export interface TypeBannerProps extends FlexProps {
   label: string;
@@ -68,6 +69,7 @@ export const getTypeColor = (
   } else {
     lt = 'niaid.500';
   }
+
   return { lt, dk };
 };
 
@@ -83,10 +85,15 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
   ...props
 }) => {
   // Retired ResourceCatalogs get the gray banner treatment; every other
-  // type/status combination keeps its standard per-type colors.
+  // type/status combination keeps its standard per-type colors. Gated
+  // behind SHOW_RETIRED_RESOURCE_CATALOG_UI until approved for production.
   const isRetired =
-    type === 'ResourceCatalog' && creativeWorkStatus === 'Retired';
+    SHOW_RETIRED_RESOURCE_CATALOG_UI &&
+    type === 'ResourceCatalog' &&
+    creativeWorkStatus === 'Retired';
+
   const colorScheme = getTypeColor(type, isRetired, isProgramResource);
+
   const abstract = SCHEMA_DEFINITIONS['@type']?.['abstract'];
   const description = SCHEMA_DEFINITIONS['@type']?.['description'];
 
@@ -108,14 +115,9 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
       : label;
 
   return (
-    <Flex
-      flexWrap='wrap'
-      w='100%'
-      bg={props.bg || colorScheme['dk']}
-      {...props}
-    >
+    <Flex flexWrap='wrap' w='100%' bg={props.bg || colorScheme.dk} {...props}>
       <Flex
-        bg={props.bg || colorScheme['dk']}
+        bg={props.bg || colorScheme.dk}
         px={{ base: 2, lg: 4 }}
         pl={pl}
         py={0}
@@ -124,13 +126,13 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
       >
         <StyledLabel
           _before={{
-            bg: colorScheme['lt'],
+            bg: colorScheme.lt,
           }}
         >
           <Tooltip label={abstractTooltipLabel || descriptionTooltipLabel}>
             <Text
               fontSize='xs'
-              color={type ? 'white' : colorScheme['lt']}
+              color={type ? 'white' : colorScheme.lt}
               px={2}
               fontWeight='semibold'
               whiteSpace='nowrap'
@@ -144,7 +146,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
         {isNiaidFunded && (
           <StyledLabel
             _before={{
-              bg: isRetired ? colorScheme['lt'] : colorScheme['dk'],
+              bg: isRetired ? colorScheme.lt : colorScheme.dk,
             }}
           >
             <Text
@@ -159,15 +161,16 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
           </StyledLabel>
         )}
       </Flex>
+
       <Flex
-        bg={props.bg || colorScheme['dk']}
+        bg={props.bg || colorScheme.dk}
         overflow='hidden'
         flex={1}
         minW='250px'
       >
         {date && (
           <Flex alignItems='center' px={{ base: 2, lg: 4 }} py={[2, 1]}>
-            <Icon as={FaRegClock} mr={2}></Icon>
+            <Icon as={FaRegClock} mr={2} />
             <Text fontSize='xs' fontWeight='semibold' whiteSpace='nowrap'>
               {date}
             </Text>

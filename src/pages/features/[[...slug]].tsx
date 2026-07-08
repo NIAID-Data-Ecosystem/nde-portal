@@ -72,7 +72,7 @@ const FeaturedPage: NextPage<{
       {error ? (
         <Error>
           <Flex flexDirection='column' justifyContent='center'>
-            <Text fontWeight='light' color='gray.600' fontSize='lg'>
+            <Text fontWeight='light' color='gray.800' fontSize='lg'>
               API Request:{' '}
               {error?.message ||
                 'It’s possible that the server is experiencing some issues.'}{' '}
