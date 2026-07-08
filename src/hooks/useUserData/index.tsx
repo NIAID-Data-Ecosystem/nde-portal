@@ -1,17 +1,31 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  ReactNode,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { MOCK_SAVED_DATASETS } from './mocks/saved_datasets';
 import {
   SavedDataset,
   SavedQuery,
+  UserAccount,
   UserPreferences,
   UserPreferencesKeys,
   UserProfile,
 } from './types';
 import { MOCK_SAVED_QUERIES } from './mocks/saved_queries';
+import {
+  findSavedQueryIndex,
+  formatSavedQueryFilters,
+  parseSavedQueries,
+} from './helpers';
 
 const DEFAULT_PREFERENCES: UserPreferences = {
   ai_toggle_preference: false,
-  beta: true,
+  beta: false,
   contact_preference: false,
   feedback_preference: false,
 };
@@ -24,7 +38,7 @@ const DEFAULT_MOCK_PROFILE: UserProfile = {
   favorite_searches: MOCK_SAVED_QUERIES,
   favorite_datasets: MOCK_SAVED_DATASETS,
   name: process.env.NEXT_PUBLIC_MOCK_AUTH_NAME || 'Mock User',
-  email: process.env.NEXT_PUBLIC_MOCK_AUTH_EMAIL || 'user@email.com',
+  email: process.env.NEXT_PUBLIC_MOCK_AUTH_EMAIL,
   beta: true,
   contact_preference: false,
   feedback_preference: false,
@@ -39,13 +53,39 @@ const apiUrl =
 const API_BASE_URL = apiUrl.replace(/\/v1$/, '');
 const isDevMode = process.env.NODE_ENV === 'development';
 
-export function useUserData() {
+// Keep item labels in error banners short so a long query/title doesn't blow out
+// the banner.
+const truncateLabel = (text: string, max = 60) =>
+  text.length > max ? `${text.slice(0, max - 1)}…` : text;
+
+function useUserDataState() {
   const [preferences, setPreferences] =
     useState<UserPreferences>(DEFAULT_PREFERENCES);
 
   const [savedQueries, setSavedQueries] = useState<SavedQuery[]>([]);
 
   const [savedDatasets, setSavedDatasets] = useState<SavedDataset[]>([]);
+
+  // Account-level fields from the /user/data route (not the auth user_info
+  // route) — email, name, linked accounts, etc. Used for account/settings
+  // display, e.g. deciding whether email-dependent settings (email updates)
+  // can be enabled.
+  const [account, setAccount] = useState<UserAccount | null>(null);
+
+  // Last failed saved-items mutation, surfaced to the UI as an error banner.
+  // Cleared whenever a subsequent mutation succeeds (or on manual dismiss).
+  const [error, setError] = useState<string | null>(null);
+  const clearError = useCallback(() => setError(null), []);
+
+  // Mirror the latest savedQueries so identity-based deletes resolve the index
+  // from the freshest list (never a stale render closure). Updated every render.
+  const savedQueriesRef = useRef<SavedQuery[]>(savedQueries);
+  savedQueriesRef.current = savedQueries;
+
+  // Mirror savedDatasets too, so a failed dataset removal can name the dataset
+  // (which the caller identifies only by id) in its error message.
+  const savedDatasetsRef = useRef<SavedDataset[]>(savedDatasets);
+  savedDatasetsRef.current = savedDatasets;
 
   const mockUserDataRef = useRef<{ profile: UserProfile }>({
     // Clone the arrays so the mock API's push/filter operations don't mutate
@@ -108,19 +148,25 @@ export function useUserData() {
       ) {
         const now = new Date().toISOString();
         const payload = body as SavedQuery;
-        store.profile.favorite_searches.push({
-          query: payload.query,
-          name: payload.name,
-          filters: payload.filters,
-          saved_at: now,
-        });
-        store.profile.updated = now;
+        // Build a new array (rather than mutating in place) so the returned
+        // reference differs and React re-renders consumers.
+        const favorite_searches = [
+          ...store.profile.favorite_searches,
+          {
+            query: payload.query,
+            name: payload.name,
+            filters: payload.filters,
+            saved_at: now,
+            total: payload.total,
+          },
+        ];
+        store.profile = { ...store.profile, favorite_searches, updated: now };
         result = {
           status: 200,
           ok: true,
           body: {
             message: 'Mock favorite search saved',
-            favorite_searches: store.profile.favorite_searches,
+            favorite_searches,
           },
         };
       } else if (
@@ -130,14 +176,16 @@ export function useUserData() {
         const now = new Date().toISOString();
         const payload = body as { index: number };
         if (typeof payload?.index === 'number' && payload.index >= 0) {
-          store.profile.favorite_searches.splice(payload.index, 1);
-          store.profile.updated = now;
+          const favorite_searches = store.profile.favorite_searches.filter(
+            (_, i) => i !== payload.index,
+          );
+          store.profile = { ...store.profile, favorite_searches, updated: now };
           result = {
             status: 200,
             ok: true,
             body: {
               message: 'Mock favorite search removed',
-              favorite_searches: store.profile.favorite_searches,
+              favorite_searches,
             },
           };
         } else {
@@ -153,18 +201,23 @@ export function useUserData() {
       ) {
         const now = new Date().toISOString();
         const payload = body as SavedDataset;
-        store.profile.favorite_datasets.push({
-          dataset_id: payload.dataset_id,
-          name: payload.name,
-          saved_at: now,
-        });
-        store.profile.updated = now;
+        // Build a new array (rather than mutating in place) so the returned
+        // reference differs and React re-renders consumers.
+        const favorite_datasets = [
+          ...store.profile.favorite_datasets,
+          {
+            dataset_id: payload.dataset_id,
+            name: payload.name,
+            saved_at: now,
+          },
+        ];
+        store.profile = { ...store.profile, favorite_datasets, updated: now };
         result = {
           status: 200,
           ok: true,
           body: {
             message: 'Mock favorite dataset saved',
-            favorite_datasets: store.profile.favorite_datasets,
+            favorite_datasets,
           },
         };
       } else if (
@@ -244,7 +297,8 @@ export function useUserData() {
 
   const getProfile = useCallback(async () => {
     const result = await callUserDataApi('GET', '/user/data');
-    if (result && 'body' in result && result.ok && result.body) {
+    if (result && 'body' in result && result.ok) {
+      setError(null);
       const profile = result.body as Partial<UserProfile>;
       const keys: (keyof UserProfile)[] = [
         'ai_toggle_preference',
@@ -263,12 +317,30 @@ export function useUserData() {
         ...updates,
       }));
 
+      setAccount({
+        created: profile.created ?? '',
+        email: profile.email ?? '',
+        linked_accounts: profile.linked_accounts ?? [],
+        name: profile.name ?? '',
+        oauth_provider: profile.oauth_provider ?? '',
+        updated: profile.updated ?? '',
+        username: profile.username ?? '',
+      });
+
       if (Array.isArray(profile.favorite_searches)) {
-        setSavedQueries(profile.favorite_searches);
+        setSavedQueries(parseSavedQueries(profile.favorite_searches));
       }
       if (Array.isArray(profile.favorite_datasets)) {
         setSavedDatasets(profile.favorite_datasets);
       }
+    } else if (result && 'status' in result && result.status !== 401) {
+      // A 401 just means the user isn't logged in (expected on public pages) —
+      // stay silent. Any other HTTP error is a real failure to load saved data.
+      // Network errors (no `status`) are left silent too, matching how auth
+      // treats them (e.g. expected CORS failures in dev).
+      setError(
+        'Unable to load your saved queries and resources. Please refresh to try again.',
+      );
     }
     return result;
   }, [callUserDataApi]);
@@ -292,17 +364,24 @@ export function useUserData() {
   );
 
   const addSavedQuery = useCallback(
-    async (search: SavedQuery) => {
+    async (search: Omit<SavedQuery, 'total'>) => {
       const result = await callUserDataApi(
         'POST',
         '/user/data/favorites/searches',
-        search,
+        { ...search, filters: formatSavedQueryFilters(search.filters) },
       );
-      if (result && 'body' in result && result.ok && result.body) {
+      if (result && 'body' in result && result.ok) {
+        setError(null);
         const body = result.body as { favorite_searches?: SavedQuery[] };
         if (Array.isArray(body.favorite_searches)) {
-          setSavedQueries(body.favorite_searches);
+          setSavedQueries(parseSavedQueries(body.favorite_searches));
         }
+      } else {
+        setError(
+          `Couldn't save the search "${truncateLabel(
+            search.query,
+          )}". Please try again.`,
+        );
       }
       return result;
     },
@@ -310,17 +389,37 @@ export function useUserData() {
   );
 
   const removeSavedQuery = useCallback(
-    async (index: number) => {
+    async (search: Pick<SavedQuery, 'query' | 'filters'>) => {
+      // Resolve the index from the freshest list at call time. The favorites API
+      // deletes by index, so a stale index (e.g. computed before a prior delete
+      // shrank the list) would return "Index out of range".
+      const index = findSavedQueryIndex(savedQueriesRef.current, search);
+      if (index === -1) {
+        // Already gone (e.g. removed by another action) — nothing to do.
+        setError(null);
+        return {
+          status: 200,
+          ok: true,
+          body: { favorite_searches: savedQueriesRef.current },
+        };
+      }
       const result = await callUserDataApi(
         'DELETE',
         '/user/data/favorites/searches',
         { index },
       );
-      if (result && 'body' in result && result.ok && result.body) {
+      if (result && 'body' in result && result.ok) {
+        setError(null);
         const body = result.body as { favorite_searches?: SavedQuery[] };
         if (Array.isArray(body.favorite_searches)) {
-          setSavedQueries(body.favorite_searches);
+          setSavedQueries(parseSavedQueries(body.favorite_searches));
         }
+      } else {
+        setError(
+          `Couldn't remove the saved search "${truncateLabel(
+            search.query,
+          )}". Please try again.`,
+        );
       }
       return result;
     },
@@ -334,11 +433,16 @@ export function useUserData() {
         '/user/data/favorites/datasets',
         dataset,
       );
-      if (result && 'body' in result && result.ok && result.body) {
+      if (result && 'body' in result && result.ok) {
+        setError(null);
         const body = result.body as { favorite_datasets?: SavedDataset[] };
         if (Array.isArray(body.favorite_datasets)) {
           setSavedDatasets(body.favorite_datasets);
         }
+      } else {
+        setError(
+          `Couldn't save "${truncateLabel(dataset.name)}". Please try again.`,
+        );
       }
       return result;
     },
@@ -354,11 +458,21 @@ export function useUserData() {
           dataset_id: datasetId,
         },
       );
-      if (result && 'body' in result && result.ok && result.body) {
+      if (result && 'body' in result && result.ok) {
+        setError(null);
         const body = result.body as { favorite_datasets?: SavedDataset[] };
         if (Array.isArray(body.favorite_datasets)) {
           setSavedDatasets(body.favorite_datasets);
         }
+      } else {
+        const name = savedDatasetsRef.current.find(
+          dataset => dataset.dataset_id === datasetId,
+        )?.name;
+        setError(
+          `Couldn't remove ${
+            name ? `"${truncateLabel(name)}"` : 'this saved resource'
+          }. Please try again.`,
+        );
       }
       return result;
     },
@@ -367,9 +481,12 @@ export function useUserData() {
 
   return {
     preferences,
+    account,
     savedQueries,
     savedDatasets,
     isDevMode,
+    error,
+    clearError,
     getProfile,
     updatePreferenceField,
     addSavedQuery,
@@ -377,4 +494,34 @@ export function useUserData() {
     addSavedDataset,
     removeSavedDataset,
   };
+}
+
+type UserDataContextValue = ReturnType<typeof useUserDataState>;
+
+const UserDataContext = createContext<UserDataContextValue | undefined>(
+  undefined,
+);
+
+/**
+ * Holds the single source of truth for the signed-in user's saved data
+ * (preferences, saved queries, saved datasets). Mounting this once (in `_app`)
+ * means every consumer shares one fetched-and-mutated state, so a delete in one
+ * component re-syncs the rest. Without it, each `useUserData()` call kept its own
+ * copy and index-based deletes drifted out of range.
+ */
+export function UserDataProvider({ children }: { children: ReactNode }) {
+  const value = useUserDataState();
+  return (
+    <UserDataContext.Provider value={value}>
+      {children}
+    </UserDataContext.Provider>
+  );
+}
+
+export function useUserData() {
+  const context = useContext(UserDataContext);
+  if (context === undefined) {
+    throw new Error('useUserData must be used within a UserDataProvider');
+  }
+  return context;
 }

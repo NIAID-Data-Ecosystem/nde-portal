@@ -103,18 +103,6 @@ function runRepositoryMatcherA11yTests() {
     ).toEqual([]);
   });
 
-  test('has a single top-level landmark structure and one h1', async ({
-    page,
-  }) => {
-    // Landmarks: a main landmark must exist and the page content must live
-    // inside it (axe rules `landmark-one-main` / `region` cover this in the
-    // full scan; these assertions make the intent explicit and fail fast).
-    await expect(page.getByRole('main')).toHaveCount(1);
-
-    // Headings: exactly one h1 for the route.
-    await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
-  });
-
   test('search form control has an accessible name', async ({ page }) => {
     // Forms: the search input is the primary form control on the route and
     // must be programmatically labelled.

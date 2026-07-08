@@ -2,7 +2,7 @@
  * User Favorites Page - Protected route requiring authentication
  */
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Box, Heading, Text, Flex, Divider } from '@chakra-ui/react';
 import { useAuth } from 'src/hooks/useAuth';
 import { withAuth } from 'src/components/auth/withAuth';
@@ -13,6 +13,7 @@ import {
   SAVED_RESOURCE_COLUMNS,
 } from 'src/views/saved/table-config';
 import { SavedTableSection } from 'src/views/saved/components/saved-table-section';
+import { SavedDataErrorBanner } from 'src/views/saved/components/saved-data-error-banner';
 import { useUserData } from 'src/hooks/useUserData';
 import { useBatchResourcesData } from 'src/views/saved/hooks/useBatchResourcesData';
 import { SavedResourceItem } from 'src/views/saved/types';
@@ -31,19 +32,43 @@ const SavedPage = () => {
   const { user } = useAuth();
   const { savedDatasets, savedQueries, isDevMode } = useUserData();
 
+  // Snapshot the saved items once, the first time they load, and render the
+  // tables from that snapshot rather than from the live (shrinking) lists. This
+  // keeps an un-bookmarked row visible — its bookmark icon flips to empty but the
+  // row stays so the user can re-bookmark it — and rows only reconcile on refresh.
+  // The live lists still drive each row's favorited state and the delete itself.
+  const [displayQueries, setDisplayQueries] = useState<typeof savedQueries>([]);
+  const [displayDatasets, setDisplayDatasets] = useState<typeof savedDatasets>(
+    [],
+  );
+  const capturedQueries = useRef(false);
+  const capturedDatasets = useRef(false);
+  useEffect(() => {
+    if (!capturedQueries.current && savedQueries.length > 0) {
+      capturedQueries.current = true;
+      setDisplayQueries(savedQueries);
+    }
+  }, [savedQueries]);
+  useEffect(() => {
+    if (!capturedDatasets.current && savedDatasets.length > 0) {
+      capturedDatasets.current = true;
+      setDisplayDatasets(savedDatasets);
+    }
+  }, [savedDatasets]);
+
   // Hydrate each saved resource with type / source / dateModified fetched by id.
   const datasetIds = useMemo(
-    () => savedDatasets.map(dataset => dataset.dataset_id),
-    [savedDatasets],
+    () => displayDatasets.map(dataset => dataset.dataset_id),
+    [displayDatasets],
   );
   const { data: resourceData } = useBatchResourcesData(datasetIds);
   const enrichedDatasets = useMemo<SavedResourceItem[]>(
     () =>
-      savedDatasets.map(dataset => ({
+      displayDatasets.map(dataset => ({
         ...dataset,
         ...resourceData?.[dataset.dataset_id],
       })),
-    [savedDatasets, resourceData],
+    [displayDatasets, resourceData],
   );
 
   if (!user || !ENABLE_AUTH) return null;
@@ -74,14 +99,17 @@ const SavedPage = () => {
             </Text>
           </Box>
         )}
+        <SavedDataErrorBanner />
       </Flex>
       <Divider />
       <SavedTableSection
         title='Saved Queries'
         description='A saved collection of frequently used queries.'
         columns={SAVED_QUERY_COLUMNS}
-        data={savedQueries}
-        getRowId={(item, idx) => item.query || `__no-id-${idx}`}
+        data={displayQueries}
+        getRowId={(item, idx) =>
+          item.query + JSON.stringify(item.filters) || `__no-id-${idx}`
+        }
         unit={{ singular: 'item', plural: 'items' }}
         searchPlaceholder='Search saved queries'
         searchAriaLabel='Search saved queries'

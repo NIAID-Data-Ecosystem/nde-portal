@@ -1,5 +1,5 @@
 import React from 'react';
-import { HStack, Text, VStack } from '@chakra-ui/react';
+import { Flex, HStack, Text, VStack } from '@chakra-ui/react';
 import { getMetadataName } from 'src/components/metadata';
 import {
   TagCell,
@@ -8,16 +8,38 @@ import {
 } from '../repository-matcher/components/TableCells';
 import { SavedColumn, SavedResourceItem, SavedRow } from './types';
 import { defaultSearchValue } from '../repository-matcher/hooks/useRepositoryMatcherData';
-
 import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
 import { SavedDataset, SavedQuery } from 'src/hooks/useUserData/types';
 import { useUserData } from 'src/hooks/useUserData';
+import { findSavedQueryIndex } from 'src/hooks/useUserData/helpers';
 import {
   FILTER_CONFIGS,
   queryFilterObject2String,
 } from '../search/components/filters';
+import {
+  APPLY_DEFAULT_DATE_FILTER_KEY,
+  APPLY_DEFAULT_DATE_PARAM,
+} from '../search/config/defaultQuery';
 import { generateTags } from '../search/components/filters/components/tag/utils';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+
+type DateCellValue = { display: string; raw: number } | null;
+
+const formatDateCellValue = (date?: string): DateCellValue => {
+  if (!date) return null;
+  const timestamp = Date.parse(date);
+  if (Number.isNaN(timestamp)) return null;
+  return {
+    display: new Date(timestamp).toLocaleDateString(),
+    raw: timestamp,
+  };
+};
+
+const normalizeNameSortValue = (value?: string) =>
+  (value ?? '')
+    .trim()
+    .replace(/^[`'"]+/, '')
+    .toLowerCase();
 
 const SavedResourceNameCell = ({
   value,
@@ -31,7 +53,7 @@ const SavedResourceNameCell = ({
     ds => ds.dataset_id === value.dataset_id,
   );
   return (
-    <HStack alignItems='flex-start'>
+    <HStack alignItems='flex-start' mt={-1}>
       <BookmarkIconButton
         isFavorited={isFavorited}
         onClick={() =>
@@ -40,7 +62,7 @@ const SavedResourceNameCell = ({
             : addSavedDataset(value)
         }
       />
-      <VStack alignItems='flex-start' spacing={1} fontSize='xs'>
+      <VStack alignItems='flex-start' spacing={1} fontSize='xs' pt={1}>
         <TextCellWithLink
           label={value?.name || ''}
           url={value?.url}
@@ -61,25 +83,26 @@ const SavedQueryNameCell = ({
   isLoading?: boolean;
 }) => {
   const { savedQueries, addSavedQuery, removeSavedQuery } = useUserData();
-  const favoriteIndex = savedQueries.findIndex(
-    search => search.query === value.query,
-  );
-  const isFavorited = favoriteIndex !== -1;
+  // Match on query AND filters: the same query string can be saved more than
+  // once with different filters, and each must be favorited/removed on its own.
+  const isFavorited = findSavedQueryIndex(savedQueries, value) !== -1;
   return (
-    <HStack alignItems='center'>
+    <HStack alignItems='flex-start' mt={-1}>
       <BookmarkIconButton
         isFavorited={isFavorited}
         aria-label={isFavorited ? 'Remove saved query' : 'Save query'}
         onClick={() =>
-          isFavorited ? removeSavedQuery(favoriteIndex) : addSavedQuery(value)
+          isFavorited ? removeSavedQuery(value) : addSavedQuery(value)
         }
       />
-      <TextCellWithLink
-        label={value?.query || ''}
-        url={value?.url}
-        isLoading={isLoading}
-        isExternal={false}
-      />
+      <Flex pt={1}>
+        <TextCellWithLink
+          label={value?.name || ''}
+          url={value?.url}
+          isLoading={isLoading}
+          isExternal={false}
+        />
+      </Flex>
     </HStack>
   );
 };
@@ -97,7 +120,7 @@ export const SAVED_RESOURCE_COLUMNS: SavedColumn<SavedResourceItem, any>[] = [
       ...item,
       url: `/resources?id=${item.dataset_id}`,
     }),
-    getSortValue: (value: SavedDataset) => value.name.toLowerCase(),
+    getSortValue: (value: SavedDataset) => normalizeNameSortValue(value.name),
     getSearchValue: (value: SavedDataset) => value.name,
     component: SavedResourceNameCell,
   },
@@ -169,18 +192,23 @@ export const SAVED_RESOURCE_COLUMNS: SavedColumn<SavedResourceItem, any>[] = [
       isDefault: true,
       style: { maxWidth: '200px', minWidth: '160px' },
     },
-    transform: item => {
-      if (!item.dateModified) return '';
-      return new Date(item.dateModified).toLocaleDateString();
-    },
+    transform: item => formatDateCellValue(item.dateModified),
+    getSearchValue: (value: DateCellValue) => value?.display ?? '',
+    getSortValue: (value: DateCellValue) => value?.raw ?? 0,
     component: ({
       value,
       isLoading,
     }: {
-      value: string;
+      value: DateCellValue;
       isLoading?: boolean;
     }) => {
-      return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
+      return (
+        <TextCell
+          value={value?.display ?? ''}
+          isLoading={isLoading}
+          noOfLines={1}
+        />
+      );
     },
   },
   {
@@ -192,18 +220,23 @@ export const SAVED_RESOURCE_COLUMNS: SavedColumn<SavedResourceItem, any>[] = [
       isDefault: true,
       style: { maxWidth: '200px', minWidth: '200px' },
     },
-    transform: item => {
-      if (!item.saved_at) return '';
-      return new Date(item.saved_at).toLocaleDateString();
-    },
+    transform: item => formatDateCellValue(item.saved_at),
+    getSearchValue: (value: DateCellValue) => value?.display ?? '',
+    getSortValue: (value: DateCellValue) => value?.raw ?? 0,
     component: ({
       value,
       isLoading,
     }: {
-      value: string;
+      value: DateCellValue;
       isLoading?: boolean;
     }) => {
-      return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
+      return (
+        <TextCell
+          value={value?.display ?? ''}
+          isLoading={isLoading}
+          noOfLines={1}
+        />
+      );
     },
   },
   // {
@@ -271,20 +304,63 @@ const configMap = Object.fromEntries(
 
 export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
   {
+    id: 'total_count',
+    label: 'Total',
+    fields: ['total'],
+    columns: {
+      style: { minWidth: '100px', maxWidth: '100px' },
+    },
+    transform: (item): number => {
+      if (!item.total) return 0;
+      return item.total;
+    },
+    getSortValue: (value: number) => value,
+    component: ({
+      value,
+      isLoading,
+    }: {
+      value: number;
+      isLoading?: boolean;
+    }) => {
+      return (
+        <TextCell
+          fontWeight='semibold'
+          value={value.toLocaleString()}
+          isLoading={isLoading}
+          noOfLines={1}
+          mt={0.5}
+          ml={-0.5}
+        />
+      );
+    },
+  },
+  {
     id: 'name',
     label: 'Name',
     fields: ['name', 'query'],
     columns: { isSortable: true, isDefault: true },
     transform: (item): SavedQuery & { url: string } => {
-      const filter_string = queryFilterObject2String(item.filters) || '';
+      // The reserved opt-out marker is stored inside the saved filters but must
+      // travel as a URL param, not inside the serialized filter string.
+      const filters = item.filters || {};
+      const filter_string = queryFilterObject2String(filters) || '';
+      // If no explicit date is present and the user has opted out of the default date range, add the opt-out param to the URL so it doesn't add the default date.
+      const applyDefaultDateParam =
+        !filters.date || filters[APPLY_DEFAULT_DATE_FILTER_KEY] === false
+          ? `&${APPLY_DEFAULT_DATE_PARAM}=false`
+          : '';
+
       return {
         ...item,
         url: `/search?q=${encodeURIComponent(
           item.query,
-        )}&filters=${encodeURIComponent(filter_string)}`,
+        )}&filters=${encodeURIComponent(
+          filter_string,
+        )}${applyDefaultDateParam}`,
       };
     },
-    getSortValue: (value: SavedQuery) => value.name.toLowerCase(),
+    getSortValue: (value: SavedQuery) =>
+      normalizeNameSortValue(value.name || value.query),
     getSearchValue: (value: SavedQuery) => `${value.name} ${value.query}`,
     component: SavedQueryNameCell,
   },
@@ -295,7 +371,7 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
     columns: {
       isSortable: false,
       isDefault: true,
-      style: { maxWidth: '200px', minWidth: '200px' },
+      style: { minWidth: '200px' },
     },
     getSearchValue: (value: {
       tags: {
@@ -362,18 +438,23 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
       isDefault: true,
       style: { maxWidth: '200px', minWidth: '200px' },
     },
-    transform: item => {
-      if (!item.saved_at) return '';
-      return new Date(item.saved_at).toLocaleDateString();
-    },
+    transform: item => formatDateCellValue(item.saved_at),
+    getSearchValue: (value: DateCellValue) => value?.display ?? '',
+    getSortValue: (value: DateCellValue) => value?.raw ?? 0,
     component: ({
       value,
       isLoading,
     }: {
-      value: string;
+      value: DateCellValue;
       isLoading?: boolean;
     }) => {
-      return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
+      return (
+        <TextCell
+          value={value?.display ?? ''}
+          isLoading={isLoading}
+          noOfLines={1}
+        />
+      );
     },
   },
 ];

@@ -118,7 +118,8 @@ export function SavedTableSection<TItem>({
   const getTableRowProps = useCallback(
     (_: any, idx: number) => ({
       bg: idx % 2 === 0 ? 'white' : '#fafbfd',
-      _hover: { bg: 'secondary.50' },
+      py: 1,
+      // _hover: { bg: 'secondary.50' },
     }),
     [],
   );
@@ -159,10 +160,12 @@ export function SavedTableSection<TItem>({
               {data.length} {data.length === 1 ? unit.singular : unit.plural}
             </Text>
           </Text>
-          <Text lineHeight='short'>{description}</Text>
+          <Text lineHeight='short' width='400px'>
+            {description}
+          </Text>
         </VStack>
         <Flex
-          maxWidth={{ base: 'unset', lg: '350px' }}
+          maxWidth={{ base: 'unset', xl: '350px' }}
           minWidth='300px'
           flex={1}
           width='100%'

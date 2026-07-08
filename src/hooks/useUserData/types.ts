@@ -8,6 +8,7 @@ export type UserPreferences = {
 export type UserPreferencesKeys = keyof UserPreferences;
 
 export type SavedQuery = {
+  total: number;
   query: string;
   name: string;
   saved_at?: string;
@@ -29,5 +30,18 @@ export type UserProfile = UserPreferences & {
   created: string;
   updated: string;
   name: string;
-  email: string;
+  email?: string;
 };
+
+// Account-level profile fields from the /user/data route (not preferences or
+// saved items) — the subset the UI needs for account/settings display.
+export type UserAccount = Pick<
+  UserProfile,
+  | 'created'
+  | 'email'
+  | 'linked_accounts'
+  | 'name'
+  | 'oauth_provider'
+  | 'updated'
+  | 'username'
+>;
