@@ -275,7 +275,11 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                             textAlign='left'
                             fontSize='sm'
                           >
-                            <Box as='thead' textTransform='uppercase'>
+                            <Box
+                              as='thead'
+                              textTransform='uppercase'
+                              color='#fff'
+                            >
                               <tr>
                                 <Box as='th' scope='col' px={6} py={3}>
                                   {sourceObj.name} Property

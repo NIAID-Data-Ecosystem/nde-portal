@@ -1,8 +1,10 @@
 name: Accessibility (a11y) Tests
 
-# Runs Playwright + @axe-core/playwright accessibility scans against the
-# repository-matcher route. The scans report every violation but only FAIL
-# the build on `serious` or `critical` impact (enforced in the test specs).
+# Runs Playwright + @axe-core/playwright accessibility scans across the app's
+# routes. The suite runs against a PRODUCTION STATIC EXPORT (`out/`) served as
+# plain files — not `next dev` — so it is fast and deterministic. The scans
+# report every violation but only FAIL the build on `serious` or `critical`
+# impact (enforced in the test specs). See e2e/README.md.
 
 on:
   pull_request:
@@ -25,11 +27,19 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: 'true'
-      # The route renders (and is accessible) in its loading state without a
-      # live API, but we provide env so the dev server boots cleanly and can
-      # fetch real content when the secret/API are reachable.
+      # Static-export env. These are fixed, deterministic values — NOT tied to the
+      # PR's target environment on purpose: the a11y scans must be reproducible and
+      # offline. Specs drive all meaningful states via `page.route` mocks, so
+      # NEXT_PUBLIC_API_URL only seeds the client bundle as a fallback for any
+      # endpoint a spec doesn't intercept (ideally none). GH_API_KEY is unused by
+      # `build:a11y` (it runs `next build` directly, skipping the GitHub-fetching
+      # build:core steps).
       NEXT_PUBLIC_APP_ENV: staging
       NEXT_PUBLIC_API_URL: https://api-staging.data.niaid.nih.gov/v1
+      # NOTE: NEXT_PUBLIC_STRAPI_API_URL is set here for completeness but is always
+      # SUPERSEDED — `build:a11y` overrides it to the local mock Strapi at build
+      # time (http://localhost:1337, inlined into the export), and the mock also
+      # serves runtime Strapi calls. This value is never actually reached.
       NEXT_PUBLIC_STRAPI_API_URL: https://data-staging.niaid.nih.gov/strapi
       NEXT_PUBLIC_AUTH_PROVIDERS: 'github,orcid'
       BASE_URL: http://localhost:3000
@@ -48,8 +58,14 @@ jobs:
       - name: Install Playwright browser (chromium)
         run: npx playwright install --with-deps chromium
 
+      # Build the static export first (as its own step so a build failure is
+      # distinct from a test failure in the CI log). Starts the mock Strapi
+      # server, runs `next build` → `out/`, then stops the mock.
+      - name: Build static export (a11y)
+        run: yarn build:a11y
+
       - name: Run accessibility tests
-        run: yarn test:a11y
+        run: yarn test:a11y:nobuild
 
       - name: Upload Playwright report
         if: ${{ !cancelled() }}

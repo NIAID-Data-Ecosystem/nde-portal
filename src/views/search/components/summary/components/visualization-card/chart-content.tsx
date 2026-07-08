@@ -10,6 +10,8 @@ export interface ChartComponentProps {
   onSliceClick: (id: string) => void;
   isExpanded: boolean;
   isSliceSelected: (id: string) => boolean;
+  /** Card label (e.g. "Sources") used as the chart's accessible name. */
+  label?: string;
 }
 
 interface ChartContentProps {
@@ -95,6 +97,7 @@ export const ChartContent = ({
             onSliceClick={onSliceClick}
             isExpanded={isExpanded}
             isSliceSelected={isSliceSelected}
+            label={label}
           />
         </Flex>
       </Flex>
