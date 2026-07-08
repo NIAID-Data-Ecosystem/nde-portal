@@ -55,6 +55,10 @@
  */
 import { test, expect, type Page, type TestInfo } from '@playwright/test';
 import { runAxeScans } from '../utils/axe';
+import {
+  expectKeyboardOpens,
+  expectEscapeReturnsFocus,
+} from '../utils/keyboard';
 
 // --- Per-route configuration -------------------------------------------------
 
@@ -418,5 +422,28 @@ test.describe('a11y: Knowledge Center doc page — mobile menu', () => {
     ).toBeVisible();
 
     await runAxeScans(page, testInfo, 'mobile-menu');
+  });
+
+  test('mobile nav menu is keyboard operable and restores focus', async ({
+    page,
+  }) => {
+    // axe scans the open menu above; this drives the keyboard path (open with
+    // Enter, dismiss with Escape) and asserts focus returns to the menu button
+    // (WCAG 2.1.1 / 2.4.3) — behaviour a static scan can't see.
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.route(CATEGORIES_GLOB, route =>
+      route.fulfill(fulfillJson(CATEGORIES_FIXTURE)),
+    );
+    await page.route(DOCS_GLOB, route =>
+      route.fulfill(fulfillJson(DOC_FIXTURE)),
+    );
+    await page.goto(DOC_ROUTE, { waitUntil: 'domcontentloaded' });
+
+    const trigger = page.getByRole('button', { name: /documentation menu/i });
+    const surface = page.getByRole('menuitem', {
+      name: /discovery portal quick start guide/i,
+    });
+    await expectKeyboardOpens(trigger, surface);
+    await expectEscapeReturnsFocus(page, trigger, surface);
   });
 });
