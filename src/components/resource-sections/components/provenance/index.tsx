@@ -18,6 +18,7 @@ import { ScrollContainer } from 'src/components/scroll-container';
 import { Link } from 'src/components/link';
 import Tooltip from 'src/components/tooltip';
 import { getSourceLogoLinkOut } from 'src/components/source-logo/helpers';
+import { SHOW_PROGRAM_RESOURCE_UI } from 'src/utils/feature-flags';
 import { SourceLogo } from 'src/components/source-logo';
 
 interface Provenance {
@@ -226,12 +227,16 @@ const Provenance: React.FC<Provenance> = ({
                   <Block
                     key={organization.name}
                     label={
-                      <Link
-                        as={NextLink}
-                        href={`/program-collections#${programCollectionSlug}`}
-                      >
-                        {organization.name}
-                      </Link>
+                      SHOW_PROGRAM_RESOURCE_UI ? (
+                        <Link
+                          as={NextLink}
+                          href={`/program-collections#${programCollectionSlug}`}
+                        >
+                          {organization.name}
+                        </Link>
+                      ) : (
+                        organization.name
+                      )
                     }
                     w='100%'
                     minW='unset'

@@ -11,7 +11,10 @@ import { Skeleton } from 'src/components/skeleton';
 import { CompactCard } from '../compact-card';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 import { hasSourceOrganization } from 'src/components/resource-sections/components/type-banner';
-import { SHOW_RETIRED_RESOURCE_CATALOG_UI } from 'src/utils/feature-flags';
+import {
+  SHOW_PROGRAM_RESOURCE_UI,
+  SHOW_RETIRED_RESOURCE_CATALOG_UI,
+} from 'src/utils/feature-flags';
 
 interface ResourceCatalogCardProps {
   data?: FormattedResource | null;
@@ -45,7 +48,9 @@ export const ResourceCatalogCard = ({
   // "Program Resource" with cyan banner styling instead of the default
   // ResourceCatalog treatment.
   const isProgramResource =
-    type === 'ResourceCatalog' && hasSourceOrganization(sourceOrganization);
+    SHOW_PROGRAM_RESOURCE_UI &&
+    type === 'ResourceCatalog' &&
+    hasSourceOrganization(sourceOrganization);
 
   const handleTypesToggle = (expanded: boolean) => {
     setShowAllTypes(expanded);
