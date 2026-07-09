@@ -7,8 +7,8 @@ import {
   ReactNode,
 } from 'react';
 import { useRouter } from 'next/router';
-import { defaultQuery } from '../config/defaultQuery';
-import { useSearchTabsContext } from './search-tabs-context';
+import { defaultQuery, getDefaultSizeForTab } from '../config/defaultQuery';
+import { DEFAULT_TAB_ID, useSearchTabsContext } from './search-tabs-context';
 
 export type PaginationState = {
   from: number;
@@ -45,7 +45,7 @@ export const PaginationProvider = ({ children }: { children: ReactNode }) => {
         tab.id,
         {
           from: defaultQuery.from,
-          size: defaultQuery.size,
+          size: getDefaultSizeForTab(tab.id),
           sort: defaultQuery.sort,
         },
       ]),
@@ -59,7 +59,7 @@ export const PaginationProvider = ({ children }: { children: ReactNode }) => {
     const urlFrom = parseInt(router.query.from as string);
     const urlSize = parseInt(router.query.size as string);
     const urlSort = router.query.sort as string;
-    const urlTab = router.query.tab as string;
+    const urlTab = (router.query.tab || DEFAULT_TAB_ID) as string;
 
     if (!isNaN(urlFrom) && urlTab) {
       setPaginationByTab(prev => ({
@@ -67,7 +67,7 @@ export const PaginationProvider = ({ children }: { children: ReactNode }) => {
         [urlTab]: {
           ...prev[urlTab],
           from: urlFrom,
-          size: urlSize || defaultQuery.size,
+          size: urlSize || getDefaultSizeForTab(urlTab),
           sort: urlSort || defaultQuery.sort,
         },
       }));
@@ -79,7 +79,7 @@ export const PaginationProvider = ({ children }: { children: ReactNode }) => {
     (tabId: string) =>
       paginationByTab[tabId] || {
         from: defaultQuery.from,
-        size: defaultQuery.size,
+        size: getDefaultSizeForTab(tabId),
         sort: defaultQuery.sort,
       },
     [paginationByTab],

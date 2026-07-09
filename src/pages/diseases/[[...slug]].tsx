@@ -34,12 +34,11 @@ const DiseasePage: NextPage<{
     initialData: initialData || undefined,
     refetchOnWindowFocus: false,
     enabled: hasSlug,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    // staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   const query = data?.query;
-  const topic =
-    data?.topic?.charAt(0).toUpperCase().concat(data.topic.slice(1)) || '';
+  const topic = data?.topic || '';
 
   // Fetch total number of results for the topic
   const params = {
@@ -65,7 +64,8 @@ const DiseasePage: NextPage<{
     enabled: params.q !== undefined && hasSlug,
   });
 
-  const pageTitle = data?.title || 'Diseases';
+  const pageTitle =
+    data?.title || siteConfig.pages['/diseases'].nav?.label || 'Diseases';
 
   return (
     <PageContainer
@@ -88,7 +88,7 @@ const DiseasePage: NextPage<{
       {error ? (
         <Error>
           <Flex flexDirection='column' justifyContent='center'>
-            <Text fontWeight='light' color='gray.600' fontSize='lg'>
+            <Text fontWeight='light' color='gray.800' fontSize='lg'>
               API Request:{' '}
               {error?.message ||
                 'It’s possible that the server is experiencing some issues.'}{' '}

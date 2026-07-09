@@ -1,12 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { FaClockRotateLeft } from 'react-icons/fa6';
+import { FaClockRotateLeft, FaMagnifyingGlass } from 'react-icons/fa6';
 import { uniq } from 'lodash';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import {
   Button,
   Flex,
-  HStack,
   Icon,
   IconButton,
   ListItem,
@@ -14,7 +13,7 @@ import {
   Tooltip,
   UnorderedList,
 } from '@chakra-ui/react';
-import { useLocalStorage } from 'usehooks-ts';
+import { useLocalStorage, useReadLocalStorage } from 'usehooks-ts';
 import {
   DropdownInput,
   DropdownInputProps,
@@ -24,7 +23,8 @@ import {
 import { SearchHistoryItem } from './components/search-history-item';
 import { CheckboxList, CheckboxListProps } from '../checkbox-list';
 import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
-import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-builders';
+import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-string';
+import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
 
 const DropdownContent = dynamic(() =>
   import('src/components/input-with-dropdown/components/DropdownContent').then(
@@ -52,26 +52,47 @@ const SearchInput = ({
       }}
       renderSubmitButton={() => {
         return (
-          <HStack height='100%'>
+          <Flex height='100%' alignItems='flex-start' gap={{ base: 0, md: 2 }}>
             {showOptionsMenu && optionMenuProps && (
-              <CheckboxList {...optionMenuProps}></CheckboxList>
+              <Flex display={{ base: 'none', md: 'flex' }}>
+                <CheckboxList {...optionMenuProps}></CheckboxList>
+              </Flex>
             )}
+            <Button
+              colorScheme={inputProps.colorScheme}
+              aria-label={inputProps.ariaLabel}
+              size='sm'
+              type='submit'
+              display={{ base: 'flex', sm: 'none' }}
+              minW='2.25rem'
+              px={2}
+              my={1}
+              mr={2}
+              alignSelf='flex-start'
+            >
+              <Icon as={FaMagnifyingGlass} />
+            </Button>
             <Button
               colorScheme={inputProps.colorScheme}
               aria-label={inputProps.ariaLabel}
               size={inputProps.size}
               type='submit'
-              display={{ base: 'none', md: 'flex' }}
+              display={{ base: 'none', sm: 'flex' }}
             >
               Search
             </Button>
             {showSearchHistory && (
-              <Flex borderLeft='1px solid' borderLeftColor='gray.200' pl={1}>
-                <Tooltip label='Toggle search history.'>
+              <Flex
+                display={{ base: 'none', md: 'flex' }}
+                borderLeft='1px solid'
+                borderLeftColor='gray.200'
+                pl={1}
+              >
+                <Tooltip label='View search history.'>
                   <IconButton
                     variant='ghost'
                     size={inputProps.size}
-                    aria-label='Toggle search history.'
+                    aria-label='View search history.'
                     icon={
                       <Flex px={2}>
                         <Icon as={FaClockRotateLeft} />
@@ -82,7 +103,7 @@ const SearchInput = ({
                 </Tooltip>
               </Flex>
             )}
-          </HStack>
+          </Flex>
         );
       }}
     />
@@ -114,6 +135,7 @@ const SearchBar = ({
   const { isOpen, setIsOpen } = useDropdownContext();
   // Search term entered in search bar.
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const enableAISearch = useReadLocalStorage('enableAISearch');
 
   /****** Handle query filters ******/
   const [queryFilters, setQueryFilters] = useState<
@@ -125,6 +147,10 @@ const SearchBar = ({
     const { q } = router.query;
     setSearchTerm(prev => {
       if (q && router.query.advancedSearch !== 'true') {
+        // `__all__` represents an unfiltered query; show an empty input.
+        if (q === '__all__') {
+          return '';
+        }
         return q as string;
       }
       return prev;
@@ -161,6 +187,9 @@ const SearchBar = ({
           }),
         }),
         ...(tab && { tab }),
+        ...(SHOW_AI_ASSISTED_SEARCH && {
+          use_ai_search: enableAISearch ? 'true' : 'false',
+        }),
       },
     });
   };
@@ -170,26 +199,42 @@ const SearchBar = ({
     [searchHistory, showSearchHistory],
   );
 
+  const resolvedOptionMenuProps = optionMenuProps
+    ? {
+        selectedOptions:
+          queryFilters?.filter(item => item.property === '@type') || [],
+        handleChange: setQueryFilters,
+        ...optionMenuProps,
+      }
+    : undefined;
+
+  const mobileOptionMenuProps = resolvedOptionMenuProps
+    ? {
+        ...resolvedOptionMenuProps,
+        buttonProps: {
+          ...(resolvedOptionMenuProps.buttonProps || {}),
+          size: 'sm',
+          variant: 'ghost',
+          bg: 'white',
+          borderRadius: 'sm',
+          minW: 'unset',
+          px: 3,
+        },
+      }
+    : undefined;
+
   return (
     <>
       <SearchInput
         id='search-bar'
+        colorScheme={colorScheme}
         ariaLabel={ariaLabel}
         placeholder={placeholder}
         size={size}
         type='text'
         showSearchHistory={showSearchHistory}
         showOptionsMenu={showOptionsMenu}
-        optionMenuProps={
-          optionMenuProps
-            ? {
-                selectedOptions:
-                  queryFilters?.filter(item => item.property === '@type') || [],
-                handleChange: setQueryFilters,
-                ...optionMenuProps,
-              }
-            : undefined
-        }
+        optionMenuProps={resolvedOptionMenuProps}
         onChange={setSearchTerm}
         onSubmit={handleSubmit}
         getInputValue={(idx: number): string => {
@@ -199,6 +244,52 @@ const SearchBar = ({
           return '';
         }}
       />
+
+      {(showOptionsMenu || showSearchHistory) && (
+        <Flex
+          mt='-1px'
+          px={2}
+          py={1}
+          display={{ base: 'flex', md: 'none' }}
+          border='1px solid'
+          borderTopWidth={0}
+          borderColor='gray.200'
+          borderBottomRadius='md'
+          bg='white'
+          justifyContent='flex-end'
+          alignItems='center'
+          gap={1}
+        >
+          {showOptionsMenu && mobileOptionMenuProps && (
+            <CheckboxList {...mobileOptionMenuProps}></CheckboxList>
+          )}
+          {showOptionsMenu && showSearchHistory && (
+            <Flex
+              display={{ base: 'block', md: 'none' }}
+              h='1.5rem'
+              borderLeft='1px solid'
+              borderLeftColor='gray.100'
+              mx={1}
+            />
+          )}
+          {showSearchHistory && (
+            <Tooltip label='View search history.'>
+              <IconButton
+                variant='ghost'
+                size='sm'
+                bg='white'
+                aria-label='View search history.'
+                icon={
+                  <Flex px={2}>
+                    <Icon as={FaClockRotateLeft} />
+                  </Flex>
+                }
+                onClick={() => setIsOpen(!isOpen)}
+              />
+            </Tooltip>
+          )}
+        </Flex>
+      )}
 
       {isOpen && showSearchHistory && historyList && (
         <DropdownContent>
@@ -255,7 +346,7 @@ interface OptionProps {
   property: string; // Associated property name (e.g., type, domain)
 }
 
-interface SearchBarWithDropdownProps {
+export interface SearchBarWithDropdownProps {
   value?: string;
   ariaLabel: string;
   placeholder: string;
@@ -276,11 +367,13 @@ interface SearchBarWithDropdownProps {
   };
 }
 
-export const SearchBarWithDropdown = (props: SearchBarWithDropdownProps) => {
+export const DropdownSearchInput = (props: SearchBarWithDropdownProps) => {
   const router = useRouter();
   const { q } = router.query;
   const defaultInputValue =
-    q && router.query.advancedSearch !== 'true' ? (q as string) : '';
+    q && router.query.advancedSearch !== 'true' && q !== '__all__'
+      ? (q as string)
+      : '';
 
   const [searchHistory, setSearchHistory] = useLocalStorage<string[]>(
     'basic-searches',
@@ -302,4 +395,8 @@ export const SearchBarWithDropdown = (props: SearchBarWithDropdownProps) => {
       />
     </InputWithDropdown>
   );
+};
+
+export const Search = {
+  Input: DropdownSearchInput,
 };

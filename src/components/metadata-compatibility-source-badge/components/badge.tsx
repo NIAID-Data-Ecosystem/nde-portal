@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { Group } from '@visx/group';
 import { scaleLinear } from '@visx/scale';
-import { HeatmapRect } from '@visx/heatmap';
 import { MetadataSource } from 'src/hooks/api/types';
 import { theme } from 'src/theme';
 import { PatternLines } from '@visx/pattern';
@@ -15,7 +14,6 @@ import { FaCircleCheck, FaRegCircleUp } from 'react-icons/fa6';
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
 interface Bin {
-  bin: number;
   count: number;
   field: string;
   label: string;
@@ -23,25 +21,13 @@ interface Bin {
   augmented: number | null;
 }
 
-interface Bins {
-  bin: number;
-  bins: Bin[];
-}
 const primary2 = theme.colors.pink[500];
 const secondary2 = theme.colors.secondary[500];
 
-function max<Datum>(data: Datum[], value: (d: Datum) => number): number {
-  return Math.max(...data.map(value));
-}
+const colorMax = (bins: Bin[]) =>
+  bins.reduce((m, b) => Math.max(m, b.count), 0);
 
-// accessors
-const bins = (d: Bins) => d.bins;
-const count = (d: Bin) => d.count;
-
-const colorMax = (binData: Bins[]) => max(binData, d => max(bins(d), count));
-// const bucketSizeMax = (binData: Bins[]) => max(binData, d => bins(d).length);
-
-const rectColorScale = (data: Bins[], type?: string) => {
+const rectColorScale = (bins: Bin[], type?: string) => {
   const colorScheme = !type
     ? [primary2, primary2]
     : type === 'required'
@@ -50,43 +36,25 @@ const rectColorScale = (data: Bins[], type?: string) => {
 
   return scaleLinear<string>({
     range: colorScheme,
-    domain: [0, colorMax(data)],
+    domain: [0, colorMax(bins)],
   });
 };
-const opacityScale = (data: Bins[]) =>
-  scaleLinear<number>({
-    range: [0.6, 1],
-    domain: [0, colorMax(data)],
-  });
 
 export type HeatmapProps = {
   width: number;
-  height: number;
+  height?: number;
   data: MetadataSource['sourceInfo']['metadata_completeness'];
   margin?: { top: number; right: number; bottom: number; left: number };
 };
 
 export const defaultMargin = { top: 10, left: 0, right: 0, bottom: 0 };
 
-const getBinsData = (fields: Omit<Bin, 'bin'>[], numRows = 2) => {
-  return fields.reduce(
-    (bins, { augmented, count, field, label, type }, idx) => {
-      const col = idx % numRows;
-      const column = bins.find(c => c.bin === col);
-      if (column) {
-        column.bins.push({ bin: col, augmented, count, field, label, type });
-      } else {
-        bins.push({
-          bin: col,
-          bins: [{ bin: col, augmented, count, field, label, type }],
-        });
-      }
-
-      return bins;
-    },
-    [] as Bins[],
-  );
-};
+// Fixed bin sizing — bins wrap to the next row when they exceed the parent width.
+const BIN_SIZE = 14;
+const BIN_GAP = 2;
+const LABEL_HEIGHT = 18;
+const CATEGORY_GAP = 14;
+const RADIUS = 2;
 
 let tooltipTimeout: number;
 
@@ -94,10 +62,9 @@ interface ToolTipData extends Bin {
   percent: string;
   theme: string;
 }
-const separation = 14;
+
 export const CompatibilityBadge = ({
   width,
-  height,
   data,
   margin = defaultMargin,
 }: HeatmapProps) => {
@@ -111,82 +78,61 @@ export const CompatibilityBadge = ({
   } = useTooltip<ToolTipData>();
 
   const { containerRef, TooltipInPortal } = useTooltipInPortal({
-    // use TooltipWithBounds
     detectBounds: false,
-    // when tooltip containers are scrolled, this will correctly update the Tooltip position
     scroll: true,
   });
-  // data
-  const required = Object.entries(data.required_fields || {})
-    .map(([field, count]) => {
-      const augmented =
-        data.required_augmented_fields_coverage?.[field] || null;
-      return {
-        label: schema[field].name,
-        field,
-        count,
-        augmented,
-        type: 'required',
-      };
-    })
-    .sort((a, b) => b.label.localeCompare(a.label));
 
-  const recommended = Object.entries(data.recommended_fields || {})
-    .map(([field, count]) => {
-      const augmented =
-        data.recommended_augmented_fields_coverage?.[field] || null;
-      return {
-        label: schema[field].name,
-        field,
-        count,
-        augmented,
-        type: 'recommended',
-      };
-    })
-    .sort((a, b) => b.label.localeCompare(a.label));
+  // Sort alphabetically so bins read left-to-right, top-to-bottom.
+  const required: Bin[] = Object.entries(data.required_fields || {})
+    .map(([field, count]) => ({
+      label: schema[field]?.name || '',
+      field,
+      count,
+      augmented: data.required_augmented_fields_coverage?.[field] || null,
+      type: 'required',
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 
-  const NUM_BARS = Math.max(recommended.length, required.length);
+  const recommended: Bin[] = Object.entries(data.recommended_fields || {})
+    .map(([field, count]) => ({
+      label: schema[field]?.name || '',
+      field,
+      count,
+      augmented: data.recommended_augmented_fields_coverage?.[field] || null,
+      type: 'recommended',
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 
-  const REQUIRED_DATA = getBinsData(required, NUM_BARS).reverse();
-
-  const RECOMMENDED_DATA = getBinsData(recommended, NUM_BARS).reverse();
-
-  // bounds
-  const size =
-    width > margin.left + margin.right
-      ? width - margin.left - margin.right
-      : width;
-
-  const xMax = size;
-  const yMax = height / 2 - margin.bottom - margin.top;
-
-  const binWidth = xMax / NUM_BARS;
-
-  const bucketSizeMax = 2;
-  const binHeight = yMax / bucketSizeMax;
-
-  const radius = 2;
-
-  // scales
-  const xScale = useMemo(
-    () =>
-      scaleLinear<number>({
-        domain: [0, NUM_BARS],
-        range: [0, xMax],
-      }),
-    [NUM_BARS, xMax],
+  const innerWidth = Math.max(0, width - margin.left - margin.right);
+  const binsPerRow = Math.max(
+    1,
+    Math.floor((innerWidth + BIN_GAP) / (BIN_SIZE + BIN_GAP)),
   );
 
-  const yScale = useMemo(
-    () =>
-      scaleLinear<number>({
-        domain: [0, bucketSizeMax],
-        range: [yMax, 0],
-      }),
-    [bucketSizeMax, yMax],
+  const requiredRows = Math.max(1, Math.ceil(required.length / binsPerRow));
+  const recommendedRows = Math.max(
+    1,
+    Math.ceil(recommended.length / binsPerRow),
   );
 
-  // event handlers
+  const requiredHeight =
+    LABEL_HEIGHT + requiredRows * BIN_SIZE + (requiredRows - 1) * BIN_GAP;
+  const recommendedHeight =
+    LABEL_HEIGHT + recommendedRows * BIN_SIZE + (recommendedRows - 1) * BIN_GAP;
+
+  const requiredTop = margin.top;
+  const recommendedTop = requiredTop + requiredHeight + CATEGORY_GAP;
+  const totalHeight = recommendedTop + recommendedHeight + margin.bottom;
+
+  const requiredColor = useMemo(
+    () => rectColorScale(required, 'required'),
+    [required],
+  );
+  const recommendedColor = useMemo(
+    () => rectColorScale(recommended, 'recommended'),
+    [recommended],
+  );
+
   const handleMouseMove = useCallback(
     (
       _: React.MouseEvent | React.TouchEvent,
@@ -196,7 +142,7 @@ export const CompatibilityBadge = ({
       const theme = data.type === 'required' ? 'pink' : 'secondary';
       showTooltip({
         tooltipLeft: x,
-        tooltipTop: data.type === 'required' ? y - separation : y,
+        tooltipTop: y,
         tooltipData: {
           ...data,
           percent: `${Math.round(data.count * 100)}%`,
@@ -214,10 +160,71 @@ export const CompatibilityBadge = ({
     }, 300);
   }, [hideTooltip]);
 
+  const renderBins = (
+    bins: Bin[],
+    color: (n: number) => string,
+    patternId: string,
+    groupTop: number,
+  ) =>
+    bins.map((bin, idx) => {
+      const col = idx % binsPerRow;
+      const row = Math.floor(idx / binsPerRow);
+      const x = col * (BIN_SIZE + BIN_GAP);
+      const y = LABEL_HEIGHT + row * (BIN_SIZE + BIN_GAP);
+      const fieldIsCompatible = bin.count > 0;
+      const fill = fieldIsCompatible ? color(bin.count) : `url(#${patternId})`;
+
+      return (
+        <Box
+          as='g'
+          className='visx-heatmap-rect'
+          key={`heatmap-rect-${bin.type}-${idx}`}
+          onMouseMove={(e: React.MouseEvent | React.TouchEvent) =>
+            handleMouseMove(e, {
+              x: margin.left + x + BIN_SIZE / 2,
+              y: groupTop + y + BIN_SIZE,
+              data: bin,
+            })
+          }
+          onTouchMove={(e: React.MouseEvent | React.TouchEvent) =>
+            handleMouseMove(e, {
+              x: margin.left + x + BIN_SIZE / 2,
+              y: groupTop + y + BIN_SIZE,
+              data: bin,
+            })
+          }
+          onMouseLeave={handleMouseLeave}
+          rx={RADIUS}
+          ry={RADIUS}
+        >
+          <rect
+            width={BIN_SIZE}
+            height={BIN_SIZE}
+            x={x}
+            y={y}
+            rx={RADIUS}
+            ry={RADIUS}
+            fill={fill}
+            fillOpacity={1}
+          />
+          {bin.augmented && (
+            <Icon
+              as={FaRegCircleUp}
+              color={fieldIsCompatible ? 'white' : color(0)}
+              x={x + BIN_SIZE / 2}
+              y={y + BIN_SIZE / 2}
+              style={{ transform: 'translate(-5px, -5px)' }}
+              size={10}
+            />
+          )}
+        </Box>
+      );
+    });
+
   return width < 10 ? null : (
     <Box
       width={`${width}px`}
-      height={`${height}px`}
+      height={`${totalHeight}px`}
       position='relative'
       sx={{
         '.visx-heatmap-rect:hover': {
@@ -227,7 +234,7 @@ export const CompatibilityBadge = ({
       }}
       onMouseLeave={handleMouseLeave}
     >
-      <svg ref={containerRef} width={width} height={height}>
+      <svg ref={containerRef} width={width} height={totalHeight}>
         <PatternLines
           id='fundamental-lines'
           height={5}
@@ -244,97 +251,38 @@ export const CompatibilityBadge = ({
           strokeWidth={1}
           orientation={['diagonal']}
         />
-        <Group className='recommended-fields' top={yMax} left={margin.left}>
+
+        <Group
+          className='recommended-fields'
+          top={recommendedTop}
+          left={margin.left}
+        >
           <Tooltip
             label='Recommended fields coverage.'
             position='absolute'
             left={0}
-            top={yMax}
+            top={0}
           >
             <Box
               as='text'
               x={0}
-              y={yScale(0)}
-              dy={-0.75}
+              y={LABEL_HEIGHT - 4}
               fontSize='12px'
               fill='gray.800'
             >
-              Recommended{' | '}{' '}
+              Recommended{' | '}
               {Math.round(data.percent_recommended_fields * 100)}%
             </Box>
           </Tooltip>
-
-          <HeatmapRect
-            data={RECOMMENDED_DATA}
-            xScale={d => xScale(d) ?? 0}
-            yScale={d => yScale(d) ?? 0}
-            opacityScale={opacityScale(RECOMMENDED_DATA)}
-            colorScale={rectColorScale(RECOMMENDED_DATA, 'recommended')}
-            binWidth={binWidth}
-            binHeight={binWidth}
-            gap={3}
-          >
-            {heatmap =>
-              heatmap.map(heatmapBins => {
-                return heatmapBins.map(bin => {
-                  const data = bin.bin as Bin;
-                  const pattern = 'url(#secondary-lines)';
-                  const fieldIsCompatible = data.count > 0;
-
-                  return (
-                    <Box
-                      as='g'
-                      className='visx-heatmap-rect'
-                      key={`heatmap-rect-${bin.row}-${bin.column}`}
-                      onMouseMove={(e: React.MouseEvent | React.TouchEvent) =>
-                        handleMouseMove(e, {
-                          x: bin.x,
-                          y: bin.y + bin.height * 2,
-                          data,
-                        })
-                      }
-                      onTouchMove={(e: React.MouseEvent | React.TouchEvent) =>
-                        handleMouseMove(e, {
-                          x: bin.x,
-                          y: bin.y + bin.height * 2,
-                          data,
-                        })
-                      }
-                      onMouseLeave={handleMouseLeave}
-                      rx={radius}
-                      ry={radius}
-                    >
-                      <rect
-                        width={bin.width}
-                        height={bin.height}
-                        x={bin.x}
-                        y={bin.y}
-                        rx={radius}
-                        ry={radius}
-                        fill={fieldIsCompatible ? bin.color : pattern}
-                        fillOpacity={1}
-                      />
-                      {data.augmented && (
-                        <Icon
-                          as={FaRegCircleUp}
-                          color={fieldIsCompatible ? 'white' : bin.color}
-                          x={bin.x + 1.5}
-                          y={bin.y + 1.5}
-                          size={10}
-                        />
-                      )}
-                    </Box>
-                  );
-                });
-              })
-            }
-          </HeatmapRect>
+          {renderBins(
+            recommended,
+            recommendedColor,
+            'secondary-lines',
+            recommendedTop,
+          )}
         </Group>
-        <Group
-          className='required-fields'
-          top={yMax - binHeight - margin.top - separation}
-          left={margin.left}
-        >
+
+        <Group className='required-fields' top={requiredTop} left={margin.left}>
           <Tooltip
             label='Fundamental fields coverage.'
             position='absolute'
@@ -344,8 +292,7 @@ export const CompatibilityBadge = ({
             <Box
               as='text'
               x={0}
-              y={yScale(0)}
-              dy={-0.75}
+              y={LABEL_HEIGHT - 4}
               fontSize='12px'
               fill='gray.800'
             >
@@ -353,75 +300,12 @@ export const CompatibilityBadge = ({
               {Math.round(data.percent_required_fields * 100)}%
             </Box>
           </Tooltip>
-
-          <HeatmapRect
-            data={REQUIRED_DATA}
-            xScale={d => xScale(d) ?? 0}
-            yScale={d => yScale(d) ?? 0}
-            opacityScale={opacityScale(REQUIRED_DATA)}
-            colorScale={rectColorScale(REQUIRED_DATA)}
-            binWidth={binWidth}
-            binHeight={binWidth}
-            gap={3}
-          >
-            {heatmap =>
-              heatmap.map(heatmapBins => {
-                return heatmapBins.map(bin => {
-                  const data = bin.bin as Bin;
-                  const pattern = 'url(#fundamental-lines)';
-                  const fieldIsCompatible = data.count > 0;
-                  return (
-                    <Box
-                      as='g'
-                      key={`heatmap-rect-${bin.row}-${bin.column}`}
-                      className='visx-heatmap-rect'
-                      onMouseMove={(e: React.MouseEvent | React.TouchEvent) =>
-                        handleMouseMove(e, {
-                          x: bin.x,
-                          y: bin.y + bin.height,
-                          data,
-                        })
-                      }
-                      onTouchMove={(e: React.MouseEvent | React.TouchEvent) =>
-                        handleMouseMove(e, {
-                          x: bin.x,
-                          y: bin.y + bin.height,
-                          data,
-                        })
-                      }
-                      onMouseLeave={handleMouseLeave}
-                      rx={radius}
-                      ry={radius}
-                    >
-                      <rect
-                        className='visx-heatmap-rect'
-                        width={bin.width}
-                        height={bin.height}
-                        x={bin.x}
-                        y={bin.y}
-                        rx={radius}
-                        ry={radius}
-                        fill={fieldIsCompatible ? bin.color : pattern}
-                        fillOpacity={1}
-                        // stroke={bin.color}
-                        // strokeWidth={0.5}
-                      />
-
-                      {data.augmented && (
-                        <Icon
-                          as={FaRegCircleUp}
-                          color={fieldIsCompatible ? 'white' : bin.color}
-                          x={bin.x + 1.5}
-                          y={bin.y + 1.5}
-                          size={10}
-                        />
-                      )}
-                    </Box>
-                  );
-                });
-              })
-            }
-          </HeatmapRect>
+          {renderBins(
+            required,
+            requiredColor,
+            'fundamental-lines',
+            requiredTop,
+          )}
         </Group>
       </svg>
       {tooltipOpen &&
@@ -436,7 +320,6 @@ export const CompatibilityBadge = ({
               position: 'absolute',
               backgroundColor: 'white',
               color: '#666666',
-              // padding: '.3rem .5rem',
               borderRadius: '3px',
               fontSize: '14px',
               boxShadow: '0 1px 2px rgba(33,33,33,0.2)',
@@ -458,7 +341,6 @@ export const CompatibilityBadge = ({
               </Text>
               <Stack p={2} spacing={1} fontSize='xs'>
                 {tooltipData.count ? (
-                  /* Collected metadata */
                   <>
                     <Text lineHeight='shorter'>
                       <Icon
@@ -470,7 +352,6 @@ export const CompatibilityBadge = ({
                       <strong>{tooltipData.label} </strong>
                       metadata is collected and available for this source.
                     </Text>
-                    {/* Collected metadata and augmented */}
                     {tooltipData.augmented ? (
                       <Text mt={1} lineHeight='shorter'>
                         <Icon
@@ -489,7 +370,6 @@ export const CompatibilityBadge = ({
                 ) : (
                   <Text lineHeight='short'>
                     {tooltipData.augmented ? (
-                      /* No metadata but augmented */
                       <Text as='span' mt={1}>
                         <Icon
                           as={FaRegCircleUp}
@@ -502,7 +382,6 @@ export const CompatibilityBadge = ({
                         source.
                       </Text>
                     ) : (
-                      /* No metadata and not augmented */
                       <Text as='span' mt={1}>
                         <strong>{tooltipData.label} </strong> metadata was not
                         found for this source.

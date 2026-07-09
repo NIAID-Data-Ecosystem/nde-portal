@@ -17,7 +17,7 @@ import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
 import { ChartWrapper } from '../layouts/chart-wrapper';
 import { BrushableListChart } from '../visualizations/brushable-list-chart';
 import { TreemapChart } from '../visualizations/treemap-chart';
-import { getSearchResultsRoute } from '../../helpers';
+import { getSearchResultsRoute, trackDiseasesEvent } from '../../helpers';
 import { FacetProps, TopicQueryProps } from '../../types';
 import {
   fillTemplatePlaceholders,
@@ -170,6 +170,20 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
                   query: params,
                   facet: facet.value,
                   term,
+                });
+              },
+              handleGATracking: ({
+                label,
+                count,
+              }: {
+                label: string;
+                count: number;
+              }) => {
+                trackDiseasesEvent({
+                  label,
+                  category: `${facet.label} - ${listView ? 'List' : 'Treemap'}`,
+                  linkType: 'chart',
+                  value: count,
                 });
               },
             };

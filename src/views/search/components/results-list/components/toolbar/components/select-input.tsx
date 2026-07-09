@@ -1,5 +1,5 @@
 import React from 'react';
-import { Select, SelectProps, VisuallyHidden } from '@chakra-ui/react';
+import { Flex, Select, SelectProps, Text } from '@chakra-ui/react';
 
 interface SelectWithLabelProps extends SelectProps {
   id: string;
@@ -23,12 +23,10 @@ export const SelectWithLabel = ({
   ...props
 }: SelectWithLabelProps) => {
   return (
-    <>
-      <VisuallyHidden>
-        <label htmlFor={id} title={label}>
-          {label}
-        </label>
-      </VisuallyHidden>
+    <Flex as='label' htmlFor={id} alignItems='center' gap={2} cursor='pointer'>
+      <Text as='span' fontSize='sm' whiteSpace='nowrap' color='gray.900'>
+        {label}
+      </Text>
       <Select
         id={id}
         aria-label={label}
@@ -54,6 +52,6 @@ export const SelectWithLabel = ({
           );
         })}
       </Select>
-    </>
+    </Flex>
   );
 };

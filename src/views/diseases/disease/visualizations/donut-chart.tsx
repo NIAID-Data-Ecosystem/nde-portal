@@ -17,7 +17,7 @@ import {
   TooltipSubtitle,
   TooltipTitle,
   TooltipWrapper,
-} from '../components/tooltip';
+} from 'src/components/visualizations/tooltip/index';
 
 interface Datum {
   count: number;
@@ -56,6 +56,9 @@ export interface DonutChartProps {
   /** Function to handle slice click events. */
   getRoute: (term: string) => UrlObject;
 
+  /** Callback for handling click events on a pie slice. */
+  handleGATracking: (event: { label: string; count: number }) => void;
+
   /** Optional label style and transform function. */
   labelStyles?: LabelProps;
 
@@ -70,6 +73,7 @@ export interface DonutChartProps {
 
   /** Accessibilty title for the chart. */
   title: string;
+
   /** Accessibility description for the chart. */
   description: string;
 }
@@ -100,6 +104,7 @@ export const DonutChart = ({
   donutThickness = 50,
   getFillColor,
   getRoute,
+  handleGATracking,
   labelStyles,
   margin = defaultMargin,
   animate = true,
@@ -150,9 +155,7 @@ export const DonutChart = ({
 
   // Show tooltip and track hovered term on pointer move
   const handleMouseOver = (
-    event:
-      | React.PointerEvent<SVGPathElement>
-      | React.FocusEvent<SVGGElement, Element>,
+    event: React.PointerEvent<SVGPathElement> | React.FocusEvent<Element>,
     datum: Datum,
   ) => {
     const targetEl = (event.target as SVGPathElement)?.ownerSVGElement;
@@ -210,8 +213,11 @@ export const DonutChart = ({
             <p id='donut-chart-title'>{title}</p>
             <p id='donut-chart-desc'>{description}</p>
           </VisuallyHidden>
+          {/* role="group" (not "img"): the chart contains focusable <a> slices,
+              and a role="img" must not nest interactive controls
+              (nested-interactive); a labelled group legitimately can. */}
           <svg
-            role='img'
+            role='group'
             width={width}
             height={height}
             aria-labelledby='donut-chart-title'
@@ -248,6 +254,7 @@ export const DonutChart = ({
                     hoveredTerm={hoveredTerm}
                     labelStyles={labelStyles}
                     dimensions={{ width, height }}
+                    handleGATracking={handleGATracking}
                     // onClickDatum={({ data: { term } }) => {
                     //   animate &&
                     //     setSelection(
@@ -306,54 +313,56 @@ const enterUpdateTransition = ({ startAngle, endAngle }: PieArcDatum<any>) => ({
   opacity: 1,
 });
 
-type AnimatedPieProps<Datum> = ProvidedProps<Datum> & {
-  /** Whether to animate the pie chart transitions. */
-  animate?: boolean;
+type AnimatedPieProps<Datum extends { count: number }> =
+  ProvidedProps<Datum> & {
+    /** Whether to animate the pie chart transitions. */
+    animate?: boolean;
 
-  /** Array of pie arc data. */
-  arcs: PieArcDatum<Datum>[];
+    /** Array of pie arc data. */
+    arcs: PieArcDatum<Datum>[];
 
-  /** Dimensions of the chart */
-  dimensions: {
-    width: number;
-    height: number;
+    /** Dimensions of the chart */
+    dimensions: {
+      width: number;
+      height: number;
+    };
+
+    /** The term currently being hovered over, or `null` if none. */
+    hoveredTerm: string | null;
+
+    /** Styles for the labels displayed on the pie chart. */
+    labelStyles: DonutChartProps['labelStyles'];
+
+    /** Number representing the outer radius of the pie chart. */
+    outerRadius: number;
+
+    /** Function to determine the color of each pie slice. */
+    getColor: (d: PieArcDatum<Datum>) => string;
+
+    /** Function to generate a unique key for each pie slice. */
+    getKey: (d: PieArcDatum<Datum>) => string;
+
+    /** Function to determine the route associated with a pie slice. */
+    getRoute: DonutChartProps['getRoute'];
+
+    /** Callback for handling mouse-over events on a pie slice. */
+    handleMouseOver: (
+      e: React.PointerEvent<SVGPathElement> | React.FocusEvent<Element>,
+      d: PieArcDatum<Datum>['data'],
+    ) => void;
+
+    /** Callback for handling mouse-out events from a pie slice. */
+    handleMouseOut: () => void;
+
+    /** Callback for handling GA tracking events. */
+    handleGATracking: (event: { label: string; count: number }) => void;
+
+    /** Callback for handling click events on a pie slice. */
+    // onClickDatum: (d: PieArcDatum<Datum>) => void;
   };
 
-  /** The term currently being hovered over, or `null` if none. */
-  hoveredTerm: string | null;
-
-  /** Styles for the labels displayed on the pie chart. */
-  labelStyles: DonutChartProps['labelStyles'];
-
-  /** Number representing the outer radius of the pie chart. */
-  outerRadius: number;
-
-  /** Function to determine the color of each pie slice. */
-  getColor: (d: PieArcDatum<Datum>) => string;
-
-  /** Function to generate a unique key for each pie slice. */
-  getKey: (d: PieArcDatum<Datum>) => string;
-
-  /** Function to determine the route associated with a pie slice. */
-  getRoute: DonutChartProps['getRoute'];
-
-  /** Callback for handling mouse-over events on a pie slice. */
-  handleMouseOver: (
-    e:
-      | React.PointerEvent<SVGPathElement>
-      | React.FocusEvent<SVGGElement, Element>,
-    d: PieArcDatum<Datum>['data'],
-  ) => void;
-
-  /** Callback for handling mouse-out events from a pie slice. */
-  handleMouseOut: () => void;
-
-  /** Callback for handling click events on a pie slice. */
-  // onClickDatum: (d: PieArcDatum<Datum>) => void;
-};
-
 // Arc rendering with animated transitions
-function AnimatedPie<Datum>({
+function AnimatedPie<Datum extends { count: number }>({
   animate,
   arcs,
   dimensions,
@@ -363,6 +372,7 @@ function AnimatedPie<Datum>({
   getKey,
   getColor,
   getRoute,
+  handleGATracking,
   handleMouseOver,
   handleMouseOut,
   outerRadius,
@@ -398,17 +408,20 @@ function AnimatedPie<Datum>({
       arc.endAngle - arc.startAngle >= 0.1 && labelWidth > 50;
 
     return (
-      <g
-        key={key}
-        tabIndex={arc.index}
-        onFocus={e => {
-          handleMouseOver(e, arc.data);
-        }}
-        onBlur={() => {
-          handleMouseOut();
-        }}
-      >
-        <NextLink href={getRoute(getKey(arc))} passHref>
+      <g key={key}>
+        <NextLink
+          onClick={() =>
+            handleGATracking({ label: displayLabel, count: arc.data.count })
+          }
+          href={getRoute(getKey(arc))}
+          // The link is the single focusable, interactive element per slice.
+          // Surfacing the tooltip on its focus keeps keyboard parity with hover
+          // without nesting a focusable <g> inside the <a> (nested-interactive)
+          // or assigning positive tabindex values (tabindex).
+          onFocus={e => handleMouseOver(e, arc.data)}
+          onBlur={() => handleMouseOut()}
+          passHref
+        >
           <animated.path
             data-testid={`${getKey(arc)}-path`}
             style={{

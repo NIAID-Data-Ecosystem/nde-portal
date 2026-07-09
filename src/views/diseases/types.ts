@@ -55,6 +55,7 @@ export interface DiseaseApiResponse {
   image: DiseaseImageApiResponse;
   subtitle?: string;
   description?: string;
+  topicEmphasizedDescription?: string;
   contacts?: DiseaseLinkItemApiResponse[];
   externalLinks?: DiseaseLinkItemApiResponse[];
   createdAt: string;
@@ -99,6 +100,7 @@ export interface DiseasePageProps {
   image: DiseaseImageApiResponse;
   subtitle?: string;
   description?: string;
+  topicEmphasizedDescription?: string;
   contacts?: LinkItem[];
   externalLinks?: LinkItem[];
   createdAt: string;

@@ -83,7 +83,7 @@ export const CheckboxList = <T extends Option>({
             </Text>
             {description && (
               <Text
-                color='page.placeholder'
+                color='gray.700'
                 fontSize='sm'
                 fontStyle='italic'
                 fontWeight='normal'
@@ -146,7 +146,14 @@ export const CheckboxList = <T extends Option>({
                         }
                       }}
                       px={1}
+                      lineHeight='tall'
+                      alignItems='flex-start'
                       _hover={{ bg: 'niaid.50' }}
+                      sx={{
+                        '>.chakra-checkbox__control': {
+                          mt: 1, // to keep checkbox in line with top of text for options with multiple lines
+                        },
+                      }}
                     >
                       <Text fontSize='sm'>{option.name}</Text>
                     </Checkbox>

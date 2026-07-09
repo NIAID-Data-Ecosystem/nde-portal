@@ -1,0 +1,79 @@
+import { FormattedResource, IncludedInDataCatalog } from 'src/utils/api/types';
+import { SHOW_RETIRED_RESOURCE_CATALOG_UI } from 'src/utils/feature-flags';
+
+// Helper function to get repository image path based on repository name
+export const getSourceImagePath = (
+  name: FormattedResource['IncludedInDataCatalog']['name'],
+) => {
+  if (!name) {
+    return null;
+  }
+  const path = '/assets/resources/';
+  const identifier = name
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z-]/g, '');
+
+  return path + identifier + '.png';
+};
+
+// Take one or more catalog sources and return them with their resolved image/logo path included.
+export const formatSourcesWithLogos = (
+  sources: FormattedResource['includedInDataCatalog'],
+) => {
+  const sources2Array = sources
+    ? Array.isArray(sources)
+      ? sources
+      : [sources]
+    : [];
+  return sources2Array.map(source => ({
+    ...source,
+    logo: getSourceImagePath(source.name),
+  }));
+};
+
+// Get link out URL for source logo
+export const getSourceLogoLinkOut = (source: IncludedInDataCatalog) => {
+  return (
+    (Array.isArray(source?.archivedAt)
+      ? source?.archivedAt[0]
+      : source?.archivedAt) ?? ''
+  );
+};
+
+// If resource is part of a catalog, only show DDE as source
+export const getDDECatalog = (
+  catalog: FormattedResource['includedInDataCatalog'],
+) => {
+  if (Array.isArray(catalog)) {
+    return catalog.find(src => src.name === 'Data Discovery Engine') || null;
+  }
+  return catalog?.name === 'Data Discovery Engine' ? catalog : null;
+};
+
+export const getAccessResourceURL = ({
+  recordType,
+  source,
+  url,
+  creativeWorkStatus,
+}: {
+  recordType: string | null | undefined;
+  source: IncludedInDataCatalog;
+  url?: FormattedResource['url'];
+  creativeWorkStatus?: FormattedResource['creativeWorkStatus'];
+}) => {
+  // Retired ResourceCatalogs should send users to the retired resources
+  // page in the Knowledge Center instead of the usual external/source link.
+  // Gated behind SHOW_RETIRED_RESOURCE_CATALOG_UI until approved for production.
+  if (
+    SHOW_RETIRED_RESOURCE_CATALOG_UI &&
+    recordType === 'ResourceCatalog' &&
+    creativeWorkStatus === 'Retired'
+  ) {
+    return '/knowledge-center/retired-resources';
+  }
+
+  return recordType === 'ResourceCatalog'
+    ? url ?? ''
+    : getSourceLogoLinkOut(source);
+};

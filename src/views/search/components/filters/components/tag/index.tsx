@@ -10,14 +10,18 @@ import {
 import {
   FilterConfig,
   SelectedFilterType,
-  SelectedFilterTypeValue,
+  SelectedFilterValueType,
 } from '../../types';
-import { queryFilterObject2String } from '../../utils/query-builders';
-import { defaultQuery } from 'src/views/search/config/defaultQuery';
+import {
+  APPLY_DEFAULT_DATE_PARAM,
+  defaultQuery,
+} from 'src/views/search/config/defaultQuery';
 import { isEqual } from 'lodash';
 import { generateTags } from './utils';
 import { SearchResultsHeading } from '../../../search-results-header';
 import { usePaginationContext } from 'src/views/search/context/pagination-context';
+
+import { queryFilterObject2String } from '../../utils/query-string';
 
 interface FilterTagsProps {
   filtersConfig: FilterConfig[];
@@ -30,7 +34,7 @@ export interface TagInfo {
   key: string;
   filterKey: string;
   name: string;
-  value: string | SelectedFilterTypeValue | SelectedFilterTypeValue[];
+  value: string | SelectedFilterValueType | SelectedFilterValueType[];
   displayValue: string;
 }
 
@@ -59,22 +63,50 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
       [selectedFilters, configMap],
     );
 
-    //Removes a single filter value from selectedFilters and updates the route.
+    // Removes a single filter value from selectedFilters and updates the route.
     const removeSelectedFilter = (
       filterKey: string,
-      filterValue: SelectedFilterTypeValue | SelectedFilterTypeValue[],
+      filterValue: SelectedFilterValueType | SelectedFilterValueType[],
     ) => {
-      const updatedFilters: SelectedFilterType = {
-        ...selectedFilters,
-        [filterKey]: selectedFilters[filterKey].filter(v => {
-          if (Array.isArray(filterValue)) return !filterValue.includes(v);
-          return !isEqual(v, filterValue);
-        }),
-      };
+      let updatedFilters: SelectedFilterType;
+
+      // If filterValue is an array of 2 dates, clear all
+      if (
+        filterKey === 'date' &&
+        Array.isArray(filterValue) &&
+        filterValue.length === 2 &&
+        typeof filterValue[0] === 'string' &&
+        typeof filterValue[1] === 'string'
+      ) {
+        // Remove the entire date range, including any _exists_ filters related to date because they are not relevant if the user is clearing the date filter and will only limit the results in an unintended way if left in the filters.
+        updatedFilters = {
+          ...selectedFilters,
+          [filterKey]: [],
+        };
+      } else {
+        // For other filters, remove the specific value(s)
+        updatedFilters = {
+          ...selectedFilters,
+          [filterKey]: selectedFilters[filterKey].filter(v => {
+            if (Array.isArray(filterValue)) return !filterValue.includes(v);
+            return !isEqual(v, filterValue);
+          }),
+        };
+      }
+
       resetPagination();
       handleRouteUpdate({
         from: defaultQuery.from,
         filters: queryFilterObject2String(updatedFilters),
+        // Removing a date value: opt out of the default range only when the date
+        // filter is now empty; drop the param when other date values remain (the
+        // value itself already suppresses the default).
+        ...(filterKey === 'date'
+          ? {
+              [APPLY_DEFAULT_DATE_PARAM]:
+                (updatedFilters.date?.length ?? 0) > 0 ? undefined : 'false',
+            }
+          : {}),
       });
     };
 
@@ -86,22 +118,19 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
         <SearchResultsHeading as='h2'>Filtered by: </SearchResultsHeading>
         <HStack flexWrap='wrap' spacing={1.5} py={1}>
           {/* Clear all filters button */}
-          <Tag
-            as={Button}
-            {...tagStyles}
-            colorScheme='secondary'
-            px={4}
-            variant='outline'
-            fontSize='sm'
-            fontWeight='medium'
-            _hover={{ bg: 'secondary.600' }}
+          <Button
+            size='xs'
             onClick={() => {
               resetPagination();
               removeAllFilters();
             }}
+            colorScheme='secondary'
+            variant='outline'
+            lineHeight='unset'
+            fontWeight='medium'
           >
             Clear All
-          </Tag>
+          </Button>
 
           {/* Render each tag with close button */}
           {tags.map(({ key, name, value, displayValue, filterKey }) => (

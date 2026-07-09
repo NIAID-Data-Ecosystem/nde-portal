@@ -18,7 +18,7 @@ import {
   TooltipSubtitle,
   TooltipTitle,
   TooltipWrapper,
-} from '../components/tooltip';
+} from 'src/components/visualizations/tooltip/index';
 import { FacetProps } from '../../types';
 
 interface TreemapChartProps {
@@ -29,6 +29,9 @@ interface TreemapChartProps {
 
   /** Function to generate the search route for each term. */
   getSearchRoute: (term: string) => UrlObject;
+
+  /** Callback for handling click events on treemap term. */
+  handleGATracking: (event: { label: string; count: number }) => void;
 
   /** Default dimensions of the chart in pixels */
   defaultDimensions: {
@@ -57,6 +60,7 @@ export const TreemapChart = ({
   facet,
   defaultDimensions,
   getSearchRoute,
+  handleGATracking,
 }: TreemapChartProps) => {
   // State to manage hover and focus interactions
   const [hoveredTerm, setHoveredTerm] = useState<string | null>(null);
@@ -162,10 +166,13 @@ export const TreemapChart = ({
           <p id={aria_title}>{title}</p>
           <p id={aria_desc}>{description}</p>
         </VisuallyHidden>
+        {/* role="group" (not "img"): the chart contains focusable <a> tiles, and
+            a role="img" must not nest interactive controls (nested-interactive);
+            a labelled group legitimately can. */}
         <svg
           width={width}
           height={height}
-          role='img'
+          role='group'
           aria-labelledby={aria_title}
           aria-describedby={aria_desc}
         >
@@ -204,6 +211,12 @@ export const TreemapChart = ({
                       >
                         {/* Focusable interactive rect with URL via NextLink */}
                         <NextLink
+                          onClick={() =>
+                            handleGATracking({
+                              label: term,
+                              count: node.data.data.count,
+                            })
+                          }
                           href={getSearchRoute(term)}
                           passHref
                           tabIndex={-1} // Prevent link from being tabbable, rect is tabbable

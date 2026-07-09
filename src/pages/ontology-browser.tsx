@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
-import { Flex, Heading, Icon, Text, VStack } from '@chakra-ui/react';
+import { useState } from 'react';
+import { Flex, Heading, VStack } from '@chakra-ui/react';
 import type { NextPage } from 'next';
-import { useRouter } from 'next/router';
 import {
   getPageSeoConfig,
   PageContainer,
@@ -23,18 +22,6 @@ export interface SearchListItem
 //  This page renders the search results from the search bar.
 const OntologyBrowserPage: NextPage = () => {
   const [searchList, setSearchList] = useState<SearchListItem[] | []>([]);
-
-  // Re-route to /404 when in production
-  const router = useRouter();
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_APP_ENV === 'production') {
-      router.replace('/404');
-    }
-  }, [router]);
-
-  if (process.env.NEXT_PUBLIC_APP_ENV === 'production') {
-    return null; // Prevent rendering in production
-  }
 
   return (
     <PageContainer meta={getPageSeoConfig('/ontology-browser')} px={0} py={0}>

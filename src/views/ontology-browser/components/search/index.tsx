@@ -85,6 +85,7 @@ export const OntologyBrowserSearch = ({
             ontology: ontologyValues,
             biothingsFields: ['_id', 'rank', 'scientific_name'],
             olsFields: ['iri', 'label', 'ontology_name', 'short_form', 'type'],
+            userquery: 'nde',
           },
           signal,
         ),

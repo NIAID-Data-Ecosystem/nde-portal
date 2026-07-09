@@ -26,7 +26,6 @@ import { Route } from './helpers';
 import FilesTable from './components/files-table';
 import { CitedByTable } from './components/cited-by-table';
 import { DisplayHTMLContent } from '../html-content';
-import SoftwareInformation from './components/software-information';
 import {
   ExternalAccess,
   UsageInfo,
@@ -46,50 +45,14 @@ import { FaMagnifyingGlass } from 'react-icons/fa6';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { RelatedResources } from './components/related-resources';
+import { SamplesDisplay } from './components/samples';
+import { CreditText } from './components/sidebar/components/external/components/credit-text';
+import {
+  SHOW_CREDIT_TEXT_SECTION,
+  SHOULD_HIDE_SAMPLES,
+} from 'src/utils/feature-flags';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
-// Metadata displayed in each section
-export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
-  overview: [
-    'doi',
-    'healthCondition',
-    'infectiousAgent',
-    'inLanguage',
-    'license',
-    'measurementTechnique',
-    'nctid',
-    'programmingLanguage',
-    'softwareVersion',
-    'spatialCoverage',
-    'species',
-    'temporalCoverage',
-    'topicCategory',
-    'variableMeasured',
-  ],
-  softwareInformation: [
-    'applicationCategory',
-    'discussionUrl',
-    'input',
-    'output',
-    'processorRequirements',
-    'programmingLanguage',
-    'softwareAddOn',
-    'softwareHelp',
-    'softwareRequirements',
-    'softwareVersion',
-  ],
-  keywords: ['keywords'],
-  applicationCategory: ['applicationCategory'],
-  programmingLanguage: ['programmingLanguage'],
-  description: ['description'],
-  provenance: ['includedInDataCatalog', 'url', 'sdPublisher'],
-  downloads: ['distribution', 'downloadUrl'],
-  funding: ['funding'],
-  isBasedOn: ['isBasedOn'],
-  citedBy: ['citedBy'],
-  relatedResources: ['hasPart', 'isBasisFor', 'isRelatedTo', 'isPartOf'],
-  metadata: ['rawData'],
-};
 
 // use config file to show content in sections.
 const Sections = ({
@@ -109,8 +72,11 @@ const Sections = ({
         isLoading={isLoading}
         name={data?.name}
         alternateName={data?.alternateName}
+        id={data?.id}
         doi={data?.doi}
         nctid={data?.nctid}
+        type={data?.['@type']}
+        creativeWorkStatus={data?.creativeWorkStatus}
       />
       {/* Banner showing data type and publish date. For computational tools, operating system info is displayed when available. */}
       {data?.author && <ResourceAuthors authors={data.author} />}
@@ -149,9 +115,17 @@ const Sections = ({
           <Section
             id={section.hash}
             key={section.hash}
-            name={section.title}
+            name={
+              section.hash === 'samples'
+                ? data?.sample?.['@type'] === 'Sample'
+                  ? 'Population Sample'
+                  : data?.sample?.['@type'] === 'SampleCollection'
+                  ? 'Experimental Samples'
+                  : section.title
+                : section.title
+            }
             isLoading={isLoading}
-            isCollapsible={section.isCollapsible}
+            isCollapsible={section?.ui?.isCollapsible}
           >
             {/* for mobile viewing */}
             {section.hash === 'overview' && data && (
@@ -221,21 +195,28 @@ const Sections = ({
                             py: 0,
                           }}
                         >
-                          <TagWithUrl
-                            colorScheme='primary'
-                            href={{
-                              pathname: '/search',
-                              query: {
-                                q: `genre:"${data?.genre}"`,
-                              },
-                            }}
-                            m={0.5}
-                            leftIcon={FaMagnifyingGlass}
-                          >
-                            {data?.genre}
-                          </TagWithUrl>
+                          {(Array.isArray(data?.genre)
+                            ? data?.genre
+                            : [data?.genre]
+                          ).map((genre, index) => (
+                            <TagWithUrl
+                              key={index}
+                              colorScheme='primary'
+                              href={{
+                                pathname: '/search',
+                                query: {
+                                  q: `genre:"${genre}"`,
+                                },
+                              }}
+                              m={0.5}
+                              leftIcon={FaMagnifyingGlass}
+                            >
+                              {genre}
+                            </TagWithUrl>
+                          ))}
                         </OverviewSectionWrapper>
                       )}
+
                       {data?.about && data?.about?.length > 0 && (
                         <OverviewSectionWrapper
                           isLoading={isLoading}
@@ -305,6 +286,22 @@ const Sections = ({
                     my={4}
                   >
                     <ResourceCitations citations={data?.citation} />
+                  </OverviewSectionWrapper>
+                )}
+
+                {/* Resource credit text */}
+                {SHOW_CREDIT_TEXT_SECTION && (
+                  <OverviewSectionWrapper
+                    isLoading={isLoading}
+                    label='Credit Text'
+                    tooltipLabel={getMetadataDescription(
+                      'creditText',
+                      data?.['@type'],
+                    )}
+                    my={4}
+                    scrollContainerProps={{ maxHeight: 'unset' }}
+                  >
+                    <CreditText data={data} px={2} />
                   </OverviewSectionWrapper>
                 )}
               </>
@@ -383,13 +380,6 @@ const Sections = ({
                   )}
               </Skeleton>
             )}
-            {section.hash === 'softwareInformation' && (
-              <SoftwareInformation
-                keys={sectionMetadata[section.hash]}
-                isLoading={isLoading}
-                {...data}
-              />
-            )}
 
             {/* Show description */}
             {section.hash === 'description' &&
@@ -415,6 +405,15 @@ const Sections = ({
                   )}
                 </>
               )}
+
+            {/* Show smaples */}
+            {section.hash === 'samples' && !SHOULD_HIDE_SAMPLES('samples') && (
+              <SamplesDisplay
+                sample={data?.sample}
+                resourceIdentifier={data?.identifier ?? undefined}
+              />
+            )}
+
             {/* Show provenance */}
             {section.hash === 'provenance' && (
               <ResourceProvenance isLoading={isLoading} {...data} />

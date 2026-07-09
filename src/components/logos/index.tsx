@@ -16,19 +16,25 @@ export const Logo = ({ href, isLazy }: LogoProps) => {
   return (
     <Flex
       className='logo'
-      flexDirection={{ base: 'column', sm: 'row' }}
-      height={{ base: '55px', sm: '28px', lg: '40px' }}
-      flex={1}
+      alignItems='center'
+      py={4}
+      flex={{ base: 1, md: 'auto' }}
     >
-      <Link
-        display='flex'
-        alignItems='center'
-        href={href?.endsWith('/') ? href : `${href}/`}
-        variant='unstyled'
-        rel='preload'
+      <Flex
+        flexDirection={{ base: 'column', sm: 'row' }}
+        height={{ base: '55px', sm: '28px', lg: '40px' }}
+        flex={1}
       >
-        <NDELogo loading={isLazy ? 'lazy' : 'eager'} />
-      </Link>
+        <Link
+          display='flex'
+          alignItems='center'
+          href={href?.endsWith('/') ? href : `${href}/`}
+          variant='unstyled'
+          rel='preload'
+        >
+          <NDELogo loading={isLazy ? 'lazy' : 'eager'} />
+        </Link>
+      </Flex>
     </Flex>
   );
 };

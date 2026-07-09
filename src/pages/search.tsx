@@ -1,23 +1,47 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { SearchTabsProvider } from 'src/views/search/context/search-tabs-context';
 import { useSearchQueryFromURL } from 'src/views/search/hooks/useSearchQueryFromURL';
 import { Box, Flex, VStack } from '@chakra-ui/react';
-import { Filters } from 'src/views/search/components/filters';
-import { SelectedFilterType } from 'src/views/search/components/filters/types';
-import { FILTER_CONFIGS } from 'src/views/search/components/filters/config';
-import { queryFilterString2Object } from 'src/views/search/components/filters/utils/query-builders';
-import { defaultQuery } from 'src/views/search/config/defaultQuery';
-import { FilterTags } from 'src/views/search/components/filters/components/tag';
+import { Filters, FILTER_CONFIGS } from 'src/views/search/components/filters';
+import {
+  SelectedFilterType,
+  SelectedFilterValueType,
+} from 'src/views/search/components/filters/types';
+import {
+  APPLY_DEFAULT_DATE_PARAM,
+  defaultQuery,
+  defaultSelectedFilters,
+  shouldApplyDefaultDate,
+} from 'src/views/search/config/defaultQuery';
 import { SearchResultsHeader } from 'src/views/search/components/search-results-header';
+import { SavedDataErrorToast } from 'src/views/saved/components/saved-data-error-toast';
 import { PaginationProvider } from 'src/views/search/context/pagination-context';
 import { SearchResultsController } from 'src/views/search/components/search-results-tabs-controller';
 import { fetchSearchResults } from 'src/utils/api';
 import { TabType } from 'src/views/search/types';
 import { tabs } from 'src/views/search/config/tabs';
+import { OntologyBrowserPopup } from 'src/views/ontology-browser/components/popup';
+import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
+import SummaryGrid from 'src/views/search/components/summary';
+import { updateRoute } from 'src/views/search/utils/update-route';
+import { useActiveVizIds } from 'src/views/search/components/summary/hooks/useActiveVizIds';
+import {
+  queryFilterString2Object,
+  queryFilterObject2String,
+  sanitizeExistsFilterValues,
+} from 'src/views/search/components/filters/utils/query-string';
+import { FilterTags } from 'src/views/search/components/filters/components/tag';
+import { SearchResultsFetchedProvider } from 'src/views/search/context/search-results-fetched-context';
+
+const DEFAULT_ACTIVE_VIZ_IDS = [
+  'date',
+  'includedInDataCatalog',
+  'healthCondition.name.raw',
+];
 
 // Default filters list.
 const defaultFilters = FILTER_CONFIGS.reduce(
@@ -29,6 +53,11 @@ const Search: NextPage<{
   initialData: FetchSearchResultsResponse;
 }> = ({ initialData }) => {
   const router = useRouter();
+  const hasInitialized = useRef(false);
+
+  const { activeVizIds, toggleViz, isVizActive } = useActiveVizIds(
+    DEFAULT_ACTIVE_VIZ_IDS,
+  );
 
   const queryParams = useSearchQueryFromURL();
 
@@ -60,11 +89,14 @@ const Search: NextPage<{
     [router],
   );
 
-  // Reset the filters to the default.
+  // Clear all filters, including the default date range. Setting
+  // `applyDefaultDate=false` keeps the cleared state sticky so the default
+  // range isn't re-seeded on the next render/reload.
   const removeAllFilters = useCallback(() => {
     return handleRouteUpdate({
       from: defaultQuery.from,
       filters: defaultFilters,
+      [APPLY_DEFAULT_DATE_PARAM]: 'false',
     });
   }, [handleRouteUpdate]);
 
@@ -80,6 +112,94 @@ const Search: NextPage<{
     setInitialTab(tab?.id || defaultTab);
   }, [router]);
 
+  const handleUpdate = useCallback(
+    (update: {}) => {
+      return updateRoute(router, update);
+    },
+    [router],
+  );
+
+  const handleSelectedFilters = useCallback(
+    (values: SelectedFilterValueType[], facet: string) => {
+      // Merge + de-dupe
+      // Normalize _exists_ filters into object form
+      // const normalizedValues = mergedValues.map(value =>
+      //   value === '_exists_' || value === '-_exists_'
+      //     ? { [value]: [facet] }
+      //     : value,
+      // );
+
+      const prevValues = selectedFilters[facet] || [];
+
+      // Checking "Any"/"No" clears everything else for this facet, and
+      // checking a normal value clears "Any"/"No" if it was active.
+      const sanitizedValues = sanitizeExistsFilterValues(values, prevValues);
+
+      const updatedFilterString = queryFilterObject2String({
+        ...selectedFilters,
+        [facet]: sanitizedValues,
+      });
+
+      handleUpdate({
+        from: 1,
+        filters: updatedFilterString,
+        // Touching the date filter makes the date value authoritative. Opt out
+        // of the default range when cleared to empty; drop the param when a real
+        // value remains (the value itself already suppresses the default).
+        ...(facet === 'date'
+          ? {
+              [APPLY_DEFAULT_DATE_PARAM]:
+                sanitizedValues.length > 0 ? undefined : 'false',
+            }
+          : {}),
+      });
+    },
+    [selectedFilters, handleUpdate],
+  );
+
+  // Apply default date filter on first load only — but not when the user has
+  // opted out (`applyDefaultDate=false`) or already has a date filter applied.
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    if (
+      shouldApplyDefaultDate(router.query.applyDefaultDate, selectedFilters)
+    ) {
+      handleRouteUpdate({
+        filters: queryFilterObject2String({
+          ...defaultSelectedFilters,
+          ...selectedFilters,
+        }),
+      });
+    }
+
+    hasInitialized.current = true;
+  }, [router.isReady]);
+
+  // Validate and cap date filter at current year if it exceeds (runtime validation)
+  useEffect(() => {
+    if (!router.isReady || !hasInitialized.current) return;
+
+    const hasDateFilter =
+      selectedFilters.date && selectedFilters.date.length > 0;
+    if (!hasDateFilter) return;
+
+    const [start, end] = selectedFilters.date;
+    if (!end || typeof end !== 'string') return;
+
+    const endYear = parseInt(end.slice(0, 4), 10);
+    const currentYear = new Date().getFullYear();
+
+    if (endYear <= currentYear) return;
+
+    handleUpdate({
+      filters: queryFilterObject2String({
+        ...selectedFilters,
+        date: [start, `${currentYear}-12-31`],
+      }),
+    });
+  }, [router.isReady, selectedFilters, handleUpdate]);
+
   // If the initial tab is not set, return a loading state.
   if (!initialTab) {
     return null;
@@ -93,52 +213,88 @@ const Search: NextPage<{
     >
       <SearchTabsProvider initialTab={initialTab}>
         <PaginationProvider>
-          <Flex bg='page.alt'>
-            <Flex
-              id='search-page-filters-sidebar'
-              bg='#fff'
-              borderRight='0.5px solid'
-              borderRightColor='gray.200'
-              flex={{ base: 0, lg: 1 }}
-              minW={{ base: 'unset', lg: '380px' }}
-              maxW={{ base: 'unset', lg: '450px' }}
-            >
-              {/* Filters sidebar */}
-              <Filters
-                colorScheme='secondary'
-                selectedFilters={selectedFilters}
-                isDisabled={appliedFilters.length === 0}
-                removeAllFilters={removeAllFilters}
-              />
-            </Flex>
-            <Box flex={3}>
-              <VStack
-                alignItems='flex-start'
-                p={4}
+          <SearchResultsFetchedProvider>
+            <Flex bg='page.alt'>
+              <Flex
+                id='search-page-filters-sidebar'
                 bg='#fff'
-                borderBottom='1px solid'
-                borderRight='1px solid'
-                borderColor='gray.100'
-                spacing={2}
+                borderRight='0.5px solid'
+                borderRightColor='gray.200'
+                flex={{ base: 0, lg: 1 }}
+                minW={{ base: 'unset', lg: '380px' }}
+                maxW={{ base: 'unset', lg: '450px' }}
               >
-                {/* Heading: Showing results for... */}
-                <SearchResultsHeader querystring={queryParams.q} />
+                {/* Filters sidebar */}
+                <Filters
+                  colorScheme='secondary'
+                  selectedFilters={selectedFilters}
+                  isDisabled={appliedFilters.length === 0}
+                  removeAllFilters={removeAllFilters}
+                  onToggleViz={toggleViz}
+                  isVizActive={isVizActive}
+                />
+              </Flex>
+              <Box flex={3} minWidth={0} maxWidth='2000px'>
+                <VStack
+                  alignItems='flex-start'
+                  p={4}
+                  bg='#fff'
+                  borderBottom='1px solid'
+                  borderRight='1px solid'
+                  borderColor='gray.100'
+                  spacing={2}
+                >
+                  <SavedDataErrorToast />
+                  <Flex flex={1} flexDirection='column' width='100%'>
+                    <Flex flex={1} justifyContent='flex-end'>
+                      <OntologyBrowserPopup
+                        querystring={
+                          queryParams.q === '__all__' ? '' : queryParams.q
+                        }
+                        selectedFilters={selectedFilters}
+                      />
+                    </Flex>
+                    {/* Heading: Showing results for... */}
+                    <SearchResultsHeader
+                      querystring={queryParams.q}
+                      selectedFilters={selectedFilters}
+                      showAIBanner={
+                        SHOW_AI_ASSISTED_SEARCH &&
+                        router.query.use_ai_search === 'true'
+                      }
+                    />
+                  </Flex>
 
-                {/* Filter tags : Tags with the names of the currently selected filters */}
-                {Object.values(selectedFilters).length > 0 && (
-                  <FilterTags
-                    filtersConfig={FILTER_CONFIGS}
-                    selectedFilters={selectedFilters}
-                    handleRouteUpdate={handleRouteUpdate}
-                    removeAllFilters={removeAllFilters}
-                  />
-                )}
-              </VStack>
-
-              {/* Search Results */}
-              <SearchResultsController initialData={initialData} />
-            </Box>
-          </Flex>
+                  {/* Filter tags : Tags with the names of the currently selected filters */}
+                  {Object.values(selectedFilters).length > 0 && (
+                    <FilterTags
+                      filtersConfig={FILTER_CONFIGS}
+                      selectedFilters={selectedFilters}
+                      handleRouteUpdate={handleRouteUpdate}
+                      removeAllFilters={removeAllFilters}
+                    />
+                  )}
+                </VStack>
+                <SummaryGrid
+                  searchParams={{
+                    ...queryParams,
+                    from: 0,
+                    size: 0,
+                    sort: '',
+                  }}
+                  onFilterUpdate={(values, facet) => {
+                    handleSelectedFilters(values, facet);
+                  }}
+                  activeVizIds={activeVizIds}
+                  removeActiveVizId={toggleViz}
+                  configs={FILTER_CONFIGS}
+                  selectedFilters={selectedFilters}
+                />
+                {/* Search Results */}
+                <SearchResultsController initialData={initialData} />
+              </Box>
+            </Flex>
+          </SearchResultsFetchedProvider>
         </PaginationProvider>
       </SearchTabsProvider>
     </PageContainer>

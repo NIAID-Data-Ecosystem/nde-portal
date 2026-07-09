@@ -41,6 +41,17 @@
         "label": "Home"
       }
     },
+    "/login": {
+      "seo": {
+        "title": "Log In",
+        "description": "Choose an authentication provider to sign in to the NIAID Data Ecosystem Discovery Portal.",
+        "keywords": ["login", "authentication", "ORCID", "GitHub"],
+        "preventIndexing": true
+      },
+      "nav": {
+        "label": "Log In"
+      }
+    },
     "/search": {
       "seo": {
         "title": "Search Results",
@@ -59,6 +70,17 @@
       "nav": {
         "label": "Search",
         "description": "Search for resources using basic queries"
+      }
+    },
+    "/repository-matcher": {
+      "seo": {
+        "title": "Repository Matcher",
+        "description": "Find a suitable repository that accepts research data deposits using the NIAID Data Ecosystem Discovery Portal.",
+        "keywords": []
+      },
+      "nav": {
+        "label": "Repository Matcher",
+        "description": "Find a suitable repository that accepts research data deposits."
       }
     },
     "/advanced-search": {
@@ -119,6 +141,18 @@
         "description": "Log of updates to the NIAID Data Ecosystem Discovery Portal"
       }
     },
+    "/knowledge-center/how-to-cite-the-niaid-data-ecosystem": {
+      "seo": {
+        "title": "How to Cite",
+        "description": "How to cite the NIAID Data Ecosystem Discovery Portal and its resources",
+        "keywords": ["how to cite", "citation", "reference", "publication"],
+        "preventIndexing": true
+      },
+      "nav": {
+        "label": "How to Cite",
+        "description": "How to cite the NIAID Data Ecosystem Discovery Portal and its resources"
+      }
+    },
     "/knowledge-center": {
       "seo": {
         "title": "Knowledge Center",
@@ -174,8 +208,8 @@
     },
     "/diseases": {
       "seo": {
-        "title": "Diseases",
-        "description": "Explore datasets and research resources for diseases, including clinical, molecular, and experimental data.",
+        "title": "Diseases and Conditions",
+        "description": "Explore datasets and research resources for diseases and conditions, including clinical, molecular, and experimental data.",
         "keywords": [
           "disease",
           "clinical data",
@@ -186,7 +220,7 @@
         ]
       },
       "nav": {
-        "label": "Diseases",
+        "label": "Diseases and Conditions",
         "description": "Explore resources for NIAID priority health conditions"
       }
     },
@@ -199,8 +233,7 @@
       "nav": {
         "label": "Features",
         "description": "Featured content for the portal."
-      },
-      "env": ["development", "staging"]
+      }
     },
     "/ontology-browser": {
       "seo": {
@@ -216,8 +249,7 @@
       "nav": {
         "label": "Ontology Browser",
         "description": "Explore search results in a novel way"
-      },
-      "env": ["development", "staging"]
+      }
     },
     "/resources": {
       "seo": {
@@ -256,6 +288,26 @@
         "description": "404 Error: Page Not Found.",
         "keywords": ["404", "page not found", "error"]
       }
+    },
+    "/api": {
+      "seo": {
+        "title": "API",
+        "description": "Programmatically access NIAID Data Ecosystem metadata through a public API.",
+        "keywords": ["NIAID", "data discovery portal", "API"]
+      },
+      "nav": {
+        "label": "API",
+        "description": "Search for resources programmatically",
+        "isExternal": true,
+        "href": "https://api.data.niaid.nih.gov/"
+      }
+    },
+    "/saved": {
+      "seo": {
+        "title": "Saved Searches",
+        "description": "View and manage your saved searches within the NIAID Data Ecosystem."
+      },
+      "env": ["dev", "staging"]
     }
   },
   "navigation": {
@@ -275,6 +327,12 @@
           },
           {
             "page": "/ontology-browser"
+          },
+          {
+            "page": "/api"
+          },
+          {
+            "page": "/repository-matcher"
           }
         ]
       },
@@ -289,6 +347,9 @@
           },
           {
             "page": "/changelog"
+          },
+          {
+            "page": "/knowledge-center/how-to-cite-the-niaid-data-ecosystem"
           }
         ]
       },
@@ -405,7 +466,7 @@
     ],
     "lastUpdate": [
       {
-        "label": "",
+        "label": "Changelog",
         "href": "/changelog/"
       }
     ]

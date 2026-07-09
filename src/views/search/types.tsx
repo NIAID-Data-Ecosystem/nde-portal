@@ -1,7 +1,10 @@
+import { SelectedFilterType } from './components/filters';
+
 export type TabType = {
-  id: 'ct' | 'd';
+  id: 'ct' | 'd' | 's' | 'dc';
   types: {
     label: string;
+    accordionLabel?: string;
     type: string;
   }[];
   isDefault?: boolean;
@@ -12,10 +15,13 @@ export interface SearchQueryParams {
   facets?: string[];
   facet_size?: number;
   fields?: string[];
-  filters?: Record<string, string[]>;
-  extra_filters?: Record<string, string[]>;
+  filters?: SelectedFilterType;
+  extra_filter?: string;
+  additionalFilter?: string;
   from?: number;
   size?: number;
   sort?: string;
   shouldUseMetadataScore?: boolean;
+  use_ai_search?: string;
+  advancedSearch?: string;
 }

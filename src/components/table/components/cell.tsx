@@ -8,6 +8,7 @@ import {
   Text,
   TextProps,
 } from '@chakra-ui/react';
+import Tooltip from 'src/components/tooltip';
 import { TableSortToggle } from './sort-toggle';
 
 // Label component - displays text in a specific style.
@@ -82,6 +83,8 @@ interface ThProps extends CellProps {
   colorScheme?: ButtonProps['colorScheme'];
   isSelected?: boolean;
   isSortable?: boolean;
+  /** Optional descriptive text. */
+  tooltip?: string;
   tableSortToggleProps?: {
     isSelected: boolean;
     sortBy: 'ASC' | 'DESC';
@@ -96,6 +99,7 @@ export const Th = React.memo(
     isSelected,
     label,
     isSortable,
+    tooltip,
     tableSortToggleProps,
     ...props
   }: ThProps) => {
@@ -123,7 +127,15 @@ export const Th = React.memo(
         whiteSpace='pre-wrap'
         {...props}
       >
-        {label && <Label>{label}</Label>}
+        {label && (
+          <Flex alignItems='center' gap={1}>
+            <Tooltip label={tooltip} hasArrow>
+              <Box as='span' display='inline-flex' color='gray.600'>
+                <Label>{label}</Label>
+              </Box>
+            </Tooltip>
+          </Flex>
+        )}
         {isSortable && tableSortToggleProps && (
           <Box
             my={1}

@@ -12,6 +12,8 @@ interface BrushableListChartProps {
   data: FacetTerm[];
   facet: FacetProps;
   getSearchRoute: (term: string) => UrlObject;
+  /** Callback for handling click events on linked term. */
+  handleGATracking: (event: { label: string; count: number }) => void;
 }
 
 const SCROLL_HEIGHT = 360;
@@ -20,6 +22,7 @@ export const BrushableListChart = ({
   facet,
   data,
   getSearchRoute,
+  handleGATracking,
 }: BrushableListChartProps) => {
   //  Data that is selected using the brush mechanism
   const [selectedData, setSelectedData] = useState<FacetTerm[]>(data);
@@ -81,7 +84,13 @@ export const BrushableListChart = ({
               lineHeight='short'
             >
               {/* Term: Links to search results */}
-              <NextLink href={getSearchRoute(item.term)} passHref>
+              <NextLink
+                onClick={() =>
+                  handleGATracking({ label: item.term, count: item.count })
+                }
+                href={getSearchRoute(item.term)}
+                passHref
+              >
                 <Link as='p'>{item.term}</Link>
               </NextLink>
 

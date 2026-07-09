@@ -26,6 +26,13 @@ export const sortChildrenList = (
   childrenList: OntologyLineageItemWithCounts[],
 ) => {
   const sorted = childrenList.sort((a, b) => {
+    if (!a?.counts || !b?.counts) return 0;
+    if (
+      a?.counts?.termCount === undefined ||
+      b?.counts?.termCount === undefined
+    )
+      return 0;
+
     // First, sort by `counts.term` in descending order
     if (a.counts.termCount !== b.counts.termCount) {
       return b.counts.termCount - a.counts.termCount;

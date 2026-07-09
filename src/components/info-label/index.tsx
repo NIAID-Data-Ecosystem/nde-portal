@@ -7,7 +7,7 @@ interface InfoLabelProps {
   title: string;
   tooltipText?: TooltipProps['label'];
   textProps?: TextProps;
-  tooltipProps?: TooltipProps;
+  tooltipProps?: Omit<TooltipProps, 'children'>;
 }
 
 export const InfoLabel: React.FC<InfoLabelProps> = ({

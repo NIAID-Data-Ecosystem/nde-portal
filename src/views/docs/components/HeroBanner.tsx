@@ -11,12 +11,12 @@ interface HeroBannerProps {
   children?: React.ReactNode;
 }
 
-export const HeroBanner: React.FC<HeroBannerProps> = ({
+export const HeroBanner = ({
   title,
   subtitle,
   body,
   children,
-}) => {
+}: HeroBannerProps) => {
   return (
     <HeroBannerContainer
       justifyContent={{ base: 'flex-start', md: 'center' }}
@@ -56,9 +56,11 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
           textAlign={{ base: 'left', lg: 'center' }}
           alignItems={{ base: 'flex-start', lg: 'center' }}
           justifyContent={{ base: 'flex-start', lg: 'center' }}
-          spacing={4}
+          spacing={2}
           px={{ base: 4 }}
-          py={{ base: 4, sm: 10 }}
+          py={{ base: 3 }}
+          mt={0}
+          mb={0}
         />
       </Flex>
 

@@ -1,19 +1,5 @@
 import { FormattedResource } from './api/types';
 
-// Get image for repo based on config.
-export const getRepositoryImage = (name: string) => {
-  if (!name) {
-    return null;
-  }
-  const path = '/assets/resources/';
-  const identifier = name
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z-]/g, '');
-
-  return path + identifier + '.png';
-};
-
 export const getFundedByNIAID = (name: string) => {
   if (!name) {
     return false;

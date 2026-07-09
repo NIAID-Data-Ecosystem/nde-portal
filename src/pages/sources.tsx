@@ -38,7 +38,9 @@ export interface SourceResponse extends MetadataSource {
 }
 
 interface SourcesProps {
-  data: {
+  // Optional: build-time prefetch may be absent if the API was unreachable
+  // during the static export. The client-side query recovers in that case.
+  data?: {
     githubInfo: {
       data: SourceResponse[];
       error: { status: number; message: string; type: string } | null;
@@ -47,10 +49,9 @@ interface SourcesProps {
       data: Metadata;
     };
   };
-  error: { status: number; message: string; type: string } | null;
   children: React.ReactNode;
 }
-const Sources: NextPage<SourcesProps> = ({ data, error }) => {
+const Sources: NextPage<SourcesProps> = ({ data }) => {
   const router = useRouter();
 
   // Fetch metadata stats from API.
@@ -61,7 +62,7 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
   } = useQuery({
     queryKey: ['metadata'],
     queryFn: fetchMetadata,
-    placeholderData: () => data.sourceMetadata.data,
+    placeholderData: () => data?.sourceMetadata?.data,
     select: res => {
       const sources = res.src;
       const sourceDetails = Object.entries(sources).map(([key, source]) => {
@@ -118,19 +119,15 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
       py={0}
     >
       <Flex>
-        {error || metadataError ? (
+        {metadataError ? (
           <Error>
             <Flex flexDirection='column' flex={1} alignItems='center'>
               <Text>
-                {error
-                  ? getQueryStatusError(error as unknown as { status: string })
-                      ?.message
-                  : ''}
-                {!error && metadataError
-                  ? getQueryStatusError(
-                      metadataError as unknown as { status: string },
-                    )?.message
-                  : ''}
+                {
+                  getQueryStatusError(
+                    metadataError as unknown as { status: string },
+                  )?.message
+                }
               </Text>
               <Box mt={4}>
                 <ErrorCTA>
@@ -148,7 +145,7 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
         ) : (
           <></>
         )}
-        {!(error || metadataError) && (
+        {!metadataError && (
           <>
             <Sidebar aria-label='Navigation for data sources.'>
               {!isLoading &&
@@ -207,9 +204,6 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
 export async function getStaticProps() {
   try {
     const sources = await fetchMetadata();
-    if (!sources) {
-      return { props: { error: 'No source data found' } };
-    }
 
     const sourceData = await fetchSourceInformationFromGithub(
       Object.entries(sources.src),
@@ -229,16 +223,11 @@ export async function getStaticProps() {
       },
     };
   } catch (err: any) {
-    console.error(`Failed to fetch metadata: ${err.message}`);
-    return {
-      props: {
-        error: {
-          type: 'error',
-          status: err.response?.status || 500,
-          message: err.response?.statusText || 'Unknown error',
-        },
-      },
-    };
+    console.warn(
+      `Could not prefetch source metadata at build time: ${err.message}. ` +
+        `Falling back to client-side fetch.`,
+    );
+    return { props: {} };
   }
 }
 

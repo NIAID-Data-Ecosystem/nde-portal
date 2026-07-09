@@ -52,7 +52,6 @@ export const OntologyButton = ({
           fontWeight='medium'
           color='gray.800'
           sx={{
-            borderBottomColor: 'inherit',
             '.child-node': {
               borderBottom: 'none',
               display: 'inline-flex',
@@ -65,7 +64,6 @@ export const OntologyButton = ({
               borderBottom: 'none',
               color: 'inherit',
             },
-            _hover: { borderBottomColor: 'inherit' },
           }}
         >
           <Text pt={0.25}>{label || inDefinedTermSet} </Text>
@@ -139,7 +137,7 @@ export const SearchButton = ({
 //   children,
 // }: {
 //   property: string;
-//   value: SelectedFilterTypeValue;
+//   value: SelectedFilterValueType;
 //   children: React.ReactNode;
 // }) => {
 //   const router = useRouter();

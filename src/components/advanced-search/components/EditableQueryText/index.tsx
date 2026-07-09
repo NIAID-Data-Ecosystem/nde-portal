@@ -25,6 +25,7 @@ import { useDebounceValue } from 'usehooks-ts';
 import {
   convertObject2QueryString,
   convertQueryString2Object,
+  injectBioSampleScope,
 } from '../../utils/query-helpers';
 import { removeDuplicateErrors } from '../../utils/validation-checks';
 import { TreeItem } from '../SortableWithCombine';
@@ -64,6 +65,11 @@ export const EditableQueryText = ({
   // expected count for query.
   const [debouncedQueryString] = useDebounceValue(value, 1000);
 
+  // Rewrite any @type:Sample token to (@type:Sample AND additionalType:"BioSample")
+  // so the count reflects only BioSample records, matching the scoping applied
+  // by the search results page.
+  const scopedQueryString = injectBioSampleScope(debouncedQueryString);
+
   const { isLoading, error, data, refetch } = useQuery<
     FetchSearchResultsResponse | undefined,
     Error
@@ -73,22 +79,34 @@ export const EditableQueryText = ({
       queryKey: [
         'search-results',
         {
-          queryString: debouncedQueryString,
+          queryString: scopedQueryString,
         },
       ],
       queryFn: ({ signal }) => {
         if (typeof debouncedQueryString !== 'string' && !debouncedQueryString) {
           return;
         }
+
+        // Validate the original (unscoped) query string. The injected
+        // additionalType constraint must not be fed into the validation logic,
+        // which parses the string back into a query object.
         const formattedQueryString = formatQueryString(debouncedQueryString);
         const validation = validateQueryString(formattedQueryString);
         if (!validation.isValid) {
           return;
         }
 
+        // Fetch with the scoped string so the count is correctly limited to
+        // BioSample records when @type:Sample appears in the query.
+        // Forward the AbortSignal so the in-flight request is cancelled when
+        // the component unmounts (e.g., after the user clicks Submit and the
+        // router navigates to /search). Without this, the pending fetch
+        // continues to compete for browser connections with the requests the
+        // search results page fires on mount, causing the navigation to feel
+        // slow.
         return fetchSearchResults(
           {
-            q: debouncedQueryString,
+            q: scopedQueryString,
             size: 0,
           },
           signal,

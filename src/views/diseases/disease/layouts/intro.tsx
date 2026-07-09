@@ -16,7 +16,7 @@ import remarkGfm from 'remark-gfm';
 interface IntroSectionProps {
   title?: DiseasePageProps['title'];
   subtitle?: DiseasePageProps['subtitle'];
-  description?: DiseasePageProps['description'];
+  topicEmphasizedDescription?: DiseasePageProps['topicEmphasizedDescription'];
   links?: DiseasePageProps['contacts'];
   image?: DiseasePageProps['image'];
   isLoading?: boolean;
@@ -24,26 +24,11 @@ interface IntroSectionProps {
 export const IntroSection: React.FC<IntroSectionProps> = ({
   title,
   subtitle,
-  description,
+  topicEmphasizedDescription,
   image,
   isLoading,
-  links,
 }) => {
   const MDXComponents = useMDXComponents();
-
-  // [Note]: Unsure if contact link will remain here. Check when program collections are added back.
-  // // Group contact links by category
-  // const contactLinksGroupedByCategory = useMemo(() => {
-  //   return (links?.data || []).reduce((acc, contact) => {
-  //     const category =
-  //       contact.attributes.categories?.data[0]?.attributes.name || '';
-  //     if (!acc[category]) {
-  //       acc[category] = [];
-  //     }
-  //     acc[category].push(contact);
-  //     return acc;
-  //   }, {} as Record<string, NonNullable<DiseasePageProps['attributes']['contactLinks']>['data']>);
-  // }, [links?.data]);
 
   return (
     <Stack
@@ -79,19 +64,19 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
         )}
 
         {/* Description */}
-        {(description || isLoading) && (
+        {(topicEmphasizedDescription || isLoading) && (
           <SkeletonText
             isLoaded={!isLoading}
             noOfLines={5}
             skeletonHeight={4}
             maxWidth={{ base: 'unset', xl: 800 }}
           >
-            {description && (
+            {topicEmphasizedDescription && (
               <ReactMarkdown
                 rehypePlugins={[rehypeRaw, remarkGfm]}
                 components={MDXComponents}
               >
-                {description}
+                {topicEmphasizedDescription}
               </ReactMarkdown>
             )}
           </SkeletonText>

@@ -25,6 +25,10 @@ import Fuse from 'fuse.js';
 import { QueryValue } from 'src/components/advanced-search/types';
 import { SchemaDefinition } from 'scripts/generate-schema-definitions/types';
 import ADVANCED_SEARCH from 'configs/advanced-search-fields.json';
+import {
+  SHOULD_HIDE_SAMPLE_FIELDS,
+  HIDDEN_SAMPLE_FIELDS,
+} from 'src/utils/feature-flags';
 
 /****
  * Overlapping or unnecessary fields.
@@ -143,7 +147,7 @@ const Option = (props: OptionProps<any>) => {
                 fontSize='xs'
                 lineHeight='shorter'
                 fontWeight='normal'
-                color={props.isSelected ? 'inherit' : 'gray.600'}
+                color={props.isSelected ? 'inherit' : 'gray.800'}
                 transition='0.2s linear'
                 maxW={350}
                 noOfLines={!showDescription ? 1 : undefined}
@@ -351,6 +355,7 @@ export const FieldSelectWithContext = () => {
   const schema = Object.values(SCHEMA_DEFINITIONS).filter(
     item => !!item.isAdvancedSearchField,
   );
+
   const fields = [
     {
       name: 'All Fields',
@@ -359,8 +364,16 @@ export const FieldSelectWithContext = () => {
       count: SCHEMA_DEFINITIONS['@type']['count'],
       type: 'text',
     },
-    ...Object.values(schema).filter(item => !!item.isAdvancedSearchField),
+    // Filter out sample-related fields in production until the dataset sample section
+    // is approved for release. The gated dotfields are hardcoded in
+    // HIDDEN_SAMPLE_FIELDS.
+    ...Object.values(schema).filter(
+      item =>
+        !!item.isAdvancedSearchField &&
+        !(SHOULD_HIDE_SAMPLE_FIELDS && HIDDEN_SAMPLE_FIELDS.has(item.dotfield)),
+    ),
   ] as SchemaDefinition[];
+
   return (
     <FieldSelect
       selectedField={queryValue.field}

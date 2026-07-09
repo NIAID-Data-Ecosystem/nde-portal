@@ -10,7 +10,7 @@ import {
   Spinner,
   StackDivider,
 } from '@chakra-ui/react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueries } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import {
   fetchLineageFromBioThingsAPI,
@@ -80,52 +80,89 @@ export const OntologyBrowser = ({
     };
   }, [id, router.query.q, ontology]);
 
-  // Fetch lineage data using the ontology type and query parameters
+  // --- 1. Fetch lineage structure (no counts yet) ---
   const {
-    error,
-    isLoading,
     data: ontologyLineageData,
+    error: biothingsError,
+    isLoading: biothingsIsLoading,
   } = useQuery({
-    queryKey: [
-      'ontology-browser-tree',
-      queryParams.q,
-      queryParams.id,
-      queryParams.ontology,
-    ],
-    queryFn: () => {
-      return fetchLineageFromBioThingsAPI({
+    queryKey: ['ontology-browser-structure', queryParams],
+    queryFn: () =>
+      fetchLineageFromBioThingsAPI({
         id: queryParams.id,
         ontology: queryParams.ontology,
-      }).then(async data => ({
-        lineage: await fetchPortalCounts(data.lineage, { q: queryParams.q }),
-      }));
-    },
-    refetchOnWindowFocus: false,
-    refetchOnMount: true,
+      }),
     enabled: router.isReady && !!queryParams.id,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 
-  // Maximum number of nodes to display in the condensed view
+  // --- 2. Split visible vs hidden nodes ---
   const MAX_VISIBLE_NODES = 5;
 
+  const visibleLineage = useMemo(() => {
+    if (!ontologyLineageData) return [];
+    const lineage = ontologyLineageData.lineage;
+    const condensedStartIndex =
+      viewSettings?.isCondensed && lineage.length > MAX_VISIBLE_NODES
+        ? lineage.length - 3
+        : 0;
+    return lineage.slice(condensedStartIndex);
+  }, [ontologyLineageData, viewSettings?.isCondensed]);
+
+  const hiddenLineage = useMemo(() => {
+    if (!ontologyLineageData) return [];
+    const lineage = ontologyLineageData.lineage;
+    return lineage.slice(0, lineage.length - visibleLineage.length);
+  }, [ontologyLineageData, visibleLineage]);
+
+  // --- 3. Query counts (visible first, hidden after) ---
+  const visibleQuery = useQuery({
+    queryKey: ['ontology-browser-visible', queryParams, visibleLineage],
+    queryFn: () => fetchPortalCounts(visibleLineage, { q: queryParams.q }),
+    enabled: visibleLineage.length > 0,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  });
+
+  const hiddenQuery = useQuery({
+    queryKey: ['ontology-browser-hidden', queryParams, hiddenLineage],
+    queryFn: () => fetchPortalCounts(hiddenLineage, { q: queryParams.q }),
+    enabled: !!visibleQuery.data && hiddenLineage.length > 0,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  });
+  const isLoading = biothingsIsLoading || visibleQuery.isLoading;
+  const error = biothingsError || visibleQuery.error;
+
+  // --- 4. Merge results into lineage ---
   useEffect(() => {
     if (ontologyLineageData) {
-      // Update the lineage state with the fetched data
+      // Set base lineage (structure only)
       setLineage(ontologyLineageData.lineage);
-
-      if (viewSettings?.isCondensed) {
-        // Determine the starting index for the condensed view
-        const condensedStartIndex =
-          ontologyLineageData.lineage.length > MAX_VISIBLE_NODES
-            ? ontologyLineageData.lineage.length - 3 // Show the last 3 nodes if exceeding the limit
-            : 0; // Show all nodes if the total is within the limit
-        setShowFromIndex(condensedStartIndex);
-      } else {
-        // Show all nodes starting from the first index in expanded view
-        setShowFromIndex(0);
-      }
     }
-  }, [ontologyLineageData, viewSettings?.isCondensed]);
+  }, [ontologyLineageData]);
+
+  useEffect(() => {
+    if (visibleQuery.data) {
+      setLineage(prev => {
+        if (!prev) return null;
+        return [...(hiddenQuery.data ?? hiddenLineage), ...visibleQuery.data];
+      });
+    }
+  }, [visibleQuery.data, hiddenQuery.data, hiddenLineage]);
+
+  // --- 5. Handle condensed/expanded view ---
+  useEffect(() => {
+    const lineage = ontologyLineageData?.lineage || [];
+    if (!isLoading && lineage) {
+      const condensedStartIndex =
+        viewSettings?.isCondensed && lineage.length > MAX_VISIBLE_NODES
+          ? lineage.length - 3
+          : 0;
+      setShowFromIndex(condensedStartIndex);
+    }
+  }, [isLoading, ontologyLineageData, viewSettings?.isCondensed]);
 
   const updateLineageWithChildren = useCallback(
     (children: OntologyLineageItemWithCounts[]) => {
@@ -134,11 +171,10 @@ export const OntologyBrowser = ({
     [],
   );
 
-  // Get the currently selected node from the lineage data.
-  // The selected node is the last item in the lineage array, which represents the deepest taxonomic level.
+  // Selected node is the last in the lineage
   const selectedOntologyNode = useMemo(() => {
-    return ontologyLineageData?.lineage?.at(-1) || null;
-  }, [ontologyLineageData]);
+    return lineage?.at(-1) || null;
+  }, [lineage]);
 
   if (error) {
     return (
@@ -154,100 +190,98 @@ export const OntologyBrowser = ({
       </Alert>
     );
   }
+
   return (
-    <>
-      <Flex
-        className='onto-table'
-        w='100%'
-        alignItems='flex-start'
-        flexWrap='wrap'
-        flex={1}
-      >
-        <Box flex={2} minWidth={{ base: 'unset', md: '500px' }}>
-          <Flex
-            w='100%'
-            justifyContent='space-between'
-            alignItems='flex-end'
-            mb={1}
-            flexWrap='wrap'
-          >
-            <OntologyBrowserHeader selectedNode={selectedOntologyNode} />
-            <OntologyBrowserSettings
-              label='Configure View'
-              buttonProps={{ size: 'sm' }}
-            />
-          </Flex>
-          {/* Tree Browser */}
-          <Box
-            w='100%'
-            bg='white'
-            border='1px solid'
-            borderRadius='semi'
-            borderColor='page.placeholder'
-            overflow='hidden'
-          >
-            {isLoading || !router.isReady ? (
-              <Spinner size='md' color='primary.500' m={4} />
-            ) : (
-              lineage && (
-                <>
-                  {showFromIndex > 0 && (
-                    <OntologyTreeBreadcrumbs
-                      lineageNodes={lineage.slice(0, showFromIndex)}
-                      showFromIndex={showFromIndex}
-                      updateShowFromIndex={setShowFromIndex}
-                    />
-                  )}
-
-                  <OntologyTreeHeaders>
-                    <OntologyTreeHeaderItem label='Term name' />
-                    <HStack
-                      justifyContent='flex-end'
-                      flex={1}
-                      divider={<StackDivider borderColor='gray.100' />}
-                      spacing={3}
-                    >
-                      <OntologyTreeHeaderItem
-                        label='Exact Matches'
-                        tooltipLabel={getTooltipLabelByCountType('termCount')}
-                      />
-                      <OntologyTreeHeaderItem
-                        label='Matches including sub-terms'
-                        tooltipLabel={getTooltipLabelByCountType(
-                          'termAndChildrenCount',
-                        )}
-                      />
-                    </HStack>
-                  </OntologyTreeHeaders>
-
-                  <Tree
-                    params={queryParams}
+    <Flex
+      className='onto-table'
+      w='100%'
+      alignItems='flex-start'
+      flexWrap='wrap'
+      flex={1}
+    >
+      <Box flex={2} minWidth={{ base: 'unset', md: '500px' }}>
+        <Flex
+          w='100%'
+          justifyContent='space-between'
+          alignItems='flex-end'
+          mb={1}
+          flexWrap='wrap'
+        >
+          <OntologyBrowserHeader selectedNode={selectedOntologyNode} />
+          <OntologyBrowserSettings
+            label='Configure View'
+            buttonProps={{ size: 'sm' }}
+          />
+        </Flex>
+        {/* Tree Browser */}
+        <Box
+          w='100%'
+          bg='white'
+          border='1px solid'
+          borderRadius='semi'
+          borderColor='page.placeholder'
+          overflow='hidden'
+        >
+          {isLoading || !router.isReady ? (
+            <Spinner size='md' color='primary.500' m={4} />
+          ) : (
+            lineage && (
+              <>
+                {showFromIndex > 0 && (
+                  <OntologyTreeBreadcrumbs
+                    lineageNodes={lineage.slice(0, showFromIndex)}
                     showFromIndex={showFromIndex}
-                    lineage={lineage}
-                    updateLineage={updateLineageWithChildren}
-                    isIncludedInSearch={id => {
-                      return searchList.some(item => item.taxonId === id);
-                    }}
-                    addToSearch={({ ontologyName, taxonId, label, counts }) => {
-                      setSearchList(prev => {
-                        //if it already exists in the list, remove it
-                        if (prev.some(item => item.taxonId === taxonId)) {
-                          return prev.filter(item => item.taxonId !== taxonId);
-                        } else {
-                          return [
-                            ...prev,
-                            { ontologyName, taxonId, label, counts },
-                          ];
-                        }
-                      });
-                    }}
+                    updateShowFromIndex={setShowFromIndex}
                   />
-                </>
-              )
-            )}
-          </Box>
+                )}
+
+                <OntologyTreeHeaders>
+                  <OntologyTreeHeaderItem label='Term name' />
+                  <HStack
+                    justifyContent='flex-end'
+                    flex={1}
+                    divider={<StackDivider borderColor='gray.100' />}
+                    spacing={3}
+                  >
+                    <OntologyTreeHeaderItem
+                      label='Exact Matches'
+                      tooltipLabel={getTooltipLabelByCountType('termCount')}
+                    />
+                    <OntologyTreeHeaderItem
+                      label='Matches including sub-terms'
+                      tooltipLabel={getTooltipLabelByCountType(
+                        'termAndChildrenCount',
+                      )}
+                    />
+                  </HStack>
+                </OntologyTreeHeaders>
+
+                <Tree
+                  params={queryParams}
+                  showFromIndex={showFromIndex}
+                  lineage={lineage}
+                  updateLineage={updateLineageWithChildren}
+                  isIncludedInSearch={id => {
+                    return searchList.some(item => item.taxonId === id);
+                  }}
+                  addToSearch={({ ontologyName, taxonId, label, counts }) => {
+                    setSearchList(prev => {
+                      if (prev.some(item => item.taxonId === taxonId)) {
+                        return prev.filter(item => item.taxonId !== taxonId);
+                      } else {
+                        return [
+                          ...prev,
+                          { ontologyName, taxonId, label, counts },
+                        ];
+                      }
+                    });
+                  }}
+                />
+              </>
+            )
+          )}
         </Box>
-      </Flex>
-    </>
+      </Box>
+    </Flex>
   );
 };

@@ -19,7 +19,6 @@ class Document extends NextDocument {
       <Box as={Html} lang='en'>
         <Head>
           <link rel='icon' href='/favicon.png' />
-          <meta name='robots' content='noindex' />
         </Head>
         <body>
           <Main />

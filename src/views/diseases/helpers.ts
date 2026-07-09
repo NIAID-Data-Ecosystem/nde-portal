@@ -1,21 +1,41 @@
-import { scaleOrdinal } from '@visx/scale';
 import { UrlObject } from 'url';
 import { Params } from 'src/utils/api';
 import {
   queryFilterObject2String,
   queryFilterString2Object,
-} from '../search/components/filters/utils/query-builders';
+} from '../search/components/filters/utils/query-string';
 import {
   DiseasePageProps,
   DiseaseCollectionApiResponse,
 } from 'src/views/diseases/types';
+import { sendGTMEvent } from '@next/third-parties/google';
 import { getTabIdFromTypeLabel } from '../search/components/filters/utils/tab-filter-utils';
 
-// Color scale for data types.
-export const getFillColor = scaleOrdinal({
-  domain: ['Dataset', 'ComputationalTool', 'ResourceCatalog'],
-  range: ['#e8c543', '#ff8359', '#6e95fc'],
-});
+export const normalizeSearchText = (value: string = '') => {
+  return value
+    .toLowerCase()
+    .normalize('NFD') // separates accents from letters
+    .replace(/[\u0300-\u036f]/g, '') // removes accents
+    .replace(/[^\p{L}\p{N}]+/gu, '') // removes spaces + punctuation
+    .trim();
+};
+
+export const trackDiseasesEvent = (event: {
+  label: string; // e.g., "Dataset"
+  category: string; // e.g., "Data Types Chart"
+  linkType: 'legend' | 'chart'; // 'link' for links, 'chart' for chart segments
+  value?: number; // optional value, e.g., count associated with "Datasets"
+}) => {
+  console.log('Tracking event:', event);
+  // Send the event to Google Tag Manager
+  return sendGTMEvent({
+    event: 'disease_to_search', // required by GTM
+    label: event.label, // clicked item name
+    category: event.category, // chart section or type
+    link_type: event.linkType, // custom param to distinguish whether it's a link or chart segment that was clicked
+    value: event?.value, // optional value associated with the event
+  });
+};
 
 // Helper function to generate a URL object for search results.
 export const getSearchResultsRoute = ({
@@ -28,7 +48,7 @@ export const getSearchResultsRoute = ({
   term?: string;
 }): UrlObject => {
   const q = query.q || '';
-  const filters = queryFilterString2Object(query.extra_filter) || {};
+  const filters = queryFilterString2Object(query?.extra_filter || '') || {};
 
   if (facet && term) {
     filters[facet] = [term];
@@ -65,6 +85,33 @@ const getContentStatus = (): string => {
   return isProd ? 'published' : 'draft';
 };
 
+export const processDiseaseDescription = (
+  description?: string,
+  topic?: string,
+): string | undefined => {
+  if (!description || !topic) {
+    return description;
+  }
+
+  const escapedTopic = topic.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(
+    String.raw`(?<!\*|_)\b${escapedTopic}\b(?!\*|_)`,
+    'gi',
+  );
+
+  return description.replace(regex, match => `*${match}*`);
+};
+
+export const withtopicEmphasizedDescription = (
+  page: DiseasePageProps,
+): DiseasePageProps => ({
+  ...page,
+  topicEmphasizedDescription: processDiseaseDescription(
+    page.description,
+    page.topic,
+  ),
+});
+
 // Fetch all disease pages
 export const fetchAllDiseasePages = async (): Promise<DiseasePageProps[]> => {
   try {
@@ -82,7 +129,7 @@ export const fetchAllDiseasePages = async (): Promise<DiseasePageProps[]> => {
     const apiResponse: DiseaseCollectionApiResponse<DiseasePageProps[]> =
       await response.json();
 
-    return apiResponse.data;
+    return apiResponse.data.map(withtopicEmphasizedDescription);
   } catch (error) {
     console.error('Error fetching disease pages:', error);
     throw error;
@@ -112,7 +159,7 @@ export const fetchDiseaseBySlug = async (
       throw new Error(`Disease with slug "${slug}" not found`);
     }
 
-    return apiResponse.data[0];
+    return withtopicEmphasizedDescription(apiResponse.data[0]);
   } catch (error) {
     console.error('Error fetching disease by slug:', error);
     throw error;

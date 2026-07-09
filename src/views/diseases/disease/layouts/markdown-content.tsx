@@ -15,7 +15,14 @@ export const fillTemplatePlaceholders = (
   template: string,
   vars: Record<string, string>,
 ) => {
-  return template.replace(/{{(\w+)}}/g, (_, key) => vars[key] ?? '');
+  return template.replace(/{{(\w+)}}/g, (_, key) => {
+    const lowerKey = key.charAt(0).toLowerCase() + key.slice(1);
+    const value = vars[lowerKey] ?? vars[key] ?? '';
+    const shouldCapitalize = key.charAt(0) !== key.charAt(0).toLowerCase();
+    return shouldCapitalize
+      ? value.charAt(0).toUpperCase() + value.slice(1)
+      : value;
+  });
 };
 
 export const MarkdownContent = ({

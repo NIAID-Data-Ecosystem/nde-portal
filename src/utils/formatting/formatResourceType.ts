@@ -1,10 +1,9 @@
 export type APIResourceType =
   | 'Dataset'
   | 'ResourceCatalog'
-  | 'ComputationalTool';
-// | 'Software'
-// | 'ScholarlyArticle'
-// | 'Other';
+  | 'ComputationalTool'
+  | 'Sample'
+  | 'DataCollection';
 
 export type CollectionType =
   | 'Knowledge Base'
@@ -30,26 +29,35 @@ export type DisplayResourceType =
   | 'Dataset'
   | 'Resource Catalog'
   | 'Computational Tool'
+  | 'Sample'
+  | 'Data Collection'
   | 'Software'
   | 'Scholarly Article'
   | 'Other';
 
-// Format the resource type for display.
-export const formatResourceTypeForDisplay = (
-  str: APIResourceType,
+// Format API resource types for display
+export const formatAPIResourceTypeForDisplay = (
+  str: APIResourceType | undefined,
 ): DisplayResourceType => {
+  if (!str) {
+    return 'Other';
+  }
   if (str.toLowerCase() === 'dataset') {
     return 'Dataset';
   } else if (str.toLowerCase() === 'resourcecatalog') {
     return 'Resource Catalog';
   } else if (str.toLowerCase() === 'computationaltool') {
     return 'Computational Tool';
+  } else if (str.toLowerCase() === 'sample') {
+    return 'Sample';
+  } else if (str.toLowerCase() === 'datacollection') {
+    return 'Data Collection';
   } else {
     return 'Other';
   }
 };
 
-// Format the dataset type(if changed for display) to the @type accepted in the API.
+// Format the dataset type (if changed for display) to the @type accepted in the API
 export const formatResourceTypeForAPI = (
   str: string,
 ): APIResourceType | string => {

@@ -1,9 +1,14 @@
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
-import { defaultQuery, DefaultSearchQueryParams } from '../config/defaultQuery';
+import {
+  defaultQuery,
+  DefaultSearchQueryParams,
+  defaultSelectedFilters,
+  shouldApplyDefaultDate,
+} from '../config/defaultQuery';
 import { encodeString } from 'src/utils/querystring-helpers';
 import { FILTER_CONFIGS } from '../components/filters/config';
-import { queryFilterString2Object } from '../components/filters/utils/query-builders';
+import { queryFilterString2Object } from '../components/filters/utils/query-string';
 
 const parseNumberQueryParam = (
   param: string | string[] | undefined,
@@ -24,9 +29,15 @@ export const useSearchQueryFromURL = (): DefaultSearchQueryParams => {
   }, []);
 
   const filters = useMemo(() => {
-    const raw = queryFilterString2Object(router.query.filters);
-    return { ...defaultFilters, ...(raw ?? {}) };
-  }, [router.query.filters, defaultFilters]);
+    const raw = queryFilterString2Object(router.query.filters) ?? {};
+    // Seed the default date range only for a fresh query — not when the user
+    // has explicitly opted out via `applyDefaultDate=false` or already has a
+    // date filter applied.
+    const base = shouldApplyDefaultDate(router.query.applyDefaultDate, raw)
+      ? defaultSelectedFilters
+      : {};
+    return { ...defaultFilters, ...base, ...raw };
+  }, [router.query.filters, router.query.applyDefaultDate, defaultFilters]);
 
   const from = useMemo(
     () => parseNumberQueryParam(router.query.from, defaultQuery.from),
@@ -47,6 +58,12 @@ export const useSearchQueryFromURL = (): DefaultSearchQueryParams => {
     return router.query.use_metadata_score === 'true';
   }, [router.query.use_metadata_score]);
 
+  const use_ai_search = useMemo(() => {
+    return Array.isArray(router.query.use_ai_search)
+      ? router.query.use_ai_search[0]
+      : router.query.use_ai_search;
+  }, [router.query.use_ai_search]);
+
   const q = useMemo(() => {
     const raw = router.query.q ?? defaultQuery.q;
     const cleaned = Array.isArray(raw)
@@ -62,6 +79,7 @@ export const useSearchQueryFromURL = (): DefaultSearchQueryParams => {
     from,
     size,
     sort,
+    use_ai_search,
     shouldUseMetadataScore,
   };
 };

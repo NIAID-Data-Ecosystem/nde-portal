@@ -19,7 +19,7 @@ import {
   TooltipSubtitle,
   TooltipTitle,
   TooltipWrapper,
-} from '../components/tooltip';
+} from 'src/components/visualizations/tooltip/index';
 
 export interface FacetTermsWithDetails
   extends Pick<FacetTerm, 'term' | 'count'> {
@@ -46,6 +46,9 @@ interface StackedBarChartProps {
   };
   /** Function to handle slice click events. */
   getRoute: (term: string) => UrlObject;
+
+  /** Callback for handling click events on a bar. */
+  handleGATracking: (event: { label: string; count: number }) => void;
 }
 
 const barStyles = { height: 10, minWidth: 10, xPadding: 4, rx: 2.5 };
@@ -56,6 +59,7 @@ export const StackedBarChart = ({
   data,
   defaultDimensions,
   getRoute,
+  handleGATracking,
 }: StackedBarChartProps) => {
   const { height, margin } = defaultDimensions;
   const { parentRef, width } = useParentSize({
@@ -145,8 +149,11 @@ export const StackedBarChart = ({
           <p id='coa-stacked-title'>{title}</p>
           <p id='coa-stacked-desc'>{description}</p>
         </VisuallyHidden>
+        {/* role="group" (not "img"): the chart contains focusable <a> segments,
+            and a role="img" must not nest interactive controls
+            (nested-interactive); a labelled group legitimately can. */}
         <svg
-          role='img'
+          role='group'
           width={svgWidth}
           height={svgHeight}
           aria-labelledby='coa-stacked-title'
@@ -163,7 +170,11 @@ export const StackedBarChart = ({
                 onBlur={() => hideTooltip}
               >
                 {/* Horizontally Stacked Bar */}
-                <AnimatedRect bar={bar} getRoute={getRoute} />
+                <AnimatedRect
+                  bar={bar}
+                  getRoute={getRoute}
+                  onClick={handleGATracking}
+                />
 
                 {/* Bar Label */}
                 <Annotation
@@ -239,6 +250,7 @@ export const StackedBarChart = ({
 export const AnimatedRect = ({
   bar,
   getRoute,
+  onClick,
 }: {
   bar: {
     data: FacetTermsWithDetails;
@@ -249,12 +261,23 @@ export const AnimatedRect = ({
     fill: string;
   };
   getRoute: StackedBarChartProps['getRoute'];
+  onClick: StackedBarChartProps['handleGATracking'];
 }) => {
   const spring = useSpring({
     width: bar.width,
   });
   return (
-    <NextLink href={getRoute(bar.data.term)}>
+    <NextLink
+      href={getRoute(bar.data.term)}
+      onClick={() => onClick({ label: bar.data.label, count: bar.data.count })}
+      // The link wraps only an SVG <rect>, so it needs an explicit accessible
+      // name (link-name) — the visible label/count sit in a separate annotation.
+      aria-label={`${
+        bar.data.label
+      }: ${bar.data.count.toLocaleString()} result${
+        bar.data.count === 1 ? '' : 's'
+      }`}
+    >
       <animated.rect
         x={bar.x}
         y={bar.y}

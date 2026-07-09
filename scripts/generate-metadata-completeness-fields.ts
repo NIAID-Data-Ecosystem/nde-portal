@@ -3,7 +3,7 @@ import axios from 'axios';
 import JSON5 from 'json5';
 
 /**
- * This script fetches the metadata completeness fields from the NIAID-Data-Ecosystem GitHub repository,
+ * This script fetches the metadata completeness fields from the NIAID-Data-Ecosystem/nde-crawlers GitHub repository,
  * processes the data, and writes it to a JSON file.
  * The script uses axios to make HTTP requests and JSON5 to parse the data.
  * The output file is saved in the src/components/metadata-completeness-badge directory.
@@ -17,7 +17,6 @@ const fetchMetadataCompletenessFields = async () => {
     const branch = 'main';
     const path = 'biothings-hub/files/nde-hub/scores.py';
     const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`;
-
     const response = await axios.get(url, {
       headers: {
         'Content-Type': 'application/json',
@@ -68,7 +67,7 @@ const fetchMetadataCompletenessFields = async () => {
       ],
     };
 
-    // Dataset
+    // Resource Catalog
     const ResourceCatalog = {
       required: [
         ...new Set([
@@ -84,11 +83,28 @@ const fetchMetadataCompletenessFields = async () => {
       ],
     };
 
+    // DataCollection
+    const DataCollection = {
+      required: [
+        ...new Set([
+          ...extractArray('DATA_COLLECTION_REQUIRED', data),
+          ...extractArray('DATA_COLLECTION_REQUIRED_AUGMENTED', data),
+        ]),
+      ],
+      recommended: [
+        ...new Set([
+          ...extractArray('DATA_COLLECTION_RECOMMENDED', data),
+          ...extractArray('DATA_COLLECTION_RECOMMENDED_AUGMENTED', data),
+        ]),
+      ],
+    };
+
     return {
       data: {
         ComputationalTool,
         Dataset,
         ResourceCatalog,
+        DataCollection,
       },
       error: null,
     };

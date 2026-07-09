@@ -1,3 +1,4 @@
+import { CreativeWorkStatusDatasetType } from 'src/hooks/api/types';
 import {
   APIResourceType,
   CollectionType,
@@ -45,6 +46,12 @@ export type AccessTypes =
   | 'Restricted'
   | 'Varied'
   | 'Unknown';
+
+export interface AdditionalProperty {
+  '@type'?: 'PropertyValue';
+  propertyID: string;
+  value: string;
+}
 
 export interface AdditionalType {
   name?: string;
@@ -293,7 +300,7 @@ export interface SourceOrganization {
   url?: string;
 }
 
-interface SpatialCoverage {
+export interface SpatialCoverage {
   identifier?: string;
   geo?: {
     latitude?: number;
@@ -321,13 +328,12 @@ export interface Species extends PropertyWithPubtator {
   displayName: string;
 }
 
-interface TemporalCoverage {
-  temporalInterval: {
-    duration?: string[];
-    endDate?: string;
-    name?: string;
-    startDate?: string;
-  };
+export interface TemporalCoverage {
+  duration?: string[];
+  endDate?: string;
+  name?: string;
+  startDate?: string;
+  temporalType?: string;
 }
 
 export interface TopicCategory {
@@ -373,6 +379,68 @@ export interface FeatureListProperties {
   inDefinedTermSet?: string;
 }
 
+export interface DefinedTerm {
+  '@type'?: string;
+  identifier?: string;
+  name?: string;
+  url?: string;
+  inDefinedTermSet?: string;
+}
+
+export interface QuantitativeValue {
+  '@type'?: string;
+  maxValue?: number;
+  minValue?: number;
+  name?: string;
+  unitCode?: string;
+  unitText?: string;
+  value?: number;
+}
+
+export interface SampleAggregate {
+  '@type': 'Sample';
+  _id?: string;
+  additionalProperty?: AdditionalProperty | AdditionalProperty[];
+  anatomicalStructure?: DefinedTerm[];
+  anatomicalSystem?: DefinedTerm[];
+  associatedGenotype?: (string | DefinedTerm)[];
+  associatedPhenotype?: DefinedTerm[];
+  cellType?: DefinedTerm[];
+  collectionMethod?: string[];
+  developmentalStage?: (QuantitativeValue | DefinedTerm)[];
+  identifier?: string;
+  includedInDataCatalog?: {
+    '@type'?: string;
+    archivedAt?: string[];
+    name?: string;
+    url?: string;
+    versionDate?: string;
+  }[];
+  sampleAvailability?: boolean;
+  sampleQuantity?: QuantitativeValue | QuantitativeValue[];
+  sampleType?: {
+    name?: string;
+    url?: string;
+  }[];
+  sex?: string[];
+  url?: string;
+}
+
+export interface SampleCollection {
+  '@type': 'SampleCollection';
+  aggregateElement?: SampleAggregate;
+  itemListElement?: {
+    _id?: string;
+    identifier?: string;
+    url?: string;
+  }[];
+  numberOfItems?: QuantitativeValue;
+}
+export interface UsageInfo {
+  name?: string | null;
+  url?: string | null;
+  description?: string | null;
+}
 // Formatting standardized resource fields
 export interface FormattedResource {
   [key: string]: any;
@@ -397,6 +465,7 @@ export interface FormattedResource {
     recommended_fields: string[];
     required_fields: string[];
   };
+  _id: string;
   id: string;
   '@type': APIResourceType; // "Dataset" | "ComputationalTool" | "Resource Catalog"
   name: string;
@@ -423,6 +492,8 @@ export interface FormattedResource {
   collectionType?: CollectionType | null;
   condition: string | null;
   conditionsOfAccess: AccessTypes | null;
+  creativeWorkStatus?: CreativeWorkStatusDatasetType | string | null;
+  creditText: string | null;
   date: string | null;
   dateCreated: string | null;
   dateModified: string | null;
@@ -436,7 +507,7 @@ export interface FormattedResource {
   downloadUrl: { name: string }[] | null;
   featureList: FeatureListProperties[] | null;
   funding: Funding[] | null;
-  genre: Domain | null;
+  genre: Domain | string[] | null;
   hasAPI: boolean | null;
   hasDownload:
     | 'All content'
@@ -470,28 +541,19 @@ export interface FormattedResource {
   publisher: Publisher | null;
   rawData?: any;
   sameAs: string | null;
+  sample?: SampleAggregate | SampleCollection | null;
   softwareAddOn: { identifier: string }[] | null;
   softwareHelp: { name?: string; url: string }[] | null;
   softwareRequirements: string[] | null;
   softwareVersion: string[] | null;
   sourceOrganization: SourceOrganization[] | null;
-  sdPublisher: SdPublisher[] | null;
+  sdPublisher: SdPublisher | SdPublisher[] | null;
   spatialCoverage: SpatialCoverage[] | null;
   species: Species[] | null;
   temporalCoverage: TemporalCoverage[] | null;
   topicCategory: TopicCategory[] | null;
   url: string | null; // link to dataset in the source repo.
-  usageInfo?:
-    | {
-        name?: string | null;
-        url?: string | null;
-        description?: string | null;
-      }
-    | {
-        name?: string | null;
-        url?: string | null;
-        description?: string | null;
-      }[];
+  usageInfo?: UsageInfo | UsageInfo[];
   variableMeasured:
     | string[]
     | {

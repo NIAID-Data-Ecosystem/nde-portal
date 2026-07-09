@@ -37,6 +37,36 @@ const getTooltipLabel = (
   return '';
 };
 
+// Capitalize the first letter of a string, but only if it is not empty
+const capitalize = (str: string) =>
+  str ? str.charAt(0).toUpperCase() + str.slice(1) : str;
+
+const transformCheckboxLabel = ({
+  facet,
+  filterName,
+  label,
+  term,
+}: Pick<FilterCheckboxProps, 'facet' | 'filterName' | 'label' | 'term'>) => {
+  if (facet === 'includedInDataCatalog.name') {
+    return { label };
+  }
+  // Split the label into scientific name and common name if it contains '|'
+  if (term?.includes('|')) {
+    const [scientificName, commonName] = label.split(' | ');
+    return {
+      label: capitalize(commonName || label),
+      subLabel: capitalize(scientificName),
+    };
+  } else if (term.includes('_exists_')) {
+    return {
+      label: capitalize(`${label} ${filterName.toLowerCase()}`),
+      subLabel: '',
+    };
+  }
+
+  return { label: capitalize(label), subLabel: '' };
+};
+
 export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
   ({
     colorScheme,
@@ -48,8 +78,13 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
     isUpdating,
     ...props
   }) => {
-    let label = props.label;
-    let subLabel = '';
+    let { label, subLabel } = transformCheckboxLabel({
+      label: props.label,
+      term,
+      filterName,
+      facet: props.facet,
+    });
+
     // Note: Requested by Andrew to track the usage of this filter option.
     const trackGAEvent = useCallback((value: string, filterName: string) => {
       if (value.includes('_exists_') || value.includes('-_exists_')) {
@@ -72,7 +107,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
     if (isHeader) {
       return (
         <Text
-          px={6}
+          px={3}
           fontSize='xs'
           fontWeight='semibold'
           lineHeight='shorter'
@@ -84,15 +119,6 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
       );
     }
 
-    // Split the label into scientific name and common name if it contains '|'
-    if (term?.includes('|')) {
-      const [scientificName, commonName] = props.label.split(' | ');
-      label = commonName || props.label;
-      subLabel = scientificName;
-    } else if (term.includes('_exists_')) {
-      label = `${props.label} ${filterName.toLowerCase()}`;
-    }
-
     return (
       <ChakraCheckbox
         onChange={() => {
@@ -100,7 +126,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
         }}
         value={term}
         w='100%'
-        px={6}
+        px={3}
         pr={2}
         py={1.5}
         alignItems='flex-start'
@@ -121,7 +147,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
       >
         {/* Loading skeleton only on load  */}
         <Skeleton
-          isLoaded={!isLoading || isUpdating}
+          isLoaded={!isLoading && !isUpdating}
           display='flex'
           alignItems='center'
           flex={1}
@@ -139,9 +165,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
               flexDirection='column'
               fontWeight={subLabel ? 'semibold' : 'normal'}
             >
-              {label
-                ? label.charAt(0).toUpperCase() + label.slice(1)
-                : 'Loading...'}
+              {label}
               {subLabel && (
                 <Text
                   as='span'
@@ -153,24 +177,26 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
                   fontWeight='normal'
                   mr={0.5}
                 >
-                  {subLabel.charAt(0).toUpperCase() + subLabel.slice(1)}
+                  {subLabel}
                 </Text>
               )}
             </Text>
           </Tooltip>
 
           {/* Display the count of the filter term */}
-          <Tag
-            as='span'
-            className='tag-count'
-            variant='subtle'
-            size='sm'
-            colorScheme={colorScheme}
-            borderRadius='full'
-            alignSelf='flex-start'
-          >
-            {count?.toLocaleString('en-US')}
-          </Tag>
+          {typeof count === 'number' && (
+            <Tag
+              as='span'
+              className='tag-count'
+              variant='subtle'
+              size='sm'
+              colorScheme={colorScheme}
+              borderRadius='full'
+              alignSelf='flex-start'
+            >
+              {count?.toLocaleString('en-US')}
+            </Tag>
+          )}
         </Skeleton>
       </ChakraCheckbox>
     );

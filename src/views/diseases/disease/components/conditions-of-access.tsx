@@ -10,7 +10,10 @@ import {
   getColorScheme,
   getConditionsOfAccessDescription,
 } from 'src/utils/formatting/formatConditionsOfAccess';
-import { getSearchResultsRoute } from 'src/views/diseases/helpers';
+import {
+  getSearchResultsRoute,
+  trackDiseasesEvent,
+} from 'src/views/diseases/helpers';
 import { TopicQueryProps } from '../../types';
 import { ChartWrapper } from '../layouts/chart-wrapper';
 import {
@@ -128,6 +131,17 @@ export const ConditionsOfAccess = ({ query, topic }: TopicQueryProps) => {
                       term,
                     });
                   }}
+                  handleGATracking={({ label, count }) => {
+                    trackDiseasesEvent({
+                      label,
+                      category:
+                        DISEASE_PAGE_COPY['charts']['conditions-of-access'][
+                          'title'
+                        ],
+                      linkType: 'chart',
+                      value: count,
+                    });
+                  }}
                 />
               )}
             </Box>
@@ -154,6 +168,17 @@ export const ConditionsOfAccess = ({ query, topic }: TopicQueryProps) => {
                               facet: params.facets,
                               term: term as string,
                             })}
+                            onClick={() => {
+                              trackDiseasesEvent({
+                                label,
+                                category:
+                                  DISEASE_PAGE_COPY['charts'][
+                                    'conditions-of-access'
+                                  ]['title'],
+                                linkType: 'legend',
+                                value: count,
+                              });
+                            }}
                             passHref
                           >
                             <Link as='p'>{label}</Link>

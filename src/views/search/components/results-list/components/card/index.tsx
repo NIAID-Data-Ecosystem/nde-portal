@@ -10,6 +10,7 @@ import {
   Tooltip,
   Stack,
   Highlight,
+  HStack,
 } from '@chakra-ui/react';
 import { useInView } from '@react-spring/web';
 import NextLink from 'next/link';
@@ -21,7 +22,6 @@ import OperatingSystems from './operating-systems';
 import { SearchableItems } from 'src/components/searchable-items';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
-import { SourceLogo, SourceLogoWrapper, getSourceDetails } from './source-logo';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
 import { ToggleContainer } from 'src/components/toggle-container';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
@@ -31,6 +31,16 @@ import { filterWords } from './helpers';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { InfoLabel } from 'src/components/info-label';
+import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+import {
+  formatSourcesWithLogos,
+  getAccessResourceURL,
+} from 'src/components/source-logo/helpers';
+import { SourceLogo } from 'src/components/source-logo';
+import { BookmarkButton } from 'src/components/bookmark-buttons/button';
+import { useUserData } from 'src/hooks/useUserData';
+import { ENABLE_AUTH } from 'src/utils/feature-flags';
+import { useAuth } from 'src/hooks/useAuth';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -47,6 +57,12 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   referrerPath,
   querystring,
 }) => {
+  const { user, login } = useAuth();
+
+  const { savedDatasets, addSavedDataset, removeSavedDataset } = useUserData();
+  const isFavorited = data?.id
+    ? savedDatasets.some(fd => fd.dataset_id === data.id)
+    : false;
   const {
     ['@type']: type,
     id,
@@ -69,7 +85,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   const sources =
     isLoading || !includedInDataCatalog
       ? []
-      : getSourceDetails(includedInDataCatalog);
+      : formatSourcesWithLogos(includedInDataCatalog) || [];
 
   const highlightProps = useMemo(
     () =>
@@ -91,6 +107,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
       borderColor='gray.100'
     >
       <TypeBanner
+        label={formatAPIResourceTypeForDisplay(type)}
         type={type}
         p={0}
         pl={[2, 4, 6]}
@@ -141,7 +158,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           >
             <DisplayHTMLContent
               noOfLines={3}
-              content={name || alternateName || ''}
+              content={name || alternateName || 'N/A'}
               fontWeight='semibold'
               color='inherit'
               fontSize='lg'
@@ -315,25 +332,22 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   borderRadius='semi'
                   justifyContent='center'
                 >
-                  <SourceLogoWrapper>
+                  <SourceLogo.Wrapper>
                     {sources?.length > 0 &&
                       sources.map(source => {
                         return (
-                          <SourceLogo
+                          <SourceLogo.Component
                             key={source.name}
                             source={source}
                             type={type}
-                            url={
-                              type === 'ResourceCatalog'
-                                ? ''
-                                : Array.isArray(source?.archivedAt)
-                                ? source?.archivedAt[0]
-                                : source?.archivedAt ?? ''
-                            }
+                            url={getAccessResourceURL({
+                              recordType: type,
+                              source,
+                            })}
                           />
                         );
                       })}
-                  </SourceLogoWrapper>
+                  </SourceLogo.Wrapper>
                 </Flex>
 
                 {description && (
@@ -492,34 +506,56 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 pb={[2, 4]}
                 my={1}
               >
-                <SourceLogoWrapper
+                <SourceLogo.Wrapper
                   display={{ base: 'none', sm: 'flex' }}
                   flex={1}
                 >
                   {sources?.length > 0 &&
                     sources.map(source => {
                       return (
-                        <SourceLogo
+                        <SourceLogo.Component
                           key={source.name}
                           source={source}
                           type={type}
-                          url={
-                            type === 'ResourceCatalog'
-                              ? ''
-                              : Array.isArray(source?.archivedAt)
-                              ? source?.archivedAt[0]
-                              : source?.archivedAt ?? ''
-                          }
+                          url={getAccessResourceURL({
+                            recordType: type,
+                            source,
+                          })}
                         />
                       );
                     })}
-                </SourceLogoWrapper>
+                </SourceLogo.Wrapper>
 
-                <Flex
+                <HStack
                   flex={{ base: 1, sm: 'unset' }}
                   mt={[2, 0]}
                   w={{ base: '100%', sm: 'unset' }}
                 >
+                  {ENABLE_AUTH && (
+                    <BookmarkButton
+                      isFavorited={isFavorited}
+                      onClick={() => {
+                        if (!data?.id) return;
+                        if (!user) {
+                          login();
+                          return;
+                        }
+                        if (isFavorited) {
+                          removeSavedDataset(data.id);
+                        } else {
+                          addSavedDataset({
+                            dataset_id: data.id,
+                            name:
+                              data.name ||
+                              data.alternateName ||
+                              'Untitled Dataset',
+                            saved_at: new Date().toISOString(),
+                          });
+                        }
+                      }}
+                      disabled={!data?.id}
+                    />
+                  )}
                   {id && (
                     <NextLink
                       // referrerPath is the current path of the page - used for breadcrumbs in resources page
@@ -550,7 +586,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       </Flex>
                     </NextLink>
                   )}
-                </Flex>
+                </HStack>
               </Stack>
             </CardBody>
           </>

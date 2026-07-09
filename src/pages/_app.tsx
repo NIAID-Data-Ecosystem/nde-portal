@@ -5,6 +5,8 @@ import { theme } from 'src/theme';
 import { GoogleTagManager } from '@next/third-parties/google';
 import { fonts } from 'lib/fonts';
 import { ChakraProvider } from '@chakra-ui/react';
+import { AuthProvider } from 'src/hooks/useAuth';
+import { UserDataProvider } from 'src/hooks/useUserData';
 
 // Creates an instance of react-query for the app.
 const queryClient = new QueryClient();
@@ -17,6 +19,11 @@ function App({ Component, pageProps }: AppProps) {
           name='viewport'
           content='width=device-width, initial-scale=1.0'
         ></meta>
+        {/* Leave for google search console */}
+        <meta
+          name='google-site-verification'
+          content={process.env.NEXT_PUBLIC_GOOGLE_CONSOLE}
+        />
       </Head>
       <style jsx global>
         {`
@@ -28,8 +35,11 @@ function App({ Component, pageProps }: AppProps) {
 
       <QueryClientProvider client={queryClient}>
         <ChakraProvider theme={theme}>
-          {/* @ts-ignore */}
-          <Component {...pageProps} />
+          <AuthProvider>
+            <UserDataProvider>
+              <Component {...pageProps} />
+            </UserDataProvider>
+          </AuthProvider>
         </ChakraProvider>
       </QueryClientProvider>
       <GoogleTagManager

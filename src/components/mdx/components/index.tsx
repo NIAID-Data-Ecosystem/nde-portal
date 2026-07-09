@@ -17,7 +17,7 @@ import {
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { HeadingWithLink } from 'src/components/heading-with-link/components/HeadingWithLink';
-import { transformString2Hash } from 'src/views/docs/components/helpers';
+import { transformString2Hash } from 'src/views/docs/utils/markdown';
 import { normalizeResponsiveProps } from '../helpers';
 
 const Details = (props: any) => {
@@ -26,6 +26,15 @@ const Details = (props: any) => {
     (node: any) => node.type === 'summary',
   );
   const [isOpen, setIsOpen] = useState(false);
+
+  // Render the summary's inner content rather than the <summary> element
+  // itself: a host <summary> is focusable, and nesting it inside the toggle
+  // <button> below produces a nested-interactive (serious) a11y violation.
+  const summaryNode = children[summaryIndex];
+  const summaryContent =
+    summaryNode && typeof summaryNode === 'object' && summaryNode.props
+      ? summaryNode.props.children
+      : summaryNode;
 
   return (
     <Box border='1px solid' borderColor='gray.100' my={0.5}>
@@ -43,11 +52,12 @@ const Details = (props: any) => {
           boxShadow: 'sm',
           bg: 'secondary.50',
         }}
+        aria-expanded={isOpen}
         onClick={() => setIsOpen(!isOpen)}
         {...props}
       >
         <Heading as='h2' fontSize='xl' flex={1} textAlign='left'>
-          {children[summaryIndex]}
+          {summaryContent}
         </Heading>
         <Icon
           as={FaAngleDown}
@@ -88,7 +98,7 @@ export const MDXComponents = {
     if (
       props?.href &&
       props?.href.includes('/uploads') &&
-      (props.href.includes('.webm') || props.src.includes('.mp4'))
+      (props.href.includes('.webm') || props.href.includes('.mp4'))
     ) {
       return MDXComponents.img({ ...props, src: href } as ImageProps); // Use img component to handle video files
     }
@@ -337,45 +347,39 @@ export const MDXComponents = {
       my: 2,
     };
 
-    const AssetComponent = (props: any) => {
-      // If the src is a video file, render a video element
-      // Note: The video will be paused and muted by default.
-      if (
-        props?.src &&
-        props?.src.includes('/uploads') &&
-        (props.src.includes('.webm') || props.src.includes('.mp4'))
-      ) {
-        return (
-          <Box
-            as='video'
-            loop
-            muted
-            playsInline
-            controls
-            {...(props?.className?.includes('border') ? borderStyles : {})}
-            {...props}
-          >
-            {props.src.includes('.webm') && (
-              <source src={src} type='video/webm'></source>
-            )}
-            {props.src.includes('.mp4') && (
-              <source src={src} type='video/mp4'></source>
-            )}
-          </Box>
-        );
-      } else if (props?.className?.includes('border')) {
-        // If the src is an image file and has a className that includes 'border',
-        // render an Image component with border styles
-        return (
-          <Image alt={props.alt || 'image'} {...borderStyles} {...props} />
-        );
-      } else {
-        return <Image alt={props.alt || 'image'} {...props} />;
-      }
-    };
+    const isVideo =
+      src.includes('/uploads') &&
+      (src.includes('.webm') || src.includes('.mp4'));
 
-    // If the src is an image file, render an Image component
-    return <AssetComponent {...props} alt={props.alt || 'image'} src={src} />;
+    if (isVideo) {
+      const { src: _src, alt, ...videoProps } = props;
+      return (
+        <Box
+          as='video'
+          loop
+          muted
+          playsInline
+          controls
+          preload='metadata'
+          aria-label={alt || undefined}
+          {...(props?.className?.includes('border') ? borderStyles : {})}
+          {...videoProps}
+        >
+          {src.includes('.webm') && <source src={src} type='video/webm' />}
+          {src.includes('.mp4') && <source src={src} type='video/mp4' />}
+          Your browser does not support the video tag.
+        </Box>
+      );
+    }
+
+    return (
+      <Image
+        alt={props.alt || ''}
+        {...(props?.className?.includes('border') ? borderStyles : {})}
+        {...props}
+        src={src}
+      />
+    );
   },
   li: (props: any) => {
     const { ordered, ...rest } = props;

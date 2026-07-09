@@ -4,7 +4,10 @@ import { fetchMetadata } from 'src/hooks/api/helpers';
 import { Metadata } from 'src/hooks/api/types';
 import { fetchSearchResults } from 'src/utils/api';
 import { FacetTerm } from 'src/utils/api/types';
-import { getSearchResultsRoute } from 'src/views/diseases/helpers';
+import {
+  getSearchResultsRoute,
+  trackDiseasesEvent,
+} from 'src/views/diseases/helpers';
 import { TopicQueryProps } from '../../types';
 import { ChartWrapper } from '../layouts/chart-wrapper';
 import { BarChart, SourceFacet } from '../visualizations/bar-chart';
@@ -158,6 +161,14 @@ export const Sources = ({
                   query: params,
                   facet: params.facets,
                   term: term as string,
+                });
+              }}
+              handleGATracking={({ label, count }) => {
+                trackDiseasesEvent({
+                  label,
+                  category: DISEASE_PAGE_COPY['charts']['sources']['title'],
+                  linkType: 'chart',
+                  value: count,
                 });
               }}
             />

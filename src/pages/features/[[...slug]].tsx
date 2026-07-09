@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import type { GetStaticProps, NextPage } from 'next';
-import { useRouter } from 'next/router';
 import { Flex, Skeleton, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { Error } from 'src/components/error';
@@ -48,14 +47,6 @@ const FeaturedPage: NextPage<{
     refetchOnMount: true,
   });
 
-  // If the app is in production, redirect to a 404 page until search is fully implemented and approved.
-  const router = useRouter();
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_APP_ENV === 'production') {
-      router.replace('/404');
-    }
-  }, [router]);
-
   const pageTitle = data?.title || 'Features';
   return (
     <PageContainer
@@ -81,7 +72,7 @@ const FeaturedPage: NextPage<{
       {error ? (
         <Error>
           <Flex flexDirection='column' justifyContent='center'>
-            <Text fontWeight='light' color='gray.600' fontSize='lg'>
+            <Text fontWeight='light' color='gray.800' fontSize='lg'>
               API Request:{' '}
               {error?.message ||
                 'It’s possible that the server is experiencing some issues.'}{' '}

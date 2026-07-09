@@ -91,9 +91,7 @@ const Overview: React.FC<OverviewProps> = ({
               property: 'spatialCoverage',
               isDisabled: !(
                 spatialCoverage ||
-                temporalCoverage?.some(
-                  coverage => coverage.temporalInterval,
-                ) === true ||
+                temporalCoverage ||
                 inLanguage?.name ||
                 inLanguage?.alternateName
               ),
@@ -249,7 +247,7 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
           {/* Period information of dataset */}
           {temporalCoverage &&
             temporalCoverage.map((coverage, idx) => {
-              if (!coverage.temporalInterval) {
+              if (!coverage) {
                 return (
                   <React.Fragment key={'temporal' + idx}> </React.Fragment>
                 );
@@ -260,33 +258,31 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
                     Temporal Coverage
                   </Text>
                   {/* Start */}
-                  {coverage?.temporalInterval?.name && (
-                    <Text>{coverage?.temporalInterval?.name}</Text>
-                  )}
-                  {coverage?.temporalInterval?.startDate && (
+                  {coverage?.name && <Text>{coverage?.name}</Text>}
+                  {coverage?.startDate && (
                     <Text>
                       <Text as='span' fontWeight='medium'>
                         Start Date:
                       </Text>{' '}
-                      {coverage.temporalInterval.startDate}
+                      {coverage.startDate}
                     </Text>
                   )}
                   {/* End */}
-                  {coverage?.temporalInterval?.endDate && (
+                  {coverage?.endDate && (
                     <Text>
                       <Text as='span' fontWeight='medium'>
                         End Date:
                       </Text>{' '}
-                      {coverage.temporalInterval.endDate}
+                      {coverage.endDate}
                     </Text>
                   )}
                   {/* Duration */}
-                  {coverage?.temporalInterval?.duration && (
+                  {coverage.duration && (
                     <Text>
                       <Text as='span' fontWeight='medium'>
                         Duration:
                       </Text>{' '}
-                      {coverage.temporalInterval.duration}
+                      {coverage.duration}
                     </Text>
                   )}
                 </React.Fragment>

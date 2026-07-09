@@ -4,7 +4,7 @@ import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { TagWithUrl } from 'src/components/tag-with-url';
 
-interface SearchableItemsProps extends FlexProps {
+interface SearchableItemsProps extends Omit<FlexProps, 'onToggle'> {
   items: {
     name: string;
     value: string;
@@ -114,6 +114,7 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
           variant='link'
           justifyContent='flex-end'
           m={1}
+          color={`${colorScheme}.500`}
           onClick={toggleLimit}
         >
           {buttonLabel}

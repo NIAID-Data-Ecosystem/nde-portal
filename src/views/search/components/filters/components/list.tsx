@@ -10,7 +10,8 @@ import { VariableSizeList as List } from 'react-window';
 import { useDebounceValue } from 'usehooks-ts';
 import { SearchInput } from 'src/components/search-input';
 import { Checkbox } from './checkbox';
-import { FacetTermWithDetails, FilterConfig, FilterItem } from '../types';
+import { FilterTermType, FilterItem, FilterConfig } from '../types';
+import { SHOW_FILTER_ANY_NO_EXCLUSIVITY } from 'src/utils/feature-flags';
 
 // VirtualizedList component to render the list of filter terms
 const VirtualizedList = React.memo(
@@ -25,7 +26,7 @@ const VirtualizedList = React.memo(
     const listRef = useRef<any>();
     const itemRefs = useRef<number[]>(Array(items.length).fill(DEFAULT_SIZE));
     const setItemSize = useCallback((index: number, size: number) => {
-      listRef?.current?.resetAfterIndex(0);
+      listRef?.current?.resetAfterIndex?.(0);
 
       itemRefs.current[index] = size;
     }, []);
@@ -125,14 +126,14 @@ export const sortTerms = (terms: FilterItem[], selectedFilters: string[]) => {
       return a.term.includes('_exists_') ? -1 : 1;
 
     // Sort by count in descending order
-    if (a.count !== b.count) return b.count - a.count;
+    if (a.count !== b.count) return (b.count ?? 0) - (a.count ?? 0);
 
     return a.label.localeCompare(b.label, undefined, { sensitivity: 'base' });
   });
 };
 
 export const groupTerms = (
-  terms: FacetTermWithDetails[],
+  terms: FilterTermType[],
   selectedFilters: string[],
   groupOrder?: FilterConfig['groupBy'],
 ) => {
@@ -204,7 +205,7 @@ export const groupTerms = (
 // Define the props interface for the FiltersList component
 interface FiltersListProps {
   colorScheme: string;
-  terms: FacetTermWithDetails[];
+  terms: FilterTermType[];
   searchPlaceholder: string;
   selectedFilters: string[];
   handleSelectedFilters: (arg: string[]) => void;
@@ -222,8 +223,37 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
     isUpdating,
     searchPlaceholder,
     selectedFilters,
-    terms,
+    terms: resultTerms,
   }) => {
+    // filter out terms that are undefined or null or empty strings
+    const terms = useMemo(() => {
+      const filteredTerms =
+        resultTerms?.filter(
+          term =>
+            term.term !== undefined && term.term !== null && term.term !== '',
+        ) || [];
+
+      // Behind the SHOW_FILTER_ANY_NO_EXCLUSIVITY feature flag: until
+      // approved for production, checking "Any"/"No" does not hide the
+      // other options for this filter.
+      if (!SHOW_FILTER_ANY_NO_EXCLUSIVITY) {
+        return filteredTerms;
+      }
+
+      // If the user has checked "Any <filter>" (_exists_) or
+      // "No <filter>" (-_exists_), the other facet values (and the opposite
+      // exists/not-exists option) are no longer relevant to choose from, so
+      // hide them and only show the one option the user selected.
+      if (selectedFilters.includes('_exists_')) {
+        return filteredTerms.filter(term => term.term === '_exists_');
+      }
+      if (selectedFilters.includes('-_exists_')) {
+        return filteredTerms.filter(term => term.term === '-_exists_');
+      }
+
+      return filteredTerms;
+    }, [resultTerms, selectedFilters]);
+
     const [searchTerm, setSearchTerm] = useState('');
     const [debouncedSearchTerm] = useDebounceValue(searchTerm, 300);
 
@@ -250,7 +280,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
     return (
       <>
         {/* Search through filter terms */}
-        <Box px={4} pt={4} pb={2}>
+        <Box p={2} pt={4}>
           {!isLoading && !isUpdating && !terms?.length ? (
             <Text fontStyle='italic' color='gray.800' mt={1} textAlign='center'>
               No results with {config.name.toLocaleLowerCase()} information.

@@ -5,7 +5,11 @@ import { getMetadataNameByDotfield } from '../advanced-search/utils/query-helper
 // Use the same list of required and recommended fields
 // https://github.com/NIAID-Data-Ecosystem/nde-crawlers/blob/main/biothings-hub/files/nde-hub/scores.py
 export const getMetadataListByType = (type: FormattedResource['@type']) => {
-  return METADATA_COMPLETENESS_FIELDS[type] || [];
+  return (
+    METADATA_COMPLETENESS_FIELDS[
+      type as keyof typeof METADATA_COMPLETENESS_FIELDS
+    ] ?? []
+  );
 };
 
 export const getTooltipDetails = (fields: string[]) => {

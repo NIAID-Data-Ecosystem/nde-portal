@@ -27,7 +27,11 @@ export const ConditionsOfAccess = ({
     <BadgeWithTooltip
       colorScheme={getColorScheme(conditionsOfAccess)}
       value={transformConditionsOfAccessLabel(conditionsOfAccess)}
-      tooltipLabel={property?.description[type]}
+      tooltipLabel={
+        property?.description?.[
+          type as keyof (typeof property)['description']
+        ] || ''
+      }
       {...props}
     />
   );
