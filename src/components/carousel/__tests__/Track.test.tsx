@@ -445,7 +445,10 @@ describe('Track', () => {
   });
 
   it('handles horizontal wheel events for navigation', () => {
-    renderWithChakra(<Track {...getDefaultProps()} />);
+    const { container } = renderWithChakra(<Track {...getDefaultProps()} />);
+
+    // The wheel listener is attached to the track element
+    const trackElement = container.firstChild as HTMLElement;
 
     // Create a horizontal wheel event (like trackpad horizontal scroll)
     const wheelEvent = new WheelEvent('wheel', {
@@ -454,15 +457,17 @@ describe('Track', () => {
       bubbles: true,
     });
 
-    // Dispatch the wheel event on the document
-    fireEvent(document, wheelEvent);
+    // Dispatch the wheel event on the track element
+    fireEvent(trackElement, wheelEvent);
 
     // Should update activeItem based on scroll direction
     expect(mockSetActiveItem).toHaveBeenCalled();
   });
 
   it('ignores wheel events that are primarily vertical', () => {
-    renderWithChakra(<Track {...getDefaultProps()} />);
+    const { container } = renderWithChakra(<Track {...getDefaultProps()} />);
+
+    const trackElement = container.firstChild as HTMLElement;
 
     // Create a mostly vertical wheel event (normal page scrolling)
     const wheelEvent = new WheelEvent('wheel', {
@@ -471,14 +476,16 @@ describe('Track', () => {
       bubbles: true,
     });
 
-    fireEvent(document, wheelEvent);
+    fireEvent(trackElement, wheelEvent);
 
     // Should ignore this event since |deltaY| > |deltaX|
     expect(mockSetActiveItem).not.toHaveBeenCalled();
   });
 
   it('prevents default behavior for horizontal wheel events', () => {
-    renderWithChakra(<Track {...getDefaultProps()} />);
+    const { container } = renderWithChakra(<Track {...getDefaultProps()} />);
+
+    const trackElement = container.firstChild as HTMLElement;
 
     // Create wheel event with preventDefault spy
     const wheelEvent = new WheelEvent('wheel', {
@@ -488,7 +495,7 @@ describe('Track', () => {
     const preventDefaultSpy = jest.spyOn(wheelEvent, 'preventDefault');
     const stopPropagationSpy = jest.spyOn(wheelEvent, 'stopPropagation');
 
-    fireEvent(document, wheelEvent);
+    fireEvent(trackElement, wheelEvent);
 
     // Should prevent default and stop propagation for horizontal scrolling
     expect(preventDefaultSpy).toHaveBeenCalled();
@@ -525,9 +532,16 @@ describe('Track', () => {
   });
 
   it('removes event listeners on unmount', () => {
-    // Spy on document event listener methods to verify cleanup
-    const addEventListenerSpy = jest.spyOn(document, 'addEventListener');
-    const removeEventListenerSpy = jest.spyOn(document, 'removeEventListener');
+    // Spy on EventTarget so both document-level (keydown/mousedown) and
+    // element-level (wheel) listeners are captured.
+    const addEventListenerSpy = jest.spyOn(
+      EventTarget.prototype,
+      'addEventListener',
+    );
+    const removeEventListenerSpy = jest.spyOn(
+      EventTarget.prototype,
+      'removeEventListener',
+    );
 
     const { unmount } = renderWithChakra(<Track {...getDefaultProps()} />);
 
