@@ -7,6 +7,47 @@ import { APPLY_DEFAULT_DATE_FILTER_KEY } from 'src/views/search/config/defaultQu
 // Matches: " OR ", OR, " TO ", TO (used in both date ranges and multi-value filters)
 const VALUE_SPLIT_PATTERN = /(?:" OR ")| OR |(?:" TO ")| TO /;
 
+/**
+ * Reserved filter key for a cross-field OR group. Its value is an array of
+ * single-field filter objects that are OR-ed together across different fields,
+ * e.g. `{ _or: [{ 'includedInDataCatalog.name': ['x'] }, { _id: ['y'] }] }`
+ * serializes to `(includedInDataCatalog.name:("x") OR _id:("y"))`.
+ *
+ * This is the only cross-field OR the helpers support and is entirely opt-in:
+ * nothing produces this key unless it is explicitly set, so existing filters
+ * are unaffected.
+ */
+export const OR_FILTER_KEY = '_or';
+
+// A leading `field:` prefix (dotted / underscored / @-prefixed field names).
+// Used only to recognize a serialized `_or` group on parse.
+const FIELD_PREFIX = /^[@\w][\w.@-]*:/;
+
+// Split a string on a separator that appears at paren-depth 0 only, leaving
+// separators nested inside `(...)` untouched. Lets us detect a cross-field OR
+// group (`a:("x") OR b:("y")`) without splitting a single field's internal
+// multi-value OR (`a:("x" OR "y")`).
+const splitTopLevel = (input: string, separator: string): string[] => {
+  const result: string[] = [];
+  let depth = 0;
+  let current = '';
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i];
+    if (char === '(') depth++;
+    else if (char === ')') depth = Math.max(0, depth - 1);
+
+    if (depth === 0 && input.startsWith(separator, i)) {
+      result.push(current);
+      current = '';
+      i += separator.length - 1;
+      continue;
+    }
+    current += char;
+  }
+  result.push(current);
+  return result;
+};
+
 const coerceFilterValues = (values: unknown): SelectedFilterValueType[] => {
   if (Array.isArray(values)) {
     return values;
@@ -44,6 +85,21 @@ export const queryFilterObject2String = (
       const values = coerceFilterValues(rawValues);
       if (values.length === 0) {
         return null;
+      }
+
+      // Cross-field OR group: recurse each single-field entry, drop the single
+      // outer paren layer it adds, and OR the segments inside one paren group.
+      // Segments keep their own `field:` prefix, which is how the parser tells
+      // this apart from a single field's multi-value OR.
+      if (filterName === OR_FILTER_KEY) {
+        const orParts = values
+          .filter(
+            (v): v is { [key: string]: string[] } => typeof v === 'object',
+          )
+          .map(obj => queryFilterObject2String(obj))
+          .filter((s): s is string => !!s)
+          .map(s => s.replace(/^\((.*)\)$/, '$1'));
+        return orParts.length > 0 ? `(${orParts.join(' OR ')})` : null;
       }
 
       const stringValues = values.filter(
@@ -110,6 +166,24 @@ export const queryFilterString2Object = (
     let cleanPart = part;
     if (cleanPart.startsWith('(') && cleanPart.endsWith(')')) {
       cleanPart = cleanPart.slice(1, -1);
+    }
+
+    // Cross-field OR group (inverse of the `OR_FILTER_KEY` serialization):
+    //   includedInDataCatalog.name:("X") OR _id:("Y")
+    // Every top-level OR segment carries its own `field:` prefix — unlike a
+    // single field's multi-value OR (one prefix-less segment) or an _exists_
+    // group (later segments start with `(`), so neither is misread here.
+    const orSegments = splitTopLevel(cleanPart, ' OR ').map(s => s.trim());
+    if (
+      orSegments.length > 1 &&
+      orSegments.every(seg => FIELD_PREFIX.test(seg))
+    ) {
+      acc[OR_FILTER_KEY] = orSegments
+        .map(seg => queryFilterString2Object(seg))
+        .filter(
+          (o): o is SelectedFilterType => !!o,
+        ) as SelectedFilterValueType[];
+      return acc;
     }
 
     // Split on first colon to separate key from value

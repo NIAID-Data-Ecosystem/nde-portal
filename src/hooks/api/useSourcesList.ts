@@ -2,7 +2,10 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchMetadata } from './helpers';
 import { Metadata, MetadataSource } from './types';
 import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
-import { queryFilterObject2String } from 'src/views/search/components/filters';
+import {
+  OR_FILTER_KEY,
+  queryFilterObject2String,
+} from 'src/views/search/components/filters';
 
 export type SourceType =
   | 'Dataset Repository'
@@ -122,26 +125,22 @@ export const buildSearchURL = (item: Source): string => {
   if (!catalogName) return '';
   const types = item.type || [];
 
-  const params = new URLSearchParams();
-  params.set('applyDefaultDate', 'false');
+  // When the source maps to a resource catalog, OR-in the catalog record by
+  // `_id` via an `_or` group (a cross-field OR the filter helpers round-trip);
+  // otherwise just scope by catalog name.
+  const filters = item.resourceCatalogIdentifier
+    ? queryFilterObject2String({
+        [OR_FILTER_KEY]: [
+          { 'includedInDataCatalog.name': [catalogName] },
+          { _id: [item.resourceCatalogIdentifier] },
+        ],
+      })
+    : queryFilterObject2String({ 'includedInDataCatalog.name': [catalogName] });
 
-  if (item.resourceCatalogIdentifier) {
-    // A cross-field OR (name OR _id) can't go through the `filters` param: the
-    // search page round-trips it via queryFilterString2Object/Object2String,
-    // which only AND across fields. Put it in `q` instead — a raw Lucene query
-    // where `encodeString` preserves recognized field queries and the OR.
-    params.set(
-      'q',
-      `includedInDataCatalog.name:"${catalogName}" OR _id:${item.resourceCatalogIdentifier}`,
-    );
-  } else {
-    // Single-field scope round-trips cleanly, so keep it as a filter.
-    params.set('q', '');
-    const filters = queryFilterObject2String({
-      'includedInDataCatalog.name': [catalogName],
-    });
-    if (filters) params.set('filters', filters);
-  }
+  const params = new URLSearchParams();
+  params.set('q', '');
+  if (filters) params.set('filters', filters);
+  params.set('applyDefaultDate', 'false');
 
   // Preselect the tab based on the source's repository type.
   if (types.includes('Computational Tool Repository')) {

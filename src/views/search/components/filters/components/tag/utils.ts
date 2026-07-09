@@ -12,6 +12,7 @@ import {
   APIResourceType,
   formatAPIResourceTypeForDisplay,
 } from 'src/utils/formatting/formatResourceType';
+import { OR_FILTER_KEY } from '../../utils/query-string';
 
 // Constants
 const DISPLAY_NAME_SEPARATOR = ' | ';
@@ -172,6 +173,44 @@ const createValueTags = (
     .filter((tag): tag is TagInfo => tag !== null);
 };
 
+// Creates a single tag for a cross-field OR group (`OR_FILTER_KEY`). Labels it
+// from the first entry that maps to a known facet (falling back to the first
+// entry), so e.g. `[{ 'includedInDataCatalog.name': ['acd@NIAID'] }, { _id: [..] }]`
+// renders as "Sources: acd@NIAID". The whole group is removed as one unit.
+const createOrGroupTag = (
+  values: SelectedFilterValueType[],
+  configMap: Record<string, FilterConfig>,
+): TagInfo[] => {
+  const entries = values.filter((v): v is { [key: string]: string[] } =>
+    isObjectValue(v),
+  );
+  if (entries.length === 0) {
+    return [];
+  }
+
+  const primary =
+    entries.find(entry => {
+      const field = Object.keys(entry)[0];
+      return Boolean(configMap[field] || schema?.[field]);
+    }) ?? entries[0];
+
+  const field = Object.keys(primary)[0];
+  const displayValue = String(primary[field]?.[0] ?? '');
+  if (!displayValue) {
+    return [];
+  }
+
+  return [
+    {
+      key: `${OR_FILTER_KEY}-${field}`,
+      filterKey: OR_FILTER_KEY,
+      name: generateTagName(field, configMap[field]),
+      value: values,
+      displayValue,
+    },
+  ];
+};
+
 // Exported functions
 
 // Generates a human-readable name for a filter key
@@ -191,6 +230,11 @@ export const generateTags = (
 
     if (tagValues.length === 0) {
       return [];
+    }
+
+    // Handle a cross-field OR group as a single tag
+    if (key === OR_FILTER_KEY) {
+      return createOrGroupTag(tagValues, configMap);
     }
 
     // Handle date ranges as a single tag
