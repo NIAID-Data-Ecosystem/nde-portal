@@ -47,6 +47,7 @@ export interface MetadataSource {
     measurementTechnique?: DefinedTerm[];
     name: string;
     parentCollection?: { id: string };
+    sameAs?: string | string[];
     schedule?: string;
     schema: Object | null;
     spatialCoverage?: SpatialCoverage[];

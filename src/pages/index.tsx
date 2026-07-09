@@ -47,6 +47,7 @@ import {
 } from 'src/utils/formatting/formatConditionsOfAccess';
 import { formatDomainName } from 'src/views/home/components/TableWithSearch/helpers';
 import { buildItemUrl } from 'src/views/repository-matcher/utils';
+import { useSourcesList } from 'src/hooks/api/useSourcesList';
 
 const Home: NextPage<{
   data: {
@@ -80,11 +81,11 @@ const Home: NextPage<{
     isLoading: repositoriesIsLoading,
     data: repositories,
     error: repositoriesError,
-  } = useRepoData({ refetchOnWindowFocus: false, refetchOnMount: false });
+  } = useSourcesList({ refetchOnWindowFocus: false, refetchOnMount: false });
 
   const tableData = useMemo(
     () =>
-      [...(resourceCatalogs || []), ...(repositories || [])].map(item => {
+      (repositories || []).map(item => {
         const domain = item?.genre
           ? formatDomainName(item.genre).sort((a, b) => a.localeCompare(b))
           : '';
@@ -98,7 +99,7 @@ const Home: NextPage<{
           ),
           domain,
           type: item.type,
-          url: buildItemUrl(item),
+          url: item.searchURL,
         };
       }),
     [repositories, resourceCatalogs],
