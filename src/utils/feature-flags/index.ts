@@ -71,3 +71,9 @@ export const SHOW_RETIRED_RESOURCE_CATALOG_UI = !isProd;
 // checking a normal value while "Any"/"No" is active drops "Any"/"No". To
 // enable in production, set this flag to `true`.
 export const SHOW_FILTER_ANY_NO_EXCLUSIVITY = !isProd;
+
+// Rename the "Any <filter>" (_exists_) and "No <filter>" (-_exists_) filter
+// options and their tags to "Specified" / "Unspecified" in the search filters
+// panel in non-production environments. To enable in
+// production, set this flag to `true`.
+export const SHOW_FILTER_SPECIFIED_UNSPECIFIED_LABELS = !isProd;

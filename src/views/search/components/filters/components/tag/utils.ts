@@ -13,6 +13,7 @@ import {
   formatAPIResourceTypeForDisplay,
 } from 'src/utils/formatting/formatResourceType';
 import { OR_FILTER_KEY } from '../../utils/query-string';
+import { SHOW_FILTER_SPECIFIED_UNSPECIFIED_LABELS } from 'src/utils/feature-flags';
 
 // Constants
 const DISPLAY_NAME_SEPARATOR = ' | ';
@@ -86,7 +87,11 @@ const getDisplayValue = (
   // Handle object values (exists/not exists queries)
   if (isObjectValue(value)) {
     const objectKey = Object.keys(value)[0];
-    return objectKey?.startsWith(NOT_EXISTS_PREFIX) ? 'None' : 'Any';
+    const isNotExists = objectKey?.startsWith(NOT_EXISTS_PREFIX);
+    if (SHOW_FILTER_SPECIFIED_UNSPECIFIED_LABELS) {
+      return isNotExists ? 'Unspecified' : 'Specified';
+    }
+    return isNotExists ? 'None' : 'Any';
   }
 
   // Handle date ranges (skip subsequent values in range)
