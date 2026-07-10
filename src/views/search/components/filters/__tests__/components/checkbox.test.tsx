@@ -51,16 +51,29 @@ describe('filters/components/checkbox', () => {
     expect(screen.getByText('Common')).toBeInTheDocument();
     expect(screen.getByText('Scientific')).toBeInTheDocument();
 
+    // With SHOW_FILTER_SPECIFIED_UNSPECIFIED_LABELS enabled (default outside
+    // production), exists terms render as a single word without the filter name.
     rerender(
       <Checkbox
         term='_exists_'
         label='Any'
         count={4}
         isLoading={false}
-        filterName='Date'
+        filterName='Keywords'
       />,
     );
-    expect(screen.getByText('Any date')).toBeInTheDocument();
+    expect(screen.getByText('Specified')).toBeInTheDocument();
+
+    rerender(
+      <Checkbox
+        term='-_exists_'
+        label='No'
+        count={4}
+        isLoading={false}
+        filterName='Keywords'
+      />,
+    );
+    expect(screen.getByText('Unspecified')).toBeInTheDocument();
   });
 
   it('tracks GTM event for exists terms only', () => {
