@@ -1,8 +1,7 @@
 import { useMemo } from 'react';
-import { useRepoData } from 'src/hooks/api/useRepoData';
-import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
 import { REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
 import { RepositoryMatcherItem } from '../types';
+import { useSourcesList } from 'src/hooks/api/useSourcesList';
 
 export type RepositoryMatcherRow = {
   _id: string;
@@ -29,47 +28,31 @@ export const defaultSearchValue = (
 };
 
 export const useRepositoryMatcherData = (fields: string[] = ['@type']) => {
+  /****** Repository + Resource Catalog Data ******/
+  // `useSourcesList` merges standalone resource catalogs into the metadata
+  // sources list until the two data sources are consolidated on one endpoint.
+  // Pass the requested `fields` through so resource catalogs carry the columns
+  // (e.g. `creativeWorkStatus`) the matcher table filters and renders on.
   const {
-    isLoading: resourceCatalogsIsLoading,
-    data: resourceCatalogs,
-    error: resourceCatalogsError,
-  } = useResourceCatalogs({ fields });
-
-  const {
-    isLoading: repositoriesIsLoading,
-    data: repositories,
-    error: repositoriesError,
-  } = useRepoData({ refetchOnWindowFocus: false, refetchOnMount: false });
-
-  const isLoading = resourceCatalogsIsLoading || repositoriesIsLoading;
+    isLoading,
+    error,
+    data: sources,
+  } = useSourcesList(
+    { refetchOnWindowFocus: false, refetchOnMount: false },
+    fields,
+  );
 
   const data = useMemo<RepositoryMatcherRow[]>(() => {
     if (isLoading) return [];
-    const combined: RepositoryMatcherItem[] = [
-      ...(resourceCatalogs || []),
-      ...(repositories || []),
-    ];
-    // Dedupe by _id — the same entity (e.g. VEuPathDB) can appear in both
-    // resource catalogs and repositories. First occurrence wins.
-    const seen = new Set<string>();
     const rows: RepositoryMatcherRow[] = [];
-    combined
+    (sources || [])
       .filter(item => {
         // Exclude items that have creativeWorkStatus of 'Retired' or 'Not Accepting Data'. If not specified, include all items.
-        const statusIsAcceptingData =
-          item?.creativeWorkStatus === 'Accepting Data';
-
-        // Exclude items with type "Data Repository" or "Sample Repository"
-        const isDataOrSampleRepo =
-          item['type'].includes('Data Repository') ||
-          item['type'].includes('Sample Repository');
-
-        return statusIsAcceptingData && !isDataOrSampleRepo;
+        // Feature-flagged "Data Repository" / "Sample Repository" types are
+        // already filtered out upstream in `useSourcesList`.
+        return item?.creativeWorkStatus === 'Accepting Data';
       })
-      .forEach((item, idx) => {
-        const id = item._id || `__no-id-${idx}`;
-        if (seen.has(id)) return;
-        seen.add(id);
+      .forEach(item => {
         const row = {
           _id: item._id || '',
           // _raw: item,
@@ -90,11 +73,11 @@ export const useRepositoryMatcherData = (fields: string[] = ['@type']) => {
         rows.push(row);
       });
     return rows;
-  }, [resourceCatalogs, repositories, isLoading]);
+  }, [sources, isLoading]);
 
   return {
     data,
     isLoading,
-    error: resourceCatalogsError || repositoriesError,
+    error,
   };
 };

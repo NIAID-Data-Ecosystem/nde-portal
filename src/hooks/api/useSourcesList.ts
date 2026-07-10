@@ -9,10 +9,15 @@ import {
   OR_FILTER_KEY,
   queryFilterObject2String,
 } from 'src/views/search/components/filters';
+import {
+  SHOW_DATA_COLLECTIONS_TAB,
+  SHOW_SAMPLES_TAB,
+} from 'src/utils/feature-flags';
 
 /**
- * Fields fetched for standalone resource catalogs so they render alongside the
- * metadata-derived sources in the sources list/table.
+ * Default fields fetched for standalone resource catalogs so they render
+ * alongside the metadata-derived sources in the sources list/table. Callers can
+ * request additional fields via `useSourcesList`'s `resourceCatalogFields` arg.
  */
 const RESOURCE_CATALOG_FIELDS = [
   '_id',
@@ -41,6 +46,14 @@ export type Source = Omit<MetadataSource['sourceInfo'], 'type'> & {
 };
 
 /**
+ * A "Data Repository" / "Sample Repository" source is hidden unless its
+ * corresponding search tab is enabled via feature flag.
+ */
+const isHiddenSourceType = (source: Source): boolean =>
+  (!SHOW_DATA_COLLECTIONS_TAB && source.type.includes('Data Repository')) ||
+  (!SHOW_SAMPLES_TAB && source.type.includes('Sample Repository'));
+
+/**
  * Parse the `resourceCatalogIdentifier` from a `sameAs` value that points to a
  * resource catalog, e.g. `https://data.niaid.nih.gov/resources?id=dde_8b9a4aa0d78d0659`
  * returns `dde_8b9a4aa0d78d0659`. Only the `id` query param is used, so the base
@@ -65,7 +78,10 @@ const getResourceCatalogIdentifier = (
   return undefined;
 };
 
-export function useSourcesList(options: any = {}) {
+export function useSourcesList(
+  options: any = {},
+  resourceCatalogFields: string[] = [], // [TO DO]: Remove once resource catalogs are served from the metadata endpoint
+) {
   const metadataQuery = useQuery<Metadata | undefined, Error, Source[]>({
     queryKey: ['metadata'],
     queryFn: async () => await fetchMetadata(),
@@ -127,14 +143,18 @@ export function useSourcesList(options: any = {}) {
     ...options,
   });
 
-  // TEMPORARY: sources and resource catalogs live on separate endpoints. Until
+  // [TO DO] TEMPORARY: sources and resource catalogs live on separate endpoints. Until
   // they are consolidated onto the metadata endpoint `fetchMetadata` uses, fetch
   // resource catalogs separately and merge in any the metadata sources list
   // doesn't already represent (via `resourceCatalogIdentifier`). When the data
   // is consolidated this whole block — and the `useResourceCatalogs` call — can
   // be removed and `metadataQuery` returned directly.
   const resourceCatalogsQuery = useResourceCatalogs({
-    fields: RESOURCE_CATALOG_FIELDS,
+    // Callers can request extra fields (e.g. `creativeWorkStatus`) on top of
+    // the defaults; dedupe so a repeated field isn't fetched twice.
+    fields: Array.from(
+      new Set([...RESOURCE_CATALOG_FIELDS, ...resourceCatalogFields]),
+    ),
   });
 
   const data = useMemo<Source[]>(() => {
@@ -152,7 +172,9 @@ export function useSourcesList(options: any = {}) {
       .filter(catalog => catalog._id && !existingCatalogIds.has(catalog._id))
       .map(resourceCatalogToSource);
 
-    return [...sources, ...additions];
+    return [...sources, ...additions].filter(
+      source => !isHiddenSourceType(source),
+    );
   }, [metadataQuery.data, resourceCatalogsQuery.data]);
 
   return {

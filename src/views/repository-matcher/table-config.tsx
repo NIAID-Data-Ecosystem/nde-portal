@@ -648,21 +648,21 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
           description:
             ' A manually curated record about the repository/resource/portal etc. itself. Repositories displayed only as Resource Catalogs in the Discovery Portal are not sources of record ingest at this time.',
         },
-        // {
-        //   label: 'Computational Tool Repository',
-        //   description:
-        //   'A repository which holds Computational Tool records. Tool metadata records are mapped and directly ingested into the Discovery Portal on a one-to-one basis.',
-        // },
-        // {
-        //   label: 'Sample Repository',
-        //   description:
-        //     'A repository which holds biological specimen or sample records. Metadata records about samples are mapped and directly ingested into the Discovery Portal on a one-to-one basis.',
-        // },
-        // {
-        //   label: 'Data Repository',
-        //   description:
-        //     'A repository which holds other types of records. Records of a searchable type are aggregated from the original source and used to create Data Collection records in the Discovery Portal. Multiple records submitted to a Data Repository may end up as a single Data Collection record in the Discovery Portal.',
-        // },
+        {
+          label: 'Computational Tool Repository',
+          description:
+            'A repository which holds Computational Tool records. Tool metadata records are mapped and directly ingested into the Discovery Portal on a one-to-one basis.',
+        },
+        {
+          label: 'Sample Repository',
+          description:
+            'A repository which holds biological specimen or sample records. Metadata records about samples are mapped and directly ingested into the Discovery Portal on a one-to-one basis.',
+        },
+        {
+          label: 'Data Repository',
+          description:
+            'A repository which holds other types of records. Records of a searchable type are aggregated from the original source and used to create Data Collection records in the Discovery Portal. Multiple records submitted to a Data Repository may end up as a single Data Collection record in the Discovery Portal.',
+        },
       ],
     },
   },

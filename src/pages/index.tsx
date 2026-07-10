@@ -25,7 +25,6 @@ import HOMEPAGE_COPY from 'configs/homepage.json';
 import HOME_QUERIES from 'configs/queries/home-queries.json';
 import NextLink from 'next/link';
 import { FaMagnifyingGlass, FaRegEnvelope, FaGithub } from 'react-icons/fa6';
-import { useRepoData } from 'src/hooks/api/useRepoData';
 import { LandingPageCards } from 'src/views/home/components/LandingPageCards/';
 import {
   NewsCarousel,
@@ -45,7 +44,6 @@ import {
   transformConditionsOfAccessLabel,
 } from 'src/utils/formatting/formatConditionsOfAccess';
 import { formatDomainName } from 'src/views/home/components/TableWithSearch/helpers';
-import { buildItemUrl } from 'src/views/repository-matcher/utils';
 import { useSourcesList } from 'src/hooks/api/useSourcesList';
 
 const Home: NextPage<{
