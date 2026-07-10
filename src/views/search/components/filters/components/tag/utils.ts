@@ -215,6 +215,9 @@ const createOrGroupTag = (
 
 // Generates a human-readable name for a filter key
 export const generateTagName = (key: string, config?: FilterConfig): string => {
+  if (key === '_id') {
+    return 'ID';
+  }
   return config?.name ?? schema?.[key]?.name ?? key;
 };
 
