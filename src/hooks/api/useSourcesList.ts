@@ -4,6 +4,7 @@ import { fetchMetadata } from './helpers';
 import { Metadata, MetadataSource } from './types';
 import { useResourceCatalogs } from './useResourceCatalogs';
 import { FormattedResource } from 'src/utils/api/types';
+import { getFundedByNIAID } from 'src/utils/helpers';
 import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
 import {
   OR_FILTER_KEY,
@@ -25,6 +26,7 @@ const RESOURCE_CATALOG_FIELDS = [
   'abstract',
   'collectionType',
   'conditionsOfAccess',
+  'description',
   'genre',
   'name',
   'url',
@@ -43,6 +45,18 @@ export type Source = Omit<MetadataSource['sourceInfo'], 'type'> & {
   resourceCatalogIdentifier?: string;
   /** Link to a `/search` scoped to this source's resources. */
   searchURL?: string;
+  /**
+   * Number of resources harvested from this source (`MetadataSource.stats`).
+   * Absent for resource catalogs, which carry no harvest stats.
+   */
+  numberOfRecords?: number;
+  /** Whether the source is funded by NIAID (derived from its name). */
+  isNiaidFunded?: boolean;
+  /**
+   * Latest release date, normalized to ISO from `MetadataSource.version`.
+   * Absent for resource catalogs.
+   */
+  dateModified?: string;
 };
 
 /**
@@ -78,6 +92,23 @@ const getResourceCatalogIdentifier = (
   return undefined;
 };
 
+/**
+ * Normalize a `MetadataSource.version` into an ISO date string. The version is
+ * either already ISO (contains `T`), a `YYYYMMDD` integer string, or absent.
+ * Returns `''` when it can't be interpreted as a date.
+ */
+const normalizeDateModified = (version?: string): string => {
+  if (!version) return '';
+  if (version.includes('T')) return version;
+  if (/^\d+$/.test(version)) {
+    return `${version.substring(0, 4)}-${version.substring(
+      4,
+      6,
+    )}-${version.substring(6, 8)}T00:00:00`;
+  }
+  return '';
+};
+
 export function useSourcesList(
   options: any = {},
   resourceCatalogFields: string[] = [], // [TO DO]: Remove once resource catalogs are served from the metadata endpoint
@@ -86,15 +117,16 @@ export function useSourcesList(
     queryKey: ['metadata'],
     queryFn: async () => await fetchMetadata(),
     select: (data: Metadata | undefined) => {
-      const sources = data?.src || [];
-      const repositories = Object.values(sources)
+      const sources = data?.src || {};
+      const repositories = Object.entries(sources)
         .filter(
-          source =>
+          ([, source]) =>
             source?.sourceInfo &&
             !Array.isArray(source.sourceInfo) &&
             source.sourceInfo.identifier,
         )
-        .map(({ sourceInfo }) => {
+        .map(([srcKey, metadataSource]) => {
+          const { sourceInfo, stats, version } = metadataSource;
           const {
             _id,
             identifier,
@@ -124,6 +156,11 @@ export function useSourcesList(
             type.push('Resource Catalog');
           }
 
+          // `stats` is keyed by the source's src key; fall back to the single
+          // value it usually holds.
+          const numberOfRecords =
+            stats?.[srcKey] ?? Object.values(stats ?? {})[0];
+
           const source = {
             ...sourceInfo,
             _id,
@@ -132,6 +169,9 @@ export function useSourcesList(
             type: type as SourceType[],
             name: resourceName,
             resourceCatalogIdentifier,
+            numberOfRecords,
+            isNiaidFunded: getFundedByNIAID(name || ''),
+            dateModified: normalizeDateModified(version),
           } as Source;
 
           // Link to a `/search` scoped to this source's resources.
@@ -198,10 +238,12 @@ const resourceCatalogToSource = (catalog: FormattedResource): Source => {
     identifier: id,
     name: catalog.name || id,
     type: ['Resource Catalog'],
+    isNiaidFunded: getFundedByNIAID(catalog.name || ''),
     // A standalone catalog is its own record, so scope search to it by `_id`.
     searchURL: buildResourceCatalogSearchURL(id),
-    // A search-API catalog record has no `schema`/`metadata_completeness` that
-    // the metadata `Source` shape carries, hence the widening cast.
+    // A search-API catalog record has no `schema`/`metadata_completeness`/`stats`
+    // that the metadata `Source` shape carries (so `numberOfRecords` and
+    // `dateModified` stay undefined here), hence the widening cast.
   } as unknown as Source;
 };
 

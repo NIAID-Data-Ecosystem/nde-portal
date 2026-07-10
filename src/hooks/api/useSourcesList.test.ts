@@ -111,6 +111,42 @@ describe('useSourcesList', () => {
     expect(params.get('filters')).toBe('(_id:("dde_new"))');
   });
 
+  it('enriches metadata sources with numberOfRecords, isNiaidFunded and dateModified', async () => {
+    mockFetchMetadata.mockResolvedValue({
+      src: {
+        immport: {
+          sourceInfo: {
+            identifier: 'immport',
+            name: 'ImmPort',
+            collectionType: 'Dataset Repository',
+          },
+          stats: { immport: 1234 },
+          version: '20240115',
+        },
+        // Missing stats/version — enrichment fields fall back safely.
+        repoA: metadata.src.repoA,
+      },
+    } as any);
+    setCatalogs({ data: undefined });
+
+    const { result } = renderHook(() => useSourcesList(), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    const data = result.current.data || [];
+
+    const immport = data.find(source => source.identifier === 'immport');
+    expect(immport?.numberOfRecords).toBe(1234);
+    expect(immport?.isNiaidFunded).toBe(true);
+    expect(immport?.dateModified).toBe('2024-01-15T00:00:00');
+
+    const repoA = data.find(source => source.identifier === 'repoA');
+    expect(repoA?.numberOfRecords).toBeUndefined();
+    expect(repoA?.isNiaidFunded).toBe(false);
+    expect(repoA?.dateModified).toBe('');
+  });
+
   it('returns only the metadata sources when there are no resource catalogs', async () => {
     mockFetchMetadata.mockResolvedValue(metadata as any);
     setCatalogs({ data: undefined });

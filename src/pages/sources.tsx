@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import { Box, Button, Flex, Text } from '@chakra-ui/react';
@@ -10,10 +10,10 @@ import {
 } from 'src/components/page-container';
 import { Main } from 'src/views/sources';
 import { Error, ErrorCTA } from 'src/components/error';
-import { Metadata, MetadataSource } from 'src/hooks/api/types';
+import { Metadata } from 'src/hooks/api/types';
 import { getQueryStatusError } from 'src/components/error/utils';
 import { fetchMetadata } from 'src/hooks/api/helpers';
-import { getFundedByNIAID } from 'src/utils/helpers';
+import { Source, useSourcesList } from 'src/hooks/api/useSourcesList';
 import {
   Label,
   Sidebar,
@@ -23,26 +23,35 @@ import { formatDate } from 'src/utils/api/helpers';
 import { BadgeWithTooltip } from 'src/components/badges/components/BadgeWithTooltip';
 import { fetchSourceInformationFromGithub } from 'src/views/sources/helpers';
 
-export interface SourceResponse extends MetadataSource {
+/** Build-time GitHub commit info, keyed by source identifier. */
+interface GithubSourceInfo {
+  id: string;
   dateCreated?: string;
-  key: string;
-  id: MetadataSource['sourceInfo']['identifier'];
-  slug: string;
-  name: MetadataSource['sourceInfo']['name'];
-  description: MetadataSource['sourceInfo']['description'];
-  dateModified: MetadataSource['version'];
-  numberOfRecords: number;
-  schema: MetadataSource['sourceInfo']['schema'];
-  url: MetadataSource['sourceInfo']['url'];
-  isNiaidFunded?: boolean;
 }
+
+/** Format a source anchor from its `_id` field. */
+const formatSourceAnchor = (source: Source) => {
+  return (source._id || '').replace(/\s+/g, '-');
+};
+
+/**
+ * A `Source` from `useSourcesList` enriched with page-level, presentational
+ * fields: an anchor `slug` and the build-time GitHub `dateCreated`
+ * ("First Released"). Resource catalogs carry neither a GitHub record nor the
+ * metadata-only fields (`schema`, `numberOfRecords`, ...), so those stay
+ * undefined.
+ */
+export type SourceDisplayItem = Source & {
+  slug: string;
+  dateCreated?: string;
+};
 
 interface SourcesProps {
   // Optional: build-time prefetch may be absent if the API was unreachable
   // during the static export. The client-side query recovers in that case.
   data?: {
     githubInfo: {
-      data: SourceResponse[];
+      data: GithubSourceInfo[];
       error: { status: number; message: string; type: string } | null;
     };
     sourceMetadata: {
@@ -54,62 +63,38 @@ interface SourcesProps {
 const Sources: NextPage<SourcesProps> = ({ data }) => {
   const router = useRouter();
 
-  // Fetch metadata stats from API.
+  // Source list (repositories + resource catalogs).
   const {
-    data: metadata,
-    isFetching: isLoading,
+    data: sources,
+    isLoading,
     error: metadataError,
-  } = useQuery({
+  } = useSourcesList({ refetchOnWindowFocus: false });
+  console.log(sources);
+  // Build metadata (API version + last-harvested date). Shares the cached
+  // ['metadata'] query with `useSourcesList`, so this adds no network request.
+  const { data: meta } = useQuery({
     queryKey: ['metadata'],
     queryFn: fetchMetadata,
     placeholderData: () => data?.sourceMetadata?.data,
-    select: res => {
-      const sources = res.src;
-      const sourceDetails = Object.entries(sources).map(([key, source]) => {
-        const id = (source.sourceInfo && source.sourceInfo.identifier) || key;
-        const name = (source?.sourceInfo && source?.sourceInfo?.name) || key;
-        const githubInfo = data?.githubInfo.data.find(item => {
-          return item.id === id;
-        });
-
-        // in place for when we have a dateModified field in the API that is not in iso format.
-        const dateModified = source?.version?.includes('T')
-          ? source.version
-          : /^\d+$/.test(source.version)
-          ? `${source.version.substring(0, 4)}-${source.version.substring(
-              4,
-              6,
-            )}-${source.version.substring(6, 8)}T00:00:00`
-          : '';
-
-        return {
-          ...githubInfo,
-          ...source,
-          key,
-          id,
-          slug: name.replace(/\s+/g, '-'),
-          name,
-          description:
-            (source?.sourceInfo && source?.sourceInfo?.description) || '',
-          dateModified,
-          numberOfRecords: source?.stats?.[key] || 0,
-          schema: (source?.sourceInfo && source?.sourceInfo?.schema) || null,
-          url: (source?.sourceInfo && source?.sourceInfo?.url) || '',
-          isNiaidFunded: getFundedByNIAID(source.sourceInfo?.name),
-        };
-      });
-      return {
-        meta: {
-          version: res.build_version,
-          date: res.build_date,
-        },
-        sources: sourceDetails.sort((a: { name: string }, b: { name: any }) =>
-          a.name.localeCompare(b.name),
-        ),
-      };
-    },
+    select: res => ({ version: res.build_version, date: res.build_date }),
     refetchOnWindowFocus: false,
   });
+
+  // Enrich each source with the anchor `slug` and the build-time GitHub
+  // `dateCreated`, then sort alphabetically by name.
+  const sourceItems = useMemo<SourceDisplayItem[]>(() => {
+    const githubInfo = data?.githubInfo?.data || [];
+    return (sources || [])
+      .map(source => {
+        const github = githubInfo.find(item => item.id === source.identifier);
+        return {
+          ...source,
+          slug: formatSourceAnchor(source),
+          dateCreated: github?.dateCreated,
+        };
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [sources, data?.githubInfo?.data]);
 
   return (
     <PageContainer
@@ -149,7 +134,7 @@ const Sources: NextPage<SourcesProps> = ({ data }) => {
           <>
             <Sidebar aria-label='Navigation for data sources.'>
               {!isLoading &&
-                metadata?.sources.map(source => {
+                sourceItems.map(source => {
                   return (
                     <SidebarItem
                       key={source.slug}
@@ -188,11 +173,7 @@ const Sources: NextPage<SourcesProps> = ({ data }) => {
               mb={32}
               flex={3}
             >
-              <Main
-                data={metadata?.sources}
-                isLoading={isLoading}
-                metadata={metadata?.meta}
-              />
+              <Main data={sourceItems} isLoading={isLoading} metadata={meta} />
             </PageContent>
           </>
         )}

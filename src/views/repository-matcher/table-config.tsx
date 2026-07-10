@@ -50,7 +50,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     }) => (
       <TextCellWithLink
         label={value?.label || ''}
-        url={value?.url}
+        url={`/sources#${value?._id || ''}`}
         isLoading={isLoading}
         isExternal={false}
       />
