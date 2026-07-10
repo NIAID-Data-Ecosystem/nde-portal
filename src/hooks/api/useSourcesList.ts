@@ -1,11 +1,29 @@
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchMetadata } from './helpers';
 import { Metadata, MetadataSource } from './types';
+import { useResourceCatalogs } from './useResourceCatalogs';
+import { FormattedResource } from 'src/utils/api/types';
 import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
 import {
   OR_FILTER_KEY,
   queryFilterObject2String,
 } from 'src/views/search/components/filters';
+
+/**
+ * Fields fetched for standalone resource catalogs so they render alongside the
+ * metadata-derived sources in the sources list/table.
+ */
+const RESOURCE_CATALOG_FIELDS = [
+  '_id',
+  '@type',
+  'abstract',
+  'collectionType',
+  'conditionsOfAccess',
+  'genre',
+  'name',
+  'url',
+];
 
 export type SourceType =
   | 'Dataset Repository'
@@ -48,7 +66,7 @@ const getResourceCatalogIdentifier = (
 };
 
 export function useSourcesList(options: any = {}) {
-  return useQuery<Metadata | undefined, Error, Source[]>({
+  const metadataQuery = useQuery<Metadata | undefined, Error, Source[]>({
     queryKey: ['metadata'],
     queryFn: async () => await fetchMetadata(),
     select: (data: Metadata | undefined) => {
@@ -62,6 +80,7 @@ export function useSourcesList(options: any = {}) {
         )
         .map(({ sourceInfo }) => {
           const {
+            _id,
             identifier,
             name,
             collectionType,
@@ -69,9 +88,7 @@ export function useSourcesList(options: any = {}) {
             type: sourceInfoType,
           } = sourceInfo || {};
           const sourceType = sourceInfoType || collectionType;
-          if (identifier !== name) {
-            console.log('id', identifier, 'name,', name);
-          }
+
           // use type if available, otherwise fallback to collectionType
           const type = (
             Array.isArray(sourceType)
@@ -93,8 +110,10 @@ export function useSourcesList(options: any = {}) {
 
           const source = {
             ...sourceInfo,
+            _id,
+            identifier,
+            key: `${identifier}-${name}-${type.join(',')}`,
             type: type as SourceType[],
-            _id: `${identifier}-${name}-${type.join(',')}`,
             name: resourceName,
             resourceCatalogIdentifier,
           } as Source;
@@ -107,7 +126,76 @@ export function useSourcesList(options: any = {}) {
     },
     ...options,
   });
+
+  // TEMPORARY: sources and resource catalogs live on separate endpoints. Until
+  // they are consolidated onto the metadata endpoint `fetchMetadata` uses, fetch
+  // resource catalogs separately and merge in any the metadata sources list
+  // doesn't already represent (via `resourceCatalogIdentifier`). When the data
+  // is consolidated this whole block — and the `useResourceCatalogs` call — can
+  // be removed and `metadataQuery` returned directly.
+  const resourceCatalogsQuery = useResourceCatalogs({
+    fields: RESOURCE_CATALOG_FIELDS,
+  });
+
+  const data = useMemo<Source[]>(() => {
+    const sources = metadataQuery.data || [];
+    const catalogs = resourceCatalogsQuery.data || [];
+
+    // Catalog identifiers already represented by a metadata source.
+    const existingCatalogIds = new Set(
+      sources
+        .map(source => source.resourceCatalogIdentifier)
+        .filter((id): id is string => !!id),
+    );
+
+    const additions = catalogs
+      .filter(catalog => catalog._id && !existingCatalogIds.has(catalog._id))
+      .map(resourceCatalogToSource);
+
+    return [...sources, ...additions];
+  }, [metadataQuery.data, resourceCatalogsQuery.data]);
+
+  return {
+    ...metadataQuery,
+    data,
+    isLoading: metadataQuery.isLoading || resourceCatalogsQuery.isLoading,
+    error: metadataQuery.error || resourceCatalogsQuery.error,
+  };
 }
+
+/**
+ * Map a resource catalog record (from the search API) into a `Source` so it can
+ * sit alongside the metadata-derived sources. TEMPORARY: only needed until
+ * resource catalogs are served from the metadata endpoint.
+ */
+const resourceCatalogToSource = (catalog: FormattedResource): Source => {
+  const id = catalog._id || '';
+  return {
+    ...catalog,
+    _id: id,
+    identifier: id,
+    name: catalog.name || id,
+    type: ['Resource Catalog'],
+    // A standalone catalog is its own record, so scope search to it by `_id`.
+    searchURL: buildResourceCatalogSearchURL(id),
+    // A search-API catalog record has no `schema`/`metadata_completeness` that
+    // the metadata `Source` shape carries, hence the widening cast.
+  } as unknown as Source;
+};
+
+/**
+ * Build a `/search` link scoped to a single resource catalog record by `_id`,
+ * e.g. `/search?q=&filters=(_id:("dde_42e839db86d4166d"))&applyDefaultDate=false`.
+ */
+export const buildResourceCatalogSearchURL = (id: string): string => {
+  if (!id) return '';
+  const filters = queryFilterObject2String({ _id: [id] });
+  const params = new URLSearchParams();
+  params.set('q', '');
+  if (filters) params.set('filters', filters);
+  params.set('applyDefaultDate', 'false');
+  return `/search?${params.toString()}`;
+};
 
 /**
  * Build a `/search` link scoped to a source's resources.

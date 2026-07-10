@@ -31,7 +31,7 @@ export function useResourceCatalogs({
       return fetchSearchResults({
         q: '@type:"ResourceCatalog"',
         fields,
-        size: 100,
+        size: 1000,
       });
     },
     select: (data: FetchSearchResultsResponse | undefined) => {

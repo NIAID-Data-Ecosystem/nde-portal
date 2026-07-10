@@ -33,7 +33,6 @@ import {
 } from 'src/views/home/components/NewsCarousel';
 import { NewsOrEventsObject, fetchEvents } from './updates';
 import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
-import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
 import { HeroBanner } from 'src/views/home/components/HeroBanner';
 import {
   fetchAllFeaturedPages,
@@ -58,25 +57,9 @@ const Home: NextPage<{
   error?: { message: string };
 }> = props => {
   const enableAISearch = useReadLocalStorage('enableAISearch');
-  /****** Resource Catalogs Data ******/
-  const {
-    isLoading: resourceCatalogsIsLoading,
-    data: resourceCatalogs,
-    error: resourceCatalogsError,
-  } = useResourceCatalogs({
-    fields: [
-      '_id',
-      '@type',
-      'abstract',
-      'collectionType',
-      'conditionsOfAccess',
-      'genre',
-      'name',
-      'url',
-    ],
-  });
-
-  /****** Repository Data ******/
+  /****** Repository + Resource Catalog Data ******/
+  // `useSourcesList` merges standalone resource catalogs into the metadata
+  // sources list until the two data sources are consolidated on one endpoint.
   const {
     isLoading: repositoriesIsLoading,
     data: repositories,
@@ -102,7 +85,7 @@ const Home: NextPage<{
           url: item.searchURL,
         };
       }),
-    [repositories, resourceCatalogs],
+    [repositories],
   );
 
   return (
@@ -176,7 +159,7 @@ const Home: NextPage<{
       </HeroBanner>
       <>
         {/**** Repositories Table section *****/}
-        {!(repositoriesError || resourceCatalogsError) && (
+        {!repositoriesError && (
           <PageContent
             flexDirection='column'
             bg='#fff'
@@ -266,7 +249,7 @@ const Home: NextPage<{
                   ariaLabel='List of repositories and resource catalogs'
                   caption='List of repositories and resource catalogs'
                   data={tableData}
-                  isLoading={repositoriesIsLoading || resourceCatalogsIsLoading}
+                  isLoading={repositoriesIsLoading}
                   columns={[
                     {
                       title: 'name',
