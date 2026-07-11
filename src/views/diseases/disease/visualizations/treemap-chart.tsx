@@ -166,10 +166,13 @@ export const TreemapChart = ({
           <p id={aria_title}>{title}</p>
           <p id={aria_desc}>{description}</p>
         </VisuallyHidden>
+        {/* role="group" (not "img"): the chart contains focusable <a> tiles, and
+            a role="img" must not nest interactive controls (nested-interactive);
+            a labelled group legitimately can. */}
         <svg
           width={width}
           height={height}
-          role='img'
+          role='group'
           aria-labelledby={aria_title}
           aria-describedby={aria_desc}
         >

@@ -140,7 +140,7 @@ export const Search = ({
               />
             </Box>
           </Flex>
-          <FormErrorMessage justifyContent='flex-end'>
+          <FormErrorMessage justifyContent='flex-end' color='status.error'>
             <UnorderedList>
               {/* This is my error message */}
               {errors.map((error, index) => (

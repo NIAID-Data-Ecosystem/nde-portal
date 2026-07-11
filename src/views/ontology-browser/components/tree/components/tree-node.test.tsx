@@ -233,7 +233,9 @@ describe('TreeNode', () => {
       name: /Show all children of homininae/i,
     });
 
-    const parentElement = toggleButton.parentElement;
+    // The toggle is now the chevron IconButton, so the row container is one
+    // level up (IconButton → left Flex → row Flex) from the toggle button.
+    const parentElement = toggleButton.parentElement?.parentElement;
     expect(parentElement).toBeInTheDocument();
     const searchButton = within(parentElement as HTMLElement).getByRole(
       'button',

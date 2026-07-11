@@ -38,6 +38,7 @@ export const SampleTable = ({
       <Table
         ariaLabel={label}
         caption={caption}
+        stickyHeader
         tableContainerProps={{
           overflowY: 'auto',
           maxHeight: '400px',
