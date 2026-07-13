@@ -110,8 +110,8 @@ describe('tag/utils', () => {
         'mapped-Dataset',
         'coa-restricted',
         'Scientific name (Common name)',
-        'Any',
-        'None',
+        'Specified',
+        'Unspecified',
       ]),
     );
   });

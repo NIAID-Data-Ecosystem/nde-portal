@@ -1,5 +1,8 @@
 // [Feature Flags]
 // This file contains feature flags to enable/disable certain features or sections of the application
+
+import { truncate } from 'fs';
+
 // based on the environment or other conditions.
 const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
 
@@ -70,4 +73,10 @@ export const SHOW_RETIRED_RESOURCE_CATALOG_UI = !isProd;
 // "Any"/"No" deselects any previously selected values for that filter, and
 // checking a normal value while "Any"/"No" is active drops "Any"/"No". To
 // enable in production, set this flag to `true`.
-export const SHOW_FILTER_ANY_NO_EXCLUSIVITY = !isProd;
+export const SHOW_FILTER_ANY_NO_EXCLUSIVITY = true;
+
+// Rename the "Any <filter>" (_exists_) and "No <filter>" (-_exists_) filter
+// options and their tags to "Specified" / "Unspecified" in the search filters
+// panel in non-production environments. To enable in
+// production, set this flag to `true`.
+export const SHOW_FILTER_SPECIFIED_UNSPECIFIED_LABELS = true;
