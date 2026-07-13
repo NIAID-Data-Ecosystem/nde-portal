@@ -28,7 +28,7 @@ export const defaultSearchValue = (
 };
 
 export const useRepositoryMatcherData = (fields: string[] = ['@type']) => {
-  /****** Repository + Resource Catalog Data ******/
+  /****** Source + Resource Catalog Data ******/
   // `useSourcesList` merges standalone resource catalogs into the metadata
   // sources list until the two data sources are consolidated on one endpoint.
   // Pass the requested `fields` through so resource catalogs carry the columns
