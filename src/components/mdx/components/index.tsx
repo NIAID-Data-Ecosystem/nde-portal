@@ -27,6 +27,15 @@ const Details = (props: any) => {
   );
   const [isOpen, setIsOpen] = useState(false);
 
+  // Render the summary's inner content rather than the <summary> element
+  // itself: a host <summary> is focusable, and nesting it inside the toggle
+  // <button> below produces a nested-interactive (serious) a11y violation.
+  const summaryNode = children[summaryIndex];
+  const summaryContent =
+    summaryNode && typeof summaryNode === 'object' && summaryNode.props
+      ? summaryNode.props.children
+      : summaryNode;
+
   return (
     <Box border='1px solid' borderColor='gray.100' my={0.5}>
       <Flex
@@ -43,11 +52,12 @@ const Details = (props: any) => {
           boxShadow: 'sm',
           bg: 'secondary.50',
         }}
+        aria-expanded={isOpen}
         onClick={() => setIsOpen(!isOpen)}
         {...props}
       >
         <Heading as='h2' fontSize='xl' flex={1} textAlign='left'>
-          {children[summaryIndex]}
+          {summaryContent}
         </Heading>
         <Icon
           as={FaAngleDown}

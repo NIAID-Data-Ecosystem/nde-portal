@@ -1,4 +1,5 @@
 import {
+  Box,
   Flex,
   FlexProps,
   Heading,
@@ -40,16 +41,14 @@ export const SidebarItem: React.FC<{
   href: UrlObject | string;
 }> = ({ href, label, subLabel }) => {
   return (
-    <NextLink href={href}>
-      <ListItem
-        _hover={{ bg: 'gray.50' }}
-        cursor='pointer'
-        px={[2, 4, 6]}
-        py={4}
-        borderTop='1px solid'
-        borderRight='1px solid'
-        borderColor='gray.100'
-      >
+    <ListItem
+      _hover={{ bg: 'gray.50' }}
+      cursor='pointer'
+      borderTop='1px solid'
+      borderRight='1px solid'
+      borderColor='gray.100'
+    >
+      <Box as={NextLink} href={href} display='block' px={[2, 4, 6]} py={4}>
         {typeof label === 'string' ? <Label>{label}</Label> : label}
 
         {subLabel && (
@@ -57,8 +56,8 @@ export const SidebarItem: React.FC<{
             {subLabel}
           </Text>
         )}
-      </ListItem>
-    </NextLink>
+      </Box>
+    </ListItem>
   );
 };
 

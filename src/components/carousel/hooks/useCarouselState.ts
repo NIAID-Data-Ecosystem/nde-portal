@@ -45,6 +45,12 @@ export const useCarouselState = ({
 
   // Update itemWidth and constraint based on screen size
   useEffect(() => {
+    // While the carousel container is hidden, the ResizeObserver reports
+    // width 0. In that case, the last correct itemWidth/constraint
+    // and derived positions persist to prevent cards from flashing to a
+    // wrong width when the carousel becomes visible again.
+    if (width <= 0) return;
+
     if (isBetweenBaseAndMd) {
       setItemWidth(width - gap);
       setConstraint(1);

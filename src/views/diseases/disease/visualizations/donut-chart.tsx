@@ -155,9 +155,7 @@ export const DonutChart = ({
 
   // Show tooltip and track hovered term on pointer move
   const handleMouseOver = (
-    event:
-      | React.PointerEvent<SVGPathElement>
-      | React.FocusEvent<SVGGElement, Element>,
+    event: React.PointerEvent<SVGPathElement> | React.FocusEvent<Element>,
     datum: Datum,
   ) => {
     const targetEl = (event.target as SVGPathElement)?.ownerSVGElement;
@@ -215,8 +213,11 @@ export const DonutChart = ({
             <p id='donut-chart-title'>{title}</p>
             <p id='donut-chart-desc'>{description}</p>
           </VisuallyHidden>
+          {/* role="group" (not "img"): the chart contains focusable <a> slices,
+              and a role="img" must not nest interactive controls
+              (nested-interactive); a labelled group legitimately can. */}
           <svg
-            role='img'
+            role='group'
             width={width}
             height={height}
             aria-labelledby='donut-chart-title'
@@ -346,9 +347,7 @@ type AnimatedPieProps<Datum extends { count: number }> =
 
     /** Callback for handling mouse-over events on a pie slice. */
     handleMouseOver: (
-      e:
-        | React.PointerEvent<SVGPathElement>
-        | React.FocusEvent<SVGGElement, Element>,
+      e: React.PointerEvent<SVGPathElement> | React.FocusEvent<Element>,
       d: PieArcDatum<Datum>['data'],
     ) => void;
 
@@ -409,21 +408,18 @@ function AnimatedPie<Datum extends { count: number }>({
       arc.endAngle - arc.startAngle >= 0.1 && labelWidth > 50;
 
     return (
-      <g
-        key={key}
-        tabIndex={arc.index}
-        onFocus={e => {
-          handleMouseOver(e, arc.data);
-        }}
-        onBlur={() => {
-          handleMouseOut();
-        }}
-      >
+      <g key={key}>
         <NextLink
           onClick={() =>
             handleGATracking({ label: displayLabel, count: arc.data.count })
           }
           href={getRoute(getKey(arc))}
+          // The link is the single focusable, interactive element per slice.
+          // Surfacing the tooltip on its focus keeps keyboard parity with hover
+          // without nesting a focusable <g> inside the <a> (nested-interactive)
+          // or assigning positive tabindex values (tabindex).
+          onFocus={e => handleMouseOver(e, arc.data)}
+          onBlur={() => handleMouseOut()}
           passHref
         >
           <animated.path
