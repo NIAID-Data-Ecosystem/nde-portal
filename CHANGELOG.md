@@ -1,8 +1,19 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See
-[standard-version](https://github.com/conventional-changelog/standard-version)
-for commit guidelines.
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [6.1.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v6.0.0...v6.1.0) (2026-07-13)
+
+
+### 🐛 Bugfixes
+
+* **search-results-page:** prevent compact card from resizing when changing tabs ([#482](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/482)) ([234aeeb](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/234aeeb55e9b9f66e86dc0eed71c7d4096c5983f))
+
+
+### 🚀 Features
+
+* replace any/no with specified/unspecified ([#491](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/491)) ([5641fd1](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/5641fd1da3859765e62184891e7dd7415ae996dd))
+* use sticky header ([#487](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/487)) ([445a90d](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/445a90d314bc061696a1abb62ef703f520393535))
 
 ## [6.0.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v5.3.0...v6.0.0) (2026-07-06)
 
