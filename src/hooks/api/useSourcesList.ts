@@ -39,6 +39,25 @@ export type SourceType =
   | 'Data Repository'
   | 'Resource Catalog';
 
+export const getTabIdFromSourceType = (
+  sourceType: SourceType,
+): string | undefined => {
+  switch (sourceType) {
+    case 'Dataset Repository':
+      return getTabIdFromResourceType('Dataset');
+    case 'Computational Tool Repository':
+      return getTabIdFromResourceType('ComputationalTool');
+    case 'Sample Repository':
+      return getTabIdFromResourceType('Sample');
+    case 'Data Repository':
+      return getTabIdFromResourceType('DataCollection');
+    case 'Resource Catalog':
+      return undefined; // No specific tab for resource catalogs
+    default:
+      return undefined;
+  }
+};
+
 export type Source = Omit<MetadataSource['sourceInfo'], 'type'> & {
   type: SourceType[];
   /** Identifier of the associated resource catalog, parsed from `sameAs`. */
@@ -295,13 +314,8 @@ export const buildSearchURL = (item: Source): string => {
   params.set('applyDefaultDate', 'false');
 
   // Preselect the tab based on the source's repository type.
-  if (types.includes('Computational Tool Repository')) {
-    const tab = getTabIdFromResourceType('ComputationalTool');
-    if (tab) params.set('tab', tab);
-  } else if (types.includes('Sample Repository')) {
-    const tab = getTabIdFromResourceType('Sample');
-    if (tab) params.set('tab', tab);
-  }
+  const tabId = getTabIdFromSourceType(types[0]);
+  if (tabId) params.set('tab', tabId);
 
   return `/search?${params.toString()}`;
 };
