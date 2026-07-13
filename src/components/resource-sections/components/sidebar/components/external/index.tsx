@@ -68,6 +68,7 @@ export const ExternalAccess = ({
           url={data?.url}
           recordType={data?.['@type']}
           creativeWorkStatus={data?.creativeWorkStatus}
+          submittingDataUrl={data?.publishingPrinciples}
         />
       </Wrapper>
     </>
