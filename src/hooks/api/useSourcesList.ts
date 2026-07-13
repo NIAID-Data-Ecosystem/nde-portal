@@ -5,7 +5,7 @@ import { Metadata, MetadataSource } from './types';
 import { useResourceCatalogs } from './useResourceCatalogs';
 import { FormattedResource } from 'src/utils/api/types';
 import { getFundedByNIAID } from 'src/utils/helpers';
-import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
+import { getTabIdFromResourceType } from 'src/views/search/config/tabs';
 import {
   OR_FILTER_KEY,
   queryFilterObject2String,
@@ -296,10 +296,10 @@ export const buildSearchURL = (item: Source): string => {
 
   // Preselect the tab based on the source's repository type.
   if (types.includes('Computational Tool Repository')) {
-    const tab = getTabIdFromTypeLabel('ComputationalTool');
+    const tab = getTabIdFromResourceType('ComputationalTool');
     if (tab) params.set('tab', tab);
   } else if (types.includes('Sample Repository')) {
-    const tab = getTabIdFromTypeLabel('Sample');
+    const tab = getTabIdFromResourceType('Sample');
     if (tab) params.set('tab', tab);
   }
 

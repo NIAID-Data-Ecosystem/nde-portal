@@ -1,4 +1,7 @@
-import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+import {
+  APIResourceType,
+  formatAPIResourceTypeForDisplay,
+} from 'src/utils/formatting/formatResourceType';
 import { TabType } from '../types';
 
 // Tab labels
@@ -63,11 +66,6 @@ export const tabs: TabType[] = [
   },
 ];
 
-// Helper to check if a type is part of the "Other Resources" group
-export const isOtherResourceType = (type: string): boolean => {
-  return type === 'ResourceCatalog' || type === 'Disease';
-};
-
 // Generate an accordion title for the "Other Resources" group
 export const generateOtherResourcesTitle = (
   sections: Array<{ type: string; count: number }>,
@@ -97,4 +95,18 @@ export const generateOtherResourcesTitle = (
   return `${
     TAB_LABELS.OTHER_RESOURCES
   } (${totalCount.toLocaleString()}): ${resourcePart}, ${diseasePart}`;
+};
+
+/**
+ * Get the tab ID from a type label
+ * @param type - The label of the type (e.g., 'Dataset', 'ComputationalTool')
+ * @returns The tab ID if found, otherwise undefined
+ */
+export const getTabIdFromResourceType = (
+  type: APIResourceType,
+): TabType['id'] | undefined => {
+  return (
+    tabs.find(tab => tab.types.some(tabType => tabType.type === type))?.id ||
+    undefined
+  );
 };

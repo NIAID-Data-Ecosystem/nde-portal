@@ -31,6 +31,10 @@ interface GithubSourceInfo {
 
 /** Format a source anchor from its `_id` field. */
 const formatSourceAnchor = (source: Source) => {
+  if (!source._id) {
+    console.log('Missing _id for source: ', source);
+    return '';
+  }
   return (source._id || '').replace(/\s+/g, '-');
 };
 
@@ -69,7 +73,7 @@ const Sources: NextPage<SourcesProps> = ({ data }) => {
     isLoading,
     error: metadataError,
   } = useSourcesList({ refetchOnWindowFocus: false });
-  console.log(sources);
+
   // Build metadata (API version + last-harvested date). Shares the cached
   // ['metadata'] query with `useSourcesList`, so this adds no network request.
   const { data: meta } = useQuery({
@@ -87,6 +91,7 @@ const Sources: NextPage<SourcesProps> = ({ data }) => {
     return (sources || [])
       .map(source => {
         const github = githubInfo.find(item => item.id === source.identifier);
+
         return {
           ...source,
           slug: formatSourceAnchor(source),

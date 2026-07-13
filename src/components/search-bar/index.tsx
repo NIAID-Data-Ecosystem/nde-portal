@@ -22,7 +22,7 @@ import {
 } from '../input-with-dropdown';
 import { SearchHistoryItem } from './components/search-history-item';
 import { CheckboxList, CheckboxListProps } from '../checkbox-list';
-import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
+import { getTabIdFromResourceType } from 'src/views/search/config/tabs';
 import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-string';
 import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
 
@@ -175,7 +175,7 @@ const SearchBar = ({
       .filter(item => item.property === '@type')
       ?.map(filter => filter.value);
 
-    const tab = getTabIdFromTypeLabel(filters[0]);
+    const tab = getTabIdFromResourceType(filters[0]);
 
     router.push({
       pathname: `/search`,
