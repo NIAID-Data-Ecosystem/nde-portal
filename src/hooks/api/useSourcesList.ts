@@ -86,19 +86,34 @@ const isHiddenSourceType = (source: Source): boolean =>
   (!SHOW_DATA_COLLECTIONS_TAB && source.type.includes('Data Repository')) ||
   (!SHOW_SAMPLES_TAB && source.type.includes('Sample Repository'));
 
+// In dev the base URL is localhost, so the base-URL check below is meaningless
+// there; the `/resources` path check still applies in every environment.
+const isDevMode = process.env.NODE_ENV === 'development';
+
 /**
  * Parse the `resourceCatalogIdentifier` from a `sameAs` value that points to a
  * resource catalog, e.g. `https://data.niaid.nih.gov/resources?id=dde_8b9a4aa0d78d0659`
- * returns `dde_8b9a4aa0d78d0659`. Only the `id` query param is used, so the base
- * URL is free to change. Accepts a string or an array of `sameAs` values.
+ * returns `dde_8b9a4aa0d78d0659`.
+ *
+ * To avoid mistaking an unrelated `sameAs` link that merely carries an `id`
+ * query param for a catalog link, the value must either point at a `/resources`
+ * page or — outside dev — share our portal's base URL. Accepts a string or an
+ * array of `sameAs` values.
  */
 const getResourceCatalogIdentifier = (
   sameAs?: string | string[],
 ): string | undefined => {
   if (!sameAs) return undefined;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
   const values = Array.isArray(sameAs) ? sameAs : [sameAs];
   for (const value of values) {
     if (!value) continue;
+
+    const isResourceCatalogLink =
+      value.includes('resources') ||
+      (!isDevMode && !!baseUrl && value.startsWith(baseUrl));
+    if (!isResourceCatalogLink) continue;
+
     try {
       const id = new URL(value).searchParams.get('id');
       if (id) return id;
@@ -182,7 +197,9 @@ export function useSourcesList(
 
           const source = {
             ...sourceInfo,
-            _id,
+            // Use the resource catalog identifier as the source `_id` if present,
+            // otherwise fall back to the metadata `_id` or the `identifier`.
+            _id: resourceCatalogIdentifier || _id || '',
             identifier,
             key: `${identifier}-${name}-${type.join(',')}`,
             type: type as SourceType[],
