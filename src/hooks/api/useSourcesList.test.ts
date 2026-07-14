@@ -96,9 +96,13 @@ describe('useSourcesList', () => {
     // 2 metadata sources + 1 added catalog (the duplicate is dropped).
     expect(data).toHaveLength(3);
 
-    // The already-represented catalog is not added as its own row.
-    expect(data.some(source => source._id === 'dde_existing')).toBe(false);
-    // ...but the source that points to it keeps the parsed identifier.
+    // The already-represented catalog is not added as its own row: the only
+    // source carrying its id is the metadata source (`repoB`) that points to
+    // it, which now adopts the catalog id as its own `_id`.
+    const withExistingId = data.filter(source => source._id === 'dde_existing');
+    expect(withExistingId).toHaveLength(1);
+    expect(withExistingId[0].identifier).toBe('repoB');
+    // ...and that source keeps the parsed identifier.
     const repoB = data.find(source => source.identifier === 'repoB');
     expect(repoB?.resourceCatalogIdentifier).toBe('dde_existing');
 
