@@ -29,13 +29,18 @@ interface GithubSourceInfo {
   dateCreated?: string;
 }
 
-/** Format a source anchor from its `_id` field. */
-const formatSourceAnchor = (source: Source) => {
+/** Convert an identifier into a URL-safe anchor slug by replacing whitespace with dashes. */
+export const formatIdentifierAsAnchorSlug = (id: string) => {
+  return id.replace(/\s+/g, '-');
+};
+
+/** Build a source's anchor slug from its `_id` field. */
+const getSourceAnchorSlug = (source: Source) => {
   if (!source._id) {
-    console.log('Missing _id for source: ', source);
+    console.log('Missing _id for source: ', source.name);
     return '';
   }
-  return (source._id || '').replace(/\s+/g, '-');
+  return formatIdentifierAsAnchorSlug(source._id);
 };
 
 /**
@@ -72,7 +77,9 @@ const Sources: NextPage<SourcesProps> = ({ data }) => {
     data: sources,
     isLoading,
     error: metadataError,
-  } = useSourcesList({ refetchOnWindowFocus: false });
+  } = useSourcesList({
+    refetchOnWindowFocus: false,
+  });
 
   // Build metadata (API version + last-harvested date). Shares the cached
   // ['metadata'] query with `useSourcesList`, so this adds no network request.
@@ -94,7 +101,7 @@ const Sources: NextPage<SourcesProps> = ({ data }) => {
 
         return {
           ...source,
-          slug: formatSourceAnchor(source),
+          slug: getSourceAnchorSlug(source),
           dateCreated: github?.dateCreated,
         };
       })
