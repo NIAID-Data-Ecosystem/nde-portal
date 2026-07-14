@@ -21,7 +21,6 @@ export const Sidebar: React.FC<FlexProps & { ['aria-label']: string }> = ({
       as='nav'
       aria-label={ariaLabel}
       bg='page.alt'
-      flex={1}
       flexDirection='column'
       display={{ base: 'none', md: 'flex' }}
       minWidth='380px'
@@ -40,6 +39,11 @@ export const SidebarItem: React.FC<{
   subLabel?: React.ReactNode;
   href: UrlObject | string;
 }> = ({ href, label, subLabel }) => {
+  // In-page hash anchors (e.g. `#source-slug`) are handled natively by the
+  // browser. Routing them through `next/link` invokes the Next router, which
+  // throws "Cancel rendering route" when navigations overlap (e.g. clicking
+  // several items in quick succession) — so use a plain anchor for those.
+  const isHashLink = typeof href === 'string' && href.startsWith('#');
   return (
     <ListItem
       _hover={{ bg: 'gray.50' }}
@@ -48,7 +52,13 @@ export const SidebarItem: React.FC<{
       borderRight='1px solid'
       borderColor='gray.100'
     >
-      <Box as={NextLink} href={href} display='block' px={[2, 4, 6]} py={4}>
+      <Box
+        as={isHashLink ? 'a' : NextLink}
+        href={href}
+        display='block'
+        px={[2, 4, 6]}
+        py={4}
+      >
         {typeof label === 'string' ? <Label>{label}</Label> : label}
 
         {subLabel && (
