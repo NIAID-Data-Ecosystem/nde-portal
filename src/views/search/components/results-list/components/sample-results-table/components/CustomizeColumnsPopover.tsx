@@ -19,6 +19,8 @@ export const DEFAULT_VISIBLE_COLUMN_IDS = [
   'conditionsOfAccess',
   'sex',
   'species',
+  'funder',
+  'fundingId',
 ];
 
 export { SAMPLE_REQUIRED_COLUMN_IDS as REQUIRED_COLUMN_IDS };
