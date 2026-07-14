@@ -22,9 +22,10 @@ export const Sidebar: React.FC<FlexProps & { ['aria-label']: string }> = ({
       aria-label={ariaLabel}
       bg='page.alt'
       flexDirection='column'
-      display={{ base: 'none', md: 'flex' }}
+      display={{ base: 'none', md: 'block' }}
       minWidth='380px'
       maxW='450px'
+      height='100%'
       {...props}
     >
       <UnorderedList top={0} ml={0}>

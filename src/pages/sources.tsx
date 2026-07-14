@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import { Box, Button, Flex, Text } from '@chakra-ui/react';
@@ -108,6 +108,16 @@ const Sources: NextPage<SourcesProps> = ({ data }) => {
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [sources, data?.githubInfo?.data]);
 
+  // Scroll to the hash anchor on page load, if present and when data is ready.
+  useEffect(() => {
+    if (!isLoading && sourceItems.length > 0 && router.asPath.includes('#')) {
+      const hash = router.asPath.split('#')[1];
+      const target = document.getElementById(hash);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [isLoading, sourceItems, router.asPath]);
   return (
     <PageContainer
       id='sources-page'
