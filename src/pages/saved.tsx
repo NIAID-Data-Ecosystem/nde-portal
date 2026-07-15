@@ -121,7 +121,7 @@ const SavedPage = () => {
             To save a search, run a search and select{' '}
             <Text as='span' fontWeight='semibold'>
               Save search
-            </Text>{' '}
+            </Text>
             .
           </SavedEmptyState>
         }
