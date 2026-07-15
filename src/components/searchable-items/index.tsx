@@ -11,6 +11,8 @@ interface SearchableItemsProps extends Omit<FlexProps, 'onToggle'> {
     field: string;
   }[];
   colorScheme?: TagProps['colorScheme'];
+  linkColor?: string;
+  tagColor?: TagProps['color'];
   generateButtonLabel?: (limit: number, length: number) => string;
   itemLimit?: number;
   name?: React.ReactNode;
@@ -36,6 +38,8 @@ const generateDefaultLabel = (limit: number, length: number) => {
  */
 export const SearchableItems: React.FC<SearchableItemsProps> = ({
   colorScheme = 'primary',
+  linkColor = `${colorScheme}.500`,
+  tagColor,
   generateButtonLabel = generateDefaultLabel,
   itemLimit = 3,
   items,
@@ -95,6 +99,7 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
         <TagWithUrl
           key={item.value}
           colorScheme={colorScheme}
+          color={tagColor}
           href={{
             pathname: '/search',
             query: {
@@ -114,7 +119,7 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
           variant='link'
           justifyContent='flex-end'
           m={1}
-          color={`${colorScheme}.500`}
+          color={linkColor}
           onClick={toggleLimit}
         >
           {buttonLabel}
