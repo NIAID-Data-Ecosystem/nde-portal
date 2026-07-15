@@ -3,40 +3,26 @@ import {
   defaultSearchValue,
   useRepositoryMatcherData,
 } from '../useRepositoryMatcherData';
-import { useRepoData } from 'src/hooks/api/useRepoData';
-import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
+import { useSourcesList } from 'src/hooks/api/useSourcesList';
 
-jest.mock('src/hooks/api/useRepoData');
-jest.mock('src/hooks/api/useResourceCatalogs');
+// The hook now delegates fetching/merging to `useSourcesList` (which merges
+// resource catalogs into the metadata sources, de-duplicates them, and filters
+// out feature-flagged repository types). Its own job is to filter by
+// `creativeWorkStatus` and build the per-column table rows + search blob.
+jest.mock('src/hooks/api/useSourcesList');
 
-const mockUseRepoData = useRepoData as jest.Mock;
-const mockUseResourceCatalogs = useResourceCatalogs as jest.Mock;
+const mockUseSourcesList = useSourcesList as jest.Mock;
 
-const setHooks = ({
-  catalogs = [],
-  repos = [],
-  resourceCatalogsIsLoading = false,
-  repositoriesIsLoading = false,
-  resourceCatalogsError = null,
-  repositoriesError = null,
+const setSources = ({
+  sources = [] as any[],
+  isLoading = false,
+  error = null as Error | null,
 }: {
-  catalogs?: any[];
-  repos?: any[];
-  resourceCatalogsIsLoading?: boolean;
-  repositoriesIsLoading?: boolean;
-  resourceCatalogsError?: Error | null;
-  repositoriesError?: Error | null;
-}) => {
-  mockUseResourceCatalogs.mockReturnValue({
-    data: catalogs,
-    isLoading: resourceCatalogsIsLoading,
-    error: resourceCatalogsError,
-  });
-  mockUseRepoData.mockReturnValue({
-    data: repos,
-    isLoading: repositoriesIsLoading,
-    error: repositoriesError,
-  });
+  sources?: any[];
+  isLoading?: boolean;
+  error?: Error | null;
+} = {}) => {
+  mockUseSourcesList.mockReturnValue({ data: sources, isLoading, error });
 };
 
 describe('defaultSearchValue', () => {
@@ -63,44 +49,22 @@ describe('defaultSearchValue', () => {
 describe('useRepositoryMatcherData', () => {
   afterEach(() => jest.clearAllMocks());
 
-  it('reports loading when either source is loading and returns no rows', () => {
-    setHooks({ repositoriesIsLoading: true });
+  it('reports loading and returns no rows while sources load', () => {
+    setSources({ isLoading: true });
     const { result } = renderHook(() => useRepositoryMatcherData());
     expect(result.current.isLoading).toBe(true);
     expect(result.current.data).toEqual([]);
   });
 
-  it('combines catalogs + repositories, filtering and de-duplicating by _id', () => {
-    setHooks({
-      catalogs: [
+  it('builds rows from sources accepting data, with transformed columns and a search blob', () => {
+    setSources({
+      sources: [
         {
           _id: 'c1',
           name: 'Catalog One',
           type: ['Resource Catalog'],
           creativeWorkStatus: 'Accepting Data',
           genre: 'IID',
-        },
-        {
-          _id: 'dup',
-          name: 'Catalog Dup',
-          type: ['Resource Catalog'],
-          creativeWorkStatus: 'Accepting Data',
-        },
-      ],
-      repos: [
-        {
-          _id: 'r1',
-          name: 'Repo One',
-          type: ['Dataset Repository'],
-          creativeWorkStatus: 'Accepting Data',
-          conditionsOfAccess: 'Open',
-        },
-        // duplicate id — first occurrence (the catalog) wins.
-        {
-          _id: 'dup',
-          name: 'Repo Dup',
-          type: ['Dataset Repository'],
-          creativeWorkStatus: 'Accepting Data',
         },
         // excluded: not accepting data.
         {
@@ -109,19 +73,12 @@ describe('useRepositoryMatcherData', () => {
           type: ['Dataset Repository'],
           creativeWorkStatus: 'Retired',
         },
-        // excluded: Data Repository type.
         {
-          _id: 'data-repo',
-          name: 'Data Repo',
-          type: ['Data Repository'],
+          _id: 'r1',
+          name: 'Repo One',
+          type: ['Dataset Repository'],
           creativeWorkStatus: 'Accepting Data',
-        },
-        // excluded: Sample Repository type.
-        {
-          _id: 'sample-repo',
-          name: 'Sample Repo',
-          type: ['Sample Repository'],
-          creativeWorkStatus: 'Accepting Data',
+          conditionsOfAccess: 'Open',
         },
       ],
     });
@@ -129,18 +86,17 @@ describe('useRepositoryMatcherData', () => {
     const { result } = renderHook(() => useRepositoryMatcherData());
     const { data } = result.current;
 
-    expect(data.map(r => r._id)).toEqual(['c1', 'dup', 'r1']);
-    // Catalog wins the dedupe, so its name is kept.
-    expect((data[1].name as { label: string }).label).toBe('Catalog Dup');
+    // Only the two "Accepting Data" sources become rows, in source order.
+    expect(data.map(r => r._id)).toEqual(['c1', 'r1']);
     // Per-column transformed values are present and the search blob is built.
     expect((data[0].name as { label: string }).label).toBe('Catalog One');
     expect(data[0]._search).toContain('catalog one');
     expect(data[0]._search).toContain('iid');
   });
 
-  it('falls back to a synthetic id for items without an _id', () => {
-    setHooks({
-      repos: [
+  it('falls back to an empty id for items without an _id', () => {
+    setSources({
+      sources: [
         {
           name: 'No Id Repo',
           type: ['Dataset Repository'],
@@ -153,15 +109,8 @@ describe('useRepositoryMatcherData', () => {
     expect(result.current.data[0]._id).toBe('');
   });
 
-  it('handles undefined data arrays from both sources', () => {
-    // Set the mocks directly so the `|| []` fallbacks see real `undefined`
-    // (setHooks' default params would coerce undefined back to []).
-    mockUseResourceCatalogs.mockReturnValue({
-      data: undefined,
-      isLoading: false,
-      error: null,
-    });
-    mockUseRepoData.mockReturnValue({
+  it('handles undefined source data', () => {
+    mockUseSourcesList.mockReturnValue({
       data: undefined,
       isLoading: false,
       error: null,
@@ -170,15 +119,10 @@ describe('useRepositoryMatcherData', () => {
     expect(result.current.data).toEqual([]);
   });
 
-  it('surfaces the resource catalog error first, then the repository error', () => {
-    const catalogErr = new Error('catalog boom');
-    setHooks({ resourceCatalogsError: catalogErr });
+  it('surfaces the sources error', () => {
+    const err = new Error('boom');
+    setSources({ error: err });
     const { result } = renderHook(() => useRepositoryMatcherData());
-    expect(result.current.error).toBe(catalogErr);
-
-    const repoErr = new Error('repo boom');
-    setHooks({ repositoriesError: repoErr });
-    const { result: result2 } = renderHook(() => useRepositoryMatcherData());
-    expect(result2.current.error).toBe(repoErr);
+    expect(result.current.error).toBe(err);
   });
 });

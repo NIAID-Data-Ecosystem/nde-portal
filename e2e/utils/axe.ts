@@ -67,6 +67,41 @@ export async function waitForAnimationsSettled(page: Page, timeout = 5000) {
 }
 
 /**
+ * Wait for the search-filters "Clear All" button to finish fading in before a
+ * scan on the `/search` route (search results and visual-summary specs).
+ *
+ * The button (`FiltersContainer`, a secondary `variant='link'` button) starts
+ * `isDisabled` (opacity 0.4) on first paint, then the page seeds the default
+ * date filter and flips it enabled — animating opacity 0.4 → 1 via Chakra's
+ * default `transition: common`. Because that flip is a *late* React state
+ * update, the transition often begins after `waitForAnimationsSettled` has
+ * already run, so axe scans the button mid-fade (enabled but dimmed to ~2.3:1)
+ * and reports a false, intermittent color-contrast failure. Its resting state
+ * is fully opaque and passes (secondary.500 `#321EB5` ≈ 10:1 on white).
+ *
+ * Opacity 1 is the terminal, monotonic resting state (it never fades back
+ * down), so waiting for it guarantees the fade is complete. An absent button
+ * (should not occur on this route) counts as settled so this never hangs. This
+ * complements `waitForAnimationsSettled`, which cannot catch a transition that
+ * has not started yet.
+ */
+export async function waitForSearchFiltersSettled(page: Page, timeout = 5000) {
+  try {
+    await page.waitForFunction(
+      () =>
+        Array.from(document.querySelectorAll('button'))
+          .filter(b => b.textContent?.trim() === 'Clear All')
+          .every(b => getComputedStyle(b).opacity === '1'),
+      undefined,
+      { timeout },
+    );
+  } catch {
+    // Best-effort, matching waitForAnimationsSettled: never hang or fail a scan
+    // on this wait; fall through and let the axe scan report the real state.
+  }
+}
+
+/**
  * Run an axe-core WCAG AA scan against the current page state.
  *
  * Before scanning, this waits for in-flight transitions/finite animations to

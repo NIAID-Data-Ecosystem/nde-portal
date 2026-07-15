@@ -1,6 +1,6 @@
 import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-string';
-import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
 import { RepositoryMatcherItem } from 'src/views/repository-matcher/types';
+import { getTabIdFromResourceType } from 'src/views/search/config/tabs';
 
 export const itemTypes = (item: RepositoryMatcherItem): string[] => {
   const t = 'type' in item ? item.type : undefined;
@@ -24,10 +24,10 @@ export const buildItemUrl = (item: RepositoryMatcherItem): string => {
   if (filters) params.set('filters', filters);
   // set tab based on type
   if (types.includes('Computational Tool Repository')) {
-    const tab = getTabIdFromTypeLabel('ComputationalTool');
+    const tab = getTabIdFromResourceType('ComputationalTool');
     if (tab) params.set('tab', tab);
   } else if (types.includes('Sample Repository')) {
-    const tab = getTabIdFromTypeLabel('Sample');
+    const tab = getTabIdFromResourceType('Sample');
     if (tab) params.set('tab', tab);
   }
   return `/search?${params.toString()}`;

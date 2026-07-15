@@ -21,7 +21,10 @@ import { generateTags } from './utils';
 import { SearchResultsHeading } from '../../../search-results-header';
 import { usePaginationContext } from 'src/views/search/context/pagination-context';
 
-import { queryFilterObject2String } from '../../utils/query-string';
+import {
+  OR_FILTER_KEY,
+  queryFilterObject2String,
+} from '../../utils/query-string';
 
 interface FilterTagsProps {
   filtersConfig: FilterConfig[];
@@ -82,6 +85,12 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
         updatedFilters = {
           ...selectedFilters,
           [filterKey]: [],
+        };
+      } else if (filterKey === OR_FILTER_KEY) {
+        // A cross-field OR group is a single logical filter — clear it whole.
+        updatedFilters = {
+          ...selectedFilters,
+          [OR_FILTER_KEY]: [],
         };
       } else {
         // For other filters, remove the specific value(s)

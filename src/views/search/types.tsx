@@ -1,3 +1,4 @@
+import { APIResourceType } from 'src/utils/formatting/formatResourceType';
 import { SelectedFilterType } from './components/filters';
 
 export type TabType = {
@@ -5,7 +6,7 @@ export type TabType = {
   types: {
     label: string;
     accordionLabel?: string;
-    type: string;
+    type: APIResourceType | 'Disease' | 'Other';
   }[];
   isDefault?: boolean;
 };

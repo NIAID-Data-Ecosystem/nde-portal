@@ -80,3 +80,5 @@ export const SHOW_FILTER_ANY_NO_EXCLUSIVITY = true;
 // panel in non-production environments. To enable in
 // production, set this flag to `true`.
 export const SHOW_FILTER_SPECIFIED_UNSPECIFIED_LABELS = true;
+
+export const USE_MERGED_SOURCES_AND_CATALOGS = !isProd;
