@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.1.1](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v6.1.0...v6.1.1) (2026-07-15)
+
+
+### 🚀 Features
+
+* **search:** add funding-related columns ([7db36e9](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/7db36e901fd224275c233eb5fead949dfbef4deb))
+* **search:** allow name column to be hidden or moved around ([748c7fa](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/748c7fa3581908ebdd76824e38d1a613eb1a106f))
+* **search:** improve retired resource catalog card accessibility ([0bbd1ae](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/0bbd1ae99befac8314fd61045ca7d8ed6dffdb93))
+
 ## [6.1.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v6.0.0...v6.1.0) (2026-07-13)
 
 
