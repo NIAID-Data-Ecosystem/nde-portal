@@ -249,7 +249,7 @@ test.describe('a11y: Saved — authenticated with nothing saved', () => {
     await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
 
     // With no saved items each table renders its "No matches" empty state.
-    await expect(page.getByText(/no matches/i).first()).toBeVisible();
+    await expect(page.getByText(/nothing saved yet/i).first()).toBeVisible();
 
     await runSharedChecks(page, testInfo, 'empty');
   });
