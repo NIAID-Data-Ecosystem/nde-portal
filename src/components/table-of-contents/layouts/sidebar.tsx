@@ -25,6 +25,7 @@ export const Sidebar: React.FC<FlexProps & { ['aria-label']: string }> = ({
       display={{ base: 'none', md: 'block' }}
       minWidth='380px'
       maxW='450px'
+      minHeight='100vh'
       height='100%'
       {...props}
     >
