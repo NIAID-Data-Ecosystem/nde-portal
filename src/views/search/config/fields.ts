@@ -49,6 +49,7 @@ export const SAMPLE_FIELDS = [
   '_id',
   'url',
   'includedInDataCatalog',
+  'funding',
   // Column fields
   'identifier',
   'alternateIdentifier',

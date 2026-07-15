@@ -80,7 +80,8 @@ export const ResourceCatalogCard = ({
     SHOW_RETIRED_RESOURCE_CATALOG_UI &&
     type === 'ResourceCatalog' &&
     creativeWorkStatus === 'Retired';
-  const cardBg = isRetired ? 'page.alt' : 'white';
+
+  const cardBg = 'white';
 
   const linkProps = id
     ? {
@@ -151,6 +152,10 @@ export const ResourceCatalogCard = ({
                     conditionsOfAccess={conditionsOfAccess}
                     mx={0.5}
                     size='sm'
+                    {...(isRetired && {
+                      colorScheme: 'gray',
+                      color: 'gray.900',
+                    })}
                   />
                   {hasAPI && (
                     <HasAPI
@@ -158,6 +163,10 @@ export const ResourceCatalogCard = ({
                       hasAPI={data?.hasAPI}
                       mx={0.5}
                       size='sm'
+                      {...(isRetired && {
+                        colorScheme: 'gray',
+                        color: 'gray.900',
+                      })}
                     />
                   )}
                   <CreativeWorkStatus
@@ -181,7 +190,9 @@ export const ResourceCatalogCard = ({
                 <SearchableItems
                   items={aboutItems}
                   itemLimit={2}
-                  colorScheme='primary'
+                  colorScheme={isRetired ? 'gray' : 'primary'}
+                  tagColor={isRetired ? 'gray.900' : undefined}
+                  linkColor={isRetired ? 'gray.900' : undefined}
                   isExpanded={showAllTypes}
                   onToggle={handleTypesToggle}
                   generateButtonLabel={(limit, length) =>
@@ -213,6 +224,7 @@ export const ResourceCatalogCard = ({
                   minH='auto'
                   height='auto'
                   fontSize='xs'
+                  {...(isRetired && { color: 'gray.900' })}
                 >
                   See description
                 </Button>
