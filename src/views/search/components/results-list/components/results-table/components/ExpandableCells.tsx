@@ -14,6 +14,7 @@ import { Button, Flex, FlexProps, Text, TextProps } from '@chakra-ui/react';
 const toggleButtonProps = {
   variant: 'link' as const,
   size: 'xs' as const,
+  fontSize: 'sm' as const,
   colorScheme: 'primary' as const,
   fontWeight: 'medium' as const,
 };
@@ -113,7 +114,7 @@ export const ExpandableList = ({
       {shouldTruncate && (
         <Button
           {...toggleButtonProps}
-          mt={1}
+          my={2}
           aria-expanded={expanded}
           aria-controls={contentId}
           onClick={() => setExpanded(prev => !prev)}
