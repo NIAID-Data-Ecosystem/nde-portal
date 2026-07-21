@@ -1,7 +1,8 @@
-import { Flex, Text, TextProps } from '@chakra-ui/react';
+import { Text, TextProps } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { DefinedTerm, QuantitativeValue } from 'src/utils/api/types';
 import { Column } from 'src/components/table';
+import { ExpandableList } from './ExpandableCells';
 
 const formatTerm = (term: string): string => {
   if (!term || typeof term !== 'string') return '';
@@ -114,9 +115,9 @@ export const renderCellData = (props: {
   if (Array.isArray(cellValue)) {
     if (cellValue.length === 0) return null;
     return (
-      <Flex flexDirection='column' gap={2}>
+      <ExpandableList>
         {cellValue.map((value, idx) => renderValue(value, idx))}
-      </Flex>
+      </ExpandableList>
     );
   }
 
