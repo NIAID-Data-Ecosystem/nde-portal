@@ -45,6 +45,7 @@ const CAROUSEL_RESULTS_FIELDS = [
   'hasAPI',
   'includedInDataCatalog',
   'name',
+  'sourceOrganization',
 ];
 
 // Stable empty array used as the fallback when useDiseaseData returns no

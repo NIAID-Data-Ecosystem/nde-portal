@@ -66,6 +66,14 @@ export const SHOW_SAMPLE_UI_PILL = true;
 // set this flag to `true`.
 export const SHOW_RETIRED_RESOURCE_CATALOG_UI = !isProd;
 
+// Show the "Program Resource" treatment for ResourceCatalog resources that have
+// a sourceOrganization (cyan type banner + "Program Resource" label on cards and
+// resource pages, and sourceOrganization names in the Collection information
+// section linked to the /program-collections page) in non-production
+// environments for testing/review. To enable in production, set this flag to
+// `true`.
+export const SHOW_PROGRAM_RESOURCE_UI = !isProd;
+
 // Show the mutual-exclusivity behavior for the "Any <filter>" (_exists_) and
 // "No <filter>" (-_exists_) filter checkboxes in the search filters panel in
 // non-production environments for testing/review. When enabled: checking

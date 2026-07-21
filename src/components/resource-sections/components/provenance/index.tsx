@@ -18,6 +18,7 @@ import { ScrollContainer } from 'src/components/scroll-container';
 import { Link } from 'src/components/link';
 import Tooltip from 'src/components/tooltip';
 import { getSourceLogoLinkOut } from 'src/components/source-logo/helpers';
+import { SHOW_PROGRAM_RESOURCE_UI } from 'src/utils/feature-flags';
 import { SourceLogo } from 'src/components/source-logo';
 
 interface Provenance {
@@ -26,6 +27,12 @@ interface Provenance {
   sdPublisher?: FormattedResource['sdPublisher'];
   sourceOrganization?: FormattedResource['sourceOrganization'];
 }
+
+// Builds the anchor slug used to link a sourceOrganization's name to its
+// matching section on the Program Collections page (e.g. "NIAID ACTG Network"
+// -> "niaid-actg-network").
+const generateProgramCollectionSlug = (name: string) =>
+  name.trim().toLowerCase().replace(/\s+/g, '-');
 
 const Provenance: React.FC<Provenance> = ({
   includedInDataCatalog,
@@ -42,7 +49,9 @@ const Provenance: React.FC<Provenance> = ({
 
   interface BlockProps extends FlexProps {
     children: React.ReactNode;
-    label?: string;
+    // Accepts a ReactNode so the label can be plain text (e.g. "Provided By")
+    // or a richer node such as a link (e.g. the sourceOrganization name).
+    label?: React.ReactNode;
   }
 
   const Block = ({ children, label, ...props }: BlockProps) => {
@@ -208,10 +217,27 @@ const Provenance: React.FC<Provenance> = ({
               w='100%'
             >
               {sourceOrganization.map(organization => {
+                // Anchor slug linking this organization's name to its
+                // matching section on the Program Collections page.
+                const programCollectionSlug = generateProgramCollectionSlug(
+                  organization.name,
+                );
+
                 return (
                   <Block
                     key={organization.name}
-                    label={organization.name}
+                    label={
+                      SHOW_PROGRAM_RESOURCE_UI ? (
+                        <Link
+                          as={NextLink}
+                          href={`/program-collections#${programCollectionSlug}`}
+                        >
+                          {organization.name}
+                        </Link>
+                      ) : (
+                        organization.name
+                      )
+                    }
                     w='100%'
                     minW='unset'
                     maxW='600px'
