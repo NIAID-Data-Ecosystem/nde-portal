@@ -1,6 +1,5 @@
 import { FormattedResource } from 'src/utils/api/types';
 import { BadgeWithTooltip, BadgeWithTooltipProps } from 'src/components/badges';
-import SchemaDefinitions from 'configs/schema-definitions.json';
 import { SHOW_RETIRED_RESOURCE_CATALOG_UI } from 'src/utils/feature-flags';
 
 interface CreativeWorkStatusProps extends Omit<BadgeWithTooltipProps, 'value'> {
@@ -22,19 +21,11 @@ export const CreativeWorkStatus = ({
     return <></>;
   }
 
-  const property = SchemaDefinitions['creativeWorkStatus'];
-
   return (
     <BadgeWithTooltip
       colorScheme='red'
       value='Retired'
-      tooltipLabel={
-        type
-          ? property?.description?.[
-              type as keyof (typeof property)['description']
-            ] || ''
-          : ''
-      }
+      tooltipLabel='The resource is no longer available.'
       {...props}
     />
   );
