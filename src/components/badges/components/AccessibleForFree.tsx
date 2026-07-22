@@ -1,6 +1,5 @@
 import { FormattedResource } from 'src/utils/api/types';
 import { BadgeWithTooltip, BadgeWithTooltipProps } from 'src/components/badges';
-import SchemaDefinitions from 'configs/schema-definitions.json';
 
 interface AccessibleForFreeProps extends Omit<BadgeWithTooltipProps, 'value'> {
   isAccessibleForFree?: FormattedResource['isAccessibleForFree'];
@@ -14,15 +13,14 @@ export const AccessibleForFree = ({
   ...props
 }: AccessibleForFreeProps) => {
   if ((isAccessibleForFree === true || isAccessibleForFree === false) && type) {
-    const property = SchemaDefinitions['isAccessibleForFree'];
     return (
       <BadgeWithTooltip
         colorScheme={isAccessibleForFree ? 'green' : 'gray'}
         value={isAccessibleForFree ? 'No Cost Access' : 'Paid  Access'}
         tooltipLabel={
-          property?.description?.[
-            type as keyof (typeof property)['description']
-          ] || ''
+          isAccessibleForFree
+            ? 'The resource is accessible for free.'
+            : 'The resource is not accessible for free.'
         }
         {...props}
       />
