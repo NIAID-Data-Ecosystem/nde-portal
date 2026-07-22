@@ -8,7 +8,7 @@ import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import {
   formatConditionsOfAccess,
   getColorScheme,
-  getConditionsOfAccessDescription,
+  getConditionsOfAccessTooltip,
 } from 'src/utils/formatting/formatConditionsOfAccess';
 import {
   getSearchResultsRoute,
@@ -49,7 +49,7 @@ export const ConditionsOfAccess = ({ query, topic }: TopicQueryProps) => {
           return {
             ...access,
             label: label || '',
-            description: getConditionsOfAccessDescription(label),
+            description: getConditionsOfAccessTooltip(label),
             colorScheme,
             fill: theme.colors[colorScheme][300] as string,
           };

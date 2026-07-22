@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, Text } from '@chakra-ui/react';
+import { Text } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { Column } from 'src/components/table';
 import {
@@ -8,11 +8,14 @@ import {
   Funding,
   IncludedInDataCatalog,
 } from 'src/utils/api/types';
-import { getTruncatedText } from 'src/components/table/helpers';
 import { ResultsTable } from '../results-table';
 import { BaseColumn } from '../results-table/types';
 import { withWidth } from '../results-table/utils';
 import { renderCellData } from '../results-table/components/Cells';
+import {
+  ExpandableList,
+  ExpandableText,
+} from '../results-table/components/ExpandableCells';
 import { SAMPLE_REQUIRED_COLUMN_IDS } from '../results-table/constants';
 
 export interface SampleColumn extends BaseColumn {}
@@ -271,7 +274,7 @@ export const ALL_SAMPLE_COLUMNS: SampleColumn[] = [
     property: 'fundingId',
     isSortable: false,
     apiSortField: COLUMN_API_SORT_FIELDS['fundingId'],
-    props: withWidth('180px'),
+    props: withWidth('280px'),
   },
 ];
 
@@ -395,7 +398,7 @@ export const getCells = ({
     const entries = value as CatalogEntry[] | null;
     if (!entries || entries.length === 0) return null;
     return (
-      <Flex flexDirection='column' gap={1}>
+      <ExpandableList gap={1}>
         {entries.map((cat, idx) =>
           cat.url ? (
             <Link key={idx} href={cat.url} isExternal fontSize='sm'>
@@ -407,7 +410,7 @@ export const getCells = ({
             </Text>
           ),
         )}
-      </Flex>
+      </ExpandableList>
     );
   }
 
@@ -417,7 +420,7 @@ export const getCells = ({
     const entries = value as FunderEntry[] | null;
     if (!entries || entries.length === 0) return null;
     return (
-      <Flex flexDirection='column' gap={1}>
+      <ExpandableList gap={1}>
         {entries.map((funder, idx) =>
           funder.identifier ? (
             <Link key={idx} href={funder.identifier} isExternal fontSize='sm'>
@@ -429,7 +432,7 @@ export const getCells = ({
             </Text>
           ),
         )}
-      </Flex>
+      </ExpandableList>
     );
   }
 
@@ -439,7 +442,7 @@ export const getCells = ({
     const entries = value as FundingIdEntry[] | null;
     if (!entries || entries.length === 0) return null;
     return (
-      <Flex flexDirection='column' gap={1}>
+      <ExpandableList gap={1}>
         {entries.map((funding, idx) =>
           funding.url ? (
             <Link key={idx} href={funding.url} isExternal fontSize='sm'>
@@ -451,19 +454,19 @@ export const getCells = ({
             </Text>
           ),
         )}
-      </Flex>
+      </ExpandableList>
     );
   }
 
-  // Limit description to 144 characters
+  // Description: clamped to a few lines with a "Show more" / "Show less" toggle.
   if (column.property === 'description') {
-    const { text } = getTruncatedText(value as string, false, 144);
-    return text ? (
-      <Text fontSize='sm'>
-        {text}
-        {(value as string).length > 144 ? '…' : ''}
-      </Text>
-    ) : null;
+    return (
+      <ExpandableText
+        text={(value as string) || ''}
+        noOfLines={4}
+        isLoading={isLoading}
+      />
+    );
   }
 
   // Scalar string fields that don't need DefinedTerm / QuantitativeValue rendering
