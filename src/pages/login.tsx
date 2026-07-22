@@ -14,7 +14,13 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
-import { FaCheck, FaGithub, FaOrcid } from 'react-icons/fa6';
+import {
+  FaCheck,
+  FaGithub,
+  FaGoogle,
+  FaMicrosoft,
+  FaOrcid,
+} from 'react-icons/fa6';
 import { useRouter } from 'next/router';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { useAuth } from 'src/hooks/useAuth';
@@ -36,6 +42,18 @@ const ProviderIcon = ({ providerId }: { providerId: string }) => {
   if (providerId.toLowerCase() === 'github') {
     return (
       <Icon as={FaGithub} color='#24292e ' boxSize={5} aria-hidden='true' />
+    );
+  }
+
+  if (providerId.toLowerCase() === 'google') {
+    return (
+      <Icon as={FaGoogle} color='#4285F4' boxSize={5} aria-hidden='true' />
+    );
+  }
+
+  if (providerId.toLowerCase() === 'microsoft') {
+    return (
+      <Icon as={FaMicrosoft} color='#00A4EF' boxSize={5} aria-hidden='true' />
     );
   }
 
@@ -78,7 +96,7 @@ function LoginPage() {
   return (
     <PageContainer meta={getPageSeoConfig('/login')} px={0} py={0}>
       <Flex
-        minH={{ base: 'auto', lg: 'calc(100vh - 180px)' }}
+        minH={{ base: 'auto', lg: '80vh' }}
         flexDirection={{ base: 'column', lg: 'row' }}
       >
         <Flex
