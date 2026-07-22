@@ -9,7 +9,15 @@ jest.mock('src/utils/formatting/formatConditionsOfAccess', () => ({
   ),
 }));
 
-import { FILTER_CONFIGS, getFilterById } from '../config';
+import {
+  ALL_FACET_PROPERTIES,
+  COMPUTATIONAL_TOOL_FACET_PROPERTIES,
+  DATA_COLLECTION_FACET_PROPERTIES,
+  FILTER_CONFIGS,
+  SAMPLE_FACET_PROPERTIES,
+  SHARED_DATASET_FACET_PROPERTIES,
+  getFilterById,
+} from '../config';
 
 describe('filters/config', () => {
   it('has unique filter ids and required fields', () => {
@@ -27,6 +35,26 @@ describe('filters/config', () => {
   it('returns filter by id and undefined for missing id', () => {
     expect(getFilterById('date')?.property).toBe('date');
     expect(getFilterById('__missing__')).toBeUndefined();
+  });
+
+  it('builds scoped facet property lists by category', () => {
+    const categoryFacetProperties = [
+      SHARED_DATASET_FACET_PROPERTIES,
+      COMPUTATIONAL_TOOL_FACET_PROPERTIES,
+      SAMPLE_FACET_PROPERTIES,
+      DATA_COLLECTION_FACET_PROPERTIES,
+    ].flatMap(properties => properties.split(',').filter(Boolean));
+
+    expect(categoryFacetProperties.sort()).toEqual(
+      ALL_FACET_PROPERTIES.split(',').filter(Boolean).sort(),
+    );
+    expect(SHARED_DATASET_FACET_PROPERTIES).toContain(
+      'infectiousAgent.displayName.raw',
+    );
+    expect(SAMPLE_FACET_PROPERTIES).toContain('sampleType.name');
+    expect(DATA_COLLECTION_FACET_PROPERTIES).toBe(
+      'about.name,exampleOfWork.about.name.raw',
+    );
   });
 
   it('applies transformData for conditionsOfAccess', () => {

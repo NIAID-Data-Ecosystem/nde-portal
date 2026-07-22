@@ -127,6 +127,7 @@ export const SearchResultsController = ({
       use_ai_search: queryParams.use_ai_search ?? 'false',
       advancedSearch: queryParams.advancedSearch,
       extra_filter: serializedFilters,
+      facets: '',
     },
     { enabled: router.isReady },
   );

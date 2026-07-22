@@ -83,6 +83,14 @@ const selectAggregationForFilter = (
   }
 };
 
+const hasScopedAggregation = (config: FilterConfig): boolean =>
+  [
+    'Sample',
+    'Computational Tool',
+    'Shared / Dataset',
+    'Data Collection',
+  ].includes(config.category);
+
 /**
  * Hook for fetching filter data.
  *
@@ -106,6 +114,9 @@ export const useFilterQueries = ({
 }: UseFilterQueriesOptions): UseFilterQueriesResult => {
   const router = useRouter();
   const queriesEnabled = router.isReady && enabled;
+  const needsFallbackAggregation = configs.some(
+    config => !hasScopedAggregation(config),
+  );
 
   // Keep the main aggregation query as a fallback / cache-warming call.
   // Always request ALL facet properties + hist=date so the query key is stable
@@ -131,7 +142,7 @@ export const useFilterQueries = ({
   // not yet available.
   const aggQuery = useAggregation({
     params: aggParams,
-    enabled: queriesEnabled,
+    enabled: queriesEnabled && needsFallbackAggregation,
   });
 
   // Source facets still need metadata for genre grouping
@@ -144,10 +155,27 @@ export const useFilterQueries = ({
     refetchOnWindowFocus: false,
   });
 
-  const response = aggQuery.data;
-  const isLoading = aggQuery.isPending;
-  const isUpdating = !isLoading && aggQuery.isFetching;
-  const error = (aggQuery.error as Error) || null;
+  const response = needsFallbackAggregation ? aggQuery.data : undefined;
+  const hasMissingScopedAggregation = configs.some(config => {
+    if (!hasScopedAggregation(config)) {
+      return false;
+    }
+    return !selectAggregationForFilter(
+      config,
+      undefined,
+      bioSampleAggregationData,
+      computationalToolAggregationData,
+      sharedDatasetAggregationData,
+      dataCollectionAggregationData,
+    );
+  });
+  const isLoading =
+    queriesEnabled &&
+    ((needsFallbackAggregation && aggQuery.isPending) ||
+      hasMissingScopedAggregation);
+  const isUpdating =
+    !isLoading && needsFallbackAggregation && aggQuery.isFetching;
+  const error = needsFallbackAggregation ? (aggQuery.error as Error) : null;
 
   // Keep a ref to the last fully-resolved results so consumers
   // see stable data while queries are refetching.

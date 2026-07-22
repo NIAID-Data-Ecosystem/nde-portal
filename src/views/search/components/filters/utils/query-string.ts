@@ -6,6 +6,7 @@ import { APPLY_DEFAULT_DATE_FILTER_KEY } from 'src/views/search/config/defaultQu
 // Regex to split filter values by quoted/bare OR and TO separators.
 // Matches: " OR ", OR, " TO ", TO (used in both date ranges and multi-value filters)
 const VALUE_SPLIT_PATTERN = /(?:" OR ")| OR |(?:" TO ")| TO /;
+const EXISTS_FILTER_KEYS = new Set(['_exists_', '-_exists_']);
 
 const coerceFilterValues = (values: unknown): SelectedFilterValueType[] => {
   if (Array.isArray(values)) {
@@ -29,7 +30,7 @@ const coerceFilterValues = (values: unknown): SelectedFilterValueType[] => {
  * Produces strings like:
  *   (topic:("Genomics" OR "Proteomics")) AND (@type:("Dataset"))
  *   (date:["2020-01-01" TO "2023-12-31"])
- *   (keywords:(-_exists_:("keywords")))
+ *   (-_exists_:("keywords"))
  */
 export const queryFilterObject2String = (
   selectedFilters?: SelectedFilterType,
@@ -83,6 +84,10 @@ export const queryFilterObject2String = (
         }
       }
 
+      if (stringValues.length === 0 && objectValues.length > 0) {
+        return valueString;
+      }
+
       return valueString ? `(${filterName}:${valueString})` : null;
     })
     .filter(Boolean);
@@ -119,7 +124,16 @@ export const queryFilterString2Object = (
     const key = cleanPart.slice(0, colonIndex).replace(/[("]/g, '');
     const rawValue = cleanPart.slice(colonIndex + 1);
 
-    const values = parseFilterValues(rawValue);
+    const values = parseFilterValues(rawValue, key);
+    if (EXISTS_FILTER_KEYS.has(key)) {
+      values.forEach(field => {
+        if (typeof field !== 'string') return;
+        if (!acc[field]) acc[field] = [];
+        acc[field].push({ [key]: [field] });
+      });
+      return acc;
+    }
+
     if (values.length > 0) {
       acc[key] = values;
     }
@@ -133,7 +147,10 @@ export const queryFilterString2Object = (
  * Strips wrapper quotes/brackets, splits on OR/TO, and recursively
  * parses any nested _exists_ sub-expressions.
  */
-const parseFilterValues = (valueString: string): SelectedFilterValueType[] => {
+const parseFilterValues = (
+  valueString: string,
+  fieldName?: string,
+): SelectedFilterValueType[] => {
   // Strip first-occurrence-only wrappers to preserve nested structures
   const cleaned = valueString
     .replace('("', '')
@@ -146,8 +163,10 @@ const parseFilterValues = (valueString: string): SelectedFilterValueType[] => {
     .filter(Boolean)
     .map(part => {
       if (part.includes('_exists_')) {
-        return queryFilterString2Object(
-          part,
+        const parsedValue = queryFilterString2Object(part);
+        return (
+          (fieldName && parsedValue?.[fieldName]?.[0]) ||
+          parsedValue
         ) as unknown as SelectedFilterValueType;
       }
       return part;

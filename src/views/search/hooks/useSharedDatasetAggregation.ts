@@ -2,7 +2,7 @@ import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { encodeString } from 'src/utils/querystring-helpers';
-import { ALL_FACET_PROPERTIES } from '../components/filters/config';
+import { SHARED_DATASET_FACET_PROPERTIES } from '../components/filters/config';
 
 export interface SharedDatasetAggregationParams {
   q: string;
@@ -62,7 +62,7 @@ export const useSharedDatasetAggregation = (
       fetchSearchResults({
         q: encodedQ,
         extra_filter: combinedFilter,
-        facets: ALL_FACET_PROPERTIES,
+        facets: SHARED_DATASET_FACET_PROPERTIES,
         hist: 'date',
         size: 0,
         facet_size: 1000,

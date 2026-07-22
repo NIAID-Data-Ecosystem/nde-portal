@@ -286,4 +286,43 @@ describe('useFilterQueries', () => {
       't1',
     ]);
   });
+
+  it('uses scoped aggregation data without fetching the fallback aggregation', () => {
+    const { result } = renderHook(
+      () =>
+        useFilterQueries({
+          configs: [
+            {
+              id: 'facet-id',
+              name: 'Facet',
+              property: 'facet.field',
+              description: '',
+              category: 'Shared / Dataset',
+              queryType: 'facet',
+            },
+          ] as any,
+          params: { q: 'term' } as any,
+          sharedDatasetAggregationData: {
+            total: 10,
+            facets: {
+              'facet.field': {
+                _type: 'terms',
+                terms: [{ term: 't1', count: 2 }],
+                missing: 3,
+                other: 5,
+                total: 7,
+              },
+            },
+          } as any,
+        }),
+      { wrapper: createWrapper() },
+    );
+
+    expect(fetchSearchResults).not.toHaveBeenCalled();
+    expect(result.current.results?.['facet-id'].data.map(d => d.term)).toEqual([
+      '_exists_',
+      't1',
+      '-_exists_',
+    ]);
+  });
 });

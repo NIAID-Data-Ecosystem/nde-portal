@@ -23,7 +23,7 @@ describe('filters/utils/query-string', () => {
     expect(result).toContain('(date:["2020-01-01" TO "2021-12-31"])');
     expect(result).toContain('(@type:("api-Dataset"))');
     expect(result).toContain(
-      '(source:(_exists_:("source")) OR (-_exists_:("source")))',
+      '(_exists_:("source")) OR (-_exists_:("source"))',
     );
   });
 
@@ -57,6 +57,29 @@ describe('filters/utils/query-string', () => {
     expect(result).toBe('(topic:("alpha"))');
   });
 
+  it('serializes pure not-exists filters as top-level API clauses', () => {
+    const result = queryFilterObject2String({
+      'infectiousAgent.displayName.raw': [
+        { '-_exists_': ['infectiousAgent.displayName.raw'] },
+      ],
+    });
+
+    expect(result).toBe('(-_exists_:("infectiousAgent.displayName.raw"))');
+  });
+
+  it('keeps exists clauses nested when mixed with normal facet values', () => {
+    const result = queryFilterObject2String({
+      'species.displayName.raw': [
+        'Human | Homo sapiens',
+        { _exists_: ['species.displayName.raw'] },
+      ],
+    });
+
+    expect(result).toBe(
+      '(species.displayName.raw:("Human | Homo sapiens") OR (_exists_:("species.displayName.raw")))',
+    );
+  });
+
   it('parses query strings back to filter objects', () => {
     const parsed = queryFilterString2Object(
       '(topic:("alpha" OR "beta")) AND (date:["2020-01-01" TO "2021-12-31"])',
@@ -64,6 +87,30 @@ describe('filters/utils/query-string', () => {
     expect(parsed).toEqual({
       topic: ['alpha', 'beta'],
       date: ['2020-01-01', '2021-12-31'],
+    });
+  });
+
+  it('parses top-level not-exists filters back to selected filter state', () => {
+    const parsed = queryFilterString2Object(
+      '(-_exists_:("infectiousAgent.displayName.raw"))',
+    );
+
+    expect(parsed).toEqual({
+      'infectiousAgent.displayName.raw': [
+        { '-_exists_': ['infectiousAgent.displayName.raw'] },
+      ],
+    });
+  });
+
+  it('parses old nested exists filter URLs back to selected filter state', () => {
+    const parsed = queryFilterString2Object(
+      '(infectiousAgent.displayName.raw:(-_exists_:("infectiousAgent.displayName.raw")))',
+    );
+
+    expect(parsed).toEqual({
+      'infectiousAgent.displayName.raw': [
+        { '-_exists_': ['infectiousAgent.displayName.raw'] },
+      ],
     });
   });
 

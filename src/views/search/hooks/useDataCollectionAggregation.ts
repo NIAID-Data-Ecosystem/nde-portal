@@ -2,7 +2,7 @@ import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { encodeString } from 'src/utils/querystring-helpers';
-import { ALL_FACET_PROPERTIES } from '../components/filters/config';
+import { DATA_COLLECTION_FACET_PROPERTIES } from '../components/filters/config';
 
 export interface DataCollectionAggregationParams {
   q: string;
@@ -56,8 +56,7 @@ export const useDataCollectionAggregation = (
       fetchSearchResults({
         q: encodedQ,
         extra_filter: combinedFilter,
-        facets: ALL_FACET_PROPERTIES,
-        hist: 'date',
+        facets: DATA_COLLECTION_FACET_PROPERTIES,
         size: 0,
         facet_size: 1000,
         use_ai_search,

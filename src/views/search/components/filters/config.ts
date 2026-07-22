@@ -326,6 +326,30 @@ export const ALL_FACET_PROPERTIES = FILTER_CONFIGS.map(c => c.property).join(
   ',',
 );
 
+export const SHARED_DATASET_FACET_PROPERTIES = FILTER_CONFIGS.filter(
+  c => c.category === 'Shared / Dataset',
+)
+  .map(c => c.property)
+  .join(',');
+
+export const COMPUTATIONAL_TOOL_FACET_PROPERTIES = FILTER_CONFIGS.filter(
+  c => c.category === 'Computational Tool',
+)
+  .map(c => c.property)
+  .join(',');
+
+export const SAMPLE_FACET_PROPERTIES = FILTER_CONFIGS.filter(
+  c => c.category === 'Sample',
+)
+  .map(c => c.property)
+  .join(',');
+
+export const DATA_COLLECTION_FACET_PROPERTIES = FILTER_CONFIGS.filter(
+  c => c.category === 'Data Collection',
+)
+  .map(c => c.property)
+  .join(',');
+
 /**
  * Get a filter config by id
  */
