@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.2.1](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v6.1.1...v6.2.1) (2026-07-23)
+
+
+### 🚀 Features
+
+* change hasDownload tooltip text ([3555962](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/355596272b13dca5885fbeb671becbb8b994ac4a))
+* change UI pill tooltip copy ([68430ce](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/68430ced7f5ca9418d5decda0a8ebd3839afba8f))
+* create progrem resource type banner ([8b3f8cd](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/8b3f8cd3ef1b793491f4991dab0a2a82612c32ba))
+* **resource-page:** add link to program collections page ([f0d370a](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f0d370a381250ec76f3d1bc31d422420222a4204))
+* **search:** add expandable rows ([810828c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/810828ceb4a1aca57cdf032cfd960ec646e66dd3))
+
+
+### 🐛 Bugfixes
+
+* **repository-matcher:** remove sample filter + add feature flag for data collection filtering ([1e6acef](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/1e6acefb121c1c96f25845ea277b7ddb72f62893))
+
 ## [6.2.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v6.1.1...v6.2.0) (2026-07-22)
 
 
