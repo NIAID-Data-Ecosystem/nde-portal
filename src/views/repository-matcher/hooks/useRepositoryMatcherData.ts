@@ -3,6 +3,7 @@ import { useRepoData } from 'src/hooks/api/useRepoData';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
 import { REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
 import { RepositoryMatcherItem } from '../types';
+import { SHOW_DATA_COLLECTIONS_TAB } from 'src/utils/feature-flags';
 
 export type RepositoryMatcherRow = {
   _id: string;
@@ -59,12 +60,11 @@ export const useRepositoryMatcherData = (fields: string[] = ['@type']) => {
         const statusIsAcceptingData =
           item?.creativeWorkStatus === 'Accepting Data';
 
-        // Exclude items with type "Data Repository" or "Sample Repository"
-        const isDataOrSampleRepo =
-          item['type'].includes('Data Repository') ||
-          item['type'].includes('Sample Repository');
+        // Exclude items with type "Data Repository"
+        const isDataCollectionRepo =
+          SHOW_DATA_COLLECTIONS_TAB && item['type'].includes('Data Repository');
 
-        return statusIsAcceptingData && !isDataOrSampleRepo;
+        return statusIsAcceptingData && !isDataCollectionRepo;
       })
       .forEach((item, idx) => {
         const id = item._id || `__no-id-${idx}`;
