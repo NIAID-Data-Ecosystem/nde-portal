@@ -129,7 +129,7 @@ describe('useRepositoryMatcherData', () => {
     const { result } = renderHook(() => useRepositoryMatcherData());
     const { data } = result.current;
 
-    expect(data.map(r => r._id)).toEqual(['c1', 'dup', 'r1']);
+    expect(data.map(r => r._id)).toEqual(['c1', 'dup', 'r1', 'sample-repo']);
     // Catalog wins the dedupe, so its name is kept.
     expect((data[1].name as { label: string }).label).toBe('Catalog Dup');
     // Per-column transformed values are present and the search blob is built.

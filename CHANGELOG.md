@@ -1,39 +1,59 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+All notable changes to this project will be documented in this file. See
+[standard-version](https://github.com/conventional-changelog/standard-version)
+for commit guidelines.
 
-## [6.2.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v6.1.1...v6.2.0) (2026-07-22)
-
-
-### 🚀 Features
-
-* change hasDownload tooltip text ([3555962](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/355596272b13dca5885fbeb671becbb8b994ac4a))
-* change UI pill tooltip copy ([68430ce](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/68430ced7f5ca9418d5decda0a8ebd3839afba8f))
-* create progrem resource type banner ([8b3f8cd](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/8b3f8cd3ef1b793491f4991dab0a2a82612c32ba))
-* **resource-page:** add link to program collections page ([f0d370a](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f0d370a381250ec76f3d1bc31d422420222a4204))
-* **search:** add expandable rows ([810828c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/810828ceb4a1aca57cdf032cfd960ec646e66dd3))
-
-### [6.1.1](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v6.1.0...v6.1.1) (2026-07-15)
-
-
-### 🚀 Features
-
-* **search:** add funding-related columns ([7db36e9](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/7db36e901fd224275c233eb5fead949dfbef4deb))
-* **search:** allow name column to be hidden or moved around ([748c7fa](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/748c7fa3581908ebdd76824e38d1a613eb1a106f))
-* **search:** improve retired resource catalog card accessibility ([0bbd1ae](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/0bbd1ae99befac8314fd61045ca7d8ed6dffdb93))
-
-## [6.1.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v6.0.0...v6.1.0) (2026-07-13)
-
+### [6.2.1](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v6.1.1...v6.2.1) (2026-07-23)
 
 ### 🐛 Bugfixes
 
-* **search-results-page:** prevent compact card from resizing when changing tabs ([#482](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/482)) ([234aeeb](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/234aeeb55e9b9f66e86dc0eed71c7d4096c5983f))
+- **repository-matcher:** remove sample filter + add feature flag for data
+  collection filtering
+  ([1e6acef](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/1e6acefb121c1c96f25845ea277b7ddb72f62893))
 
+## [6.2.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v6.1.1...v6.2.0) (2026-07-22)
 
 ### 🚀 Features
 
-* replace any/no with specified/unspecified ([#491](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/491)) ([5641fd1](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/5641fd1da3859765e62184891e7dd7415ae996dd))
-* use sticky header ([#487](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/487)) ([445a90d](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/445a90d314bc061696a1abb62ef703f520393535))
+- change hasDownload tooltip text
+  ([3555962](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/355596272b13dca5885fbeb671becbb8b994ac4a))
+- change UI pill tooltip copy
+  ([68430ce](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/68430ced7f5ca9418d5decda0a8ebd3839afba8f))
+- create progrem resource type banner
+  ([8b3f8cd](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/8b3f8cd3ef1b793491f4991dab0a2a82612c32ba))
+- **resource-page:** add link to program collections page
+  ([f0d370a](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f0d370a381250ec76f3d1bc31d422420222a4204))
+- **search:** add expandable rows
+  ([810828c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/810828ceb4a1aca57cdf032cfd960ec646e66dd3))
+
+### [6.1.1](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v6.1.0...v6.1.1) (2026-07-15)
+
+### 🚀 Features
+
+- **search:** add funding-related columns
+  ([7db36e9](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/7db36e901fd224275c233eb5fead949dfbef4deb))
+- **search:** allow name column to be hidden or moved around
+  ([748c7fa](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/748c7fa3581908ebdd76824e38d1a613eb1a106f))
+- **search:** improve retired resource catalog card accessibility
+  ([0bbd1ae](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/0bbd1ae99befac8314fd61045ca7d8ed6dffdb93))
+
+## [6.1.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v6.0.0...v6.1.0) (2026-07-13)
+
+### 🐛 Bugfixes
+
+- **search-results-page:** prevent compact card from resizing when changing tabs
+  ([#482](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/482))
+  ([234aeeb](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/234aeeb55e9b9f66e86dc0eed71c7d4096c5983f))
+
+### 🚀 Features
+
+- replace any/no with specified/unspecified
+  ([#491](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/491))
+  ([5641fd1](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/5641fd1da3859765e62184891e7dd7415ae996dd))
+- use sticky header
+  ([#487](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/487))
+  ([445a90d](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/445a90d314bc061696a1abb62ef703f520393535))
 
 ## [6.0.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v5.3.0...v6.0.0) (2026-07-06)
 
