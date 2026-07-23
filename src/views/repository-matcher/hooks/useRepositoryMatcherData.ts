@@ -61,10 +61,11 @@ export const useRepositoryMatcherData = (fields: string[] = ['@type']) => {
           item?.creativeWorkStatus === 'Accepting Data';
 
         // Exclude items with type "Data Repository"
-        const isDataCollectionRepo =
-          SHOW_DATA_COLLECTIONS_TAB && item['type'].includes('Data Repository');
+        const shouldExucludeDataRepository =
+          !SHOW_DATA_COLLECTIONS_TAB &&
+          item['type'].includes('Data Repository');
 
-        return statusIsAcceptingData && !isDataCollectionRepo;
+        return statusIsAcceptingData && !shouldExucludeDataRepository;
       })
       .forEach((item, idx) => {
         const id = item._id || `__no-id-${idx}`;
