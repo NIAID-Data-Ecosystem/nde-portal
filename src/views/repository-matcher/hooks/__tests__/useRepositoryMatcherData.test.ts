@@ -8,6 +8,9 @@ import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
 
 jest.mock('src/hooks/api/useRepoData');
 jest.mock('src/hooks/api/useResourceCatalogs');
+jest.mock('src/utils/feature-flags', () => ({
+  SHOW_DATA_COLLECTIONS_TAB: false,
+}));
 
 const mockUseRepoData = useRepoData as jest.Mock;
 const mockUseResourceCatalogs = useResourceCatalogs as jest.Mock;
