@@ -90,7 +90,10 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
           license: data?.license,
           measurementTechnique: data?.measurementTechnique,
           // Include sample data only when the feature flag is enabled.
-          ...(SHOW_SAMPLE_UI_PILL ? { sample: data?.sample } : {}),
+          // DataCollection cards never show a sample pill.
+          ...(SHOW_SAMPLE_UI_PILL && type !== 'DataCollection'
+            ? { sample: data?.sample }
+            : {}),
           species: data?.species,
           usageInfo: data?.usageInfo,
           variableMeasured: data?.variableMeasured,

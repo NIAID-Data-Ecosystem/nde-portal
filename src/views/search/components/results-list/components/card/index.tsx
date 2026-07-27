@@ -97,6 +97,40 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     [querystring],
   );
 
+  // Content Type pills for DataCollection cards. Combines "Data Type" (from
+  // `about`) and "Asset Type" (from `exampleOfWork.about`) into a single set of
+  // searchable pills. Both fields may be returned as a single object or an
+  // array, so normalize before mapping.
+  const contentTypeItems = useMemo(() => {
+    const dataTypeAbout = data?.about;
+    const dataTypeItems = dataTypeAbout
+      ? (Array.isArray(dataTypeAbout)
+          ? dataTypeAbout
+          : [dataTypeAbout]
+        ).flatMap(item =>
+          typeof item?.name === 'string'
+            ? [{ name: item.name, value: item.name, field: 'about.name' }]
+            : [],
+        )
+      : [];
+
+    const assetTypeAbout = data?.exampleOfWork?.about;
+    const assetTypeItems = assetTypeAbout
+      ? (Array.isArray(assetTypeAbout)
+          ? assetTypeAbout
+          : [assetTypeAbout]
+        ).flatMap(item => {
+          const label = item?.displayName || item?.name;
+          const value = item?.name || item?.displayName;
+          return label && value
+            ? [{ name: label, value, field: 'exampleOfWork.about.name.raw' }]
+            : [];
+        })
+      : [];
+
+    return [...dataTypeItems, ...assetTypeItems];
+  }, [data?.about, data?.exampleOfWork?.about]);
+
   return (
     // {/* Banner with resource type + date of publication */}
     <Card
@@ -374,6 +408,38 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               </Stack>
 
               <MetadataAccordion data={data} />
+
+              {data?.['@type'] === 'DataCollection' &&
+                contentTypeItems.length > 0 && (
+                  <Flex
+                    borderBottom='1px solid'
+                    borderBottomColor='gray.200'
+                    px={paddingCard}
+                    py={1}
+                  >
+                    <SearchableItems
+                      generateButtonLabel={(
+                        limit,
+                        length,
+                        itemLabel = 'content types',
+                      ) =>
+                        limit === length
+                          ? `Show fewer ${itemLabel}`
+                          : `Show all ${itemLabel} (${length - limit} more)`
+                      }
+                      itemLimit={3}
+                      items={contentTypeItems}
+                      name={
+                        <InfoLabel
+                          title='Content Type'
+                          tooltipText={
+                            metadataFields['about'].description?.[data['@type']]
+                          }
+                        />
+                      }
+                    />
+                  </Flex>
+                )}
 
               {data?.topicCategory &&
                 data?.topicCategory.some(topic => topic.name) && (

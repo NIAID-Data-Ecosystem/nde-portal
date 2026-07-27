@@ -10,7 +10,7 @@ import {
   PAGE_SIZE_OPTIONS,
   SORT_OPTIONS,
 } from 'src/views/search/config/defaultQuery';
-import { Flex, Stack } from '@chakra-ui/react';
+import { Flex, Radio, RadioGroup, Stack, Text } from '@chakra-ui/react';
 import { MetadataScoreToggle } from './components/metadata-score-toggle';
 
 /*
@@ -26,11 +26,17 @@ export const SearchResultsToolbar = ({
   id,
   params,
   extraActions,
+  viewMode,
+  onViewModeChange,
 }: {
   id: TabType['id'];
   params: Params;
   /** Optional content rendered to the left of the Download Metadata button. */
   extraActions?: React.ReactNode;
+  /** Current view mode. Only used to render the DataCollection view toggle. */
+  viewMode?: 'table' | 'card';
+  /** Handler for the DataCollection view-mode toggle. */
+  onViewModeChange?: (mode: 'table' | 'card') => void;
 }) => {
   const router = useRouter();
 
@@ -52,6 +58,35 @@ export const SearchResultsToolbar = ({
             updateRoute(router, update);
           }}
         />
+      )}
+      {/* View mode toggle (DataCollection tab only). Rendered on its own row
+          above the sort/size/download controls. */}
+      {id === 'dc' && viewMode && onViewModeChange && (
+        <Flex alignItems='center' gap={2} w='100%' pb={2}>
+          <Text
+            as='span'
+            id='view-mode-label'
+            fontSize='sm'
+            whiteSpace='nowrap'
+            color='gray.900'
+          >
+            View mode:
+          </Text>
+          <RadioGroup
+            aria-labelledby='view-mode-label'
+            value={viewMode}
+            onChange={value => onViewModeChange(value as 'table' | 'card')}
+          >
+            <Stack direction='row' spacing={4}>
+              <Radio value='card' size='sm'>
+                Card
+              </Radio>
+              <Radio value='table' size='sm'>
+                Table
+              </Radio>
+            </Stack>
+          </RadioGroup>
+        </Flex>
       )}
       <Flex
         borderBottom={{ base: '1px solid' }}

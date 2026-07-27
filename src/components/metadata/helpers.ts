@@ -20,7 +20,7 @@ export const SORT_ORDER = [
   'healthCondition',
   'measurementTechnique',
   'variableMeasured',
-  'sample',
+  // 'sample',
   'funding',
   'license',
   'usageInfo',

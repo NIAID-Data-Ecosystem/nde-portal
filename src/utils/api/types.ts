@@ -505,6 +505,11 @@ export interface FormattedResource {
   distribution: Distribution[] | null;
   doi: string | null;
   downloadUrl: { name: string }[] | null;
+  exampleOfWork?: {
+    about?:
+      | Array<{ displayName?: string; name?: string; url?: string }>
+      | { displayName?: string; name?: string; url?: string };
+  } | null;
   featureList: FeatureListProperties[] | null;
   funding: Funding[] | null;
   genre: Domain | string[] | null;

@@ -66,6 +66,9 @@ export const getTypeColor = (
   } else if (typeLower === 'disease') {
     lt = 'purple.600';
     dk = 'purple.800';
+  } else if (typeLower === 'datacollection') {
+    lt = 'pink.800';
+    dk = 'pink.200';
   } else {
     lt = 'niaid.500';
   }

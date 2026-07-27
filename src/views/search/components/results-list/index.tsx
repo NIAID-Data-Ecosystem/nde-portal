@@ -182,6 +182,11 @@ export const SearchResults = ({
       : ALL_DATA_COLLECTION_COLUMNS.map(c => c.id),
   );
 
+  // View mode for the DataCollection tab: 'table' (default) renders the
+  // DataCollectionResultsTable, 'card' renders the same result cards used by
+  // the Dataset/Tool tabs.
+  const [viewMode, setViewMode] = useState<'table' | 'card'>('table');
+
   const selectByType = useCallback(
     (data: FetchSearchResultsResponse | undefined) => {
       if (types && types.length > 0 && data) {
@@ -301,6 +306,35 @@ export const SearchResults = ({
     updateRoute(router, update);
   };
 
+  // Result cards used by the Dataset/Tool tabs, and by the DataCollection tab
+  // when the user selects the 'card' view mode.
+  const resultCards = numCards > 0 && (
+    <VStack
+      as={UnorderedList}
+      className='search-results-cards'
+      alignItems='flex-start'
+      flex={3}
+      ml={0}
+      spacing={4}
+      w='100%'
+    >
+      {Array(numCards)
+        .fill(null)
+        .map((_, idx) => {
+          return (
+            <ListItem key={data?.results?.[idx]._id || idx} w='100%'>
+              <Card
+                isLoading={!router.isReady || isLoading}
+                data={data?.results[idx]}
+                referrerPath={router.asPath}
+                querystring={urlQueryParams.q}
+              />
+            </ListItem>
+          );
+        })}
+    </VStack>
+  );
+
   return (
     <>
       <VStack borderRadius='semi' bg='white' px={4} py={2}>
@@ -308,6 +342,8 @@ export const SearchResults = ({
         <SearchResultsToolbar
           id={id}
           params={params}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
           extraActions={
             isSamplesTab ? (
               <SampleCustomizeColumnsPopover
@@ -356,43 +392,22 @@ export const SearchResults = ({
             onSortChange={handleSortChange}
           />
         ) : isDataCollectionTab ? (
-          /* DataCollection tab */
-          <DataCollectionResultsTable
-            results={data?.results || []}
-            isLoading={!router.isReady || isLoading}
-            visibleColumnIds={dcVisibleColumnIds}
-            columnOrder={dcColumnOrder}
-            currentSort={sort}
-            onSortChange={handleSortChange}
-          />
+          /* DataCollection tab: table or cards depending on view mode */
+          viewMode === 'table' ? (
+            <DataCollectionResultsTable
+              results={data?.results || []}
+              isLoading={!router.isReady || isLoading}
+              visibleColumnIds={dcVisibleColumnIds}
+              columnOrder={dcColumnOrder}
+              currentSort={sort}
+              onSortChange={handleSortChange}
+            />
+          ) : (
+            resultCards
+          )
         ) : (
           /* Dataset / ComputationalTool tabs: render result cards */
-          numCards > 0 && (
-            <VStack
-              as={UnorderedList}
-              className='search-results-cards'
-              alignItems='flex-start'
-              flex={3}
-              ml={0}
-              spacing={4}
-              w='100%'
-            >
-              {Array(numCards)
-                .fill(null)
-                .map((_, idx) => {
-                  return (
-                    <ListItem key={data?.results?.[idx]._id || idx} w='100%'>
-                      <Card
-                        isLoading={!router.isReady || isLoading}
-                        data={data?.results[idx]}
-                        referrerPath={router.asPath}
-                        querystring={urlQueryParams.q}
-                      />
-                    </ListItem>
-                  );
-                })}
-            </VStack>
-          )
+          resultCards
         )}
 
         {/* Pagination controls */}

@@ -78,14 +78,20 @@ export const SAMPLE_FIELDS = [
   'itemLocation',
 ];
 
-// Minimal field list for the DataCollection table.
+// Field list for the DataCollection tab.
+//
+// This is a superset serving BOTH the DataCollection table and the
+// DataCollection card view. Keeping a single array means the fetch/prefetch
+// cache key is identical across view modes, so toggling Table <-> Card does
+// not trigger a refetch and stays in sync with the tabs-controller prefetch
+// (which imports this same constant).
 export const DATA_COLLECTION_FIELDS = [
   // Used by toRow() for catalog URL
   '_meta',
   '@type',
   'url',
   'includedInDataCatalog',
-  // Column fields
+  // Table column fields
   'name',
   'about',
   'conditionsOfAccess',
@@ -98,4 +104,24 @@ export const DATA_COLLECTION_FIELDS = [
   'isBasedOn',
   'collectionSize',
   'exampleOfWork',
+  // Card-only fields (header, badges, category pills)
+  'alternateName',
+  'author',
+  'isAccessibleForFree',
+  'operatingSystem',
+  'applicationCategory',
+  'programmingLanguage',
+  // Card-only fields (MetadataAccordion parity)
+  'funding',
+  'license',
+  'measurementTechnique',
+  'variableMeasured',
+  'usageInfo',
+  'featureList',
+  'availableOnDevice',
+  'input',
+  'output',
+  'softwareHelp',
+  'softwareRequirements',
+  'softwareVersion',
 ];
