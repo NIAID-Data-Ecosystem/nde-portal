@@ -2,20 +2,27 @@ import React from 'react';
 import { Text } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { Column } from 'src/components/table';
-import {
-  FormattedResource,
-  Funder,
-  Funding,
-  IncludedInDataCatalog,
-} from 'src/utils/api/types';
+import { FormattedResource } from 'src/utils/api/types';
 import { ResultsTable } from '../results-table';
-import { BaseColumn } from '../results-table/types';
-import { withWidth } from '../results-table/utils';
-import { renderCellData } from '../results-table/components/Cells';
 import {
-  ExpandableList,
-  ExpandableText,
-} from '../results-table/components/ExpandableCells';
+  BaseColumn,
+  CatalogEntry,
+  FunderEntry,
+  FundingIdEntry,
+} from '../results-table/types';
+import {
+  toCatalogEntries,
+  toFunderEntries,
+  toFundingIdEntries,
+  withWidth,
+} from '../results-table/utils';
+import {
+  CatalogCell,
+  FunderCell,
+  FundingIdCell,
+  renderCellData,
+} from '../results-table/components/Cells';
+import { ExpandableText } from '../results-table/components/ExpandableCells';
 import { SAMPLE_REQUIRED_COLUMN_IDS } from '../results-table/constants';
 
 export interface SampleColumn extends BaseColumn {}
@@ -278,72 +285,12 @@ export const ALL_SAMPLE_COLUMNS: SampleColumn[] = [
   },
 ];
 
-// Normalized shape stored on the row for each source entry.
-type CatalogEntry = { name: string; url: string | null };
-
-// Normalized shapes stored on the row for the funding-related columns.
-type FunderEntry = { name: string; identifier: string | null };
-type FundingIdEntry = { identifier: string; url: string | null };
-
 export const toRow = (resource: FormattedResource): Record<string, unknown> => {
-  const rawCatalog = resource.includedInDataCatalog;
-  // Normalize to an array regardless of whether the API returned a single
-  // object or an array.
-  const catalogs: IncludedInDataCatalog[] = Array.isArray(rawCatalog)
-    ? rawCatalog
-    : rawCatalog
-    ? [rawCatalog]
-    : [];
-
-  const catalogEntries: CatalogEntry[] = catalogs.map(catalog => {
-    const archivedAt = catalog?.archivedAt;
-    const url =
-      (Array.isArray(archivedAt) ? archivedAt[0] : archivedAt) ??
-      catalog?.url ??
-      null;
-    return { name: catalog.name ?? '', url };
-  });
-
-  // Normalize funding (an array on the record) into two flat, column-ready
-  // lists. `funder` can itself be a single object or an array, so flatten it.
-  const fundingEntries: Funding[] = Array.isArray(resource.funding)
-    ? resource.funding
-    : resource.funding
-    ? [resource.funding]
-    : [];
-
-  const funderList: FunderEntry[] = fundingEntries
-    .flatMap(funding => {
-      const funders = Array.isArray(funding?.funder)
-        ? funding.funder
-        : funding?.funder
-        ? [funding.funder]
-        : [];
-      return funders;
-    })
-    .map((funder: Funder) => ({
-      name: funder?.name ?? '',
-      identifier: funder?.identifier ?? null,
-    }))
-    .filter(entry => entry.name);
-
-  // Collapse duplicate funders, preferring the variant that
-  // carries an identifier so the name can link out.
-  const funderByName = new Map<string, FunderEntry>();
-  funderList.forEach(entry => {
-    const existing = funderByName.get(entry.name);
-    if (!existing || (!existing.identifier && entry.identifier)) {
-      funderByName.set(entry.name, entry);
-    }
-  });
-  const funderEntries: FunderEntry[] = Array.from(funderByName.values());
-
-  const fundingIdEntries: FundingIdEntry[] = fundingEntries
-    .map(funding => ({
-      identifier: funding?.identifier ?? '',
-      url: funding?.url ?? null,
-    }))
-    .filter(entry => entry.identifier);
+  // Normalize the source and funding-derived columns into flat, column-ready
+  // lists. These normalizers are shared with the other results tables.
+  const catalogEntries = toCatalogEntries(resource);
+  const funderEntries = toFunderEntries(resource);
+  const fundingIdEntries = toFundingIdEntries(resource);
 
   const rawIdentifier = (resource as any).identifier;
   const resolvedIdentifier = Array.isArray(rawIdentifier)
@@ -395,67 +342,19 @@ export const getCells = ({
   // Source: Array<{ name, url }> => one link/text per catalog entry.
   // Records with multiple sources render each on its own line.
   if (column.property === 'includedInDataCatalog') {
-    const entries = value as CatalogEntry[] | null;
-    if (!entries || entries.length === 0) return null;
-    return (
-      <ExpandableList gap={1}>
-        {entries.map((cat, idx) =>
-          cat.url ? (
-            <Link key={idx} href={cat.url} isExternal fontSize='sm'>
-              {cat.name || cat.url}
-            </Link>
-          ) : (
-            <Text key={idx} fontSize='sm'>
-              {cat.name}
-            </Text>
-          ),
-        )}
-      </ExpandableList>
-    );
+    return <CatalogCell entries={value as CatalogEntry[] | null} />;
   }
 
   // Funder: Array<{ name, identifier }> => name linked to funder identifier.
   // Records with multiple funders render each on its own line.
   if (column.property === 'funder') {
-    const entries = value as FunderEntry[] | null;
-    if (!entries || entries.length === 0) return null;
-    return (
-      <ExpandableList gap={1}>
-        {entries.map((funder, idx) =>
-          funder.identifier ? (
-            <Link key={idx} href={funder.identifier} isExternal fontSize='sm'>
-              {funder.name}
-            </Link>
-          ) : (
-            <Text key={idx} fontSize='sm'>
-              {funder.name}
-            </Text>
-          ),
-        )}
-      </ExpandableList>
-    );
+    return <FunderCell entries={value as FunderEntry[] | null} />;
   }
 
   // Funding ID: Array<{ identifier, url }> => identifier linked to funding url.
   // Records with multiple funding entries render each on its own line.
   if (column.property === 'fundingId') {
-    const entries = value as FundingIdEntry[] | null;
-    if (!entries || entries.length === 0) return null;
-    return (
-      <ExpandableList gap={1}>
-        {entries.map((funding, idx) =>
-          funding.url ? (
-            <Link key={idx} href={funding.url} isExternal fontSize='sm'>
-              {funding.identifier}
-            </Link>
-          ) : (
-            <Text key={idx} fontSize='sm'>
-              {funding.identifier}
-            </Text>
-          ),
-        )}
-      </ExpandableList>
-    );
+    return <FundingIdCell entries={value as FundingIdEntry[] | null} />;
   }
 
   // Description: clamped to a few lines with a "Show more" / "Show less" toggle.

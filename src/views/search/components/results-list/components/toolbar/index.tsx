@@ -20,17 +20,23 @@ import { MetadataScoreToggle } from './components/metadata-score-toggle';
 
  `extraActions` is an optional render prop for inserting additional controls
  (e.g. "Customize Columns") to the left of the Download Metadata button.
+
+ `viewModeControl` is an optional slot rendered on its own row above the
+ sort/size controls (e.g. the Card / Table view mode radio).
 */
 
 export const SearchResultsToolbar = ({
   id,
   params,
   extraActions,
+  viewModeControl,
 }: {
   id: TabType['id'];
   params: Params;
   /** Optional content rendered to the left of the Download Metadata button. */
   extraActions?: React.ReactNode;
+  /** Optional control rendered on its own row above the sort/size controls. */
+  viewModeControl?: React.ReactNode;
 }) => {
   const router = useRouter();
 
@@ -53,6 +59,13 @@ export const SearchResultsToolbar = ({
           }}
         />
       )}
+      {/* View mode (Card / Table) sits on its own row above the controls below. */}
+      {viewModeControl && (
+        <Flex w='100%' py={0}>
+          {viewModeControl}
+        </Flex>
+      )}
+
       <Flex
         borderBottom={{ base: '1px solid' }}
         borderColor={{ base: 'page.alt' }}

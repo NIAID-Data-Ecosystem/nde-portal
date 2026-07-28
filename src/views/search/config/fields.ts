@@ -41,6 +41,66 @@ export const RESULT_FIELDS = [
   'variableMeasured',
 ];
 
+// Minimal field list for the Dataset table view.
+export const DATASET_TABLE_FIELDS = [
+  // Used by toRow() for the record link and the source / funding columns
+  '_meta',
+  '@type',
+  '_id',
+  'url',
+  'includedInDataCatalog',
+  'funding',
+  // Column fields
+  'name',
+  'date',
+  'description',
+  'conditionsOfAccess',
+  'author',
+  'healthCondition',
+  'infectiousAgent',
+  'species',
+  'measurementTechnique',
+  'variableMeasured',
+  'topicCategory',
+  'license',
+  'usageInfo',
+  'doi',
+  'isAccessibleForFree',
+  'sdPublisher',
+  'alternateName',
+];
+
+// Minimal field list for the ComputationalTool table view.
+export const COMPUTATIONAL_TOOL_TABLE_FIELDS = [
+  // Used by toRow() for the record link and the source / funding columns
+  '_meta',
+  '@type',
+  '_id',
+  'url',
+  'includedInDataCatalog',
+  'funding',
+  // Column fields
+  'name',
+  'date',
+  'description',
+  'conditionsOfAccess',
+  'author',
+  'applicationCategory',
+  'programmingLanguage',
+  'operatingSystem',
+  'availableOnDevice',
+  'input',
+  'output',
+  'featureList',
+  'softwareVersion',
+  'softwareRequirements',
+  'softwareHelp',
+  'topicCategory',
+  'license',
+  'isAccessibleForFree',
+  'doi',
+];
+
 // Minimal field list for the Sample table.
 export const SAMPLE_FIELDS = [
   // Used by toRow() for identifier resolution and catalog URL

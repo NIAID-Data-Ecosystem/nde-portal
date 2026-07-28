@@ -13,115 +13,41 @@ import { usePaginationContext } from '../../context/pagination-context';
 import { updateRoute } from '../../utils/update-route';
 import { SearchResultsToolbar } from './components/toolbar';
 import Banner from 'src/components/banner';
-import {
-  SampleResultsTable,
-  ALL_SAMPLE_COLUMNS,
-} from './components/sample-results-table';
-import {
-  DataCollectionResultsTable,
-  ALL_DATA_COLLECTION_COLUMNS,
-} from './components/data-collection-results-table';
+import { SampleResultsTable } from './components/sample-results-table';
+import { DataCollectionResultsTable } from './components/data-collection-results-table';
+import { DatasetResultsTable } from './components/dataset-results-table';
+import { ComputationalToolResultsTable } from './components/computational-tool-results-table';
 import { useSearchResultsFetchedContext } from '../../context/search-results-fetched-context';
+import { CustomizeColumnsPopover } from './components/results-table/components/CustomizeColumnsPopover';
 import {
-  CustomizeColumnsPopover as SampleCustomizeColumnsPopover,
-  DEFAULT_VISIBLE_COLUMN_IDS as SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS,
-  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as SAMPLE_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-  CUSTOM_COLUMN_ORDER_STORAGE_KEY as SAMPLE_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
-} from './components/sample-results-table/components/CustomizeColumnsPopover';
+  RESULTS_TABLE_SETTINGS,
+  ResultsTableType,
+} from './config/table-settings';
 import {
-  CustomizeColumnsPopover as DataCollectionCustomizeColumnsPopover,
-  DEFAULT_VISIBLE_COLUMN_IDS as DC_DEFAULT_VISIBLE_COLUMN_IDS,
-  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as DC_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-  CUSTOM_COLUMN_ORDER_STORAGE_KEY as DC_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
-} from './components/data-collection-results-table/components/CustomizeColumnsPopover';
+  resolveStoredOrderedIds,
+  resolveStoredVisibleIds,
+} from 'src/components/select-and-order-popover';
+import {
+  ViewMode,
+  ViewModeRadio,
+} from './components/toolbar/components/view-mode-radio';
 import { BIOSAMPLE_EXTRA_FILTER } from '../../hooks/useBioSampleAggregation';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import {
   RESULT_FIELDS,
   SAMPLE_FIELDS,
   DATA_COLLECTION_FIELDS,
+  DATASET_TABLE_FIELDS,
+  COMPUTATIONAL_TOOL_TABLE_FIELDS,
 } from '../../config/fields';
-
-const readFromStorage = (key: string, fallback: string[]): string[] => {
-  if (typeof window === 'undefined') return fallback;
-  try {
-    const stored = window.localStorage.getItem(key);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch {
-    // ignore
-  }
-  return fallback;
-};
-
-// Read the persisted visible column IDs from localStorage.
-// Falls back to the default subset when no stored value exists.
-const getInitialVisibleColumnIds = (): string[] => {
-  const stored = readFromStorage(
-    SAMPLE_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-    SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS,
-  );
-  const allIds = ALL_SAMPLE_COLUMNS.map(c => c.id);
-  const valid = stored.filter((id: string) => allIds.includes(id));
-  return valid.length > 0 ? valid : SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS;
-};
-
-// Read the persisted column order from localStorage.
-// Falls back to the master column order when no stored value exists.
-const getInitialColumnOrder = (): string[] => {
-  const allIds = ALL_SAMPLE_COLUMNS.map(c => c.id);
-  const stored = readFromStorage(
-    SAMPLE_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
-    allIds,
-  );
-  const valid = stored.filter((id: string) => allIds.includes(id));
-  if (valid.length > 0) {
-    const missing = allIds.filter(id => !valid.includes(id));
-    return [...valid, ...missing];
-  }
-  return allIds;
-};
-
-const getInitialDataCollectionVisibleColumnIds = (): string[] => {
-  const stored = readFromStorage(
-    DC_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-    DC_DEFAULT_VISIBLE_COLUMN_IDS,
-  );
-  const allIds = ALL_DATA_COLLECTION_COLUMNS.map(c => c.id);
-  const valid = stored.filter((id: string) => allIds.includes(id));
-  return valid.length > 0 ? valid : DC_DEFAULT_VISIBLE_COLUMN_IDS;
-};
-
-const getInitialDataCollectionColumnOrder = (): string[] => {
-  const allIds = ALL_DATA_COLLECTION_COLUMNS.map(c => c.id);
-  const stored = readFromStorage(DC_CUSTOM_COLUMN_ORDER_STORAGE_KEY, allIds);
-  const valid = stored.filter((id: string) => allIds.includes(id));
-  if (valid.length > 0) {
-    const missing = allIds.filter(id => !valid.includes(id));
-    return [...valid, ...missing];
-  }
-  return allIds;
-};
-
-// Build the ColumnConfig list expected by each CustomizeColumnsPopover.
-const SAMPLE_COLUMN_CONFIGS = ALL_SAMPLE_COLUMNS.map(col => ({
-  id: col.id,
-  title: col.title,
-}));
-
-const DATA_COLLECTION_COLUMN_CONFIGS = ALL_DATA_COLLECTION_COLUMNS.map(col => ({
-  id: col.id,
-  title: col.title,
-}));
 
 /*
 [COMPONENT INFO]:
  Search results pages displays the list of records returned by a search.
- Contains pagination and search results cards. When the active tab is the
- Samples tab ('s') or the DataCollection tab ('dc'), results are rendered
- as a table instead of cards.
+ Contains pagination and search results cards. The Samples ('s') and
+ DataCollection ('dc') tabs always render a table. The Dataset and
+ ComputationalTool sections render cards by default and let the user switch to
+ a table via the "View mode" radio in the toolbar.
 */
 
 export const SearchResults = ({
@@ -147,39 +73,81 @@ export const SearchResults = ({
   // Selected tab index is stored in context to sync with other components.
   const urlQueryParams = useSearchQueryFromURL();
 
-  // For Samples and DataCollection tabs, use extra fields for the table columns.
+  // Samples and DataCollections always render as a table.
   const isSamplesTab = id === 's';
   const isDataCollectionTab = id === 'dc';
 
-  // Each tab type uses a minimal, table-specific field list rather than the
+  // The 'd' tab renders one SearchResults per accordion section, so key the
+  // view-mode toggle off the section type rather than the tab id: only the
+  // Dataset section should offer it (ResourceCatalog renders a carousel).
+  const isDatasetSection = types.includes('Dataset');
+  const isComputationalToolSection = types.includes('ComputationalTool');
+  const supportsViewToggle = isDatasetSection || isComputationalToolSection;
+
+  const [viewMode, setViewMode] = useState<ViewMode>('card');
+  const isTableView = supportsViewToggle && viewMode === 'table';
+
+  // Which table this instance renders when a table is showing. Fixed for the
+  // lifetime of the component (it depends only on props), so the column state
+  // below can be initialized at mount even while the card view is active.
+  const tableType: ResultsTableType | null = isSamplesTab
+    ? 'sample'
+    : isDataCollectionTab
+    ? 'data-collection'
+    : isDatasetSection
+    ? 'dataset'
+    : isComputationalToolSection
+    ? 'computational-tool'
+    : null;
+
+  const tableSettings = tableType ? RESULTS_TABLE_SETTINGS[tableType] : null;
+
+  // Samples and DataCollections are table-only; the other two are opt-in.
+  const showTable = isSamplesTab || isDataCollectionTab || isTableView;
+
+  // Each table uses a minimal, table-specific field list rather than the
   // shared RESULT_FIELDS base (which carries many card-only fields that the
   // tables never render).
   const fields = isSamplesTab
     ? SAMPLE_FIELDS
     : isDataCollectionTab
     ? DATA_COLLECTION_FIELDS
+    : isTableView && isDatasetSection
+    ? DATASET_TABLE_FIELDS
+    : isTableView && isComputationalToolSection
+    ? COMPUTATIONAL_TOOL_TABLE_FIELDS
     : RESULT_FIELDS;
 
-  // Only initialize column state for the tab type that this instance actually
-  // renders. Avoid paying the localStorage read cost for the other table
-  // type on every mount.
+  // Column visibility / ordering for whichever table is active. Initialized
+  // lazily from localStorage so the first client render already has the right
+  // columns and does not flicker.
   const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(() =>
-    isSamplesTab
-      ? getInitialVisibleColumnIds()
-      : SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS,
+    tableSettings
+      ? resolveStoredVisibleIds({
+          storageKey: tableSettings.storageKeyVisible,
+          allIds: tableSettings.columns.map(col => col.id),
+          defaultVisibleIds: tableSettings.defaultVisibleIds,
+          requiredIds: tableSettings.requiredIds,
+        })
+      : [],
   );
   const [columnOrder, setColumnOrder] = useState<string[]>(() =>
-    isSamplesTab ? getInitialColumnOrder() : ALL_SAMPLE_COLUMNS.map(c => c.id),
+    tableSettings
+      ? resolveStoredOrderedIds({
+          storageKey: tableSettings.storageKeyOrder,
+          allIds: tableSettings.columns.map(col => col.id),
+          requiredIds: tableSettings.requiredIds,
+        })
+      : [],
   );
-  const [dcVisibleColumnIds, setDcVisibleColumnIds] = useState<string[]>(() =>
-    isDataCollectionTab
-      ? getInitialDataCollectionVisibleColumnIds()
-      : DC_DEFAULT_VISIBLE_COLUMN_IDS,
-  );
-  const [dcColumnOrder, setDcColumnOrder] = useState<string[]>(() =>
-    isDataCollectionTab
-      ? getInitialDataCollectionColumnOrder()
-      : ALL_DATA_COLLECTION_COLUMNS.map(c => c.id),
+
+  // Column configs for the Customize Columns popover.
+  const columnConfigs = useMemo(
+    () =>
+      tableSettings
+        ? tableSettings.columns.map(col => ({ id: col.id, title: col.title }))
+        : [],
+    [tableSettings],
   );
 
   const selectByType = useCallback(
@@ -304,22 +272,32 @@ export const SearchResults = ({
   return (
     <>
       <VStack borderRadius='semi' bg='white' px={4} py={2}>
-        {/* Toolbar controls: Sort, size, download metadata, and optional extra actions. For Samples and DataCollections tab the "Customize Columns" button is injected via the extraActions prop so it appears to the left of Download Metadata. */}
+        {/* Toolbar controls: Sort, size, download metadata, and optional extra
+        actions. Whenever a table is showing, the "Customize Columns" button is
+        injected via the extraActions prop so it appears to the left of Download
+        Metadata. The Card / Table radio gets its own row above the rest. */}
         <SearchResultsToolbar
           id={id}
           params={params}
+          viewModeControl={
+            supportsViewToggle ? (
+              <ViewModeRadio
+                id={`${id}-${types.join('-')}`}
+                value={viewMode}
+                onChange={setViewMode}
+              />
+            ) : undefined
+          }
           extraActions={
-            isSamplesTab ? (
-              <SampleCustomizeColumnsPopover
-                columnsList={SAMPLE_COLUMN_CONFIGS}
+            showTable && tableSettings ? (
+              <CustomizeColumnsPopover
+                columnsList={columnConfigs}
+                storageKeyVisible={tableSettings.storageKeyVisible}
+                storageKeyOrder={tableSettings.storageKeyOrder}
+                defaultVisibleIds={tableSettings.defaultVisibleIds}
+                requiredIds={tableSettings.requiredIds}
                 onVisibleColumnsChange={setVisibleColumnIds}
                 onColumnOrderChange={setColumnOrder}
-              />
-            ) : isDataCollectionTab ? (
-              <DataCollectionCustomizeColumnsPopover
-                columnsList={DATA_COLLECTION_COLUMN_CONFIGS}
-                onVisibleColumnsChange={setDcVisibleColumnIds}
-                onColumnOrderChange={setDcColumnOrder}
               />
             ) : undefined
           }
@@ -360,8 +338,30 @@ export const SearchResults = ({
           <DataCollectionResultsTable
             results={data?.results || []}
             isLoading={!router.isReady || isLoading}
-            visibleColumnIds={dcVisibleColumnIds}
-            columnOrder={dcColumnOrder}
+            visibleColumnIds={visibleColumnIds}
+            columnOrder={columnOrder}
+            currentSort={sort}
+            onSortChange={handleSortChange}
+          />
+        ) : isTableView && isDatasetSection ? (
+          /* Dataset tab, table view */
+          <DatasetResultsTable
+            results={data?.results || []}
+            isLoading={!router.isReady || isLoading}
+            referrerPath={router.asPath}
+            visibleColumnIds={visibleColumnIds}
+            columnOrder={columnOrder}
+            currentSort={sort}
+            onSortChange={handleSortChange}
+          />
+        ) : isTableView && isComputationalToolSection ? (
+          /* ComputationalTool tab, table view */
+          <ComputationalToolResultsTable
+            results={data?.results || []}
+            isLoading={!router.isReady || isLoading}
+            referrerPath={router.asPath}
+            visibleColumnIds={visibleColumnIds}
+            columnOrder={columnOrder}
             currentSort={sort}
             onSortChange={handleSortChange}
           />

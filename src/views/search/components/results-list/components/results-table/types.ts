@@ -19,6 +19,24 @@ export interface BaseColumn extends Column {
   apiSortField: string | null;
 }
 
+/** Normalized shape stored on the row for each `includedInDataCatalog` entry. */
+export interface CatalogEntry {
+  name: string;
+  url: string | null;
+}
+
+/** Normalized shape stored on the row for each funder derived from `funding`. */
+export interface FunderEntry {
+  name: string;
+  identifier: string | null;
+}
+
+/** Normalized shape stored on the row for each funding ID derived from `funding`. */
+export interface FundingIdEntry {
+  identifier: string;
+  url: string | null;
+}
+
 export interface ResultsTableProps<TColumn extends BaseColumn> {
   /** Full master list of columns for this table type. */
   columns: TColumn[];

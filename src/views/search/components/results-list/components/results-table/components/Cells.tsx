@@ -3,6 +3,7 @@ import { Link } from 'src/components/link';
 import { DefinedTerm, QuantitativeValue } from 'src/utils/api/types';
 import { Column } from 'src/components/table';
 import { ExpandableList } from './ExpandableCells';
+import { CatalogEntry, FunderEntry, FundingIdEntry } from '../types';
 
 const formatTerm = (term: string): string => {
   if (!term || typeof term !== 'string') return '';
@@ -102,6 +103,75 @@ export const renderValue = (val: CellValue, key?: React.Key) => {
   }
 
   return null;
+};
+
+/**
+ * Source cell. Renders one link (or plain text) per catalog entry, so records
+ * with multiple sources stack each on its own line.
+ */
+export const CatalogCell = ({
+  entries,
+}: {
+  entries: CatalogEntry[] | null;
+}): React.ReactNode => {
+  if (!entries || entries.length === 0) return null;
+  return (
+    <ExpandableList gap={1}>
+      {entries.map((catalog, idx) =>
+        catalog.url ? (
+          <Link key={idx} href={catalog.url} isExternal fontSize='sm'>
+            {catalog.name || catalog.url}
+          </Link>
+        ) : (
+          <TextCell key={idx}>{catalog.name}</TextCell>
+        ),
+      )}
+    </ExpandableList>
+  );
+};
+
+/** Funder cell. Each funder name links to its identifier when one exists. */
+export const FunderCell = ({
+  entries,
+}: {
+  entries: FunderEntry[] | null;
+}): React.ReactNode => {
+  if (!entries || entries.length === 0) return null;
+  return (
+    <ExpandableList gap={1}>
+      {entries.map((funder, idx) =>
+        funder.identifier ? (
+          <Link key={idx} href={funder.identifier} isExternal fontSize='sm'>
+            {funder.name}
+          </Link>
+        ) : (
+          <TextCell key={idx}>{funder.name}</TextCell>
+        ),
+      )}
+    </ExpandableList>
+  );
+};
+
+/** Funding ID cell. Each identifier links to its funding URL when one exists. */
+export const FundingIdCell = ({
+  entries,
+}: {
+  entries: FundingIdEntry[] | null;
+}): React.ReactNode => {
+  if (!entries || entries.length === 0) return null;
+  return (
+    <ExpandableList gap={1}>
+      {entries.map((funding, idx) =>
+        funding.url ? (
+          <Link key={idx} href={funding.url} isExternal fontSize='sm'>
+            {funding.identifier}
+          </Link>
+        ) : (
+          <TextCell key={idx}>{funding.identifier}</TextCell>
+        ),
+      )}
+    </ExpandableList>
+  );
 };
 
 // Render a cell value that may be a single scalar or an array of scalars.
