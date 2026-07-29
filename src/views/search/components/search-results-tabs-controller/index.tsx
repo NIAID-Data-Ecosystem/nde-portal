@@ -281,7 +281,7 @@ export const SearchResultsController = ({
       q: queryParams.q,
       filters: { ...queryParams.filters, ['@type']: ['ResourceCatalog'] },
       fields: CAROUSEL_RESULTS_FIELDS,
-      facets: ['@type'],
+      // No facets: this query is only read for `results`.
       size: 50,
       sort: 'name.raw',
       use_ai_search: queryParams.use_ai_search ?? 'false',

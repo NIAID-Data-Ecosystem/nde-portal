@@ -1,4 +1,4 @@
-import { FilterConfig, ChartConfig } from './types';
+import { FilterConfig, ChartConfig, FilterCategory } from './types';
 import { getMetadataDescription } from 'src/components/metadata';
 import {
   SHOW_SAMPLES_TAB,
@@ -325,6 +325,39 @@ export const FILTER_CONFIGS: FilterConfig[] = [
 export const ALL_FACET_PROPERTIES = FILTER_CONFIGS.map(c => c.property).join(
   ',',
 );
+
+/**
+ * Facet properties partitioned by the category that consumes them, as a
+ * comma-separated string per category.
+ *
+ * Each category is served by its own type-scoped aggregation request
+ * (see `src/views/search/hooks/use*Aggregation.ts`), and each of those
+ * responses is only ever read for its own category's filters.
+ *
+ * Because `property` is unique and `category` is required on every config,
+ * this is a lossless partition of `ALL_FACET_PROPERTIES`.
+ *
+ * Note the value is derived from the already feature-flag-filtered
+ * FILTER_CONFIGS, so a category with no visible filters yields `''`. Callers
+ * must skip the request in that case rather than send `facets=`.
+ */
+export const FACET_PROPERTIES_BY_CATEGORY = FILTER_CONFIGS.reduce(
+  (acc, config) => {
+    acc[config.category] = acc[config.category]
+      ? `${acc[config.category]},${config.property}`
+      : config.property;
+    return acc;
+  },
+  {} as Record<FilterCategory, string>,
+);
+
+/**
+ * Facet properties needed by a single category's scoped aggregation.
+ * Returns an empty string when the category has no visible filters.
+ */
+export const getFacetPropertiesForCategory = (
+  category: FilterCategory,
+): string => FACET_PROPERTIES_BY_CATEGORY[category] ?? '';
 
 /**
  * Get a filter config by id
