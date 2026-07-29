@@ -11,7 +11,7 @@ export const SHOULD_HIDE_SAMPLES = (hash: string) => false;
 
 // Hide the samples tab on the search results page in production builds until
 // approved. To enable tab in production, set this flag to `true`.
-export const SHOW_SAMPLES_TAB = !isProd;
+export const SHOW_SAMPLES_TAB = true;
 
 // Hide the data collections tab on the search results page in production builds until approved. To enable tab in production, set this flag to `true`.
 export const SHOW_DATA_COLLECTIONS_TAB = !isProd;
@@ -64,7 +64,7 @@ export const SHOW_SAMPLE_UI_PILL = true;
 // link redirecting to the knowledge-center/retired-resources page) in
 // non-production environments for testing/review. To enable in production,
 // set this flag to `true`.
-export const SHOW_RETIRED_RESOURCE_CATALOG_UI = !isProd;
+export const SHOW_RETIRED_RESOURCE_CATALOG_UI = true;
 
 // Show the "Program Resource" treatment for ResourceCatalog resources that have
 // a sourceOrganization (cyan type banner + "Program Resource" label on cards and
@@ -72,7 +72,7 @@ export const SHOW_RETIRED_RESOURCE_CATALOG_UI = !isProd;
 // section linked to the /program-collections page) in non-production
 // environments for testing/review. To enable in production, set this flag to
 // `true`.
-export const SHOW_PROGRAM_RESOURCE_UI = !isProd;
+export const SHOW_PROGRAM_RESOURCE_UI = true;
 
 // Show the mutual-exclusivity behavior for the "Any <filter>" (_exists_) and
 // "No <filter>" (-_exists_) filter checkboxes in the search filters panel in
