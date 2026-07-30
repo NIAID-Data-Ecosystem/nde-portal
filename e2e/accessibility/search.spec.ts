@@ -5888,7 +5888,7 @@ test.describe('a11y: Search — error', () => {
 
     // Wait for the error UI: the ErrorMessage's heading and Retry control.
     await expect(
-      page.getByRole('heading', { name: /something went wrong/i }),
+      page.getByRole('heading', { name: /^something went wrong\.$/i }),
     ).toBeVisible();
     await expect(
       page.getByRole('button', { name: /retry/i }).first(),

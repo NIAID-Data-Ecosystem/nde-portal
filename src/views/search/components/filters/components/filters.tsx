@@ -134,18 +134,21 @@ export const Filters = React.memo(
       { enabled: router.isReady },
     );
 
-    // Use simplified filter queries hook
+    // Use simplified filter queries hook.
+    // The four scoped aggregations above cover every filter category, so the
+    // unscoped all-facet aggregation is disabled here.
     const filtersAggQuery = useFilterQueries({
       configs: visibleFiltersList,
       enabled: isFiltersFetchEnabled,
+      enableMainAggregation: false,
       params: filtersAggParams,
-      bioSampleAggregationData: bioSampleAgg.data,
-      computationalToolAggregationData: computationalToolAgg.data,
-      sharedDatasetAggregationData: sharedDatasetAgg.data,
-      dataCollectionAggregationData: dataCollectionAgg.data,
+      bioSampleAggregation: bioSampleAgg,
+      computationalToolAggregation: computationalToolAgg,
+      sharedDatasetAggregation: sharedDatasetAgg,
+      dataCollectionAggregation: dataCollectionAgg,
     });
 
-    const { results, error, isUpdating } = filtersAggQuery;
+    const { results, error } = filtersAggQuery;
 
     const groupedFilters = useMemo(() => {
       return visibleFiltersList.reduce((groups, config) => {
@@ -345,9 +348,8 @@ export const Filters = React.memo(
                                 handleSelectedFilters(values, property)
                               }
                               isLoading={results?.[id]?.isLoading ?? true}
-                              isUpdating={
-                                results?.[id]?.isUpdating || isUpdating
-                              }
+                              // Per-filter state only
+                              isUpdating={results?.[id]?.isUpdating}
                             />
                           )}
                         </FiltersSection>
