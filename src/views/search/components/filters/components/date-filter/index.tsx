@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { omit } from 'lodash';
-import { Box, Flex, Heading } from '@chakra-ui/react';
+import { Box, Flex, Text } from '@chakra-ui/react';
 import { DateRange } from './hooks/useDateRangeContext';
 import { FILTER_CONFIGS } from '../../config';
 import {
@@ -84,11 +84,16 @@ const DateFilterContent: React.FC<
 
   if (error) {
     return (
-      <Flex p={4} bg='status.error'>
-        <Heading size='sm' color='white' fontWeight='semibold'>
+      <Flex p={4} bg='status.error' role='alert'>
+        <Text
+          fontSize='md'
+          lineHeight='base'
+          fontWeight='semibold'
+          color='white'
+        >
           Something went wrong, unable to load filters. <br />
           Try reloading the page.
-        </Heading>
+        </Text>
       </Flex>
     );
   }
