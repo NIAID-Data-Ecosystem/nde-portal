@@ -26,6 +26,12 @@ const isCI = !!process.env.CI;
 
 export default defineConfig({
   testDir: './e2e',
+  // Screen reader specs live under `e2e/screen-reader/` and belong to a
+  // different suite entirely — real VoiceOver, headed, single-worker, minutes
+  // per test, macOS-only. They have their own config
+  // (`playwright.screen-reader.config.ts`) and are deliberately NOT run in CI,
+  // so exclude them here or `yarn test:a11y` would collect and hang on them.
+  testIgnore: '**/screen-reader/**',
   // Fail the build on CI if a `test.only` was committed by accident.
   forbidOnly: isCI,
   retries: isCI ? 1 : 0,

@@ -1,7 +1,21 @@
 # End-to-end and accessibility tests
 
-This directory contains Playwright tests. The current suite focuses on
-accessibility checks powered by `@axe-core/playwright`.
+This directory contains Playwright tests, in two separate suites:
+
+| Suite                                | What it does                                                                                                               | Config                               | In CI?                |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | --------------------- |
+| [`accessibility/`](./accessibility/) | `@axe-core/playwright` WCAG scans — static analysis, headless, parallel, seconds per spec                                  | `playwright.config.ts`               | **yes**               |
+| [`screen-reader/`](./screen-reader/) | Drives **real VoiceOver** via guidepup and asserts on what is spoken — headed, single-worker, minutes per spec, macOS-only | `playwright.screen-reader.config.ts` | **no**, run on demand |
+
+The rest of this document is about the axe suite. For screen reader tests — the
+required one-time macOS setup, the "move with VoiceOver, wait with Playwright"
+rule, and how to read the spoken transcripts — see
+[`screen-reader/README.md`](./screen-reader/README.md).
+
+The two suites deliberately overlap on routes but not on questions. axe proves a
+control _has_ an accessible name; only the screen reader suite proves the user
+is _told_ something useful when they reach it. Shared route mocks and fixtures
+live in [`fixtures/`](./fixtures/) so both suites exercise the same DOM.
 
 ## Running tests
 

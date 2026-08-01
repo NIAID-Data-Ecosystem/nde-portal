@@ -13,6 +13,9 @@
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+# screen reader suite (playwright.screen-reader.config.ts)
+/test-results-sr/
+/playwright-report-sr/
 
 # next.js
 /.next/
