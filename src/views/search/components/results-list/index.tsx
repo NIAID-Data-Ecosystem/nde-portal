@@ -21,6 +21,10 @@ import {
   DataCollectionResultsTable,
   ALL_DATA_COLLECTION_COLUMNS,
 } from './components/data-collection-results-table';
+import {
+  DatasetResultsTable,
+  ALL_DATASET_COLUMNS,
+} from './components/dataset-results-table';
 import { useSearchResultsFetchedContext } from '../../context/search-results-fetched-context';
 import {
   CustomizeColumnsPopover as SampleCustomizeColumnsPopover,
@@ -34,6 +38,17 @@ import {
   CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as DC_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
   CUSTOM_COLUMN_ORDER_STORAGE_KEY as DC_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
 } from './components/data-collection-results-table/components/CustomizeColumnsPopover';
+import {
+  CustomizeColumnsPopover as DatasetCustomizeColumnsPopover,
+  DEFAULT_VISIBLE_COLUMN_IDS as DATASET_DEFAULT_VISIBLE_COLUMN_IDS,
+  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as DATASET_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+  CUSTOM_COLUMN_ORDER_STORAGE_KEY as DATASET_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+} from './components/dataset-results-table/components/CustomizeColumnsPopover';
+import { DATASET_REQUIRED_COLUMN_IDS } from './components/results-table/constants';
+import {
+  resolveStoredVisibleIds,
+  resolveStoredOrderedIds,
+} from 'src/components/select-and-order-popover';
 import { BIOSAMPLE_EXTRA_FILTER } from '../../hooks/useBioSampleAggregation';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import {
@@ -108,8 +123,34 @@ const getInitialDataCollectionColumnOrder = (): string[] => {
   return allIds;
 };
 
+// The Dataset table resolves its persisted state through the popover's own
+// exported resolvers, which apply the required-column rules (always visible,
+// pinned first) that the hand-rolled helpers above do not.
+const ALL_DATASET_COLUMN_IDS = ALL_DATASET_COLUMNS.map(c => c.id);
+const DATASET_REQUIRED_IDS = DATASET_REQUIRED_COLUMN_IDS as unknown as string[];
+
+const getInitialDatasetVisibleColumnIds = (): string[] =>
+  resolveStoredVisibleIds({
+    storageKey: DATASET_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+    allIds: ALL_DATASET_COLUMN_IDS,
+    defaultVisibleIds: DATASET_DEFAULT_VISIBLE_COLUMN_IDS,
+    requiredIds: DATASET_REQUIRED_IDS,
+  });
+
+const getInitialDatasetColumnOrder = (): string[] =>
+  resolveStoredOrderedIds({
+    storageKey: DATASET_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+    allIds: ALL_DATASET_COLUMN_IDS,
+    requiredIds: DATASET_REQUIRED_IDS,
+  });
+
 // Build the ColumnConfig list expected by each CustomizeColumnsPopover.
 const SAMPLE_COLUMN_CONFIGS = ALL_SAMPLE_COLUMNS.map(col => ({
+  id: col.id,
+  title: col.title,
+}));
+
+const DATASET_COLUMN_CONFIGS = ALL_DATASET_COLUMNS.map(col => ({
   id: col.id,
   title: col.title,
 }));
@@ -150,13 +191,22 @@ export const SearchResults = ({
   // Selected tab index is stored in context to sync with other components.
   const urlQueryParams = useSearchQueryFromURL();
 
+  // Persisted per-tab card/table preference. Only some tabs offer the choice.
+  const showViewMode = TABS_WITH_VIEW_MODE.includes(id);
+  const [viewMode, setViewMode] = useViewMode(id);
+
   // For Samples and DataCollection tabs, use extra fields for the table columns.
   const isSamplesTab = id === 's';
   const isDataCollectionTab = id === 'dc';
+  // The Datasets tab renders either cards or a table, depending on the user's
+  // view mode preference.
+  const isDatasetTable = id === 'd' && viewMode === 'table';
 
   // Each tab type uses a minimal, table-specific field list rather than the
   // shared RESULT_FIELDS base (which carries many card-only fields that the
-  // tables never render).
+  // tables never render). The Dataset table intentionally reuses
+  // RESULT_FIELDS: an identical field list keeps the query key the same for
+  // both view modes, so toggling card/table never triggers a refetch.
   const fields = isSamplesTab
     ? SAMPLE_FIELDS
     : isDataCollectionTab
@@ -184,10 +234,16 @@ export const SearchResults = ({
       ? getInitialDataCollectionColumnOrder()
       : ALL_DATA_COLLECTION_COLUMNS.map(c => c.id),
   );
-
-  // Persisted per-tab card/table preference. Only some tabs offer the choice.
-  const showViewMode = TABS_WITH_VIEW_MODE.includes(id);
-  const [viewMode, setViewMode] = useViewMode(id);
+  const [datasetVisibleColumnIds, setDatasetVisibleColumnIds] = useState<
+    string[]
+  >(() =>
+    isDatasetTable
+      ? getInitialDatasetVisibleColumnIds()
+      : DATASET_DEFAULT_VISIBLE_COLUMN_IDS,
+  );
+  const [datasetColumnOrder, setDatasetColumnOrder] = useState<string[]>(() =>
+    isDatasetTable ? getInitialDatasetColumnOrder() : ALL_DATASET_COLUMN_IDS,
+  );
 
   const selectByType = useCallback(
     (data: FetchSearchResultsResponse | undefined) => {
@@ -311,7 +367,7 @@ export const SearchResults = ({
   return (
     <>
       <VStack borderRadius='semi' bg='white' px={4} py={2}>
-        {/* Toolbar controls: Sort, size, download metadata, and optional extra actions. For Samples and DataCollections tab the "Customize Columns" button is injected via the extraActions prop so it appears to the left of Download Metadata. */}
+        {/* Toolbar controls: Sort, size, download metadata, and optional extra actions. Whenever a table is being rendered (Samples, DataCollections, and Datasets in table view) the "Customize Columns" button is injected via the extraActions prop so it appears to the left of Download Metadata. */}
         <SearchResultsToolbar
           id={id}
           params={params}
@@ -332,6 +388,12 @@ export const SearchResults = ({
                 columnsList={DATA_COLLECTION_COLUMN_CONFIGS}
                 onVisibleColumnsChange={setDcVisibleColumnIds}
                 onColumnOrderChange={setDcColumnOrder}
+              />
+            ) : isDatasetTable ? (
+              <DatasetCustomizeColumnsPopover
+                columnsList={DATASET_COLUMN_CONFIGS}
+                onVisibleColumnsChange={setDatasetVisibleColumnIds}
+                onColumnOrderChange={setDatasetColumnOrder}
               />
             ) : undefined
           }
@@ -377,8 +439,19 @@ export const SearchResults = ({
             currentSort={sort}
             onSortChange={handleSortChange}
           />
+        ) : isDatasetTable ? (
+          /* Datasets tab in table view */
+          <DatasetResultsTable
+            results={data?.results || []}
+            isLoading={!router.isReady || isLoading}
+            visibleColumnIds={datasetVisibleColumnIds}
+            columnOrder={datasetColumnOrder}
+            currentSort={sort}
+            onSortChange={handleSortChange}
+            referrerPath={router.asPath}
+          />
         ) : (
-          /* Dataset / ComputationalTool tabs: render result cards */
+          /* Dataset / ComputationalTool tabs in card view: render result cards */
           numCards > 0 && (
             <VStack
               as={UnorderedList}
