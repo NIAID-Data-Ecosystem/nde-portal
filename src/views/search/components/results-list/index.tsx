@@ -41,6 +41,9 @@ import {
   SAMPLE_FIELDS,
   DATA_COLLECTION_FIELDS,
 } from '../../config/fields';
+import { TABS_WITH_VIEW_MODE } from '../../config/view-mode';
+import { useViewMode } from '../../hooks/useViewMode';
+import { ViewModeRadio } from './components/toolbar/components/view-mode-radio';
 
 const readFromStorage = (key: string, fallback: string[]): string[] => {
   if (typeof window === 'undefined') return fallback;
@@ -182,6 +185,10 @@ export const SearchResults = ({
       : ALL_DATA_COLLECTION_COLUMNS.map(c => c.id),
   );
 
+  // Persisted per-tab card/table preference. Only some tabs offer the choice.
+  const showViewMode = TABS_WITH_VIEW_MODE.includes(id);
+  const [viewMode, setViewMode] = useViewMode(id);
+
   const selectByType = useCallback(
     (data: FetchSearchResultsResponse | undefined) => {
       if (types && types.length > 0 && data) {
@@ -308,6 +315,11 @@ export const SearchResults = ({
         <SearchResultsToolbar
           id={id}
           params={params}
+          viewModeControl={
+            showViewMode ? (
+              <ViewModeRadio id={id} value={viewMode} onChange={setViewMode} />
+            ) : undefined
+          }
           extraActions={
             isSamplesTab ? (
               <SampleCustomizeColumnsPopover
