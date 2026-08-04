@@ -122,20 +122,12 @@ export const ALL_DATASET_COLUMNS: DatasetColumn[] = [
     props: withWidth('200px'),
   },
   {
-    id: 'experimentalSamples',
-    title: 'Experimental Samples',
-    property: 'experimentalSamples',
+    id: 'samples',
+    title: 'Samples',
+    property: 'samples',
     isSortable: false,
     apiSortField: null,
-    props: withWidth('170px'),
-  },
-  {
-    id: 'populationSamples',
-    title: 'Population Samples',
-    property: 'populationSamples',
-    isSortable: false,
-    apiSortField: null,
-    props: withWidth('170px'),
+    props: withWidth('180px'),
   },
   {
     id: 'funder',
@@ -183,26 +175,23 @@ type FunderEntry = { name: string; identifier: string | null };
 type FundingIdEntry = { identifier: string; url: string | null };
 type UsageInfoEntry = { name: string; url: string | null };
 type LicenseEntry = { title: string; url: string | null };
+type SampleEntry = { count: number; kind: 'experimental' | 'population' };
 
 /**
- * Split the record's `sample` into the two sample counts the table shows.
- * Discriminates on the top-level `@type`, the same way the card's sample pill
- * does: a SampleCollection contributes an experimental count, a SampleAggregate
- * a population count.
+ * Reduce the record's `sample` to the single count the table shows, along with
+ * which kind of sample it is. Discriminates on the top-level `@type`, the same
+ * way the card's sample pill does: a SampleCollection is an experimental count,
+ * a SampleAggregate a population count. Returns null when there is no count to
+ * show, so the cell renders blank.
  */
-const getSampleCounts = (
+const getSampleEntry = (
   sample?: SampleAggregate | SampleCollection | null,
-): { experimentalSamples: number | null; populationSamples: number | null } => {
-  if (!sample) {
-    return { experimentalSamples: null, populationSamples: null };
-  }
+): SampleEntry | null => {
+  if (!sample) return null;
 
   if (sample['@type'] === 'SampleCollection') {
     const count = (sample as SampleCollection).numberOfItems?.value;
-    return {
-      experimentalSamples: count ?? null,
-      populationSamples: null,
-    };
+    return count == null ? null : { count, kind: 'experimental' };
   }
 
   const { sampleQuantity } = sample as SampleAggregate;
@@ -211,7 +200,7 @@ const getSampleCounts = (
       ? sampleQuantity.value
       : undefined;
 
-  return { experimentalSamples: null, populationSamples: count ?? null };
+  return count == null ? null : { count, kind: 'population' };
 };
 
 export const toRow = (resource: FormattedResource): Record<string, unknown> => {
@@ -316,7 +305,7 @@ export const toRow = (resource: FormattedResource): Record<string, unknown> => {
     fundingId: fundingIdEntries.length > 0 ? fundingIdEntries : null,
     usageInfo: usageInfoEntries.length > 0 ? usageInfoEntries : null,
     license,
-    ...getSampleCounts(resource.sample),
+    samples: getSampleEntry(resource.sample),
   };
 };
 
@@ -464,15 +453,15 @@ export const createGetCells =
       );
     }
 
-    // Sample counts: the number alone, blank when the record has none.
-    if (
-      column.property === 'experimentalSamples' ||
-      column.property === 'populationSamples'
-    ) {
-      const count = value as number | null;
-      return count == null ? null : (
-        <Text fontSize='sm'>{count.toLocaleString()}</Text>
-      );
+    // Samples: the count with its kind. Blank when
+    // the record has no sample count.
+    if (column.property === 'samples') {
+      const entry = value as SampleEntry | null;
+      return entry ? (
+        <Text fontSize='sm'>{`${entry.count.toLocaleString()} (${
+          entry.kind
+        })`}</Text>
+      ) : null;
     }
 
     // infectiousAgent, species, healthCondition, measurementTechnique,
