@@ -5,8 +5,7 @@ import {
 } from '../useRepositoryMatcherData';
 import { useSourcesList } from 'src/hooks/api/useSourcesList';
 
-jest.mock('src/hooks/api/useRepoData');
-jest.mock('src/hooks/api/useResourceCatalogs');
+jest.mock('src/hooks/api/useSourcesList');
 jest.mock('src/utils/feature-flags', () => ({
   SHOW_DATA_COLLECTIONS_TAB: false,
 }));
@@ -73,6 +72,14 @@ describe('useRepositoryMatcherData', () => {
           type: ['Dataset Repository'],
           creativeWorkStatus: 'Retired',
         },
+        // excluded: data repositories are hidden while the data collections
+        // tab is off (SHOW_DATA_COLLECTIONS_TAB is mocked to false above).
+        {
+          _id: 'collection',
+          name: 'Data Collection Repo',
+          type: ['Data Repository'],
+          creativeWorkStatus: 'Accepting Data',
+        },
         {
           _id: 'r1',
           name: 'Repo One',
@@ -86,9 +93,7 @@ describe('useRepositoryMatcherData', () => {
     const { result } = renderHook(() => useRepositoryMatcherData());
     const { data } = result.current;
 
-    expect(data.map(r => r._id)).toEqual(['c1', 'dup', 'r1', 'sample-repo']);
-    // Catalog wins the dedupe, so its name is kept.
-    expect((data[1].name as { label: string }).label).toBe('Catalog Dup');
+    expect(data.map(r => r._id)).toEqual(['c1', 'r1']);
     // Per-column transformed values are present and the search blob is built.
     expect((data[0].name as { label: string }).label).toBe('Catalog One');
     expect(data[0]._search).toContain('catalog one');
