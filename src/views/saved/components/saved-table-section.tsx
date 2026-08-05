@@ -5,6 +5,7 @@ import { SearchInput } from 'src/components/search-input';
 import { useSearchedData } from 'src/views/repository-matcher/hooks/useSearchedData';
 import { formatTableData } from '../table-config';
 import { SavedColumn } from '../types';
+import { SavedEmptyState } from './saved-empty-state';
 
 const TABLE_CONTAINER_PROPS = {
   overflowX: 'auto' as const,
@@ -31,7 +32,10 @@ interface SavedTableSectionProps<TItem> {
   searchAriaLabel: string;
   tableAriaLabel: string;
   caption: string;
+  /** Shown when a search/filter returns no matching rows. */
   emptyState?: React.ReactNode;
+  /** Shown when the user has not saved any items yet (no data at all). */
+  noItemsState?: React.ReactNode;
   tableContainerProps?: Omit<
     React.ComponentProps<typeof Table>['tableContainerProps'],
     'children'
@@ -57,6 +61,7 @@ export function SavedTableSection<TItem>({
   tableContainerProps = TABLE_CONTAINER_PROPS,
   caption,
   emptyState,
+  noItemsState,
 }: SavedTableSectionProps<TItem>) {
   const tableColumns = useMemo(
     () =>
@@ -200,12 +205,20 @@ export function SavedTableSection<TItem>({
         onControlledSort={handleSort}
         getCells={getCells}
         emptyState={
-          emptyState ?? (
-            <Flex direction='column' align='center' py={10}>
-              <Text fontWeight='bold'>No matches</Text>
-              <Text color='gray.700'>Try broadening your search.</Text>
-            </Flex>
-          )
+          // When there's no saved data at all, prompt the user to save
+          // something; otherwise the table is empty because a search/filter
+          // returned no matches.
+          data.length === 0
+            ? noItemsState ?? (
+                <SavedEmptyState title='Nothing saved yet'>
+                  Once you save items, they&apos;ll appear here.
+                </SavedEmptyState>
+              )
+            : emptyState ?? (
+                <SavedEmptyState title='No matches'>
+                  Try broadening your search.
+                </SavedEmptyState>
+              )
         }
       />
     </Flex>

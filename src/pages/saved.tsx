@@ -13,6 +13,7 @@ import {
   SAVED_RESOURCE_COLUMNS,
 } from 'src/views/saved/table-config';
 import { SavedTableSection } from 'src/views/saved/components/saved-table-section';
+import { SavedEmptyState } from 'src/views/saved/components/saved-empty-state';
 import { SavedDataErrorBanner } from 'src/views/saved/components/saved-data-error-banner';
 import { useUserData } from 'src/hooks/useUserData';
 import { useBatchResourcesData } from 'src/views/saved/hooks/useBatchResourcesData';
@@ -114,7 +115,16 @@ const SavedPage = () => {
         searchPlaceholder='Search saved queries'
         searchAriaLabel='Search saved queries'
         tableAriaLabel='Saved queries table'
-        caption='Saved queries are searches that you have bookmarked.'
+        caption='Saved queries are searches that you have saved.'
+        noItemsState={
+          <SavedEmptyState title='Nothing saved yet'>
+            To save a search, run a search and select{' '}
+            <Text as='span' fontWeight='semibold'>
+              Save search
+            </Text>{' '}
+            .
+          </SavedEmptyState>
+        }
         tableContainerProps={{
           overflowX: 'auto' as const,
           maxHeight: '300px',
@@ -133,7 +143,7 @@ const SavedPage = () => {
         searchPlaceholder='Search saved resources'
         searchAriaLabel='Search saved resources'
         tableAriaLabel='Saved resources table'
-        caption='Saved resources include datasets, computational tools, and other records that you have favorited.'
+        caption='Saved resources include datasets, computational tools, and other records that you have saved.'
         tableContainerProps={{
           overflowX: 'auto' as const,
           maxHeight: '350px',
@@ -141,6 +151,15 @@ const SavedPage = () => {
           bg: 'white',
           overflowY: 'auto' as const,
         }}
+        noItemsState={
+          <SavedEmptyState title='Nothing saved yet'>
+            To save a resource, select{' '}
+            <Text as='span' fontWeight='semibold'>
+              Save resource
+            </Text>{' '}
+            in the resource page.
+          </SavedEmptyState>
+        }
       />
     </PageContainer>
   );

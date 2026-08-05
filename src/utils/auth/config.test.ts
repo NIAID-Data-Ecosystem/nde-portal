@@ -15,6 +15,8 @@ describe('auth config', () => {
   it('builds labels with overrides and title case fallback', () => {
     expect(getProviderLabel('github')).toBe('GitHub');
     expect(getProviderLabel('orcid')).toBe('ORCID');
+    expect(getProviderLabel('google')).toBe('Google');
+    expect(getProviderLabel('microsoft')).toBe('Microsoft');
     expect(getProviderLabel('nih-login_provider')).toBe('Nih Login Provider');
   });
 

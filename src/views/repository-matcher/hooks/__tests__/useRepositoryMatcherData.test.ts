@@ -5,11 +5,11 @@ import {
 } from '../useRepositoryMatcherData';
 import { useSourcesList } from 'src/hooks/api/useSourcesList';
 
-// The hook now delegates fetching/merging to `useSourcesList` (which merges
-// resource catalogs into the metadata sources, de-duplicates them, and filters
-// out feature-flagged repository types). Its own job is to filter by
-// `creativeWorkStatus` and build the per-column table rows + search blob.
-jest.mock('src/hooks/api/useSourcesList');
+jest.mock('src/hooks/api/useRepoData');
+jest.mock('src/hooks/api/useResourceCatalogs');
+jest.mock('src/utils/feature-flags', () => ({
+  SHOW_DATA_COLLECTIONS_TAB: false,
+}));
 
 const mockUseSourcesList = useSourcesList as jest.Mock;
 
@@ -86,8 +86,9 @@ describe('useRepositoryMatcherData', () => {
     const { result } = renderHook(() => useRepositoryMatcherData());
     const { data } = result.current;
 
-    // Only the two "Accepting Data" sources become rows, in source order.
-    expect(data.map(r => r._id)).toEqual(['c1', 'r1']);
+    expect(data.map(r => r._id)).toEqual(['c1', 'dup', 'r1', 'sample-repo']);
+    // Catalog wins the dedupe, so its name is kept.
+    expect((data[1].name as { label: string }).label).toBe('Catalog Dup');
     // Per-column transformed values are present and the search blob is built.
     expect((data[0].name as { label: string }).label).toBe('Catalog One');
     expect(data[0]._search).toContain('catalog one');
