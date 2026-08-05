@@ -1,46 +1,42 @@
 import React, { useMemo } from 'react';
 import { Text } from '@chakra-ui/react';
 import { Column } from 'src/components/table';
-import {
-  FormattedResource,
-  SampleAggregate,
-  SampleCollection,
-  UsageInfo,
-} from 'src/utils/api/types';
+import { FormattedResource } from 'src/utils/api/types';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 import { ResultsTable } from '../results-table';
 import { BaseColumn } from '../results-table/types';
 import {
   CatalogEntry,
   FunderEntry,
-  FundingIdEntry,
   LicenseEntry,
   normalizeTermNames,
   toArray,
   toCatalogEntry,
   toFunderEntries,
-  toFundingIdEntries,
   toLicenseEntry,
   withWidth,
 } from '../results-table/utils';
 import { renderCellData } from '../results-table/components/Cells';
 import { ExpandableText } from '../results-table/components/ExpandableCells';
 import {
+  LinkEntry,
   LinkListCell,
   LinkOrTextCell,
   ResourceNameCell,
 } from '../results-table/components/SharedCells';
-import { DATASET_REQUIRED_COLUMN_IDS } from '../results-table/constants';
+import { COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS } from '../results-table/constants';
 
-export interface DatasetColumn extends BaseColumn {}
+export interface ComputationalToolColumn extends BaseColumn {}
 
 /*
- Columns mirror the metadata the Dataset card displays: the card header fields
- (name, source, date, author, access badges, description) followed by the
- properties in the card's metadata accordion, in its SORT_ORDER. Labels match
- the card's wording.
+ Columns mirror the metadata the Computational Tool card displays: the card
+ header fields (name, source, date, author, access, description), then the
+ tool-specific sections rendered in the card body (application categories,
+ programming languages, operating systems), then the properties in the card's
+ metadata accordion in its SORT_ORDER_COMPTOOL order, and finally Topic
+ Category, which the card sorts last. Labels match the card's wording.
 */
-export const ALL_DATASET_COLUMNS: DatasetColumn[] = [
+export const ALL_COMPUTATIONAL_TOOL_COLUMNS: ComputationalToolColumn[] = [
   {
     id: 'name',
     title: 'Name',
@@ -90,49 +86,57 @@ export const ALL_DATASET_COLUMNS: DatasetColumn[] = [
     props: withWidth('250px'),
   },
   {
-    id: 'infectiousAgent',
-    title: 'Pathogen',
-    property: 'infectiousAgent',
+    id: 'applicationCategory',
+    title: 'Application Categories',
+    property: 'applicationCategory',
     isSortable: false,
     apiSortField: null,
-    props: withWidth('160px'),
+    props: withWidth('190px'),
   },
   {
-    id: 'species',
-    title: 'Species',
-    property: 'species',
+    id: 'programmingLanguage',
+    title: 'Programming Languages',
+    property: 'programmingLanguage',
     isSortable: false,
     apiSortField: null,
-    props: withWidth('170px'),
+    props: withWidth('190px'),
   },
   {
-    id: 'healthCondition',
-    title: 'Health Condition',
-    property: 'healthCondition',
+    id: 'operatingSystem',
+    title: 'Operating System',
+    property: 'operatingSystem',
     isSortable: false,
     apiSortField: null,
-    props: withWidth('160px'),
+    props: withWidth('150px'),
   },
   {
-    id: 'measurementTechnique',
-    title: 'Measurement Technique',
-    property: 'measurementTechnique',
+    id: 'input',
+    title: 'Input',
+    property: 'input',
+    isSortable: false,
+    apiSortField: null,
+    props: withWidth('180px'),
+  },
+  {
+    id: 'featureList',
+    title: 'Feature List',
+    property: 'featureList',
     isSortable: false,
     apiSortField: null,
     props: withWidth('200px'),
   },
   {
-    id: 'variableMeasured',
-    title: 'Variable Measured',
-    property: 'variableMeasured',
+    id: 'output',
+    title: 'Output',
+    property: 'output',
     isSortable: false,
     apiSortField: null,
-    props: withWidth('200px'),
+    props: withWidth('180px'),
   },
   {
-    id: 'samples',
-    title: 'Samples',
-    property: 'samples',
+    id: 'softwareHelp',
+    title: 'Software Help',
+    property: 'softwareHelp',
     isSortable: false,
     apiSortField: null,
     props: withWidth('180px'),
@@ -146,28 +150,20 @@ export const ALL_DATASET_COLUMNS: DatasetColumn[] = [
     props: withWidth('200px'),
   },
   {
-    id: 'fundingId',
-    title: 'Funding ID',
-    property: 'fundingId',
-    isSortable: false,
-    apiSortField: null,
-    props: withWidth('160px'),
-  },
-  {
     id: 'license',
     title: 'License',
     property: 'license',
     isSortable: false,
     apiSortField: null,
-    props: withWidth('200px'),
+    props: withWidth('160px'),
   },
   {
-    id: 'usageInfo',
-    title: 'Usage Info',
-    property: 'usageInfo',
+    id: 'softwareVersion',
+    title: 'Software Version',
+    property: 'softwareVersion',
     isSortable: false,
     apiSortField: null,
-    props: withWidth('200px'),
+    props: withWidth('150px'),
   },
   {
     id: 'topicCategory',
@@ -179,59 +175,32 @@ export const ALL_DATASET_COLUMNS: DatasetColumn[] = [
   },
 ];
 
-type UsageInfoEntry = { name: string; url: string | null };
-type SampleEntry = { count: number; kind: 'experimental' | 'population' };
-
-/**
- * Reduce the record's `sample` to the single count the table shows, along with
- * which kind of sample it is. Discriminates on the top-level `@type`, the same
- * way the card's sample pill does: a SampleCollection is an experimental count,
- * a SampleAggregate a population count. Returns null when there is no count to
- * show, so the cell renders blank.
- */
-const getSampleEntry = (
-  sample?: SampleAggregate | SampleCollection | null,
-): SampleEntry | null => {
-  if (!sample) return null;
-
-  if (sample['@type'] === 'SampleCollection') {
-    const count = (sample as SampleCollection).numberOfItems?.value;
-    return count == null ? null : { count, kind: 'experimental' };
-  }
-
-  const { sampleQuantity } = sample as SampleAggregate;
-  const count =
-    sampleQuantity && !Array.isArray(sampleQuantity)
-      ? sampleQuantity.value
-      : undefined;
-
-  return count == null ? null : { count, kind: 'population' };
-};
-
 export const toRow = (resource: FormattedResource): Record<string, unknown> => {
-  // Usage info may be a single object or an array. The card falls back to
-  // "Usage Agreement" when an entry has no name.
-  const usageInfoEntries: UsageInfoEntry[] = toArray<UsageInfo>(
-    resource.usageInfo,
-  )
-    .map(info => ({
-      name: info?.name || 'Usage Agreement',
-      url: info?.url ?? null,
-    }))
-    .filter(entry => entry.name || entry.url);
+  // Software help: the card drops entries without a url, joins an array name,
+  // and falls back to the url when no name is left. In practice `name` always
+  // arrives as an array (e.g. ["General"]) despite its declared string type.
+  const softwareHelpEntries: LinkEntry[] = toArray<{
+    name?: string | string[];
+    url: string;
+  }>(resource.softwareHelp)
+    .filter(entry => entry?.url)
+    .map(entry => {
+      const label = Array.isArray(entry.name)
+        ? entry.name.filter(Boolean).join(', ') || entry.url
+        : entry.name || entry.url;
+      return { label, url: entry.url };
+    });
 
   return {
     ...resource,
     includedInDataCatalog: toCatalogEntry(resource.includedInDataCatalog),
-    measurementTechnique: normalizeTermNames(resource.measurementTechnique),
-    // Columns derived from `funding`, `sample`, `usageInfo` and `license`.
-    // Stored as arrays (or null when empty) so getCells stacks multiple
-    // entries per record uniformly.
+    // These DefinedTerm-shaped properties can carry an array `name`.
+    input: normalizeTermNames(resource.input),
+    output: normalizeTermNames(resource.output),
+    featureList: normalizeTermNames(resource.featureList),
+    softwareHelp: softwareHelpEntries.length > 0 ? softwareHelpEntries : null,
     funder: toFunderEntries(resource.funding),
-    fundingId: toFundingIdEntries(resource.funding),
-    usageInfo: usageInfoEntries.length > 0 ? usageInfoEntries : null,
     license: toLicenseEntry(resource.license),
-    samples: getSampleEntry(resource.sample),
   };
 };
 
@@ -268,7 +237,7 @@ export const createGetCells =
       return value ? <Text fontSize='sm'>{String(value)}</Text> : null;
     }
 
-    // Source: { name, url } => link or plain text
+    // Source: { name, url } => link or plain text.
     if (column.property === 'includedInDataCatalog') {
       const catalog = value as CatalogEntry | null;
       if (!catalog) return null;
@@ -298,6 +267,11 @@ export const createGetCells =
       );
     }
 
+    // Software Help: each help resource linked by name.
+    if (column.property === 'softwareHelp') {
+      return <LinkListCell entries={value as LinkEntry[] | null} />;
+    }
+
     // Funder: name linked to the funder's identifier.
     if (column.property === 'funder') {
       const entries = value as FunderEntry[] | null;
@@ -311,29 +285,6 @@ export const createGetCells =
       );
     }
 
-    // Funding ID: identifier linked to the funding URL.
-    if (column.property === 'fundingId') {
-      const entries = value as FundingIdEntry[] | null;
-      return (
-        <LinkListCell
-          entries={entries?.map(({ identifier, url }) => ({
-            label: identifier,
-            url,
-          }))}
-        />
-      );
-    }
-
-    // Usage Info: name (or "Usage Agreement") linked to the usage URL.
-    if (column.property === 'usageInfo') {
-      const entries = value as UsageInfoEntry[] | null;
-      return (
-        <LinkListCell
-          entries={entries?.map(({ name, url }) => ({ label: name, url }))}
-        />
-      );
-    }
-
     // License: title linked to the license URL.
     if (column.property === 'license') {
       const license = value as LicenseEntry | null;
@@ -341,24 +292,13 @@ export const createGetCells =
       return <LinkOrTextCell label={license.title} url={license.url} />;
     }
 
-    // Samples: the count with its kind. Blank when
-    // the record has no sample count.
-    if (column.property === 'samples') {
-      const entry = value as SampleEntry | null;
-      return entry ? (
-        <Text fontSize='sm'>{`${entry.count.toLocaleString()} (${
-          entry.kind
-        })`}</Text>
-      ) : null;
-    }
-
-    // infectiousAgent, species, healthCondition, measurementTechnique,
-    // variableMeasured, topicCategory, and any other DefinedTerm /
-    // QuantitativeValue fields.
+    // applicationCategory, programmingLanguage, operatingSystem and
+    // softwareVersion are string arrays; input, output, featureList and
+    // topicCategory are DefinedTerm arrays. The shared renderer handles both.
     return renderCellData({ column, data: value as any, isLoading });
   };
 
-interface DatasetResultsTableProps {
+interface ComputationalToolResultsTableProps {
   results: FormattedResource[];
   isLoading: boolean;
   /**
@@ -369,7 +309,7 @@ interface DatasetResultsTableProps {
   /**
    * Full ordered list of all column IDs (visible + hidden).
    * The table renders visible columns in this order.
-   * When undefined, the default ALL_DATASET_COLUMNS order is used.
+   * When undefined, the default ALL_COMPUTATIONAL_TOOL_COLUMNS order is used.
    */
   columnOrder?: string[];
   /**
@@ -392,7 +332,7 @@ interface DatasetResultsTableProps {
   referrerPath?: string;
 }
 
-export const DatasetResultsTable = ({
+export const ComputationalToolResultsTable = ({
   results,
   isLoading,
   visibleColumnIds,
@@ -400,21 +340,21 @@ export const DatasetResultsTable = ({
   currentSort,
   onSortChange,
   referrerPath,
-}: DatasetResultsTableProps) => {
-  // Keep the cell renderer's identity stable: the generic Table memoizes each
-  // row on it, so a fresh function every render would re-render every cell.
+}: ComputationalToolResultsTableProps) => {
   const getCells = useMemo(() => createGetCells(referrerPath), [referrerPath]);
 
   return (
     <ResultsTable
-      columns={ALL_DATASET_COLUMNS}
+      columns={ALL_COMPUTATIONAL_TOOL_COLUMNS}
       results={results}
       isLoading={isLoading}
       toRow={toRow}
       getCells={getCells}
-      ariaLabel='Dataset search results'
-      caption='Table of dataset search results'
-      requiredColumnIds={DATASET_REQUIRED_COLUMN_IDS as unknown as string[]}
+      ariaLabel='Computational tool search results'
+      caption='Table of computational tool search results'
+      requiredColumnIds={
+        COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS as unknown as string[]
+      }
       visibleColumnIds={visibleColumnIds}
       columnOrder={columnOrder}
       currentSort={currentSort}

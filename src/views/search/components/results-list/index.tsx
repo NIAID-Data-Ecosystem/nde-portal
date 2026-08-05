@@ -25,6 +25,10 @@ import {
   DatasetResultsTable,
   ALL_DATASET_COLUMNS,
 } from './components/dataset-results-table';
+import {
+  ComputationalToolResultsTable,
+  ALL_COMPUTATIONAL_TOOL_COLUMNS,
+} from './components/computational-tool-results-table';
 import { useSearchResultsFetchedContext } from '../../context/search-results-fetched-context';
 import {
   CustomizeColumnsPopover as SampleCustomizeColumnsPopover,
@@ -44,7 +48,16 @@ import {
   CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as DATASET_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
   CUSTOM_COLUMN_ORDER_STORAGE_KEY as DATASET_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
 } from './components/dataset-results-table/components/CustomizeColumnsPopover';
-import { DATASET_REQUIRED_COLUMN_IDS } from './components/results-table/constants';
+import {
+  CustomizeColumnsPopover as ComputationalToolCustomizeColumnsPopover,
+  DEFAULT_VISIBLE_COLUMN_IDS as CT_DEFAULT_VISIBLE_COLUMN_IDS,
+  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as CT_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+  CUSTOM_COLUMN_ORDER_STORAGE_KEY as CT_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+} from './components/computational-tool-results-table/components/CustomizeColumnsPopover';
+import {
+  COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS,
+  DATASET_REQUIRED_COLUMN_IDS,
+} from './components/results-table/constants';
 import {
   resolveStoredVisibleIds,
   resolveStoredOrderedIds,
@@ -144,6 +157,25 @@ const getInitialDatasetColumnOrder = (): string[] =>
     requiredIds: DATASET_REQUIRED_IDS,
   });
 
+const ALL_CT_COLUMN_IDS = ALL_COMPUTATIONAL_TOOL_COLUMNS.map(c => c.id);
+const CT_REQUIRED_IDS =
+  COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS as unknown as string[];
+
+const getInitialCTVisibleColumnIds = (): string[] =>
+  resolveStoredVisibleIds({
+    storageKey: CT_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+    allIds: ALL_CT_COLUMN_IDS,
+    defaultVisibleIds: CT_DEFAULT_VISIBLE_COLUMN_IDS,
+    requiredIds: CT_REQUIRED_IDS,
+  });
+
+const getInitialCTColumnOrder = (): string[] =>
+  resolveStoredOrderedIds({
+    storageKey: CT_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+    allIds: ALL_CT_COLUMN_IDS,
+    requiredIds: CT_REQUIRED_IDS,
+  });
+
 // Build the ColumnConfig list expected by each CustomizeColumnsPopover.
 const SAMPLE_COLUMN_CONFIGS = ALL_SAMPLE_COLUMNS.map(col => ({
   id: col.id,
@@ -154,6 +186,13 @@ const DATASET_COLUMN_CONFIGS = ALL_DATASET_COLUMNS.map(col => ({
   id: col.id,
   title: col.title,
 }));
+
+const COMPUTATIONAL_TOOL_COLUMN_CONFIGS = ALL_COMPUTATIONAL_TOOL_COLUMNS.map(
+  col => ({
+    id: col.id,
+    title: col.title,
+  }),
+);
 
 const DATA_COLLECTION_COLUMN_CONFIGS = ALL_DATA_COLLECTION_COLUMNS.map(col => ({
   id: col.id,
@@ -198,9 +237,10 @@ export const SearchResults = ({
   // For Samples and DataCollection tabs, use extra fields for the table columns.
   const isSamplesTab = id === 's';
   const isDataCollectionTab = id === 'dc';
-  // The Datasets tab renders either cards or a table, depending on the user's
-  // view mode preference.
+  // The Datasets and Computational Tools tabs render either cards or a table,
+  // depending on the user's view mode preference.
   const isDatasetTable = id === 'd' && viewMode === 'table';
+  const isComputationalToolTable = id === 'ct' && viewMode === 'table';
 
   // Each tab type uses a minimal, table-specific field list rather than the
   // shared RESULT_FIELDS base (which carries many card-only fields that the
@@ -243,6 +283,14 @@ export const SearchResults = ({
   );
   const [datasetColumnOrder, setDatasetColumnOrder] = useState<string[]>(() =>
     isDatasetTable ? getInitialDatasetColumnOrder() : ALL_DATASET_COLUMN_IDS,
+  );
+  const [ctVisibleColumnIds, setCtVisibleColumnIds] = useState<string[]>(() =>
+    isComputationalToolTable
+      ? getInitialCTVisibleColumnIds()
+      : CT_DEFAULT_VISIBLE_COLUMN_IDS,
+  );
+  const [ctColumnOrder, setCtColumnOrder] = useState<string[]>(() =>
+    isComputationalToolTable ? getInitialCTColumnOrder() : ALL_CT_COLUMN_IDS,
   );
 
   const selectByType = useCallback(
@@ -395,6 +443,12 @@ export const SearchResults = ({
                 onVisibleColumnsChange={setDatasetVisibleColumnIds}
                 onColumnOrderChange={setDatasetColumnOrder}
               />
+            ) : isComputationalToolTable ? (
+              <ComputationalToolCustomizeColumnsPopover
+                columnsList={COMPUTATIONAL_TOOL_COLUMN_CONFIGS}
+                onVisibleColumnsChange={setCtVisibleColumnIds}
+                onColumnOrderChange={setCtColumnOrder}
+              />
             ) : undefined
           }
         />
@@ -446,6 +500,17 @@ export const SearchResults = ({
             isLoading={!router.isReady || isLoading}
             visibleColumnIds={datasetVisibleColumnIds}
             columnOrder={datasetColumnOrder}
+            currentSort={sort}
+            onSortChange={handleSortChange}
+            referrerPath={router.asPath}
+          />
+        ) : isComputationalToolTable ? (
+          /* Computational Tools tab in table view */
+          <ComputationalToolResultsTable
+            results={data?.results || []}
+            isLoading={!router.isReady || isLoading}
+            visibleColumnIds={ctVisibleColumnIds}
+            columnOrder={ctColumnOrder}
             currentSort={sort}
             onSortChange={handleSortChange}
             referrerPath={router.asPath}
