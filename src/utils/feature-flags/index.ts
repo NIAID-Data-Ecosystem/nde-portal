@@ -88,3 +88,10 @@ export const SHOW_FILTER_ANY_NO_EXCLUSIVITY = true;
 // panel in non-production environments. To enable in
 // production, set this flag to `true`.
 export const SHOW_FILTER_SPECIFIED_UNSPECIFIED_LABELS = true;
+
+// Show the search results "View mode" radio (Card / Table) and the
+// alternate views it switches between in non-production environments.
+// When disabled, the Datasets and Computational Tools tabs always render
+// cards and the Data Collections tab always renders the table.
+// To enable in production, set this flag to `true`.
+export const SHOW_SEARCH_VIEW_MODES = !isProd;

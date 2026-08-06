@@ -69,6 +69,7 @@ import {
   SAMPLE_FIELDS,
   DATA_COLLECTION_FIELDS,
 } from '../../config/fields';
+import { SHOW_SEARCH_VIEW_MODES } from 'src/utils/feature-flags';
 import { TABS_WITH_VIEW_MODE } from '../../config/view-mode';
 import { useViewMode } from '../../hooks/useViewMode';
 import { ViewModeRadio } from './components/toolbar/components/view-mode-radio';
@@ -231,16 +232,21 @@ export const SearchResults = ({
   const urlQueryParams = useSearchQueryFromURL();
 
   // Persisted per-tab card/table preference. Only some tabs offer the choice.
-  const showViewMode = TABS_WITH_VIEW_MODE.includes(id);
+  const showViewMode =
+    SHOW_SEARCH_VIEW_MODES && TABS_WITH_VIEW_MODE.includes(id);
   const [viewMode, setViewMode] = useViewMode(id);
 
   // For Samples and DataCollection tabs, use extra fields for the table columns.
   const isSamplesTab = id === 's';
   const isDataCollectionTab = id === 'dc';
   // The Datasets and Computational Tools tabs render either cards or a table,
-  // depending on the user's view mode preference.
-  const isDatasetTable = id === 'd' && viewMode === 'table';
-  const isComputationalToolTable = id === 'ct' && viewMode === 'table';
+  // depending on the user's view mode preference. The flag is checked here as
+  // well as on the radio: a user may already have "table" persisted in
+  // localStorage, and that must not surface a view the flag hides.
+  const isDatasetTable =
+    SHOW_SEARCH_VIEW_MODES && id === 'd' && viewMode === 'table';
+  const isComputationalToolTable =
+    SHOW_SEARCH_VIEW_MODES && id === 'ct' && viewMode === 'table';
 
   // Each tab type uses a minimal, table-specific field list rather than the
   // shared RESULT_FIELDS base (which carries many card-only fields that the
