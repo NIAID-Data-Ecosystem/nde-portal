@@ -10,3 +10,10 @@
 export const SAMPLE_REQUIRED_COLUMN_IDS = ['identifier'] as const;
 
 export const DATA_COLLECTION_REQUIRED_COLUMN_IDS = ['name', 'source'] as const;
+
+export const DATASET_REQUIRED_COLUMN_IDS = ['name', 'source'] as const;
+
+export const COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS = [
+  'name',
+  'source',
+] as const;

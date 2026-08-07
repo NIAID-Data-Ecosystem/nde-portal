@@ -21,6 +21,14 @@ import {
   DataCollectionResultsTable,
   ALL_DATA_COLLECTION_COLUMNS,
 } from './components/data-collection-results-table';
+import {
+  DatasetResultsTable,
+  ALL_DATASET_COLUMNS,
+} from './components/dataset-results-table';
+import {
+  ComputationalToolResultsTable,
+  ALL_COMPUTATIONAL_TOOL_COLUMNS,
+} from './components/computational-tool-results-table';
 import { useSearchResultsFetchedContext } from '../../context/search-results-fetched-context';
 import {
   CustomizeColumnsPopover as SampleCustomizeColumnsPopover,
@@ -34,6 +42,26 @@ import {
   CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as DC_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
   CUSTOM_COLUMN_ORDER_STORAGE_KEY as DC_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
 } from './components/data-collection-results-table/components/CustomizeColumnsPopover';
+import {
+  CustomizeColumnsPopover as DatasetCustomizeColumnsPopover,
+  DEFAULT_VISIBLE_COLUMN_IDS as DATASET_DEFAULT_VISIBLE_COLUMN_IDS,
+  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as DATASET_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+  CUSTOM_COLUMN_ORDER_STORAGE_KEY as DATASET_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+} from './components/dataset-results-table/components/CustomizeColumnsPopover';
+import {
+  CustomizeColumnsPopover as ComputationalToolCustomizeColumnsPopover,
+  DEFAULT_VISIBLE_COLUMN_IDS as CT_DEFAULT_VISIBLE_COLUMN_IDS,
+  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as CT_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+  CUSTOM_COLUMN_ORDER_STORAGE_KEY as CT_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+} from './components/computational-tool-results-table/components/CustomizeColumnsPopover';
+import {
+  COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS,
+  DATASET_REQUIRED_COLUMN_IDS,
+} from './components/results-table/constants';
+import {
+  resolveStoredVisibleIds,
+  resolveStoredOrderedIds,
+} from 'src/components/select-and-order-popover';
 import { BIOSAMPLE_EXTRA_FILTER } from '../../hooks/useBioSampleAggregation';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import {
@@ -41,6 +69,10 @@ import {
   SAMPLE_FIELDS,
   DATA_COLLECTION_FIELDS,
 } from '../../config/fields';
+import { SHOW_SEARCH_VIEW_MODES } from 'src/utils/feature-flags';
+import { TABS_WITH_VIEW_MODE } from '../../config/view-mode';
+import { useViewMode } from '../../hooks/useViewMode';
+import { ViewModeRadio } from './components/toolbar/components/view-mode-radio';
 
 const readFromStorage = (key: string, fallback: string[]): string[] => {
   if (typeof window === 'undefined') return fallback;
@@ -105,11 +137,63 @@ const getInitialDataCollectionColumnOrder = (): string[] => {
   return allIds;
 };
 
+// The Dataset table resolves its persisted state through the popover's own
+// exported resolvers, which apply the required-column rules (always visible,
+// pinned first) that the hand-rolled helpers above do not.
+const ALL_DATASET_COLUMN_IDS = ALL_DATASET_COLUMNS.map(c => c.id);
+const DATASET_REQUIRED_IDS = DATASET_REQUIRED_COLUMN_IDS as unknown as string[];
+
+const getInitialDatasetVisibleColumnIds = (): string[] =>
+  resolveStoredVisibleIds({
+    storageKey: DATASET_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+    allIds: ALL_DATASET_COLUMN_IDS,
+    defaultVisibleIds: DATASET_DEFAULT_VISIBLE_COLUMN_IDS,
+    requiredIds: DATASET_REQUIRED_IDS,
+  });
+
+const getInitialDatasetColumnOrder = (): string[] =>
+  resolveStoredOrderedIds({
+    storageKey: DATASET_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+    allIds: ALL_DATASET_COLUMN_IDS,
+    requiredIds: DATASET_REQUIRED_IDS,
+  });
+
+const ALL_CT_COLUMN_IDS = ALL_COMPUTATIONAL_TOOL_COLUMNS.map(c => c.id);
+const CT_REQUIRED_IDS =
+  COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS as unknown as string[];
+
+const getInitialCTVisibleColumnIds = (): string[] =>
+  resolveStoredVisibleIds({
+    storageKey: CT_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+    allIds: ALL_CT_COLUMN_IDS,
+    defaultVisibleIds: CT_DEFAULT_VISIBLE_COLUMN_IDS,
+    requiredIds: CT_REQUIRED_IDS,
+  });
+
+const getInitialCTColumnOrder = (): string[] =>
+  resolveStoredOrderedIds({
+    storageKey: CT_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+    allIds: ALL_CT_COLUMN_IDS,
+    requiredIds: CT_REQUIRED_IDS,
+  });
+
 // Build the ColumnConfig list expected by each CustomizeColumnsPopover.
 const SAMPLE_COLUMN_CONFIGS = ALL_SAMPLE_COLUMNS.map(col => ({
   id: col.id,
   title: col.title,
 }));
+
+const DATASET_COLUMN_CONFIGS = ALL_DATASET_COLUMNS.map(col => ({
+  id: col.id,
+  title: col.title,
+}));
+
+const COMPUTATIONAL_TOOL_COLUMN_CONFIGS = ALL_COMPUTATIONAL_TOOL_COLUMNS.map(
+  col => ({
+    id: col.id,
+    title: col.title,
+  }),
+);
 
 const DATA_COLLECTION_COLUMN_CONFIGS = ALL_DATA_COLLECTION_COLUMNS.map(col => ({
   id: col.id,
@@ -147,13 +231,28 @@ export const SearchResults = ({
   // Selected tab index is stored in context to sync with other components.
   const urlQueryParams = useSearchQueryFromURL();
 
+  // Persisted per-tab card/table preference. Only some tabs offer the choice.
+  const showViewMode =
+    SHOW_SEARCH_VIEW_MODES && TABS_WITH_VIEW_MODE.includes(id);
+  const [viewMode, setViewMode] = useViewMode(id);
+
   // For Samples and DataCollection tabs, use extra fields for the table columns.
   const isSamplesTab = id === 's';
   const isDataCollectionTab = id === 'dc';
+  // The Datasets and Computational Tools tabs render either cards or a table,
+  // depending on the user's view mode preference. The flag is checked here as
+  // well as on the radio: a user may already have "table" persisted in
+  // localStorage, and that must not surface a view the flag hides.
+  const isDatasetTable =
+    SHOW_SEARCH_VIEW_MODES && id === 'd' && viewMode === 'table';
+  const isComputationalToolTable =
+    SHOW_SEARCH_VIEW_MODES && id === 'ct' && viewMode === 'table';
 
   // Each tab type uses a minimal, table-specific field list rather than the
   // shared RESULT_FIELDS base (which carries many card-only fields that the
-  // tables never render).
+  // tables never render). The Dataset table intentionally reuses
+  // RESULT_FIELDS: an identical field list keeps the query key the same for
+  // both view modes, so toggling card/table never triggers a refetch.
   const fields = isSamplesTab
     ? SAMPLE_FIELDS
     : isDataCollectionTab
@@ -180,6 +279,24 @@ export const SearchResults = ({
     isDataCollectionTab
       ? getInitialDataCollectionColumnOrder()
       : ALL_DATA_COLLECTION_COLUMNS.map(c => c.id),
+  );
+  const [datasetVisibleColumnIds, setDatasetVisibleColumnIds] = useState<
+    string[]
+  >(() =>
+    isDatasetTable
+      ? getInitialDatasetVisibleColumnIds()
+      : DATASET_DEFAULT_VISIBLE_COLUMN_IDS,
+  );
+  const [datasetColumnOrder, setDatasetColumnOrder] = useState<string[]>(() =>
+    isDatasetTable ? getInitialDatasetColumnOrder() : ALL_DATASET_COLUMN_IDS,
+  );
+  const [ctVisibleColumnIds, setCtVisibleColumnIds] = useState<string[]>(() =>
+    isComputationalToolTable
+      ? getInitialCTVisibleColumnIds()
+      : CT_DEFAULT_VISIBLE_COLUMN_IDS,
+  );
+  const [ctColumnOrder, setCtColumnOrder] = useState<string[]>(() =>
+    isComputationalToolTable ? getInitialCTColumnOrder() : ALL_CT_COLUMN_IDS,
   );
 
   const selectByType = useCallback(
@@ -304,10 +421,15 @@ export const SearchResults = ({
   return (
     <>
       <VStack borderRadius='semi' bg='white' px={4} py={2}>
-        {/* Toolbar controls: Sort, size, download metadata, and optional extra actions. For Samples and DataCollections tab the "Customize Columns" button is injected via the extraActions prop so it appears to the left of Download Metadata. */}
+        {/* Toolbar controls: Sort, size, download metadata, and optional extra actions. Whenever a table is being rendered (Samples, DataCollections, and Datasets in table view) the "Customize Columns" button is injected via the extraActions prop so it appears to the left of Download Metadata. */}
         <SearchResultsToolbar
           id={id}
           params={params}
+          viewModeControl={
+            showViewMode ? (
+              <ViewModeRadio id={id} value={viewMode} onChange={setViewMode} />
+            ) : undefined
+          }
           extraActions={
             isSamplesTab ? (
               <SampleCustomizeColumnsPopover
@@ -320,6 +442,18 @@ export const SearchResults = ({
                 columnsList={DATA_COLLECTION_COLUMN_CONFIGS}
                 onVisibleColumnsChange={setDcVisibleColumnIds}
                 onColumnOrderChange={setDcColumnOrder}
+              />
+            ) : isDatasetTable ? (
+              <DatasetCustomizeColumnsPopover
+                columnsList={DATASET_COLUMN_CONFIGS}
+                onVisibleColumnsChange={setDatasetVisibleColumnIds}
+                onColumnOrderChange={setDatasetColumnOrder}
+              />
+            ) : isComputationalToolTable ? (
+              <ComputationalToolCustomizeColumnsPopover
+                columnsList={COMPUTATIONAL_TOOL_COLUMN_CONFIGS}
+                onVisibleColumnsChange={setCtVisibleColumnIds}
+                onColumnOrderChange={setCtColumnOrder}
               />
             ) : undefined
           }
@@ -365,8 +499,30 @@ export const SearchResults = ({
             currentSort={sort}
             onSortChange={handleSortChange}
           />
+        ) : isDatasetTable ? (
+          /* Datasets tab in table view */
+          <DatasetResultsTable
+            results={data?.results || []}
+            isLoading={!router.isReady || isLoading}
+            visibleColumnIds={datasetVisibleColumnIds}
+            columnOrder={datasetColumnOrder}
+            currentSort={sort}
+            onSortChange={handleSortChange}
+            referrerPath={router.asPath}
+          />
+        ) : isComputationalToolTable ? (
+          /* Computational Tools tab in table view */
+          <ComputationalToolResultsTable
+            results={data?.results || []}
+            isLoading={!router.isReady || isLoading}
+            visibleColumnIds={ctVisibleColumnIds}
+            columnOrder={ctColumnOrder}
+            currentSort={sort}
+            onSortChange={handleSortChange}
+            referrerPath={router.asPath}
+          />
         ) : (
-          /* Dataset / ComputationalTool tabs: render result cards */
+          /* Dataset / ComputationalTool tabs in card view: render result cards */
           numCards > 0 && (
             <VStack
               as={UnorderedList}
