@@ -2,9 +2,13 @@
 
 Playwright specs that drive **actual VoiceOver** via
 [guidepup](https://www.guidepup.dev/), to assert on what a screen reader user
-really hears. Separate suite from the axe scans in
-[`../accessibility/`](../accessibility/), with its own config
-([`playwright.screen-reader.config.ts`](../../playwright.screen-reader.config.ts)).
+really hears. A **self-contained** suite, independent of the axe scans in
+[`../accessibility/`](../accessibility/): its own config
+([`playwright.screen-reader.config.ts`](../../playwright.screen-reader.config.ts)),
+its own fixtures, its own helpers, and no imports crossing into the axe suite in
+either direction. This is an exploration — see
+[Why this suite duplicates the axe suite's fixtures](#why-this-suite-duplicates-the-axe-suites-fixtures)
+for why it's built to be deletable.
 
 ## Why this exists
 
@@ -143,7 +147,8 @@ way — intermittently, with a plausible-looking wrong answer.
 ```ts
 import { voiceOverTest as test } from '@guidepup/playwright';
 import { expect } from '@playwright/test';
-import { mockHomePopulated, ROUTE, CATALOG_ROW_NAME } from '../fixtures/home';
+import { HERO_SEARCH_LABEL } from './fixtures/home';
+import { enterHomePageWebContent } from './utils/home-page';
 import {
   walkToItem,
   expectAnnounces,
@@ -154,13 +159,10 @@ test('the hero search announces its label and role', async ({
   page,
   voiceOver,
 }, testInfo) => {
-  await mockHomePopulated(page);
-  await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
-  await expect(
-    page.getByRole('link', { name: CATALOG_ROW_NAME }),
-  ).toBeVisible();
+  // Mocks the route, navigates, waits for the data to render, and parks the
+  // VoiceOver cursor at the top of web content.
+  await enterHomePageWebContent(page, voiceOver);
 
-  await voiceOver.navigateToWebContent();
   // Linear walk (`undefined` command = voiceOver.next()). `findNextControl`
   // proved less reliable on this page — it skips the field and strands the
   // cursor. Assert on itemText; the spoken phrase can lag by a step.
@@ -169,7 +171,7 @@ test('the hero search announces its label and role', async ({
   });
   expectAnnounces(
     itemText,
-    ['Search for resources', 'edit text'],
+    [HERO_SEARCH_LABEL, 'edit text'],
     'The hero search field must announce its accessible name and its role.',
   );
 
@@ -177,28 +179,50 @@ test('the hero search announces its label and role', async ({
 });
 ```
 
-Route mocks and fixtures are **shared with the axe suite** via
-[`../fixtures/home.ts`](../fixtures/home.ts), so the two suites can't drift onto
-different DOMs. Add new route fixtures there, not inline in a spec.
+Route mocks and fixtures live in [`./fixtures/`](./fixtures/) and belong to
+**this suite alone**. Per-route entry helpers live in
+[`./utils/home-page.ts`](./utils/home-page.ts) and friends. Add new fixtures and
+entry helpers there — never inline in a spec, and never by importing from
+`e2e/accessibility/` or `e2e/utils/`.
 
-> **Those fixtures gate CI.** The axe suite imports the same module and runs on
-> every PR, so editing a fixture for a screen reader test can break the merge
-> gate. Two rules:
->
-> 1. **Add a variant, don't mutate the base.** If a spec needs different data —
->    e.g. the carousel only renders its prev/next controls when
->    `childrenLength > constraint`, so exercising them needs more cards than the
->    base fixture provides — export a factory alongside the base rather than
->    changing it.
-> 2. **Re-run the route's axe spec before pushing**, and get the ~20s answer
->    instead of the CI one:
->    ```sh
->    yarn test:a11y:nobuild e2e/accessibility/home.spec.ts
->    ```
->
-> The coupling is deliberate. Duplicating the fixtures would remove this risk
-> and replace it with a worse one: the two suites silently drifting onto
-> different DOMs, with the rarely-run screen reader suite rotting unnoticed.
+## Why this suite duplicates the axe suite's fixtures
+
+`e2e/accessibility/home.spec.ts` defines equivalent fixtures inline, and this
+suite keeps its own copy. That's deliberate, and it's the opposite of what you'd
+normally do.
+
+Screen reader automation here is an **exploration that may not be kept**. The
+axe suite gates merges to `main`. If the two shared a fixture module, every edit
+made while developing a screen reader test would carry merge-gate risk on behalf
+of an experiment — and abandoning the experiment would mean unpicking a refactor
+out of a spec CI depends on. As it stands, dropping this work is:
+
+```sh
+rm -rf e2e/screen-reader playwright.screen-reader.config.ts
+```
+
+plus reverting the `testIgnore` line in `playwright.config.ts`, three `test:sr`
+scripts, and two `.gitignore` lines. Nothing the axe suite reads is touched.
+
+**The cost:** the two copies can drift. If the NDE API's response shape changes,
+both need updating and nothing will tell you. If this suite is ever made
+permanent, revisit the decision and extract a shared module then.
+
+One upside while it lasts: because nothing in CI reads these fixtures, you can
+change them freely — including adding variants a spec needs, such as extra
+carousel cards (the Carousel only renders its prev/next controls when
+`childrenLength > constraint`).
+
+## What this suite still shares
+
+The isolation isn't absolute, and shouldn't be overstated. This suite consumes
+two pieces of the axe suite's infrastructure **read-only**:
+
+- `yarn build:a11y` (`scripts/build-a11y.mjs`) to produce `out/`
+- `e2e/mock-strapi-server.js`, which `playwright.screen-reader.config.ts` spawns
+
+Neither is modified, so neither is a CI risk, and both would remain if this
+exploration were dropped — the axe suite needs them regardless.
 
 ### Helpers
 
@@ -213,6 +237,17 @@ alternatives:
 | `expectAnnounces`                         | Assert a phrase carries the expected name/role/state tokens.               |
 | `attachSpokenLog` / `attachFullSpokenLog` | Attach the transcript to the report.                                       |
 | `normalize` / `spoken`                    | Whitespace-collapse; case-insensitive contains.                            |
+
+Plus one per-route entry helper, from
+[`./utils/home-page.ts`](./utils/home-page.ts):
+
+| Helper                    | Use                                                                                              |
+| ------------------------- | ------------------------------------------------------------------------------------------------ |
+| `enterHomePageWebContent` | Mock `/`, navigate, wait for the data to render, park the VoiceOver cursor at the top of content |
+
+When another route gets coverage, add a sibling (`search-page.ts`) rather than
+generalising this into a registry — the per-route "proof the data rendered"
+waits are the point, and they differ per route.
 
 Two conventions those encode, worth keeping:
 

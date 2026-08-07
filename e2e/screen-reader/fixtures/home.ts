@@ -1,24 +1,33 @@
 /**
- * Shared route mocks and fixtures for the Home / index route (`/`).
+ * Route mocks and fixtures for the Home / index route (`/`), owned by the
+ * SCREEN READER suite.
  *
- * Extracted so the two suites that exercise this route stay in lockstep:
- *   - `e2e/accessibility/home.spec.ts`  — axe scans (fast, headless, in CI)
- *   - `e2e/screen-reader/home.spec.ts`  — real VoiceOver (slow, headed, local)
+ * ## Why this is a deliberate duplicate
  *
- * If these fixtures lived in one spec and were copied into the other, the two
- * would drift and the suites would silently start scanning different DOMs.
+ * `e2e/accessibility/home.spec.ts` defines equivalent fixtures inline. Sharing
+ * one module between the two suites would keep them in lockstep — but the axe
+ * suite gates merges to `main`, and this suite is an exploration that may not
+ * be kept. Coupling them would mean every edit made while developing a screen
+ * reader test carries merge-gate risk on behalf of an experiment, and dropping
+ * the experiment would mean unpicking a refactor out of a spec CI depends on.
  *
- * ⚠️  EDITING THIS FILE CAN BREAK THE CI MERGE GATE. The axe suite runs on every
- * PR against these exact values. If a screen reader test needs different data,
- * export a VARIANT alongside the base rather than changing the base — e.g. the
- * carousel only renders its prev/next controls when `childrenLength >
- * constraint`, so a spec exercising them needs a fixture with more cards. Then
- * re-run `yarn test:a11y:nobuild e2e/accessibility/home.spec.ts` before pushing.
+ * So this suite owns its own copy. Deleting `e2e/screen-reader/` and
+ * `playwright.screen-reader.config.ts` removes it entirely, with no edit to
+ * anything the axe suite reads.
  *
- * This is a plain module, not a spec: Playwright's default `testMatch` only
- * collects `*.spec.ts`, so nothing here is picked up as a test.
+ * **The cost, stated plainly:** these fixtures can drift from the axe suite's.
+ * If the NDE API's response shape changes — say `fetchSearchResults` stops
+ * reading `data.hits` — BOTH copies need updating, and nothing will tell you.
+ * A stale copy here fails loudly the next time this suite runs; a stale copy
+ * that still happens to render will quietly test the wrong DOM. If this suite
+ * is ever made permanent, revisit the decision and share one module.
  *
- * Data model for this route (src/pages/index.tsx):
+ * Because nothing in CI reads this file, it can be changed freely — including
+ * adding fixture variants (e.g. more carousel cards, which the Carousel needs
+ * before it renders its prev/next controls at all).
+ *
+ * ## Data model for this route (src/pages/index.tsx)
+ *
  *   - The "Explore All Included Resources" table is fed by two CLIENT-SIDE
  *     TanStack Query hooks, both interceptable with `page.route`:
  *       * useResourceCatalogs -> NDE `/query`    (QUERY_GLOB)
@@ -46,7 +55,8 @@ export const NOTICES_API_GLOB = '**/api/notices*'; // PageContainer client fetch
 export const HERO_H1 = 'Discovery Portal';
 
 // The hero search bar's accessible name (= its placeholder). Note it is a
-// <Textarea>, not an <input> — see src/components/search-bar/index.tsx.
+// <Textarea>, not an <input> — see src/components/search-bar/index.tsx — but
+// VoiceOver announces it as "edit text" regardless.
 export const HERO_SEARCH_LABEL = 'Search for resources';
 
 // --- Fixtures ----------------------------------------------------------------
@@ -183,8 +193,8 @@ export async function mockStrapiRoutes(page: Page) {
  * Mock every request the populated home page makes: the two NDE endpoints that
  * feed the resources table, plus the Strapi routes above.
  *
- * Call this BEFORE `page.goto(ROUTE)`. Afterwards, wait on `CATALOG_ROW_NAME`
- * and `REPO_ROW_NAME` to prove both queries resolved.
+ * Prefer `enterHomePageWebContent` from `../utils/home-page` over calling this
+ * directly — it also navigates and parks the VoiceOver cursor.
  */
 export async function mockHomePopulated(page: Page) {
   await mockStrapiRoutes(page);

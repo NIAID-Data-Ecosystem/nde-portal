@@ -31,18 +31,16 @@
  * table and its filter popovers, the news carousel controls, the nav dropdowns,
  * and the footer.
  *
- * Route mocks and fixtures come from `../fixtures/home`, shared with the axe
- * spec so the two suites can't drift onto different DOMs.
+ * Route mocks and fixtures come from `./fixtures/home`, which this suite OWNS —
+ * `e2e/accessibility/home.spec.ts` keeps its own equivalent copy inline. That
+ * duplication is deliberate: it keeps this exploratory suite deletable without
+ * touching anything the CI merge gate reads. See the fixtures module's docblock
+ * for the tradeoff.
  */
 import { voiceOverTest as test } from '@guidepup/playwright';
 import { expect } from '@playwright/test';
-import {
-  CATALOG_ROW_NAME,
-  HERO_SEARCH_LABEL,
-  mockHomePopulated,
-  REPO_ROW_NAME,
-  ROUTE,
-} from '../fixtures/home';
+import { HERO_SEARCH_LABEL } from './fixtures/home';
+import { enterHomePageWebContent } from './utils/home-page';
 import {
   attachFullSpokenLog,
   attachSpokenLog,
@@ -52,31 +50,6 @@ import {
   walkToItem,
 } from './utils/voiceover';
 
-// --- Shared setup ------------------------------------------------------------
-
-/**
- * Load the populated home page and park the VoiceOver cursor at the top of web
- * content, ready to traverse.
- *
- * The Playwright waits here are doing one job only — proving both client
- * queries resolved before VoiceOver starts walking. Nothing below this line
- * moves the cursor with Playwright.
- */
-async function gotoPopulatedAndEnterWebContent(
-  page: Parameters<typeof mockHomePopulated>[0],
-  voiceOver: Parameters<typeof collectHeadings>[0],
-) {
-  await mockHomePopulated(page);
-  await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
-
-  await expect(
-    page.getByRole('link', { name: CATALOG_ROW_NAME }),
-  ).toBeVisible();
-  await expect(page.getByRole('link', { name: REPO_ROW_NAME })).toBeVisible();
-
-  await voiceOver.navigateToWebContent();
-}
-
 // --- Document structure ------------------------------------------------------
 
 test.describe('screen reader: Home — document structure', () => {
@@ -84,7 +57,7 @@ test.describe('screen reader: Home — document structure', () => {
     page,
     voiceOver,
   }, testInfo) => {
-    await gotoPopulatedAndEnterWebContent(page, voiceOver);
+    await enterHomePageWebContent(page, voiceOver);
 
     const headings = await collectHeadings(voiceOver);
     await attachSpokenLog(testInfo, 'heading-walk', headings);
@@ -131,7 +104,7 @@ test.describe('screen reader: Home — document structure', () => {
   test.fixme(
     'carousel card headings sit below the section heading that introduces them',
     async ({ page, voiceOver }, testInfo) => {
-      await gotoPopulatedAndEnterWebContent(page, voiceOver);
+      await enterHomePageWebContent(page, voiceOver);
 
       const headings = await collectHeadings(voiceOver);
       await attachSpokenLog(testInfo, 'heading-walk-carousel', headings);
@@ -168,7 +141,7 @@ test.describe('screen reader: Home — hero search', () => {
     page,
     voiceOver,
   }, testInfo) => {
-    await gotoPopulatedAndEnterWebContent(page, voiceOver);
+    await enterHomePageWebContent(page, voiceOver);
 
     // Walk linearly rather than with `findNextControl`. The spike showed the
     // control-only walk is the less reliable of the two here: it skips past the
@@ -204,7 +177,7 @@ test.describe('screen reader: Home — hero search', () => {
     page,
     voiceOver,
   }, testInfo) => {
-    await gotoPopulatedAndEnterWebContent(page, voiceOver);
+    await enterHomePageWebContent(page, voiceOver);
 
     const { trace } = await walkToItem(voiceOver, undefined, 'edit text', {
       maxSteps: 45,
@@ -249,7 +222,7 @@ test.describe('screen reader: Home — hero search', () => {
   test.fixme(
     'arrowing through search suggestions announces each option',
     async ({ page, voiceOver }, testInfo) => {
-      await gotoPopulatedAndEnterWebContent(page, voiceOver);
+      await enterHomePageWebContent(page, voiceOver);
 
       const { trace } = await walkToItem(voiceOver, undefined, 'edit text', {
         maxSteps: 45,
