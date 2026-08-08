@@ -15,7 +15,9 @@ import { expect, type Page } from '@playwright/test';
 import type { VoiceOverPlaywright } from '@guidepup/playwright';
 import {
   CATALOG_ROW_NAME,
+  manyRowName,
   mockHomePopulated,
+  type MockHomeOptions,
   REPO_ROW_NAME,
   ROUTE,
 } from '../fixtures/home';
@@ -29,18 +31,31 @@ import {
  * Playwright locators wait on state, VoiceOver commands move the cursor. Never
  * use `locator.focus()` to position the reader; the VO cursor and DOM focus are
  * separate, and mixing them desyncs them intermittently. See the README.
+ *
+ * Pass `{ repoCount }` to render a many-row table instead of the 1-repo
+ * baseline — see `metadataFixtureWithCount`. The proof-of-render wait adapts to
+ * whichever variant is in play.
  */
 export async function enterHomePageWebContent(
   page: Page,
   voiceOver: VoiceOverPlaywright,
+  options: MockHomeOptions = {},
 ): Promise<void> {
-  await mockHomePopulated(page);
+  await mockHomePopulated(page, options);
   await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
 
+  // Proof the /query hook resolved.
   await expect(
     page.getByRole('link', { name: CATALOG_ROW_NAME }),
   ).toBeVisible();
-  await expect(page.getByRole('link', { name: REPO_ROW_NAME })).toBeVisible();
+  // Proof the /metadata hook resolved. With the many-row variant the baseline
+  // repo name doesn't exist, so wait on the first generated row instead.
+  await expect(
+    page.getByRole('link', {
+      name: options.repoCount === undefined ? REPO_ROW_NAME : manyRowName(1),
+      exact: true,
+    }),
+  ).toBeVisible();
 
   await voiceOver.navigateToWebContent();
 }

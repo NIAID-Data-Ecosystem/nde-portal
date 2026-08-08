@@ -106,6 +106,55 @@ export const METADATA_FIXTURE = {
 export const CATALOG_ROW_NAME = 'Fixture Resource Catalog';
 export const REPO_ROW_NAME = 'Fixture Dataset Repository';
 
+/**
+ * A `/metadata` response with `count` repository rows instead of one.
+ *
+ * Why this variant exists: the table renders rows through react-window's
+ * `VariableSizeList`, so only a WINDOW of rows is ever in the DOM while the
+ * root advertises `aria-rowcount={rows.length}` — the full count. With the
+ * 2-row baseline nothing is windowed and that discrepancy can't show up. Enough
+ * rows to force recycling is the only way to observe whether VoiceOver reports
+ * row position correctly, and whether it stays correct across a scroll.
+ *
+ * Row names are 1-indexed and zero-padded (`Fixture Repository 007`) so a
+ * spoken transcript can be read against an expected ordinal at a glance.
+ *
+ * Added alongside `METADATA_FIXTURE` rather than replacing it: `home.spec.ts`'s
+ * passing assertions depend on the 2-row baseline.
+ */
+export function metadataFixtureWithCount(count: number) {
+  const base = METADATA_FIXTURE.src.fixtureRepo.sourceInfo;
+  const src: Record<string, { sourceInfo: typeof base }> = {};
+
+  for (let i = 1; i <= count; i++) {
+    const ordinal = String(i).padStart(3, '0');
+    src[`fixtureRepo${ordinal}`] = {
+      sourceInfo: {
+        ...base,
+        _id: `repo-fixture-${ordinal}`,
+        identifier: `fixture-repo-${ordinal}`,
+        name: manyRowName(i),
+      },
+    };
+  }
+
+  return { src };
+}
+
+/** Row-name prefix used by {@link metadataFixtureWithCount}. */
+export const MANY_ROW_NAME_PREFIX = 'Fixture Repository';
+
+/** Row count used by the table spec. Comfortably past any render window. */
+export const MANY_ROW_COUNT = 40;
+
+/**
+ * The name {@link metadataFixtureWithCount} gives its `ordinal`-th row
+ * (1-indexed), e.g. `manyRowName(7)` → `'Fixture Repository 007'`.
+ */
+export function manyRowName(ordinal: number): string {
+  return `${MANY_ROW_NAME_PREFIX} ${String(ordinal).padStart(3, '0')}`;
+}
+
 export const STRAPI_NEWS_FIXTURE = {
   data: [
     {
@@ -189,6 +238,14 @@ export async function mockStrapiRoutes(page: Page) {
   await page.route(NOTICES_API_GLOB, fulfillJson({ data: [] }));
 }
 
+export interface MockHomeOptions {
+  /**
+   * Number of repository rows the table should render. Omit for the 1-repo
+   * baseline; pass {@link MANY_ROW_COUNT} to force react-window to window.
+   */
+  repoCount?: number;
+}
+
 /**
  * Mock every request the populated home page makes: the two NDE endpoints that
  * feed the resources table, plus the Strapi routes above.
@@ -196,8 +253,18 @@ export async function mockStrapiRoutes(page: Page) {
  * Prefer `enterHomePageWebContent` from `../utils/home-page` over calling this
  * directly — it also navigates and parks the VoiceOver cursor.
  */
-export async function mockHomePopulated(page: Page) {
+export async function mockHomePopulated(
+  page: Page,
+  { repoCount }: MockHomeOptions = {},
+) {
   await mockStrapiRoutes(page);
   await page.route(QUERY_GLOB, fulfillJson(QUERY_FIXTURE));
-  await page.route(METADATA_GLOB, fulfillJson(METADATA_FIXTURE));
+  await page.route(
+    METADATA_GLOB,
+    fulfillJson(
+      repoCount === undefined
+        ? METADATA_FIXTURE
+        : metadataFixtureWithCount(repoCount),
+    ),
+  );
 }

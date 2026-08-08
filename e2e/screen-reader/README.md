@@ -22,6 +22,29 @@ Nothing announces that a suggestion list opened or which suggestion you're on.
 That is WCAG 4.1.2 as a user experiences it, and only a real screen reader
 catches it.
 
+## What it has found so far
+
+Six defects, **all of which pass every axe scan today**. Each is written as a
+test asserting the correct behaviour and deferred with `test.fixme` + a
+`FIXME(a11y)` note, so it starts passing the day someone fixes it. Every one was
+confirmed by temporarily un-`fixme`-ing it and watching it fail.
+
+| Surface       | Defect                                                                       |
+| ------------- | ---------------------------------------------------------------------------- |
+| Hero search   | Suggestion dropdown announces **nothing** — no combobox ARIA, no live region |
+| News carousel | Card headings jump `h3` → `h2`, so cards don't nest under "Updates"          |
+| Table sorting | Activating a sort control announces **nothing**; state is colour-only        |
+| Table sorting | All 8 sort controls share 2 generic labels — none names its column           |
+| Table cells   | Every cell announcement is padded with a sort-control label                  |
+| Table headers | The first column header announces as **empty**                               |
+
+Equally useful, the suite **disproved** a defect that looked certain from the
+markup: the table is virtualised (`react-window`) and declares
+`aria-rowcount={rows.length}` with no `aria-rowindex` anywhere, which should
+break row position — and doesn't. VoiceOver reports "row 2 of 42" correctly, and
+all 40 rows stay reachable and ordered across recycling. Both facts are now
+guarded by passing tests. This is the case for observing before asserting.
+
 ## Not in CI — on purpose
 
 These tests are slow (minutes each), headed, single-worker, macOS-only, and they
@@ -245,9 +268,27 @@ Plus one per-route entry helper, from
 | ------------------------- | ------------------------------------------------------------------------------------------------ |
 | `enterHomePageWebContent` | Mock `/`, navigate, wait for the data to render, park the VoiceOver cursor at the top of content |
 
+Pass `{ repoCount }` to render a many-row table instead of the 1-repo baseline
+(see `metadataFixtureWithCount` in [`./fixtures/home.ts`](./fixtures/home.ts)).
+`table.spec.ts` needs it: with only two rows react-window never windows, so
+nothing about row recycling is observable.
+
 When another route gets coverage, add a sibling (`search-page.ts`) rather than
 generalising this into a registry — the per-route "proof the data rendered"
 waits are the point, and they differ per route.
+
+### Two tricks worth reusing
+
+Every VoiceOver move costs ~1.5s, so traversal strategy is the difference
+between a 1-minute test and a 5-minute timeout:
+
+- **Jump, don't walk, to a distant surface.** The table sits ~60 items from the
+  top of web content. `findNextHeading` reaches its section heading in 7
+  presses.
+- **Pick the command that matches your stride.** Each table row's name cell is a
+  link, so `findNextLink` hops row-to-row at 1 press instead of the 5 a linear
+  walk costs. The tradeoff: `findNextLink` omits the "row N of M" context a
+  linear walk announces, so choose per assertion.
 
 Two conventions those encode, worth keeping:
 
