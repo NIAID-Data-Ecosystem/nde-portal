@@ -27,14 +27,18 @@ something actually drives a screen reader.
 
 ## Summary
 
-| ID                | Surface            | Defect                                              | WCAG         | Reach               |
-| ----------------- | ------------------ | --------------------------------------------------- | ------------ | ------------------- |
-| [SR-001](#sr-001) | Search suggestions | Dropdown announces nothing at all                   | 4.1.2, 1.3.1 | 8 files / 4 routes  |
-| [SR-002](#sr-002) | Table sorting      | Activating a sort control announces nothing         | 4.1.2, 1.4.1 | 16 files / 4 routes |
-| [SR-003](#sr-003) | Table sorting      | 8 sort controls share 2 generic labels              | 2.4.6, 4.1.2 | 16 files / 4 routes |
-| [SR-004](#sr-004) | Table cells        | Every cell announcement padded with a control label | 1.3.1        | 16 files / 4 routes |
-| [SR-005](#sr-005) | Table headers      | First column header announces as empty              | 1.3.1        | 16 files / 4 routes |
-| [SR-006](#sr-006) | News carousel      | Heading outline jumps `h3` → `h2`                   | 1.3.1        | 2 files / 2 routes  |
+| ID                | Surface            | Defect                                                  | WCAG         | Reach                |
+| ----------------- | ------------------ | ------------------------------------------------------- | ------------ | -------------------- |
+| [SR-001](#sr-001) | Search suggestions | Dropdown announces nothing at all                       | 4.1.2, 1.3.1 | 8 files / 4 routes   |
+| [SR-002](#sr-002) | Table sorting      | Activating a sort control announces nothing             | 4.1.2, 1.4.1 | 16 files / 4 routes  |
+| [SR-003](#sr-003) | Table sorting      | 8 sort controls share 2 generic labels                  | 2.4.6, 4.1.2 | 16 files / 4 routes  |
+| [SR-004](#sr-004) | Table cells        | Every cell announcement padded with a control label     | 1.3.1        | 16 files / 4 routes  |
+| [SR-005](#sr-005) | Table headers      | First column header announces as empty                  | 1.3.1        | 16 files / 4 routes  |
+| [SR-006](#sr-006) | News carousel      | Heading outline jumps `h3` → `h2`                       | 1.3.1        | 2 files / 2 routes   |
+| [SR-007](#sr-007) | Page shell         | No banner landmark — the nav sits inside `main`         | 1.3.1        | 31 files / 21 routes |
+| [SR-008](#sr-008) | Page shell         | No contentinfo landmark — the footer sits inside `main` | 1.3.1        | 31 files / 21 routes |
+| [SR-009](#sr-009) | Page shell         | No skip link; 16 announcements before the page title    | 2.4.1        | 31 files / 21 routes |
+| [SR-010](#sr-010) | Navigation         | The active nav item never announces "current page"      | 4.1.2, 1.4.1 | 31 files / 21 routes |
 
 **Reach** counts files importing the affected shared component. None of these is
 page-specific markup — each is one fix that lands everywhere the component is
@@ -42,9 +46,15 @@ used.
 
 | Component                             | Consumer files | Routes                                           |
 | ------------------------------------- | -------------- | ------------------------------------------------ |
+| `src/components/page-container/`      | 31             | **every route** — it renders the nav and footer  |
 | `src/components/table/`               | 16             | home, search, saved, resource detail             |
 | `src/components/input-with-dropdown/` | 8              | home, search, ontology-browser, knowledge-center |
 | `src/components/carousel/`            | 2              | home, search                                     |
+
+SR-007 through SR-010 have the widest reach in this document: `PageContainer`
+wraps all 21 routes, and SR-007, SR-008 and SR-009 share a single root cause —
+one `<main>` element that opens above the navigation and closes below the
+footer.
 
 ## What the suite also _disproved_
 
@@ -309,20 +319,219 @@ heading that introduces them_
 
 ---
 
+<a id="sr-007"></a>
+
+## SR-007 — There is no banner landmark; the navigation is inside `main`
+
+**Severity: medium.** Landmark navigation is one of the three ways screen reader
+users skim an unfamiliar page, alongside headings and links.
+
+|                        |                                                                                                    |
+| ---------------------- | -------------------------------------------------------------------------------------------------- |
+| **Sighted user**       | Sees a header bar, visually distinct from the page body, and ignores it after the first page       |
+| **Screen reader user** | Asks for the page's landmarks and is told the header is simply the first thing inside main content |
+
+Observed at the top of web content — the first landmark entered is the
+navigation itself, with no header region around it:
+
+```
+1. Main navigation navigation
+2. NDE Desktop Logo link
+3. Home link
+4. Search dialog pop up collapsed button
+```
+
+**Where** —
+[`src/components/page-container/components/container.tsx:76`](../../src/components/page-container/components/container.tsx#L76)
+opens `<Flex as='main'>` and renders `<Navigation />` inside it at
+[line 82](../../src/components/page-container/components/container.tsx#L82).
+`grep` for `<header` or `role='banner'` across `src/` returns nothing — there is
+no banner on any route.
+
+**Why axe missed it** — `landmark-banner-is-top-level` and
+`landmark-no-duplicate-banner` inspect banner landmarks that **exist**, so a
+page with no banner at all makes them _inapplicable_ rather than failing. No axe
+rule requires a page to have one, and `region` passes because every element is
+inside `<main>`.
+
+**Fix** — move `<Navigation />` out of `<main>` and wrap it in a `<header>`. One
+element, and it resolves SR-008 at the same time.
+
+**Guarded by** — `page-shell.spec.ts` → _the navigation sits in a banner
+landmark, outside the main content_
+
+**Caveat recorded in the spec** — `navigateToWebContent()` parks the VoiceOver
+cursor inside `<main>`, so no "main" boundary is announced at the _start_ of a
+walk, only "end of main" at the finish. If a `<header>` is added above `<main>`
+and this test still fails, check whether the entry point is landing inside the
+banner and skipping its boundary announcement the same way, before concluding
+the fix was wrong.
+
+---
+
+<a id="sr-008"></a>
+
+## SR-008 — There is no content information landmark; the footer is inside `main`
+
+|                        |                                                                                          |
+| ---------------------- | ---------------------------------------------------------------------------------------- |
+| **Sighted user**       | Scrolls to the bottom and finds policies, contact links and government links             |
+| **Screen reader user** | Has no footer landmark to jump to, and must walk the entire page to reach the same links |
+
+`<footer>` maps to `contentinfo` **only when it is not a descendant of `main`**.
+Here it is, so it maps to a plain generic container. Walking out of the footer,
+the last link is followed directly by the end of `main`:
+
+```
+11. Changelog link
+12. Data harvested: 00-00-0000 link
+13. main                              (spoken: "end of main")
+14. Notifications-top empty region
+```
+
+No content information boundary is announced anywhere on the page. Note what
+comes _after_ `main`: only two empty toast containers. The footer is the last
+thing inside the main content region.
+
+**Where** —
+[`src/components/page-container/components/container.tsx:133`](../../src/components/page-container/components/container.tsx#L133)
+renders `<Footer />` inside the `<main>` opened at
+[line 76](../../src/components/page-container/components/container.tsx#L76).
+
+**Why axe missed it** — same shape as SR-007.
+`landmark-contentinfo-is-top-level` inspects contentinfo landmarks that exist,
+and there isn't one, so the rule is inapplicable. **The absence of a landmark
+cannot violate a rule that only examines landmarks which are present.** That is
+a structural blind spot in static analysis, not an oversight in axe's rule set.
+
+**Fix** — close `<main>` before `<Footer />`. The same one-element change as
+SR-007.
+
+**Guarded by** — `page-shell.spec.ts` → _the footer is announced as a content
+information landmark_
+
+---
+
+<a id="sr-009"></a>
+
+## SR-009 — No skip link, and axe's own bypass rule certifies one that doesn't exist
+
+**Severity: high.** WCAG 2.4.1 (Bypass Blocks) is a **Level A** criterion, and
+this affects every route on every visit.
+
+|                        |                                                                           |
+| ---------------------- | ------------------------------------------------------------------------- |
+| **Sighted user**       | Glances past the header to the page title in well under a second          |
+| **Screen reader user** | Sits through **16 announcements** before being told what page they are on |
+
+The full transcript, captured by the test as `chrome-before-h1`:
+
+```
+ 1. Main navigation navigation
+ 2. NDE Desktop Logo link
+ 3. Home link
+ 4. Search dialog pop up collapsed button
+ 5. About dialog pop up collapsed button
+ 6. Resources dialog pop up collapsed button
+ 7. Log In button
+ 8. Main navigation navigation
+ 9. image
+10. This is the alpha version of the NIAID Data Ecosystem Discovery Portal.
+11. Read Less button
+12. Currently using the:
+13. Staging API link
+14. A complex network of interconnected lines and nodes, resembling a molecular
+    or neural network structure. The image features various shades of blue and
+    white, with nodes of different sizes connected by thin lines, creating a
+    web-like pattern. image
+15. An abstract graphic featuring three hexagons. The top-right hexagon shows a
+    person typing on a keyboard with a microscope in the background, symbolizing
+    a blend of technology and science. image
+16. Discovery Portal heading level 1
+```
+
+Items 9–13 are the non-production environment banner, so a production visitor
+hears 11 rather than 16 — still with no way to skip any of them. Items 14 and 15
+are decorative artwork carrying ~60 words of alt text; that is a separate
+defect, observed here but not yet filed.
+
+**Where** — there is no skip link anywhere in the app. The only trace of one is
+a dead `SkipLink` key in
+[`src/theme/theme.types.ts:665`](../../src/theme/theme.types.ts#L665),
+referenced by nothing.
+
+**Why axe missed it — the sharpest example in this document.** axe _does_ have a
+rule for 2.4.1: `bypass`, tagged `wcag2a`, impact **serious**. It passes when
+the page has a skip link **or** a heading **or** a main landmark. This page has
+a `<main>` — the one that starts above the navigation (SR-007) — so the rule is
+satisfied and reports a pass. A static check confirmed conformance with the
+letter of a criterion that the page fails completely in practice.
+
+**Fix** — a visually-hidden-until-focused "Skip to main content" link as the
+first focusable element, pointing at a container **below** the nav. It needs
+SR-007's fix first, to have somewhere meaningful to point.
+
+**Guarded by** — `page-shell.spec.ts` → _a skip link lets a screen reader user
+bypass the navigation_
+
+---
+
+<a id="sr-010"></a>
+
+## SR-010 — The active navigation item never announces that it is the current page
+
+|                        |                                                                  |
+| ---------------------- | ---------------------------------------------------------------- |
+| **Sighted user**       | Sees a white underline under "Home" and knows where they are     |
+| **Screen reader user** | Hears `Home link` — identical to every other item in the nav bar |
+
+Observed on `/`, where "Home" _is_ the current page:
+
+```
+1. NDE Desktop Logo link
+2. Home link
+```
+
+**Where** — `aria-current` appears **nowhere in `src/`**. The active state is a
+white underline `<Box>` in
+[`nav-desktop-top-level-link.tsx:28`](../../src/components/navigation-bar/components/nav-desktop-top-level-link.tsx#L28).
+The component already computes the active state in order to render that
+underline; it simply never exposes it.
+
+**WCAG** — 4.1.2 (Name, Role, Value); also **1.4.1 (Use of Color)**, since
+colour and shape are the only channel, which affects low-vision and colour-blind
+sighted users too.
+
+**Why axe missed it** — `aria-current` is optional in ARIA, so its absence is
+never a violation, and axe has no way to associate a nav item with the current
+URL.
+
+**Fix** — `aria-current='page'` on the active link, alongside the existing
+underline. The breadcrumb trail has the same gap
+([`breadcrumbs.tsx:89`](../../src/components/page-container/components/breadcrumbs.tsx#L89)
+renders the current page as a live link) on routes other than this one, which
+renders no breadcrumbs.
+
+**Guarded by** — `page-shell.spec.ts` → _the active navigation link announces
+that it is the current page_
+
+---
+
 ## Surfaces checked and found clean
 
 Recording these matters: a method that only reports problems can't be
 distinguished from one that manufactures them.
 
-| Surface                   | Result                                                                                                               |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| Main navigation dropdowns | Announce correctly — `Search dialog pop up collapsed button` carries name, popup type, state and role                |
-| Footer                    | Static links, reached normally by the heading walk; `Policies` and `Related Government Websites` announce as level 2 |
-| Table identity            | `List of repositories and resource catalogs table 5 columns, 42 rows`                                                |
-| Table row position        | Correct despite virtualisation — see the disproved prediction above                                                  |
-| Table row ordering        | All 40 rows reachable exactly once, in order, across recycling                                                       |
-| Hero search field         | Announces name and role: `Search for resources … edit text`                                                          |
-| Hero search typing        | Keystrokes echoed correctly                                                                                          |
+| Surface                   | Result                                                                                                                                                                                                            |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Navigation landmark       | `Main navigation navigation` — correctly named and roled, and the only landmark on the page that is. Now guarded                                                                                                  |
+| Main navigation dropdowns | Announce correctly — `Search dialog pop up collapsed button` carries name, popup type, state and role. Now guarded                                                                                                |
+| Footer contents           | Static links, correctly named and grouped as lists (`list 5 items`, `link USA.gov 4 of 5`); the two footer headings announce as level 2. It is the footer's _landmark_ that is missing (SR-008), not its contents |
+| Table identity            | `List of repositories and resource catalogs table 5 columns, 42 rows`                                                                                                                                             |
+| Table row position        | Correct despite virtualisation — see the disproved prediction above                                                                                                                                               |
+| Table row ordering        | All 40 rows reachable exactly once, in order, across recycling                                                                                                                                                    |
+| Hero search field         | Announces name and role: `Search for resources … edit text`                                                                                                                                                       |
+| Hero search typing        | Keystrokes echoed correctly                                                                                                                                                                                       |
 
 ## Coverage caveat
 

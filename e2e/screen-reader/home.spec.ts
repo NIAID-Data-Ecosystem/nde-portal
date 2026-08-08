@@ -27,9 +27,17 @@
  * name and role) are identical in every state, because the hero renders from
  * static config and never depends on the two NDE queries.
  *
- * Also deliberately out of scope for this first spec: the Explore Resources
- * table and its filter popovers, the news carousel controls, the nav dropdowns,
- * and the footer.
+ * Scope. Two other specs cover surfaces reached through this same route, so
+ * they are deliberately absent here:
+ *   - `table.spec.ts` — the shared Explore Resources table
+ *   - `page-shell.spec.ts` — the landmarks, skip link and nav state that
+ *     `PageContainer` renders on every route, including the nav dropdowns and
+ *     the footer
+ *
+ * Still uncovered anywhere: the table's filter popovers and result count, the
+ * news carousel controls, and the hero's decorative images (~60 words of alt
+ * text read before the `<h1>` — visible in the `chrome-before-h1` transcript
+ * attached by `page-shell.spec.ts`, but not yet filed as a finding).
  *
  * Route mocks and fixtures come from `./fixtures/home`, which this suite OWNS —
  * `e2e/accessibility/home.spec.ts` keeps its own equivalent copy inline. That

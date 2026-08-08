@@ -24,7 +24,7 @@ catches it.
 
 ## What it has found so far
 
-Six defects, **all of which pass every axe scan today**. Each is written as a
+Ten defects, **all of which pass every axe scan today**. Each is written as a
 test asserting the correct behaviour and deferred with `test.fixme` + a
 `FIXME(a11y)` note, so it starts passing the day someone fixes it. Every one was
 confirmed by temporarily un-`fixme`-ing it and watching it fail.
@@ -42,6 +42,15 @@ comments reference these IDs rather than repeating the detail.
 | SR-004 | Table cells   | Every cell announcement is padded with a sort-control label                  |
 | SR-005 | Table headers | The first column header announces as **empty**                               |
 | SR-006 | News carousel | Card headings jump `h3` → `h2`, so cards don't nest under "Updates"          |
+| SR-007 | Page shell    | No banner landmark — the nav is inside the one `<main>`                      |
+| SR-008 | Page shell    | No contentinfo landmark — the footer is inside the same `<main>`             |
+| SR-009 | Page shell    | No skip link. **16 announcements** before the page title, on every route     |
+| SR-010 | Navigation    | The active nav item announces `Home link` — no "current page"                |
+
+SR-009 is the sharpest of the ten: axe **has** a rule for WCAG 2.4.1 (`bypass`,
+impact _serious_), and it passes here because the page has a `<main>` landmark —
+one that starts above the navigation. The rule certifies a bypass mechanism that
+does not exist.
 
 Equally useful, the suite **disproved** a defect that looked certain from the
 markup: the table is virtualised (`react-window`) and declares
