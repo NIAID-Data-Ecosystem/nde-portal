@@ -101,6 +101,7 @@ test.describe('screen reader: Home — document structure', () => {
   // pass `as='h4'`. axe classifies heading-order as moderate, so the axe suite
   // reports but does not fail on it — which is exactly why it's still here.
   // Un-fixme this once NewsCarousel.tsx sets the level explicitly.
+  // See SR-006 in FINDINGS.md.
   test.fixme(
     'carousel card headings sit below the section heading that introduces them',
     async ({ page, voiceOver }, testInfo) => {
@@ -219,6 +220,7 @@ test.describe('screen reader: Home — hero search', () => {
   // This test asserts the CORRECT behaviour and is expected to fail until the
   // component gains combobox semantics. Do not rewrite it to assert the current
   // silence — that would lock the bug in as expected. Un-fixme after the fix.
+  // See SR-001 in FINDINGS.md.
   test.fixme(
     'arrowing through search suggestions announces each option',
     async ({ page, voiceOver }, testInfo) => {

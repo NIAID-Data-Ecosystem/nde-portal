@@ -200,11 +200,10 @@ test.describe('screen reader: Table — structure', () => {
 // --- Sorting -----------------------------------------------------------------
 
 test.describe('screen reader: Table — sorting', () => {
-  // FIXME(a11y): activating a sort control announces NOTHING. The spike pressed
-  // the ascending control and captured an empty spoken log; re-reading the
-  // control afterwards still says plain "sort table column ascending button".
-  // A sighted user sees the caret change colour; a screen reader user gets
-  // silence and no way to learn the table re-sorted, or in which direction.
+  // FIXME(a11y): activating a sort control announces NOTHING. A sighted user
+  // sees the caret change colour and the rows reorder; a screen reader user
+  // gets silence, with no way to learn the table re-sorted or in which
+  // direction.
   //
   // Cause: src/components/table/components/sort-toggle.tsx conveys active state
   // purely through `color={isSelected && sortBy === 'ASC' ? … : 'gray.200'}`
@@ -214,7 +213,7 @@ test.describe('screen reader: Table — sorting', () => {
   // WCAG 4.1.2 (Name, Role, Value), and 1.4.1 (Use of Color) for the
   // colour-only state. axe passes it: the buttons have accessible names, and
   // axe does not require aria-sort. Un-fixme once aria-sort lands on the
-  // columnheader. See NDE-XXXX.
+  // columnheader. See SR-002 in FINDINGS.md.
   test.fixme(
     'activating a sort control announces the new sort state',
     async ({ page, voiceOver }, testInfo) => {
@@ -223,25 +222,48 @@ test.describe('screen reader: Table — sorting', () => {
       });
       await jumpToTableSection(voiceOver);
 
-      const sort = await walkToItem(voiceOver, undefined, SORT_CONTROL_LABEL, {
-        maxSteps: 45,
-      });
+      // DESCENDING, deliberately. An earlier version of this test used the
+      // first ascending control — which belongs to TYPE, on data already
+      // ordered with the 40 repositories ahead of the lone catalog. That sort
+      // is a no-op, so "nothing was announced" was indistinguishable from
+      // "nothing happened", and the finding was briefly unproven. TYPE
+      // descending MUST bring the catalog to the top if it fires.
+      const sort = await walkToItem(
+        voiceOver,
+        undefined,
+        `${SORT_CONTROL_LABEL} descending`,
+        { maxSteps: 45 },
+      );
       await attachSpokenLog(testInfo, 'walk-to-sort', sort.trace.items);
+
+      const firstRow = () =>
+        page
+          .getByRole('link', { name: /Fixture (Repository|Resource Catalog)/ })
+          .first()
+          .textContent();
+      const before = await firstRow();
 
       await voiceOver.clearSpokenPhraseLog();
       await voiceOver.act();
+      await expect
+        .poll(firstRow, {
+          message:
+            'ORACLE: the sort must actually fire, or the silence below proves ' +
+            'nothing. Playwright is used here only to observe app state — it ' +
+            'never moves the VoiceOver cursor.',
+        })
+        .not.toBe(before);
 
       const log = await voiceOver.spokenPhraseLog();
       await attachSpokenLog(testInfo, 'after-activating-sort', log);
 
       const everythingSpoken = log.join(' ');
       expect(
-        spoken(everythingSpoken, 'ascending') ||
+        spoken(everythingSpoken, 'descending') ||
           spoken(everythingSpoken, 'sorted'),
-        'Sorting a column is a change of context and must be announced. ' +
-          `VoiceOver said:\n${log
-            .map((l, i) => `  ${i + 1}. ${l}`)
-            .join('\n')}`,
+        'The table demonstrably re-sorted (first row changed), so the new sort ' +
+          'state must be announced. VoiceOver said:\n' +
+          `${log.map((l, i) => `  ${i + 1}. ${l}`).join('\n')}`,
       ).toBe(true);
 
       await attachFullSpokenLog(voiceOver, testInfo, 'sort-activation');
@@ -257,7 +279,7 @@ test.describe('screen reader: Table — sorting', () => {
   //
   // Fix: interpolate the column label, e.g. `sort ${columnLabel} ascending`.
   // WCAG 2.4.6 (Headings and Labels) / 4.1.2. axe passes it — a duplicated
-  // accessible name is not a violation. See NDE-XXXX.
+  // accessible name is not a violation. See SR-003 in FINDINGS.md.
   test.fixme(
     'sort controls name the column they sort',
     async ({ page, voiceOver }, testInfo) => {
@@ -300,7 +322,7 @@ test.describe('screen reader: Table — cell announcements', () => {
   // Fix: give the columnheader an explicit `aria-label` of just the column
   // name, so its accessible name stops being derived from its children.
   // WCAG 1.3.1. axe passes it — the name is present, merely polluted.
-  // Un-fixme once column headers name themselves. See NDE-XXXX.
+  // Un-fixme once column headers name themselves. See SR-004 in FINDINGS.md.
   test.fixme(
     'cell announcements are not padded with control labels',
     async ({ page, voiceOver }, testInfo) => {
@@ -338,7 +360,7 @@ test.describe('screen reader: Table — cell announcements', () => {
   // 5"). Cells in that column still pick up "NAME" as their column context, so
   // the association exists — but a user navigating the header row itself is
   // told nothing about column 1.
-  // Un-fixme once the NAME header announces its own label. See NDE-XXXX.
+  // Un-fixme once the NAME header announces its own label. See SR-005 in FINDINGS.md.
   test.fixme(
     'the first column header announces its label',
     async ({ page, voiceOver }, testInfo) => {

@@ -29,14 +29,19 @@ test asserting the correct behaviour and deferred with `test.fixme` + a
 `FIXME(a11y)` note, so it starts passing the day someone fixes it. Every one was
 confirmed by temporarily un-`fixme`-ing it and watching it fail.
 
-| Surface       | Defect                                                                       |
-| ------------- | ---------------------------------------------------------------------------- |
-| Hero search   | Suggestion dropdown announces **nothing** — no combobox ARIA, no live region |
-| News carousel | Card headings jump `h3` → `h2`, so cards don't nest under "Updates"          |
-| Table sorting | Activating a sort control announces **nothing**; state is colour-only        |
-| Table sorting | All 8 sort controls share 2 generic labels — none names its column           |
-| Table cells   | Every cell announcement is padded with a sort-control label                  |
-| Table headers | The first column header announces as **empty**                               |
+**[FINDINGS.md](./FINDINGS.md) is the full record** — per finding: what a
+sighted user sees vs what VoiceOver says, why axe missed it, the WCAG criterion,
+the fix, and how many files the shared component reaches. The `FIXME(a11y)`
+comments reference these IDs rather than repeating the detail.
+
+| ID     | Surface       | Defect                                                                       |
+| ------ | ------------- | ---------------------------------------------------------------------------- |
+| SR-001 | Hero search   | Suggestion dropdown announces **nothing** — no combobox ARIA, no live region |
+| SR-002 | Table sorting | Activating a sort control announces **nothing**; state is colour-only        |
+| SR-003 | Table sorting | All 8 sort controls share 2 generic labels — none names its column           |
+| SR-004 | Table cells   | Every cell announcement is padded with a sort-control label                  |
+| SR-005 | Table headers | The first column header announces as **empty**                               |
+| SR-006 | News carousel | Card headings jump `h3` → `h2`, so cards don't nest under "Updates"          |
 
 Equally useful, the suite **disproved** a defect that looked certain from the
 markup: the table is virtualised (`react-window`) and declares
@@ -358,7 +363,7 @@ suite does — mark that one test `test.fixme` with a `FIXME(a11y)` comment nami
 the gap and linking a follow-up issue, so it stays visible as tracked debt:
 
 ```ts
-// FIXME(a11y): the hero suggestion dropdown has no combobox ARIA — see NDE-XXXX
+// FIXME(a11y): the hero suggestion dropdown has no combobox ARIA — see SR-001 in FINDINGS.md
 test.fixme('arrowing through suggestions announces each option', ...);
 ```
 
