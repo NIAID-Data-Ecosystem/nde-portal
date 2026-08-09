@@ -24,8 +24,8 @@ catches it.
 
 ## What it has found so far
 
-Ten defects, **all of which pass every axe scan today**. Each is written as a
-test asserting the correct behaviour and deferred with `test.fixme` + a
+Fourteen defects, **all of which pass every axe scan today**. Each is written as
+a test asserting the correct behaviour and deferred with `test.fixme` + a
 `FIXME(a11y)` note, so it starts passing the day someone fixes it. Every one was
 confirmed by temporarily un-`fixme`-ing it and watching it fail.
 
@@ -46,11 +46,22 @@ comments reference these IDs rather than repeating the detail.
 | SR-008 | Page shell    | No contentinfo landmark — the footer is inside the same `<main>`             |
 | SR-009 | Page shell    | No skip link. **16 announcements** before the page title, on every route     |
 | SR-010 | Navigation    | The active nav item announces `Home link` — no "current page"                |
+| SR-011 | Table search  | Searching narrows the table and announces **nothing** but the typed keys     |
+| SR-012 | Table search  | A search matching nothing empties the table in silence                       |
+| SR-013 | Table filters | Ticking a filter halves the table with a **completely empty** spoken log     |
+| SR-014 | Table filters | Every filter chip's remove button is named just `close`                      |
 
-SR-009 is the sharpest of the ten: axe **has** a rule for WCAG 2.4.1 (`bypass`,
-impact _serious_), and it passes here because the page has a `<main>` landmark —
-one that starts above the navigation. The rule certifies a bypass mechanism that
-does not exist.
+Two of these are worth singling out for what they say about static analysis:
+
+**SR-009** — axe **has** a rule for WCAG 2.4.1 (`bypass`, impact _serious_), and
+it passes here because the page has a `<main>` landmark, one that starts above
+the navigation. The rule certifies a bypass mechanism that does not exist.
+
+**SR-011/012/013** — all three are WCAG 4.1.3 (Status Messages, AA), and axe has
+no rule for that criterion and cannot have one. Detecting a _missing_ status
+message means knowing a number was supposed to update in response to an action —
+a claim about intent that no DOM snapshot contains. One fix (`role="status"` on
+the results count) closes all three.
 
 Equally useful, the suite **disproved** a defect that looked certain from the
 markup: the table is virtualised (`react-window`) and declares
@@ -286,6 +297,11 @@ Pass `{ repoCount }` to render a many-row table instead of the 1-repo baseline
 (see `metadataFixtureWithCount` in [`./fixtures/home.ts`](./fixtures/home.ts)).
 `table.spec.ts` needs it: with only two rows react-window never windows, so
 nothing about row recycling is observable.
+
+Pass `{ repoGenre }` to give the repository row a different Research Domain from
+the catalog row. `table-search.spec.ts` needs it: with both rows on `IID` the
+filter has one option, so ticking it filters 2 rows down to 2 — and "nothing was
+announced" after a no-op proves nothing. Same trap as SR-002.
 
 When another route gets coverage, add a sibling (`search-page.ts`) rather than
 generalising this into a registry — the per-route "proof the data rendered"

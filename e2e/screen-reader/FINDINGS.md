@@ -27,18 +27,22 @@ something actually drives a screen reader.
 
 ## Summary
 
-| ID                | Surface            | Defect                                                  | WCAG         | Reach                |
-| ----------------- | ------------------ | ------------------------------------------------------- | ------------ | -------------------- |
-| [SR-001](#sr-001) | Search suggestions | Dropdown announces nothing at all                       | 4.1.2, 1.3.1 | 8 files / 4 routes   |
-| [SR-002](#sr-002) | Table sorting      | Activating a sort control announces nothing             | 4.1.2, 1.4.1 | 16 files / 4 routes  |
-| [SR-003](#sr-003) | Table sorting      | 8 sort controls share 2 generic labels                  | 2.4.6, 4.1.2 | 16 files / 4 routes  |
-| [SR-004](#sr-004) | Table cells        | Every cell announcement padded with a control label     | 1.3.1        | 16 files / 4 routes  |
-| [SR-005](#sr-005) | Table headers      | First column header announces as empty                  | 1.3.1        | 16 files / 4 routes  |
-| [SR-006](#sr-006) | News carousel      | Heading outline jumps `h3` → `h2`                       | 1.3.1        | 2 files / 2 routes   |
-| [SR-007](#sr-007) | Page shell         | No banner landmark — the nav sits inside `main`         | 1.3.1        | 31 files / 21 routes |
-| [SR-008](#sr-008) | Page shell         | No contentinfo landmark — the footer sits inside `main` | 1.3.1        | 31 files / 21 routes |
-| [SR-009](#sr-009) | Page shell         | No skip link; 16 announcements before the page title    | 2.4.1        | 31 files / 21 routes |
-| [SR-010](#sr-010) | Navigation         | The active nav item never announces "current page"      | 4.1.2, 1.4.1 | 31 files / 21 routes |
+| ID                | Surface            | Defect                                                    | WCAG         | Reach                |
+| ----------------- | ------------------ | --------------------------------------------------------- | ------------ | -------------------- |
+| [SR-001](#sr-001) | Search suggestions | Dropdown announces nothing at all                         | 4.1.2, 1.3.1 | 8 files / 4 routes   |
+| [SR-002](#sr-002) | Table sorting      | Activating a sort control announces nothing               | 4.1.2, 1.4.1 | 16 files / 4 routes  |
+| [SR-003](#sr-003) | Table sorting      | 8 sort controls share 2 generic labels                    | 2.4.6, 4.1.2 | 16 files / 4 routes  |
+| [SR-004](#sr-004) | Table cells        | Every cell announcement padded with a control label       | 1.3.1        | 16 files / 4 routes  |
+| [SR-005](#sr-005) | Table headers      | First column header announces as empty                    | 1.3.1        | 16 files / 4 routes  |
+| [SR-006](#sr-006) | News carousel      | Heading outline jumps `h3` → `h2`                         | 1.3.1        | 2 files / 2 routes   |
+| [SR-007](#sr-007) | Page shell         | No banner landmark — the nav sits inside `main`           | 1.3.1        | 31 files / 21 routes |
+| [SR-008](#sr-008) | Page shell         | No contentinfo landmark — the footer sits inside `main`   | 1.3.1        | 31 files / 21 routes |
+| [SR-009](#sr-009) | Page shell         | No skip link; 16 announcements before the page title      | 2.4.1        | 31 files / 21 routes |
+| [SR-010](#sr-010) | Navigation         | The active nav item never announces "current page"        | 4.1.2, 1.4.1 | 31 files / 21 routes |
+| [SR-011](#sr-011) | Table search       | Searching announces nothing — no live region on the route | 4.1.3        | 6 files / 5 routes   |
+| [SR-012](#sr-012) | Table search       | A search matching nothing empties the table in silence    | 4.1.3        | 6 files / 5 routes   |
+| [SR-013](#sr-013) | Table filters      | Applying a filter announces nothing at all                | 4.1.3        | 3 files / 3 routes   |
+| [SR-014](#sr-014) | Table filters      | Every filter chip's remove button is named just "close"   | 2.4.6, 4.1.2 | 1 file / 1 route     |
 
 **Reach** counts files importing the affected shared component. None of these is
 page-specific markup — each is one fix that lands everywhere the component is
@@ -49,12 +53,20 @@ used.
 | `src/components/page-container/`      | 31             | **every route** — it renders the nav and footer  |
 | `src/components/table/`               | 16             | home, search, saved, resource detail             |
 | `src/components/input-with-dropdown/` | 8              | home, search, ontology-browser, knowledge-center |
+| `src/components/search-input/`        | 6              | home, search, saved, repository-matcher          |
+| `src/components/checkbox-list/`       | 3              | home, search                                     |
 | `src/components/carousel/`            | 2              | home, search                                     |
 
 SR-007 through SR-010 have the widest reach in this document: `PageContainer`
 wraps all 21 routes, and SR-007, SR-008 and SR-009 share a single root cause —
 one `<main>` element that opens above the navigation and closes below the
 footer.
+
+SR-011, SR-012 and SR-013 also share one root cause, and one fix: **there is no
+live region anywhere in the application.** `grep -o 'aria-live'` across the
+built page returns zero matches, and `role="status"` appears nowhere in `src/`.
+Every one of them is WCAG **4.1.3 Status Messages**, a Level AA criterion that
+is invisible to static analysis by construction — see SR-011.
 
 ## What the suite also _disproved_
 
@@ -517,6 +529,189 @@ that it is the current page_
 
 ---
 
+<a id="sr-011"></a>
+
+## SR-011 — Searching the table announces nothing about the outcome
+
+**Severity: high.** The search box is the primary way to use a table of every
+repository in the ecosystem.
+
+|                        |                                                                                     |
+| ---------------------- | ----------------------------------------------------------------------------------- |
+| **Sighted user**       | Types, watches rows disappear, reads "1 results" update beside the box              |
+| **Screen reader user** | Hears the seven characters they typed. Nothing else. The table has silently changed |
+
+Observed — the oracle confirms the row set really changed, and the **entire**
+spoken log for the interaction is the character echo:
+
+```
+count: 2 results -> 1 results
+--- spoken ---
+C  a  t  a  l  o  g
+```
+
+**Where** —
+[`TableWithSearch/index.tsx:124`](../../src/views/home/components/TableWithSearch/index.tsx#L124)
+
+```tsx
+<Text fontSize='sm' fontWeight='semibold' lineHeight='normal'>
+  {filteredData.length} results
+</Text>
+```
+
+A plain `<p>`. No `role="status"`, no `aria-live`, no `aria-atomic`, and no
+association with either the input or the table. There is **no live region
+anywhere on the route** — `grep -o 'aria-live' out/index.html` returns zero
+matches, and `role="status"` appears nowhere in `src/`.
+
+**WCAG** — **4.1.3 Status Messages (Level AA)**. A change of content that
+conveys the result of an action must be programmatically determinable through
+role or properties, so it can be announced without moving focus.
+
+**Why axe missed it — a categorical blind spot, not a gap.** axe has no rule for
+4.1.3 and cannot have one. Detecting a _missing_ status message requires knowing
+that a number on the page was **supposed** to update in response to a user
+action. That is a claim about intent and causality, which static inspection of a
+DOM snapshot cannot make. The only way to find it is to perform the action and
+listen — which is the entire argument for this suite in one finding.
+
+**Fix** — `role="status"` on the results count. One attribute, and it resolves
+SR-012 and SR-013 at the same time.
+
+**Guarded by** — `table-search.spec.ts` → _typing in the table search announces
+how many results remain_
+
+---
+
+<a id="sr-012"></a>
+
+## SR-012 — A search that matches nothing empties the table in silence
+
+The worst case of SR-011, and worth its own entry because the consequence is
+different in kind: not "the user misses an update" but "the user is left with
+nothing and is not told why".
+
+|                        |                                                                                   |
+| ---------------------- | --------------------------------------------------------------------------------- |
+| **Sighted user**       | Sees "0 results" and a panel reading _No items match — try clearing some filters_ |
+| **Screen reader user** | Hears the characters typed. The table is now empty and they have not been told    |
+
+Observed:
+
+```
+count: 0 results
+--- spoken ---
+z    z
+```
+
+(VoiceOver echoed only two of the four characters; the point stands either way.)
+
+**Where** — the recovery advice is passed as `emptyState` from
+[`src/pages/index.tsx:299`](../../src/pages/index.tsx#L299) and rendered by the
+Table **inside a table cell**
+([`table/index.tsx:653`](../../src/components/table/index.tsx#L653)). So the one
+piece of guidance the app offers a stuck user sits in a cell they have no reason
+to navigate to, having received no signal that anything changed.
+
+Note also that the two empty states disagree: this one says `No items match`,
+while a table with no source data at all says `No results found.`
+([`TableWithSearch/index.tsx:94`](../../src/views/home/components/TableWithSearch/index.tsx#L94)).
+
+**WCAG** — 4.1.3 Status Messages (AA).
+
+**Why axe missed it** — as SR-011. The empty state is valid, well-formed markup;
+it is the silence around its arrival that is the defect.
+
+**Fix** — the same `role="status"` as SR-011.
+
+**Guarded by** — `table-search.spec.ts` → _a search that matches nothing
+announces the empty state_
+
+---
+
+<a id="sr-013"></a>
+
+## SR-013 — Applying a filter announces nothing at all
+
+**The starkest transcript in this document.** Ticking a Research Domain checkbox
+halved the table, and VoiceOver said **nothing whatsoever** — not a word, not a
+checkbox state change, not a count:
+
+```
+count: 2 results -> 1 results
+--- spoken ---
+                       ← the log is empty
+```
+
+Filters apply instantly: `handleFilterChange` calls `setFilters` on every
+checkbox change
+([`filters/index.tsx:53`](../../src/views/home/components/TableWithSearch/filters/index.tsx#L53))
+and there is no Apply button. So the table reorders under the user with no event
+of any kind reaching them.
+
+**Where** — same missing live region as SR-011.
+
+**Why axe missed it** — as SR-011; and note the axe suite has a test
+specifically covering this popover, _filter popover is keyboard operable and
+restores focus_, which passes. It proves the control can be reached, opened and
+dismissed by keyboard with correct focus return. It cannot prove the user learns
+what the control **did**.
+
+**Fix** — the same `role="status"` as SR-011.
+
+**Guarded by** — `table-search.spec.ts` → _applying a filter announces how many
+results remain_
+
+**Method note** — the checkbox is ticked with Playwright, not VoiceOver, because
+the VO cursor cannot enter the popover (see the Coverage caveat). This does not
+weaken the claim: a live region announces regardless of what triggered the
+change, and the oracle proves the change occurred. It does mean the popover's
+own contents are **not** proven reachable by this test.
+
+---
+
+<a id="sr-014"></a>
+
+## SR-014 — Filter chips never say which filter they remove
+
+|                        |                                                                            |
+| ---------------------- | -------------------------------------------------------------------------- |
+| **Sighted user**       | Sees an "IID ✕" chip and a "Clear all ✕" chip, and knows which ✕ does what |
+| **Screen reader user** | Hears `close button, group` for both, with nothing to tell them apart      |
+
+Observed walking the toolbar with one filter applied:
+
+```
+12. 1 results
+13. Showing results filtered by:
+14. Clear all
+15. close button, group
+16. IID
+17. close button, group
+```
+
+With N filters applied there are N+1 buttons all named `close`. One of them
+discards every filter at once; the rest discard one each. Navigating by control
+— a normal way to use a screen reader — they are indistinguishable.
+
+**Where** —
+[`TableWithSearch/index.tsx:149`](../../src/views/home/components/TableWithSearch/index.tsx#L149)
+and [`:163`](../../src/views/home/components/TableWithSearch/index.tsx#L163) use
+Chakra's `<TagCloseButton />` with no label, and Chakra's default is the bare
+word `close`.
+
+**Why axe missed it** — the `button-name` rule is satisfied: every button _has_
+an accessible name. Duplicate and uninformative names are not violations. The
+same blind spot as SR-003.
+
+**Fix** — `aria-label={`Remove ${name} filter`}` on the chip's close button, and
+something like `Clear all filters` for the clear-all chip.
+
+**Guarded by** — `table-search.spec.ts` → _filter chips name the filter they
+remove_
+
+---
+
 ## Surfaces checked and found clean
 
 Recording these matters: a method that only reports problems can't be
@@ -532,6 +727,9 @@ distinguished from one that manufactures them.
 | Table row ordering        | All 40 rows reachable exactly once, in order, across recycling                                                                                                                                                    |
 | Hero search field         | Announces name and role: `Search for resources … edit text`                                                                                                                                                       |
 | Hero search typing        | Keystrokes echoed correctly                                                                                                                                                                                       |
+| Table search field        | `Search table edit text` — correct despite an `id` of `"Search table"` (a space inside an id) and no `aria-label`. Now guarded                                                                                    |
+| Table filter triggers     | `Type` / `Research Domain` / `Access` each announce `dialog pop up collapsed button` — name, popup type, state and role                                                                                           |
+| Results count text        | `2 results` announces correctly when the cursor reaches it. The defect is that it is never announced when it _changes_ (SR-011)                                                                                   |
 
 ## Coverage caveat
 
@@ -542,3 +740,22 @@ Notably that is **not Safari**, which is what most VoiceOver users actually run
 — Playwright no longer ships a WebKit build for macOS 12. Announcement strings
 differ between engines, so these findings should be treated as real but not
 exhaustive, and re-checked against Safari before being taken as complete.
+
+### One surface the method could not reach
+
+**The VoiceOver cursor will not enter an opened filter popover.**
+`voiceOver.act()` on the trigger does open it — Playwright confirms the
+checkboxes become visible — but a linear walk from there goes straight past the
+dialog to the next toolbar button, and the popover closes behind the cursor.
+
+This is recorded as a **limit of the harness, not a defect in the app**, and
+deliberately so. It may be a real bug (a dialog that opens without the screen
+reader cursor following, then closes on blur, is a genuine trap), or it may be
+an artefact of how guidepup drives the VO cursor versus DOM focus. The evidence
+available does not distinguish those, and filing it as a finding would mean
+reporting a defect the suite has not actually demonstrated.
+
+Consequence: SR-013 ticks its checkbox with Playwright, so the popover's own
+contents are **not** proven reachable. Settling it needs a different technique
+than a linear walk — most likely VoiceOver's item chooser or web rotor — and is
+the first thing to try if this experiment continues.

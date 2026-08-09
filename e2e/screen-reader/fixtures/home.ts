@@ -244,6 +244,52 @@ export interface MockHomeOptions {
    * baseline; pass {@link MANY_ROW_COUNT} to force react-window to window.
    */
   repoCount?: number;
+  /**
+   * Genre for the repository row(s), fed to the table's "Research Domain"
+   * filter. Defaults to `'IID'`, which matches the catalog row.
+   *
+   * Why this exists: with both rows on `'IID'` the Research Domain filter has
+   * exactly ONE option, so ticking it filters 2 rows down to 2 — a no-op.
+   * "Nothing was announced" after a no-op is unfalsifiable, which is the trap
+   * SR-002 nearly shipped with. Pass {@link SECOND_DOMAIN_GENRE} to give the
+   * filter two options, so ticking one demonstrably changes the row set.
+   *
+   * `formatDomainName` (TableWithSearch/helpers.tsx) title-cases the raw value:
+   * `'iid'` → `IID`, `'generalist'` → `Generalist`.
+   */
+  repoGenre?: string;
+}
+
+/**
+ * Raw genre that renders as a `Generalist` option in the Research Domain
+ * filter, distinct from the catalog row's `IID`. See {@link MockHomeOptions}.
+ */
+export const SECOND_DOMAIN_GENRE = 'generalist';
+
+/** The name the Research Domain filter gives {@link SECOND_DOMAIN_GENRE}. */
+export const SECOND_DOMAIN_NAME = 'Generalist';
+
+/**
+ * Override the genre on every repository row. Returns the fixture untouched
+ * when no genre is given, so the default row set is bit-for-bit what it was
+ * before this option existed.
+ */
+function withRepoGenre(
+  metadata: { src: Record<string, { sourceInfo: { genre: string[] } }> },
+  repoGenre: string | undefined,
+) {
+  if (repoGenre === undefined) {
+    return metadata;
+  }
+
+  return {
+    src: Object.fromEntries(
+      Object.entries(metadata.src).map(([key, entry]) => [
+        key,
+        { ...entry, sourceInfo: { ...entry.sourceInfo, genre: [repoGenre] } },
+      ]),
+    ),
+  };
 }
 
 /**
@@ -255,16 +301,18 @@ export interface MockHomeOptions {
  */
 export async function mockHomePopulated(
   page: Page,
-  { repoCount }: MockHomeOptions = {},
+  { repoCount, repoGenre }: MockHomeOptions = {},
 ) {
   await mockStrapiRoutes(page);
   await page.route(QUERY_GLOB, fulfillJson(QUERY_FIXTURE));
+
+  const metadata =
+    repoCount === undefined
+      ? METADATA_FIXTURE
+      : metadataFixtureWithCount(repoCount);
+
   await page.route(
     METADATA_GLOB,
-    fulfillJson(
-      repoCount === undefined
-        ? METADATA_FIXTURE
-        : metadataFixtureWithCount(repoCount),
-    ),
+    fulfillJson(withRepoGenre(metadata, repoGenre)),
   );
 }

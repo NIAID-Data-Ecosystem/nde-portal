@@ -30,14 +30,17 @@
  * Scope. Two other specs cover surfaces reached through this same route, so
  * they are deliberately absent here:
  *   - `table.spec.ts` — the shared Explore Resources table
+ *   - `table-search.spec.ts` — that table's search box, filter popovers and
+ *     result count
  *   - `page-shell.spec.ts` — the landmarks, skip link and nav state that
  *     `PageContainer` renders on every route, including the nav dropdowns and
  *     the footer
  *
- * Still uncovered anywhere: the table's filter popovers and result count, the
- * news carousel controls, and the hero's decorative images (~60 words of alt
- * text read before the `<h1>` — visible in the `chrome-before-h1` transcript
- * attached by `page-shell.spec.ts`, but not yet filed as a finding).
+ * Still uncovered anywhere: the news carousel controls, the table's loading
+ * state (10 skeleton rows announced as empty cells), and the hero's decorative
+ * images (~60 words of alt text read before the `<h1>` — visible in the
+ * `chrome-before-h1` transcript attached by `page-shell.spec.ts`, but not yet
+ * filed as a finding).
  *
  * Route mocks and fixtures come from `./fixtures/home`, which this suite OWNS —
  * `e2e/accessibility/home.spec.ts` keeps its own equivalent copy inline. That
