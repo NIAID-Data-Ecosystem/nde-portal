@@ -43,6 +43,10 @@ something actually drives a screen reader.
 | [SR-012](#sr-012) | Table search       | A search matching nothing empties the table in silence    | 4.1.3        | 6 files / 5 routes   |
 | [SR-013](#sr-013) | Table filters      | Applying a filter announces nothing at all                | 4.1.3        | 3 files / 3 routes   |
 | [SR-014](#sr-014) | Table filters      | Every filter chip's remove button is named just "close"   | 2.4.6, 4.1.2 | 1 file / 1 route     |
+| [SR-015](#sr-015) | News carousel      | The carousel never identifies itself as one               | 1.3.1        | 2 files / 2 routes   |
+| [SR-016](#sr-016) | News carousel      | Every slide is announced, including the ones off screen   | 1.3.2, 2.4.3 | 2 files / 2 routes   |
+| [SR-017](#sr-017) | News carousel      | Changing slide announces nothing                          | 4.1.3        | 2 files / 2 routes   |
+| [SR-018](#sr-018) | News carousel      | Six card links share the name "(view full release)"       | 2.4.4        | 2 files / 2 routes   |
 
 **Reach** counts files importing the affected shared component. None of these is
 page-specific markup — each is one fix that lands everywhere the component is
@@ -62,11 +66,16 @@ wraps all 21 routes, and SR-007, SR-008 and SR-009 share a single root cause —
 one `<main>` element that opens above the navigation and closes below the
 footer.
 
-SR-011, SR-012 and SR-013 also share one root cause, and one fix: **there is no
-live region anywhere in the application.** `grep -o 'aria-live'` across the
-built page returns zero matches, and `role="status"` appears nowhere in `src/`.
-Every one of them is WCAG **4.1.3 Status Messages**, a Level AA criterion that
-is invisible to static analysis by construction — see SR-011.
+SR-011, SR-012, SR-013 and SR-017 also share one root cause, and one fix:
+**there is no live region anywhere in the application.** `grep -o 'aria-live'`
+across the built page returns zero matches, and `role="status"` appears nowhere
+in `src/`. All four are WCAG **4.1.3 Status Messages**, a Level AA criterion
+that is invisible to static analysis by construction — see SR-011.
+
+Three findings — SR-003, SR-014 and SR-018 — are the same defect in three
+components: several controls sharing one generic accessible name. axe's
+`button-name` and `link-name` rules are satisfied by any name at all, so
+duplicate and uninformative names are never violations.
 
 ## What the suite also _disproved_
 
@@ -83,6 +92,41 @@ It is wrong. VoiceOver announces `row 2 of 42`, `row 3 of 42` … correctly, and
 all 40 rows stay reachable and in order across recycling. Both facts are now
 guarded by passing tests. Reading the markup produced a confident, plausible,
 incorrect hypothesis; only running a screen reader settled it.
+
+### The carousel does not hijack VoiceOver's navigation keys
+
+The second overturned prediction, and a sharper one.
+
+[`Track.tsx:79-100`](../../src/components/carousel/components/Track.tsx#L79)
+registers a `keydown` handler on **`document`** that calls `preventDefault()` on
+ArrowLeft/Right/Up/Down whenever `trackIsActive` — **with no modifier check of
+any kind**. `trackIsActive` is set by focusing any card or control and is
+essentially never cleared (only by Tab-ing out of the very last item, or a
+mousedown outside the track).
+
+VoiceOver navigates with **Ctrl+Option+Arrow**, which reaches the DOM as a
+keydown with `key === 'ArrowRight'`. So on paper, once a user has so much as
+focused a card, reading anywhere on the page should scroll the carousel and
+suppress arrow-key page scrolling site-wide. That is a serious bug, and the code
+plainly describes it.
+
+It does not happen. The test proves the handler is live and modifier-blind first
+— a plain ArrowRight with a card focused moves the slide from
+`carousel indicator 1 of 3 (current)` to `2 of 3 (current)` — and then shows
+that VoiceOver's own navigation leaves the carousel untouched. VoiceOver
+consumes the keystroke before the page sees it.
+
+The bug is real for anyone pressing unmodified arrow keys; it is **not** the
+screen-reader catastrophe the code implies. Guarded by a passing test in
+`carousel.spec.ts` → _moving the VoiceOver cursor does not scroll the carousel_,
+with the arming oracle built in, so if a future browser or VoiceOver version
+stops swallowing the key the suite will say so.
+
+**Why this one matters for judging the method.** It is the clearest case in this
+document of code review producing a confident, specific, wrong answer. Anyone —
+human or AI — reading `Track.tsx` would file this as a defect. Only running a
+real screen reader distinguishes "the handler is wrong" from "the handler is
+wrong and it reaches users".
 
 ---
 
@@ -712,24 +756,205 @@ remove_
 
 ---
 
+<a id="sr-015"></a>
+
+## SR-015 — The carousel never identifies itself as a carousel
+
+|                        |                                                                                          |
+| ---------------------- | ---------------------------------------------------------------------------------------- |
+| **Sighted user**       | Sees a row of cards with arrows and dots, and recognises a carousel instantly            |
+| **Screen reader user** | Walks from the "Updates" heading straight into a card image. No widget is ever mentioned |
+
+Observed entering the carousel:
+
+```
+1. News Thumbnail Image image
+2. Update Card 001 heading level 2
+3. 2026-06-28 —Deterministic update card 001.
+4. ( view full release ) (view full release) link
+```
+
+No region, no group, no name, nothing to say a widget exists — and therefore no
+hint that most of its content is off screen (SR-016) or that there are controls
+further on to reveal it.
+
+**Where** —
+[`src/components/carousel/index.tsx:82-104`](../../src/components/carousel/index.tsx#L82)
+renders only styled `<div>`s: no `role="region"`, no `aria-roledescription`, no
+`aria-label`. `aria-roledescription` appears **zero** times in the built page.
+
+**Why axe missed it** — there is no rule requiring a composite widget to declare
+itself, and no way for a scanner to infer that a `<div>` containing a horizontal
+track _is_ a carousel. Recognising the pattern is the hard part, and it is
+exactly what static analysis cannot do.
+
+**Fix** — `role="region"` (or `group`) + `aria-roledescription="carousel"` + an
+accessible name, per the APG carousel pattern.
+
+**Guarded by** — `carousel.spec.ts` → _the carousel identifies itself as a
+carousel_
+
+**Near-miss worth recording.** This test passed on its first confirmation run,
+wrongly. The fixture cards were named `Carousel Card 00N`, so the assertion's
+search for the token "carousel" matched the card heading — **the test data was
+supplying the very word the test looked for.** Renaming them to
+`Update Card 00N` made it fail as it should. Generalisable: a screen reader
+assertion is a substring search over a transcript, so any fixture text
+containing the token under test can manufacture a pass. Reading the attached
+transcript is what catches it.
+
+---
+
+<a id="sr-016"></a>
+
+## SR-016 — Every slide is announced, including the ones off screen
+
+**Severity: high**, and the most screen-reader-specific finding in this
+document.
+
+|                        |                                                                                        |
+| ---------------------- | -------------------------------------------------------------------------------------- |
+| **Sighted user**       | Sees two cards, and arrows to see more                                                 |
+| **Screen reader user** | Is read all six, in full — 24 announcements for content five-sixths of which is hidden |
+
+Observed with six cards at 1280px, where the carousel presents two
+(`Update Card 001`, `Update Card 002`). Hopping link-to-link:
+
+```
+1. ( view full release ) (view full release) link
+2. ( view full release ) (view full release) link
+3. ( view full release ) (view full release) link
+4. ( view full release ) (view full release) link
+5. ( view full release ) (view full release) link
+6. ( view full release ) (view full release) link
+7. All updates link
+```
+
+Six reachable, two presented.
+
+**Where** — off-screen slides are moved by a framer-motion `translateX`
+([`Track.tsx:176`](../../src/components/carousel/components/Track.tsx#L176))
+under `overflow: hidden`
+([`index.tsx:84`](../../src/components/carousel/index.tsx#L84)). They carry **no
+`aria-hidden`, no `inert`, no `tabIndex={-1}`**
+([`Item.tsx:36-51`](../../src/components/carousel/components/Item.tsx#L36)), so
+every card stays in the accessibility tree.
+
+**Why this is a screen reader defect specifically** —
+[`Item.tsx:24-31`](../../src/components/carousel/components/Item.tsx#L24)
+scrolls a card into view on Tab keyup, so a _keyboard_ user is partly protected.
+The VoiceOver cursor fires no focus event and gets no such help. Worse: the
+browser scrolls the clipped card into view behind the widget's back, leaving the
+container's scroll position desynced from the carousel's own transform while the
+dots still report slide 1. A keyboard-only test would not find this.
+
+**Why axe missed it** — every card is valid, named and in the DOM. Whether an
+element is visually clipped by an ancestor is not something axe evaluates, and
+"should this be hidden from assistive tech?" is a question about intent.
+
+**WCAG** — 1.3.2 (Meaningful Sequence) and 2.4.3 (Focus Order).
+
+**Fix** — `aria-hidden` or `inert` on slides outside the current window, kept in
+sync with `activeItem`.
+
+**Guarded by** — `carousel.spec.ts` → _only the cards on screen are announced_
+
+---
+
+<a id="sr-017"></a>
+
+## SR-017 — Changing slide announces nothing
+
+|                        |                                                                      |
+| ---------------------- | -------------------------------------------------------------------- |
+| **Sighted user**       | Presses the arrow, watches the cards slide, sees the active dot move |
+| **Screen reader user** | Silence                                                              |
+
+Observed activating `next carousel item` — the oracle confirms the carousel
+moved, and the spoken log is empty:
+
+```
+dot: carousel indicator 1 of 3 (current) -> carousel indicator 2 of 3 (current)
+--- spoken ---
+                                            ← nothing
+```
+
+The dots make this worse rather than better. They are
+`<div role="button" tabIndex={0}>`
+([`CarouselControls.tsx:82-115`](../../src/components/carousel/components/CarouselControls.tsx#L82))
+with the state baked into the **name** — `carousel indicator 1 of 3 (current)` —
+rather than exposed as state: no `aria-current`, no `aria-selected`, no
+`aria-pressed`, and no `tablist`/`tab` relationship to the slides. So the one
+place the position is published is a string the user only encounters if they
+happen to land on that particular 12×12px div, and it is never announced at the
+moment it changes.
+
+**WCAG** — 4.1.3 Status Messages (AA). Same root cause as SR-011…SR-013: no live
+region anywhere in the app.
+
+**Why axe missed it** — as SR-011; and `aria-current` is optional, so its
+absence is not a violation.
+
+**Fix** — announce the new position in a live region on change, and add
+`aria-current` to the active dot in addition to its `(current)` text.
+
+**Guarded by** — `carousel.spec.ts` → _changing slide announces the new
+position_
+
+---
+
+<a id="sr-018"></a>
+
+## SR-018 — Card links never say where they lead
+
+|                        |                                                                                |
+| ---------------------- | ------------------------------------------------------------------------------ |
+| **Sighted user**       | Reads the card title above the link and knows exactly what it opens            |
+| **Screen reader user** | Hears `( view full release ) link` six times, with nothing to distinguish them |
+
+Navigating by link — the fastest way through a list of cards, and a normal way
+to use a screen reader — every card link is identical. The card title lives in a
+separate heading node, so it is not part of the link's accessible name.
+
+**Where** —
+[`NewsCarousel.tsx:220-230`](../../src/views/home/components/NewsCarousel.tsx#L220).
+Note the announcement is `( view full release ) (view full release) link`: the
+spaces come from a block `<p>` (`<Text>`) nested inside the anchor, which is
+also invalid HTML.
+
+**Why axe missed it** — `link-name` is satisfied; every link has a name.
+Duplicate, non-descriptive names are not violations. Third instance of this
+blind spot, after SR-003 and SR-014.
+
+**WCAG** — 2.4.4 (Link Purpose, In Context).
+
+**Fix** — include the card title, e.g.
+`` aria-label={`View full release: ${carouselCard.name}`} ``.
+
+**Guarded by** — `carousel.spec.ts` → _card links describe where they lead_
+
+---
+
 ## Surfaces checked and found clean
 
 Recording these matters: a method that only reports problems can't be
 distinguished from one that manufactures them.
 
-| Surface                   | Result                                                                                                                                                                                                            |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Navigation landmark       | `Main navigation navigation` — correctly named and roled, and the only landmark on the page that is. Now guarded                                                                                                  |
-| Main navigation dropdowns | Announce correctly — `Search dialog pop up collapsed button` carries name, popup type, state and role. Now guarded                                                                                                |
-| Footer contents           | Static links, correctly named and grouped as lists (`list 5 items`, `link USA.gov 4 of 5`); the two footer headings announce as level 2. It is the footer's _landmark_ that is missing (SR-008), not its contents |
-| Table identity            | `List of repositories and resource catalogs table 5 columns, 42 rows`                                                                                                                                             |
-| Table row position        | Correct despite virtualisation — see the disproved prediction above                                                                                                                                               |
-| Table row ordering        | All 40 rows reachable exactly once, in order, across recycling                                                                                                                                                    |
-| Hero search field         | Announces name and role: `Search for resources … edit text`                                                                                                                                                       |
-| Hero search typing        | Keystrokes echoed correctly                                                                                                                                                                                       |
-| Table search field        | `Search table edit text` — correct despite an `id` of `"Search table"` (a space inside an id) and no `aria-label`. Now guarded                                                                                    |
-| Table filter triggers     | `Type` / `Research Domain` / `Access` each announce `dialog pop up collapsed button` — name, popup type, state and role                                                                                           |
-| Results count text        | `2 results` announces correctly when the cursor reaches it. The defect is that it is never announced when it _changes_ (SR-011)                                                                                   |
+| Surface                                        | Result                                                                                                                                                                                                            |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Navigation landmark                            | `Main navigation navigation` — correctly named and roled, and the only landmark on the page that is. Now guarded                                                                                                  |
+| Main navigation dropdowns                      | Announce correctly — `Search dialog pop up collapsed button` carries name, popup type, state and role. Now guarded                                                                                                |
+| Footer contents                                | Static links, correctly named and grouped as lists (`list 5 items`, `link USA.gov 4 of 5`); the two footer headings announce as level 2. It is the footer's _landmark_ that is missing (SR-008), not its contents |
+| Table identity                                 | `List of repositories and resource catalogs table 5 columns, 42 rows`                                                                                                                                             |
+| Table row position                             | Correct despite virtualisation — see the disproved prediction above                                                                                                                                               |
+| Table row ordering                             | All 40 rows reachable exactly once, in order, across recycling                                                                                                                                                    |
+| Hero search field                              | Announces name and role: `Search for resources … edit text`                                                                                                                                                       |
+| Hero search typing                             | Keystrokes echoed correctly                                                                                                                                                                                       |
+| Table search field                             | `Search table edit text` — correct despite an `id` of `"Search table"` (a space inside an id) and no `aria-label`. Now guarded                                                                                    |
+| Table filter triggers                          | `Type` / `Research Domain` / `Access` each announce `dialog pop up collapsed button` — name, popup type, state and role                                                                                           |
+| Results count text                             | `2 results` announces correctly when the cursor reaches it. The defect is that it is never announced when it _changes_ (SR-011)                                                                                   |
+| Carousel prev/next                             | `previous carousel item dimmed button` — name, role and the disabled state all survive into speech. Now guarded                                                                                                   |
+| VoiceOver vs. the carousel's arrow-key handler | VO navigation does not operate the carousel, despite a document-level handler that ignores modifiers. See the disproved section. Now guarded                                                                      |
 
 ## Coverage caveat
 

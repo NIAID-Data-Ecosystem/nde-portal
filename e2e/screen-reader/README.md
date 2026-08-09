@@ -24,7 +24,7 @@ catches it.
 
 ## What it has found so far
 
-Fourteen defects, **all of which pass every axe scan today**. Each is written as
+Eighteen defects, **all of which pass every axe scan today**. Each is written as
 a test asserting the correct behaviour and deferred with `test.fixme` + a
 `FIXME(a11y)` note, so it starts passing the day someone fixes it. Every one was
 confirmed by temporarily un-`fixme`-ing it and watching it fail.
@@ -50,6 +50,10 @@ comments reference these IDs rather than repeating the detail.
 | SR-012 | Table search  | A search matching nothing empties the table in silence                       |
 | SR-013 | Table filters | Ticking a filter halves the table with a **completely empty** spoken log     |
 | SR-014 | Table filters | Every filter chip's remove button is named just `close`                      |
+| SR-015 | News carousel | The carousel never identifies itself as a carousel                           |
+| SR-016 | News carousel | All 6 slides are announced when only 2 are on screen                         |
+| SR-017 | News carousel | Changing slide announces nothing                                             |
+| SR-018 | News carousel | Six card links share the name `(view full release)`                          |
 
 Two of these are worth singling out for what they say about static analysis:
 
@@ -63,12 +67,23 @@ message means knowing a number was supposed to update in response to an action �
 a claim about intent that no DOM snapshot contains. One fix (`role="status"` on
 the results count) closes all three.
 
-Equally useful, the suite **disproved** a defect that looked certain from the
-markup: the table is virtualised (`react-window`) and declares
-`aria-rowcount={rows.length}` with no `aria-rowindex` anywhere, which should
-break row position — and doesn't. VoiceOver reports "row 2 of 42" correctly, and
-all 40 rows stay reachable and ordered across recycling. Both facts are now
-guarded by passing tests. This is the case for observing before asserting.
+Equally useful, the suite has **disproved two** defects that looked certain from
+the markup:
+
+- The table is virtualised (`react-window`) and declares
+  `aria-rowcount={rows.length}` with no `aria-rowindex` anywhere, which should
+  break row position — and doesn't. VoiceOver reports "row 2 of 42" correctly,
+  and all 40 rows stay reachable and ordered across recycling.
+- The carousel registers a `keydown` handler on `document` that
+  `preventDefault()`s arrow keys with **no modifier check**, which should mean
+  VoiceOver's Ctrl+Option+Arrow navigation scrolls the carousel from anywhere on
+  the page. It doesn't — VoiceOver consumes the keystroke first. The handler is
+  still wrong for unmodified arrow keys (proven by the test's own oracle), but
+  it is not the screen-reader catastrophe the code implies.
+
+Both are now guarded by passing tests. This is the case for observing before
+asserting — and the second is the clearest example in the project of code
+review, human or AI, producing a confident and specific wrong answer.
 
 ## Not in CI — on purpose
 
@@ -302,6 +317,24 @@ Pass `{ repoGenre }` to give the repository row a different Research Domain from
 the catalog row. `table-search.spec.ts` needs it: with both rows on `IID` the
 filter has one option, so ticking it filters 2 rows down to 2 — and "nothing was
 announced" after a no-op proves nothing. Same trap as SR-002.
+
+Pass `{ carouselCardCount }` for a multi-card news carousel. `carousel.spec.ts`
+needs it: the prev/next controls only render when there are more cards than fit,
+and nothing about off-screen slides is observable until some are off screen.
+Note the card copy deliberately avoids the word "carousel" — see the next
+section.
+
+### Fixture text can manufacture a pass
+
+A screen reader assertion is ultimately a substring search over a transcript, so
+**any fixture text containing the token under test can make a test pass for the
+wrong reason.** SR-015 asks whether entering the carousel announces that it is
+one; it passed on its first run because the fixture cards were named
+`Carousel Card 001`. Renaming them to `Update Card 00N` made it fail correctly.
+
+This is the same shape as the SR-002 near-miss, and the reason every test here
+attaches its transcript: the only way to tell "passed" from "passed for the
+right reason" is to read what was actually said.
 
 When another route gets coverage, add a sibling (`search-page.ts`) rather than
 generalising this into a registry — the per-route "proof the data rendered"

@@ -214,6 +214,87 @@ export const STRAPI_FEATURES_FIXTURE = {
   ],
 };
 
+// --- Carousel card variant ---------------------------------------------------
+
+/**
+ * Cards to render when `carouselCardCount` is used.
+ *
+ * Six, not three. `useCarouselState` derives `constraint` from the viewport:
+ * at Playwright's 1280px it is 2 (the `xl` breakpoint is exactly 1280 and the
+ * `max-width` query is inclusive, so the md-to-xl branch wins), and at 1281px
+ * or wider it is 3. Controls only render when `cards > constraint`, so three
+ * cards would work at 1280 and silently vanish one pixel wider. Six survives
+ * both.
+ *
+ * Consequence for assertions: the number of dots differs between those two
+ * viewports (3 vs 2). Never hard-code the dot total — match
+ * `/carousel indicator \d+ of \d+/` and key off the ` (current)` suffix.
+ */
+export const CAROUSEL_CARD_COUNT = 6;
+
+/**
+ * Name of the `ordinal`-th generated card, e.g. `'Update Card 003'`.
+ *
+ * Deliberately does NOT contain the word "carousel". These cards were first
+ * named `Carousel Card 00N`, which made the SR-015 test — "does entering the
+ * widget announce that it IS a carousel?" — pass against the card heading
+ * rather than any widget announcement. The fixture data was supplying the very
+ * token the assertion searched for. Keep this name clear of widget vocabulary.
+ */
+export function carouselCardName(ordinal: number): string {
+  return `Update Card ${String(ordinal).padStart(3, '0')}`;
+}
+
+/**
+ * A `/api/news-reports` response with `count` cards instead of one.
+ *
+ * Three details here are load-bearing, each of which fails silently if got
+ * wrong:
+ *
+ *   - **Distinct names.** The page ships three cards baked in by
+ *     `getStaticProps`, which are replaced when the client-side refetch
+ *     resolves. Reusing the baseline names would make the before and after
+ *     states indistinguishable, and a spec could assert against the baked
+ *     cards without knowing.
+ *   - **Unique ids, offset well past the other fixtures.** `NewsCarousel`
+ *     keys on `carouselCard.id + idx` — numeric addition, not concatenation —
+ *     so sequential ids across collections collide.
+ *   - **A string `slug` on every item.** `NewsCarousel` calls
+ *     `.slug.replace(...)` on each; a missing slug throws, the query errors,
+ *     and TanStack Query leaves `data` at `initialData` — i.e. the three baked
+ *     cards, still on screen, with nothing to signal the fixture was rejected.
+ *
+ * Descending `publishedAt` so the component's sort is deterministic rather
+ * than relying on stable-sort tie-breaking: card 001 is newest and sorts first.
+ */
+export function newsFixtureWithCount(count: number) {
+  return {
+    data: Array.from({ length: count }, (_, i) => {
+      const ordinal = i + 1;
+      const padded = String(ordinal).padStart(3, '0');
+      // Descending by ordinal: 001 is the newest, so it sorts to the front.
+      const day = String(Math.max(1, 28 - i)).padStart(2, '0');
+
+      return {
+        id: 1000 + ordinal,
+        name: carouselCardName(ordinal),
+        // None of this copy may contain the word "carousel" — it is announced
+        // verbatim, and SR-015 searches the transcript for that token. See
+        // {@link carouselCardName}.
+        slug: `news-report-update-card-${padded}`,
+        subtitle: null,
+        shortDescription: `Deterministic update card ${padded}.`,
+        description: `Full description of update card ${padded}.`,
+        image: null,
+        publishedAt: `2026-06-${day}T00:00:00.000Z`,
+        updatedAt: `2026-06-${day}T00:00:00.000Z`,
+        createdAt: `2026-06-${day}T00:00:00.000Z`,
+        categories: null,
+      };
+    }),
+  };
+}
+
 // --- Route mocks -------------------------------------------------------------
 
 function fulfillJson(body: unknown) {
@@ -231,10 +312,26 @@ function fulfillJson(body: unknown) {
  * `/api/notices` call. The server-side `getStaticProps` half of the same data
  * is baked into `out/` by the mock Strapi server at build time.
  */
-export async function mockStrapiRoutes(page: Page) {
-  await page.route(NEWS_API_GLOB, fulfillJson(STRAPI_NEWS_FIXTURE));
-  await page.route(EVENTS_API_GLOB, fulfillJson(STRAPI_EVENTS_FIXTURE));
-  await page.route(FEATURES_API_GLOB, fulfillJson(STRAPI_FEATURES_FIXTURE));
+export async function mockStrapiRoutes(page: Page, carouselCardCount?: number) {
+  // With a card count, serve N news items and NO events or features, so the
+  // carousel holds exactly N cards in a known order. Without one, the baseline
+  // three (one per source) that the other specs expect.
+  const many = carouselCardCount !== undefined;
+
+  await page.route(
+    NEWS_API_GLOB,
+    fulfillJson(
+      many ? newsFixtureWithCount(carouselCardCount) : STRAPI_NEWS_FIXTURE,
+    ),
+  );
+  await page.route(
+    EVENTS_API_GLOB,
+    fulfillJson(many ? { data: [] } : STRAPI_EVENTS_FIXTURE),
+  );
+  await page.route(
+    FEATURES_API_GLOB,
+    fulfillJson(many ? { data: [] } : STRAPI_FEATURES_FIXTURE),
+  );
   await page.route(NOTICES_API_GLOB, fulfillJson({ data: [] }));
 }
 
@@ -258,6 +355,13 @@ export interface MockHomeOptions {
    * `'iid'` → `IID`, `'generalist'` → `Generalist`.
    */
   repoGenre?: string;
+  /**
+   * Number of news carousel cards. Omit for the baseline three (one news, one
+   * event, one feature); pass {@link CAROUSEL_CARD_COUNT} to render enough
+   * cards that the carousel shows its prev/next controls and keeps some slides
+   * off screen. See {@link newsFixtureWithCount}.
+   */
+  carouselCardCount?: number;
 }
 
 /**
@@ -301,9 +405,9 @@ function withRepoGenre(
  */
 export async function mockHomePopulated(
   page: Page,
-  { repoCount, repoGenre }: MockHomeOptions = {},
+  { repoCount, repoGenre, carouselCardCount }: MockHomeOptions = {},
 ) {
-  await mockStrapiRoutes(page);
+  await mockStrapiRoutes(page, carouselCardCount);
   await page.route(QUERY_GLOB, fulfillJson(QUERY_FIXTURE));
 
   const metadata =

@@ -14,6 +14,7 @@
 import { expect, type Page } from '@playwright/test';
 import type { VoiceOverPlaywright } from '@guidepup/playwright';
 import {
+  carouselCardName,
   CATALOG_ROW_NAME,
   manyRowName,
   mockHomePopulated,
@@ -33,8 +34,9 @@ import {
  * separate, and mixing them desyncs them intermittently. See the README.
  *
  * Pass `{ repoCount }` to render a many-row table instead of the 1-repo
- * baseline — see `metadataFixtureWithCount`. The proof-of-render wait adapts to
- * whichever variant is in play.
+ * baseline — see `metadataFixtureWithCount`, and `{ carouselCardCount }` for a
+ * multi-card carousel. The proof-of-render waits adapt to whichever variants
+ * are in play.
  */
 export async function enterHomePageWebContent(
   page: Page,
@@ -56,6 +58,18 @@ export async function enterHomePageWebContent(
       exact: true,
     }),
   ).toBeVisible();
+
+  // Proof the carousel's CLIENT-SIDE refetch resolved. The page ships three
+  // cards baked in by getStaticProps, which the browser then refetches and
+  // replaces. Without this wait a spec could walk the baked cards instead of
+  // the fixture's and never know — they look identical to a traversal.
+  if (options.carouselCardCount !== undefined) {
+    await expect(
+      page.getByRole('heading', {
+        name: carouselCardName(options.carouselCardCount),
+      }),
+    ).toBeVisible();
+  }
 
   await voiceOver.navigateToWebContent();
 }
