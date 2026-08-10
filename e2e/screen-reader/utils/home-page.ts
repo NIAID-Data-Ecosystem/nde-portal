@@ -17,11 +17,23 @@ import {
   carouselCardName,
   CATALOG_ROW_NAME,
   manyRowName,
+  mockHomeGated,
+  mockHomeLoading,
   mockHomePopulated,
   type MockHomeOptions,
   REPO_ROW_NAME,
   ROUTE,
 } from '../fixtures/home';
+
+/**
+ * Playwright locator for a skeleton cell.
+ *
+ * The loading table's cells are Chakra `SkeletonText`, which emits no ARIA and
+ * no role, so there is no accessible surface to wait on — a `data-testid` is the
+ * correct and only handle. `src/views/home/components/TableWithSearch` tags all
+ * 50 of them (10 rows x 5 columns), hence `.first()` at every call site.
+ */
+export const skeletonCell = (page: Page) => page.getByTestId('loading').first();
 
 /**
  * Load the populated home page and park the VoiceOver cursor at the top of web
@@ -72,4 +84,49 @@ export async function enterHomePageWebContent(
   }
 
   await voiceOver.navigateToWebContent();
+}
+
+/**
+ * Load the home page with both NDE queries hanging, so the resources table is
+ * held in its skeleton state, and park the VoiceOver cursor at the top of web
+ * content.
+ *
+ * A sibling of `enterHomePageWebContent` rather than an option on it: that
+ * helper's three proof-of-render waits are exactly what cannot happen here — the
+ * table rows never arrive — so they have to be REPLACED, not reused. The waits
+ * are the point of a per-route entry helper, so a variant that needs different
+ * ones is a different function.
+ *
+ * Pass a `release` from {@link mockHomeGated} instead of using this when the test
+ * needs to observe the transition out of the loading state.
+ */
+export async function enterHomePageLoadingWebContent(
+  page: Page,
+  voiceOver: VoiceOverPlaywright,
+): Promise<void> {
+  await mockHomeLoading(page);
+  await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
+
+  // Proof of the loading state, and the only one available.
+  await expect(skeletonCell(page)).toBeVisible();
+
+  await voiceOver.navigateToWebContent();
+}
+
+/**
+ * As {@link enterHomePageLoadingWebContent}, but returns the `release()` that
+ * lets the queries resolve, for specs that need to observe the moment data
+ * replaces the skeleton rows.
+ */
+export async function enterHomePageGatedWebContent(
+  page: Page,
+  voiceOver: VoiceOverPlaywright,
+): Promise<() => void> {
+  const release = await mockHomeGated(page);
+  await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
+
+  await expect(skeletonCell(page)).toBeVisible();
+
+  await voiceOver.navigateToWebContent();
+  return release;
 }

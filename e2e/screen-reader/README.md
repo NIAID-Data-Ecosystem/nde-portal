@@ -24,8 +24,8 @@ catches it.
 
 ## What it has found so far
 
-Eighteen defects, **all of which pass every axe scan today**. Each is written as
-a test asserting the correct behaviour and deferred with `test.fixme` + a
+Twenty-one defects, **all of which pass every axe scan today**. Each is written
+as a test asserting the correct behaviour and deferred with `test.fixme` + a
 `FIXME(a11y)` note, so it starts passing the day someone fixes it. Every one was
 confirmed by temporarily un-`fixme`-ing it and watching it fail.
 
@@ -54,8 +54,11 @@ comments reference these IDs rather than repeating the detail.
 | SR-016 | News carousel | All 6 slides are announced when only 2 are on screen                         |
 | SR-017 | News carousel | Changing slide announces nothing                                             |
 | SR-018 | News carousel | Six card links share the name `(view full release)`                          |
+| SR-019 | Table loading | Nothing says the table is loading — no `aria-busy` in the repo at all        |
+| SR-020 | Table loading | 30 skeleton cells announce `-` as the cell's **value**                       |
+| SR-021 | Table loading | Skeleton rows being replaced by real data announces nothing                  |
 
-Two of these are worth singling out for what they say about static analysis:
+Three of these are worth singling out for what they say about static analysis:
 
 **SR-009** — axe **has** a rule for WCAG 2.4.1 (`bypass`, impact _serious_), and
 it passes here because the page has a `<main>` landmark, one that starts above
@@ -66,6 +69,12 @@ no rule for that criterion and cannot have one. Detecting a _missing_ status
 message means knowing a number was supposed to update in response to an action —
 a claim about intent that no DOM snapshot contains. One fix (`role="status"` on
 the results count) closes all three.
+
+**SR-019** — the axe suite scans the table's loading state in a test of its own
+and **passes it**. Same route, same mocks, same DOM as `table-loading.spec.ts`.
+That is the cleanest comparison in the project: not two methods looking at
+different things, but two methods looking at one identical page state and
+disagreeing about whether it is accessible.
 
 Equally useful, the suite has **disproved two** defects that looked certain from
 the markup:
@@ -84,6 +93,14 @@ the markup:
 Both are now guarded by passing tests. This is the case for observing before
 asserting — and the second is the clearest example in the project of code
 review, human or AI, producing a confident and specific wrong answer.
+
+A third correction landed on **this suite's own documentation**. `home.spec.ts`
+described the table's loading state as "10 skeleton rows announced as empty
+cells". Two of the five columns do announce `blank`; the other three announce a
+literal `-` as the cell's value, because Chakra's skeleton hides contents with
+`* { visibility: hidden }` and `*` matches element descendants only, leaving a
+bare text node transparent but fully announced. Worse than predicted, and the
+prediction was written from the markup — see SR-020.
 
 ## Not in CI — on purpose
 
@@ -323,6 +340,18 @@ needs it: the prev/next controls only render when there are more cards than fit,
 and nothing about off-screen slides is observable until some are off screen.
 Note the card copy deliberately avoids the word "carousel" — see the next
 section.
+
+For the table's loading state there are two more entry helpers rather than
+options, because their proof-of-render waits are the opposite of the populated
+one's — the rows never arrive:
+
+| Helper                           | Use                                                                     |
+| -------------------------------- | ----------------------------------------------------------------------- |
+| `enterHomePageLoadingWebContent` | Both NDE requests hang forever; the table stays in skeleton state       |
+| `enterHomePageGatedWebContent`   | Same, but returns a `release()` so the test chooses when the data lands |
+
+Both wait on `getByTestId('loading').first()` — a skeleton has no accessible
+surface to wait on, which is itself the point of SR-019.
 
 ### Fixture text can manufacture a pass
 

@@ -27,26 +27,29 @@ something actually drives a screen reader.
 
 ## Summary
 
-| ID                | Surface            | Defect                                                    | WCAG         | Reach                |
-| ----------------- | ------------------ | --------------------------------------------------------- | ------------ | -------------------- |
-| [SR-001](#sr-001) | Search suggestions | Dropdown announces nothing at all                         | 4.1.2, 1.3.1 | 8 files / 4 routes   |
-| [SR-002](#sr-002) | Table sorting      | Activating a sort control announces nothing               | 4.1.2, 1.4.1 | 16 files / 4 routes  |
-| [SR-003](#sr-003) | Table sorting      | 8 sort controls share 2 generic labels                    | 2.4.6, 4.1.2 | 16 files / 4 routes  |
-| [SR-004](#sr-004) | Table cells        | Every cell announcement padded with a control label       | 1.3.1        | 16 files / 4 routes  |
-| [SR-005](#sr-005) | Table headers      | First column header announces as empty                    | 1.3.1        | 16 files / 4 routes  |
-| [SR-006](#sr-006) | News carousel      | Heading outline jumps `h3` → `h2`                         | 1.3.1        | 2 files / 2 routes   |
-| [SR-007](#sr-007) | Page shell         | No banner landmark — the nav sits inside `main`           | 1.3.1        | 31 files / 21 routes |
-| [SR-008](#sr-008) | Page shell         | No contentinfo landmark — the footer sits inside `main`   | 1.3.1        | 31 files / 21 routes |
-| [SR-009](#sr-009) | Page shell         | No skip link; 16 announcements before the page title      | 2.4.1        | 31 files / 21 routes |
-| [SR-010](#sr-010) | Navigation         | The active nav item never announces "current page"        | 4.1.2, 1.4.1 | 31 files / 21 routes |
-| [SR-011](#sr-011) | Table search       | Searching announces nothing — no live region on the route | 4.1.3        | 6 files / 5 routes   |
-| [SR-012](#sr-012) | Table search       | A search matching nothing empties the table in silence    | 4.1.3        | 6 files / 5 routes   |
-| [SR-013](#sr-013) | Table filters      | Applying a filter announces nothing at all                | 4.1.3        | 3 files / 3 routes   |
-| [SR-014](#sr-014) | Table filters      | Every filter chip's remove button is named just "close"   | 2.4.6, 4.1.2 | 1 file / 1 route     |
-| [SR-015](#sr-015) | News carousel      | The carousel never identifies itself as one               | 1.3.1        | 2 files / 2 routes   |
-| [SR-016](#sr-016) | News carousel      | Every slide is announced, including the ones off screen   | 1.3.2, 2.4.3 | 2 files / 2 routes   |
-| [SR-017](#sr-017) | News carousel      | Changing slide announces nothing                          | 4.1.3        | 2 files / 2 routes   |
-| [SR-018](#sr-018) | News carousel      | Six card links share the name "(view full release)"       | 2.4.4        | 2 files / 2 routes   |
+| ID                | Surface            | Defect                                                        | WCAG         | Reach                |
+| ----------------- | ------------------ | ------------------------------------------------------------- | ------------ | -------------------- |
+| [SR-001](#sr-001) | Search suggestions | Dropdown announces nothing at all                             | 4.1.2, 1.3.1 | 8 files / 4 routes   |
+| [SR-002](#sr-002) | Table sorting      | Activating a sort control announces nothing                   | 4.1.2, 1.4.1 | 16 files / 4 routes  |
+| [SR-003](#sr-003) | Table sorting      | 8 sort controls share 2 generic labels                        | 2.4.6, 4.1.2 | 16 files / 4 routes  |
+| [SR-004](#sr-004) | Table cells        | Every cell announcement padded with a control label           | 1.3.1        | 16 files / 4 routes  |
+| [SR-005](#sr-005) | Table headers      | First column header announces as empty                        | 1.3.1        | 16 files / 4 routes  |
+| [SR-006](#sr-006) | News carousel      | Heading outline jumps `h3` → `h2`                             | 1.3.1        | 2 files / 2 routes   |
+| [SR-007](#sr-007) | Page shell         | No banner landmark — the nav sits inside `main`               | 1.3.1        | 31 files / 21 routes |
+| [SR-008](#sr-008) | Page shell         | No contentinfo landmark — the footer sits inside `main`       | 1.3.1        | 31 files / 21 routes |
+| [SR-009](#sr-009) | Page shell         | No skip link; 16 announcements before the page title          | 2.4.1        | 31 files / 21 routes |
+| [SR-010](#sr-010) | Navigation         | The active nav item never announces "current page"            | 4.1.2, 1.4.1 | 31 files / 21 routes |
+| [SR-011](#sr-011) | Table search       | Searching announces nothing — no live region on the route     | 4.1.3        | 6 files / 5 routes   |
+| [SR-012](#sr-012) | Table search       | A search matching nothing empties the table in silence        | 4.1.3        | 6 files / 5 routes   |
+| [SR-013](#sr-013) | Table filters      | Applying a filter announces nothing at all                    | 4.1.3        | 3 files / 3 routes   |
+| [SR-014](#sr-014) | Table filters      | Every filter chip's remove button is named just "close"       | 2.4.6, 4.1.2 | 1 file / 1 route     |
+| [SR-015](#sr-015) | News carousel      | The carousel never identifies itself as one                   | 1.3.1        | 2 files / 2 routes   |
+| [SR-016](#sr-016) | News carousel      | Every slide is announced, including the ones off screen       | 1.3.2, 2.4.3 | 2 files / 2 routes   |
+| [SR-017](#sr-017) | News carousel      | Changing slide announces nothing                              | 4.1.3        | 2 files / 2 routes   |
+| [SR-018](#sr-018) | News carousel      | Six card links share the name "(view full release)"           | 2.4.4        | 2 files / 2 routes   |
+| [SR-019](#sr-019) | Table loading      | Nothing says the table is loading; no `aria-busy` in the repo | 4.1.3        | 1 file / 1 route     |
+| [SR-020](#sr-020) | Table loading      | 30 skeleton cells announce "-" as the cell's value            | 1.3.1        | 1 file / 1 route     |
+| [SR-021](#sr-021) | Table loading      | Data replacing the skeleton rows announces nothing            | 4.1.3        | 1 file / 1 route     |
 
 **Reach** counts files importing the affected shared component. None of these is
 page-specific markup — each is one fix that lands everywhere the component is
@@ -66,11 +69,18 @@ wraps all 21 routes, and SR-007, SR-008 and SR-009 share a single root cause —
 one `<main>` element that opens above the navigation and closes below the
 footer.
 
-SR-011, SR-012, SR-013 and SR-017 also share one root cause, and one fix:
-**there is no live region anywhere in the application.** `grep -o 'aria-live'`
-across the built page returns zero matches, and `role="status"` appears nowhere
-in `src/`. All four are WCAG **4.1.3 Status Messages**, a Level AA criterion
-that is invisible to static analysis by construction — see SR-011.
+SR-011, SR-012, SR-013, SR-017, SR-019 and SR-021 also share one root cause, and
+largely one fix: **there is no live region anywhere in the application.**
+`grep -o 'aria-live'` across the built page returns zero matches, and
+`role="status"` appears exactly once in `src/`
+([chart-wrapper.tsx:35](../../src/views/diseases/disease/layouts/chart-wrapper.tsx#L35),
+on a loading skeleton — so the fix has an in-repo precedent). **`aria-busy` does
+not appear in `src/` at all.** All six are WCAG **4.1.3 Status Messages**, a
+Level AA criterion that is invisible to static analysis by construction — see
+SR-011.
+
+That makes 4.1.3 the single largest cluster in this document: six of twenty-one
+findings, one missing primitive.
 
 Three findings — SR-003, SR-014 and SR-018 — are the same defect in three
 components: several controls sharing one generic accessible name. axe's
@@ -935,6 +945,147 @@ blind spot, after SR-003 and SR-014.
 
 ---
 
+<a id="sr-019"></a>
+
+## SR-019 — Nothing tells a screen reader user the table is loading
+
+**The sharpest axe comparison in this document.** The axe suite scans this exact
+state and passes it — `a11y: Home — loading` → _passes axe while the resources
+table is loading_. Same route, same mocks, same DOM as the test below.
+
+|                        |                                                                                     |
+| ---------------------- | ----------------------------------------------------------------------------------- |
+| **Sighted user**       | Sees shimmering grey placeholder bars and understands instantly that data is coming |
+| **Screen reader user** | Is told it is an ordinary, complete table with eleven rows                          |
+
+Observed on reaching the table while both queries are in flight:
+
+```
+List of repositories and resource catalogs table 5 columns, 11 rows
+```
+
+Eleven rows, ten of them fake. Nothing indicates that data is loading, that what
+follows is placeholder, or that it is about to be replaced (SR-021).
+
+**Where** — `aria-busy` appears **nowhere in `src/`**
+(`grep -rn "aria-busy" src/` → 0 hits), there is no live region, and Chakra's
+`Skeleton` emits no ARIA of its own — verified in
+`node_modules/@chakra-ui/react/dist/esm/skeleton/skeleton.mjs`, which sets only
+presentational CSS.
+
+**Why axe missed it** — a skeleton row is valid markup, `aria-busy` is optional
+so its absence is never a violation, and no rule can know that ten rows of
+placeholder are standing in for real content. The shimmer that communicates
+"loading" to a sighted user is pure CSS.
+
+**Fix** — `aria-busy="true"` on the table while loading, and/or a
+`role="status"` "Loading results" message. `chart-wrapper.tsx:35` already does
+the latter elsewhere in this codebase.
+
+**Guarded by** — `table-loading.spec.ts` → _the loading table announces that it
+is busy_
+
+---
+
+<a id="sr-020"></a>
+
+## SR-020 — Placeholder cells announce a hyphen as the cell's value
+
+**Not silence — misinformation.** The user is not told the data is missing; they
+are told what it is, incorrectly, 30 times.
+
+Observed on the first data row:
+
+```
+row 2 of 11  NAME … blank column 1 of 5
+DESCRIPTION blank column 2 of 5
+TYPE … - column 3 of 5
+RESEARCH DOMAIN … - column 4 of 5
+ACCESS … - column 5 of 5
+```
+
+Columns 1–2 announce `blank`, which is honest. Columns 3–5 assert a value.
+
+**Where** — the ternaries at
+[TableWithSearch/index.tsx:267](../../src/views/home/components/TableWithSearch/index.tsx#L267),
+[:273](../../src/views/home/components/TableWithSearch/index.tsx#L273) and
+[:277](../../src/views/home/components/TableWithSearch/index.tsx#L277) fall
+through to a literal `'-'` on the empty row objects that `Array(10).fill({})`
+supplies.
+
+The reason it reaches the user is a CSS subtlety: Chakra hides skeleton contents
+with `&::before, &::after, * { visibility: hidden }`, and `*` matches
+**element** descendants only. A bare text node is merely `color: transparent` —
+invisible on screen, fully present in the accessibility tree. 10 rows × 3
+columns = **30 cells**, confirmed by counting the built HTML.
+
+**Why axe missed it** — a `-` is valid text content. Nothing in the DOM marks it
+as a placeholder, and axe cannot infer intent.
+
+**Fix** — render nothing (or the skeleton bar alone) while loading rather than
+falling through to `'-'`.
+
+**Guarded by** — `table-loading.spec.ts` → _placeholder cells are not announced
+as content_
+
+### This one corrected a prediction the suite had already written down
+
+`home.spec.ts` described this gap as _"10 skeleton rows announced as empty
+cells."_ That was **right for two of five columns and wrong for three** — and
+the wrong three are a worse defect than the one predicted, because asserting a
+false value is worse than saying nothing.
+
+The prediction was mine, written while scoping this work from the markup. It is
+the third overturned reading in this document, and the first drawn from the
+suite's own documentation rather than the app's code. The correction came from
+the built HTML and was confirmed by the transcript.
+
+---
+
+<a id="sr-021"></a>
+
+## SR-021 — Data replacing the skeleton rows announces nothing
+
+|                        |                                                                        |
+| ---------------------- | ---------------------------------------------------------------------- |
+| **Sighted user**       | Watches the placeholder bars resolve into real rows                    |
+| **Screen reader user** | Is reading the table when its entire contents are silently swapped out |
+
+Observed with the VoiceOver cursor parked **on the table**, then releasing the
+gated requests:
+
+```
+cursor parked on: List of repositories and resource catalogs table
+rows:    10 -> 2
+results: 0 results -> 2 results
+--- spoken ---
+                    ← nothing
+```
+
+**The worst of the 4.1.3 family**, because unlike SR-011…SR-013 and SR-017 the
+trigger is not a user action. There is nothing for the user to associate the
+change with and no reason to expect it: they are reading row 2 of 11, and
+without warning row 2 of 11 is a different row in a different table.
+
+**Where** — the same missing live region as SR-011.
+
+**Why axe missed it** — axe scans one DOM snapshot. A transition between two
+states, each individually valid, is not something it can evaluate. This is a
+different limitation from the others: not "the rule doesn't exist" but "the
+method has no notion of time".
+
+**Fix** — the same `role="status"` as SR-011, which would announce the new
+result count as it changes.
+
+**Guarded by** — `table-loading.spec.ts` → _data arriving is announced_
+
+**Method note** — the test holds both requests with a gate it releases itself,
+rather than a timed delay, so the cursor is provably on the table before the
+content under it changes. A `setTimeout` would race a traversal whose duration
+depends on how fast VoiceOver is speaking.
+
+---
+
 ## Surfaces checked and found clean
 
 Recording these matters: a method that only reports problems can't be
@@ -955,6 +1106,8 @@ distinguished from one that manufactures them.
 | Results count text                             | `2 results` announces correctly when the cursor reaches it. The defect is that it is never announced when it _changes_ (SR-011)                                                                                   |
 | Carousel prev/next                             | `previous carousel item dimmed button` — name, role and the disabled state all survive into speech. Now guarded                                                                                                   |
 | VoiceOver vs. the carousel's arrow-key handler | VO navigation does not operate the carousel, despite a document-level handler that ignores modifiers. See the disproved section. Now guarded                                                                      |
+| Table search field while loading               | Keeps its name and role (`Search table edit text`) while the rows are still skeletons, so a user can start typing before data lands. Now guarded                                                                  |
+| Table row position while loading               | `row 2 of 11` is internally consistent with the ten placeholder rows plus the header. The defect is that the eleven rows are announced as real (SR-019), not that the counting is wrong                           |
 
 ## Coverage caveat
 

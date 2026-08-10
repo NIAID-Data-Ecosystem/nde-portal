@@ -420,3 +420,80 @@ export async function mockHomePopulated(
     fulfillJson(withRepoGenre(metadata, repoGenre)),
   );
 }
+
+// --- Loading state -----------------------------------------------------------
+
+/**
+ * Hold the resources table in its skeleton state for the life of the page.
+ *
+ * The technique is the axe suite's, verbatim: a route handler returning a
+ * promise that can NEVER settle, so the request stays in flight forever. No
+ * timers and no race, which matters when a VoiceOver traversal takes minutes.
+ *
+ * Two things not to change here, both verified against this app:
+ *
+ *   - **Never `route.abort()` and never fulfil with an error.** The QueryClient
+ *     takes the library default `retry: 3` and `fetchMetadata` has its own
+ *     `MAX_RETRIES = 3` loop on top (src/hooks/api/helpers.ts), so a failure
+ *     eventually resolves to an error — and `src/pages/index.tsx:178` then
+ *     unmounts the whole `PageContent`, three `<h2>` sections and the table
+ *     included. There would be nothing left to walk.
+ *   - **Both NDE globs must hang.** `isLoading` is the OR of the two hooks
+ *     (`src/pages/index.tsx:268`), so hanging one still yields skeleton rows —
+ *     but `tableData` is derived from both independently, so the resolved half
+ *     makes the three filter buttons render and the counter read `1 results`
+ *     instead of `0 results`. Only hanging both is the real loading state.
+ *
+ * A separate function rather than a `MockHomeOptions` flag: `mockHomePopulated`
+ * fulfils `QUERY_GLOB` unconditionally and the first registered `page.route`
+ * wins, so a flag would have to short-circuit the whole function anyway. This
+ * keeps that function bit-for-bit unchanged.
+ *
+ * Prefer `enterHomePageLoadingWebContent` from `../utils/home-page` over calling
+ * this directly — it also navigates and parks the VoiceOver cursor.
+ */
+export async function mockHomeLoading(page: Page) {
+  await mockStrapiRoutes(page);
+  await page.route(QUERY_GLOB, () => new Promise<void>(() => {}));
+  await page.route(METADATA_GLOB, () => new Promise<void>(() => {}));
+}
+
+/**
+ * Like {@link mockHomeLoading}, but the caller decides when the data lands.
+ *
+ * Returns a `release()` function. Until it is called both NDE requests hang and
+ * the table shows skeleton rows; calling it fulfils them with the standard
+ * populated fixtures.
+ *
+ * Why a gate rather than a delayed fulfil: a `setTimeout`-based delay races
+ * against a traversal whose duration depends on how fast VoiceOver is speaking.
+ * A gate makes the transition happen at exactly the point in the test that wants
+ * it, which is the only way to park the cursor on the table BEFORE the content
+ * under it is replaced.
+ */
+export async function mockHomeGated(page: Page): Promise<() => void> {
+  let release!: () => void;
+  const gate = new Promise<void>(resolve => {
+    release = resolve;
+  });
+
+  await mockStrapiRoutes(page);
+  await page.route(QUERY_GLOB, async route => {
+    await gate;
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(QUERY_FIXTURE),
+    });
+  });
+  await page.route(METADATA_GLOB, async route => {
+    await gate;
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(METADATA_FIXTURE),
+    });
+  });
+
+  return release;
+}

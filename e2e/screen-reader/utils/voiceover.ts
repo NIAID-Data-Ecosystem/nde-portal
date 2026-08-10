@@ -73,6 +73,12 @@ export interface WalkOptions {
    * (item "Main navigation navigation", spoken "end of Main navigation
    * navigation"), so a linear walk out of the nav landmark looked like a cycle
    * back to the top and stopped 7 items in. Don't reintroduce it.
+   *
+   * A detected repeat is also CONFIRMED with a second read before the walk
+   * stops, because `itemText()` occasionally returns the previous item's text
+   * when read too soon after a move. That is indistinguishable from a park at
+   * the first read, and treating it as one truncated real walks twice — see the
+   * comment at the check itself.
    */
   stopOnRepeat?: boolean;
 }
@@ -114,14 +120,32 @@ export async function walkUntil(
       await voiceOver.perform(command as never);
     }
 
-    const itemText = normalize(await voiceOver.itemText());
-    const phrase = normalize(await voiceOver.lastSpokenPhrase());
+    let itemText = normalize(await voiceOver.itemText());
+    let phrase = normalize(await voiceOver.lastSpokenPhrase());
 
     // Out of road: parked on the last match. Consecutive repeats only — see
     // the note on `stopOnRepeat` for why "back on item 1" must NOT count.
-    const parked = items.length > 0 && items[items.length - 1] === itemText;
-    if (stopOnRepeat && parked) {
-      break;
+    if (
+      stopOnRepeat &&
+      items.length > 0 &&
+      items[items.length - 1] === itemText
+    ) {
+      // A repeat is ambiguous: either the cursor really has parked, or this
+      // read landed before VoiceOver finished updating and returned the
+      // PREVIOUS item's text. Both look identical here, and treating a lagged
+      // read as a park truncated the walk twice in real runs — a heading jump
+      // stopped one heading short of its target and failed with a trace that
+      // looked like the heading was missing.
+      //
+      // So confirm before concluding: read again. A genuinely parked cursor
+      // reports the same text twice; a lagged read has caught up by now. Costs
+      // one extra read, and only on the repeat path.
+      itemText = normalize(await voiceOver.itemText());
+      phrase = normalize(await voiceOver.lastSpokenPhrase());
+
+      if (items[items.length - 1] === itemText) {
+        break;
+      }
     }
 
     items.push(itemText);

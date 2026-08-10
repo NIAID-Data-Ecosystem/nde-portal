@@ -38,11 +38,14 @@
  *   - `carousel.spec.ts` — the news carousel widget (this spec keeps SR-006,
  *     the card headings' place in the outline, because that is a heading-walk
  *     assertion rather than a widget one)
+ *   - `table-loading.spec.ts` — the table's skeleton state. Note this scope note
+ *     used to predict "10 skeleton rows announced as empty cells", which was
+ *     wrong for three of the five columns: they announce a literal `-` as the
+ *     cell's value. See SR-020.
  *
- * Still uncovered anywhere: the table's loading state (10 skeleton rows
- * announced as empty cells), and the hero's decorative images (~60 words of alt
- * text read before the `<h1>` — visible in the `chrome-before-h1` transcript
- * attached by `page-shell.spec.ts`, but not yet filed as a finding).
+ * Still uncovered anywhere: the hero's decorative images (~60 words of alt text
+ * read before the `<h1>` — visible in the `chrome-before-h1` transcript attached
+ * by `page-shell.spec.ts`, but not yet filed as a finding).
  *
  * Route mocks and fixtures come from `./fixtures/home`, which this suite OWNS —
  * `e2e/accessibility/home.spec.ts` keeps its own equivalent copy inline. That

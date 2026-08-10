@@ -68,11 +68,12 @@
  * between viewports — never hard-code it; match `/carousel indicator \d+ of
  * \d+/` and key off ` (current)`.
  *
- * One observed flake, recorded rather than papered over: on one run of six, the
- * `findNextHeading` jump parked after two headings and never reached "Updates",
- * failing with the trace rather than a bare timeout — `walkUntil`'s park
- * detection treating a lagged `itemText()` as a repeat. It passed on re-run. If
- * this becomes frequent the fix is in the helper, not here.
+ * The flake this spec used to carry is now fixed at source. Twice, the
+ * `findNextHeading` jump stopped short of "Updates" and failed with a trace that
+ * made the heading look missing — `walkUntil`'s park detection treating a lagged
+ * `itemText()` read as a genuine repeat. `walkUntil` now confirms a repeat with
+ * a second read before stopping. See the note on `stopOnRepeat` in
+ * `utils/voiceover.ts`.
  *
  * ## Not verified
  *
