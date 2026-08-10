@@ -50,6 +50,10 @@ something actually drives a screen reader.
 | [SR-019](#sr-019) | Table loading      | Nothing says the table is loading; no `aria-busy` in the repo | 4.1.3        | 1 file / 1 route     |
 | [SR-020](#sr-020) | Table loading      | 30 skeleton cells announce "-" as the cell's value            | 1.3.1        | 1 file / 1 route     |
 | [SR-021](#sr-021) | Table loading      | Data replacing the skeleton rows announces nothing            | 4.1.3        | 1 file / 1 route     |
+| [SR-022](#sr-022) | Hero artwork       | 66 words of decorative alt read before the page title         | 1.1.1        | 1 file / 1 route     |
+| [SR-023](#sr-023) | Getting Started    | 70 words of stock-photo alt read before the heading           | 1.1.1        | 1 file / 1 route     |
+| [SR-024](#sr-024) | Hero artwork       | Artwork collapsed to 0x0 at mobile is still announced in full | 1.1.1        | 1 file / 1 route     |
+| [SR-025](#sr-025) | Decorative icons   | Unlabelled icons announced as a nameless "image"              | 1.1.1        | 28 svgs / 1 route    |
 
 **Reach** counts files importing the affected shared component. None of these is
 page-specific markup — each is one fix that lands everywhere the component is
@@ -79,13 +83,20 @@ not appear in `src/` at all.** All six are WCAG **4.1.3 Status Messages**, a
 Level AA criterion that is invisible to static analysis by construction — see
 SR-011.
 
-That makes 4.1.3 the single largest cluster in this document: six of twenty-one
+That makes 4.1.3 the single largest cluster in this document: six of twenty-five
 findings, one missing primitive.
 
 Three findings — SR-003, SR-014 and SR-018 — are the same defect in three
 components: several controls sharing one generic accessible name. axe's
 `button-name` and `link-name` rules are satisfied by any name at all, so
 duplicate and uninformative names are never violations.
+
+SR-022, SR-023, SR-024 and SR-025 are the **1.1.1 cluster**, and they share a
+boundary rather than a root cause: `image-alt` checks that `alt` is _present_,
+never that it is appropriate or that the image is decorative. **No axe-core rule
+at any tag measures alt length or decorative intent** — see SR-022 for the full
+rule-by-rule account, including why `image-redundant-alt` is scanned yet cannot
+fire here.
 
 ## What the suite also _disproved_
 
@@ -518,8 +529,8 @@ The full transcript, captured by the test as `chrome-before-h1`:
 
 Items 9–13 are the non-production environment banner, so a production visitor
 hears 11 rather than 16 — still with no way to skip any of them. Items 14 and 15
-are decorative artwork carrying ~60 words of alt text; that is a separate
-defect, observed here but not yet filed.
+are decorative artwork carrying 66 words of alt text (measured — SR-022); that
+is a separate defect, observed here but not yet filed.
 
 **Where** — there is no skip link anywhere in the app. The only trace of one is
 a dead `SkipLink` key in
@@ -1086,28 +1097,208 @@ depends on how fast VoiceOver is speaking.
 
 ---
 
+<a id="sr-022"></a>
+
+## SR-022 — 66 words of decorative alt text before the page title
+
+|                        |                                                                                   |
+| ---------------------- | --------------------------------------------------------------------------------- |
+| **Sighted user**       | Sees faint background art and a hero illustration, and ignores both instantly     |
+| **Screen reader user** | Hears two paragraphs of stock-image description before learning what page this is |
+
+Observed walking from the top of web content:
+
+```
+13. Staging API link
+14. A complex network of interconnected lines and nodes, resembling a molecular
+    or neural network structure. The image features various shades of blue and
+    white, with nodes of different sizes connected by thin lines, creating a
+    web-like pattern. image
+15. An abstract graphic featuring three hexagons. The top-right hexagon shows a
+    person typing on a keyboard with a microscope in the background, symbolizing
+    a blend of technology and science. image
+16. Discovery Portal heading level 1
+```
+
+**37 + 29 = 66 words**, measured. Both images are pure decoration — the first is
+background art rendered at `opacity 0.2`.
+
+**Where** —
+[HeroBanner.tsx:36](../../src/views/home/components/HeroBanner.tsx#L36) and
+[:60](../../src/views/home/components/HeroBanner.tsx#L60). Both should be
+`alt=''`.
+
+### Why axe missed it — the full account
+
+This is the finding where "axe can't see it" is most often asserted loosely, so
+it is worth being exact. All of this was verified against the installed axe-core
+and this project's config:
+
+- **`image-alt`** (impact `critical`, in the scanned set) passes. Its checks are
+  `has-alt`, `aria-label`, `aria-labelledby`, `non-empty-title`,
+  `presentational-role`, `alt-space-value` — **presence and non-whitespace
+  only**. It never inspects length, quality, or decorative intent.
+- **`image-redundant-alt`** _is_ scanned — `best-practice` is one of the five
+  tags in `WCAG_AA_TAGS` — but it cannot fire here. Its only check requires the
+  image to have an ancestor matching
+  `button, [role=button], a[href], p, li, td, th` whose visible text is
+  character-for-character equal to the image's accessible name. These images
+  have no such ancestor. It is also `minor` impact, and `BLOCKING_IMPACTS` is
+  `serious`/`critical`, so it could not fail CI even if it did fire.
+- **No axe-core rule at any tag measures alt length or decorative intent.** The
+  complete alt-related set is `area-alt`, `image-alt`, `image-redundant-alt`,
+  `input-image-alt`, `object-alt`, `role-img-alt`, `server-side-image-map`,
+  `svg-img-alt`. Decorative intent is a judgement about authorial purpose, not a
+  property of the DOM — there is no rule to write.
+
+**WCAG** — 1.1.1 Non-text Content, technique H67: decorative images must be
+marked so assistive technology can ignore them.
+
+**Guarded by** — `decorative-images.spec.ts` → _decorative hero artwork is not
+announced_
+
+---
+
+<a id="sr-023"></a>
+
+## SR-023 — 70 words of stock photo before "Getting Started"
+
+The same defect in a different file, filed separately because it is a different
+one-line fix.
+
+```
+21. The image shows a healthcare professional, likely a doctor, wearing a white
+    coat and stethoscope, interacting with a digital interface. … The doctor is
+    pointing at the heart icon, indicating a focus on heart health or medical
+    diagnostics. image
+22. Getting Started heading level 2
+```
+
+**70 words**, measured, immediately before the heading that introduces the
+section. Pure decoration beside marketing copy.
+
+**Where** — [src/pages/index.tsx:200](../../src/pages/index.tsx#L200). Should be
+`alt=''`.
+
+**Why axe missed it** — as SR-022.
+
+**Guarded by** — `decorative-images.spec.ts` → _the Getting Started photo is not
+announced_
+
+---
+
+<a id="sr-024"></a>
+
+## SR-024 — Artwork that isn't rendered is still read out in full
+
+**The sharpest of the four**, and the one that is invisible to any DOM scan by
+construction: the markup is identical at every breakpoint. Only the CSS differs.
+
+|                        |                                                               |
+| ---------------------- | ------------------------------------------------------------- |
+| **Sighted phone user** | Sees nothing — the image is not rendered                      |
+| **Screen reader user** | Hears 29 words describing artwork that is not on their screen |
+
+Observed at a 375×812 viewport:
+
+```
+hexagon box: 0x0  display=block
+
+10. A complex network of interconnected lines and nodes … image
+11. An abstract graphic featuring three hexagons. … image
+12. Discovery Portal heading level 1
+```
+
+**Where** —
+[HeroBanner.tsx:65](../../src/views/home/components/HeroBanner.tsx#L65):
+
+```tsx
+height={{ base: 0, sm: '200px', md: '70%', lg: '85%', xl: '100%' }}
+```
+
+`height: 0` is not `display: none`. The element keeps a box, stays in the
+accessibility tree, and is announced in full.
+
+**The same codebase does this correctly a few elements away.**
+[nde-logo.tsx](../../src/components/logos/nde-logo.tsx) renders three variants
+and hides the off-breakpoint ones with genuine `display: none` — verified: at
+1280px four of the six logo `<img>`s are `display: none` and exactly one is
+announced per location. That contrast is guarded by the passing control test in
+this spec, which is why it is worth having.
+
+**Why axe missed it** — axe scans one viewport, and even at 375px the DOM is
+byte-identical to the desktop DOM. A rule would have to reason about computed
+geometry _and_ infer that a zero-height image is meant to be absent rather than
+merely small.
+
+**Fix** — `display={{ base: 'none', sm: 'block' }}` instead of `height: 0`.
+
+**Guarded by** — `decorative-images.spec.ts` → _the hexagon artwork is not
+announced where it is not rendered_
+
+**Method note** — this is the suite's first test at a non-default viewport.
+`test.use({ viewport: { width: 375, height: 812 } })` composes with guidepup's
+`voiceOverTest` without special handling; confirmed by the spike before the test
+was written.
+
+---
+
+<a id="sr-025"></a>
+
+## SR-025 — Decorative icons are announced as nameless images
+
+The built page has **56 `<svg>` elements, 28 of them with neither `aria-hidden`
+nor a role**, and `role="img"` appears **zero** times. At least one is announced
+with a role and no name:
+
+```
+9. image
+```
+
+That is the hero search input's magnifier
+([search-input/index.tsx:102](../../src/components/search-input/index.tsx#L102)).
+It tells the user something is there and nothing about what — worse than silence
+for an element that carries no information at all.
+
+**Why axe missed it — inapplicable, not passing.** `svg-img-alt` only examines
+`<svg>` carrying `role="img"`, `"graphics-document"` or `"graphics-symbol"`.
+This page has none, so the rule has no targets. An unlabelled `<svg>` with no
+role falls outside every alt-related rule in axe-core.
+
+**Fix** — `aria-hidden='true'` on presentational `Icon` instances.
+
+**Guarded by** — `decorative-images.spec.ts` → _decorative icons are not
+announced as nameless images_
+
+**Scope note** — the environment banner renders a second nameless icon, but only
+in non-production builds. The test deliberately starts its walk below the banner
+so it exercises the search magnifier, which ships everywhere.
+
+---
+
 ## Surfaces checked and found clean
 
 Recording these matters: a method that only reports problems can't be
 distinguished from one that manufactures them.
 
-| Surface                                        | Result                                                                                                                                                                                                            |
-| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Navigation landmark                            | `Main navigation navigation` — correctly named and roled, and the only landmark on the page that is. Now guarded                                                                                                  |
-| Main navigation dropdowns                      | Announce correctly — `Search dialog pop up collapsed button` carries name, popup type, state and role. Now guarded                                                                                                |
-| Footer contents                                | Static links, correctly named and grouped as lists (`list 5 items`, `link USA.gov 4 of 5`); the two footer headings announce as level 2. It is the footer's _landmark_ that is missing (SR-008), not its contents |
-| Table identity                                 | `List of repositories and resource catalogs table 5 columns, 42 rows`                                                                                                                                             |
-| Table row position                             | Correct despite virtualisation — see the disproved prediction above                                                                                                                                               |
-| Table row ordering                             | All 40 rows reachable exactly once, in order, across recycling                                                                                                                                                    |
-| Hero search field                              | Announces name and role: `Search for resources … edit text`                                                                                                                                                       |
-| Hero search typing                             | Keystrokes echoed correctly                                                                                                                                                                                       |
-| Table search field                             | `Search table edit text` — correct despite an `id` of `"Search table"` (a space inside an id) and no `aria-label`. Now guarded                                                                                    |
-| Table filter triggers                          | `Type` / `Research Domain` / `Access` each announce `dialog pop up collapsed button` — name, popup type, state and role                                                                                           |
-| Results count text                             | `2 results` announces correctly when the cursor reaches it. The defect is that it is never announced when it _changes_ (SR-011)                                                                                   |
-| Carousel prev/next                             | `previous carousel item dimmed button` — name, role and the disabled state all survive into speech. Now guarded                                                                                                   |
-| VoiceOver vs. the carousel's arrow-key handler | VO navigation does not operate the carousel, despite a document-level handler that ignores modifiers. See the disproved section. Now guarded                                                                      |
-| Table search field while loading               | Keeps its name and role (`Search table edit text`) while the rows are still skeletons, so a user can start typing before data lands. Now guarded                                                                  |
-| Table row position while loading               | `row 2 of 11` is internally consistent with the ten placeholder rows plus the header. The defect is that the eleven rows are announced as real (SR-019), not that the counting is wrong                           |
+| Surface                                        | Result                                                                                                                                                                                                               |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Navigation landmark                            | `Main navigation navigation` — correctly named and roled, and the only landmark on the page that is. Now guarded                                                                                                     |
+| Main navigation dropdowns                      | Announce correctly — `Search dialog pop up collapsed button` carries name, popup type, state and role. Now guarded                                                                                                   |
+| Footer contents                                | Static links, correctly named and grouped as lists (`list 5 items`, `link USA.gov 4 of 5`); the two footer headings announce as level 2. It is the footer's _landmark_ that is missing (SR-008), not its contents    |
+| Table identity                                 | `List of repositories and resource catalogs table 5 columns, 42 rows`                                                                                                                                                |
+| Table row position                             | Correct despite virtualisation — see the disproved prediction above                                                                                                                                                  |
+| Table row ordering                             | All 40 rows reachable exactly once, in order, across recycling                                                                                                                                                       |
+| Hero search field                              | Announces name and role: `Search for resources … edit text`                                                                                                                                                          |
+| Hero search typing                             | Keystrokes echoed correctly                                                                                                                                                                                          |
+| Table search field                             | `Search table edit text` — correct despite an `id` of `"Search table"` (a space inside an id) and no `aria-label`. Now guarded                                                                                       |
+| Table filter triggers                          | `Type` / `Research Domain` / `Access` each announce `dialog pop up collapsed button` — name, popup type, state and role                                                                                              |
+| Results count text                             | `2 results` announces correctly when the cursor reaches it. The defect is that it is never announced when it _changes_ (SR-011)                                                                                      |
+| Carousel prev/next                             | `previous carousel item dimmed button` — name, role and the disabled state all survive into speech. Now guarded                                                                                                      |
+| VoiceOver vs. the carousel's arrow-key handler | VO navigation does not operate the carousel, despite a document-level handler that ignores modifiers. See the disproved section. Now guarded                                                                         |
+| Table search field while loading               | Keeps its name and role (`Search table edit text`) while the rows are still skeletons, so a user can start typing before data lands. Now guarded                                                                     |
+| Table row position while loading               | `row 2 of 11` is internally consistent with the ten placeholder rows plus the header. The defect is that the eleven rows are announced as real (SR-019), not that the counting is wrong                              |
+| Responsive image hiding in the nav/footer logo | Three variants exist; at any breakpoint four of the six `<img>`s are genuinely `display: none` and exactly one is announced per location. The correct pattern, and the direct counter-example to SR-024. Now guarded |
 
 ## Coverage caveat
 

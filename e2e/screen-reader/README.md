@@ -24,7 +24,7 @@ catches it.
 
 ## What it has found so far
 
-Twenty-one defects, **all of which pass every axe scan today**. Each is written
+Twenty-five defects, **all of which pass every axe scan today**. Each is written
 as a test asserting the correct behaviour and deferred with `test.fixme` + a
 `FIXME(a11y)` note, so it starts passing the day someone fixes it. Every one was
 confirmed by temporarily un-`fixme`-ing it and watching it fail.
@@ -34,31 +34,35 @@ sighted user sees vs what VoiceOver says, why axe missed it, the WCAG criterion,
 the fix, and how many files the shared component reaches. The `FIXME(a11y)`
 comments reference these IDs rather than repeating the detail.
 
-| ID     | Surface       | Defect                                                                       |
-| ------ | ------------- | ---------------------------------------------------------------------------- |
-| SR-001 | Hero search   | Suggestion dropdown announces **nothing** — no combobox ARIA, no live region |
-| SR-002 | Table sorting | Activating a sort control announces **nothing**; state is colour-only        |
-| SR-003 | Table sorting | All 8 sort controls share 2 generic labels — none names its column           |
-| SR-004 | Table cells   | Every cell announcement is padded with a sort-control label                  |
-| SR-005 | Table headers | The first column header announces as **empty**                               |
-| SR-006 | News carousel | Card headings jump `h3` → `h2`, so cards don't nest under "Updates"          |
-| SR-007 | Page shell    | No banner landmark — the nav is inside the one `<main>`                      |
-| SR-008 | Page shell    | No contentinfo landmark — the footer is inside the same `<main>`             |
-| SR-009 | Page shell    | No skip link. **16 announcements** before the page title, on every route     |
-| SR-010 | Navigation    | The active nav item announces `Home link` — no "current page"                |
-| SR-011 | Table search  | Searching narrows the table and announces **nothing** but the typed keys     |
-| SR-012 | Table search  | A search matching nothing empties the table in silence                       |
-| SR-013 | Table filters | Ticking a filter halves the table with a **completely empty** spoken log     |
-| SR-014 | Table filters | Every filter chip's remove button is named just `close`                      |
-| SR-015 | News carousel | The carousel never identifies itself as a carousel                           |
-| SR-016 | News carousel | All 6 slides are announced when only 2 are on screen                         |
-| SR-017 | News carousel | Changing slide announces nothing                                             |
-| SR-018 | News carousel | Six card links share the name `(view full release)`                          |
-| SR-019 | Table loading | Nothing says the table is loading — no `aria-busy` in the repo at all        |
-| SR-020 | Table loading | 30 skeleton cells announce `-` as the cell's **value**                       |
-| SR-021 | Table loading | Skeleton rows being replaced by real data announces nothing                  |
+| ID     | Surface         | Defect                                                                       |
+| ------ | --------------- | ---------------------------------------------------------------------------- |
+| SR-001 | Hero search     | Suggestion dropdown announces **nothing** — no combobox ARIA, no live region |
+| SR-002 | Table sorting   | Activating a sort control announces **nothing**; state is colour-only        |
+| SR-003 | Table sorting   | All 8 sort controls share 2 generic labels — none names its column           |
+| SR-004 | Table cells     | Every cell announcement is padded with a sort-control label                  |
+| SR-005 | Table headers   | The first column header announces as **empty**                               |
+| SR-006 | News carousel   | Card headings jump `h3` → `h2`, so cards don't nest under "Updates"          |
+| SR-007 | Page shell      | No banner landmark — the nav is inside the one `<main>`                      |
+| SR-008 | Page shell      | No contentinfo landmark — the footer is inside the same `<main>`             |
+| SR-009 | Page shell      | No skip link. **16 announcements** before the page title, on every route     |
+| SR-010 | Navigation      | The active nav item announces `Home link` — no "current page"                |
+| SR-011 | Table search    | Searching narrows the table and announces **nothing** but the typed keys     |
+| SR-012 | Table search    | A search matching nothing empties the table in silence                       |
+| SR-013 | Table filters   | Ticking a filter halves the table with a **completely empty** spoken log     |
+| SR-014 | Table filters   | Every filter chip's remove button is named just `close`                      |
+| SR-015 | News carousel   | The carousel never identifies itself as a carousel                           |
+| SR-016 | News carousel   | All 6 slides are announced when only 2 are on screen                         |
+| SR-017 | News carousel   | Changing slide announces nothing                                             |
+| SR-018 | News carousel   | Six card links share the name `(view full release)`                          |
+| SR-019 | Table loading   | Nothing says the table is loading — no `aria-busy` in the repo at all        |
+| SR-020 | Table loading   | 30 skeleton cells announce `-` as the cell's **value**                       |
+| SR-021 | Table loading   | Skeleton rows being replaced by real data announces nothing                  |
+| SR-022 | Hero artwork    | **66 words** of decorative alt text read before the page title               |
+| SR-023 | Getting Started | 70 more words of stock-photo alt before the heading                          |
+| SR-024 | Hero artwork    | Artwork collapsed to **0x0** at mobile width is still announced in full      |
+| SR-025 | Icons           | 28 unlabelled `<svg>`s; at least one announced as a nameless `image`         |
 
-Three of these are worth singling out for what they say about static analysis:
+Four of these are worth singling out for what they say about static analysis:
 
 **SR-009** — axe **has** a rule for WCAG 2.4.1 (`bypass`, impact _serious_), and
 it passes here because the page has a `<main>` landmark, one that starts above
@@ -75,6 +79,13 @@ and **passes it**. Same route, same mocks, same DOM as `table-loading.spec.ts`.
 That is the cleanest comparison in the project: not two methods looking at
 different things, but two methods looking at one identical page state and
 disagreeing about whether it is accessible.
+
+**SR-024** — the hero's hexagon artwork is collapsed to `0x0` at phone width and
+VoiceOver still reads all 29 words of its description. No DOM scan can catch
+this: the markup is byte-identical at every breakpoint, and only the CSS
+differs. It also has a built-in control — the nav logo, a few elements away,
+hides its off-breakpoint variants with real `display: none` and is correctly
+silent.
 
 Equally useful, the suite has **disproved two** defects that looked certain from
 the markup:
@@ -420,6 +431,20 @@ wrong:
   its own chrome ("VoiceOver Settings activity"), so the phrase you get back may
   belong to the previous item. Key assertions off `itemText()` and treat the
   spoken phrase as supporting evidence.
+
+### Known flakes, and when to fix them
+
+Both of these are the same underlying thing — a read landing before VoiceOver
+has finished updating — and the rule of thumb here has been: **record it the
+first time, fix it in the helper the second.**
+
+| Flake                                                                                                                     | Status                                                                                                                                                                                                                                                                                                           |
+| ------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `walkUntil` treating a lagged `itemText()` as a park, truncating a walk                                                   | **Fixed.** Happened twice (a heading jump stopped one heading short), so `walkUntil` now confirms a repeat with a second read before stopping.                                                                                                                                                                   |
+| `table.spec.ts` → _announces its name, dimensions…_ getting `"VoiceOver Settings activity"` instead of the table's phrase | **Recorded, not fixed.** Seen once, passes on re-run. That test must assert on the phrase because the dimensions (`5 columns, 42 rows`) appear nowhere else. If it recurs, the fix is to re-read `lastSpokenPhrase()` once when it comes back as VoiceOver chrome — the phrase-side twin of the `walkUntil` fix. |
+
+A test failing this way is recognisable: the "VoiceOver said" line in the
+failure quotes VoiceOver's own UI rather than anything on the page.
 
 ### Reading the transcripts
 

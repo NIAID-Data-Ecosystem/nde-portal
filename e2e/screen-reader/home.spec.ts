@@ -42,10 +42,13 @@
  *     used to predict "10 skeleton rows announced as empty cells", which was
  *     wrong for three of the five columns: they announce a literal `-` as the
  *     cell's value. See SR-020.
+ *   - `decorative-images.spec.ts` — the hero artwork and the Getting Started
+ *     photo (66 and 70 words of alt text respectively, measured), the hexagon
+ *     that is still announced at 0x0, and the unlabelled icons
  *
- * Still uncovered anywhere: the hero's decorative images (~60 words of alt text
- * read before the `<h1>` — visible in the `chrome-before-h1` transcript attached
- * by `page-shell.spec.ts`, but not yet filed as a finding).
+ * With that, the home page is fully covered. The one known gap left anywhere is
+ * the `alt="null"` coercion in NewsCarousel.tsx:140, which only reproduces when
+ * a Strapi image has a null `alternativeText` and needs its own fixture.
  *
  * Route mocks and fixtures come from `./fixtures/home`, which this suite OWNS —
  * `e2e/accessibility/home.spec.ts` keeps its own equivalent copy inline. That
