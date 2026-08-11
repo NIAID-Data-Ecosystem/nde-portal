@@ -82,7 +82,7 @@ export const ALL_DATA_COLLECTION_COLUMNS: DataCollectionColumn[] = [
   },
   {
     id: 'infectiousAgent',
-    title: 'Infectious Agent',
+    title: 'Pathogen Species',
     property: 'infectiousAgent',
     isSortable: false,
     apiSortField: null,
