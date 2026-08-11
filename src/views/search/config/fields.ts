@@ -78,14 +78,17 @@ export const SAMPLE_FIELDS = [
   'itemLocation',
 ];
 
-// Minimal field list for the DataCollection table.
+// Field list for the DataCollection tab, covering both its table and its card
+// view. Kept as a single array on purpose: an identical field list means the
+// query key does not change between view modes, so toggling Table <-> Card
+// never triggers a refetch and always matches the tabs-controller prefetch.
 export const DATA_COLLECTION_FIELDS = [
   // Used by toRow() for catalog URL
   '_meta',
   '@type',
   'url',
   'includedInDataCatalog',
-  // Column fields
+  // Table column fields
   'name',
   'about',
   'conditionsOfAccess',
@@ -98,4 +101,14 @@ export const DATA_COLLECTION_FIELDS = [
   'isBasedOn',
   'collectionSize',
   'exampleOfWork',
+  // Card header and access badges
+  'alternateName',
+  'author',
+  'isAccessibleForFree',
+  // Card metadata pills, in addition to the column fields above
+  'funding',
+  'license',
+  'measurementTechnique',
+  'usageInfo',
+  'variableMeasured',
 ];

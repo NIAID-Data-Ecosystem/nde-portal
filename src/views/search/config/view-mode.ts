@@ -10,12 +10,11 @@ export const VIEW_MODE_OPTIONS: { value: SearchViewMode; label: string }[] = [
 // excluded: it is table-only.
 export const TABS_WITH_VIEW_MODE: TabType['id'][] = ['d', 'ct', 'dc'];
 
-// Tabs that should default to something other than 'card'.
+// Tabs that should default to something other than 'card'. Currently empty:
+// every tab offering a choice defaults to cards.
 export const DEFAULT_VIEW_MODE_BY_TAB: Partial<
   Record<TabType['id'], SearchViewMode>
-> = {
-  dc: 'table',
-};
+> = {};
 
 export const getDefaultViewModeForTab = (
   tabId: TabType['id'],

@@ -10,15 +10,13 @@ beforeEach(() => {
 
 describe('useViewMode', () => {
   describe('defaults', () => {
-    it.each(['d', 'ct'] as const)('defaults to card for the %s tab', tabId => {
-      const { result } = renderHook(() => useViewMode(tabId));
-      expect(result.current[0]).toBe('card');
-    });
-
-    it('defaults to table for the dc tab', () => {
-      const { result } = renderHook(() => useViewMode('dc'));
-      expect(result.current[0]).toBe('table');
-    });
+    it.each(['d', 'ct', 'dc'] as const)(
+      'defaults to card for the %s tab',
+      tabId => {
+        const { result } = renderHook(() => useViewMode(tabId));
+        expect(result.current[0]).toBe('card');
+      },
+    );
   });
 
   describe('reading persisted preferences', () => {
@@ -31,7 +29,7 @@ describe('useViewMode', () => {
     it('falls back to the default when the stored value is not a view mode', () => {
       localStorage.setItem(getViewModeStorageKey('dc'), 'grid');
       const { result } = renderHook(() => useViewMode('dc'));
-      expect(result.current[0]).toBe('table');
+      expect(result.current[0]).toBe('card');
     });
   });
 
