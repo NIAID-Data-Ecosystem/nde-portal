@@ -83,7 +83,7 @@ export const CheckboxList = <T extends Option>({
             </Text>
             {description && (
               <Text
-                color='page.placeholder'
+                color='gray.700'
                 fontSize='sm'
                 fontStyle='italic'
                 fontWeight='normal'

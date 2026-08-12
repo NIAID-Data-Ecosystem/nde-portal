@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { GetStaticProps, NextPage } from 'next';
 import { Flex, HStack, Text } from '@chakra-ui/react';
+import { useQuery } from '@tanstack/react-query';
 import { Error } from 'src/components/error';
 import { Link } from 'src/components/link';
 import {
@@ -30,38 +31,39 @@ import { queryFilterObject2String } from 'src/views/search/components/filters/ut
 const ProgramCollections: NextPage<{
   data: ProgramCollection[];
   error: Error;
-}> = ({ data, error }) => {
+}> = props => {
   const [searchValue, setSearchValue] = useState('');
-  // const [isHydrated, setIsHydrated] = useState(false);
+  // Only fetch in the browser after hydration, so the server-rendered markup
+  // matches the build-time getStaticProps data on first paint.
+  const [isHydrated, setIsHydrated] = useState(false);
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
-  // useEffect(() => {
-  //   setIsHydrated(true);
-  // }, []);
+  // Re-fetch program collections client-side, seeding from the build-time
+  // getStaticProps data so content is visible immediately while the refetch runs.
+  const { data, error } = useQuery({
+    queryKey: ['program-collections'],
+    queryFn: () => fetchProgramCollections(150),
+    placeholderData: () => props.data,
+    enabled: isHydrated, // don't refetch on first render
+    select: collections =>
+      [...collections].sort((a, b) => {
+        if (
+          !a.sourceOrganization ||
+          !b.sourceOrganization ||
+          a.sourceOrganization.name === null ||
+          b.sourceOrganization.name === null
+        ) {
+          return a.term.localeCompare(b.term);
+        }
 
-  // // Fetch program collections from the API
-  // const { data, isFetching, error } = useQuery({
-  //   queryKey: ['program-collections'],
-  //   queryFn: isHydrated ? () => fetchProgramCollections(150) : undefined,
-  //   placeholderData: () => props.data,
-  //   enabled: isHydrated, // don’t refetch on first render
-  // select: collections => {
-  //   return collections.sort((a, b) => {
-  //     if (
-  //       !a.sourceOrganization ||
-  //       !b.sourceOrganization ||
-  //       a.sourceOrganization.name === null ||
-  //       b.sourceOrganization.name === null
-  //     ) {
-  //       return a.term.localeCompare(b.term);
-  //     }
-
-  //     return a.sourceOrganization.name.localeCompare(
-  //       b.sourceOrganization.name,
-  //     );
-  //   });
-  // },
-  //   refetchOnWindowFocus: false,
-  // });
+        return a.sourceOrganization.name.localeCompare(
+          b.sourceOrganization.name,
+        );
+      }),
+    refetchOnWindowFocus: false,
+  });
 
   const programCollections = useMemo(() => {
     return (
@@ -94,7 +96,7 @@ const ProgramCollections: NextPage<{
         {error ? (
           <Error>
             <Flex flexDirection='column' justifyContent='center'>
-              <Text fontWeight='light' color='gray.600' fontSize='lg'>
+              <Text fontWeight='light' color='gray.800' fontSize='lg'>
                 API Request:{' '}
                 {error?.message ||
                   'It’s possible that the server is experiencing some issues.'}{' '}
@@ -196,14 +198,14 @@ const ProgramCollections: NextPage<{
                       >
                         <>
                           {/* Description */}
-                          {collection.sourceOrganization?.abstract && (
+                          {collection?.sourceOrganization?.abstract && (
                             <StyledCardDescription>
                               {collection.sourceOrganization?.abstract}
                             </StyledCardDescription>
                           )}
 
                           {/* Parent Organization */}
-                          {parentOrganizations.length && (
+                          {parentOrganizations.length > 0 && (
                             <HStack>
                               <StyleCardSubLabel key={index}>
                                 {`Parent Organization(s): ${parentOrganizations.join(

@@ -1,13 +1,21 @@
 import React from 'react';
-import { Flex, Text } from '@chakra-ui/react';
+import { Text } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { Column } from 'src/components/table';
-import { FormattedResource, IncludedInDataCatalog } from 'src/utils/api/types';
-import { getTruncatedText } from 'src/components/table/helpers';
+import {
+  FormattedResource,
+  Funder,
+  Funding,
+  IncludedInDataCatalog,
+} from 'src/utils/api/types';
 import { ResultsTable } from '../results-table';
 import { BaseColumn } from '../results-table/types';
 import { withWidth } from '../results-table/utils';
 import { renderCellData } from '../results-table/components/Cells';
+import {
+  ExpandableList,
+  ExpandableText,
+} from '../results-table/components/ExpandableCells';
 import { SAMPLE_REQUIRED_COLUMN_IDS } from '../results-table/constants';
 
 export interface SampleColumn extends BaseColumn {}
@@ -39,6 +47,8 @@ const COLUMN_API_SORT_FIELDS: Record<string, string | null> = {
   cellType: null,
   locationOfOrigin: null,
   itemLocation: null,
+  funder: null,
+  fundingId: null,
 };
 
 export const ALL_SAMPLE_COLUMNS: SampleColumn[] = [
@@ -250,10 +260,30 @@ export const ALL_SAMPLE_COLUMNS: SampleColumn[] = [
     apiSortField: COLUMN_API_SORT_FIELDS['itemLocation'],
     props: withWidth('150px'),
   },
+  {
+    id: 'funder',
+    title: 'Funder',
+    property: 'funder',
+    isSortable: false,
+    apiSortField: COLUMN_API_SORT_FIELDS['funder'],
+    props: withWidth('200px'),
+  },
+  {
+    id: 'fundingId',
+    title: 'Funding ID',
+    property: 'fundingId',
+    isSortable: false,
+    apiSortField: COLUMN_API_SORT_FIELDS['fundingId'],
+    props: withWidth('280px'),
+  },
 ];
 
 // Normalized shape stored on the row for each source entry.
 type CatalogEntry = { name: string; url: string | null };
+
+// Normalized shapes stored on the row for the funding-related columns.
+type FunderEntry = { name: string; identifier: string | null };
+type FundingIdEntry = { identifier: string; url: string | null };
 
 export const toRow = (resource: FormattedResource): Record<string, unknown> => {
   const rawCatalog = resource.includedInDataCatalog;
@@ -274,6 +304,47 @@ export const toRow = (resource: FormattedResource): Record<string, unknown> => {
     return { name: catalog.name ?? '', url };
   });
 
+  // Normalize funding (an array on the record) into two flat, column-ready
+  // lists. `funder` can itself be a single object or an array, so flatten it.
+  const fundingEntries: Funding[] = Array.isArray(resource.funding)
+    ? resource.funding
+    : resource.funding
+    ? [resource.funding]
+    : [];
+
+  const funderList: FunderEntry[] = fundingEntries
+    .flatMap(funding => {
+      const funders = Array.isArray(funding?.funder)
+        ? funding.funder
+        : funding?.funder
+        ? [funding.funder]
+        : [];
+      return funders;
+    })
+    .map((funder: Funder) => ({
+      name: funder?.name ?? '',
+      identifier: funder?.identifier ?? null,
+    }))
+    .filter(entry => entry.name);
+
+  // Collapse duplicate funders, preferring the variant that
+  // carries an identifier so the name can link out.
+  const funderByName = new Map<string, FunderEntry>();
+  funderList.forEach(entry => {
+    const existing = funderByName.get(entry.name);
+    if (!existing || (!existing.identifier && entry.identifier)) {
+      funderByName.set(entry.name, entry);
+    }
+  });
+  const funderEntries: FunderEntry[] = Array.from(funderByName.values());
+
+  const fundingIdEntries: FundingIdEntry[] = fundingEntries
+    .map(funding => ({
+      identifier: funding?.identifier ?? '',
+      url: funding?.url ?? null,
+    }))
+    .filter(entry => entry.identifier);
+
   const rawIdentifier = (resource as any).identifier;
   const resolvedIdentifier = Array.isArray(rawIdentifier)
     ? (resource as any)._id?.replace(/^_/, '').toUpperCase() ?? ''
@@ -290,6 +361,10 @@ export const toRow = (resource: FormattedResource): Record<string, unknown> => {
     // Always store an array (or null when empty) so getCells can handle both
     // single-source and multi-source records uniformly.
     includedInDataCatalog: catalogEntries.length > 0 ? catalogEntries : null,
+    // Columns derived from `funding`. Stored as arrays (or null when
+    // empty) so getCells stacks multiple entries per record uniformly.
+    funder: funderEntries.length > 0 ? funderEntries : null,
+    fundingId: fundingIdEntries.length > 0 ? fundingIdEntries : null,
   };
 };
 
@@ -323,7 +398,7 @@ export const getCells = ({
     const entries = value as CatalogEntry[] | null;
     if (!entries || entries.length === 0) return null;
     return (
-      <Flex flexDirection='column' gap={1}>
+      <ExpandableList gap={1}>
         {entries.map((cat, idx) =>
           cat.url ? (
             <Link key={idx} href={cat.url} isExternal fontSize='sm'>
@@ -335,19 +410,63 @@ export const getCells = ({
             </Text>
           ),
         )}
-      </Flex>
+      </ExpandableList>
     );
   }
 
-  // Limit description to 144 characters
+  // Funder: Array<{ name, identifier }> => name linked to funder identifier.
+  // Records with multiple funders render each on its own line.
+  if (column.property === 'funder') {
+    const entries = value as FunderEntry[] | null;
+    if (!entries || entries.length === 0) return null;
+    return (
+      <ExpandableList gap={1}>
+        {entries.map((funder, idx) =>
+          funder.identifier ? (
+            <Link key={idx} href={funder.identifier} isExternal fontSize='sm'>
+              {funder.name}
+            </Link>
+          ) : (
+            <Text key={idx} fontSize='sm'>
+              {funder.name}
+            </Text>
+          ),
+        )}
+      </ExpandableList>
+    );
+  }
+
+  // Funding ID: Array<{ identifier, url }> => identifier linked to funding url.
+  // Records with multiple funding entries render each on its own line.
+  if (column.property === 'fundingId') {
+    const entries = value as FundingIdEntry[] | null;
+    if (!entries || entries.length === 0) return null;
+    return (
+      <ExpandableList gap={1}>
+        {entries.map((funding, idx) =>
+          funding.url ? (
+            <Link key={idx} href={funding.url} isExternal fontSize='sm'>
+              {funding.identifier}
+            </Link>
+          ) : (
+            <Text key={idx} fontSize='sm'>
+              {funding.identifier}
+            </Text>
+          ),
+        )}
+      </ExpandableList>
+    );
+  }
+
+  // Description: clamped to a few lines with a "Show more" / "Show less" toggle.
   if (column.property === 'description') {
-    const { text } = getTruncatedText(value as string, false, 144);
-    return text ? (
-      <Text fontSize='sm'>
-        {text}
-        {(value as string).length > 144 ? '…' : ''}
-      </Text>
-    ) : null;
+    return (
+      <ExpandableText
+        text={(value as string) || ''}
+        noOfLines={4}
+        isLoading={isLoading}
+      />
+    );
   }
 
   // Scalar string fields that don't need DefinedTerm / QuantitativeValue rendering

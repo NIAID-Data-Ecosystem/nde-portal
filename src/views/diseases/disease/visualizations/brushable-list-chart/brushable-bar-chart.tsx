@@ -83,6 +83,11 @@ export const BrushableBarChart = ({
     >
       <div
         ref={chartRef}
+        // role="group" makes this focusable, keyboard-driven container a valid
+        // host for aria-label (aria-prohibited-attr forbids aria-label on a
+        // role-less div). It is not an interactive role, so it does not nest
+        // interactivity with the brush overlay inside.
+        role='group'
         tabIndex={0}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}

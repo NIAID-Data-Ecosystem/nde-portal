@@ -12,6 +12,7 @@ import {
   APIResourceType,
   formatAPIResourceTypeForDisplay,
 } from 'src/utils/formatting/formatResourceType';
+import { SHOW_FILTER_SPECIFIED_UNSPECIFIED_LABELS } from 'src/utils/feature-flags';
 
 // Constants
 const DISPLAY_NAME_SEPARATOR = ' | ';
@@ -28,8 +29,24 @@ const isStringValue = (value: unknown): value is string =>
 const isObjectValue = (value: unknown): value is Record<string, unknown> =>
   isPlainObject(value);
 
+const coerceTagValues = (values: unknown): SelectedFilterValueType[] => {
+  if (Array.isArray(values)) {
+    return values;
+  }
+
+  if (typeof values === 'string') {
+    return values ? [values] : [];
+  }
+
+  if (isObjectValue(values)) {
+    return [values as { [key: string]: string[] }];
+  }
+
+  return [];
+};
+
 const isDateRangeValues = (
-  values: (string | SelectedFilterValueType)[],
+  values: SelectedFilterValueType[],
 ): values is [string, string] =>
   values.length === 2 && isStringValue(values[0]) && isStringValue(values[1]);
 
@@ -62,14 +79,18 @@ const applyConfigTransform = (value: string, config?: FilterConfig): string => {
 const getDisplayValue = (
   key: string,
   value: string | SelectedFilterValueType,
-  values: (string | SelectedFilterValueType)[],
+  values: SelectedFilterValueType[],
   index: number,
   config?: FilterConfig,
 ): string => {
   // Handle object values (exists/not exists queries)
   if (isObjectValue(value)) {
     const objectKey = Object.keys(value)[0];
-    return objectKey?.startsWith(NOT_EXISTS_PREFIX) ? 'None' : 'Any';
+    const isNotExists = objectKey?.startsWith(NOT_EXISTS_PREFIX);
+    if (SHOW_FILTER_SPECIFIED_UNSPECIFIED_LABELS) {
+      return isNotExists ? 'Unspecified' : 'Specified';
+    }
+    return isNotExists ? 'None' : 'Any';
   }
 
   // Handle date ranges (skip subsequent values in range)
@@ -97,7 +118,7 @@ const getDisplayValue = (
 };
 
 // Checks if a filter represents a date exists/not exists query
-const stripDateExistsQuery = (values: (string | SelectedFilterValueType)[]) => {
+const stripDateExistsQuery = (values: SelectedFilterValueType[]) => {
   return values.filter(
     value =>
       !isObjectValue(value) &&
@@ -123,15 +144,20 @@ const createDateRangeTag = (
 const createValueTags = (
   key: string,
   name: string,
-  values: (string | SelectedFilterValueType)[],
+  values: unknown,
   config?: FilterConfig,
 ): TagInfo[] => {
-  return values
+  const tagValues = coerceTagValues(values);
+  if (tagValues.length === 0) {
+    return [];
+  }
+
+  return tagValues
     .map((rawValue, index): TagInfo | null => {
       const displayValue = getDisplayValue(
         key,
         rawValue,
-        values,
+        tagValues,
         index,
         config,
       );
@@ -166,10 +192,15 @@ export const generateTags = (
   return Object.entries(selectedFilters).flatMap(([key, values]) => {
     const config = configMap[key];
     const name = generateTagName(key, config);
+    const tagValues = coerceTagValues(values);
+
+    if (tagValues.length === 0) {
+      return [];
+    }
 
     // Handle date ranges as a single tag
     if (key === DATE_FILTER_KEY) {
-      const cleanedDateValues = stripDateExistsQuery(values);
+      const cleanedDateValues = stripDateExistsQuery(tagValues);
 
       if (cleanedDateValues?.length === 0) {
         return [];

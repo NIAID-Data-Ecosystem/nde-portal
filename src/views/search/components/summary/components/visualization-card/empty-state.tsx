@@ -9,7 +9,7 @@ export const EmptyState = ({
 }: EmptyStateProps) => {
   return (
     <Flex h={height} align='center' justify='center' w='100%'>
-      <Text color='page.placeholder' fontStyle='italic' textAlign='center'>
+      <Text color='gray.700' fontStyle='italic' textAlign='center'>
         No data available for the selected aggregation.
       </Text>
     </Flex>

@@ -7,6 +7,7 @@ import {
 } from '@chakra-ui/react';
 import { sendGTMEvent } from '@next/third-parties/google';
 import Tooltip from 'src/components/tooltip';
+import { SHOW_FILTER_SPECIFIED_UNSPECIFIED_LABELS } from 'src/utils/feature-flags';
 import { FilterItem } from '../types';
 
 // Memoized Checkbox component to prevent unnecessary re-renders
@@ -58,6 +59,12 @@ const transformCheckboxLabel = ({
       subLabel: capitalize(scientificName),
     };
   } else if (term.includes('_exists_')) {
+    if (SHOW_FILTER_SPECIFIED_UNSPECIFIED_LABELS) {
+      return {
+        label: term === '-_exists_' ? 'Unspecified' : 'Specified',
+        subLabel: '',
+      };
+    }
     return {
       label: capitalize(`${label} ${filterName.toLowerCase()}`),
       subLabel: '',

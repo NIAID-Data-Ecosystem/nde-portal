@@ -19,6 +19,7 @@ import navigationData from 'src/components/resource-sections/resource-sections.j
 import { Route, showSection } from 'src/components/resource-sections/helpers';
 import { getQueryStatusError } from 'src/components/error/utils';
 import { Sidebar } from 'src/components/resource-sections/components/sidebar';
+import { SavedDataErrorToast } from 'src/views/saved/components/saved-data-error-toast';
 import SITE_CONFIG from 'configs/site.config.json';
 import { SiteConfig } from 'src/components/page-container/types';
 import { SHOULD_HIDE_SAMPLES } from 'src/utils/feature-flags';
@@ -147,6 +148,7 @@ const ResourcePage: NextPage = () => {
             flex={1}
             w='100%'
           >
+            <SavedDataErrorToast />
             {error ? (
               // [ERROR STATE]: API response error
               <Error>

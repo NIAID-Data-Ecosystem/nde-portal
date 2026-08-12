@@ -87,7 +87,14 @@ export const SidebarDesktop = ({
           {({ isExpanded }) => (
             <>
               <h2>
-                <AccordionButton p={0} py={2} mb={1}>
+                <AccordionButton
+                  p={0}
+                  py={2}
+                  mb={1}
+                  // While loading the category name is hidden by the skeleton,
+                  // so give the button an accessible name to satisfy button-name.
+                  aria-label={isLoading ? 'Loading' : undefined}
+                >
                   <SkeletonText
                     isLoaded={!isLoading}
                     width={isLoading ? '80%' : '100%'}

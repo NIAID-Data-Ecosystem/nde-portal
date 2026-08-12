@@ -13,6 +13,7 @@ import { ChartDatum } from 'src/views/search/components/summary/types';
 import { useSearchQueryFromURL } from 'src/views/search/hooks/useSearchQueryFromURL';
 import { updateRoute } from 'src/views/search/utils/update-route';
 import { usePaginationContext } from 'src/views/search/context/pagination-context';
+import { APPLY_DEFAULT_DATE_PARAM } from 'src/views/search/config/defaultQuery';
 import { useSearchResultsFetchedContext } from 'src/views/search/context/search-results-fetched-context';
 import { SelectedFilterType } from 'src/views/search/components/filters/types';
 import { useSharedDatasetAggregation } from 'src/views/search/hooks/useSharedDatasetAggregation';
@@ -87,6 +88,14 @@ export const DateHistogram = (props: DateHistogramProps) => {
       handleUpdate({
         from: 1,
         filters: updatedFilterString,
+        // Adjusting the date makes the date value authoritative: opt out of the
+        // default range when cleared to empty; drop the param when a value stays.
+        ...(facet === 'date'
+          ? {
+              [APPLY_DEFAULT_DATE_PARAM]:
+                updatedValues.length > 0 ? undefined : 'false',
+            }
+          : {}),
       });
     },
     [selectedFilters, handleUpdate],

@@ -36,7 +36,7 @@ const defaultProps: DonutChartProps = {
 describe('DonutChart', () => {
   it('renders the chart with default dimensions', () => {
     render(<DonutChart {...defaultProps} />);
-    const svgElement = screen.getByRole('img', { hidden: true });
+    const svgElement = screen.getByRole('group', { hidden: true });
     expect(svgElement).toBeInTheDocument();
     expect(svgElement).toHaveAttribute('width', '400');
     expect(svgElement).toHaveAttribute('height', '400');
@@ -45,7 +45,7 @@ describe('DonutChart', () => {
   test('renders SVG with title and description for accessibility', () => {
     render(<DonutChart {...defaultProps} />);
 
-    const svg = screen.getByRole('img');
+    const svg = screen.getByRole('group');
 
     // Check that aria-labelledby is present
     expect(svg).toHaveAttribute('aria-labelledby');

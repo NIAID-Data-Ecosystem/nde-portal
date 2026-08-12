@@ -247,27 +247,23 @@ export const TreeNode = (props: {
           bg: 'blackAlpha.50',
         }}
       >
-        <Flex
-          as='button'
-          alignItems='center'
-          onClick={toggleNode}
-          cursor={
-            sortedChildrenList.length > 0 || node.hasChildren
-              ? 'pointer'
-              : 'default'
-          }
-          flex={1}
-        >
+        <Flex alignItems='center' flex={1}>
           {sortedChildrenList.length > 0 || node.hasChildren ? (
+            // The chevron is the real toggle control. Keeping the toggle as a
+            // dedicated <button> (rather than wrapping the whole row, term link
+            // included, in `as='button'`) avoids nesting the term <a> inside a
+            // button — axe's serious `nested-interactive` violation.
             <IconButton
-              as='div'
               aria-label={`Show all children of ${node.label}`}
+              aria-expanded={isToggled}
               icon={<FaAngleRight />}
               variant='ghost'
               colorScheme='gray'
               size='sm'
+              cursor='pointer'
               transform={isToggled ? 'rotate(90deg)' : ''}
               color='currentColor'
+              onClick={toggleNode}
             />
           ) : (
             <Box mx={4}></Box>

@@ -22,6 +22,7 @@ interface DataAccessProps {
   includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
   url?: FormattedResource['url'];
   recordType?: string | null;
+  creativeWorkStatus?: FormattedResource['creativeWorkStatus'];
   children?: React.ReactNode;
   colorScheme?: ButtonProps['colorScheme'];
 }
@@ -29,19 +30,26 @@ interface DataAccessProps {
 const AccessResourceButton: React.FC<{ url: string; colorScheme: string }> = ({
   url,
   colorScheme,
-}) => (
-  <NextLink href={url} target='_blank'>
-    <Button colorScheme={colorScheme} size='sm' rightIcon={<FaArrowRight />}>
-      Access Resource
-    </Button>
-  </NextLink>
-);
+}) => {
+  // Internal routes (e.g. the retired resources page) should navigate
+  // in the same tab; external source links continue to open in a new tab.
+  const isInternalLink = url.startsWith('/');
+
+  return (
+    <NextLink href={url} target={isInternalLink ? undefined : '_blank'}>
+      <Button colorScheme={colorScheme} size='sm' rightIcon={<FaArrowRight />}>
+        Access Resource
+      </Button>
+    </NextLink>
+  );
+};
 
 export const DataAccess: React.FC<DataAccessProps> = ({
   isLoading,
   includedInDataCatalog,
   url,
   recordType,
+  creativeWorkStatus,
   colorScheme = 'secondary',
 }) => {
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -97,6 +105,7 @@ export const DataAccess: React.FC<DataAccessProps> = ({
                   recordType,
                   source,
                   url,
+                  creativeWorkStatus,
                 })}
                 colorScheme={colorScheme}
               />

@@ -209,8 +209,11 @@ export const BarChart = ({
             <p id='coa-stacked-title'>{title}</p>
             <p id='coa-stacked-desc'>{description}</p>
           </VisuallyHidden>
+          {/* role="group" (not "img"): the chart contains focusable <a> bars,
+              and a role="img" must not nest interactive controls
+              (nested-interactive); a labelled group legitimately can. */}
           <svg
-            role='img'
+            role='group'
             width={svgWidth}
             height={svgHeight}
             aria-labelledby='coa-stacked-title'

@@ -10,6 +10,8 @@ export const getMetadataColor = (property?: string) => {
     return 'cyan.700';
   } else if (property?.toLowerCase() === 'variablemeasured') {
     return 'cyan.700';
+  } else if (property?.toLowerCase() === 'sample') {
+    return 'purple.600';
   } else if (property?.toLowerCase() === 'measurementtechnique') {
     return 'purple.600';
   } else if (property?.toLowerCase() === 'softwarehelp') {
@@ -46,6 +48,8 @@ export const getMetadataTheme = (property?: string) => {
     return 'cyan';
   } else if (property?.toLowerCase() === 'variablemeasured') {
     return 'cyan';
+  } else if (property?.toLowerCase() === 'sample') {
+    return 'purple';
   } else if (property?.toLowerCase() === 'measurementtechnique') {
     return 'purple';
   } else if (property?.toLowerCase() === 'softwarehelp') {

@@ -8,6 +8,9 @@ import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
 
 jest.mock('src/hooks/api/useRepoData');
 jest.mock('src/hooks/api/useResourceCatalogs');
+jest.mock('src/utils/feature-flags', () => ({
+  SHOW_DATA_COLLECTIONS_TAB: false,
+}));
 
 const mockUseRepoData = useRepoData as jest.Mock;
 const mockUseResourceCatalogs = useResourceCatalogs as jest.Mock;
@@ -129,7 +132,7 @@ describe('useRepositoryMatcherData', () => {
     const { result } = renderHook(() => useRepositoryMatcherData());
     const { data } = result.current;
 
-    expect(data.map(r => r._id)).toEqual(['c1', 'dup', 'r1']);
+    expect(data.map(r => r._id)).toEqual(['c1', 'dup', 'r1', 'sample-repo']);
     // Catalog wins the dedupe, so its name is kept.
     expect((data[1].name as { label: string }).label).toBe('Catalog Dup');
     // Per-column transformed values are present and the search blob is built.

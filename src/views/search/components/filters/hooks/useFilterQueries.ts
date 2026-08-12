@@ -12,6 +12,58 @@ import { ALL_FACET_PROPERTIES } from '../config';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 
 /**
+ * Defines the subset of a React Query result that this hook consumes from a
+ * scoped aggregation, enabling callers to pass their `useQuery` result directly.
+ */
+export interface ScopedAggregationQuery {
+  data: FetchSearchResultsResponse | undefined;
+  isPending: boolean;
+  isFetching: boolean;
+  error: Error | null;
+}
+
+/**
+ * Stand-in result used when the unscoped aggregation is disabled. It prevents
+ * configs that route to it from inheriting React Query's permanent
+ * `isPending: true` state for disabled queries, reporting them instead as
+ * settled with no data.
+ */
+const IDLE_QUERY: ScopedAggregationQuery = {
+  data: undefined,
+  isPending: false,
+  isFetching: false,
+  error: null,
+};
+
+/**
+ * React Query creates a new result object on every render. To avoid unnecessary
+ * recomputation, the scoped query results are wrapped in a memoized object
+ * whose identity changes only when one of the fields consumed by this hook changes.
+ */
+const useStableQuery = (
+  query: ScopedAggregationQuery | undefined,
+): ScopedAggregationQuery | undefined => {
+  const data = query?.data;
+  const isPending = query?.isPending;
+  const isFetching = query?.isFetching;
+  const error = query?.error ?? null;
+
+  return useMemo(
+    () =>
+      query
+        ? {
+            data,
+            isPending: !!isPending,
+            isFetching: !!isFetching,
+            error,
+          }
+        : undefined,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [!!query, data, isPending, isFetching, error],
+  );
+};
+
+/**
  * Hook options
  */
 interface UseFilterQueriesOptions {
@@ -22,26 +74,39 @@ interface UseFilterQueriesOptions {
   /** Whether queries are enabled (e.g. gated on search results loading first) */
   enabled?: boolean;
   /**
-   * Pre-fetched BioSample-scoped aggregation response.
-   * Used for Sample-category filter facet counts.
+   * Whether to fire the internal unscoped aggregation. Callers that supply a
+   * scoped query for every category they render (the filters panel) should
+   * disable it. Defaults to `true` for callers that rely on it
+   * (e.g. the Date filter).
    */
-  bioSampleAggregationData?: FetchSearchResultsResponse | undefined;
+  enableMainAggregation?: boolean;
   /**
-   * Pre-fetched ComputationalTool-scoped aggregation response.
-   * Used for Computational Tool filter facet counts.
+   * Facet properties to request from the unscoped aggregation. Defaults to
+   * every facet property; callers that read only some should narrow it, since
+   * aggregation cost scales with facet count.
    */
-  computationalToolAggregationData?: FetchSearchResultsResponse | undefined;
+  mainAggregationFacets?: string;
   /**
-   * Pre-fetched Shared/Dataset aggregation response.
+   * BioSample-scoped aggregation query.
+   * Drives Sample-category filter facet counts and their loading state.
+   */
+  bioSampleAggregation?: ScopedAggregationQuery;
+  /**
+   * ComputationalTool-scoped aggregation query.
+   * Drives Computational Tool filter facet counts and their loading state.
+   */
+  computationalToolAggregation?: ScopedAggregationQuery;
+  /**
+   * Shared/Dataset aggregation query.
    * Includes all record types except non-BioSample Sample records.
-   * Used for Shared/Dataset filter facet counts.
+   * Drives Shared/Dataset filter facet counts and their loading state.
    */
-  sharedDatasetAggregationData?: FetchSearchResultsResponse | undefined;
+  sharedDatasetAggregation?: ScopedAggregationQuery;
   /**
-   * Pre-fetched DataCollection-scoped aggregation response.
-   * Used for Data Collection filter facet counts.
+   * DataCollection-scoped aggregation query.
+   * Drives Data Collection filter facet counts and their loading state.
    */
-  dataCollectionAggregationData?: FetchSearchResultsResponse | undefined;
+  dataCollectionAggregation?: ScopedAggregationQuery;
 }
 
 export interface UseFilterQueriesResult {
@@ -52,69 +117,86 @@ export interface UseFilterQueriesResult {
 }
 
 /**
- * Selects the correct aggregation response for a given filter config.
+ * Selects the aggregation query that serves a given filter config.
  *
  * Routing rules:
- *   - "Sample" category: bioSampleAggregationData
- *   - "Computational Tool": computationalToolAggregationData
- *   - "Shared / Dataset": sharedDatasetAggregationData
- *   - "Data Collection": dataCollectionAggregationData
- *   - anything else: fallback main aggregation response
+ *   - "Sample" category: bioSampleAggregation
+ *   - "Computational Tool": computationalToolAggregation
+ *   - "Shared / Dataset": sharedDatasetAggregation
+ *   - "Data Collection": dataCollectionAggregation
+ *   - anything else (or a category whose scoped query was not supplied):
+ *     the main aggregation
+ *
+ * The returned query is the single source of truth for both this filter's
+ * facet data and its loading state, so a section unblocks as soon as its own
+ * scoped request resolves rather than waiting on unrelated ones.
  */
-const selectAggregationForFilter = (
+const selectQueryForFilter = (
   config: FilterConfig,
-  mainResponse: FetchSearchResultsResponse | undefined,
-  bioSampleAggregationData: FetchSearchResultsResponse | undefined,
-  computationalToolAggregationData: FetchSearchResultsResponse | undefined,
-  sharedDatasetAggregationData: FetchSearchResultsResponse | undefined,
-  dataCollectionAggregationData: FetchSearchResultsResponse | undefined,
-): FetchSearchResultsResponse | undefined => {
+  mainQuery: ScopedAggregationQuery,
+  bioSampleAggregation: ScopedAggregationQuery | undefined,
+  computationalToolAggregation: ScopedAggregationQuery | undefined,
+  sharedDatasetAggregation: ScopedAggregationQuery | undefined,
+  dataCollectionAggregation: ScopedAggregationQuery | undefined,
+): ScopedAggregationQuery => {
   switch (config.category) {
     case 'Sample':
-      return bioSampleAggregationData ?? mainResponse;
+      return bioSampleAggregation ?? mainQuery;
     case 'Computational Tool':
-      return computationalToolAggregationData ?? mainResponse;
+      return computationalToolAggregation ?? mainQuery;
     case 'Shared / Dataset':
-      return sharedDatasetAggregationData ?? mainResponse;
+      return sharedDatasetAggregation ?? mainQuery;
     case 'Data Collection':
-      return dataCollectionAggregationData ?? mainResponse;
+      return dataCollectionAggregation ?? mainQuery;
     default:
-      return mainResponse;
+      return mainQuery;
   }
 };
 
 /**
- * Hook for fetching filter data.
+ * Hook for deriving per-filter term lists from aggregation responses.
  *
- * Makes a single aggregation API call for all facets + date histogram,
- * then derives per-filter results from the response.
+ * Each filter category is routed to its appropriate scoped aggregation, which
+ * supplies both that filter's facet data and its loading state:
+ *   - Shared/Dataset: sharedDatasetAggregation (all types except non-BioSample Samples)
+ *   - Computational Tool: computationalToolAggregation (@type:ComputationalTool only)
+ *   - Sample: bioSampleAggregation (@type:Sample AND additionalType:"BioSample")
+ *   - Data Collection: dataCollectionAggregation (@type:DataCollection only)
  *
- * Each filter category is routed to its appropriate scoped aggregation:
- *   - Shared/Dataset: sharedDatasetAggregationData (all types except non-BioSample Samples)
- *   - Computational Tool: computationalToolAggregationData (@type:ComputationalTool only)
- *   - Sample: bioSampleAggregationData (@type:Sample AND additionalType:"BioSample")
- *   - Data Collection: dataCollectionAggregationData (@type:DataCollection only)
+ * Any category without a supplied scoped query falls back to the internal
+ * unscoped aggregation, which callers that supply all four should turn off via
+ * `enableMainAggregation: false`.
  */
 export const useFilterQueries = ({
   configs,
   params,
   enabled = true,
-  bioSampleAggregationData,
-  computationalToolAggregationData,
-  sharedDatasetAggregationData,
-  dataCollectionAggregationData,
+  enableMainAggregation = true,
+  mainAggregationFacets = ALL_FACET_PROPERTIES,
+  bioSampleAggregation: bioSampleAggregationProp,
+  computationalToolAggregation: computationalToolAggregationProp,
+  sharedDatasetAggregation: sharedDatasetAggregationProp,
+  dataCollectionAggregation: dataCollectionAggregationProp,
 }: UseFilterQueriesOptions): UseFilterQueriesResult => {
-  const router = useRouter();
-  const queriesEnabled = router.isReady && enabled;
+  const bioSampleAggregation = useStableQuery(bioSampleAggregationProp);
+  const computationalToolAggregation = useStableQuery(
+    computationalToolAggregationProp,
+  );
+  const sharedDatasetAggregation = useStableQuery(sharedDatasetAggregationProp);
+  const dataCollectionAggregation = useStableQuery(
+    dataCollectionAggregationProp,
+  );
 
-  // Keep the main aggregation query as a fallback / cache-warming call.
-  // Always request ALL facet properties + hist=date so the query key is stable
-  // regardless of which filters are currently visible.
+  const router = useRouter();
+  const queriesEnabled = router.isReady && enabled && enableMainAggregation;
+
+  // The unscoped aggregation. Requests a stable facet list (all properties by
+  // default) so the query key does not churn with which filters are visible.
   const aggParams: AggregationQueryParams = useMemo(
     () => ({
       q: params.q || '',
       extra_filter: params.extra_filter || '',
-      facets: ALL_FACET_PROPERTIES,
+      facets: mainAggregationFacets,
       use_ai_search: params?.use_ai_search ?? 'false',
       advancedSearch: params?.advancedSearch,
       hist: 'date',
@@ -124,11 +206,10 @@ export const useFilterQueries = ({
       params.extra_filter,
       params.use_ai_search,
       params.advancedSearch,
+      mainAggregationFacets,
     ],
   );
 
-  // Main (unscoped) aggregation: kept as fallback when a scoped response is
-  // not yet available.
   const aggQuery = useAggregation({
     params: aggParams,
     enabled: queriesEnabled,
@@ -139,15 +220,61 @@ export const useFilterQueries = ({
   const metadataQuery = useQuery({
     queryKey: ['metadata'],
     queryFn: fetchMetadata,
-    enabled: queriesEnabled && hasSourceConfig,
+    enabled: router.isReady && enabled && hasSourceConfig,
     staleTime: 1000 * 60 * 30,
     refetchOnWindowFocus: false,
   });
 
-  const response = aggQuery.data;
-  const isLoading = aggQuery.isPending;
-  const isUpdating = !isLoading && aggQuery.isFetching;
-  const error = (aggQuery.error as Error) || null;
+  const mainQuery: ScopedAggregationQuery = useMemo(
+    () =>
+      enableMainAggregation
+        ? {
+            data: aggQuery.data,
+            isPending: aggQuery.isPending,
+            isFetching: aggQuery.isFetching,
+            error: (aggQuery.error as Error) || null,
+          }
+        : IDLE_QUERY,
+    [
+      enableMainAggregation,
+      aggQuery.data,
+      aggQuery.isPending,
+      aggQuery.isFetching,
+      aggQuery.error,
+    ],
+  );
+
+  // Every aggregation query that at least one of `configs` reads from. Used for
+  // the hook-level loading/error state; per-filter state comes from that
+  // filter's own query, so one slow category cannot stall the others.
+  const activeQueries = useMemo(() => {
+    const queries = new Set<ScopedAggregationQuery>();
+    configs.forEach(config => {
+      queries.add(
+        selectQueryForFilter(
+          config,
+          mainQuery,
+          bioSampleAggregation,
+          computationalToolAggregation,
+          sharedDatasetAggregation,
+          dataCollectionAggregation,
+        ),
+      );
+    });
+    return Array.from(queries);
+  }, [
+    configs,
+    mainQuery,
+    bioSampleAggregation,
+    computationalToolAggregation,
+    sharedDatasetAggregation,
+    dataCollectionAggregation,
+  ]);
+
+  const isLoading = activeQueries.some(query => query.isPending);
+  const isUpdating =
+    !isLoading && activeQueries.some(query => query.isFetching);
+  const error = activeQueries.find(query => query.error)?.error || null;
 
   // Keep a ref to the last fully-resolved results so consumers
   // see stable data while queries are refetching.
@@ -160,14 +287,17 @@ export const useFilterQueries = ({
       let terms: FilterTermType[] = [];
 
       // Route to the correct scoped aggregation for this filter's category.
-      const activeResponse = selectAggregationForFilter(
+      const activeQuery = selectQueryForFilter(
         config,
-        response,
-        bioSampleAggregationData,
-        computationalToolAggregationData,
-        sharedDatasetAggregationData,
-        dataCollectionAggregationData,
+        mainQuery,
+        bioSampleAggregation,
+        computationalToolAggregation,
+        sharedDatasetAggregation,
+        dataCollectionAggregation,
       );
+      const activeResponse = activeQuery.data;
+      const configIsLoading = activeQuery.isPending;
+      const configIsUpdating = !configIsLoading && activeQuery.isFetching;
 
       if (activeResponse?.facets) {
         if (config.queryType === 'histogram') {
@@ -268,9 +398,9 @@ export const useFilterQueries = ({
         id: config.id,
         terms: finalTerms,
         data: finalTerms,
-        isLoading,
-        isUpdating,
-        error: aggQuery.error,
+        isLoading: configIsLoading,
+        isUpdating: configIsUpdating,
+        error: activeQuery.error,
       };
       return acc;
     }, {} as FilterResults);
@@ -282,15 +412,14 @@ export const useFilterQueries = ({
     return next;
   }, [
     configs,
-    response,
-    bioSampleAggregationData,
-    computationalToolAggregationData,
-    sharedDatasetAggregationData,
-    dataCollectionAggregationData,
+    mainQuery,
+    bioSampleAggregation,
+    computationalToolAggregation,
+    sharedDatasetAggregation,
+    dataCollectionAggregation,
     isLoading,
     isUpdating,
     metadataQuery.data,
-    aggQuery.error,
   ]);
 
   return {

@@ -6,10 +6,15 @@ export const ChartTypePicker = (props: {
   options: ChartType[];
   onChange: (next: ChartType) => void;
   isDisabled?: boolean;
+  /** Name of the chart this picker controls, for an accessible label. */
+  label?: string;
 }) => {
   return (
     <Flex justifyContent='flex-end'>
       <Select
+        aria-label={
+          props.label ? `Chart type for ${props.label}` : 'Chart type'
+        }
         width='unset'
         size='xs'
         value={props.value}

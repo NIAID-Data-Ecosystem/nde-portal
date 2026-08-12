@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Flex, Tooltip, Text, Button } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
-import { ConditionsOfAccess } from 'src/components/badges';
+import { ConditionsOfAccess, CreativeWorkStatus } from 'src/components/badges';
 import { HasAPI } from 'src/components/badges/components/HasAPI';
 import { MetadataLabel } from 'src/components/metadata';
 import { ScrollContainer } from 'src/components/scroll-container';
@@ -10,6 +10,11 @@ import { SearchableItems } from 'src/components/searchable-items';
 import { Skeleton } from 'src/components/skeleton';
 import { CompactCard } from '../compact-card';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+import { hasSourceOrganization } from 'src/components/resource-sections/components/type-banner';
+import {
+  SHOW_PROGRAM_RESOURCE_UI,
+  SHOW_RETIRED_RESOURCE_CATALOG_UI,
+} from 'src/utils/feature-flags';
 
 interface ResourceCatalogCardProps {
   data?: FormattedResource | null;
@@ -33,9 +38,19 @@ export const ResourceCatalogCard = ({
     date,
     conditionsOfAccess,
     hasAPI,
+    creativeWorkStatus,
     about,
     description,
+    sourceOrganization,
   } = data || {};
+
+  // ResourceCatalogs with a non-null sourceOrganization are displayed as
+  // "Program Resource" with cyan banner styling instead of the default
+  // ResourceCatalog treatment.
+  const isProgramResource =
+    SHOW_PROGRAM_RESOURCE_UI &&
+    type === 'ResourceCatalog' &&
+    hasSourceOrganization(sourceOrganization);
 
   const handleTypesToggle = (expanded: boolean) => {
     setShowAllTypes(expanded);
@@ -58,6 +73,16 @@ export const ResourceCatalogCard = ({
 
   const shouldShowDescription = !showAllTypes;
 
+  // Retired ResourceCatalog cards use a gray treatment throughout to
+  // visually communicate that the resource is no longer active. Gated
+  // behind SHOW_RETIRED_RESOURCE_CATALOG_UI until approved for production.
+  const isRetired =
+    SHOW_RETIRED_RESOURCE_CATALOG_UI &&
+    type === 'ResourceCatalog' &&
+    creativeWorkStatus === 'Retired';
+
+  const cardBg = 'white';
+
   const linkProps = id
     ? {
         href: {
@@ -69,12 +94,14 @@ export const ResourceCatalogCard = ({
     : undefined;
 
   return (
-    <CompactCard.Base isLoading={isLoading}>
+    <CompactCard.Base isLoading={isLoading} bg={cardBg}>
       <CompactCard.Banner
         label={formatAPIResourceTypeForDisplay(type || 'ResourceCatalog')}
         type={type || 'ResourceCatalog'}
         isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
         isLoading={isLoading}
+        creativeWorkStatus={creativeWorkStatus}
+        isProgramResource={isProgramResource}
       />
 
       <CompactCard.Header isLoading={isLoading}>
@@ -90,7 +117,7 @@ export const ResourceCatalogCard = ({
         <Skeleton isLoaded={!isLoading} minHeight='30px'>
           {date && (
             <Flex
-              bg='white'
+              bg={cardBg}
               fontWeight='semibold'
               whiteSpace='nowrap'
               alignItems='flex-start'
@@ -107,7 +134,9 @@ export const ResourceCatalogCard = ({
               >
                 <Text fontSize='13px'>{date}</Text>
               </Tooltip>
-              {(conditionsOfAccess || hasAPI) && (
+              {(conditionsOfAccess ||
+                hasAPI ||
+                creativeWorkStatus === 'Retired') && (
                 <Flex
                   justifyContent={['flex-start']}
                   alignItems='center'
@@ -123,6 +152,10 @@ export const ResourceCatalogCard = ({
                     conditionsOfAccess={conditionsOfAccess}
                     mx={0.5}
                     size='sm'
+                    {...(isRetired && {
+                      colorScheme: 'gray',
+                      color: 'gray.900',
+                    })}
                   />
                   {hasAPI && (
                     <HasAPI
@@ -130,8 +163,18 @@ export const ResourceCatalogCard = ({
                       hasAPI={data?.hasAPI}
                       mx={0.5}
                       size='sm'
+                      {...(isRetired && {
+                        colorScheme: 'gray',
+                        color: 'gray.900',
+                      })}
                     />
                   )}
+                  <CreativeWorkStatus
+                    creativeWorkStatus={creativeWorkStatus}
+                    type={data?.['@type']}
+                    mx={0.5}
+                    size='sm'
+                  />
                 </Flex>
               )}
             </Flex>
@@ -141,13 +184,15 @@ export const ResourceCatalogCard = ({
         {/* Content types */}
         <Skeleton isLoaded={!isLoading} px={-1}>
           {aboutItems.length > 0 && (
-            <Flex bg='white' direction='column'>
+            <Flex bg={cardBg} direction='column'>
               <MetadataLabel label='Content Types' />
               <ScrollContainer overflow='auto' maxHeight='200px'>
                 <SearchableItems
                   items={aboutItems}
                   itemLimit={2}
-                  colorScheme='primary'
+                  colorScheme={isRetired ? 'gray' : 'primary'}
+                  tagColor={isRetired ? 'gray.900' : undefined}
+                  linkColor={isRetired ? 'gray.900' : undefined}
                   isExpanded={showAllTypes}
                   onToggle={handleTypesToggle}
                   generateButtonLabel={(limit, length) =>
@@ -179,6 +224,7 @@ export const ResourceCatalogCard = ({
                   minH='auto'
                   height='auto'
                   fontSize='xs'
+                  {...(isRetired && { color: 'gray.900' })}
                 >
                   See description
                 </Button>

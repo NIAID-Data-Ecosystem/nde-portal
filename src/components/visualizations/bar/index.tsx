@@ -74,6 +74,8 @@ export const BarChart = ({
   isSliceSelected,
   useLogScale = false,
   isExpanded = false,
+  title,
+  label,
 }: BarChartProps) => {
   // State: whether to apply log scale or raw counts (potentially remove depending on NIAID feedback)
   const [applyLogScale, setApplyLogScale] = useState<boolean>(useLogScale);
@@ -222,8 +224,7 @@ export const BarChart = ({
               width={svgSpring.width}
               height={svgSpring.height}
               style={{ overflow: 'visible' }}
-              // aria-labelledby='summary-stacked-title'
-              // aria-describedby='summary-stacked-desc'
+              aria-label={title ?? (label ? `${label} bar chart` : 'Bar chart')}
             >
               <Group top={margin.top} left={margin.left}>
                 <AxisBottom

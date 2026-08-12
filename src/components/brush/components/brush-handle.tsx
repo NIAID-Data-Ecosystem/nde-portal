@@ -67,11 +67,15 @@ export const BrushHandle = ({
   const finalLabelColor = labelColor || finalStrokeColor;
 
   return (
+    // The handles are visual grips inside the brush container, which is the
+    // focusable, labeled element that owns the keyboard interaction. The handles
+    // are not independently focusable and carry no slider value semantics, so
+    // they are presentational (role='slider' here would require aria-valuenow
+    // and a tab stop that don't exist — see aria-required-attr).
     <Group
       left={leftPosition}
       top={(height - pathHeight) / 2}
-      role='slider'
-      aria-label={`${isLeftHandle ? 'Left' : 'Right'} brush handle`}
+      aria-hidden='true'
     >
       {/* Handle rectangle with grip lines */}
       <path

@@ -4,6 +4,7 @@ import {
   defaultQuery,
   DefaultSearchQueryParams,
   defaultSelectedFilters,
+  shouldApplyDefaultDate,
 } from '../config/defaultQuery';
 import { encodeString } from 'src/utils/querystring-helpers';
 import { FILTER_CONFIGS } from '../components/filters/config';
@@ -28,9 +29,15 @@ export const useSearchQueryFromURL = (): DefaultSearchQueryParams => {
   }, []);
 
   const filters = useMemo(() => {
-    const raw = queryFilterString2Object(router.query.filters);
-    return { ...defaultFilters, ...defaultSelectedFilters, ...(raw ?? {}) };
-  }, [router.query.filters, defaultFilters]);
+    const raw = queryFilterString2Object(router.query.filters) ?? {};
+    // Seed the default date range only for a fresh query — not when the user
+    // has explicitly opted out via `applyDefaultDate=false` or already has a
+    // date filter applied.
+    const base = shouldApplyDefaultDate(router.query.applyDefaultDate, raw)
+      ? defaultSelectedFilters
+      : {};
+    return { ...defaultFilters, ...base, ...raw };
+  }, [router.query.filters, router.query.applyDefaultDate, defaultFilters]);
 
   const from = useMemo(
     () => parseNumberQueryParam(router.query.from, defaultQuery.from),

@@ -1,7 +1,7 @@
 import { AccessTypes, FormattedResource } from '../api/types';
 
 /*
- Stardized conditions of access value. Feedback provided by NIAID proposes "controlled" access instead of "closed" or "restricted".
+ Standardized conditions of access value. Feedback provided by NIAID proposes "controlled" access instead of "closed" or "restricted".
  See issue #59 for more information.
 */
 
@@ -28,23 +28,27 @@ export const getColorScheme = (
   }
 };
 
-export const getConditionsOfAccessDescription = (
+// Descriptive text for the conditions-of-access value, keyed by access type.
+// Used by the conditions-of-access UI pill tooltip and the disease chart legend.
+export const getConditionsOfAccessTooltip = (
   conditionsOfAccess: AccessTypes | null,
 ) => {
   if (!conditionsOfAccess) {
     return '';
   }
-  // Map of access types to their descriptions
-  const descriptions: Record<AccessTypes, string> = {
-    Open: 'Freely available.',
-    Restricted: 'May include restrictions, such as on use.',
-    Registered: 'Requires registration to access',
-    Embargoed: 'Unpublished',
-    Controlled: 'Controlled Access',
-    Unknown: 'Unknown Access',
-    Varied: 'Varied Access',
+  const tooltips: Record<AccessTypes, string> = {
+    Open: 'The resource is freely available without access restrictions.',
+    // "Restricted" is remapped to "Controlled" before display; both share this text.
+    Restricted: 'The resource may have conditions that limit access.',
+    Controlled: 'The resource may have conditions that limit access.',
+    // "Closed" is remapped to "Registered" before display.
+    Registered:
+      'The resource requires registration or authorization to access.',
+    Embargoed: 'Public access is restricted until publication.',
+    Varied: 'Access to the resource varies by record.',
+    Unknown: 'Conditions of access information was not found.',
   };
-  return descriptions?.[conditionsOfAccess] || '';
+  return tooltips?.[conditionsOfAccess] || '';
 };
 
 export const formatConditionsOfAccess = (

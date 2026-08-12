@@ -100,7 +100,7 @@ const Component = ({
       ) : (
         <></>
       )}
-      <Flex>
+      <Flex bg='#fff'>
         {url ? (
           <Link href={url} isExternal lineHeight='shorter'>
             <Text fontSize='12px' lineHeight='short'>

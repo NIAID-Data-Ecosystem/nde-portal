@@ -6,6 +6,7 @@ import { Footer } from 'src/components/footer';
 import { Navigation } from 'src/components/navigation-bar';
 import { Breadcrumbs } from './breadcrumbs';
 import { Banner } from './banner';
+import { LoginErrorBanner } from './login-error-banner';
 import { Search } from './search';
 import { SeoMetaFields, SeoMetaFieldsProps } from './seo-meta-fields';
 import { useBreadcrumbs } from '../hooks/useBreadcrumbs';
@@ -83,6 +84,8 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         {/*Page content has margin-top to compensate for fixed nav bar. */}
         <Box id='pagebody' position='relative' {...props}>
           <Stack spacing='1px' bg='gray.100'>
+            {/* <!-- Banner for failed OAuth login attempts --> */}
+            <LoginErrorBanner />
             {/* <!-- Banner for dev and staging instance --> */}
             {!isProd && (
               <Banner

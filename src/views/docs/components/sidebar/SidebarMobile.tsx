@@ -53,23 +53,24 @@ export const SidebarMobile = ({
               if (!item?.slug) return null;
               const isSelected = selectedSlug === item.slug;
               return (
-                <NextLink
+                // Compose the link onto the MenuItem so the `menuitem` role is on
+                // the anchor itself. Wrapping a MenuItem in NextLink instead puts
+                // a bare <a> as a direct child of role="menu", which fails axe's
+                // `aria-required-children` (a menu may only contain menuitems).
+                <MenuItem
                   key={item.id}
-                  style={{ display: 'flex', width: '100%' }}
+                  as={NextLink}
                   href={item.href}
+                  pl={6}
+                  color={
+                    isSelected ? `${colorScheme}.600!important` : 'inherit'
+                  }
+                  bg={isSelected ? `${colorScheme}.100` : 'transparent'}
                 >
-                  <MenuItem
-                    pl={6}
-                    color={
-                      isSelected ? `${colorScheme}.600!important` : 'inherit'
-                    }
-                    bg={isSelected ? `${colorScheme}.100` : 'transparent'}
-                  >
-                    <Text fontSize='sm' color='inherit'>
-                      {item.name}
-                    </Text>
-                  </MenuItem>
-                </NextLink>
+                  <Text fontSize='sm' color='inherit'>
+                    {item.name}
+                  </Text>
+                </MenuItem>
               );
             })}
           </MenuGroup>

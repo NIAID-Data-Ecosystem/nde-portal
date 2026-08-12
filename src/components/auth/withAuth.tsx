@@ -4,6 +4,7 @@
  */
 
 import { ComponentType, useEffect } from 'react';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { Box, Spinner, Text } from '@chakra-ui/react';
 import { useAuth } from 'src/hooks/useAuth';
@@ -57,18 +58,26 @@ export function withAuth<P extends object>(
         return <LoadingComponent />;
       }
       return (
-        <Box
-          display='flex'
-          flexDirection='column'
-          alignItems='center'
-          justifyContent='center'
-          minHeight='50vh'
-        >
-          <Spinner size='lg' color='blue.500' />
-          <Text mt={4} color='gray.600'>
-            Loading...
-          </Text>
-        </Box>
+        <>
+          {/* The protected page's PageContainer (which sets the document title)
+              isn't mounted yet, so provide a title for this loading paint —
+              otherwise the statically exported HTML ships with no <title>. */}
+          <Head>
+            <title>Loading… | NIAID Data Discovery Portal</title>
+          </Head>
+          <Box
+            display='flex'
+            flexDirection='column'
+            alignItems='center'
+            justifyContent='center'
+            minHeight='50vh'
+          >
+            <Spinner size='lg' color='blue.500' />
+            <Text mt={4} color='gray.800'>
+              Loading...
+            </Text>
+          </Box>
+        </>
       );
     }
 

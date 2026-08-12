@@ -497,6 +497,7 @@ export const DateBrush = ({
     <div
       ref={chartRef}
       tabIndex={0}
+      role='group'
       onFocus={() => setIsFocused(true)}
       onBlur={() => setIsFocused(false)}
       style={{

@@ -91,3 +91,30 @@ export const getDefaultSizeForTab = (tabId: string): number =>
 export const defaultSelectedFilters = {
   date: getDefaultDateFilter(),
 };
+
+// The default date range (see `defaultSelectedFilters`) is seeded whenever a
+// query has no `date` filter. `applyDefaultDate` is the explicit signal that
+// lets a user opt out of that seeding — distinguishing "the user deliberately
+// cleared the date filter" from "fresh visit", which otherwise look identical
+// in the URL. It travels two ways:
+//   - `APPLY_DEFAULT_DATE_PARAM`: a URL query param (`'false'` = suppress).
+//   - `APPLY_DEFAULT_DATE_FILTER_KEY`: a reserved key persisted inside a saved
+//     query's `filters` object (never serialized into the URL/API filter
+//     string — see `queryFilterObject2String`).
+export const APPLY_DEFAULT_DATE_PARAM = 'applyDefaultDate';
+export const APPLY_DEFAULT_DATE_FILTER_KEY = '_applyDefaultDate';
+
+/**
+ * Whether the default date range should be seeded for the current query.
+ * Shared by `useSearchQueryFromURL` and the search page's first-load effect so
+ * the rule stays in one place: seed only when the user hasn't opted out via the
+ * `applyDefaultDate` param AND the query doesn't already carry a `date` filter.
+ */
+export const shouldApplyDefaultDate = (
+  applyDefaultDateParam: string | string[] | undefined,
+  filters: Record<string, any>,
+): boolean => {
+  const optedOut = applyDefaultDateParam === 'false';
+  const hasDate = Array.isArray(filters?.date) && filters.date.length > 0;
+  return !optedOut && !hasDate;
+};

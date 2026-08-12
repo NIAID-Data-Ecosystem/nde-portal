@@ -29,6 +29,7 @@ export const RESULT_FIELDS = [
   'operatingSystem',
   'output',
   'programmingLanguage',
+  'sample',
   'sdPublisher',
   'softwareHelp',
   'softwareRequirements',
@@ -48,6 +49,7 @@ export const SAMPLE_FIELDS = [
   '_id',
   'url',
   'includedInDataCatalog',
+  'funding',
   // Column fields
   'identifier',
   'alternateIdentifier',

@@ -149,8 +149,11 @@ export const StackedBarChart = ({
           <p id='coa-stacked-title'>{title}</p>
           <p id='coa-stacked-desc'>{description}</p>
         </VisuallyHidden>
+        {/* role="group" (not "img"): the chart contains focusable <a> segments,
+            and a role="img" must not nest interactive controls
+            (nested-interactive); a labelled group legitimately can. */}
         <svg
-          role='img'
+          role='group'
           width={svgWidth}
           height={svgHeight}
           aria-labelledby='coa-stacked-title'
@@ -267,6 +270,13 @@ export const AnimatedRect = ({
     <NextLink
       href={getRoute(bar.data.term)}
       onClick={() => onClick({ label: bar.data.label, count: bar.data.count })}
+      // The link wraps only an SVG <rect>, so it needs an explicit accessible
+      // name (link-name) — the visible label/count sit in a separate annotation.
+      aria-label={`${
+        bar.data.label
+      }: ${bar.data.count.toLocaleString()} result${
+        bar.data.count === 1 ? '' : 's'
+      }`}
     >
       <animated.rect
         x={bar.x}

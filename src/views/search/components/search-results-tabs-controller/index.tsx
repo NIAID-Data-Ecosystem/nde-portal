@@ -39,11 +39,13 @@ const CAROUSEL_RESULTS_FIELDS = [
   'about',
   'alternateName',
   'conditionsOfAccess',
+  'creativeWorkStatus',
   'date',
   'description',
   'hasAPI',
   'includedInDataCatalog',
   'name',
+  'sourceOrganization',
 ];
 
 // Stable empty array used as the fallback when useDiseaseData returns no
@@ -279,7 +281,7 @@ export const SearchResultsController = ({
       q: queryParams.q,
       filters: { ...queryParams.filters, ['@type']: ['ResourceCatalog'] },
       fields: CAROUSEL_RESULTS_FIELDS,
-      facets: ['@type'],
+      // No facets: this query is only read for `results`.
       size: 50,
       sort: 'name.raw',
       use_ai_search: queryParams.use_ai_search ?? 'false',

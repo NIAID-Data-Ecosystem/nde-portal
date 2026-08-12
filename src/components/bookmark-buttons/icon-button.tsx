@@ -9,10 +9,7 @@ export const BookmarkIconButton: React.FC<
   }
 > = ({ isFavorited, onClick, 'aria-label': ariaLabel, ...props }) => {
   const label =
-    ariaLabel ||
-    (isFavorited
-      ? 'Remove bookmark for this resource'
-      : 'Bookmark this resource');
+    ariaLabel || (isFavorited ? 'Remove from saved' : 'Save this resource');
 
   return (
     <Tooltip label={label}>
@@ -30,6 +27,7 @@ export const BookmarkIconButton: React.FC<
         isRound={true}
         borderRadius='50%'
         size='sm'
+        colorScheme='blue'
         {...props}
       />
     </Tooltip>

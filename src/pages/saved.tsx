@@ -2,135 +2,85 @@
  * User Favorites Page - Protected route requiring authentication
  */
 
-import {
-  Box,
-  Heading,
-  Text,
-  Flex,
-  Divider,
-  Stack,
-  VStack,
-} from '@chakra-ui/react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Box, Heading, Text, Flex, Divider } from '@chakra-ui/react';
 import { useAuth } from 'src/hooks/useAuth';
 import { withAuth } from 'src/components/auth/withAuth';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
-import { useUserData } from 'src/hooks/useUserData';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
-import { Table } from 'src/components/table';
 import {
-  formatTableData,
+  SAVED_QUERY_COLUMNS,
   SAVED_RESOURCE_COLUMNS,
 } from 'src/views/saved/table-config';
-import { useCallback, useMemo, useState } from 'react';
-import { useSearchedData } from 'src/views/repository-matcher/hooks/useSearchedData';
-import { SearchInput } from 'src/components/search-input';
+import { SavedTableSection } from 'src/views/saved/components/saved-table-section';
+import { SavedEmptyState } from 'src/views/saved/components/saved-empty-state';
+import { SavedDataErrorBanner } from 'src/views/saved/components/saved-data-error-banner';
+import { useUserData } from 'src/hooks/useUserData';
+import { useBatchResourcesData } from 'src/views/saved/hooks/useBatchResourcesData';
+import { SavedResourceItem } from 'src/views/saved/types';
 
-const TABLE_CONTAINER_PROPS = {
-  overflowX: 'auto' as const,
-  maxHeight: '350px',
-  w: '100%',
-  bg: 'white',
-  overflowY: 'auto' as const,
+const SAVED_PAGE_COPY = {
+  heading: 'Saved',
+  description: 'Manage saved queries and resources.',
+  devModeWarning: {
+    title: 'Using mock user data in development mode',
+    description:
+      'In development mode, the page uses mock data to simulate saved queries and resources. This allows you to see how the page will look and function without needing real user data. In production, you will see your actual saved queries and resources.',
+  },
 };
 
-function UserFavouritesPage() {
+const SavedPage = () => {
   const { user } = useAuth();
-  const { favoriteDatasets, isDevMode } = useUserData();
+  const { savedDatasets, savedQueries, isDevMode } = useUserData();
 
-  const savedResourcesColumns = useMemo(() => {
-    return SAVED_RESOURCE_COLUMNS.map(col => ({
-      title: col.label,
-      property: col.id,
-      isSortable: col.columns?.isSortable,
-      props: col.columns?.style,
-    }));
-  }, []);
-
-  /****** Search *****/
-  const [searchTerm, setSearchTerm] = useState('');
-  const handleSearchChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value),
+  // Snapshot the saved items once, the first time they load, and render the
+  // tables from that snapshot rather than from the live (shrinking) lists. This
+  // keeps an un-bookmarked row visible — its bookmark icon flips to empty but the
+  // row stays so the user can re-bookmark it — and rows only reconcile on refresh.
+  // The live lists still drive each row's favorited state and the delete itself.
+  const [displayQueries, setDisplayQueries] = useState<typeof savedQueries>([]);
+  const [displayDatasets, setDisplayDatasets] = useState<typeof savedDatasets>(
     [],
   );
-  // Search iterates ALL columns (incl. hidden), so toggling visibility
-  // doesn't drop matches that live in hidden columns.
-  const searchedData = useSearchedData(
-    formatTableData(favoriteDatasets),
-    searchTerm,
+  const capturedQueries = useRef(false);
+  const capturedDatasets = useRef(false);
+  useEffect(() => {
+    if (!capturedQueries.current && savedQueries.length > 0) {
+      capturedQueries.current = true;
+      setDisplayQueries(savedQueries);
+    }
+  }, [savedQueries]);
+  useEffect(() => {
+    if (!capturedDatasets.current && savedDatasets.length > 0) {
+      capturedDatasets.current = true;
+      setDisplayDatasets(savedDatasets);
+    }
+  }, [savedDatasets]);
+
+  // Hydrate each saved resource with type / source / dateModified fetched by id.
+  const datasetIds = useMemo(
+    () => displayDatasets.map(dataset => dataset.dataset_id),
+    [displayDatasets],
   );
-
-  /****** Sort *****/
-  const [sortProperty, setSortProperty] = useState<string>(
-    SAVED_RESOURCE_COLUMNS[0].id,
-  );
-  const [sortAsc, setSortAsc] = useState(true);
-
-  const handleSort = useCallback((property: string, ascending: boolean) => {
-    setSortProperty(property);
-    setSortAsc(ascending);
-  }, []);
-
-  const savedResourcesData = useMemo(() => {
-    if (!searchedData?.length) return searchedData;
-    const col = SAVED_RESOURCE_COLUMNS.find(c => c.id === sortProperty);
-    if (!col) return searchedData;
-    const accessor = col.getSortValue ?? ((v: any) => v);
-    return [...searchedData].sort((a, b) => {
-      let va: any = accessor((a as any)[col.id]);
-      let vb: any = accessor((b as any)[col.id]);
-      va = va ?? (typeof va === 'number' ? 0 : '');
-      vb = vb ?? (typeof vb === 'number' ? 0 : '');
-      const cmp =
-        typeof va === 'number' && typeof vb === 'number'
-          ? va - vb
-          : String(va).localeCompare(String(vb), undefined, {
-              sensitivity: 'base',
-              numeric: true,
-            });
-      return sortAsc ? cmp : -cmp;
-    });
-  }, [searchedData, sortProperty, sortAsc]);
-
-  // Stable references so the table's row-level memoization isn't defeated by
-  // new function/object identities on every page render.
-  const getTableRowProps = useCallback(
-    (_: any, idx: number) => ({
-      bg: idx % 2 === 0 ? 'white' : '#fafbfd',
-      _hover: { bg: 'primary.50' },
-    }),
-    [],
-  );
-
-  const getCells = useCallback(
-    ({
-      column,
-      data: row,
-      isLoading: rowLoading,
-    }: {
-      column: { property: string };
-      data: any;
-      isLoading?: boolean;
-    }) => {
-      const col = SAVED_RESOURCE_COLUMNS.find(c => c.id === column.property);
-      if (!col) return null;
-      return col.component({
-        value: row?.[col.id],
-        isLoading: rowLoading,
-        data: row,
-      });
-    },
-    [],
+  const { data: resourceData } = useBatchResourcesData(datasetIds);
+  const enrichedDatasets = useMemo<SavedResourceItem[]>(
+    () =>
+      displayDatasets.map(dataset => ({
+        ...dataset,
+        ...resourceData?.[dataset.dataset_id],
+      })),
+    [displayDatasets, resourceData],
   );
 
   if (!user || !ENABLE_AUTH) return null;
   return (
-    <PageContainer meta={getPageSeoConfig('/favorites')} px={0} py={0}>
+    <PageContainer meta={getPageSeoConfig('/saved')} px={0} py={0}>
       <Flex direction='column' gap={4} px={{ base: 4, lg: 40 }} py={8}>
         <Heading as='h1' size='lg'>
-          Saved
+          {SAVED_PAGE_COPY.heading}
         </Heading>
         <Text fontSize='md' lineHeight='short'>
-          Manage saved queries and resources.
+          {SAVED_PAGE_COPY.description}
         </Text>
         {isDevMode && (
           <Box
@@ -142,79 +92,78 @@ function UserFavouritesPage() {
             py={2}
             mb={3}
           >
-            <Text fontSize='sm' color='orange.800'>
-              Using mock user data in development mode
+            <Text fontSize='sm' color='orange.800' fontWeight='semibold'>
+              {SAVED_PAGE_COPY.devModeWarning.title}
+            </Text>
+            <Text fontSize='sm' color='orange.800' lineHeight='short'>
+              {SAVED_PAGE_COPY.devModeWarning.description}
             </Text>
           </Box>
         )}
+        <SavedDataErrorBanner />
       </Flex>
       <Divider />
-      <Flex direction='column' gap={4} px={{ base: 4, lg: 40 }} py={8}>
-        <Stack
-          direction='row'
-          spacing={6}
-          justifyContent='space-between'
-          flexWrap='wrap'
-        >
-          <VStack align='start' gap={0.5} fontSize='sm' fontWeight='normal'>
-            <Text fontWeight='semibold'>
-              Saved Resources
-              <Text as='span' color='gray.700' fontWeight='medium' ml={2}>
-                {favoriteDatasets.length}{' '}
-                {favoriteDatasets.length === 1 ? 'item' : 'items'}
-              </Text>
-            </Text>
-            <Text lineHeight='short'>
-              A saved collection of datasets, computational tools, and other
-              records.
-            </Text>
-          </VStack>
-          <Flex
-            maxWidth={{ base: 'unset', lg: '350px' }}
-            minWidth='300px'
-            flex={1}
-            width='100%'
-          >
-            <SearchInput
-              size='sm'
-              placeholder='Search saved resources'
-              ariaLabel='Search saved resources'
-              value={searchTerm}
-              handleChange={handleSearchChange}
-              isResponsive={false}
-              alignItems='flex-end'
-              onClose={() => setSearchTerm('')}
-              width='100%'
-              colorScheme='primary'
-            />
-          </Flex>
-        </Stack>
-        <Table
-          ariaLabel='Saved resources table'
-          caption='Saved resources include datasets, computational tools, and other records that you have favorited.'
-          columns={savedResourcesColumns}
-          data={savedResourcesData as any}
-          isLoading={false}
-          hasPagination={true}
-          stickyHeader
-          virtualized
-          tableContainerProps={TABLE_CONTAINER_PROPS}
-          getTableRowProps={getTableRowProps}
-          controlledSortProperty={sortProperty}
-          controlledSortAsc={sortAsc}
-          onControlledSort={handleSort}
-          getCells={getCells}
-          emptyState={
-            <Flex direction='column' align='center' py={10}>
-              <Text fontWeight='bold'>No matches</Text>
-              <Text color='gray.700'>Try broadening your search.</Text>
-            </Flex>
-          }
-        />
-      </Flex>
+      <SavedTableSection
+        title='Saved Queries'
+        description='A saved collection of frequently used queries.'
+        columns={SAVED_QUERY_COLUMNS}
+        data={displayQueries}
+        getRowId={(item, idx) =>
+          item.query + JSON.stringify(item.filters) || `__no-id-${idx}`
+        }
+        unit={{ singular: 'item', plural: 'items' }}
+        searchPlaceholder='Search saved queries'
+        searchAriaLabel='Search saved queries'
+        tableAriaLabel='Saved queries table'
+        caption='Saved queries are searches that you have saved.'
+        noItemsState={
+          <SavedEmptyState title='Nothing saved yet'>
+            To save a search, run a search and select{' '}
+            <Text as='span' fontWeight='semibold'>
+              Save search
+            </Text>{' '}
+            .
+          </SavedEmptyState>
+        }
+        tableContainerProps={{
+          overflowX: 'auto' as const,
+          maxHeight: '300px',
+          w: '100%',
+          bg: 'white',
+          overflowY: 'auto' as const,
+        }}
+      />
+      <SavedTableSection
+        title='Saved Resources'
+        description='A saved collection of datasets, computational tools, and other records.'
+        columns={SAVED_RESOURCE_COLUMNS}
+        data={enrichedDatasets}
+        getRowId={(item, idx) => item.dataset_id || `__no-id-${idx}`}
+        unit={{ singular: 'item', plural: 'items' }}
+        searchPlaceholder='Search saved resources'
+        searchAriaLabel='Search saved resources'
+        tableAriaLabel='Saved resources table'
+        caption='Saved resources include datasets, computational tools, and other records that you have saved.'
+        tableContainerProps={{
+          overflowX: 'auto' as const,
+          maxHeight: '350px',
+          w: '100%',
+          bg: 'white',
+          overflowY: 'auto' as const,
+        }}
+        noItemsState={
+          <SavedEmptyState title='Nothing saved yet'>
+            To save a resource, select{' '}
+            <Text as='span' fontWeight='semibold'>
+              Save resource
+            </Text>{' '}
+            in the resource page.
+          </SavedEmptyState>
+        }
+      />
     </PageContainer>
   );
-}
+};
 
 // Wrap with auth protection - shows login prompt if not authenticated
-export default withAuth(UserFavouritesPage);
+export default withAuth(SavedPage);

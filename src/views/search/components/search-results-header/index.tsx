@@ -2,6 +2,7 @@ import {
   Flex,
   FlexProps,
   HStack,
+  Stack,
   Text,
   TextProps,
   VStack,
@@ -11,7 +12,10 @@ import { Link } from 'src/components/link';
 import { AI_ASSISTED_SEARCH_KC_LINK } from 'src/components/page-container/components/search/components/ai-toggle';
 import { useAuth } from 'src/hooks/useAuth';
 import { useUserData } from 'src/hooks/useUserData';
+import { findSavedQueryIndex } from 'src/hooks/useUserData/helpers';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
+
+import { SelectedFilterType } from '../filters';
 
 export const SearchResultsHeading = ({ children, ...props }: TextProps) => {
   return (
@@ -46,20 +50,21 @@ const AIBanner: React.FC<FlexProps & { colorScheme?: string }> = ({
 export const SearchResultsHeader = ({
   querystring,
   showAIBanner,
+  selectedFilters,
 }: {
   querystring: string;
   showAIBanner: boolean | null;
+  selectedFilters: SelectedFilterType;
 }) => {
   const { user, login } = useAuth();
 
-  const { favoriteSearches, saveFavoriteSearch, removeFavoriteSearch } =
-    useUserData();
+  const { savedQueries, addSavedQuery, removeSavedQuery } = useUserData();
 
-  const favoriteIndex = favoriteSearches.findIndex(
-    search => search.query === querystring,
-  );
-  const isFavorited = favoriteIndex !== -1;
-
+  const isFavorited =
+    findSavedQueryIndex(savedQueries, {
+      query: querystring,
+      filters: selectedFilters,
+    }) !== -1;
   return (
     <VStack alignItems='flex-start' spacing={1} fontSize='sm' flex={1}>
       {showAIBanner && (
@@ -80,24 +85,30 @@ export const SearchResultsHeader = ({
         </AIBanner>
       )}
       {/* Heading: Showing results for... */}
-      <SearchResultsHeading as='h1' fontSize='inherit'>
-        {querystring === '__all__'
-          ? 'Showing all results'
-          : 'Showing results for: '}
-      </SearchResultsHeading>
-      {/* Query string */}
-      {querystring !== '__all__' && (
+      <Stack
+        // Use row layout for "All Results" and column layout for other queries
+        flexDirection={querystring === '__all__' ? 'row' : 'column'}
+        spacing={1}
+      >
+        <SearchResultsHeading as='h1' fontSize='inherit' whiteSpace='nowrap'>
+          {querystring === '__all__'
+            ? 'Showing all results'
+            : 'Showing results for: '}
+        </SearchResultsHeading>
+        {/* Query string */}
         <HStack spacing={1} width='100%' alignItems='flex-start'>
-          <Text color='text.heading' fontSize='inherit' fontWeight='medium'>
-            {querystring.replaceAll('\\', '')}
-          </Text>
+          {querystring !== '__all__' && (
+            <Text color='text.heading' fontSize='inherit' fontWeight='medium'>
+              {querystring.replaceAll('\\', '')}
+            </Text>
+          )}
 
           {ENABLE_AUTH && (
             <BookmarkIconButton
               aria-label={
                 isFavorited
-                  ? 'Remove bookmark for this search'
-                  : 'Bookmark this search'
+                  ? 'Remove search from saved searches'
+                  : 'Save this search'
               }
               isFavorited={isFavorited}
               onClick={() => {
@@ -106,16 +117,22 @@ export const SearchResultsHeader = ({
                   return;
                 }
                 return isFavorited
-                  ? removeFavoriteSearch(favoriteIndex)
-                  : saveFavoriteSearch({
+                  ? removeSavedQuery({
                       query: querystring,
-                      name: `Search: ${querystring}`,
+                      filters: selectedFilters,
+                    })
+                  : addSavedQuery({
+                      query: querystring,
+                      name: `${
+                        querystring === '__all__' ? 'All results' : querystring
+                      }`,
+                      filters: selectedFilters,
                     });
               }}
             />
           )}
         </HStack>
-      )}
+      </Stack>
     </VStack>
   );
 };

@@ -147,6 +147,10 @@ const SearchBar = ({
     const { q } = router.query;
     setSearchTerm(prev => {
       if (q && router.query.advancedSearch !== 'true') {
+        // `__all__` represents an unfiltered query; show an empty input.
+        if (q === '__all__') {
+          return '';
+        }
         return q as string;
       }
       return prev;
@@ -367,7 +371,9 @@ export const DropdownSearchInput = (props: SearchBarWithDropdownProps) => {
   const router = useRouter();
   const { q } = router.query;
   const defaultInputValue =
-    q && router.query.advancedSearch !== 'true' ? (q as string) : '';
+    q && router.query.advancedSearch !== 'true' && q !== '__all__'
+      ? (q as string)
+      : '';
 
   const [searchHistory, setSearchHistory] = useLocalStorage<string[]>(
     'basic-searches',

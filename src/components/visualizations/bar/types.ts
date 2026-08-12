@@ -26,10 +26,13 @@ export interface BarChartProps {
   animate?: boolean;
 
   /** Accessibilty title for the chart. */
-  title: string;
+  title?: string;
 
   /** Accessibility description for the chart. */
-  description: string;
+  description?: string;
+
+  /** Card label (e.g. "Sources"), used as a fallback accessible name. */
+  label?: string;
 
   /** Callback when a slice is clicked. */
   onSliceClick?: (id: string) => void;

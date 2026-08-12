@@ -67,6 +67,7 @@ export const ExternalAccess = ({
           includedInDataCatalog={data?.includedInDataCatalog}
           url={data?.url}
           recordType={data?.['@type']}
+          creativeWorkStatus={data?.creativeWorkStatus}
         />
       </Wrapper>
     </>
@@ -85,7 +86,11 @@ export const UsageInfo = ({
       <Box bg='secondary.50'>
         {/* License, usage agreement */}
         {(data?.usageInfo || data?.license || SHOW_CREDIT_TEXT_SECTION) && (
-          <Wrapper isLoading={isLoading} label='Usage and Licensing'>
+          <Wrapper
+            isLoading={isLoading}
+            label='Usage and Licensing'
+            bg='secondary.50'
+          >
             <>
               <DataUsage
                 isLoading={isLoading}

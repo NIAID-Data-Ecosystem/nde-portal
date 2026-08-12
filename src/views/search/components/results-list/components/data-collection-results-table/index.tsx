@@ -1,13 +1,16 @@
 import React from 'react';
-import { Flex, Text } from '@chakra-ui/react';
+import { Text } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { Column } from 'src/components/table';
 import { FormattedResource, IncludedInDataCatalog } from 'src/utils/api/types';
-import { getTruncatedText } from 'src/components/table/helpers';
 import { ResultsTable } from '../results-table';
 import { BaseColumn } from '../results-table/types';
 import { withWidth } from '../results-table/utils';
 import { renderCellData } from '../results-table/components/Cells';
+import {
+  ExpandableList,
+  ExpandableText,
+} from '../results-table/components/ExpandableCells';
 import { DATA_COLLECTION_REQUIRED_COLUMN_IDS } from '../results-table/constants';
 
 export interface DataCollectionColumn extends BaseColumn {}
@@ -216,7 +219,7 @@ export const getCells = ({
     if (validItems.length === 0) return null;
 
     return (
-      <Flex flexDirection='column' gap={2}>
+      <ExpandableList>
         {validItems.map((item, idx) => {
           const label = item.displayName || item.name || item.url || '';
           return item.url ? (
@@ -229,7 +232,7 @@ export const getCells = ({
             </Text>
           );
         })}
-      </Flex>
+      </ExpandableList>
     );
   }
 
@@ -238,15 +241,15 @@ export const getCells = ({
     return value ? <Text fontSize='sm'>{String(value)}</Text> : null;
   }
 
-  // Description: truncated to 144 characters
+  // Description: clamped to a few lines with a "Show more" / "Show less" toggle.
   if (column.property === 'description') {
-    const { text } = getTruncatedText(value as string, false, 144);
-    return text ? (
-      <Text fontSize='sm'>
-        {text}
-        {(value as string).length > 144 ? '…' : ''}
-      </Text>
-    ) : null;
+    return (
+      <ExpandableText
+        text={(value as string) || ''}
+        noOfLines={4}
+        isLoading={isLoading}
+      />
+    );
   }
 
   // isBasedOn: render the name of each entry whose @type is "Action" as
@@ -264,13 +267,13 @@ export const getCells = ({
     if (actionNames.length === 0) return null;
 
     return (
-      <Flex flexDirection='column' gap={2}>
+      <ExpandableList>
         {actionNames.map((name: string, idx: number) => (
           <Text key={idx} fontSize='sm'>
             {name}
           </Text>
         ))}
-      </Flex>
+      </ExpandableList>
     );
   }
 
@@ -295,13 +298,13 @@ export const getCells = ({
       return <Text fontSize='sm'>{formatted[0]}</Text>;
     }
     return (
-      <Flex flexDirection='column' gap={2}>
+      <ExpandableList>
         {formatted.map((text, idx) => (
           <Text key={idx} fontSize='sm'>
             {text}
           </Text>
         ))}
-      </Flex>
+      </ExpandableList>
     );
   }
 

@@ -147,7 +147,7 @@ const Option = (props: OptionProps<any>) => {
                 fontSize='xs'
                 lineHeight='shorter'
                 fontWeight='normal'
-                color={props.isSelected ? 'inherit' : 'gray.600'}
+                color={props.isSelected ? 'inherit' : 'gray.800'}
                 transition='0.2s linear'
                 maxW={350}
                 noOfLines={!showDescription ? 1 : undefined}
