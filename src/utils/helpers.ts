@@ -6,9 +6,13 @@ export const getFundedByNIAID = (name: string) => {
   }
   const FUNDED_REPOS = [
     'accessclinicaldata@NIAID',
+    'BEI Resources',
     'ClinEpiDB',
     'ImmPort',
+    'ImmuneSpace',
     'MicrobiomeDB',
+    'Protein Data Bank',
+    'SAGE ARK Portal',
     'VDJServer',
     'VEuPathDB',
   ];
