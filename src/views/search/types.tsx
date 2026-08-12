@@ -10,6 +10,10 @@ export type TabType = {
   isDefault?: boolean;
 };
 
+// How the results for a tab are laid out.
+// See TABS_WITH_VIEW_MODE in `../config/view-mode`.
+export type SearchViewMode = 'card' | 'table';
+
 export interface SearchQueryParams {
   q: string;
   facets?: string[];

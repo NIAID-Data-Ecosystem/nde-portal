@@ -1,6 +1,28 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+All notable changes to this project will be documented in this file. See
+[standard-version](https://github.com/conventional-changelog/standard-version)
+for commit guidelines.
+
+## [6.3.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v6.2.2...v6.3.0) (2026-08-12)
+
+### 🐛 Bugfixes
+
+- remove unnecessary facet aggragations
+  ([#516](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/516))
+  ([ee4454b](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/ee4454b5bfe3aef3bd6e3371ed3faa4a7bddcbb1))
+
+### 🚀 Features
+
+- add Google OAuth provider
+  ([#515](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/515))
+  ([278e542](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/278e542bc7892d598cd171c62e3f927d14f871c5))
+- allow users to move or hide all dataset and comptool columns
+  ([#520](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/520))
+  ([5aed999](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/5aed999bdd19f831b6eee2a1ea8b7b8a9f718824))
+- update niaid funded list + sitemap generation
+  ([#523](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/523))
+  ([5e3fd21](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/5e3fd21b5a7af1375a4c60a3339a99769214f49e))
 
 ### [6.2.2](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v6.2.1...v6.2.2) (2026-07-24)
 

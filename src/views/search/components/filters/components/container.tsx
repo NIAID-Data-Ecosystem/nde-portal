@@ -9,7 +9,6 @@ import {
   DrawerContent,
   DrawerCloseButton,
   Flex,
-  Heading,
   Text,
   useDisclosure,
   useBreakpointValue,
@@ -122,17 +121,18 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
             size='xs'
             onClick={removeAllFilters}
             isDisabled={isDisabled}
+            _disabled={{ opacity: 1, color: 'gray.700' }}
           >
             Clear All
           </Button>
         </Flex>
       </Flex>
       {error ? (
-        <Flex p={4} bg='status.error_lt'>
-          <Heading size='sm' color='red.600' fontWeight='normal'>
+        <Flex p={4} bg='status.error_lt' role='alert'>
+          <Text fontSize='md' lineHeight='base' color='red.600'>
             Something went wrong, unable to load filters. <br />
             Try reloading the page.
-          </Heading>
+          </Text>
         </Flex>
       ) : (
         <Box bg='white'>{children}</Box>

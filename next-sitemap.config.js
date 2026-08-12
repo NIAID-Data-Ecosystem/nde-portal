@@ -8,14 +8,22 @@ if (!process.env.BASE_URL) {
 }
 
 const datasetDir = path.join(__dirname, 'public/sitemaps/datasets');
+const DATASET_SITEMAP_INDEX = 'sitemap-index.xml';
 
 const getAdditionalSitemaps = () => {
   // Retrieve the list of additional sitemaps from the 'sitemaps' directory
   const files = fs.existsSync(datasetDir) ? fs.readdirSync(datasetDir) : [];
+  const xmlFiles = files.filter(file => file.endsWith('.xml'));
 
-  return files
-    .filter(file => file.endsWith('.xml'))
-    .map(file => `${process.env.BASE_URL}/sitemaps/datasets/${file}`);
+  // The sitemap index already points at every per-source sitemap, so list it
+  // alone rather than duplicating each of its entries in robots.txt.
+  const sitemaps = xmlFiles.includes(DATASET_SITEMAP_INDEX)
+    ? [DATASET_SITEMAP_INDEX]
+    : xmlFiles;
+
+  return sitemaps.map(
+    file => `${process.env.BASE_URL}/sitemaps/datasets/${file}`,
+  );
 };
 
 // Exclude paths that are not in production based on the site configuration.
