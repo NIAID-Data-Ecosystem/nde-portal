@@ -14,7 +14,7 @@ for commit guidelines.
 
 ### 🚀 Features
 
-- add Microsoft and Google OAuth providers
+- add Google OAuth provider
   ([#515](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/515))
   ([278e542](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/278e542bc7892d598cd171c62e3f927d14f871c5))
 - allow users to move or hide all dataset and comptool columns
