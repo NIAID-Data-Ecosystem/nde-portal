@@ -5888,7 +5888,7 @@ test.describe('a11y: Search — error', () => {
 
     // Wait for the error UI: the ErrorMessage's heading and Retry control.
     await expect(
-      page.getByRole('heading', { name: /something went wrong/i }),
+      page.getByRole('heading', { name: /^something went wrong\.$/i }),
     ).toBeVisible();
     await expect(
       page.getByRole('button', { name: /retry/i }).first(),
@@ -6339,36 +6339,17 @@ test.describe('a11y: Search — resource catalog content types', () => {
   });
 });
 
-// --- Retired resource catalog card -------------------------------------------
-//
-// FIXME: the Retired ResourceCatalog card surfaces a REAL serious color-contrast
-// violation. The card applies a gray treatment (bg `page.alt`, #f5f6fa) to signal
-// retirement (resource-catalog-card/index.tsx `cardBg = isRetired ? 'page.alt'
-// : 'white'`), but its interactive text stays teal #0b8484 (the SearchableItems
-// "Show more types" toggle and the content-type item links, colorScheme
-// 'primary'). That teal clears 4.5:1 on the white background of non-retired cards
-// (~4.57) but drops to 4.18:1 on the gray Retired background — below AA for
-// <18px normal text. The red "Retired" badge itself is fine; the regression is
-// the gray card background lowering the teal text's contrast. This is a theme/
-// design decision (darken the primary teal, or don't tint the Retired card
-// background), out of scope for adding this spec, so the scan is parked as
-// test.fixme (not loosened). To re-enable: fix the contrast, then change
-// `test.fixme` back to `test`.
-
 test.describe('a11y: Search — resource catalog (retired)', () => {
-  test.fixme(
-    'passes axe with a Retired catalog card',
-    async ({ page }, testInfo) => {
-      await gotoResourceCatalog(
-        page,
-        [RETIRED_RESOURCE_CATALOG_HIT],
-        'Human Microbiome Project Portal',
-      );
+  test('passes axe with a Retired catalog card', async ({ page }, testInfo) => {
+    await gotoResourceCatalog(
+      page,
+      [RETIRED_RESOURCE_CATALOG_HIT],
+      'Human Microbiome Project Portal',
+    );
 
-      // Prove the Retired badge rendered before scanning.
-      await expect(page.getByText('Retired').first()).toBeVisible();
+    // Prove the Retired badge rendered before scanning.
+    await expect(page.getByText('Retired').first()).toBeVisible();
 
-      await runSharedChecks(page, testInfo, 'resource-catalog-retired');
-    },
-  );
+    await runSharedChecks(page, testInfo, 'resource-catalog-retired');
+  });
 });

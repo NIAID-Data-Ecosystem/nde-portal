@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import { omit } from 'lodash';
-import { Box, Flex, Heading } from '@chakra-ui/react';
+import { Box, Flex, Text } from '@chakra-ui/react';
 import { DateRange } from './hooks/useDateRangeContext';
 import { FILTER_CONFIGS } from '../../config';
 import {
@@ -84,11 +84,16 @@ const DateFilterContent: React.FC<
 
   if (error) {
     return (
-      <Flex p={4} bg='status.error'>
-        <Heading size='sm' color='white' fontWeight='semibold'>
+      <Flex p={4} bg='status.error' role='alert'>
+        <Text
+          fontSize='md'
+          lineHeight='base'
+          fontWeight='semibold'
+          color='white'
+        >
           Something went wrong, unable to load filters. <br />
           Try reloading the page.
-        </Heading>
+        </Text>
       </Flex>
     );
   }
@@ -149,10 +154,15 @@ export const DateFilter: React.FC<DateFilterProps> = props => {
 
   // Initial data (without date filter): only fetched when the caller has not
   // supplied initialAggregateQueryData (i.e., filters sidebar usage).
+  //
+  // The single config here is the date histogram, which reads nothing but
+  // `facets.date.missing` and `facets.hist_dates.terms`, so only the `date`
+  // facet is requested.
   const initialAggQuery = useFilterQueries({
     configs: DATE_FILTER_CONFIG,
     enabled: props.enabled && !initialAggregateQueryData,
     params: initialAggParams,
+    mainAggregationFacets: 'date',
   });
 
   // Use caller-supplied initial data when available, otherwise fall back to the

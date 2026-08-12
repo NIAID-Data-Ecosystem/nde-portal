@@ -10,7 +10,7 @@ export interface AuthLoginProvider {
 
 export interface User {
   username: string;
-  oauth_provider: string; // "GitHub" or "ORCID"
+  oauth_provider: string; // e.g. "GitHub", "ORCID", "Google", "Microsoft"
   name: string;
   // Primary email address for the user, if available. This is an array to accommodate multiple emails from ORCID and github. Set by the backend API.
   email?: string;
