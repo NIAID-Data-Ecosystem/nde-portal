@@ -12,10 +12,11 @@ import {
   VisuallyHidden,
   useDisclosure,
   Tooltip,
+  VStack,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { IsBasedOn, IsBasisFor } from 'src/utils/api/types';
-import { uniqueId } from 'lodash';
+import { castArray, uniqueId } from 'lodash';
 import { Cell, EmptyCell, Th } from 'src/components/table/components/cell';
 import { Row } from 'src/components/table/components/row';
 import { TableContainer } from 'src/components/table/components/table-container';
@@ -369,31 +370,69 @@ export const BasedOnTable = ({
   );
 };
 
+// ActionProcessDetail: labelled block of secondary details within an action process card.
+const ActionProcessDetail = ({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) => (
+  <Box>
+    <Text fontWeight='semibold'>{label}</Text>
+    {children}
+  </Box>
+);
+
+// BasedOnActionProcess: describes how a DataCollection was generated.
+// Detailed description and steps are nested under the action name,
+// see https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/444#issuecomment-5267360271
 export const BasedOnActionProcess = ({
+  name,
   description,
+  disambiguatingDescription,
   actionProcess,
 }: IsBasedOn) => {
-  if (!description && (!actionProcess || !actionProcess.step))
-    return <>No details provided.</>;
+  // step may come back from the API as a single string or a list.
+  const steps = castArray(actionProcess?.step ?? []).filter(Boolean);
 
-  const steps = Array.isArray(actionProcess?.step)
-    ? actionProcess.step
-    : actionProcess?.step
-    ? [actionProcess.step]
-    : [];
+  if (!description && steps.length === 0) return <>No details provided.</>;
 
   return (
-    <>
-      <Text fontWeight='semibold' lineHeight='short' mb={1}>
-        {description}
+    <Stack
+      gap={0.5}
+      w='100%'
+      bg='status.info_lt'
+      borderRadius='sm'
+      fontSize='sm'
+      lineHeight='short'
+      p={4}
+    >
+      {/* Name of action */}
+      <Text fontWeight='semibold' lineHeight='short'>
+        {name || 'Generation process'}
       </Text>
-      {steps?.map((step, index) => {
-        return (
-          <Text key={index} lineHeight='short' fontSize='sm'>
-            {step || 'No action process provided'}
-          </Text>
-        );
-      })}
-    </>
+      {disambiguatingDescription && (
+        <Text fontWeight='medium' textDecoration='underline'>
+          {disambiguatingDescription}
+        </Text>
+      )}
+      <VStack alignItems='start' spacing={1} mt={1} fontSize='xs'>
+        {description && (
+          <ActionProcessDetail label='Description'>
+            <Text>{description}</Text>
+          </ActionProcessDetail>
+        )}
+        {steps.length > 0 && (
+          <ActionProcessDetail label='Steps'>
+            <VStack alignItems='start' spacing={1}>
+              {steps.map((step, index) => (
+                <Text key={index}>{step}</Text>
+              ))}
+            </VStack>
+          </ActionProcessDetail>
+        )}
+      </VStack>
+    </Stack>
   );
 };

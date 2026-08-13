@@ -218,7 +218,8 @@ export interface InteractionStatistics {
 
 export interface IsBasedOnActionProcess {
   '@type': string;
-  step: string[];
+  // may be a single step or a list of steps.
+  step?: string | string[];
 }
 
 export interface IsBasedOn {
@@ -228,6 +229,7 @@ export interface IsBasedOn {
   citation?: string;
   codeRepository?: string;
   datePublished?: string;
+  disambiguatingDescription?: string;
   description?: string;
   doi?: string;
   identifier?: string;

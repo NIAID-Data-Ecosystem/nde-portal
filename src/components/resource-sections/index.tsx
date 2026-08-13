@@ -1,13 +1,13 @@
 import React from 'react';
 import { FormattedResource } from 'src/utils/api/types';
 import {
-  Divider,
   Flex,
   ListItem,
   Skeleton,
   Stack,
   StackDivider,
   UnorderedList,
+  Text,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import {
@@ -22,7 +22,6 @@ import {
 import { Route } from './helpers';
 import FilesTable from './components/files-table';
 import { CitedByTable } from './components/cited-by-table';
-import { DisplayHTMLContent } from '../html-content';
 import {
   ExternalAccess,
   UsageInfo,
@@ -47,6 +46,7 @@ import {
 } from 'src/utils/feature-flags';
 import { ExampleOfWorkDisplay } from './components/example-of-work';
 import { AboutResource } from './components/about';
+import { DescriptionSection } from './components/description';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -62,12 +62,10 @@ const Sections = ({
 }) => {
   const type = data?.['@type'] || 'Dataset';
   const isBasedOn = data?.isBasedOn?.filter(item => item['@type'] !== 'Action');
-
-  const isBasedOnActionProcess =
-    (type === 'DataCollection' &&
-      data?.isBasedOn?.filter(item => item['@type'] === 'Action')) ||
-    null;
-
+  const isDataCollectionType = type === 'DataCollection';
+  const isBasedOnActionProcess = data?.isBasedOn?.filter(
+    item => item['@type'] === 'Action',
+  );
   return (
     <>
       <ResourceHeader
@@ -93,24 +91,28 @@ const Sections = ({
               description={data.disambiguatingDescription}
               tagLabel='AI Generated'
             />
-            {/* Badge indicating completeness of metadata */}
-            {/* {data && data['_meta'] && (
-          <Flex
-            px={4}
-            py={4}
-            justifyContent='center'
-            minWidth='250px'
-            display={{ base: 'none', lg: 'flex' }}
-          >
-            <CompletenessBadgeCircle
-              type={data['@type']}
-              stats={data['_meta']}
-              size='lg'
-            />
-          </Flex>
-        )} */}
           </Flex>
         )}
+
+      {/* isBasedOn action property used for DataCollection contains an explanation of how the DataCollection was created */}
+      {isDataCollectionType && (
+        <Stack flexDirection='column' w='100%' px={4} my={4}>
+          {/* Show description */}
+          <Stack flexDirection='column' w='100%' gap={0.5} px={[0, 0, 4]}>
+            <Text fontWeight='semibold' lineHeight='short' fontSize='sm'>
+              Description
+            </Text>
+            <DescriptionSection
+              description={data?.description}
+              isLoading={isLoading}
+            />
+          </Stack>
+          {isBasedOnActionProcess &&
+            isBasedOnActionProcess.map((action, index) => (
+              <BasedOnActionProcess key={index} {...action} />
+            ))}
+        </Stack>
+      )}
 
       {sections.map(section => {
         const getSectionName = () => {
@@ -120,11 +122,6 @@ const Sections = ({
             } else if (data?.sample?.['@type'] === 'SampleCollection') {
               return 'Experimental Samples';
             }
-          } else if (
-            section.hash === 'basedOnAction' &&
-            isBasedOnActionProcess
-          ) {
-            return isBasedOnActionProcess[0]?.name || section.title;
           }
           return section.title;
         };
@@ -181,23 +178,16 @@ const Sections = ({
                 <UsageInfo data={data} isLoading={isLoading} />
               </Flex>
             )}
+
             {section.hash === 'overview' && (
               <>
                 {/* If type is DataCollection, show AboutResource above the main overview */}
-                {type === 'DataCollection' && (
-                  <AboutResource
-                    about={data?.about}
-                    collectionSize={data?.collectionSize}
-                    exampleOfWork={data?.exampleOfWork}
-                    genre={data?.genre}
-                    isLoading={isLoading}
-                  />
-                )}
-
-                <ResourceOverview isLoading={isLoading} {...data} />
-                {/* Overview secondary section */}
                 {/* If type is not DataCollection, show AboutResource below the main overview */}
-                {type !== 'DataCollection' && (
+                <Flex
+                  flexDirection={
+                    isDataCollectionType ? 'column' : 'column-reverse'
+                  }
+                >
                   <AboutResource
                     about={data?.about}
                     collectionSize={data?.collectionSize}
@@ -205,7 +195,8 @@ const Sections = ({
                     genre={data?.genre}
                     isLoading={isLoading}
                   />
-                )}
+                  <ResourceOverview isLoading={isLoading} {...data} />
+                </Flex>
 
                 {/* Resource citation(s) */}
                 {data?.citation && (
@@ -319,29 +310,13 @@ const Sections = ({
             )}
 
             {/* Show description */}
-            {section.hash === 'description' &&
-              (data?.description || data?.abstract) && (
-                <>
-                  {/* Abstract text */}
-                  {data.abstract && (
-                    <>
-                      <DisplayHTMLContent
-                        content={`**Abstract:** ${data.abstract}` || ''}
-                        overflow='auto'
-                      />
-                      <Divider my={2} />
-                    </>
-                  )}
-
-                  {/* Description text */}
-                  {data.description && (
-                    <DisplayHTMLContent
-                      content={data.description}
-                      overflow='auto'
-                    />
-                  )}
-                </>
-              )}
+            {!isDataCollectionType && section.hash === 'description' && (
+              <DescriptionSection
+                description={data?.description}
+                abstract={data?.abstract}
+                isLoading={isLoading}
+              />
+            )}
 
             {/* Show smaples */}
             {section.hash === 'samples' && !SHOULD_HIDE_SAMPLES('samples') && (
@@ -427,13 +402,6 @@ const Sections = ({
             {section.hash === 'exampleOfWork' && data?.exampleOfWork && (
               <ExampleOfWorkDisplay {...data.exampleOfWork} />
             )}
-
-            {/* isBasedOn action property used for DataCollection contains an explanation of how the DataCollection was created */}
-            {section.hash === 'basedOnAction' &&
-              isBasedOnActionProcess &&
-              isBasedOnActionProcess.map((action, index) => (
-                <BasedOnActionProcess key={index} {...action} />
-              ))}
 
             {/* Show raw metadata */}
             {section.hash === 'metadata' && data?.rawData && (
