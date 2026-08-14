@@ -78,6 +78,11 @@ export const ExampleOfWorkDisplay = ({
           </Text>
 
           <ScrollContainer
+            // Keyboard users must be able to scroll the properties table, which
+            // routinely overflows 400px and often holds no focusable content
+            // (axe `scrollable-region-focusable`). Same treatment as the raw
+            // metadata JSON viewer's scroll container.
+            tabIndex={0}
             overflow='auto'
             maxHeight='400px'
             border='1px solid'
