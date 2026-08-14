@@ -22,7 +22,10 @@ import { Sidebar } from 'src/components/resource-sections/components/sidebar';
 import { SavedDataErrorToast } from 'src/views/saved/components/saved-data-error-toast';
 import SITE_CONFIG from 'configs/site.config.json';
 import { SiteConfig } from 'src/components/page-container/types';
-import { SHOULD_HIDE_SAMPLES } from 'src/utils/feature-flags';
+import {
+  SHOULD_HIDE_SAMPLES,
+  SHOW_DATA_COLLECTIONS_TAB,
+} from 'src/utils/feature-flags';
 
 const siteConfig = SITE_CONFIG as SiteConfig;
 
@@ -122,6 +125,16 @@ const ResourcePage: NextPage = () => {
     (!isLoading && !data)
   ) {
     // Redirect to 404 page if no id is provided or no data is found for the given id.
+    router.push('/404');
+    return <></>;
+  }
+
+  // Redirect to 404 page if the data is of type DataCollection and the SHOW_DATA_COLLECTIONS_TAB feature flag is set to false.
+  if (
+    !isLoading &&
+    data?.['@type'] === 'DataCollection' &&
+    !SHOW_DATA_COLLECTIONS_TAB
+  ) {
     router.push('/404');
     return <></>;
   }
