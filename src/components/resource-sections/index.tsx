@@ -8,6 +8,7 @@ import {
   StackDivider,
   UnorderedList,
   Text,
+  VStack,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import {
@@ -184,10 +185,11 @@ const Sections = ({
               <>
                 {/* If type is DataCollection, show AboutResource above the main overview */}
                 {/* If type is not DataCollection, show AboutResource below the main overview */}
-                <Flex
+                <VStack
                   flexDirection={
                     isDataCollectionType ? 'column' : 'column-reverse'
                   }
+                  spacing={4}
                 >
                   <AboutResource
                     about={data?.about}
@@ -197,7 +199,7 @@ const Sections = ({
                     isLoading={isLoading}
                   />
                   <ResourceOverview isLoading={isLoading} {...data} />
-                </Flex>
+                </VStack>
 
                 {/* Resource citation(s) */}
                 {data?.citation && (

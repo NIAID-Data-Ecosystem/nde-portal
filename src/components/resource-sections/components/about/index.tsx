@@ -60,6 +60,7 @@ export const AboutResource = ({
       spacingX={14}
       spacingY={10}
       mt={4}
+      rowGap={0}
       w='100%'
     >
       {/* Col 1: Genre & Content Types */}
