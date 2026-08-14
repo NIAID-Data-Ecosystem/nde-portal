@@ -34,25 +34,22 @@ export const AboutResource = ({
         : [exampleOfWork.about]
       : []),
   ]
+    // Normalize before deduplicating: some records nest the term one level
+    // deeper (`about[].about`), and those wrappers carry no displayName/name of
+    // their own — comparing them unnormalized makes every nested entry look
+    // like a duplicate of the first.
+    .map(item => {
+      const term = item.about || item;
+      return {
+        name: term.displayName || term.name || 'N/A',
+        url: term.url,
+      };
+    })
     .filter(
       (item, index, self) =>
         index ===
-        self.findIndex(
-          t => t.displayName === item.displayName && t.name === item.name, // consider displayName and name for uniqueness
-        ),
-    )
-    .map(item => {
-      if (item.about) {
-        return {
-          name: item.about.displayName || item.about.name || 'N/A',
-          url: item.about.url,
-        };
-      }
-      return {
-        name: item.displayName || item.name || 'N/A',
-        url: item.url,
-      };
-    });
+        self.findIndex(t => t.name === item.name && t.url === item.url), // consider name and url for uniqueness
+    );
 
   return (
     <SimpleGrid
@@ -102,7 +99,9 @@ export const AboutResource = ({
           >
             {contentTypes.map((item, idx) => (
               <TagWithUrl
-                key={item.name}
+                // Resolved names are not unique on their own: distinct terms
+                // can share one, and unnamed terms all fall back to 'N/A'.
+                key={`${item.name}-${idx}`}
                 colorScheme='primary'
                 m={0.5}
                 leftIcon={FaMagnifyingGlass}
