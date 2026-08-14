@@ -1,9 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+  Accordion,
+  AccordionButton,
+  AccordionItem,
+  AccordionPanel,
   Box,
   Button,
   Flex,
   Heading,
+  Icon,
   Skeleton,
   Stack,
   Table,
@@ -17,6 +22,7 @@ import {
 import { Link } from 'src/components/link';
 import { IsBasedOn, IsBasisFor } from 'src/utils/api/types';
 import { castArray, uniqueId } from 'lodash';
+import { FaMinus, FaPlus } from 'react-icons/fa6';
 import { Cell, EmptyCell, Th } from 'src/components/table/components/cell';
 import { Row } from 'src/components/table/components/row';
 import { TableContainer } from 'src/components/table/components/table-container';
@@ -406,33 +412,69 @@ export const BasedOnActionProcess = ({
       borderRadius='sm'
       fontSize='sm'
       lineHeight='short'
-      p={4}
+      p={[2, 4]}
     >
-      {/* Name of action */}
-      <Text fontWeight='semibold' lineHeight='short'>
-        {name || 'Generation process'}
-      </Text>
-      {disambiguatingDescription && (
-        <Text fontWeight='medium' textDecoration='underline'>
-          {disambiguatingDescription}
-        </Text>
-      )}
-      <VStack alignItems='start' spacing={1} mt={1} fontSize='xs'>
-        {description && (
-          <ActionProcessDetail label='Description'>
-            <Text>{description}</Text>
-          </ActionProcessDetail>
-        )}
-        {steps.length > 0 && (
-          <ActionProcessDetail label='Steps'>
-            <VStack alignItems='start' spacing={1}>
-              {steps.map((step, index) => (
-                <Text key={index}>{step}</Text>
-              ))}
-            </VStack>
-          </ActionProcessDetail>
-        )}
-      </VStack>
+      {/* Description and steps are collapsed by default to keep the card compact. */}
+      <Accordion allowToggle>
+        <AccordionItem border='none'>
+          {({ isExpanded }) => (
+            <>
+              <Flex
+                flexWrap='wrap'
+                alignItems='flex-end'
+                columnGap={3}
+                rowGap={0.5}
+                lineHeight='short'
+              >
+                {/* Name of action */}
+                <Flex flexDirection='column' gap={0.5}>
+                  <Text fontWeight='semibold'>
+                    {name || 'Generation process'}
+                  </Text>
+                  {disambiguatingDescription && (
+                    <Text fontWeight='medium'>{disambiguatingDescription}</Text>
+                  )}
+                </Flex>
+                <AccordionButton
+                  w='auto'
+                  gap={2}
+                  px={0}
+                  py={0}
+                  mb={0.5}
+                  flexShrink={0}
+                  fontSize='sm'
+                  fontWeight='medium'
+                  textDecoration='underline'
+                  _hover={{ textDecoration: 'none' }}
+                >
+                  <Text as='span' fontSize='xs'>
+                    {isExpanded ? 'Hide details' : 'Show details'}
+                  </Text>
+                  <Icon as={isExpanded ? FaMinus : FaPlus} fontSize='2xs' />
+                </AccordionButton>
+              </Flex>
+              <AccordionPanel px={0} pt={1} pb={1}>
+                <VStack alignItems='start' spacing={1} fontSize='xs'>
+                  {description && (
+                    <ActionProcessDetail label='Description'>
+                      <Text>{description}</Text>
+                    </ActionProcessDetail>
+                  )}
+                  {steps.length > 0 && (
+                    <ActionProcessDetail label='Steps'>
+                      <VStack alignItems='start' spacing={1}>
+                        {steps.map((step, index) => (
+                          <Text key={index}>{step}</Text>
+                        ))}
+                      </VStack>
+                    </ActionProcessDetail>
+                  )}
+                </VStack>
+              </AccordionPanel>
+            </>
+          )}
+        </AccordionItem>
+      </Accordion>
     </Stack>
   );
 };
