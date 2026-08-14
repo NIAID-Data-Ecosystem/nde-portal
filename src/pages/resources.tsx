@@ -15,7 +15,7 @@ import { FormattedResource } from 'src/utils/api/types';
 import Empty from 'src/components/empty';
 import { Error, ErrorCTA } from 'src/components/error';
 import Sections from 'src/components/resource-sections';
-import navigationData from 'src/components/resource-sections/resource-sections.json';
+import { RESOURCE_SECTIONS } from 'src/components/resource-sections/resource-sections';
 import { Route, showSection } from 'src/components/resource-sections/helpers';
 import { getQueryStatusError } from 'src/components/error/utils';
 import { Sidebar } from 'src/components/resource-sections/components/sidebar';
@@ -99,15 +99,20 @@ const ResourcePage: NextPage = () => {
     }
   }, [data]);
 
-  const { routes } = navigationData as {
+  const { routes } = RESOURCE_SECTIONS as {
     title: string;
     routes: Route[];
   };
 
   // Check if the metadata is available for a given section before displaying it in navbar or page.
-  const sections = routes.filter(
-    route => !SHOULD_HIDE_SAMPLES(route.hash) && showSection(route, data),
-  );
+  const sections = routes.filter(route => {
+    // Hide the "description" section for data collection resources, as it is handled differently.
+    const isDataCollectionType = data?.['@type'] === 'DataCollection';
+    if (isDataCollectionType && route.hash === 'description') {
+      return false;
+    }
+    return !SHOULD_HIDE_SAMPLES(route.hash) && showSection(route, data);
+  });
 
   const errorResponse =
     error && getQueryStatusError(error as unknown as { status: string });

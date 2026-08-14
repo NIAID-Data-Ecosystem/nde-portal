@@ -125,6 +125,7 @@ const Sections = ({
           }
           return section.title;
         };
+
         return (
           <Section
             id={section.hash}
