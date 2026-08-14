@@ -11,7 +11,13 @@ import {
   ExpandableList,
   ExpandableText,
 } from '../results-table/components/ExpandableCells';
+import { LinkOrTextCell } from '../results-table/components/SharedCells';
 import { DATA_COLLECTION_REQUIRED_COLUMN_IDS } from '../results-table/constants';
+import {
+  ContentTypeTerm,
+  getContentTypeLabel,
+  getContentTypeTerms,
+} from '../../utils/content-type';
 
 export interface DataCollectionColumn extends BaseColumn {}
 
@@ -33,20 +39,12 @@ export const ALL_DATA_COLLECTION_COLUMNS: DataCollectionColumn[] = [
     props: withWidth('160px'),
   },
   {
-    id: 'about',
-    title: 'Data Type',
-    property: 'about',
-    isSortable: true,
-    apiSortField: 'about.name',
-    props: withWidth('200px'),
-  },
-  {
-    id: 'exampleOfWork',
-    title: 'Asset Type',
-    property: 'exampleOfWork',
+    id: 'contentType',
+    title: 'Content Type',
+    property: 'contentType',
     isSortable: false,
     apiSortField: null,
-    props: withWidth('200px'),
+    props: withWidth('220px'),
   },
   {
     id: 'conditionsOfAccess',
@@ -139,6 +137,9 @@ export const toRow = (resource: FormattedResource): Record<string, unknown> => {
     includedInDataCatalog: catalog
       ? { name: catalog.name ?? '', url: catalogUrl }
       : null,
+    // `about` and `exampleOfWork.about` are shown together as one column, so
+    // they are merged and deduplicated here.
+    contentType: getContentTypeTerms(resource),
   };
 };
 
@@ -171,67 +172,25 @@ export const getCells = ({
     );
   }
 
-  // About: comma-separated list of about[].name values.
-  // Normalizes to array first since the API may return a single object
-  // instead of an array when there is only one entry.
-  if (column.property === 'about') {
-    if (!value) return null;
-    const aboutArray = Array.isArray(value) ? value : [value];
-    const names = aboutArray
-      .map(
-        (item: {
-          name: string;
-          displayName: string;
-          url: string;
-          description: string;
-        }) => item.name,
-      )
-      .filter(Boolean)
-      .join(', ');
-    return names ? <Text fontSize='sm'>{names}</Text> : null;
-  }
+  // Content Type: the merged `about` + `exampleOfWork.about` terms built in
+  // toRow, sorted alphabetically and stacked one per line. Each links out to
+  // the term's ontology entry when it has one.
+  if (column.property === 'contentType') {
+    const entries = ((value as ContentTypeTerm[] | undefined) ?? [])
+      .map(term => ({
+        label: getContentTypeLabel(term),
+        url: term.url ?? null,
+      }))
+      .filter(entry => entry.label)
+      .sort((a, b) => a.label.localeCompare(b.label));
 
-  // Example of Work: render each exampleOfWork.about[] entry as an external
-  // link (name, url), stacked vertically.
-  if (column.property === 'exampleOfWork') {
-    if (!value) return null;
-
-    // exampleOfWork is a single CreativeWork object, not an array.
-    const exampleOfWorkObj = value as {
-      about?:
-        | Array<{ displayName?: string; name?: string; url?: string }>
-        | { displayName?: string; name?: string; url?: string };
-    };
-
-    const aboutItems = exampleOfWorkObj.about
-      ? Array.isArray(exampleOfWorkObj.about)
-        ? exampleOfWorkObj.about
-        : [exampleOfWorkObj.about]
-      : [];
-
-    const validItems = aboutItems
-      .filter(item => item.displayName || item.name || item.url)
-      .sort((a, b) => {
-        const labelA = a.displayName || a.name || a.url || '';
-        const labelB = b.displayName || b.name || b.url || '';
-        return labelA.localeCompare(labelB);
-      });
-    if (validItems.length === 0) return null;
+    if (entries.length === 0) return null;
 
     return (
       <ExpandableList>
-        {validItems.map((item, idx) => {
-          const label = item.displayName || item.name || item.url || '';
-          return item.url ? (
-            <Link key={idx} href={item.url} isExternal fontSize='sm'>
-              {label}
-            </Link>
-          ) : (
-            <Text key={idx} fontSize='sm'>
-              {label}
-            </Text>
-          );
-        })}
+        {entries.map((entry, idx) => (
+          <LinkOrTextCell key={idx} label={entry.label} url={entry.url} />
+        ))}
       </ExpandableList>
     );
   }

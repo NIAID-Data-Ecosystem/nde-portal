@@ -27,11 +27,8 @@ import { ToggleContainer } from 'src/components/toggle-container';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 import { Skeleton } from 'src/components/skeleton';
-import {
-  CONTENT_TYPE_TOOLTIP,
-  filterWords,
-  getContentTypeItems,
-} from './helpers';
+import { filterWords, getContentTypeItems } from './helpers';
+import { CONTENT_TYPE_TOOLTIP } from '../../utils/content-type';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { InfoLabel } from 'src/components/info-label';
@@ -91,8 +88,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
       ? []
       : formatSourcesWithLogos(includedInDataCatalog) || [];
 
-  // Data Type (`about`) and Asset Type (`exampleOfWork.about`) values, merged
-  // into one unlabeled pill list. Data Collections only.
+  // `about` and `exampleOfWork.about` values, merged into one unlabeled pill
+  // list. Data Collections only.
   const contentTypeItems = useMemo(() => getContentTypeItems(data), [data]);
 
   const highlightProps = useMemo(
