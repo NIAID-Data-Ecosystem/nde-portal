@@ -63,6 +63,9 @@ export const getTypeColor = (
     dk = 'primary.700';
   } else if (typeLower?.includes('tool') || typeLower?.includes('software')) {
     lt = 'primary.800';
+  } else if (typeLower === 'datacollection') {
+    lt = 'blue.800';
+    dk = 'blue.300';
   } else if (typeLower === 'disease') {
     lt = 'purple.600';
     dk = 'purple.800';
@@ -93,6 +96,11 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
     creativeWorkStatus === 'Retired';
 
   const colorScheme = getTypeColor(type, isRetired, isProgramResource);
+
+  // Most types pair a light label (lt) with a dark banner (dk), so the white
+  // "NIAID" sub-label reads against dk. Retired catalogs and Data Collections
+  // invert that pairing.
+  const hasLightBanner = isRetired || type === 'DataCollection';
 
   const abstract = SCHEMA_DEFINITIONS['@type']?.['abstract'];
   const description = SCHEMA_DEFINITIONS['@type']?.['description'];
@@ -146,7 +154,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
         {isNiaidFunded && (
           <StyledLabel
             _before={{
-              bg: isRetired ? colorScheme.lt : colorScheme.dk,
+              bg: hasLightBanner ? colorScheme.lt : colorScheme.dk,
             }}
           >
             <Text
