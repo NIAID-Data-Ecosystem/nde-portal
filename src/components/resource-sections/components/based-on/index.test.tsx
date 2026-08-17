@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ChakraProvider } from '@chakra-ui/react';
 import '@testing-library/jest-dom';
@@ -92,7 +92,7 @@ describe('BasedOnActionProcess', () => {
     expect(
       screen.getByRole('button', { name: /Hide details/ }),
     ).toBeInTheDocument();
-    expect(screen.getByText('Description')).toBeVisible();
+    await waitFor(() => expect(screen.getByText('Description')).toBeVisible());
     expect(screen.getByText('How the collection was built.')).toBeVisible();
     expect(screen.getByText('Steps')).toBeVisible();
     expect(screen.getByText('Search the source')).toBeVisible();
@@ -111,7 +111,7 @@ describe('BasedOnActionProcess', () => {
 
     await user.click(screen.getByRole('button', { name: /Show details/ }));
 
-    expect(screen.getByText('Steps')).toBeVisible();
+    await waitFor(() => expect(screen.getByText('Steps')).toBeVisible());
     expect(screen.getByText('Only step')).toBeVisible();
   });
 
