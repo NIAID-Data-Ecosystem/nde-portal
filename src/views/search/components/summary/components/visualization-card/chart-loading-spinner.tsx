@@ -13,7 +13,7 @@ export const ChartLoadingSpinner = () => (
   >
     <Spinner
       color='accent.600'
-      emptyColor='white'
+      css={{ '--spinner-track-color': 'colors.white' }}
       position='absolute'
       size='md'
       borderWidth='2px'

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, Spinner, SpinnerProps } from '@chakra-ui/react';
+import { Flex, Spinner, SpinnerProps, VisuallyHidden } from '@chakra-ui/react';
 
 /**
  * Loading Spinner returns spinner when loading and returns the content otherwise.
@@ -19,12 +19,17 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
       <Flex w={'100%'} p={4} justifyContent='center' {...props}>
         <Spinner
           color={props.color || 'primary.500'}
-          emptyColor={props.emptyColor || 'gray.200'}
-          label={props.label || 'loading'}
           size={props.size || 'lg'}
-          animationDuration={props.speed || '0.65s'}
-          borderWidth={props.thickness || '4px'}
+          /*
+           * v2's `speed`, `thickness`, `emptyColor` and `label` props are gone in
+           * v3: the first two are plain style props, the track colour is a CSS
+           * variable on the spinner recipe, and the label is now just text.
+           */
+          animationDuration='0.65s'
+          borderWidth='4px'
+          css={{ '--spinner-track-color': 'colors.gray.200' }}
         />
+        <VisuallyHidden>loading</VisuallyHidden>
       </Flex>
     );
   }

@@ -1,4 +1,5 @@
-import { Flex, FlexProps, TooltipProps } from '@chakra-ui/react';
+import { Flex, FlexProps } from '@chakra-ui/react';
+import type { TooltipProps } from 'src/components/tooltip';
 import { InfoLabel } from 'src/components/info-label';
 
 export const OntologyTreeHeaderItem = ({

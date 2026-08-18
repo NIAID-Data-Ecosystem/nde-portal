@@ -1,5 +1,6 @@
 import React from 'react';
-import { Icon, Text, TextProps, TooltipProps } from '@chakra-ui/react';
+import { Icon, Text, TextProps } from '@chakra-ui/react';
+import type { TooltipProps } from 'src/components/tooltip';
 import { FaInfo } from 'react-icons/fa6';
 import Tooltip from 'src/components/tooltip';
 

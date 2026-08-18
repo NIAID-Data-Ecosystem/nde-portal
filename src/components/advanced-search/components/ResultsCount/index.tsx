@@ -81,7 +81,7 @@ export const ResultsCount: React.FC<ResultsCountProps> = ({
         {isLoading ? (
           <Spinner
             color='primary.500'
-            emptyColor='gray.200'
+            css={{ '--spinner-track-color': 'colors.gray.200' }}
             borderWidth='2px'
             mx={2}
           ></Spinner>

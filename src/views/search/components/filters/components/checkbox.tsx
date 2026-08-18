@@ -127,8 +127,8 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
     }
 
     return (
-      <ChakraCheckbox
-        onValueChange={() => {
+      <ChakraCheckbox.Root
+        onCheckedChange={() => {
           trackGAEvent(term, filterName);
         }}
         value={term}
@@ -141,11 +141,11 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
           bg: `${colorPalette}.50`,
         }}
         css={{
-          '& >.chakra-checkbox__control': {
+          '& .chakra-checkbox__control': {
             mt: 1, // to keep checkbox in line with top of text for options with multiple lines
           },
 
-          '& >.chakra-checkbox__label': {
+          '& .chakra-checkbox__label': {
             display: 'flex',
             alignItems: 'center',
             flex: 1,
@@ -153,60 +153,64 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
           },
         }}
       >
+        <ChakraCheckbox.HiddenInput />
+        <ChakraCheckbox.Control />
         {/* Loading skeleton only on load  */}
-        <Skeleton
-          loading={!(!isLoading && !isUpdating)}
-          display='flex'
-          alignItems='center'
-          flex={1}
-        >
-          <Tooltip content={getTooltipLabel(term, filterName)}>
-            <Text
-              as='span'
-              flex={1}
-              wordBreak='break-word'
-              color='text.heading'
-              fontSize='xs'
-              lineHeight='short'
-              mr={0.5}
-              display='flex'
-              flexDirection='column'
-              fontWeight={subLabel ? 'semibold' : 'normal'}
-            >
-              {label}
-              {subLabel && (
-                <Text
-                  as='span'
-                  flex={1}
-                  wordBreak='break-word'
-                  color='text.heading'
-                  fontSize='xs'
-                  lineHeight='short'
-                  fontWeight='normal'
-                  mr={0.5}
-                >
-                  {subLabel}
-                </Text>
-              )}
-            </Text>
-          </Tooltip>
+        <ChakraCheckbox.Label>
+          <Skeleton
+            loading={!(!isLoading && !isUpdating)}
+            display='flex'
+            alignItems='center'
+            flex={1}
+          >
+            <Tooltip content={getTooltipLabel(term, filterName)}>
+              <Text
+                as='span'
+                flex={1}
+                wordBreak='break-word'
+                color='text.heading'
+                fontSize='xs'
+                lineHeight='short'
+                mr={0.5}
+                display='flex'
+                flexDirection='column'
+                fontWeight={subLabel ? 'semibold' : 'normal'}
+              >
+                {label}
+                {subLabel && (
+                  <Text
+                    as='span'
+                    flex={1}
+                    wordBreak='break-word'
+                    color='text.heading'
+                    fontSize='xs'
+                    lineHeight='short'
+                    fontWeight='normal'
+                    mr={0.5}
+                  >
+                    {subLabel}
+                  </Text>
+                )}
+              </Text>
+            </Tooltip>
 
-          {/* Display the count of the filter term */}
-          {typeof count === 'number' && (
-            <Tag.Root
-              as='span'
-              className='tag-count'
-              variant='subtle'
-              size='sm'
-              colorPalette={colorPalette}
-              borderRadius='full'
-              alignSelf='flex-start'
-            >
-              {count?.toLocaleString('en-US')}
-            </Tag.Root>
-          )}
-        </Skeleton>
-      </ChakraCheckbox>
+            {/* Display the count of the filter term */}
+            {typeof count === 'number' && (
+              <Tag.Root
+                as='span'
+                className='tag-count'
+                variant='subtle'
+                size='sm'
+                colorPalette={colorPalette}
+                borderRadius='full'
+                alignSelf='flex-start'
+              >
+                {count?.toLocaleString('en-US')}
+              </Tag.Root>
+            )}
+          </Skeleton>
+        </ChakraCheckbox.Label>
+      </ChakraCheckbox.Root>
     );
   },
 );

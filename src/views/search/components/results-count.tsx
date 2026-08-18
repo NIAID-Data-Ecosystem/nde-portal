@@ -26,7 +26,7 @@ const ResultsCount: React.FC<ResultsCount> = ({
       {isLoading ? (
         <Spinner
           color='primary.500'
-          emptyColor='gray.200'
+          css={{ '--spinner-track-color': 'colors.gray.200' }}
           size='md'
           animationDuration='0.5s'
           borderWidth='1px'

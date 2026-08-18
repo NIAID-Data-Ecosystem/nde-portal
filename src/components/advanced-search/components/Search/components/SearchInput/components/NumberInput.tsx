@@ -2,7 +2,6 @@ import { useState } from 'react';
 import {
   Flex,
   NativeSelect,
-  NumberInput,
   NumberInput as ChakraNumberInput,
 } from '@chakra-ui/react';
 
@@ -47,16 +46,12 @@ export const NumberInput: React.FC<NumberInputProps> = ({
           });
         }}
       >
-        <NativeSelect.Root>
+        <NativeSelect.Root size='lg' mr={2} variant='outline'>
           <NativeSelect.Field
             colorPalette={colorPalette}
-            // bg={colorPalette ? `${colorPalette}.50` : `gray.100`}
-            size='lg'
-            mr={2}
-            variant='outline'
             disabled={isDisabled}
             value={options.findIndex(option => option.label === operator.label)}
-            onValueChange={e => {
+            onChange={e => {
               setOperator(options[+e.target.value]);
             }}
             fontWeight='semibold'
@@ -71,28 +66,28 @@ export const NumberInput: React.FC<NumberInputProps> = ({
           </NativeSelect.Field>
           <NativeSelect.Indicator />
         </NativeSelect.Root>
-        <ChakraNumberInput
+        <ChakraNumberInput.Root
           w='100%'
           maxW={150}
           value={formatNumber(+count, ' ')}
-          onValueChange={value => {
-            setCount(value);
+          onValueChange={details => {
+            setCount(details.value);
           }}
-          colorPalette={colorPalette} // [to do] - implement colorscheme.
+          colorPalette={colorPalette}
           clampValueOnBlur={true}
           disabled={isDisabled}
           allowMouseWheel
           step={50}
-          defaultValue={0}
+          defaultValue='0'
           min={0}
           size='lg'
         >
-          <NumberInput.Input />
-          <NumberInput.Control>
-            <NumberInput.IncrementTrigger />
-            <NumberInput.DecrementTrigger />
-          </NumberInput.Control>
-        </ChakraNumberInput>
+          <ChakraNumberInput.Input />
+          <ChakraNumberInput.Control>
+            <ChakraNumberInput.IncrementTrigger />
+            <ChakraNumberInput.DecrementTrigger />
+          </ChakraNumberInput.Control>
+        </ChakraNumberInput.Root>
         <Flex mx={2}>
           {renderSubmitButton &&
             renderSubmitButton({
