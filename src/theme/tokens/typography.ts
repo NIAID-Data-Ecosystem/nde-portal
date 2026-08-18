@@ -24,8 +24,6 @@ glyph in an unchanged line box. That is why the recipes in ../recipes set
 export const fontSizes = defineTokens.fontSizes({
   xs: { value: '0.875rem' },
   sm: { value: '0.937rem' },
-  // Present in Chakra v2's scale but dropped in v3; still referenced by the app.
-  '3xs': { value: '0.45rem' },
 });
 
 /*

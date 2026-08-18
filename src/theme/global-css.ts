@@ -12,20 +12,23 @@ survive alongside `listStyleType`.
 export const globalCss = defineGlobalStyles({
   '*': {
     listStyleType: 'none',
+    lineHeight: 'base',
   },
+  // sets default color palette for components if not specified
+  // https://chakra-ui.com/guides/theming-change-default-color-palette
+  html: { colorPalette: 'primary' },
   body: {
     fontFamily: 'body',
     color: 'text.body',
     fontSize: '16px',
-    lineHeight: 'base',
   },
-  /*
-  v2 set `colorPalette: 'primary'` in the Button style config's `defaultProps`.
-  `colorPalette` is a style prop rather than a recipe variant, so it cannot go
-  in `defaultVariants` — scoping it here is the v3 equivalent, and mirrors how
-  Chakra itself applies `colorPalette: 'gray'` to `html`.
-  */
-  '.chakra-button': {
-    colorPalette: 'primary',
-  },
+  // [chakra-todo] unsure if needed, but keeping for now to match v2's `styles.global`
+  // strong: {
+  //   lineHeight: 'inherit',
+  // },
+  // span: {
+  //   color: 'inherit',
+  //   lineHeight: 'inherit',
+  // },
+  // ul: { listStyle: 'none' },
 });

@@ -25,7 +25,7 @@ const standard = (name: string) => ({
   muted: { value: `{colors.${name}.200}` },
   emphasized: { value: `{colors.${name}.300}` },
   solid: { value: `{colors.${name}.500}` },
-  focusRing: { value: `{colors.${name}.500}` },
+  focusRing: { value: `{colors.${name}.500/50}` },
   border: { value: `{colors.${name}.200}` },
 });
 
@@ -95,3 +95,104 @@ export const semanticColors = defineSemanticTokens.colors({
   purple: buttonRoles('purple'),
   pink: buttonRoles('pink'),
 });
+
+// [chakra-todo]: might need to include this or delete. Was in v3 old theming
+// error: {
+//   light: { value: '#FBF2F3' },
+//   default: { value: '#D23342' },
+//   contrast: { value: 'white' },
+//   emphasized: { value: '{colors.error.light}' },
+//   fg: { value: '{colors.error.default}' },
+//   focusRing: { value: '{colors.red.500/50}' },
+//   muted: { value: '#f6bec4' },
+//   solid: { value: '{colors.error.default}' },
+//   subtle: { value: '{colors.error.light}' },
+// },
+// info: {
+//   light: { value: '#F3F4FC' },
+//   default: { value: '#4865E3' },
+//   contrast: { value: 'white' },
+//   emphasized: { value: '{colors.info.light}' },
+//   fg: { value: '{colors.info.default}' },
+//   focusRing: { value: '#4299E199' },
+//   muted: { value: '#8FA2F1' },
+//   solid: { value: '{colors.info.default}' },
+//   subtle: { value: '{colors.info.light}' },
+// },
+// success: {
+//   light: { value: '#F2F5F4' },
+//   default: { value: '#17805F' },
+//   contrast: { value: 'white' },
+//   emphasized: { value: '{colors.success.light}' },
+//   fg: { value: '{colors.success.default}' },
+//   focusRing: { value: '{colors.success.default}' },
+//   muted: { value: '#BBF4E3' },
+//   solid: { value: '{colors.success.default}' },
+//   subtle: { value: '{colors.success.light}' },
+// },
+// warning: {
+//   light: { value: '#FFF9F2' },
+//   default: { value: '#FFC10A' },
+//   contrast: { value: 'white' },
+//   emphasized: { value: '{colors.warning.light}' },
+//   fg: { value: '{colors.yellow.800}' },
+//   focusRing: { value: '{colors.warning.default}' },
+//   muted: { value: '#FFECAD' },
+//   solid: { value: '{colors.warning.default}' },
+//   subtle: { value: '{colors.warning.light}' },
+// },
+// bg: {
+//     DEFAULT: {
+//       value: '{colors.page.default}',
+//     },
+//     subtle: {
+//       value: '{colors.page.alt}',
+//     },
+//     error: {
+//       value: '{colors.error.light}',
+//     },
+//     warning: {
+//       value: '{colors.warning.light}',
+//     },
+//     success: {
+//       value: '{colors.success.light}',
+//     },
+//     info: {
+//       value: '{colors.info.light}',
+//     },
+//   },
+//   border: {
+//     DEFAULT: {
+//       value: '{colors.gray.200}',
+//     },
+//     error: {
+//       value: '{colors.error.default}',
+//     },
+//     warning: {
+//       value: '{colors.warning.default}',
+//     },
+//     success: {
+//       value: '{colors.success.default}',
+//     },
+//     info: {
+//       value: '{colors.info.default}',
+//     },
+//   },
+//   fg: {
+//     DEFAULT: {
+//       value: '{colors.text.body}',
+//     },
+//     error: {
+//       value: '{colors.error.default}',
+//     },
+//     warning: {
+//       value: '{colors.warning.default}',
+//     },
+//     success: {
+//       value: '{colors.success.default}',
+//     },
+//     info: {
+//       value: '{colors.info.default}',
+//     },
+//     muted: { value: '{colors.text.body/80}' },
+//   },

@@ -1,4 +1,5 @@
 import { defineSlotRecipe } from '@chakra-ui/react';
+import { cardAnatomy } from '@chakra-ui/react/anatomy';
 
 /*
 Ported from the v2 `Card` multi-part style config. The v2 `container` slot is
@@ -9,49 +10,64 @@ property, which will compete with the explicit `pt`/`pb`/`mb` rules below.
 Those are kept because they are more specific and they are what the app's
 layouts are built around.
 */
+// [TO DO]: See if custom styles (commented) from previous implementation are necessary
+
 export const cardSlotRecipe = defineSlotRecipe({
-  slots: ['root', 'header', 'body', 'footer', 'title', 'description'],
+  slots: cardAnatomy.keys(),
   base: {
     root: {
-      bg: 'white',
-      boxShadow: 'base',
-      borderRadius: 'semi',
-      overflow: 'hidden',
+      // bg: 'white',
+      // boxShadow: 'base',
+      // borderRadius: 'semi',
+      // overflow: 'hidden',
     },
     header: {
-      pb: [2, 4],
-      display: 'flex',
-      flexWrap: 'wrap',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+      // pb: [2, 4],
+      // display: 'flex',
+      // flexWrap: 'wrap',
+      // justifyContent: 'space-between',
+      // alignItems: 'center',
     },
     body: {
-      display: 'flex',
-      flexDirection: 'column',
-      pt: 0,
-      '>*': {
-        my: 4,
-      },
-      _notLast: {
-        pb: 0,
-      },
-      _last: {
-        '>*': {
-          _last: { mb: 0 },
-        },
-      },
+      // display: 'flex',
+      // flexDirection: 'column',
+      // pt: 0,
+      // '>*': {
+      //   my: 4,
+      // },
+      // _notLast: {
+      //   pb: 0,
+      // },
+      // _last: {
+      //   '>*': {
+      //     _last: { mb: 0 },
+      //   },
+      // },
+    },
+    description: {
+      lineHeight: 'short',
+      fontSize: 'md',
     },
     footer: {
-      display: 'flex',
+      // display: 'flex',
     },
   },
   variants: {
     variant: {
+      elevated: {}, // needed to set default variant, but no styles are applied
       niaid: {
         root: {},
         header: { bg: 'niaid.500', color: 'white' },
         footer: { bg: 'page.alt' },
       },
+      outline: {
+        root: {
+          borderColor: 'gray.100',
+        },
+      },
     },
+  },
+  defaultVariants: {
+    variant: 'elevated',
   },
 });

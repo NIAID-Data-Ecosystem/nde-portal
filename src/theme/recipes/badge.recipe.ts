@@ -23,11 +23,6 @@ export const badgeRecipe = defineRecipe({
         bg: 'colorPalette.badgeSolidBg',
         color: 'white',
       },
-      /*
-      Every v2 `subtle` branch was one of the four unreachable palettes, so it
-      returned `{ bg: undefined, color: undefined }` and fell through to
-      Chakra's stock subtle. Left empty to keep doing exactly that.
-      */
       subtle: {},
       outline: {
         color: 'colorPalette.fg',
@@ -36,6 +31,6 @@ export const badgeRecipe = defineRecipe({
     },
   },
   defaultVariants: {
-    variant: 'subtle',
+    variant: 'solid',
   },
 });
