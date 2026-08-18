@@ -2,16 +2,14 @@ import React, { useMemo } from 'react';
 import {
   Button,
   Card,
-  CardHeader,
-  CardBody,
   Flex,
   Icon,
   Text,
-  Tooltip,
   Stack,
   Highlight,
   HStack,
 } from '@chakra-ui/react';
+import { Tooltip } from '@/components/ui/tooltip';
 import { useInView } from '@react-spring/web';
 import NextLink from 'next/link';
 import { FaCircleArrowRight, FaAngleRight, FaRegClock } from 'react-icons/fa6';
@@ -107,7 +105,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 
   return (
     // {/* Banner with resource type + date of publication */}
-    <Card
+    <Card.Root
       ref={cardRef}
       variant='niaid'
       boxShadow='none'
@@ -122,9 +120,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         flexDirection={['column', 'row']}
         isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
       />
-
       {/* Card header where name of resource is a link to resource page */}
-      <CardHeader
+      <Card.Header
         bg='transparent'
         position='relative'
         px={paddingCard}
@@ -183,16 +180,18 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               highlightProps={highlightProps}
             />
             <Icon
-              as={FaAngleRight}
               boxSize={4}
               ml={4}
               opacity={0.6}
               transform='translate(-5px)'
               transition='0.2s ease-in-out'
-            />
+              asChild
+            >
+              <FaAngleRight />
+            </Icon>
           </NextLink>
         </Skeleton>
-      </CardHeader>
+      </Card.Header>
       <Skeleton
         isLoaded={!isLoading}
         p='0px!important'
@@ -256,10 +255,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               </Flex>
             )}
 
-            <CardBody
+            <Card.Body
               p={0}
-              sx={{
-                '>*': {
+              css={{
+                '& >*': {
                   my: 0,
                 },
               }}
@@ -276,15 +275,17 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   justify='space-between'
                 >
                   <Tooltip
-                    label='Corresponds to the most recent of date modified, date published and date created.'
-                    hasArrow
+                    content='Corresponds to the most recent of date modified, date published and date created.'
+                    showArrow
                     bg='#fff'
                     sx={{
                       color: 'text.body',
                     }}
                   >
                     <Flex whiteSpace='nowrap' alignItems='center'>
-                      <Icon as={FaRegClock} mr={2} />
+                      <Icon mr={2} asChild>
+                        <FaRegClock />
+                      </Icon>
                       <Text fontSize='xs'>{date}</Text>
                     </Flex>
                   </Tooltip>
@@ -317,7 +318,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 px={paddingCard}
                 py={[0, 1]}
                 flexDirection={{ base: 'column', md: 'row' }}
-                spacing={[1, 3, 4]}
+                gap={[1, 3, 4]}
               >
                 {data && (
                   <CompletenessBadgeCircle
@@ -618,21 +619,21 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           as='span'
                           flex={1}
                           size={{ base: 'md', sm: 'sm' }}
-                          rightIcon={<FaCircleArrowRight />}
                           aria-label={`Go to details about resource ${name}`}
                         >
                           View resource
+                          <FaCircleArrowRight />
                         </Button>
                       </Flex>
                     </NextLink>
                   )}
                 </HStack>
               </Stack>
-            </CardBody>
+            </Card.Body>
           </>
         )}
       </Skeleton>
-    </Card>
+    </Card.Root>
   );
 };
 

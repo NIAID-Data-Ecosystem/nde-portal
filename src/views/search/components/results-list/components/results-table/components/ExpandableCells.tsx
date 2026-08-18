@@ -37,6 +37,7 @@ export const ExpandableText = ({
   const [expanded, setExpanded] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
   const textRef = useRef<HTMLParagraphElement>(null);
+  // Use React.useId instead (available in React 18+)
   const contentId = useId();
 
   // Detect whether the clamped text overflows so the toggle is only shown when
@@ -60,7 +61,7 @@ export const ExpandableText = ({
       <Text
         id={contentId}
         ref={textRef}
-        noOfLines={expanded ? undefined : noOfLines}
+        lineClamp={expanded ? undefined : noOfLines}
         fontSize='sm'
         {...props}
       >
@@ -97,6 +98,7 @@ export const ExpandableList = ({
   gap?: FlexProps['gap'];
 }) => {
   const [expanded, setExpanded] = useState(false);
+  // Use React.useId instead (available in React 18+)
   const contentId = useId();
 
   const items = useMemo(() => React.Children.toArray(children), [children]);

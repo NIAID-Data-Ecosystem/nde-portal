@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  AccordionIcon,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  Box,
-  Flex,
-  Text,
-} from '@chakra-ui/react';
+import { Box, Flex, Text } from '@chakra-ui/react';
 import Tooltip from 'src/components/tooltip';
 import { FiltersChartToggle } from './filters-chart-toggle';
 
@@ -28,12 +20,13 @@ Filter drawer corresponding to a filter facet.
 export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
   ({ name, description, children, filterId, isVizActive, onToggleViz }) => {
     return (
-      <AccordionItem
+      <Accordion.Item
         bg='#fff'
         my={0.5}
         border='1px solid'
         borderRadius='md'
         borderColor='blackAlpha.200'
+        value='item-0'
       >
         {({ isExpanded }) => {
           return (
@@ -53,7 +46,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                     bg: isExpanded ? 'secondary.50' : 'gray.50',
                   }}
                 >
-                  <AccordionButton
+                  <Accordion.ItemTrigger
                     flex={1}
                     bg='transparent'
                     _hover={{ bg: 'transparent' }}
@@ -84,8 +77,8 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                         {name}
                       </Text>
                     </Tooltip>
-                    <AccordionIcon />
-                  </AccordionButton>
+                    <Accordion.ItemIndicator />
+                  </Accordion.ItemTrigger>
                   {filterId && (
                     <Tooltip
                       label={
@@ -108,22 +101,22 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                 </Flex>
               </h2>
               {isExpanded ? (
-                <AccordionPanel
+                <Accordion.ItemContent
                   p={0}
                   borderLeft='4px solid'
                   borderLeftColor='secondary.200'
                   borderBottom='0.25px solid'
                   borderBottomColor='gray.100'
                 >
-                  {children}
-                </AccordionPanel>
+                  <Accordion.ItemBody>{children}</Accordion.ItemBody>
+                </Accordion.ItemContent>
               ) : (
                 <></>
               )}
             </>
           );
         }}
-      </AccordionItem>
+      </Accordion.Item>
     );
   },
 );

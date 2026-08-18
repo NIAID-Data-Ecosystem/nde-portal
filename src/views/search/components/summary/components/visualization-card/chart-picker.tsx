@@ -1,4 +1,4 @@
-import { Flex, Select } from '@chakra-ui/react';
+import { Flex, NativeSelect } from '@chakra-ui/react';
 import { ChartType } from '../../types';
 
 export const ChartTypePicker = (props: {
@@ -11,23 +11,26 @@ export const ChartTypePicker = (props: {
 }) => {
   return (
     <Flex justifyContent='flex-end'>
-      <Select
-        aria-label={
-          props.label ? `Chart type for ${props.label}` : 'Chart type'
-        }
-        width='unset'
-        size='xs'
-        value={props.value}
-        disabled={props.isDisabled}
-        onChange={e => props.onChange(e.target.value as ChartType)}
-        style={{ textTransform: 'capitalize' }}
-      >
-        {props.options.map(o => (
-          <option key={o} value={o}>
-            {o} chart
-          </option>
-        ))}
-      </Select>
+      <NativeSelect.Root>
+        <NativeSelect.Field
+          aria-label={
+            props.label ? `Chart type for ${props.label}` : 'Chart type'
+          }
+          width='unset'
+          size='xs'
+          value={props.value}
+          disabled={props.isDisabled}
+          onValueChange={e => props.onChange(e.target.value as ChartType)}
+          style={{ textTransform: 'capitalize' }}
+        >
+          {props.options.map(o => (
+            <option key={o} value={o}>
+              {o} chart
+            </option>
+          ))}
+        </NativeSelect.Field>
+        <NativeSelect.Indicator />
+      </NativeSelect.Root>
     </Flex>
   );
 };

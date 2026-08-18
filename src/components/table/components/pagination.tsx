@@ -135,7 +135,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
           <NativeSelect.Root size='sm' mx={[0, 2]}>
             <NativeSelect.Field
               value={size}
-              onChange={e => {
+              onValueChange={e => {
                 setSize(+e.currentTarget.value);
                 setFrom(0);
               }}
@@ -172,7 +172,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
           <NativeSelect.Root size='sm' mx={[0, 4]} my={[2, 0]}>
             <NativeSelect.Field
               value={from}
-              onChange={e => setFrom(+e.currentTarget.value)}
+              onValueChange={e => setFrom(+e.currentTarget.value)}
               cursor='pointer'
               bg='white'
               aria-label='Select page'
@@ -201,7 +201,6 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
           ></ArrowButton>
         </Flex>
       </Flex>
-
       {/* Display of what is currently showing. */}
       <Flex
         alignItems='center'

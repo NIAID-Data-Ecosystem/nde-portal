@@ -1,8 +1,15 @@
+/*
+ MIGRATION NOTE: The following Chakra UI hooks have been removed.
+ Please replace them with the suggested alternatives:
+
+//   - usePrevious: Use react-use: usePrevious
+
+ See: https://chakra-ui.com/docs/get-started/migration#hooks
+*/
 import {
   Box,
   SkeletonProps as ChakraSkeletonProps,
   cssVar,
-  usePrevious,
   useToken,
 } from '@chakra-ui/react';
 import { keyframes } from '@emotion/react';
@@ -61,7 +68,10 @@ export const Skeleton = ({
     return (
       <Box
         className='custom-skeleton-loaded'
-        __css={{ animation, ...rest?.__css }}
+        css={{
+          animation,
+          ...rest?.__css,
+        }}
         {...rest}
       >
         {children}
@@ -72,13 +82,14 @@ export const Skeleton = ({
     <Box
       className='custom-skeleton-loading'
       w='100%'
-      __css={{
+      css={{
         ...cssVarStyles,
         cursor: 'default',
         position: 'relative',
         pointerEvents: 'none',
         userSelect: 'none',
-        _after: {
+
+        '& _after': {
           content: "''",
           animation: `${speed}s linear infinite alternate ${bgFade}`,
           width: 'full',
@@ -87,6 +98,7 @@ export const Skeleton = ({
           top: 0,
           left: 0,
         },
+
         ...rest?.__css,
       }}
       {...rest}

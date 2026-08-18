@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Heading, Highlight, ListItem, Text } from '@chakra-ui/react';
+import { Heading, Highlight, Text, List } from '@chakra-ui/react';
 import { useDropdownContext } from 'src/components/input-with-dropdown';
 import type { SearchResultItemProps } from '../../types';
 
@@ -15,7 +15,7 @@ export const SearchResultItem = React.memo(
     const isSelected = useMemo(() => cursor === index, [index, cursor]);
 
     return (
-      <ListItem
+      <List.Item
         px={2}
         mx={2}
         my={1}
@@ -65,7 +65,7 @@ export const SearchResultItem = React.memo(
             </Highlight>
           </Text>
         )}
-      </ListItem>
+      </List.Item>
     );
   },
 );

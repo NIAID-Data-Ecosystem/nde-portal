@@ -1,12 +1,12 @@
 import React from 'react';
 import {
-  Divider,
   Flex,
   FlexProps,
   Heading,
   SkeletonText,
   Text,
   TextProps,
+  Separator,
 } from '@chakra-ui/react';
 import { HeadingWithLinkStyles } from 'src/components/heading-with-link/components/HeadingWithLink';
 
@@ -69,7 +69,7 @@ export const SectionTitle = ({
       <>
         <SkeletonText
           isLoaded={!isLoading}
-          noOfLines={1}
+          lineClamp={1}
           skeletonHeight={skeletonHeight}
           width='100%'
           mb={mb}
@@ -81,7 +81,7 @@ export const SectionTitle = ({
           )}
         </SkeletonText>
         {as === 'h3' && (
-          <Divider mt={2} mb={4} borderColor='page.placeholder' />
+          <Separator mt={2} mb={4} borderColor='page.placeholder' />
         )}
       </>
     );
@@ -90,7 +90,7 @@ export const SectionTitle = ({
   return (
     <SkeletonText
       isLoaded={!isLoading}
-      noOfLines={4}
+      lineClamp={4}
       skeletonHeight={4}
       width='100%'
     >

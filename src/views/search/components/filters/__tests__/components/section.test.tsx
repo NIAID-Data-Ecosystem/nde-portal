@@ -19,11 +19,11 @@ describe('filters/components/section', () => {
 
   it('renders and expands panel content', () => {
     render(
-      <Accordion allowMultiple>
+      <Accordion.Root multiple>
         <FiltersSection name='Topic' description='topic description'>
           <div>section-content</div>
         </FiltersSection>
-      </Accordion>,
+      </Accordion.Root>,
     );
 
     fireEvent.click(screen.getByRole('button', { name: /topic/i }));
@@ -33,7 +33,7 @@ describe('filters/components/section', () => {
   it('shows chart toggle in visual-summary mode and invokes callback', () => {
     const onToggleViz = jest.fn();
     render(
-      <Accordion allowMultiple>
+      <Accordion.Root multiple>
         <FiltersSection
           name='Topic'
           description='topic description'
@@ -43,7 +43,7 @@ describe('filters/components/section', () => {
         >
           <div>section-content</div>
         </FiltersSection>
-      </Accordion>,
+      </Accordion.Root>,
     );
 
     fireEvent.click(

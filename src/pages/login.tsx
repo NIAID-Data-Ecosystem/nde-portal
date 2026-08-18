@@ -9,7 +9,6 @@ import {
   Image,
   Link,
   List,
-  ListItem,
   Spinner,
   Stack,
   Text,
@@ -27,8 +26,10 @@ import { useAuth } from 'src/hooks/useAuth';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
 const ListItemContent = ({ children }: { children: React.ReactNode }) => (
-  <HStack alignItems='center' spacing={4} lineHeight='short'>
-    <Icon as={FaCheck} boxSize={4} aria-hidden='true' color='niaid.500' />
+  <HStack alignItems='center' gap={4} lineHeight='short'>
+    <Icon boxSize={4} aria-hidden='true' color='niaid.500' asChild>
+      <FaCheck />
+    </Icon>
 
     <Text fontSize='inherit'>{children}</Text>
   </HStack>
@@ -36,24 +37,34 @@ const ListItemContent = ({ children }: { children: React.ReactNode }) => (
 
 const ProviderIcon = ({ providerId }: { providerId: string }) => {
   if (providerId.toLowerCase() === 'orcid') {
-    return <Icon as={FaOrcid} color='#A6CE39' boxSize={5} aria-hidden='true' />;
+    return (
+      <Icon color='#A6CE39' boxSize={5} aria-hidden='true' asChild>
+        <FaOrcid />
+      </Icon>
+    );
   }
 
   if (providerId.toLowerCase() === 'github') {
     return (
-      <Icon as={FaGithub} color='#24292e ' boxSize={5} aria-hidden='true' />
+      <Icon color='#24292e ' boxSize={5} aria-hidden='true' asChild>
+        <FaGithub />
+      </Icon>
     );
   }
 
   if (providerId.toLowerCase() === 'google') {
     return (
-      <Icon as={FaGoogle} color='#4285F4' boxSize={5} aria-hidden='true' />
+      <Icon color='#4285F4' boxSize={5} aria-hidden='true' asChild>
+        <FaGoogle />
+      </Icon>
     );
   }
 
   if (providerId.toLowerCase() === 'microsoft') {
     return (
-      <Icon as={FaMicrosoft} color='#00A4EF' boxSize={5} aria-hidden='true' />
+      <Icon color='#00A4EF' boxSize={5} aria-hidden='true' asChild>
+        <FaMicrosoft />
+      </Icon>
     );
   }
 
@@ -152,11 +163,11 @@ function LoginPage() {
                 <Text color='gray.700'>Checking authentication status...</Text>
               </Stack>
             ) : (
-              <Stack spacing={3} maxW='260px' mx='auto'>
+              <Stack gap={3} maxW='260px' mx='auto'>
                 {loginProviders.map(provider => (
                   <Button
                     key={provider.id}
-                    colorScheme='gray'
+                    colorPalette='gray'
                     variant='outline'
                     size='md'
                     py={1}
@@ -171,7 +182,7 @@ function LoginPage() {
                     }}
                     onClick={() => login(provider.id)}
                   >
-                    <HStack spacing={2} justify='flex-start'>
+                    <HStack gap={2} justify='flex-start'>
                       <ProviderIcon providerId={provider.id} />
                       <Text fontSize='inherit'>
                         Log In With {provider.label}
@@ -218,7 +229,7 @@ function LoginPage() {
               mb={8}
             />
 
-            <Stack spacing={6} fontSize='inherit' lineHeight='tall'>
+            <Stack gap={6} fontSize='inherit' lineHeight='tall'>
               <Text>
                 The NIAID Data Ecosystem Discovery Portal is a project from the
                 National Institute of Allergy and Infectious Diseases (NIAID) to
@@ -243,23 +254,23 @@ function LoginPage() {
               Why create a user account?
             </Heading>
 
-            <List spacing={3} color='gray.700' fontSize='inherit'>
-              <ListItem>
+            <List.Root gap={3} color='gray.700' fontSize='inherit'>
+              <List.Item>
                 <ListItemContent>
                   Save and re-visit selected datasets
                 </ListItemContent>
-              </ListItem>
-              <ListItem>
+              </List.Item>
+              <List.Item>
                 <ListItemContent>
                   Personalize your sitewide preferences
                 </ListItemContent>
-              </ListItem>
-              <ListItem>
+              </List.Item>
+              <List.Item>
                 <ListItemContent>
                   Opt in to experimental features
                 </ListItemContent>
-              </ListItem>
-            </List>
+              </List.Item>
+            </List.Root>
 
             <Link
               href='/about'

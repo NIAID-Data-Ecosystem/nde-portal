@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Button,
-  Flex,
-  ListItem,
-  Text,
-  UnorderedList,
-} from '@chakra-ui/react';
+import { Box, Button, Flex, Text, List } from '@chakra-ui/react';
 import { ErrorCTA } from 'src/components/error';
 import { Error } from 'src/components/error';
 import { getQueryStatusError } from 'src/components/error/utils';
@@ -39,17 +32,17 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
               It looks like something may be wrong with the format of your
               query. Here are some suggestions:
             </Text>
-            <UnorderedList styleType='disc' p={4} spacing={2}>
+            <List.Root as='ul' listStyleType='disc' p={4} gap={2}>
               {!validation.isValid && validation.errors.length > 0
                 ? validation.errors.map(error => (
-                    <ListItem key={error.id} listStyleType='inherit'>
+                    <List.Item key={error.id} listStyleType='inherit'>
                       <Text lineHeight='short' mt={0.5}>
                         {error.message}
                       </Text>
-                    </ListItem>
+                    </List.Item>
                   ))
                 : null}
-            </UnorderedList>
+            </List.Root>
           </>
         )}
 

@@ -56,12 +56,14 @@ const DropdownItemContent = ({
       </Text>
       {isExternal && (
         <Icon
-          as={FaArrowUpRightFromSquare}
           w={3}
           h={3}
           color='niaid.700'
           aria-label='Opens in new tab'
-        />
+          asChild
+        >
+          <FaArrowUpRightFromSquare />
+        </Icon>
       )}
     </Flex>
     {description && (
@@ -88,7 +90,9 @@ const DropdownItemArrowIcon = (): JSX.Element => (
     justify='flex-end'
     align='center'
   >
-    <Icon sx={ICON_COLOR} w={3} h={3} as={FaAngleRight} />
+    <Icon sx={ICON_COLOR} w={3} h={3} asChild>
+      <FaAngleRight />
+    </Icon>
   </Flex>
 );
 
@@ -100,14 +104,16 @@ const DropdownItemToggleIcon = ({
 }): JSX.Element => (
   <Icon
     sx={ICON_COLOR}
-    as={FaAngleDown}
     transition='all .25s ease-in-out'
     transform={
       isOpen ? 'translateX(-10px) rotate(180deg)' : 'translateX(-10px)'
     }
     w={3}
     h={3}
-  />
+    asChild
+  >
+    <FaAngleDown />
+  </Icon>
 );
 
 export const NavDropdownItem = ({
@@ -123,22 +129,22 @@ export const NavDropdownItem = ({
   if (!href) {
     return (
       <Flex
-        as='button'
-        type='button'
         aria-expanded={isOpen}
         aria-label={`${isOpen ? 'Close' : 'Open'} ${label} dropdown`}
         {...SHARED_DROPDOWN_ITEM_STYLES}
         color='gray.900'
         _hover={{ bg: 'niaid.50', color: 'gray.900' }}
-        onClick={onClick}
+        asChild
       >
-        <DropdownItemContent
-          label={label}
-          icon={icon}
-          description={description}
-          isExternal={isExternal}
-        />
-        <DropdownItemToggleIcon isOpen={isOpen} />
+        <button type='button' onClick={onClick}>
+          <DropdownItemContent
+            label={label}
+            icon={icon}
+            description={description}
+            isExternal={isExternal}
+          />
+          <DropdownItemToggleIcon isOpen={isOpen} />
+        </button>
       </Flex>
     );
   }

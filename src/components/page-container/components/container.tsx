@@ -71,7 +71,6 @@ export const PageContainer: React.FC<PageContainerProps> = ({
     <>
       {/* Meta fields for SEO */}
       <SeoMetaFields {...meta} />
-
       <Flex
         as='main'
         w='100%'
@@ -83,7 +82,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
 
         {/*Page content has margin-top to compensate for fixed nav bar. */}
         <Box id='pagebody' position='relative' {...props}>
-          <Stack spacing='1px' bg='gray.100'>
+          <Stack gap='1px' bg='gray.100'>
             {/* <!-- Banner for failed OAuth login attempts --> */}
             <LoginErrorBanner />
             {/* <!-- Banner for dev and staging instance --> */}

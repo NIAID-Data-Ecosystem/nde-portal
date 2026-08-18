@@ -128,7 +128,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
 
     return (
       <ChakraCheckbox
-        onChange={() => {
+        onValueChange={() => {
           trackGAEvent(term, filterName);
         }}
         value={term}
@@ -140,11 +140,12 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
         _hover={{
           bg: `${colorScheme}.50`,
         }}
-        sx={{
-          '>.chakra-checkbox__control': {
+        css={{
+          '& >.chakra-checkbox__control': {
             mt: 1, // to keep checkbox in line with top of text for options with multiple lines
           },
-          '>.chakra-checkbox__label': {
+
+          '& >.chakra-checkbox__label': {
             display: 'flex',
             alignItems: 'center',
             flex: 1,
@@ -154,7 +155,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
       >
         {/* Loading skeleton only on load  */}
         <Skeleton
-          isLoaded={!isLoading && !isUpdating}
+          loading={!(!isLoading && !isUpdating)}
           display='flex'
           alignItems='center'
           flex={1}
@@ -192,17 +193,17 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
 
           {/* Display the count of the filter term */}
           {typeof count === 'number' && (
-            <Tag
+            <Tag.Root
               as='span'
               className='tag-count'
               variant='subtle'
               size='sm'
-              colorScheme={colorScheme}
+              colorPalette={colorScheme}
               borderRadius='full'
               alignSelf='flex-start'
             >
               {count?.toLocaleString('en-US')}
-            </Tag>
+            </Tag.Root>
           )}
         </Skeleton>
       </ChakraCheckbox>

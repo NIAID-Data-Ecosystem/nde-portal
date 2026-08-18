@@ -169,7 +169,6 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
           </StyledLabel>
         )}
       </Flex>
-
       <Flex
         bg={props.bg || colorScheme.dk}
         overflow='hidden'
@@ -178,7 +177,9 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
       >
         {date && (
           <Flex alignItems='center' px={{ base: 2, lg: 4 }} py={[2, 1]}>
-            <Icon as={FaRegClock} mr={2} />
+            <Icon mr={2} asChild>
+              <FaRegClock />
+            </Icon>
             <Text fontSize='xs' fontWeight='semibold' whiteSpace='nowrap'>
               {date}
             </Text>

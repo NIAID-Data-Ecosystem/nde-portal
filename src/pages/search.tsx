@@ -242,7 +242,7 @@ const Search: NextPage<{
                   borderBottom='1px solid'
                   borderRight='1px solid'
                   borderColor='gray.100'
-                  spacing={2}
+                  gap={2}
                 >
                   <SavedDataErrorToast />
                   <Flex flex={1} flexDirection='column' width='100%'>

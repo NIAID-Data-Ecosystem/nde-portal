@@ -2,15 +2,14 @@ import {
   Box,
   Button,
   ButtonProps,
-  Collapse,
+  Collapsible,
   Flex,
   FlexProps,
   Icon,
-  ListItem,
   Progress,
   Text,
-  UnorderedList,
   useDisclosure,
+  List,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FaDownload, FaCircleExclamation } from 'react-icons/fa6';
@@ -47,7 +46,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
   ...props
 }) => {
   // Toggle open/close a download format list.
-  const { isOpen, onToggle, onClose } = useDisclosure();
+  const { open, onToggle, onClose } = useDisclosure();
   const router = useRouter();
 
   // Options for download format and corresponding formatting functions.
@@ -166,25 +165,32 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
   return (
     <Flex alignItems='flex-end' flexDirection='column' {...props}>
       {/* Error */}
-      <Collapse in={!!error}>
-        <Text fontSize='xs' fontStyle='italic' color='status.error'>
-          <Icon as={FaCircleExclamation} color='status.error' mr={1}></Icon>
-          Something went wrong with the metadata download. Please try again.
-        </Text>
-      </Collapse>
-
+      <Collapsible.Root open={!!error}>
+        <Collapsible.Content>
+          <Text fontSize='xs' fontStyle='italic' color='status.error'>
+            <Icon color='status.error' mr={1} asChild>
+              <FaCircleExclamation />
+            </Icon>
+            Something went wrong with the metadata download. Please try again.
+          </Text>
+        </Collapsible.Content>
+      </Collapsible.Root>
       <Box maxW='300px'>
         {downloadFormat || percentComplete ? (
           <Flex flexDirection='column'>
             <Flex w='200px' alignItems='center'>
-              <Progress
+              <Progress.Root
                 w='100%'
-                hasStripe
+                striped
                 value={percentComplete}
-                colorScheme='primary'
-                isIndeterminate={percentComplete === 0}
-                isAnimated
-              />
+                colorPalette='primary'
+                indeterminate={percentComplete === 0}
+                animated
+              >
+                <Progress.Track>
+                  <Progress.Range />
+                </Progress.Track>
+              </Progress.Root>
               <Text
                 fontSize='xs'
                 color='page.placeholder'
@@ -203,8 +209,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
         {isFetching ? (
           // cancel query
           <Button
-            leftIcon={<FaXmark />}
-            colorScheme='primary'
+            colorPalette='primary'
             onClick={() => {
               queryClient.cancelQueries({ queryKey });
               clearDownloadState();
@@ -214,21 +219,22 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
             fontSize='12px'
             {...buttonProps}
           >
+            <FaXmark />
             cancel
           </Button>
         ) : (
           <Box position='relative'>
             <Button
-              leftIcon={<FaDownload />}
-              colorScheme='primary'
+              colorPalette='primary'
               onClick={onToggle}
               variant='solid'
               size='sm'
-              isLoading={isFetching}
+              loading={isFetching}
               loadingText='Downloading'
               w='100%'
               {...buttonProps}
             >
+              <FaDownload />
               {children}
             </Button>
             <Box
@@ -239,45 +245,50 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
               borderRadius='semi'
               bg='white'
             >
-              <Collapse in={isOpen} animateOpacity>
-                <UnorderedList ml={0}>
-                  {options.map((option, idx) => {
-                    return (
-                      <ListItem
-                        key={option.name}
-                        borderBottom={
-                          idx < options.length - 1 ? '1px solid' : 'none'
-                        }
-                        borderColor='page.alt'
-                      >
-                        <Box
-                          as='a'
-                          w='100%'
-                          display='block'
-                          px={4}
-                          py={2}
-                          cursor='pointer'
-                          _hover={{
-                            bg: `${buttonProps?.colorScheme || 'primary'}.50`,
-                          }}
-                          onClick={async () => {
-                            trackDownloadEvent({
-                              label: `Download Metadata: From ${router.pathname}`,
-                              event: 'download_metadata_click',
-                              value: `downloadFormat: ${option.format}`,
-                            });
-                            onClose();
-                            setPercentComplete(0);
-                            setDownloadFormat(option);
-                          }}
+              <Collapsible.Root open={isOpen}>
+                <Collapsible.Content>
+                  <List.Root as='ul' ml={0}>
+                    {options.map((option, idx) => {
+                      return (
+                        <List.Item
+                          key={option.name}
+                          borderBottom={
+                            idx < options.length - 1 ? '1px solid' : 'none'
+                          }
+                          borderColor='page.alt'
                         >
-                          <Text fontWeight='semibold'>{option.name}</Text>
-                        </Box>
-                      </ListItem>
-                    );
-                  })}
-                </UnorderedList>
-              </Collapse>
+                          <Box
+                            w='100%'
+                            display='block'
+                            px={4}
+                            py={2}
+                            cursor='pointer'
+                            _hover={{
+                              bg: `${buttonProps?.colorScheme || 'primary'}.50`,
+                            }}
+                            asChild
+                          >
+                            <a
+                              onClick={async () => {
+                                trackDownloadEvent({
+                                  label: `Download Metadata: From ${router.pathname}`,
+                                  event: 'download_metadata_click',
+                                  value: `downloadFormat: ${option.format}`,
+                                });
+                                onClose();
+                                setPercentComplete(0);
+                                setDownloadFormat(option);
+                              }}
+                            >
+                              <Text fontWeight='semibold'>{option.name}</Text>
+                            </a>
+                          </Box>
+                        </List.Item>
+                      );
+                    })}
+                  </List.Root>
+                </Collapsible.Content>
+              </Collapsible.Root>
             </Box>
           </Box>
         )}

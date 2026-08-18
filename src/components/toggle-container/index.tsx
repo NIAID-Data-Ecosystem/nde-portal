@@ -3,9 +3,9 @@ import {
   Button,
   Icon,
   Flex,
-  SystemProps,
   useDisclosure,
   ButtonProps,
+  SystemStyleObject,
 } from '@chakra-ui/react';
 import { FaAngleDown } from 'react-icons/fa6';
 
@@ -15,7 +15,7 @@ export interface ToggleContainerProps extends ButtonProps {
   // can be a number describing the minimum num of lines or a minmax tuple.
   noOfLines?: [number, number] | number;
   ariaLabel: string;
-  alignIcon?: SystemProps['alignItems'];
+  alignIcon?: SystemStyleObject['alignItems'];
   variant?: 'border';
 }
 
@@ -29,7 +29,7 @@ export const ToggleContainer: React.FC<ToggleContainerProps> = ({
   variant,
   ...props
 }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure({ defaultIsOpen });
+  const { open, onOpen, onClose } = useDisclosure({ defaultIsOpen });
 
   // Set minimum number of lines shown when container is not expanded
   const minNoOfLines = Array.isArray(noOfLines)
@@ -76,7 +76,7 @@ export const ToggleContainer: React.FC<ToggleContainerProps> = ({
       flexWrap={['wrap', 'nowrap']}
       aria-label={ariaLabel}
       alignItems={alignIcon}
-      isDisabled={!isExpandable}
+      disabled={!isExpandable}
       px={[2, 4, 8, 10]}
       py={[2, 4, 6]}
       transition='all 0.2s ease-in-out'
@@ -108,7 +108,7 @@ export const ToggleContainer: React.FC<ToggleContainerProps> = ({
         ref={containerRef}
         overflow={'hidden'}
         height={isOpen ? undefined : minHeight}
-        noOfLines={isOpen ? maxNoOfLines : minNoOfLines}
+        lineClamp={isOpen ? maxNoOfLines : minNoOfLines}
       >
         {children}
       </Flex>
@@ -127,11 +127,13 @@ export const ToggleContainer: React.FC<ToggleContainerProps> = ({
             w={3}
             h={3}
             color='gray.700'
-            as={FaAngleDown}
             transform={isOpen ? 'rotate(-180deg)' : undefined}
             transformOrigin='center'
             transition='transform 0.2s'
-          />
+            asChild
+          >
+            <FaAngleDown />
+          </Icon>
         </Flex>
       )}
     </Button>

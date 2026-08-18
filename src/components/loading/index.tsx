@@ -22,8 +22,8 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
           emptyColor={props.emptyColor || 'gray.200'}
           label={props.label || 'loading'}
           size={props.size || 'lg'}
-          speed={props.speed || '0.65s'}
-          thickness={props.thickness || '4px'}
+          animationDuration={props.speed || '0.65s'}
+          borderWidth={props.thickness || '4px'}
         />
       </Flex>
     );

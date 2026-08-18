@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormControl, FormLabel, Switch, VStack } from '@chakra-ui/react';
+import { Switch, VStack, Field } from '@chakra-ui/react';
 import { useLocalStorage } from 'usehooks-ts';
 import { BrowserSettings } from '../index';
 import {
@@ -30,9 +30,9 @@ export const OntologyViewSettings = ({
   );
 
   return (
-    <VStack lineHeight='shorter' spacing={4}>
+    <VStack lineHeight='shorter' gap={4}>
       {Object.entries(defaultSettings).map(([key, setting]) => (
-        <FormControl
+        <Field.Root
           key={key}
           display='flex'
           alignItems='center'
@@ -40,21 +40,21 @@ export const OntologyViewSettings = ({
           mt={1}
           cursor='pointer'
         >
-          <FormLabel htmlFor={`switch-${key}`} mb='0' fontSize='sm'>
+          <Field.Label htmlFor={`switch-${key}`} mb='0' fontSize='sm'>
             {setting.label}
-          </FormLabel>
+          </Field.Label>
           <Switch
             id={`switch-${key}`}
-            colorScheme='primary'
-            isChecked={viewSettings[key as keyof LocalStorageConfig]}
-            onChange={() =>
+            colorPalette='primary'
+            checked={viewSettings[key as keyof LocalStorageConfig]}
+            onValueChange={() =>
               setViewSettings({
                 ...viewSettings,
                 [key]: !viewSettings[key as keyof LocalStorageConfig],
               })
             }
           />
-        </FormControl>
+        </Field.Root>
       ))}
     </VStack>
   );

@@ -53,19 +53,17 @@ export const DiseaseOverviewCard = ({
         type='Disease'
         isLoading={isLoading}
       />
-
       <CompactCard.Header isLoading={isLoading}>
         {title && (
           <CompactCard.Title linkProps={linkProps}>{title}</CompactCard.Title>
         )}
       </CompactCard.Header>
-
       <CompactCard.Body>
         <Skeleton isLoaded={!isLoading} flex='1'>
           {/* Description (if present) */}
           {topicEmphasizedDescription || description ? (
             <>
-              <Text as='div' noOfLines={6} fontSize='xs' lineHeight='short'>
+              <Text as='div' lineClamp={6} fontSize='xs' lineHeight='short'>
                 {topicEmphasizedDescription ? (
                   <ReactMarkdown rehypePlugins={[rehypeRaw, remarkGfm]}>
                     {topicEmphasizedDescription}

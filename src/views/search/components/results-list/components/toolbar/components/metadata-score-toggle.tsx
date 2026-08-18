@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  Circle,
-  FormControl,
-  FormLabel,
-  Icon,
-  Stack,
-  Switch,
-  Text,
-} from '@chakra-ui/react';
+import { Circle, Icon, Stack, Switch, Text } from '@chakra-ui/react';
 import Tooltip from 'src/components/tooltip';
 import { FaInfo } from 'react-icons/fa6';
 

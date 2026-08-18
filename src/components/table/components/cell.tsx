@@ -107,7 +107,6 @@ export const Th = React.memo(
     const py = isSortable ? 1 : 2;
     return (
       <Flex
-        as='th'
         role='columnheader'
         scope='col'
         label={label}
@@ -126,28 +125,31 @@ export const Th = React.memo(
         py={py}
         whiteSpace='pre-wrap'
         {...props}
+        asChild
       >
-        {label && (
-          <Flex alignItems='center' gap={1}>
-            <Tooltip label={tooltip} hasArrow>
-              <Box as='span' display='inline-flex' color='gray.600'>
-                <Label>{label}</Label>
-              </Box>
-            </Tooltip>
-          </Flex>
-        )}
-        {isSortable && tableSortToggleProps && (
-          <Box
-            my={1}
-            fontSize='xs'
-            lineHeight='short'
-            whiteSpace='pre-wrap'
-            wordBreak='break-word'
-            fontWeight='normal'
-          >
-            <TableSortToggle {...tableSortToggleProps} />
-          </Box>
-        )}
+        <th>
+          {label && (
+            <Flex alignItems='center' gap={1}>
+              <Tooltip label={tooltip} hasArrow>
+                <Box as='span' display='inline-flex' color='gray.600'>
+                  <Label>{label}</Label>
+                </Box>
+              </Tooltip>
+            </Flex>
+          )}
+          {isSortable && tableSortToggleProps && (
+            <Box
+              my={1}
+              fontSize='xs'
+              lineHeight='short'
+              whiteSpace='pre-wrap'
+              wordBreak='break-word'
+              fontWeight='normal'
+            >
+              <TableSortToggle {...tableSortToggleProps} />
+            </Box>
+          )}
+        </th>
       </Flex>
     );
   },

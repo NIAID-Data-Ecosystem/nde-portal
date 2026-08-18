@@ -2,12 +2,12 @@ import React from 'react';
 import { FormattedResource } from 'src/utils/api/types';
 import {
   Box,
-  Divider,
   Heading,
   HeadingProps,
   Skeleton,
   SkeletonProps,
   Stack,
+  Separator,
 } from '@chakra-ui/react';
 import { DataAccess } from './components/data-access';
 import { DataUsage } from './components/usage';
@@ -140,8 +140,8 @@ export const Wrapper = ({
   hasDivider = true,
   ...props
 }: WrapperProps) => (
-  <Skeleton isLoaded={!isLoading} fontSize='xs' flex={1} {...props}>
-    {hasDivider && <Divider borderColor='page.placeholder' />}
+  <Skeleton loading={!!isLoading} fontSize='xs' flex={1} {...props}>
+    {hasDivider && <Separator borderColor='page.placeholder' />}
     {label && (
       <Heading
         as='h2'
@@ -159,7 +159,7 @@ export const Wrapper = ({
     <Stack
       p={{ base: 4, md: 6 }}
       pt={{ base: 2, md: label ? 0 : 6 }}
-      spacing={{ base: 2, md: 4 }}
+      gap={{ base: 2, md: 4 }}
       lineHeight='short'
     >
       {children}

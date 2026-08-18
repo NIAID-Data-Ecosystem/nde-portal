@@ -28,8 +28,8 @@ const ResultsCount: React.FC<ResultsCount> = ({
           color='primary.500'
           emptyColor='gray.200'
           size='md'
-          speed='0.5s'
-          thickness='1px'
+          animationDuration='0.5s'
+          borderWidth='1px'
           mr={2}
         />
       ) : (

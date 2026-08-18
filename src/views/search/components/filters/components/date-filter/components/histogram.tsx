@@ -243,67 +243,85 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
           {tooltipData.label}: {tooltipData.display.countText}
         </TooltipComponent>
       )}
-
       <Flex ref={containerRef} justifyContent='center' h='100%'>
         <Flex w='100%' h='100%' flexDirection='column'>
           <Flex ref={parentRef} justifyContent='center' width='100%' minH={0}>
             <Box
-              as='svg'
               id='filters-histogram'
               width={effectiveSvgWidth}
               height={height}
               style={{ overflow: 'visible' }}
+              asChild
             >
-              <defs>
-                <linearGradient
-                  id='histogram-gradient'
-                  gradientUnits='userSpaceOnUse'
-                  x1='0'
-                  y1='0'
-                  x2='0'
-                  y2='100%'
-                >
-                  <stop offset='0' stopColor='#e05e8f'></stop>
-                  <stop offset='1' stopColor='#241683'></stop>
-                </linearGradient>
-              </defs>
-              <Group>
-                {hasDataInRange ? (
-                  <>
-                    {visibleData.map((d, i) => {
-                      const { term } = d;
-                      const count = d.count ?? 0;
-                      /* Updated counts when date has changed */
-                      const updatedCount =
-                        updatedCounts.find(u => u.term === term)?.count || 0;
+              <svg>
+                <defs>
+                  <linearGradient
+                    id='histogram-gradient'
+                    gradientUnits='userSpaceOnUse'
+                    x1='0'
+                    y1='0'
+                    x2='0'
+                    y2='100%'
+                  >
+                    <stop offset='0' stopColor='#e05e8f'></stop>
+                    <stop offset='1' stopColor='#241683'></stop>
+                  </linearGradient>
+                </defs>
+                <Group>
+                  {hasDataInRange ? (
+                    <>
+                      {visibleData.map((d, i) => {
+                        const { term } = d;
+                        const count = d.count ?? 0;
+                        /* Updated counts when date has changed */
+                        const updatedCount =
+                          updatedCounts.find(u => u.term === term)?.count || 0;
 
-                      const barWidth = xScale.bandwidth();
-                      const barX = xScale(i);
+                        const barWidth = xScale.bandwidth();
+                        const barX = xScale(i);
 
-                      const barCount =
-                        updatedCount > 0 && updatedCount < count
-                          ? updatedCount
-                          : count;
+                        const barCount =
+                          updatedCount > 0 && updatedCount < count
+                            ? updatedCount
+                            : count;
 
-                      const defaultBarHeight = Math.ceil(
-                        height - yScale(count),
-                      );
-                      const barHeight = Math.ceil(height - yScale(barCount));
-                      const barY = height - barHeight;
+                        const defaultBarHeight = Math.ceil(
+                          height - yScale(count),
+                        );
+                        const barHeight = Math.ceil(height - yScale(barCount));
+                        const barY = height - barHeight;
 
-                      const hovered = term === tooltipData?.term;
-                      let fill = `url("#histogram-gradient")`;
+                        const hovered = term === tooltipData?.term;
+                        let fill = `url("#histogram-gradient")`;
 
-                      if (count === 0 && updatedCount === 0) {
-                        fill = theme.colors.gray[200];
-                      }
+                        if (count === 0 && updatedCount === 0) {
+                          fill = theme.colors.gray[200];
+                        }
 
-                      return (
-                        <React.Fragment key={`bar-${term}`}>
-                          {/* Used only when the bar is selected and the updated count is less than the full count. */}
-                          {updatedCount > 0 && updatedCount < count && (
+                        return (
+                          <React.Fragment key={`bar-${term}`}>
+                            {/* Used only when the bar is selected and the updated count is less than the full count. */}
+                            {updatedCount > 0 && updatedCount < count && (
+                              <Bar
+                                className='partial-bar'
+                                x={barX}
+                                width={barWidth}
+                                opacity={
+                                  hovered
+                                    ? params.opacity.hover
+                                    : params.opacity.active
+                                }
+                                y={height - defaultBarHeight}
+                                height={defaultBarHeight}
+                                fill={params.fill.gray}
+                                style={{
+                                  transition: 'y 0.1s ease, height 0.1s ease',
+                                }}
+                              />
+                            )}
+                            {/* Bars that show the full count. */}
                             <Bar
-                              className='partial-bar'
+                              className='full-bar'
                               x={barX}
                               width={barWidth}
                               opacity={
@@ -311,111 +329,93 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
                                   ? params.opacity.hover
                                   : params.opacity.active
                               }
-                              y={height - defaultBarHeight}
-                              height={defaultBarHeight}
-                              fill={params.fill.gray}
+                              y={barY}
+                              height={barHeight}
+                              fill={fill}
                               style={{
                                 transition: 'y 0.1s ease, height 0.1s ease',
                               }}
                             />
-                          )}
-                          {/* Bars that show the full count. */}
+                          </React.Fragment>
+                        );
+                      })}
+                    </>
+                  ) : (
+                    <>
+                      {/* Show message when no data in range */}
+                      <text
+                        x={effectiveSvgWidth / 2}
+                        y={height / 2}
+                        dy='1rem'
+                        textAnchor='middle'
+                        fill={theme.colors.gray[800]}
+                        fontSize='14'
+                      >
+                        No data available. Please use a different date range.
+                      </text>
+                    </>
+                  )}
+                </Group>
+                {/* Invisible bars for tooltip triggers */}
+                {hasDataInRange && (
+                  <Group>
+                    {visibleData.map((d, i) => {
+                      const { term } = d;
+                      /* Updated counts when date has changed */
+                      const updatedCount =
+                        updatedCounts.find(u => u.term === term)?.count || 0;
+
+                      const barWidth = xScale.bandwidth();
+                      const barX = xScale(i);
+
+                      return (
+                        <React.Fragment key={`invisible-bar-${term}`}>
                           <Bar
-                            className='full-bar'
+                            className='hover-bar'
                             x={barX}
+                            y={0}
                             width={barWidth}
-                            opacity={
-                              hovered
-                                ? params.opacity.hover
-                                : params.opacity.active
+                            height={height}
+                            fill='transparent'
+                            onMouseOver={e =>
+                              handleMouseOver(e, {
+                                ...d,
+                                count: d.count ?? 0,
+                                updatedCount,
+                              })
                             }
-                            y={barY}
-                            height={barHeight}
-                            fill={fill}
-                            style={{
-                              transition: 'y 0.1s ease, height 0.1s ease',
+                            onMouseOut={hideTooltip}
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => {
+                              // Set filter to single year
+                              const year = term.split('-')[0];
+                              handleClick([`${year}-01-01`, `${year}-12-31`]);
                             }}
                           />
                         </React.Fragment>
                       );
                     })}
-                  </>
-                ) : (
-                  <>
-                    {/* Show message when no data in range */}
-                    <text
-                      x={effectiveSvgWidth / 2}
-                      y={height / 2}
-                      dy='1rem'
-                      textAnchor='middle'
-                      fill={theme.colors.gray[800]}
-                      fontSize='14'
-                    >
-                      No data available. Please use a different date range.
-                    </text>
-                  </>
+                  </Group>
                 )}
-              </Group>
-
-              {/* Invisible bars for tooltip triggers */}
-              {hasDataInRange && (
-                <Group>
-                  {visibleData.map((d, i) => {
-                    const { term } = d;
-                    /* Updated counts when date has changed */
-                    const updatedCount =
-                      updatedCounts.find(u => u.term === term)?.count || 0;
-
-                    const barWidth = xScale.bandwidth();
-                    const barX = xScale(i);
-
-                    return (
-                      <React.Fragment key={`invisible-bar-${term}`}>
-                        <Bar
-                          className='hover-bar'
-                          x={barX}
-                          y={0}
-                          width={barWidth}
-                          height={height}
-                          fill='transparent'
-                          onMouseOver={e =>
-                            handleMouseOver(e, {
-                              ...d,
-                              count: d.count ?? 0,
-                              updatedCount,
-                            })
-                          }
-                          onMouseOut={hideTooltip}
-                          style={{ cursor: 'pointer' }}
-                          onClick={() => {
-                            // Set filter to single year
-                            const year = term.split('-')[0];
-                            handleClick([`${year}-01-01`, `${year}-12-31`]);
-                          }}
-                        />
-                      </React.Fragment>
-                    );
-                  })}
-                </Group>
-              )}
-              {/* x-axis */}
-              {hasDataInRange && (
-                <Group>
-                  <AxisBottom
-                    top={height}
-                    scale={xScale}
-                    tickValues={xAxisTickValues}
-                    tickFormat={i => visibleData[i as number]?.label || ''}
-                    stroke={theme.colors.gray[300]}
-                    tickStroke={theme.colors.gray[300]}
-                    tickLabelProps={() => ({
-                      fill: theme.colors.gray[600],
-                      fontSize: 13,
-                      textAnchor: 'middle',
-                    })}
-                  />
-                </Group>
-              )}
+                {/* x-axis */}
+                {hasDataInRange && (
+                  <Group>
+                    <AxisBottom
+                      top={height}
+                      scale={xScale}
+                      tickValues={xAxisTickValues}
+                      tickFormat={i => visibleData[i as number]?.label || ''}
+                      stroke={theme.colors.gray[300]}
+                      tickStroke={theme.colors.gray[300]}
+                      tickLabelProps={() => ({
+                        fill: theme.colors.gray[600],
+                        fontSize: 13,
+                        textAnchor: 'middle',
+                      })}
+                    />
+                  </Group>
+                )}
+              </svg>
             </Box>
           </Flex>
           {/* brush */}

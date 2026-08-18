@@ -73,95 +73,103 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   };
 
   return (
-    <Flex
-      as='form'
-      alignItems='center'
-      position='relative'
-      onSubmit={e => {
-        e.preventDefault();
-        handleSubmit && handleSubmit(e);
-      }}
-      {...props}
-    >
-      <VisuallyHidden>
-        <label htmlFor={ariaLabel}>{ariaLabel}</label>
-      </VisuallyHidden>
-
-      <InputGroup
-        // If in 'responsive mode' we use a button to toggle the visibility of the input in mobile size.
-        visibility={[
-          isResponsive && !showInput ? 'hidden' : 'visible',
-          'visible',
-        ]}
-        size={size}
-        _focusWithin={{
-          svg: { color: `${colorScheme}.500` },
+    <Flex alignItems='center' position='relative' {...props} asChild>
+      <form
+        onSubmit={e => {
+          e.preventDefault();
+          handleSubmit && handleSubmit(e);
         }}
       >
-        <InputLeftElement pointerEvents='none' height={sizeConfig[size].height}>
-          <Icon as={FaMagnifyingGlass} color='page.placeholder' boxSize={4} />
-        </InputLeftElement>
-        <Input
-          id={ariaLabel}
-          type='text'
-          variant='shadow'
+        <VisuallyHidden>
+          <label htmlFor={ariaLabel}>{ariaLabel}</label>
+        </VisuallyHidden>
+        <InputGroup
+          // If in 'responsive mode' we use a button to toggle the visibility of the input in mobile size.
+          visibility={[
+            isResponsive && !showInput ? 'hidden' : 'visible',
+            'visible',
+          ]}
           size={size}
-          onChange={e => handleChange(e)}
-          colorScheme={colorScheme}
-          pr={handleSubmit ? sizeConfig[size].width : 0}
-          bg={bg}
-          height={sizeConfig[size].height}
-          {...props}
-        />
+          _focusWithin={{
+            svg: { color: `${colorScheme}.500` },
+          }}
+        >
+          <InputLeftElement
+            pointerEvents='none'
+            height={sizeConfig[size].height}
+          >
+            <Icon color='page.placeholder' boxSize={4} asChild>
+              <FaMagnifyingGlass />
+            </Icon>
+          </InputLeftElement>
+          <Input
+            id={ariaLabel}
+            type='text'
+            variant='shadow'
+            size={size}
+            onValueChange={e => handleChange(e)}
+            colorPalette={colorScheme}
+            pr={handleSubmit ? sizeConfig[size].width : 0}
+            bg={bg}
+            height={sizeConfig[size].height}
+            {...props}
+          />
 
-        {/* If handle submit function is provided we show a button. */}
-        {(onClose || handleSubmit) && (
-          <InputRightElement p={1} height={sizeConfig[size].height}>
-            {onClose && props.value && (
-              <CloseButton
-                onClick={() => {
-                  onClose();
-                }}
-                size={size}
-                colorScheme='primary'
-              />
+          {/* If handle submit function is provided we show a button. */}
+          {(onClose || handleSubmit) && (
+            <InputRightElement p={1} height={sizeConfig[size].height}>
+              {onClose && props.value && (
+                <CloseButton
+                  onClick={() => {
+                    onClose();
+                  }}
+                  size={size}
+                  colorPalette='primary'
+                />
+              )}
+              {handleSubmit && (
+                <Button
+                  size={size}
+                  colorPalette={colorScheme}
+                  loading={isLoading}
+                  aria-label='search'
+                  type='submit'
+                  display='flex'
+                  // set padding top and bottom for safari, do not remove.
+                  py={0}
+                >
+                  Search
+                </Button>
+              )}
+            </InputRightElement>
+          )}
+        </InputGroup>
+        {/* Button that toggles out input if in responsive mode. */}
+        {isResponsive && (
+          <IconButton
+            display={['flex', 'none']}
+            size={size}
+            top={0}
+            right={0}
+            ml={4}
+            aria-label='Open search input'
+            colorPalette={colorScheme}
+            variant={buttonVariant || 'outline'}
+            onClick={() => setShowInput(!showInput)}
+            data-active={showInput}
+          >
+            {showInput ? (
+              <Icon asChild>
+                <FaXmark />
+              </Icon>
+            ) : (
+              <Icon asChild>
+                <FaMagnifyingGlass />
+              </Icon>
             )}
-            {handleSubmit && (
-              <Button
-                size={size}
-                colorScheme={colorScheme}
-                isLoading={isLoading}
-                aria-label='search'
-                type='submit'
-                display='flex'
-                // set padding top and bottom for safari, do not remove.
-                py={0}
-              >
-                Search
-              </Button>
-            )}
-          </InputRightElement>
+          </IconButton>
         )}
-      </InputGroup>
-
-      {/* Button that toggles out input if in responsive mode. */}
-      {isResponsive && (
-        <IconButton
-          display={['flex', 'none']}
-          size={size}
-          top={0}
-          right={0}
-          ml={4}
-          aria-label='Open search input'
-          icon={
-            showInput ? <Icon as={FaXmark} /> : <Icon as={FaMagnifyingGlass} />
-          }
-          colorScheme={colorScheme}
-          variant={buttonVariant || 'outline'}
-          onClick={() => setShowInput(!showInput)}
-          isActive={showInput}
-        />
-      )}
+      </form>
     </Flex>
   );
 };

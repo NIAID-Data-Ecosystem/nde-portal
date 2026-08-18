@@ -1,12 +1,12 @@
 import React from 'react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import {
-  Divider,
   Icon,
   StackProps,
   Text,
   TextProps,
   VStack,
+  Separator,
 } from '@chakra-ui/react';
 import { defaultStyles } from '@visx/tooltip';
 
@@ -33,31 +33,28 @@ export const TooltipWrapper = ({
 }: TooltipWrapperProps) => {
   return (
     <VStack
-      spacing={2}
+      gap={2}
       alignItems='flex-start'
       fontSize='sm'
       lineHeight='short'
       {...props}
     >
-      <VStack alignItems='flex-start' spacing={0.5}>
+      <VStack alignItems='flex-start' gap={0.5}>
         {children}
       </VStack>
       {/* Show note that item links to search */}
       {showsSearchHint && (
         <>
-          <Divider />
+          <Separator />
           <Text
             lineHeight='normal'
             color='text.body'
             width='100%'
             fontSize='xs'
           >
-            <Icon
-              as={FaMagnifyingGlass}
-              color='gray.500'
-              mr={0.5}
-              boxSize={3}
-            ></Icon>{' '}
+            <Icon color='gray.500' mr={0.5} boxSize={3} asChild>
+              <FaMagnifyingGlass />
+            </Icon>{' '}
             {searchHintText}
           </Text>
         </>

@@ -92,16 +92,14 @@ export const CreditText = ({
       {label && (
         <HeadingWithTooltip label={label} tooltipLabel={tooltipLabel || ''} />
       )}
-
       {/* Collapsed to select number of lines unless expanded */}
-      <Text ref={textRef} noOfLines={expanded ? undefined : noOfLines}>
+      <Text ref={textRef} lineClamp={expanded ? undefined : noOfLines}>
         {creditContent}
       </Text>
-
       {/* Only show toggle if there's credit text AND it overflows the set noOfLines*/}
       {data?.creditText && isOverflowing && (
         <Button
-          variant='link'
+          variant='plain'
           onClick={() => setExpanded(!expanded)}
           color='blue.500'
           mt={0}

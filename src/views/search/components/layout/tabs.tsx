@@ -31,16 +31,15 @@ export const SearchTabs = ({
   tabs,
 }: SearchTabsProps) => {
   return (
-    <Tabs
-      index={index}
-      onChange={onChange}
-      colorScheme={colorScheme}
+    <Tabs.Root
+      value={index}
+      onValueChange={onChange}
+      colorPalette={colorScheme}
       bg='#fff'
-      isLazy
-      lazyBehavior='keepMounted'
+      lazyMount
     >
       {/* Render each tab with its label(s) and count(s) */}
-      <TabList
+      <Tabs.List
         borderTop='1px solid'
         borderTopColor='gray.100'
         borderBottom='hidden'
@@ -51,8 +50,8 @@ export const SearchTabs = ({
             key={tab.id}
             id={tab.id}
             aria-label={tab.types.map(t => t.label).join(', ')}
-            sx={{
-              _selected: {
+            css={{
+              '& _selected': {
                 color: `${colorScheme}.500`,
                 bg: '#fff',
               },
@@ -61,9 +60,9 @@ export const SearchTabs = ({
             <TabLabels types={tab.types} colorScheme={colorScheme} />
           </Tab>
         ))}
-      </TabList>
+      </Tabs.List>
       <TabPanels>{renderTabPanels()}</TabPanels>
-    </Tabs>
+    </Tabs.Root>
   );
 };
 
@@ -103,9 +102,11 @@ const TabLabels = ({
     return (
       <Text as='h2' {...textStyles}>
         {`${TAB_LABELS.DATASET}s`}
-        <Tag {...tagStyles}>{datasetCount.toLocaleString()}</Tag>
+        <Tag.Root {...tagStyles}>{datasetCount.toLocaleString()}</Tag.Root>
         {` and ${TAB_LABELS.OTHER_RESOURCES} `}
-        <Tag {...tagStyles}>{otherResourcesCount.toLocaleString()}</Tag>
+        <Tag.Root {...tagStyles}>
+          {otherResourcesCount.toLocaleString()}
+        </Tag.Root>
       </Text>
     );
   }
@@ -115,7 +116,7 @@ const TabLabels = ({
   return (
     <Text as='h2' {...textStyles}>
       {type.label}
-      <Tag {...tagStyles}>{type.count.toLocaleString()}</Tag>
+      <Tag.Root {...tagStyles}>{type.count.toLocaleString()}</Tag.Root>
     </Text>
   );
 };

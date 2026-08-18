@@ -38,96 +38,95 @@ export const EnumInput: React.FC<EnumInputProps> = ({
   }, [handleChange, selectedOption]);
 
   return (
-    <Flex
-      as='form'
-      w='100%'
-      alignItems='center'
-      onSubmit={e => {
-        e.preventDefault();
-        handleSubmit({
-          term: selectedOption?.label || '',
-          querystring: selectedOption?.value || '',
-        });
-        setSelectedOption(defaultOption);
-      }}
-    >
-      <Select
-        defaultValue={defaultOption}
-        isDisabled={isDisabled}
-        isSearchable={true}
-        name='Field options'
-        value={selectedOption}
-        options={options}
-        onChange={(option: any) => {
-          setSelectedOption(option);
+    <Flex w='100%' alignItems='center' asChild>
+      <form
+        onSubmit={e => {
+          e.preventDefault();
+          handleSubmit({
+            term: selectedOption?.label || '',
+            querystring: selectedOption?.value || '',
+          });
+          setSelectedOption(defaultOption);
         }}
-        styles={{
-          valueContainer: base => ({
-            ...base,
-            ...customStyles[size]?.valueContainer,
-          }),
-          input: base => ({
-            ...base,
-            ...customStyles[size]?.input,
-          }),
-          indicatorSeparator: base => ({
-            ...base,
-            ...customStyles[size]?.indicatorSeparator,
-          }),
-          indicatorsContainer: base => ({
-            ...base,
-            ...customStyles[size]?.indicatorsContainer,
-          }),
-          container: base => ({ ...base, flex: 1 }),
-          control: base => ({
-            ...base,
-            ...customStyles[size]?.control,
-            borderColor: theme.colors.gray[200],
-            boxShadow: 'none',
-            ':hover': {
+      >
+        <Select
+          defaultValue={defaultOption}
+          isDisabled={isDisabled}
+          isSearchable={true}
+          name='Field options'
+          value={selectedOption}
+          options={options}
+          onChange={(option: any) => {
+            setSelectedOption(option);
+          }}
+          styles={{
+            valueContainer: base => ({
+              ...base,
+              ...customStyles[size]?.valueContainer,
+            }),
+            input: base => ({
+              ...base,
+              ...customStyles[size]?.input,
+            }),
+            indicatorSeparator: base => ({
+              ...base,
+              ...customStyles[size]?.indicatorSeparator,
+            }),
+            indicatorsContainer: base => ({
+              ...base,
+              ...customStyles[size]?.indicatorsContainer,
+            }),
+            container: base => ({ ...base, flex: 1 }),
+            control: base => ({
+              ...base,
+              ...customStyles[size]?.control,
               borderColor: theme.colors.gray[200],
-            },
-            ':focus': {
-              borderColor: theme.colors.primary[500],
-              boxShadow: `0 0 0 1px ${theme.colors.primary[600]}`,
-            },
-            ':focus-within': {
-              borderColor: theme.colors.primary[500],
-              boxShadow: `0 0 0 1px ${theme.colors.primary[600]}`,
-            },
-          }),
-          option: (base, { isFocused, isSelected }) => ({
-            ...base,
-            ...customStyles[size]?.option,
-            cursor: 'pointer',
-            backgroundColor: isSelected
-              ? theme.colors.primary[500]
-              : isFocused
-              ? theme.colors.primary[100]
-              : 'transparent',
-            color: isSelected ? 'white' : theme.colors.text.body,
-            ':hover': {
-              background: isSelected
+              boxShadow: 'none',
+              ':hover': {
+                borderColor: theme.colors.gray[200],
+              },
+              ':focus': {
+                borderColor: theme.colors.primary[500],
+                boxShadow: `0 0 0 1px ${theme.colors.primary[600]}`,
+              },
+              ':focus-within': {
+                borderColor: theme.colors.primary[500],
+                boxShadow: `0 0 0 1px ${theme.colors.primary[600]}`,
+              },
+            }),
+            option: (base, { isFocused, isSelected }) => ({
+              ...base,
+              ...customStyles[size]?.option,
+              cursor: 'pointer',
+              backgroundColor: isSelected
                 ? theme.colors.primary[500]
-                : theme.colors.primary[100],
-            },
-          }),
-          singleValue: base => ({
-            ...base,
-            ...customStyles[size]?.singleValue,
+                : isFocused
+                ? theme.colors.primary[100]
+                : 'transparent',
+              color: isSelected ? 'white' : theme.colors.text.body,
+              ':hover': {
+                background: isSelected
+                  ? theme.colors.primary[500]
+                  : theme.colors.primary[100],
+              },
+            }),
+            singleValue: base => ({
+              ...base,
+              ...customStyles[size]?.singleValue,
 
-            fontWeight: theme.fontWeights['medium' as any],
-          }),
-        }}
-      />
-      <Flex mx={2}>
-        {renderSubmitButton &&
-          renderSubmitButton({
-            type: 'submit',
-            w: '100%',
-            isDisabled: false,
-          })}
-      </Flex>
+              fontWeight: theme.fontWeights['medium' as any],
+            }),
+          }}
+        />
+        <Flex mx={2}>
+          {renderSubmitButton &&
+            renderSubmitButton({
+              type: 'submit',
+              w: '100%',
+              isDisabled: false,
+            })}
+        </Flex>
+      </form>
     </Flex>
   );
 };

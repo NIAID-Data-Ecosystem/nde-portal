@@ -11,8 +11,8 @@ import {
   Tr,
   VisuallyHidden,
   useDisclosure,
-  Tooltip,
 } from '@chakra-ui/react';
+import { Tooltip } from '@/components/ui/tooltip';
 import { Link } from 'src/components/link';
 import { IsBasedOn, IsBasisFor } from 'src/utils/api/types';
 import { uniqueId } from 'lodash';
@@ -28,7 +28,7 @@ import { TagWithUrl } from 'src/components/tag-with-url';
 // TruncatedDescription: Component for displaying truncated text with 'read more/less' option
 const TruncatedDescription = React.memo(
   ({ description }: { description: Item['description'] }) => {
-    const { isOpen, onToggle } = useDisclosure();
+    const { open, onToggle } = useDisclosure();
 
     if (!description) return <></>;
 
@@ -39,7 +39,7 @@ const TruncatedDescription = React.memo(
         {!isOpen && hasMore ? '...' : ''}
         {hasMore ? (
           <Button
-            variant='link'
+            variant='plain'
             textDecoration='underline'
             mx={1}
             onClick={onToggle}
@@ -153,29 +153,29 @@ const BasedOnTable = ({
   if (!isLoading && items?.length === 0) return <></>;
 
   return (
-    <Skeleton isLoaded={!isLoading} overflow='auto'>
+    <Skeleton loading={!!isLoading} overflow='auto'>
       {title && (
         <Heading as='h4' fontSize='sm' mx={1} mb={4} fontWeight='semibold'>
           {title}
         </Heading>
       )}
       <TableWrapper colorScheme='primary'>
-        <TableContainer>
-          <Table
+        <Table.ScrollArea>
+          <Table.Root
             role='table'
             aria-label={title}
             aria-describedby={caption}
             aria-rowcount={rows.length}
           >
             {/* Note: keep for accessibility */}
-            <VisuallyHidden id={`table-caption-${id}`} as='caption'>
-              {title}
+            <VisuallyHidden id={`table-caption-${id}`} asChild>
+              <caption>{title}</caption>
             </VisuallyHidden>
             <thead>
-              <Tr role='row' flex='1' display='flex' w='100%'>
+              <Table.Row role='row' flex='1' display='flex' w='100%'>
                 {columns.map(column => {
                   return (
-                    <Th
+                    <Table.ColumnHeader
                       key={`table-col-th-${column.key}`}
                       label={column.title}
                       isSelected={column.key === orderBy}
@@ -189,10 +189,10 @@ const BasedOnTable = ({
                         },
                       }}
                       {...column.props}
-                    ></Th>
+                    ></Table.ColumnHeader>
                   );
                 })}
-              </Tr>
+              </Table.Row>
             </thead>
             <tbody>
               {rows.map(item => {
@@ -203,134 +203,133 @@ const BasedOnTable = ({
                       flexDirection='column'
                       py={1}
                     >
-                      <Flex as='td' role='cell' alignItems='center'>
-                        {columns.map(column => {
-                          return (
-                            <Cell
-                              key={`table-td-${item.key}-${column.key}`}
-                              sx={{ '>div': { my: 0 } }}
-                              {...column.props}
-                            >
-                              {/* name */}
-                              {column.key === 'name' && (
-                                <Box>
-                                  <Text fontSize='xs'>
-                                    {item.name ? (
-                                      item.url ? (
-                                        <Link
-                                          href={item.url}
-                                          isExternal
-                                          lineHeight={'shorter'}
-                                        >
-                                          {item.name}
-                                        </Link>
+                      <Flex role='cell' alignItems='center' asChild>
+                        <td>
+                          {columns.map(column => {
+                            return (
+                              <Cell
+                                key={`table-td-${item.key}-${column.key}`}
+                                sx={{ '>div': { my: 0 } }}
+                                {...column.props}
+                              >
+                                {/* name */}
+                                {column.key === 'name' && (
+                                  <Box>
+                                    <Text fontSize='xs'>
+                                      {item.name ? (
+                                        item.url ? (
+                                          <Link
+                                            href={item.url}
+                                            isExternal
+                                            lineHeight={'shorter'}
+                                          >
+                                            {item.name}
+                                          </Link>
+                                        ) : (
+                                          item.name
+                                        )
                                       ) : (
-                                        item.name
-                                      )
-                                    ) : (
-                                      <EmptyCell label='No name provided' />
+                                        <EmptyCell label='No name provided' />
+                                      )}
+                                    </Text>
+                                    {(item.identifier ||
+                                      item.pmid ||
+                                      item.doi) && (
+                                      <Stack gap={1} mt={1}>
+                                        {item.identifier && (
+                                          <TagWithUrl
+                                            // only add url here if there is no name (name field is default used for the link)
+                                            href={
+                                              !item.name && item.url
+                                                ? item.url
+                                                : ''
+                                            }
+                                            label='ID |'
+                                            isExternal
+                                          >
+                                            {item.identifier}
+                                          </TagWithUrl>
+                                        )}
+                                        {item.pmid && (
+                                          <TagWithUrl label='PMID |' isExternal>
+                                            {item.pmid}
+                                          </TagWithUrl>
+                                        )}
+                                        {item.doi && (
+                                          <TagWithUrl label='DOI |' isExternal>
+                                            {item.doi}
+                                          </TagWithUrl>
+                                        )}
+                                      </Stack>
                                     )}
-                                  </Text>
-                                  {(item.identifier ||
-                                    item.pmid ||
-                                    item.doi) && (
-                                    <Stack spacing={1} mt={1}>
-                                      {item.identifier && (
-                                        <TagWithUrl
-                                          // only add url here if there is no name (name field is default used for the link)
-                                          href={
-                                            !item.name && item.url
-                                              ? item.url
-                                              : ''
-                                          }
-                                          label='ID |'
-                                          isExternal
-                                        >
-                                          {item.identifier}
-                                        </TagWithUrl>
-                                      )}
-                                      {item.pmid && (
-                                        <TagWithUrl label='PMID |' isExternal>
-                                          {item.pmid}
-                                        </TagWithUrl>
-                                      )}
-                                      {item.doi && (
-                                        <TagWithUrl label='DOI |' isExternal>
-                                          {item.doi}
-                                        </TagWithUrl>
-                                      )}
-                                    </Stack>
-                                  )}
-                                </Box>
-                              )}
-
-                              {/* type */}
-                              {column.key === '@type' &&
-                                (item.type.length > 0 &&
-                                item.type.some(type => {
-                                  return type.name || type.url;
-                                }) ? (
-                                  <>
-                                    {item.type.map((type, idx) => {
-                                      if (!type?.name && !type?.url)
-                                        return <React.Fragment key={idx} />;
-                                      return (
-                                        <Tooltip
-                                          key={idx}
-                                          label={
-                                            type?.url
-                                              ? 'Show ontology information.'
-                                              : ''
-                                          }
-                                          hasArrow
-                                          bg='white'
-                                          color='text.body'
-                                          fontWeight='normal'
-                                          fontSize='12px'
-                                          boxShadow='base'
-                                        >
-                                          <span>
-                                            <TagWithUrl
-                                              href={type?.url || ''}
-                                              colorScheme='primary'
-                                              isExternal
-                                            >
-                                              {type?.name ||
-                                                type?.url ||
-                                                'No type provided'}
-                                            </TagWithUrl>
-                                          </span>
-                                        </Tooltip>
-                                      );
-                                    })}
-                                  </>
-                                ) : (
-                                  <EmptyCell />
-                                ))}
-
-                              {/* datePublished */}
-                              {column.key === 'datePublished' &&
-                                (item.datePublished ? (
-                                  <>
-                                    {new Date(
-                                      item['datePublished'] as string,
-                                    ).toLocaleDateString('en-US', {
-                                      year: 'numeric',
-                                      month: 'short',
-                                      day: 'numeric',
-                                    })}
-                                  </>
-                                ) : (
-                                  <EmptyCell />
-                                ))}
-                            </Cell>
-                          );
-                        })}
+                                  </Box>
+                                )}
+                                {/* type */}
+                                {column.key === '@type' &&
+                                  (item.type.length > 0 &&
+                                  item.type.some(type => {
+                                    return type.name || type.url;
+                                  }) ? (
+                                    <>
+                                      {item.type.map((type, idx) => {
+                                        if (!type?.name && !type?.url)
+                                          return <React.Fragment key={idx} />;
+                                        return (
+                                          <Tooltip
+                                            key={idx}
+                                            content={
+                                              type?.url
+                                                ? 'Show ontology information.'
+                                                : ''
+                                            }
+                                            showArrow
+                                            bg='white'
+                                            color='text.body'
+                                            fontWeight='normal'
+                                            fontSize='12px'
+                                            boxShadow='base'
+                                          >
+                                            <span>
+                                              <TagWithUrl
+                                                href={type?.url || ''}
+                                                colorScheme='primary'
+                                                isExternal
+                                              >
+                                                {type?.name ||
+                                                  type?.url ||
+                                                  'No type provided'}
+                                              </TagWithUrl>
+                                            </span>
+                                          </Tooltip>
+                                        );
+                                      })}
+                                    </>
+                                  ) : (
+                                    <EmptyCell />
+                                  ))}
+                                {/* datePublished */}
+                                {column.key === 'datePublished' &&
+                                  (item.datePublished ? (
+                                    <>
+                                      {new Date(
+                                        item['datePublished'] as string,
+                                      ).toLocaleDateString('en-US', {
+                                        year: 'numeric',
+                                        month: 'short',
+                                        day: 'numeric',
+                                      })}
+                                    </>
+                                  ) : (
+                                    <EmptyCell />
+                                  ))}
+                              </Cell>
+                            );
+                          })}
+                        </td>
                       </Flex>
 
                       {item.description && (
                         <Box
-                          as='td'
                           role='cell'
                           px={3}
                           my={2}
@@ -339,10 +338,13 @@ const BasedOnTable = ({
                           whiteSpace='pre-wrap'
                           wordBreak='break-word'
                           fontWeight='normal'
+                          asChild
                         >
-                          <TruncatedDescription
-                            description={item.description}
-                          />
+                          <td>
+                            <TruncatedDescription
+                              description={item.description}
+                            />
+                          </td>
                         </Box>
                       )}
                     </Row>
@@ -350,8 +352,8 @@ const BasedOnTable = ({
                 );
               })}
             </tbody>
-          </Table>
-        </TableContainer>
+          </Table.Root>
+        </Table.ScrollArea>
         <TablePagination
           total={items.length}
           size={size}

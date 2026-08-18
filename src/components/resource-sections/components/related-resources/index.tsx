@@ -57,7 +57,7 @@ export const RelatedResources = ({
     'url',
   ]);
   return (
-    <VStack className='related-resource' spacing={6}>
+    <VStack className='related-resource' gap={6}>
       {/* Side-by-side: isBasisFor | isRelatedTo  */}
       {(hasIsBasisFor || hasIsRelatedTo) && (
         <Grid
@@ -125,7 +125,6 @@ export const RelatedResources = ({
           )}
         </Grid>
       )}
-
       {/* Side-by-side: isPartOf | hasPartOf  */}
       {(hasIsPartOf || hasHasPart) && (
         <Grid

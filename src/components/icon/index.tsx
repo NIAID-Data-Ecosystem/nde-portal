@@ -62,7 +62,6 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
     } else if (glyph?.toLowerCase() === 'info') {
       FaIcon = () => (
         <Icon
-          as={FaInfo}
           color={color || 'gray.700'}
           fill={fill || '#000'}
           boxSize={boxSize || '1.15rem'}
@@ -71,7 +70,10 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
           p='0.2rem'
           aria-label='information'
           {...props}
-        />
+          asChild
+        >
+          <FaInfo />
+        </Icon>
       );
     } else {
       FaIcon = null;
@@ -83,7 +85,6 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
         </VisuallyHidden>
         {FaIcon ? (
           <Icon
-            as={FaIcon}
             viewBox={viewBox || '0 0 200 200'}
             color={color || '#000'}
             fill={fill || '#000'}
@@ -91,7 +92,10 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
             // title={title}
             aria-label={title}
             {...props}
-          />
+            asChild
+          >
+            <FaIcon />
+          </Icon>
         ) : (
           <Icon
             viewBox={viewBox || '0 0 200 200'}

@@ -42,20 +42,12 @@ export const OntologyTreeBreadcrumbs = ({
         py={2}
         pl={4}
         flexWrap='wrap'
-        spacing={0}
-        divider={
-          <Icon
-            as={FaAngleRight}
-            color='gray.400'
-            boxSize={3}
-            borderLeft='none'
-          />
-        }
+        gap={0}
       >
         {lineageNodes.map((node, index) => (
           <React.Fragment key={node.id}>
             <Button
-              colorScheme='gray'
+              colorPalette='gray'
               variant='ghost'
               size='sm'
               px={1}
@@ -91,14 +83,15 @@ export const OntologyTreeBreadcrumbs = ({
         >
           <IconButton
             aria-label='show parent node'
-            icon={<FaEllipsis />}
             variant='ghost'
-            colorScheme='gray'
+            colorPalette='gray'
             size='sm'
             color='currentColor'
             justifyContent='flex-start'
             px={2}
-          />
+          >
+            <FaEllipsis />
+          </IconButton>
         </Flex>
       </Tooltip>
     </>

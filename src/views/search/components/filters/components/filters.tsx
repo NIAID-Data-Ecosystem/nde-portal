@@ -1,13 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
-  Text,
-} from '@chakra-ui/react';
+import { Accordion, Box, Text } from '@chakra-ui/react';
 import { useFilterQueries } from '../hooks/useFilterQueries';
 import {
   queryFilterObject2String,
@@ -264,12 +256,12 @@ export const Filters = React.memo(
           removeAllFilters();
         }}
       >
-        <Accordion allowMultiple defaultIndex={categoryAccordionDefaultIndex}>
+        <Accordion.Root multiple defaultValue={categoryAccordionDefaultIndex}>
           {groupedCategories.map(([category, filtersInCategory]) => {
             return (
-              <AccordionItem key={category} border='none'>
+              <Accordion.Item key={category} border='none' value='item-0'>
                 <h2>
-                  <AccordionButton
+                  <Accordion.ItemTrigger
                     px={4}
                     py={{ base: 3, md: 2 }}
                     bg='gray.50'
@@ -287,80 +279,83 @@ export const Filters = React.memo(
                       </Text>
                     </Box>
 
-                    <AccordionIcon />
-                  </AccordionButton>
+                    <Accordion.ItemIndicator />
+                  </Accordion.ItemTrigger>
                 </h2>
-                <AccordionPanel px={2} py={1} bg='blackAlpha.50'>
-                  <Accordion
-                    allowMultiple
-                    defaultIndex={getFilterIndicesForOpenState(
-                      filtersInCategory,
-                    )}
-                  >
-                    {filtersInCategory.map(filterConfig => {
-                      const { id, name, property, description } = filterConfig;
-                      const selected = selectedFilters?.[property]?.map(
-                        filter => {
-                          if (typeof filter === 'object') {
-                            return Object.keys(filter)[0];
-                          }
-                          return filter;
-                        },
-                      );
+                <Accordion.ItemContent px={2} py={1} bg='blackAlpha.50'>
+                  <Accordion.ItemBody>
+                    <Accordion.Root
+                      multiple
+                      defaultValue={getFilterIndicesForOpenState(
+                        filtersInCategory,
+                      )}
+                    >
+                      {filtersInCategory.map(filterConfig => {
+                        const { id, name, property, description } =
+                          filterConfig;
+                        const selected = selectedFilters?.[property]?.map(
+                          filter => {
+                            if (typeof filter === 'object') {
+                              return Object.keys(filter)[0];
+                            }
+                            return filter;
+                          },
+                        );
 
-                      return (
-                        <FiltersSection
-                          key={name}
-                          name={name}
-                          description={description}
-                          filterId={filterConfig.chart ? id : undefined}
-                          isVizActive={
-                            filterConfig.chart && isVizActive
-                              ? isVizActive(id)
-                              : false
-                          }
-                          onToggleViz={onToggleViz}
-                        >
-                          {id === 'date' ? (
-                            <DateFilter
-                              colorScheme={colorScheme}
-                              handleSelectedFilter={values =>
-                                handleSelectedFilters(values, property)
-                              }
-                              resetFilter={() =>
-                                handleSelectedFilters([], property)
-                              }
-                              selectedDates={selected || []}
-                              updatedAggregateQueryData={filtersAggQuery}
-                              queryParams={filtersAggParams}
-                              showHistogram={false}
-                              showDateControls={showDateControls}
-                              enabled={isFiltersFetchEnabled}
-                            />
-                          ) : (
-                            <FiltersList
-                              config={filterConfig}
-                              colorScheme={colorScheme}
-                              searchPlaceholder={`Search ${name.toLowerCase()} filters`}
-                              terms={results?.[id]?.terms || []}
-                              selectedFilters={selected || []}
-                              handleSelectedFilters={values =>
-                                handleSelectedFilters(values, property)
-                              }
-                              isLoading={results?.[id]?.isLoading ?? true}
-                              // Per-filter state only
-                              isUpdating={results?.[id]?.isUpdating}
-                            />
-                          )}
-                        </FiltersSection>
-                      );
-                    })}
-                  </Accordion>
-                </AccordionPanel>
-              </AccordionItem>
+                        return (
+                          <FiltersSection
+                            key={name}
+                            name={name}
+                            description={description}
+                            filterId={filterConfig.chart ? id : undefined}
+                            isVizActive={
+                              filterConfig.chart && isVizActive
+                                ? isVizActive(id)
+                                : false
+                            }
+                            onToggleViz={onToggleViz}
+                          >
+                            {id === 'date' ? (
+                              <DateFilter
+                                colorScheme={colorScheme}
+                                handleSelectedFilter={values =>
+                                  handleSelectedFilters(values, property)
+                                }
+                                resetFilter={() =>
+                                  handleSelectedFilters([], property)
+                                }
+                                selectedDates={selected || []}
+                                updatedAggregateQueryData={filtersAggQuery}
+                                queryParams={filtersAggParams}
+                                showHistogram={false}
+                                showDateControls={showDateControls}
+                                enabled={isFiltersFetchEnabled}
+                              />
+                            ) : (
+                              <FiltersList
+                                config={filterConfig}
+                                colorScheme={colorScheme}
+                                searchPlaceholder={`Search ${name.toLowerCase()} filters`}
+                                terms={results?.[id]?.terms || []}
+                                selectedFilters={selected || []}
+                                handleSelectedFilters={values =>
+                                  handleSelectedFilters(values, property)
+                                }
+                                isLoading={results?.[id]?.isLoading ?? true}
+                                // Per-filter state only
+                                isUpdating={results?.[id]?.isUpdating}
+                              />
+                            )}
+                          </FiltersSection>
+                        );
+                      })}
+                    </Accordion.Root>
+                  </Accordion.ItemBody>
+                </Accordion.ItemContent>
+              </Accordion.Item>
             );
           })}
-        </Accordion>
+        </Accordion.Root>
       </FiltersContainer>
     );
   },

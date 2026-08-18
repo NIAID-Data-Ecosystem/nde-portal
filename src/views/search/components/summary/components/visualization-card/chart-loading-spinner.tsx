@@ -16,7 +16,7 @@ export const ChartLoadingSpinner = () => (
       emptyColor='white'
       position='absolute'
       size='md'
-      thickness='2px'
+      borderWidth='2px'
     />
   </Flex>
 );

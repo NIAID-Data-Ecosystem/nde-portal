@@ -1,8 +1,9 @@
-import { ListProps, UnorderedList } from '@chakra-ui/react';
+import { ListProps, List } from '@chakra-ui/react';
 
 export const OptionsList: React.FC<ListProps> = ({ children, ...props }) => {
   return (
-    <UnorderedList
+    <List.Root
+      as='ul'
       position='absolute'
       maxH='300px'
       overflowX='hidden'
@@ -17,6 +18,6 @@ export const OptionsList: React.FC<ListProps> = ({ children, ...props }) => {
       {...props}
     >
       {children}
-    </UnorderedList>
+    </List.Root>
   );
 };

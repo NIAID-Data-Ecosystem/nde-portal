@@ -30,7 +30,7 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
 
   // Sets display to modal/expand view.
   const {
-    isOpen: isModalView,
+    open: isModalView,
     onOpen: openModalView,
     onClose: closeModalView,
   } = useDisclosure();

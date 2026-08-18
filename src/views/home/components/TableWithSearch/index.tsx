@@ -97,7 +97,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
         <Flex flexDirection='column'>
           <Stack
             direction='row'
-            spacing={2}
+            gap={2}
             mb={2}
             flexWrap='wrap'
             alignItems='center'
@@ -117,7 +117,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
             <Filters data={data} filters={filters} setFilters={setFilters} />
           </Stack>
 
-          <Stack direction='column' flexWrap='wrap' py={2} spacing={2}>
+          <Stack direction='column' flexWrap='wrap' py={2} gap={2}>
             <Box>
               {/* <!-- Number of results --> */}
               <Text fontSize='sm' fontWeight='semibold' lineHeight='normal'>
@@ -131,46 +131,46 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
             {/* <!-- Filter Tags--> */}
             <Stack
               direction='row'
-              spacing={2}
+              gap={2}
               flex={1}
               flexWrap='wrap'
               minW='300px'
             >
               {filters.length > 0 && (
-                <Tag
+                <Tag.Root
                   key='clear'
                   size='lg'
                   variant='outline'
                   borderRadius='full'
-                  colorScheme='primary'
+                  colorPalette='primary'
                   borderColor='primary.100'
                 >
-                  <TagLabel>Clear all</TagLabel>
-                  <TagCloseButton onClick={() => setFilters([])} />
-                </Tag>
+                  <Tag.Label>Clear all</Tag.Label>
+                  <Tag.CloseTrigger onClick={() => setFilters([])} />
+                </Tag.Root>
               )}
               {filters.map(filter => {
                 const { name, property, value } = filter;
                 return (
-                  <Tag
+                  <Tag.Root
                     key={property + '-' + value}
                     size='lg'
                     variant='subtle'
                     borderRadius='full'
-                    colorScheme='primary'
+                    colorPalette='primary'
                   >
-                    <TagLabel fontWeight='medium'>{name}</TagLabel>
-                    <TagCloseButton
+                    <Tag.Label fontWeight='medium'>{name}</Tag.Label>
+                    <Tag.CloseTrigger
                       onClick={() => removeSingleFilter(filter)}
                     />
-                  </Tag>
+                  </Tag.Root>
                 );
               })}
             </Stack>
           </Stack>
 
           {/* <!-- Table --> */}
-          <Table
+          <Table.Root
             emptyState={emptyState}
             stickyHeader
             data={isLoading ? Array(10).fill({}) : filteredData}
@@ -218,7 +218,7 @@ export const RepositoryCells = ({
         <SkeletonText
           data-testid={isLoading ? 'loading' : 'loaded'}
           isLoaded={Boolean(!isLoading && data._id)}
-          noOfLines={2}
+          lineClamp={2}
           w='100%'
           fontSize='sm'
         >
@@ -231,20 +231,18 @@ export const RepositoryCells = ({
           )}
         </SkeletonText>
       )}
-
       {/* Repository/Resource Catalog brief description */}
       {column.property === 'abstract' && (
         <SkeletonText
           data-testid={isLoading ? 'loading' : 'loaded'}
           isLoaded={Boolean(!isLoading && data._id)}
-          spacing='2'
+          gap='2'
           w='100%'
           fontSize='sm'
         >
-          <Text noOfLines={3}>{data[column.property]}</Text>
+          <Text lineClamp={3}>{data[column.property]}</Text>
         </SkeletonText>
       )}
-
       {/* Repository / Resource Catalog type, domain and conditions of access */}
       {(column.property === 'type' ||
         column.property === 'domain' ||
@@ -256,7 +254,7 @@ export const RepositoryCells = ({
           w='100%'
           h='100%'
           fontSize='sm'
-          noOfLines={2}
+          lineClamp={2}
         >
           {column.property === 'type' &&
             (data.type && data.type.length > 0

@@ -82,7 +82,7 @@ export const ResultsCount: React.FC<ResultsCountProps> = ({
           <Spinner
             color='primary.500'
             emptyColor='gray.200'
-            thickness='2px'
+            borderWidth='2px'
             mx={2}
           ></Spinner>
         ) : (

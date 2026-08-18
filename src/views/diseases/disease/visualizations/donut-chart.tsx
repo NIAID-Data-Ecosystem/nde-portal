@@ -194,18 +194,23 @@ export const DonutChart = ({
       width={{ base: '100%', md: 'unset' }}
     >
       {/* Toggle log scale */}
-      <Checkbox
-        isChecked={applyLogScale}
-        onChange={() => setApplyLogScale(!applyLogScale)}
+      <Checkbox.Root
+        onCheckedChange={() => setApplyLogScale(!applyLogScale)}
         alignSelf='flex-start'
+        checked={applyLogScale}
       >
-        <InfoLabel
-          title='Apply log scale'
-          tooltipText='Log scale compresses large values, making smaller categories more visible while preserving
+        <Checkbox.HiddenInput />
+        <Checkbox.Control>
+          <Checkbox.Indicator />
+        </Checkbox.Control>
+        <Checkbox.Label>
+          <InfoLabel
+            title='Apply log scale'
+            tooltipText='Log scale compresses large values, making smaller categories more visible while preserving
           proportions. Original counts are shown in tooltips.'
-        ></InfoLabel>
-      </Checkbox>
-
+          ></InfoLabel>
+        </Checkbox.Label>
+      </Checkbox.Root>
       {/* Donut Chart */}
       <div ref={parentRef} style={{ width: '100%', height: `${height}px` }}>
         <Box ref={containerRef} width={width} height={height}>
@@ -268,7 +273,6 @@ export const DonutChart = ({
           </svg>
         </Box>
       </div>
-
       {/* Tooltip */}
       {tooltipOpen && tooltipData && (
         <TooltipInPortal
@@ -473,11 +477,11 @@ function AnimatedPie<Datum extends { count: number }>({
                   fontSize='xs'
                   fontWeight='semibold'
                   lineHeight='normal'
-                  sx={{
+                  css={{
                     hyphens: 'auto',
                     whiteSpace: 'normal',
                   }}
-                  noOfLines={2}
+                  lineClamp={2}
                 >
                   {displayLabel}
                 </Text>

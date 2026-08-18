@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
-import { Collapse, ListItem, UnorderedList, VStack } from '@chakra-ui/react';
+import { Collapsible, VStack, List } from '@chakra-ui/react';
 import Card from './components/card';
 import { ErrorMessage } from './components/error';
 import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
@@ -479,13 +479,15 @@ export const SearchResults = ({
         />
 
         {/* Display banner on last page if results exceed amount allotted by API */}
-        <Collapse in={from === Math.floor(MAX_RESULTS / size)} animateOpacity>
-          <Banner status='info'>
-            Only the first {MAX_RESULTS.toLocaleString()} results are displayed,
-            please limit your query to get better results or use our API to
-            download all results.
-          </Banner>
-        </Collapse>
+        <Collapsible.Root open={from === Math.floor(MAX_RESULTS / size)}>
+          <Collapsible.Content>
+            <Banner status='info'>
+              Only the first {MAX_RESULTS.toLocaleString()} results are
+              displayed, please limit your query to get better results or use
+              our API to download all results.
+            </Banner>
+          </Collapsible.Content>
+        </Collapsible.Root>
 
         {/* Samples tab */}
         {isSamplesTab ? (
@@ -533,28 +535,30 @@ export const SearchResults = ({
           /* Dataset / ComputationalTool / DataCollection tabs in card view: render result cards */
           numCards > 0 && (
             <VStack
-              as={UnorderedList}
               className='search-results-cards'
               alignItems='flex-start'
               flex={3}
               ml={0}
-              spacing={4}
+              gap={4}
               w='100%'
+              asChild
             >
-              {Array(numCards)
-                .fill(null)
-                .map((_, idx) => {
-                  return (
-                    <ListItem key={data?.results?.[idx]._id || idx} w='100%'>
-                      <Card
-                        isLoading={!router.isReady || isLoading}
-                        data={data?.results[idx]}
-                        referrerPath={router.asPath}
-                        querystring={urlQueryParams.q}
-                      />
-                    </ListItem>
-                  );
-                })}
+              <UnorderedList>
+                {Array(numCards)
+                  .fill(null)
+                  .map((_, idx) => {
+                    return (
+                      <List.Item key={data?.results?.[idx]._id || idx} w='100%'>
+                        <Card
+                          isLoading={!router.isReady || isLoading}
+                          data={data?.results[idx]}
+                          referrerPath={router.asPath}
+                          querystring={urlQueryParams.q}
+                        />
+                      </List.Item>
+                    );
+                  })}
+              </UnorderedList>
             </VStack>
           )
         )}

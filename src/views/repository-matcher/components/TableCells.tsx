@@ -55,9 +55,9 @@ export const TagCellList = ({
       ))}
       {shouldTruncate && (
         <Button
-          variant='link'
+          variant='plain'
           size='xs'
-          colorScheme='primary'
+          colorPalette='primary'
           fontWeight='medium'
           onClick={() => setExpanded(prev => !prev)}
         >
@@ -102,14 +102,14 @@ export const TagCell = ({
   return (
     <Tooltip label={label} isDisabled={!value || !isTruncated} hasArrow>
       <Box>
-        <Tag
+        <Tag.Root
           variant='subtle'
-          noOfLines={noOfLines}
+          lineClamp={noOfLines}
           borderRadius='full'
           {...props}
         >
-          <TagLabel ref={labelRef}>{label}</TagLabel>
-        </Tag>
+          <Tag.Label ref={labelRef}>{label}</Tag.Label>
+        </Tag.Root>
       </Box>
     </Tooltip>
   );
@@ -148,15 +148,10 @@ export const TextCell = ({
   const clampLines = expandable && expanded ? undefined : noOfLines;
 
   return (
-    <SkeletonText
-      isLoaded={!isLoading}
-      noOfLines={noOfLines}
-      spacing='2'
-      w='100%'
-    >
+    <SkeletonText isLoaded={!isLoading} lineClamp={noOfLines} gap='2' w='100%'>
       <Text
         ref={textRef}
-        noOfLines={clampLines}
+        lineClamp={clampLines}
         fontStyle={value ? 'normal' : 'italic'}
         lineHeight='shorter'
         fontSize='xs'
@@ -166,9 +161,9 @@ export const TextCell = ({
       </Text>
       {expandable && (isTruncated || expanded) && (
         <Button
-          variant='link'
+          variant='plain'
           size='xs'
-          colorScheme='primary'
+          colorPalette='primary'
           fontWeight='medium'
           mt='1'
           onClick={() => setExpanded(prev => !prev)}
@@ -192,7 +187,7 @@ export const TextCellWithLink = ({
   isExternal?: boolean;
 }) => {
   return (
-    <SkeletonText isLoaded={!isLoading} noOfLines={2} fontSize='xs' w='100%'>
+    <SkeletonText isLoaded={!isLoading} lineClamp={2} fontSize='xs' w='100%'>
       {url ? (
         <NextLink href={url} prefetch={false} passHref>
           <Link as='div' isExternal={isExternal}>

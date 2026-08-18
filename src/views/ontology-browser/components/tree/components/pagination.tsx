@@ -45,10 +45,10 @@ export const Pagination = ({
       </Text>
       {hasMore && (
         <Button
-          isDisabled={isDisabled}
-          isLoading={isLoading}
+          disabled={isDisabled}
+          loading={isLoading}
           size='sm'
-          variant='link'
+          variant='plain'
           onClick={onShowMore}
           fontSize='inherit'
           mx={2}

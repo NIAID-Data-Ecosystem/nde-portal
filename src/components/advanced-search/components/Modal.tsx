@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  ModalProps,
-} from '@chakra-ui/react';
+import { Box, ModalProps, Dialog, Portal } from '@chakra-ui/react';
 
 export interface AdvancedSearchModalProps extends Omit<ModalProps, 'onClose'> {
   isOpen: boolean;
@@ -23,21 +14,29 @@ export const AdvancedSearchModal: React.FC<AdvancedSearchModalProps> = ({
   ...props
 }) => {
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={handleClose}
-      blockScrollOnMount={false}
-      size='5xl'
+    <Dialog.Root
+      open={isOpen}
+      preventScroll={false}
+      size='xl'
       {...props}
+      onOpenChange={e => {
+        if (!e.open) {
+          handleClose();
+        }
+      }}
     >
-      <ModalOverlay height='100vh' />
-      <ModalContent>
-        <ModalHeader>Advanced Search</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <Box>{children}</Box>
-        </ModalBody>
-      </ModalContent>
-    </Modal>
+      <Portal>
+        <Dialog.Backdrop height='100vh' />
+        <Dialog.Positioner>
+          <Dialog.Content>
+            <Dialog.Header>Advanced Search</Dialog.Header>
+            <Dialog.CloseTrigger />
+            <Dialog.Body>
+              <Box>{children}</Box>
+            </Dialog.Body>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Portal>
+    </Dialog.Root>
   );
 };

@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import NextLink from 'next/link';
-import { Box, Flex, ListItem, Text, UnorderedList } from '@chakra-ui/react';
+import { Box, Flex, Text, List } from '@chakra-ui/react';
 import { UrlObject } from 'url';
 import { Link } from 'src/components/link';
 import { ScrollContainer } from 'src/components/scroll-container';
@@ -70,7 +70,7 @@ export const BrushableListChart = ({
           minHeight={`${SCROLL_HEIGHT}px`}
         >
           {selectedData.map(item => (
-            <ListItem
+            <List.Item
               key={item.term}
               fontSize='sm'
               color='gray.500'
@@ -96,7 +96,7 @@ export const BrushableListChart = ({
 
               {/* Count */}
               <Text>{item.count.toLocaleString()}</Text>
-            </ListItem>
+            </List.Item>
           ))}
         </ScrollContainer>
       </Box>

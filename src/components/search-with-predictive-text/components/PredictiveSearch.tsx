@@ -3,11 +3,11 @@ import { groupBy, uniqBy } from 'lodash';
 import {
   Box,
   Circle,
-  Divider,
   Flex,
   Icon,
   InputProps,
   Text,
+  Separator,
 } from '@chakra-ui/react';
 import { FaInfo } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
@@ -166,7 +166,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
                 <Text fontStyle='italic' p={2} fontSize='xs'>
                   No results
                 </Text>
-                <Divider w='100%' mx={8} />
+                <Separator w='100%' mx={8} />
                 <Flex p={4}>
                   <Circle
                     size='20px'
@@ -175,7 +175,9 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
                     color='gray.600'
                     mr={1}
                   >
-                    <Icon as={FaInfo} boxSize={2} />
+                    <Icon boxSize={2} asChild>
+                      <FaInfo />
+                    </Icon>
                   </Circle>
                   <Text fontSize='xs' lineHeight='shorter'>
                     The Discovery Portal attempts to standardize metadata that

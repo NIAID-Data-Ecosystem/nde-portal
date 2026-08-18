@@ -62,7 +62,7 @@ const SavedResourceNameCell = ({
             : addSavedDataset(value)
         }
       />
-      <VStack alignItems='flex-start' spacing={1} fontSize='xs' pt={1}>
+      <VStack alignItems='flex-start' gap={1} fontSize='xs' pt={1}>
         <TextCellWithLink
           label={value?.name || ''}
           url={value?.url}
@@ -412,7 +412,7 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
       if (!tags || !tags.length)
         return <TextCell value='' isLoading={isLoading} />;
       return (
-        <HStack flexWrap='wrap' spacing={1}>
+        <HStack flexWrap='wrap' gap={1}>
           {tags.map(tag => {
             const str = `${tag.name}: ${tag.displayValue}`;
             return (

@@ -6,12 +6,6 @@ import {
   FlexProps,
   Icon,
   Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverCloseButton,
-  PopoverHeader,
-  PopoverBody,
-  PopoverArrow,
   Text,
 } from '@chakra-ui/react';
 import { FaCaretDown, FaGear } from 'react-icons/fa6';
@@ -67,51 +61,55 @@ export const OntologyBrowserSettings: React.FC<OntologyPopoverProps> = ({
 }) => {
   return (
     <Flex flex={{ base: 1, sm: 'unset' }} height={{ base: 'unset' }} {...rest}>
-      <Popover>
-        <PopoverTrigger>
+      <Popover.Root>
+        <Popover.Trigger asChild>
           <Button
-            colorScheme='primary'
+            colorPalette='primary'
             flex={1}
             fontWeight='medium'
             fontSize='inherit'
             lineHeight='shorter'
             px={4}
-            leftIcon={<Icon as={FaGear} color='inherit' />}
-            rightIcon={<FaCaretDown />}
             variant='outline'
             justifyContent='space-between'
             {...buttonProps}
           >
+            <Icon color='inherit' asChild>
+              <FaGear />
+            </Icon>
             {buttonProps?.children || label}
+            <FaCaretDown />
           </Button>
-        </PopoverTrigger>
-        <PopoverContent>
-          <PopoverArrow />
-          <PopoverCloseButton />
-          <PopoverHeader>
-            <Text fontWeight='semibold' lineHeight='normal' my={1}>
-              {label}
-            </Text>
-            {description && (
-              <Text
-                color='page.placeholder'
-                fontSize='sm'
-                fontStyle='italic'
-                fontWeight='normal'
-                lineHeight='short'
-                mt={1.5}
-              >
-                {description}
+        </Popover.Trigger>
+        <Popover.Positioner>
+          <Popover.Content>
+            <Popover.Arrow />
+            <Popover.CloseTrigger />
+            <Popover.Title>
+              <Text fontWeight='semibold' lineHeight='normal' my={1}>
+                {label}
               </Text>
-            )}
-          </PopoverHeader>
-          <PopoverBody>
-            <ScrollContainer maxHeight='300px'>
-              <OntologyViewSettings settings={settings} />
-            </ScrollContainer>
-          </PopoverBody>
-        </PopoverContent>
-      </Popover>
+              {description && (
+                <Text
+                  color='page.placeholder'
+                  fontSize='sm'
+                  fontStyle='italic'
+                  fontWeight='normal'
+                  lineHeight='short'
+                  mt={1.5}
+                >
+                  {description}
+                </Text>
+              )}
+            </Popover.Title>
+            <Popover.Body>
+              <ScrollContainer maxHeight='300px'>
+                <OntologyViewSettings settings={settings} />
+              </ScrollContainer>
+            </Popover.Body>
+          </Popover.Content>
+        </Popover.Positioner>
+      </Popover.Root>
     </Flex>
   );
 };

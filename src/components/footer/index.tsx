@@ -4,12 +4,11 @@ import {
   Flex,
   Heading,
   HeadingProps,
-  ListItem,
   ListProps,
   SimpleGrid,
   Stack,
   TextProps,
-  UnorderedList,
+  List,
 } from '@chakra-ui/react';
 import { Logo } from 'src/components/logos';
 import SITE_CONFIG from 'configs/site.config.json';
@@ -64,7 +63,7 @@ export const Footer = () => {
         >
           {label}
         </LinksHeading>
-        <UnorderedList ml={0} {...listProps}>
+        <List.Root as='ul' ml={0} {...listProps}>
           {routes &&
             routes.map(route => {
               if (route.routes) {
@@ -81,7 +80,7 @@ export const Footer = () => {
                 );
               }
               return (
-                <ListItem key={route.label}>
+                <List.Item key={route.label}>
                   {route.href && (
                     <FooterLink
                       href={route.href}
@@ -91,10 +90,10 @@ export const Footer = () => {
                       {route.label}
                     </FooterLink>
                   )}
-                </ListItem>
+                </List.Item>
               );
             })}
-        </UnorderedList>
+        </List.Root>
       </>
     );
   };
@@ -138,11 +137,11 @@ export const Footer = () => {
                   {section.label && (
                     <LinksHeading mt={8}>{section.label}</LinksHeading>
                   )}
-                  <UnorderedList ml={0} my={4}>
+                  <List.Root as='ul' ml={0} my={4}>
                     {section.routes &&
                       section.routes.map(({ href, label, isExternal }) => {
                         return (
-                          <ListItem
+                          <List.Item
                             key={label}
                             alignItems='flex-start'
                             mt={1}
@@ -162,10 +161,10 @@ export const Footer = () => {
                             >
                               {label}
                             </FooterLink>
-                          </ListItem>
+                          </List.Item>
                         );
                       })}
-                  </UnorderedList>
+                  </List.Root>
                 </Box>
               );
             })}

@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  FlexProps,
-  Heading,
-  StackDivider,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { FlexProps, Heading, Text, VStack } from '@chakra-ui/react';
 
 import { ScrollContainer } from 'src/components/scroll-container';
 

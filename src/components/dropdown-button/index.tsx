@@ -9,9 +9,8 @@ import {
   Icon,
   IconButton,
   IconButtonProps,
-  ListItem,
   ListItemProps,
-  UnorderedList,
+  List,
 } from '@chakra-ui/react';
 import { UnionTypes } from 'src/components/advanced-search/types';
 
@@ -48,11 +47,10 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
   return (
     <Box onMouseLeave={() => setOptionsOpen(false)} height={height}>
       <ButtonGroup
-        isAttached
+        attached
         variant='solid'
         size={size}
-        colorScheme={colorScheme}
-        isDisabled={isDisabled}
+        colorPalette={colorScheme}
         height={height}
         {...props}
       >
@@ -61,6 +59,7 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
           type={type}
           height={height}
           _focus={{ boxShadow: 'none' }}
+          disabled={isDisabled}
         >
           {selectedOption || placeholder}
         </Button>
@@ -69,7 +68,6 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
             height={height}
             aria-label={ariaLabel}
             alignItems='center'
-            icon={<Icon as={FaAngleDown} />}
             onClick={() => setOptionsOpen(!optionsOpen)}
             onMouseEnter={() => setOptionsOpen(true)}
             bg={`${colorScheme}.400`}
@@ -78,7 +76,11 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
             }}
             _focus={{ boxShadow: 'none' }}
             {...props.iconButtonProps}
-          />
+          >
+            <Icon asChild>
+              <FaAngleDown />
+            </Icon>
+          </IconButton>
         )}
       </ButtonGroup>
       {/* Menu of options */}
@@ -95,10 +97,10 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
             bg='white'
             w='100%'
           >
-            <UnorderedList ml={0}>
+            <List.Root as='ul' ml={0}>
               {options.map(option => {
                 return (
-                  <ListItem
+                  <List.Item
                     key={option.value}
                     px={4}
                     py={1}
@@ -114,10 +116,10 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
                     {...option.props}
                   >
                     {option.name}
-                  </ListItem>
+                  </List.Item>
                 );
               })}
-            </UnorderedList>
+            </List.Root>
           </Box>
         </Box>
       )}

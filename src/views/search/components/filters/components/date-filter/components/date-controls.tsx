@@ -58,18 +58,23 @@ export const DateControls: React.FC<DateControlsProps> = ({
         handleSelectedFilter={onDateSelect}
         resetFilter={onResetFilter}
       />
-
       {/* Checkbox to toggle items with/without dates. Default behavior shows all resources. */}
-      <Checkbox
+      <Checkbox.Root
         mt={4}
-        isChecked={isNoDateCheckboxChecked}
-        onChange={handleToggleNoDateResources}
-        isDisabled={!resourcesWithNoDate.length}
+        onCheckedChange={handleToggleNoDateResources}
+        disabled={!resourcesWithNoDate.length}
+        checked={isNoDateCheckboxChecked}
       >
-        <Text fontSize='sm' fontWeight='medium' lineHeight='shorter'>
-          Include {noDateCount} resources with no date information.
-        </Text>
-      </Checkbox>
+        <Checkbox.HiddenInput />
+        <Checkbox.Control>
+          <Checkbox.Indicator />
+        </Checkbox.Control>
+        <Checkbox.Label>
+          <Text fontSize='sm' fontWeight='medium' lineHeight='shorter'>
+            Include {noDateCount} resources with no date information.
+          </Text>
+        </Checkbox.Label>
+      </Checkbox.Root>
     </Flex>
   );
 };

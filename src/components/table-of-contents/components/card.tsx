@@ -51,7 +51,7 @@ export const StyledCard: React.FC<StyledCardProps> = ({
     <StyledCardWrapper id={id} isLoading={isLoading}>
       <VStack alignItems='flex-start' lineHeight='short' mt={2}>
         <Stack
-          spacing={{ base: 4, lg: 6, xl: 10 }}
+          gap={{ base: 4, lg: 6, xl: 10 }}
           flexDirection='row'
           alignItems='unset'
           flexWrap='wrap-reverse'
@@ -123,7 +123,7 @@ export const StyledCardStack: React.FC<StackProps> = ({
   ...props
 }) => {
   return (
-    <VStack spacing={6} mt={4} alignItems='flex-start' {...props}>
+    <VStack gap={6} mt={4} alignItems='flex-start' {...props}>
       {children}
     </VStack>
   );
@@ -136,7 +136,7 @@ export const StyledCardWrapper: React.FC<
     <Skeleton
       as='section'
       id={id}
-      isLoaded={!isLoading}
+      loading={!!isLoading}
       minHeight={isLoading ? '200px' : 'unset'}
       w='100%'
       boxShadow='low'
@@ -199,38 +199,42 @@ export const StyledCardButton: React.FC<StyledCardButtonProps> = ({
   ...props
 }) => {
   return (
-    <Box as={NextLink} href={href} passHref legacyBehavior>
-      <Button
-        as='a'
-        size='sm'
-        rightIcon={
-          <Icon
-            as={FaChevronRight}
-            boxSize={3}
-            ml={1}
-            transition='all .3s ease'
-            transform='translateX(-5px)'
-          />
-        }
-        wordBreak='break-word'
-        whiteSpace='normal'
-        textAlign='center'
-        height='unset'
-        width={{ base: '100%', md: 'unset' }}
-        colorScheme='primary'
-        sx={{
-          '&:hover': {
-            svg: {
-              transform: 'translateX(0)',
-              transition: 'all .3s ease',
+    <Box asChild>
+      <NextLink href={href} legacyBehavior>
+        <Button
+          size='sm'
+          wordBreak='break-word'
+          whiteSpace='normal'
+          textAlign='center'
+          height='unset'
+          width={{ base: '100%', md: 'unset' }}
+          colorPalette='primary'
+          css={{
+            '& &:hover': {
+              svg: {
+                transform: 'translateX(0)',
+                transition: 'all .3s ease',
+              },
             },
-          },
-        }}
-        mt={2}
-        {...props}
-      >
-        {children}
-      </Button>
+          }}
+          mt={2}
+          {...props}
+          asChild
+        >
+          <a>
+            {children}
+            <Icon
+              boxSize={3}
+              ml={1}
+              transition='all .3s ease'
+              transform='translateX(-5px)'
+              asChild
+            >
+              <FaChevronRight />
+            </Icon>
+          </a>
+        </Button>
+      </NextLink>
     </Box>
   );
 };

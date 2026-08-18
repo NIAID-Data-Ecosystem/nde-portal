@@ -91,11 +91,11 @@ export const PaginationButton: React.FC<PaginationButtonProps> = ({
     <>
       {/* Desktop is a select dropdown */}
       <Button
-        colorScheme='primary'
+        colorPalette='primary'
         px={2}
         m={1}
         variant={isActive ? 'solid' : 'outline'}
-        isActive={isActive}
+        data-active
         title={
           title || typeof children == 'string'
             ? `Go to page ${children}`

@@ -19,7 +19,7 @@ export const SidebarContainer = ({
   bg,
   ...props
 }: SidebarContainerProps) => {
-  const { isOpen, onOpen, onClose } = useDisclosure({ defaultIsOpen: true });
+  const { open, onOpen, onClose } = useDisclosure({ defaultIsOpen: true });
 
   return (
     <>
@@ -27,7 +27,7 @@ export const SidebarContainer = ({
         <Button
           aria-label='Expand documentation navigation menu'
           onClick={onOpen}
-          colorScheme='gray'
+          colorPalette='gray'
           bg={bg || 'white'}
           variant='ghost'
           borderRight='1px solid'
@@ -37,7 +37,9 @@ export const SidebarContainer = ({
           display='flex'
           alignItems='flex-start'
         >
-          <Icon as={FaAnglesRight} position='sticky' top={4} />
+          <Icon position='sticky' top={4} asChild>
+            <FaAnglesRight />
+          </Icon>
         </Button>
       )}
       <Box
@@ -62,14 +64,16 @@ export const SidebarContainer = ({
             <Button
               aria-label='Collapse documentation navigation menu'
               onClick={onClose}
-              colorScheme='gray'
+              colorPalette='gray'
               variant='ghost'
               borderRadius='none'
               display='flex'
               alignItems='center'
               gap={2}
             >
-              <Icon as={FaAnglesLeft} />
+              <Icon asChild>
+                <FaAnglesLeft />
+              </Icon>
               <Text fontSize='sm' fontWeight='semibold'>
                 Hide Menu
               </Text>

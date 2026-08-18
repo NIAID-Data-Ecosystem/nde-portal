@@ -1,4 +1,4 @@
-import { Box, Button, Collapse, Flex, Text } from '@chakra-ui/react';
+import { Box, Button, Collapsible, Flex, Text } from '@chakra-ui/react';
 import { useState } from 'react';
 import {
   AdvancedSearchFormContext,
@@ -97,19 +97,20 @@ const ItemContent = ({
           <FieldTag />
         </Flex>
       </Box>
-      <Collapse in={errors.length > 0}>
-        {errors.map(error => (
-          <Text
-            key={error.id}
-            color='status.error'
-            fontSize='xs'
-            fontStyle='italic'
-          >
-            {error.message}
-          </Text>
-        ))}
-      </Collapse>
-
+      <Collapsible.Root open={errors.length > 0}>
+        <Collapsible.Content>
+          {errors.map(error => (
+            <Text
+              key={error.id}
+              color='status.error'
+              fontSize='xs'
+              fontStyle='italic'
+            >
+              {error.message}
+            </Text>
+          ))}
+        </Collapsible.Content>
+      </Collapsible.Root>
       <Flex alignItems='center' justifyContent='flex-end' mt={2}>
         <Button
           variant='outline'
@@ -125,7 +126,7 @@ const ItemContent = ({
         <Button
           size='sm'
           m={1}
-          isDisabled={
+          disabled={
             !{
               ...value,
               ...queryValue,

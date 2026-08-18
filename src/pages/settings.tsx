@@ -181,11 +181,11 @@ function SettingToggle({
         )}
       </VStack>
       <Switch
-        colorScheme='primary'
+        colorPalette='primary'
         aria-label={label}
-        isChecked={isChecked}
-        isDisabled={isDisabled}
-        onChange={e => onChange(e.target.checked)}
+        checked={isChecked}
+        disabled={isDisabled}
+        onValueChange={e => onChange(e.target.checked)}
       />
     </HStack>
   );
@@ -263,11 +263,11 @@ function UserSettingsPage() {
               <SettingToggle
                 key={key}
                 {...SETTINGS_COPY.toggles[key]}
-                isChecked={getChecked(key)}
-                onChange={() => updateSetting(key)}
+                checked={getChecked(key)}
+                onValueChange={() => updateSetting(key)}
                 showBorder={index < section.toggleKeys.length - 1}
                 alert={toggleAlerts[key]}
-                isDisabled={toggleDisabled[key]}
+                disabled={toggleDisabled[key]}
               />
             ))}
           </SettingsSection>
@@ -275,7 +275,7 @@ function UserSettingsPage() {
 
         {/* Log Out Button */}
         <Button
-          colorScheme='red'
+          colorPalette='red'
           variant='ghost'
           size='sm'
           onClick={logout}

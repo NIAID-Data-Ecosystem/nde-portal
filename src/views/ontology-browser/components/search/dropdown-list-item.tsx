@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Highlight, Icon, ListItem, Text } from '@chakra-ui/react';
+import { Box, Highlight, Icon, Text, List } from '@chakra-ui/react';
 import { useDropdownContext } from 'src/components/input-with-dropdown';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 
@@ -23,7 +23,7 @@ export const DropdownListItem = React.memo(
   }) => {
     const { cursor, getListItemProps } = useDropdownContext();
     return (
-      <ListItem
+      <List.Item
         display='flex'
         cursor='pointer'
         px={2}
@@ -37,13 +37,9 @@ export const DropdownListItem = React.memo(
           onClick: () => handleSubmit(),
         })}
       >
-        <Icon
-          as={FaMagnifyingGlass}
-          mr={2}
-          mt={1.5}
-          color='primary.400'
-          boxSize={3}
-        />
+        <Icon mr={2} mt={1.5} color='primary.400' boxSize={3} asChild>
+          <FaMagnifyingGlass />
+        </Icon>
         <Box>
           {/* Ontology label */}
           {ontology && (
@@ -79,7 +75,7 @@ export const DropdownListItem = React.memo(
             </Highlight>
           </Text>
         </Box>
-      </ListItem>
+      </List.Item>
     );
   },
 );

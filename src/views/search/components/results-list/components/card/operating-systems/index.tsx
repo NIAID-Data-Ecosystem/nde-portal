@@ -1,5 +1,6 @@
 import React from 'react';
-import { Flex, FlexProps, Icon, Tooltip } from '@chakra-ui/react';
+import { Flex, FlexProps, Icon } from '@chakra-ui/react';
+import { Tooltip } from '@/components/ui/tooltip';
 import { FaComputer } from 'react-icons/fa6';
 import { operatingSystemIcons } from 'src/utils/helpers/operating-system-icons';
 
@@ -16,8 +17,8 @@ const OperatingSystems: React.FC<OperatingSystemProps> = ({ data }) => {
         return (
           <Tooltip
             key={`${item}`}
-            label={`Operating system supported: ${item}`}
-            hasArrow
+            content={`Operating system supported: ${item}`}
+            showArrow
             bg='#fff'
             sx={{
               color: 'text.body',

@@ -49,12 +49,9 @@ export const MetadataContent = ({
                 <Text wordBreak='break-word' w='100%'>
                   {name}
                 </Text>
-                <Icon
-                  as={FaSquareArrowUpRight}
-                  boxSize={2.5}
-                  ml={1}
-                  color='gray.800'
-                />
+                <Icon boxSize={2.5} ml={1} color='gray.800' asChild>
+                  <FaSquareArrowUpRight />
+                </Icon>
               </Link>
             ) : (
               <Text fontWeight='normal' wordBreak='break-word' w='100%'>

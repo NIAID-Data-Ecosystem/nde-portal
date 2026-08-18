@@ -28,21 +28,21 @@ export const ViewModeRadio = ({ id, value, onChange }: ViewModeRadioProps) => {
       >
         View mode:
       </Text>
-      <RadioGroup
+      <RadioGroup.Root
         size='sm'
         name={`view-mode-${id}`}
         aria-labelledby={labelId}
         value={value}
-        onChange={next => onChange(next as SearchViewMode)}
+        onValueChange={next => onChange(next as SearchViewMode)}
       >
-        <Stack direction='row' spacing={4} fontSize='sm'>
+        <Stack direction='row' gap={4} fontSize='sm'>
           {VIEW_MODE_OPTIONS.map(option => (
             <Radio key={option.value} value={option.value}>
               {option.label}
             </Radio>
           ))}
         </Stack>
-      </RadioGroup>
+      </RadioGroup.Root>
     </Flex>
   );
 };

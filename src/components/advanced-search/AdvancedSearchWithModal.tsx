@@ -23,7 +23,7 @@ export const AdvancedSearchWithModal: React.FC<
   AdvancedSearchPropsWithModal
 > = ({ buttonProps, modalProps, ...props }) => {
   // Handles the opening of the modal.
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { open, onOpen, onClose } = useDisclosure();
 
   return (
     <>

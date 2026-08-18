@@ -186,17 +186,23 @@ export const BarChart = ({
     <>
       <Flex justifyContent='space-between' alignItems='flex-end'>
         {/* Toggle for log scale */}
-        <Checkbox
-          isChecked={applyLogScale}
-          onChange={() => setApplyLogScale(!applyLogScale)}
+        <Checkbox.Root
+          onCheckedChange={() => setApplyLogScale(!applyLogScale)}
           alignSelf='flex-end'
+          checked={applyLogScale}
         >
-          <InfoLabel
-            title='Apply log scale'
-            tooltipText='Log scale compresses large values, making smaller categories more visible while preserving
+          <Checkbox.HiddenInput />
+          <Checkbox.Control>
+            <Checkbox.Indicator />
+          </Checkbox.Control>
+          <Checkbox.Label>
+            <InfoLabel
+              title='Apply log scale'
+              tooltipText='Log scale compresses large values, making smaller categories more visible while preserving
               proportions. Original counts are shown in tooltips.'
-          ></InfoLabel>
-        </Checkbox>
+            ></InfoLabel>
+          </Checkbox.Label>
+        </Checkbox.Root>
         <Legend id={`${id}-iidpattern-swatch`} />
       </Flex>
       <div ref={parentRef} style={{ width: '100%', height: `${svgHeight}px` }}>
@@ -304,7 +310,7 @@ export const BarChart = ({
                             fontSize='xs'
                             lineHeight='normal'
                             maxWidth={`${xMax}px`}
-                            noOfLines={1}
+                            lineClamp={1}
                             visibility={isLoading ? 'hidden' : 'visible'}
                           >
                             {datum?.info?.name || datum.term} |{' '}
@@ -398,7 +404,7 @@ const IIDPattern = ({ id }: { id: string }) => {
 const Legend = ({ id }: { id: string }) => {
   const swatchSize = 16;
   return (
-    <VStack alignItems='flex-start' spacing={1}>
+    <VStack alignItems='flex-start' gap={1}>
       {/* IID Pattern Swatch */}
       <HStack>
         <svg width={swatchSize} height={swatchSize}>

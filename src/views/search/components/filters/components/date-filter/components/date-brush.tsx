@@ -509,77 +509,79 @@ export const DateBrush = ({
       aria-label='Use the arrow keys to move the brush selection. Press Tab to toggle the brush handles.'
     >
       <Box
-        as='svg'
         width={containerWidth}
         height={TOTAL_HEIGHT}
         style={{ overflow: 'visible' }}
+        asChild
       >
-        <Group left={margin.left} top={margin.top}>
-          {/* Brush selection area. key forces remount only on external changes.*/}
-          <Brush
-            key={brushKey}
-            xScale={xScale}
-            yScale={yScale}
-            width={innerWidth}
-            height={BRUSH_HEIGHT}
-            innerRef={brushRef}
-            resizeTriggerAreas={['left', 'right']}
-            brushDirection='horizontal'
-            initialBrushPosition={calculatedBrushPosition}
-            onChange={onBrushChange}
-            onBrushEnd={handleBrushEnd}
-            onBrushStart={handleBrushStart}
-            selectedBoxStyle={{
-              fill: theme.colors.secondary?.[500],
-              fillOpacity: 0.3,
-              stroke: theme.colors.secondary?.[500],
-              strokeWidth: isFocused ? 2 : 1.5,
-              strokeOpacity: isFocused ? 1 : 0.8,
-            }}
-            useWindowMoveEvents
-            renderBrushHandle={props => {
-              const isLeftHandle = props.className?.includes('left');
-              const label = brushYears
-                ? isLeftHandle
-                  ? brushYears.startYear
-                  : brushYears.endYear
-                : undefined;
+        <svg>
+          <Group left={margin.left} top={margin.top}>
+            {/* Brush selection area. key forces remount only on external changes.*/}
+            <Brush
+              key={brushKey}
+              xScale={xScale}
+              yScale={yScale}
+              width={innerWidth}
+              height={BRUSH_HEIGHT}
+              innerRef={brushRef}
+              resizeTriggerAreas={['left', 'right']}
+              brushDirection='horizontal'
+              initialBrushPosition={calculatedBrushPosition}
+              onChange={onBrushChange}
+              onBrushEnd={handleBrushEnd}
+              onBrushStart={handleBrushStart}
+              selectedBoxStyle={{
+                fill: theme.colors.secondary?.[500],
+                fillOpacity: 0.3,
+                stroke: theme.colors.secondary?.[500],
+                strokeWidth: isFocused ? 2 : 1.5,
+                strokeOpacity: isFocused ? 1 : 0.8,
+              }}
+              useWindowMoveEvents
+              renderBrushHandle={props => {
+                const isLeftHandle = props.className?.includes('left');
+                const label = brushYears
+                  ? isLeftHandle
+                    ? brushYears.startYear
+                    : brushYears.endYear
+                  : undefined;
 
-              return (
-                <BrushHandle
-                  {...props}
-                  isFocused={Boolean(
-                    activeHandle && props.className?.includes(activeHandle),
-                  )}
-                  label={label}
-                  strokeColor={theme.colors.secondary?.[500]}
-                  labelColor={theme.colors.secondary?.[500]}
-                  labelOptions={{
-                    padding: 6,
-                    fontSize: 13,
-                    fontWeight: 600,
-                    verticalAdjustment: (BRUSH_HEIGHT - 15) / 8,
-                  }}
-                />
-              );
-            }}
-          />
+                return (
+                  <BrushHandle
+                    {...props}
+                    isFocused={Boolean(
+                      activeHandle && props.className?.includes(activeHandle),
+                    )}
+                    label={label}
+                    strokeColor={theme.colors.secondary?.[500]}
+                    labelColor={theme.colors.secondary?.[500]}
+                    labelOptions={{
+                      padding: 6,
+                      fontSize: 13,
+                      fontWeight: 600,
+                      verticalAdjustment: (BRUSH_HEIGHT - 15) / 8,
+                    }}
+                  />
+                );
+              }}
+            />
 
-          {/* x-axis with fixed labels (earliest and current year) */}
-          <AxisBottom
-            top={BRUSH_HEIGHT}
-            scale={xScale}
-            tickValues={tickValues}
-            tickFormat={tickFormat}
-            stroke={theme.colors.gray[300]}
-            tickStroke={theme.colors.gray[300]}
-            tickLabelProps={() => ({
-              fill: theme.colors.gray[600],
-              fontSize: 13,
-              textAnchor: 'middle',
-            })}
-          />
-        </Group>
+            {/* x-axis with fixed labels (earliest and current year) */}
+            <AxisBottom
+              top={BRUSH_HEIGHT}
+              scale={xScale}
+              tickValues={tickValues}
+              tickFormat={tickFormat}
+              stroke={theme.colors.gray[300]}
+              tickStroke={theme.colors.gray[300]}
+              tickLabelProps={() => ({
+                fill: theme.colors.gray[600],
+                fontSize: 13,
+                textAnchor: 'middle',
+              })}
+            />
+          </Group>
+        </svg>
       </Box>
     </div>
   );

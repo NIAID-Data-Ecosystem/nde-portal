@@ -4,7 +4,6 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import {
-  Divider,
   Flex,
   Heading,
   HStack,
@@ -12,6 +11,7 @@ import {
   SkeletonText,
   Tag,
   Text,
+  Separator,
 } from '@chakra-ui/react';
 import Empty from 'src/components/empty';
 import { FeaturedPageProps } from '../types';
@@ -54,7 +54,7 @@ const Main = ({ data, isLoading }: MainContentProps) => {
             <SkeletonText
               isLoaded={!isLoading}
               mb={2}
-              noOfLines={1}
+              lineClamp={1}
               skeletonHeight={10}
             >
               <Heading as='h1' size='xl'>
@@ -64,7 +64,7 @@ const Main = ({ data, isLoading }: MainContentProps) => {
             <SkeletonText
               isLoaded={!isLoading}
               mb={4}
-              noOfLines={1}
+              lineClamp={1}
               skeletonHeight={6}
             >
               <Text color='gray.700' lineHeight='short'>
@@ -73,7 +73,7 @@ const Main = ({ data, isLoading }: MainContentProps) => {
             </SkeletonText>
 
             <Skeleton
-              isLoaded={!isLoading}
+              loading={!!isLoading}
               height='100%'
               display='flex'
               flexDirection='column'
@@ -85,25 +85,25 @@ const Main = ({ data, isLoading }: MainContentProps) => {
                 {data?.content || ''}
               </ReactMarkdown>
               {data?.categories && data?.categories?.length > 0 && (
-                <HStack spacing={2} mt={8}>
+                <HStack gap={2} mt={8}>
                   {data.categories.map(({ id, name }) => (
-                    <Tag
+                    <Tag.Root
                       key={id}
                       variant='outline'
                       size='sm'
-                      colorScheme='accent'
+                      colorPalette='accent'
                     >
                       {name}
-                    </Tag>
+                    </Tag.Root>
                   ))}
                 </HStack>
               )}
             </Skeleton>
 
-            <Divider orientation='horizontal' my={4} />
+            <Separator orientation='horizontal' my={4} />
             <SkeletonText
               isLoaded={!isLoading}
-              noOfLines={1}
+              lineClamp={1}
               skeletonHeight={4}
             >
               <Text

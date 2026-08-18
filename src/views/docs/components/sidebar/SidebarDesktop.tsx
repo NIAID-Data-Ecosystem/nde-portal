@@ -1,15 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
   Box,
   Flex,
   Icon,
   SkeletonText,
   Text,
-  UnorderedList,
+  List,
 } from '@chakra-ui/react';
 import { FaAngleDown, FaAngleRight } from 'react-icons/fa6';
 import { DocumentItem } from './DocumentItem';
@@ -73,21 +70,23 @@ export const SidebarDesktop = ({
   }, [selectedSlug]);
 
   return (
-    <Accordion
-      index={expandedIndices}
-      onChange={indices => {
-        // Allow manual toggling of categories
-        setExpandedIndices(Array.isArray(indices) ? indices : [indices]);
-      }}
-      allowMultiple
+    <Accordion.Root
+      value={expandedIndices}
+      onValueChange={({ value: value }) =>
+        (indices => {
+          // Allow manual toggling of categories
+          setExpandedIndices(Array.isArray(indices) ? indices : [indices]);
+        })(value)
+      }
+      multiple
       minW='350px'
     >
       {categories.map(category => (
-        <AccordionItem key={category.id} mt={4} border='none'>
+        <Accordion.Item key={category.id} mt={4} border='none' value='item-0'>
           {({ isExpanded }) => (
             <>
               <h2>
-                <AccordionButton
+                <Accordion.ItemTrigger
                   p={0}
                   py={2}
                   mb={1}
@@ -98,7 +97,7 @@ export const SidebarDesktop = ({
                   <SkeletonText
                     isLoaded={!isLoading}
                     width={isLoading ? '80%' : '100%'}
-                    noOfLines={1}
+                    lineClamp={1}
                     skeletonHeight={4}
                     display='flex'
                     alignItems='center'
@@ -126,34 +125,40 @@ export const SidebarDesktop = ({
                     mr={2}
                   >
                     {isExpanded ? (
-                      <Icon as={FaAngleDown} boxSize={4} />
+                      <Icon boxSize={4} asChild>
+                        <FaAngleDown />
+                      </Icon>
                     ) : (
-                      <Icon as={FaAngleRight} boxSize={4} />
+                      <Icon boxSize={4} asChild>
+                        <FaAngleRight />
+                      </Icon>
                     )}
                   </Box>
-                </AccordionButton>
+                </Accordion.ItemTrigger>
               </h2>
-              <AccordionPanel p={0}>
-                <UnorderedList ml={0}>
-                  {category.items.map(item => {
-                    if (!item?.slug) return null;
-                    return (
-                      <DocumentItem
-                        key={item.id}
-                        item={item}
-                        selectedSlug={selectedSlug}
-                        colorScheme={colorScheme}
-                        isLoading={isLoading}
-                        activePageSlug={selectedSlug}
-                      />
-                    );
-                  })}
-                </UnorderedList>
-              </AccordionPanel>
+              <Accordion.ItemContent p={0}>
+                <Accordion.ItemBody>
+                  <List.Root as='ul' ml={0}>
+                    {category.items.map(item => {
+                      if (!item?.slug) return null;
+                      return (
+                        <DocumentItem
+                          key={item.id}
+                          item={item}
+                          selectedSlug={selectedSlug}
+                          colorScheme={colorScheme}
+                          isLoading={isLoading}
+                          activePageSlug={selectedSlug}
+                        />
+                      );
+                    })}
+                  </List.Root>
+                </Accordion.ItemBody>
+              </Accordion.ItemContent>
             </>
           )}
-        </AccordionItem>
+        </Accordion.Item>
       ))}
-    </Accordion>
+    </Accordion.Root>
   );
 };

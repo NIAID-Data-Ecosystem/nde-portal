@@ -1,4 +1,5 @@
-import { Radio, RadioProps, Text, Tooltip } from '@chakra-ui/react';
+import { Radio, RadioProps, Text } from '@chakra-ui/react';
+import { Tooltip } from '@/components/ui/tooltip';
 import { SearchTypesConfigProps } from '../../../search-types-config';
 
 export const RadioTooltip: React.FC<Partial<RadioItemProps>> = ({
@@ -9,10 +10,10 @@ export const RadioTooltip: React.FC<Partial<RadioItemProps>> = ({
 }) => {
   return (
     <Tooltip
-      hasArrow
-      isDisabled={isDisabled}
+      showArrow
+      disabled={isDisabled}
       whiteSpace='pre-line'
-      label={
+      content={
         <>
           {description && (
             <>
@@ -59,7 +60,7 @@ export const RadioItem: React.FC<RadioItemProps> = ({
   };
   return (
     <Radio
-      isDisabled={isDisabled}
+      disabled={isDisabled}
       _focus={{
         boxShadow: props.isChecked && !isDisabled ? 'outline' : 'none',
       }}

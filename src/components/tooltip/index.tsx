@@ -1,8 +1,6 @@
 import React from 'react';
-import {
-  Tooltip as ChakraTooltip,
-  TooltipProps as ChakraTooltipProps,
-} from '@chakra-ui/react';
+import { TooltipProps as ChakraTooltipProps } from '@chakra-ui/react';
+import { Tooltip as ChakraTooltip } from '@/components/ui/tooltip';
 import { theme } from 'src/theme';
 
 interface TooltipProps extends ChakraTooltipProps {}

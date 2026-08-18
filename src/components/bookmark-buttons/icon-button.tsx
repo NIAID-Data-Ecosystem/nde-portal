@@ -14,22 +14,25 @@ export const BookmarkIconButton: React.FC<
   return (
     <Tooltip label={label}>
       <IconButton
-        icon={
-          isFavorited ? (
-            <Icon as={FaBookmark} fill='link.color' />
-          ) : (
-            <Icon as={FaRegBookmark} fill='page.placeholder' />
-          )
-        }
         aria-label={label}
         onClick={onClick}
         variant='ghost'
         isRound={true}
         borderRadius='50%'
         size='sm'
-        colorScheme='blue'
+        colorPalette='blue'
         {...props}
-      />
+      >
+        {isFavorited ? (
+          <Icon fill='link.color' asChild>
+            <FaBookmark />
+          </Icon>
+        ) : (
+          <Icon fill='page.placeholder' asChild>
+            <FaRegBookmark />
+          </Icon>
+        )}
+      </IconButton>
     </Tooltip>
   );
 };

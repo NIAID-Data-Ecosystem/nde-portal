@@ -52,9 +52,9 @@ const DesktopLoginAction = ({
 }) => {
   return (
     <Button
-      isLoading={isLoading}
+      loading={isLoading}
       variant='outline'
-      colorScheme='white'
+      colorPalette='white'
       bg='transparent'
       alignSelf='center'
       _hover={{ bg: 'whiteAlpha.300' }}
@@ -74,7 +74,7 @@ const LogoutButton = ({
   return (
     <Button
       size='sm'
-      colorScheme='red'
+      colorPalette='red'
       color='red.500'
       onClick={onLogout}
       variant='ghost'
@@ -119,10 +119,10 @@ const DesktopAccountAction = ({
 const MobileLoadingAction = () => {
   return (
     <Button
-      isLoading={true}
+      loading={true}
       size='sm'
       w='100%'
-      colorScheme='niaid'
+      colorPalette='niaid'
       variant='ghost'
     >
       Loading
@@ -132,7 +132,7 @@ const MobileLoadingAction = () => {
 
 const MobileLoginAction = ({ onLogin }: { onLogin: () => void }) => {
   return (
-    <Button size='sm' w='100%' colorScheme='niaid' onClick={() => onLogin()}>
+    <Button size='sm' w='100%' colorPalette='niaid' onClick={() => onLogin()}>
       {ACCOUNTS_CONFIG.login}
     </Button>
   );

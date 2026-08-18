@@ -18,25 +18,27 @@ export const TableSortToggle = ({
   return (
     <Flex display='inline-flex' ml={2}>
       <IconButton
-        icon={<FaCaretUp />}
         aria-label='sort table column ascending'
         ml={0.5}
-        colorScheme='gray'
+        colorPalette='gray'
         variant='ghost'
         size='xs'
         color={isSelected && sortBy === 'ASC' ? 'inherit' : 'gray.200'}
         onClick={() => handleToggle(true)}
-      />
+      >
+        <FaCaretUp />
+      </IconButton>
       <IconButton
-        icon={<FaCaretDown />}
         aria-label='sort table column descending'
         ml={0.5}
-        colorScheme='gray'
+        colorPalette='gray'
         size='xs'
         variant='ghost'
         color={isSelected && sortBy === 'DESC' ? 'inherit' : 'gray.200'}
         onClick={() => handleToggle(false)}
-      />
+      >
+        <FaCaretDown />
+      </IconButton>
     </Flex>
   );
 };

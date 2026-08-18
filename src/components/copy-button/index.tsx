@@ -1,4 +1,12 @@
-import { Button, ButtonProps, Icon, useClipboard } from '@chakra-ui/react';
+/*
+ MIGRATION NOTE: The following Chakra UI hooks have been removed.
+ Please replace them with the suggested alternatives:
+
+//   - useClipboard: Use react-use: useCopyToClipboard
+
+ See: https://chakra-ui.com/docs/get-started/migration#hooks
+*/
+import { Button, ButtonProps, Icon } from '@chakra-ui/react';
 import { FaCopy, FaRegCopy } from 'react-icons/fa6';
 import Tooltip from '../tooltip';
 
@@ -24,11 +32,11 @@ export const CopyButton = ({
   return (
     <Button
       variant='solid'
-      leftIcon={<FaCopy />}
-      colorScheme='primary'
+      colorPalette='primary'
       onClick={onCopy}
       {...buttonProps}
     >
+      <FaCopy />
       {hasCopied ? copiedText : buttonText}
     </Button>
   );
@@ -46,14 +54,16 @@ export const CopyIconButton = ({
     <Tooltip label={hasCopied ? copiedText : buttonText} closeOnClick={false}>
       <Button
         variant='ghost'
-        colorScheme='gray'
+        colorPalette='gray'
         onClick={onCopy}
         aria-label={hasCopied ? copiedText : buttonText}
         gap={1}
         size='sm'
         {...buttonProps}
       >
-        <Icon as={FaRegCopy} />
+        <Icon asChild>
+          <FaRegCopy />
+        </Icon>
         {hasCopied ? copiedText : ''}
       </Button>
     </Tooltip>

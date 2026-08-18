@@ -41,19 +41,13 @@ export const LegendContainer = ({
         {tableHeader}
       </LegendTableHeader>
       {orientation === 'vertical' ? (
-        <Stack
-          flexDirection='column'
-          divider={<Divider borderColor='gray.200' />}
-          spacing={1.5}
-          my={2}
-          {...props}
-        >
+        <Stack flexDirection='column' gap={1.5} my={2} {...props}>
           {children}
         </Stack>
       ) : (
         <Stack
           flexDirection={{ base: 'column', md: 'row' }}
-          spacing={{ base: 1.5, md: 8 }}
+          gap={{ base: 1.5, md: 8 }}
           my={2}
           {...props}
         >
@@ -120,7 +114,7 @@ export const LegendItem = ({
 }) => {
   return (
     <Skeleton
-      isLoaded={!isLoading}
+      loading={!!isLoading}
       width='100%'
       height={isLoading ? '20px' : 'unset'}
     >
@@ -129,7 +123,7 @@ export const LegendItem = ({
         fontSize='xs'
         lineHeight='short'
         justifyContent='flex-start'
-        spacing={1.5}
+        gap={1.5}
         width='100%'
       >
         {swatchBg && <Box width={4} height={4} bg={swatchBg} m={0.5} />}

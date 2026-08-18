@@ -1,13 +1,5 @@
 import React, { ReactNode } from 'react';
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardProps,
-  BoxProps,
-  TextProps,
-  Text,
-} from '@chakra-ui/react';
+import { Card, CardProps, BoxProps, TextProps, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { TypeBanner } from 'src/components/resource-sections/components';
 import { Skeleton } from 'src/components/skeleton';
@@ -29,7 +21,7 @@ interface BaseProps extends Omit<CardProps, 'children' | 'as'> {
 
 const Base = ({ isLoading = false, children, ...cardProps }: BaseProps) => {
   return (
-    <Card
+    <Card.Root
       variant='niaid'
       boxShadow='none'
       border='1px solid'
@@ -38,7 +30,7 @@ const Base = ({ isLoading = false, children, ...cardProps }: BaseProps) => {
       {...cardProps}
     >
       {children}
-    </Card>
+    </Card.Root>
   );
 };
 
@@ -81,7 +73,7 @@ interface HeaderProps extends BoxProps {
 
 const Header = ({ isLoading = false, children, ...boxProps }: HeaderProps) => {
   return (
-    <CardHeader
+    <Card.Header
       bg='transparent'
       position='relative'
       px={2}
@@ -106,14 +98,14 @@ const Header = ({ isLoading = false, children, ...boxProps }: HeaderProps) => {
       <Skeleton isLoaded={!isLoading} minHeight='27px' flex={1}>
         {!isLoading && children}
       </Skeleton>
-    </CardHeader>
+    </Card.Header>
   );
 };
 
 // Title component
 interface LinkProps {
   href: string | { pathname: string; query: Record<string, any> };
-  as?: string;
+  asChild?: boolean;
 }
 
 interface TitleProps extends Omit<TextProps, 'children'> {
@@ -124,7 +116,7 @@ interface TitleProps extends Omit<TextProps, 'children'> {
 const Title = ({ children, linkProps, ...textProps }: TitleProps) => {
   const content = (
     <Text
-      noOfLines={3}
+      lineClamp={3}
       fontWeight='semibold'
       color='inherit'
       fontSize='md'
@@ -168,10 +160,10 @@ interface BodyProps extends BoxProps {
 
 const Body = ({ children, ...boxProps }: BodyProps) => {
   return (
-    <CardBody
+    <Card.Body
       p={2}
-      sx={{
-        '>*': {
+      css={{
+        '& >*': {
           my: 0,
         },
       }}
@@ -181,7 +173,7 @@ const Body = ({ children, ...boxProps }: BodyProps) => {
       {...boxProps}
     >
       {children}
-    </CardBody>
+    </Card.Body>
   );
 };
 

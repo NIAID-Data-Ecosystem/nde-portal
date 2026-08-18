@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Flex, Tooltip, Text, Button } from '@chakra-ui/react';
+import { Flex, Text, Button } from '@chakra-ui/react';
+import { Tooltip } from '@/components/ui/tooltip';
 import { FormattedResource } from 'src/utils/api/types';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 import { ConditionsOfAccess, CreativeWorkStatus } from 'src/components/badges';
@@ -103,7 +104,6 @@ export const ResourceCatalogCard = ({
         creativeWorkStatus={creativeWorkStatus}
         isProgramResource={isProgramResource}
       />
-
       <CompactCard.Header isLoading={isLoading}>
         {(name || alternateName) && (
           <CompactCard.Title linkProps={linkProps}>
@@ -111,7 +111,6 @@ export const ResourceCatalogCard = ({
           </CompactCard.Title>
         )}
       </CompactCard.Header>
-
       <CompactCard.Body>
         {/* Date and badges */}
         <Skeleton isLoaded={!isLoading} minHeight='30px'>
@@ -125,8 +124,8 @@ export const ResourceCatalogCard = ({
               px={0}
             >
               <Tooltip
-                label='Corresponds to the most recent of date modified, date published and date created.'
-                hasArrow
+                content='Corresponds to the most recent of date modified, date published and date created.'
+                showArrow
                 bg='#fff'
                 sx={{
                   color: 'text.body',
@@ -211,12 +210,12 @@ export const ResourceCatalogCard = ({
           {description && (
             <>
               {shouldShowDescription ? (
-                <Text fontSize='xs' lineHeight='short' noOfLines={3}>
+                <Text fontSize='xs' lineHeight='short' lineClamp={3}>
                   {description.trim()}
                 </Text>
               ) : (
                 <Button
-                  variant='link'
+                  variant='plain'
                   size='xs'
                   onClick={handleShowDescription}
                   alignSelf='flex-start'

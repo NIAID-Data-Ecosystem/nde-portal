@@ -1,14 +1,6 @@
 import { useEffect, useState } from 'react';
 import { uniqueId } from 'lodash';
-import {
-  Box,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  ListItem,
-  Text,
-  UnorderedList,
-} from '@chakra-ui/react';
+import { Box, Flex, Text, Field, List } from '@chakra-ui/react';
 import { TreeItem } from '../SortableWithCombine';
 import { useAdvancedSearchContext } from './components/AdvancedSearchFormContext';
 import { Disclaimer } from './components/Disclaimer';
@@ -63,9 +55,8 @@ export const Search = ({
       >
         <SearchOptions />
       </Flex>
-
       <Flex w='100%' alignItems='flex-end'>
-        <FormControl isInvalid={errors.length > 0}>
+        <Field.Root invalid={errors.length > 0}>
           <Flex
             flexDirection={['column', 'column', 'row']}
             alignItems='flex-end'
@@ -140,19 +131,19 @@ export const Search = ({
               />
             </Box>
           </Flex>
-          <FormErrorMessage justifyContent='flex-end' color='status.error'>
-            <UnorderedList>
+          <Field.ErrorText justifyContent='flex-end' color='status.error'>
+            <List.Root as='ul'>
               {/* This is my error message */}
               {errors.map((error, index) => (
-                <ListItem key={index}>
+                <List.Item key={index}>
                   <Text color='inherit' lineHeight='shorter'>
                     <strong>{error.title}</strong>: {error.message}
                   </Text>
-                </ListItem>
+                </List.Item>
               ))}
-            </UnorderedList>
-          </FormErrorMessage>
-        </FormControl>
+            </List.Root>
+          </Field.ErrorText>
+        </Field.Root>
       </Flex>
       <Disclaimer />
     </>

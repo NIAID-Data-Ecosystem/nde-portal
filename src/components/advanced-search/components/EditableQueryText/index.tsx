@@ -9,10 +9,10 @@ import {
   Spinner,
   Text,
   Textarea,
-  Tooltip,
-  useEditableControls,
+  useEditableContext,
   VisuallyHidden,
 } from '@chakra-ui/react';
+import { Tooltip } from '@/components/ui/tooltip';
 import { theme } from 'src/theme';
 import { MouseEventHandler, useEffect, useState } from 'react';
 import { FaCheck, FaRegPenToSquare, FaXmark } from 'react-icons/fa6';
@@ -161,7 +161,7 @@ export const EditableQueryText = ({
       getSubmitButtonProps,
       getCancelButtonProps,
       getEditButtonProps,
-    } = useEditableControls();
+    } = useEditableContext();
 
     const shakeAnimation = `${shake} 0.2s ease-in-out 0s 1`;
 
@@ -199,35 +199,44 @@ export const EditableQueryText = ({
     };
 
     return isEditing ? (
-      <ButtonGroup justifyContent='end' size='sm' w='full' spacing={2} mt={2}>
+      <ButtonGroup justifyContent='end' size='sm' w='full' gap={2} mt={2}>
         <IconButton
           aria-label='Cancel'
           variant='solid'
-          colorScheme='gray'
+          colorPalette='gray'
           color='text.body'
-          icon={<Icon as={FaXmark} boxSize={6} />}
           {...getCancelButtonProps()}
-        />
+        >
+          <Icon boxSize={6} asChild>
+            <FaXmark />
+          </Icon>
+        </IconButton>
         <IconButton
           aria-label='Accept Edit.'
           animation={animateError ? shakeAnimation : undefined}
-          icon={<Icon as={FaCheck} />}
           {...getSubmitButtonProps()}
           onClick={handleSubmit}
-        />
+        >
+          <Icon asChild>
+            <FaCheck />
+          </Icon>
+        </IconButton>
       </ButtonGroup>
     ) : (
       <Flex justifyContent='end'>
-        <Tooltip label='Click to edit'>
+        <Tooltip content='Click to edit'>
           <IconButton
             aria-label='Edit'
             size='sm'
             variant='solid'
-            colorScheme='gray'
+            colorPalette='gray'
             color='text.body'
-            icon={<Icon as={FaRegPenToSquare} boxSize={4} />}
             {...getEditButtonProps()}
-          />
+          >
+            <Icon boxSize={4} asChild>
+              <FaRegPenToSquare />
+            </Icon>
+          </IconButton>
         </Tooltip>
       </Flex>
     );
@@ -235,17 +244,16 @@ export const EditableQueryText = ({
 
   return (
     <>
-      <Editable
-        submitOnBlur={false}
+      <Editable.Root
         border='2px solid'
         borderColor='gray.100'
         borderRadius='semi'
         value={value}
         placeholder='Click to write query string.'
-        onCancel={() => {
+        onValueRevert={() => {
           setValue(defaultValue);
         }}
-        onChange={nextValue => {
+        onValueChange={nextValue => {
           setValue(nextValue);
           const validation = handleValidation(nextValue);
           if (validation.errors.length < errors.length) {
@@ -260,9 +268,10 @@ export const EditableQueryText = ({
             });
           }
         }}
+        submitMode='enter'
       >
-        <Tooltip label='Click to edit'>
-          <EditablePreview
+        <Tooltip content='Click to edit'>
+          <Editable.Preview
             w='100%'
             py={2}
             px={4}
@@ -282,15 +291,17 @@ export const EditableQueryText = ({
           py={2}
           px={4}
           fontSize='sm'
-          as={EditableTextarea}
-          isInvalid={hasErrors}
+          invalid={hasErrors}
           _focus={{
             boxShadow: hasErrors
               ? `0 0 0 1px ${theme.colors.status.error}`
               : '0 0 0 1px #3182ce',
             borderColor: hasErrors ? theme.colors.status.error : '#3182ce',
           }}
-        />
+          asChild
+        >
+          <EditableTextarea />
+        </Textarea>
         <Flex p={2} justifyContent='space-between' alignItems='center'>
           <Flex>
             {value && (
@@ -306,7 +317,7 @@ export const EditableQueryText = ({
                   <Spinner
                     color='primary.500'
                     emptyColor='gray.200'
-                    thickness='2px'
+                    borderWidth='2px'
                     size='sm'
                     mx={2}
                   />
@@ -321,7 +332,7 @@ export const EditableQueryText = ({
           </Flex>
           <EditableControls />
         </Flex>
-      </Editable>
+      </Editable.Root>
     </>
   );
 };

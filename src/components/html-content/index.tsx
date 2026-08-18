@@ -70,19 +70,20 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
       fontSize='sm'
       flex={1}
       style={{ whiteSpace: 'pre-line' }}
-      sx={{
-        // Display nested links with nde link format.
-        a: {
+      css={{
+        '& a': {
           color: 'link.color',
           textDecoration: 'underline',
           _hover: { textDecoration: 'none' },
           wordBreak: 'break-word',
         },
-        '>*': {
+
+        '& >*': {
           whiteSpace: 'pre-line',
           wordBreak: 'break-word',
         },
-        mark: {
+
+        '& mark': {
           px: 0.5,
           bg: 'orange.100',
           color: 'inherit',

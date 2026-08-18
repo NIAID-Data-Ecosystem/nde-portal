@@ -18,17 +18,17 @@ export const BadgeWithTooltip = ({
 }: BadgeWithTooltipProps) => {
   return (
     <Tooltip label={tooltipLabel}>
-      <Tag
+      <Tag.Root
         size='md'
-        colorScheme={colorScheme}
+        colorPalette={colorScheme}
         borderRadius='full'
         variant='subtle'
         {...props}
       >
-        {leftIcon && <TagLeftIcon as={leftIcon} mr={0} />}
+        {leftIcon && <Tag.StartElement as={leftIcon} mr={0} />}
 
-        <TagLabel>{value || children}</TagLabel>
-      </Tag>
+        <Tag.Label>{value || children}</Tag.Label>
+      </Tag.Root>
     </Tooltip>
   );
 };

@@ -4,10 +4,10 @@ import {
   Flex,
   Icon,
   Text,
-  Tooltip,
   useDisclosure,
   VisuallyHidden,
 } from '@chakra-ui/react';
+import { Tooltip } from '@/components/ui/tooltip';
 import { theme } from 'src/theme';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
@@ -48,7 +48,7 @@ export const filterFields = (field: SchemaDefinition) => {
 };
 
 const Option = (props: OptionProps<any>) => {
-  const { isOpen: showDescription, onClose, onOpen } = useDisclosure();
+  const { open: showDescription, onClose, onOpen } = useDisclosure();
   const { data } = props;
   const { label, type, count, property } = data;
 
@@ -111,9 +111,13 @@ const Option = (props: OptionProps<any>) => {
           }
         >
           <Tooltip
-            hasArrow
-            label={tooltipLabel.charAt(0).toUpperCase() + tooltipLabel.slice(1)}
-            placement='top-start'
+            showArrow
+            content={
+              tooltipLabel.charAt(0).toUpperCase() + tooltipLabel.slice(1)
+            }
+            positioning={{
+              placement: 'top-start',
+            }}
           >
             {/* icon displaying the type of field. */}
             <Box
@@ -150,7 +154,7 @@ const Option = (props: OptionProps<any>) => {
                 color={props.isSelected ? 'inherit' : 'gray.800'}
                 transition='0.2s linear'
                 maxW={350}
-                noOfLines={!showDescription ? 1 : undefined}
+                lineClamp={!showDescription ? 1 : undefined}
               >
                 {description.charAt(0).toUpperCase() +
                   description.toLowerCase().slice(1)}
@@ -167,7 +171,9 @@ const Option = (props: OptionProps<any>) => {
 const Control = (props: ControlProps<any>) => {
   return (
     <components.Control {...props}>
-      <Icon as={FaMagnifyingGlass} ml={2} color='gray.300' />
+      <Icon ml={2} color='gray.300' asChild>
+        <FaMagnifyingGlass />
+      </Icon>
       {props.children}
     </components.Control>
   );

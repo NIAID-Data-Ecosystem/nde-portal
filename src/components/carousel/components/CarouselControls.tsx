@@ -27,7 +27,7 @@ export const CarouselControls = ({
 
   return (
     <Skeleton
-      isLoaded={!isLoading}
+      loading={!!isLoading}
       width='100%'
       height='32px'
       display='flex'
@@ -38,7 +38,7 @@ export const CarouselControls = ({
         aria-label='previous carousel item'
         onClick={handleDecrementClick}
         onFocus={handleFocus}
-        isDisabled={activeItem <= 0}
+        disabled={activeItem <= 0}
         mr={showProgressBar ? 0 : `${gap / 3}px`}
         color={`${colorScheme}.800`}
         variant='ghost'
@@ -46,9 +46,10 @@ export const CarouselControls = ({
         size='sm'
         flexShrink={0}
       >
-        <Icon as={FaAngleLeft} boxSize={4} />
+        <Icon boxSize={4} asChild>
+          <FaAngleLeft />
+        </Icon>
       </Button>
-
       {showProgressBar ? (
         <Box
           flex={1}
@@ -61,13 +62,17 @@ export const CarouselControls = ({
             progressPercentage,
           )}% complete`}
         >
-          <Progress
+          <Progress.Root
             value={progressPercentage}
-            colorScheme={colorScheme}
+            colorPalette={colorScheme}
             size='sm'
             borderRadius='full'
             bg={`${colorScheme}.100`}
-          />
+          >
+            <Progress.Track>
+              <Progress.Range />
+            </Progress.Track>
+          </Progress.Root>
         </Box>
       ) : (
         <Flex>
@@ -117,12 +122,11 @@ export const CarouselControls = ({
           })}
         </Flex>
       )}
-
       <Button
         aria-label='next carousel item'
         onClick={handleIncrementClick}
         onFocus={handleFocus}
-        isDisabled={activeItem >= maxActiveItem}
+        disabled={activeItem >= maxActiveItem}
         ml={showProgressBar ? 0 : `${gap / 3}px`}
         color={`${colorScheme}.800`}
         variant='ghost'
@@ -130,7 +134,9 @@ export const CarouselControls = ({
         size='sm'
         flexShrink={0}
       >
-        <Icon as={FaAngleRight} boxSize={4} />
+        <Icon boxSize={4} asChild>
+          <FaAngleRight />
+        </Icon>
       </Button>
     </Skeleton>
   );

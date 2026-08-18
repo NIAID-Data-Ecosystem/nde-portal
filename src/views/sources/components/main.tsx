@@ -3,14 +3,14 @@ import { FaMinus, FaPlus, FaUpRightFromSquare } from 'react-icons/fa6';
 import {
   Box,
   Button,
-  Collapse,
+  Collapsible,
   Flex,
   HStack,
   Icon,
   SkeletonText,
-  StackDivider,
   Text,
   VStack,
+  Stack,
 } from '@chakra-ui/react';
 import { BadgeWithTooltip } from 'src/components/badges';
 import { Link } from 'src/components/link';
@@ -63,17 +63,17 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
           as='a'
           href='https://github.com/NIAID-Data-Ecosystem/nde-crawlers/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D'
           target='_blank'
-          colorScheme='secondary'
+          colorPalette='secondary'
           size='sm'
           variant='outline'
-          rightIcon={<Icon as={FaUpRightFromSquare} boxSize={3} />}
         >
           Suggest a new source
+          <Icon as={FaUpRightFromSquare} boxSize={3} />
         </Button>
       </SectionHeader>
       <Flex justifyContent='space-between' flexWrap='wrap-reverse'>
         <VStack minW='250px' alignItems='flex-start' m={0.5} flex={1}>
-          <SkeletonText isLoaded={!isLoading} noOfLines={1} skeletonHeight={5}>
+          <SkeletonText isLoaded={!isLoading} lineClamp={1} skeletonHeight={5}>
             <Flex alignItems='center'>
               <Text
                 fontSize='xs'
@@ -95,7 +95,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
               )}
             </Flex>
           </SkeletonText>
-          <SkeletonText isLoaded={!isLoading} noOfLines={1} skeletonHeight={5}>
+          <SkeletonText isLoaded={!isLoading} lineClamp={1} skeletonHeight={5}>
             {metadata?.date && (
               <Text fontSize='xs' lineHeight='short' fontWeight='semibold'>
                 Data last harvested:
@@ -176,7 +176,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
             >
               <>
                 {/* Release dates */}
-                <HStack divider={<StackDivider borderColor='gray.100' />}>
+                <HStack>
                   <Text fontSize='xs' fontWeight='semibold' color='text.body'>
                     Latest Release:{' '}
                     <Text as='span' fontWeight='normal'>
@@ -185,6 +185,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                         : 'N/A'}
                     </Text>
                   </Text>
+                  <Stack.Separator borderColor='gray.100' />
                   <Text fontSize='xs' fontWeight='semibold' color='text.body'>
                     First Released:{' '}
                     <Text as='span' fontWeight='normal'>
@@ -258,72 +259,74 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                         />
                       </Flex>
                     </Flex>
-                    <Collapse in={schemaId.includes(sourceObj.name)}>
-                      {schemaId.includes(sourceObj.name) && (
-                        <Box
-                          mt={4}
-                          position='relative'
-                          overflowX='auto'
-                          boxShadow='low'
-                          borderRadius='semi'
-                        >
+                    <Collapsible.Root open={schemaId.includes(sourceObj.name)}>
+                      <Collapsible.Content>
+                        {schemaId.includes(sourceObj.name) && (
                           <Box
-                            as='table'
-                            w='100%'
-                            bg='#374151'
-                            color='whiteAlpha.800'
-                            textAlign='left'
-                            fontSize='sm'
+                            mt={4}
+                            position='relative'
+                            overflowX='auto'
+                            boxShadow='low'
+                            borderRadius='semi'
                           >
                             <Box
-                              as='thead'
-                              textTransform='uppercase'
-                              color='#fff'
+                              as='table'
+                              w='100%'
+                              bg='#374151'
+                              color='whiteAlpha.800'
+                              textAlign='left'
+                              fontSize='sm'
                             >
-                              <tr>
-                                <Box as='th' scope='col' px={6} py={3}>
-                                  {sourceObj.name} Property
-                                </Box>
-                                <Box as='th' scope='col' px={6} py={3}>
-                                  NIAID Data Ecosystem Property
-                                </Box>
-                              </tr>
-                            </Box>
+                              <Box
+                                as='thead'
+                                textTransform='uppercase'
+                                color='#fff'
+                              >
+                                <tr>
+                                  <Box as='th' scope='col' px={6} py={3}>
+                                    {sourceObj.name} Property
+                                  </Box>
+                                  <Box as='th' scope='col' px={6} py={3}>
+                                    NIAID Data Ecosystem Property
+                                  </Box>
+                                </tr>
+                              </Box>
 
-                            <Box as='tbody' bg='#1F2937' border='gray.100'>
-                              {Object.entries(sourceObj.schema).map(
-                                (item, i) => {
-                                  return (
-                                    <Box
-                                      as='tr'
-                                      key={item[0]}
-                                      borderBottom='1px solid'
-                                      borderColor='gray.700'
-                                    >
-                                      {Object.entries(item).map(field => {
-                                        return (
-                                          <Box
-                                            as='td'
-                                            key={`${field[0]}-${field[1]}`}
-                                            px={6}
-                                            py={2}
-                                            fontWeight='medium'
-                                            color='#fff'
-                                            whiteSpace='nowrap'
-                                          >
-                                            {field[1]}
-                                          </Box>
-                                        );
-                                      })}
-                                    </Box>
-                                  );
-                                },
-                              )}
+                              <Box as='tbody' bg='#1F2937' border='gray.100'>
+                                {Object.entries(sourceObj.schema).map(
+                                  (item, i) => {
+                                    return (
+                                      <Box
+                                        as='tr'
+                                        key={item[0]}
+                                        borderBottom='1px solid'
+                                        borderColor='gray.700'
+                                      >
+                                        {Object.entries(item).map(field => {
+                                          return (
+                                            <Box
+                                              as='td'
+                                              key={`${field[0]}-${field[1]}`}
+                                              px={6}
+                                              py={2}
+                                              fontWeight='medium'
+                                              color='#fff'
+                                              whiteSpace='nowrap'
+                                            >
+                                              {field[1]}
+                                            </Box>
+                                          );
+                                        })}
+                                      </Box>
+                                    );
+                                  },
+                                )}
+                              </Box>
                             </Box>
                           </Box>
-                        </Box>
-                      )}
-                    </Collapse>
+                        )}
+                      </Collapsible.Content>
+                    </Collapsible.Root>
                   </Box>
                 )}
               </>

@@ -179,8 +179,8 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     component: ({ value }: { value: string; isLoading?: boolean }) => {
       const colorScheme = getColorScheme(value as AccessTypes);
       return (
-        <Tag
-          colorScheme={colorScheme}
+        <Tag.Root
+          colorPalette={colorScheme}
           variant='subtle'
           borderColor='transparent'
           borderRadius='full'
@@ -189,8 +189,8 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
           boxShadow='none'
         >
           <Circle size='8px' bg={`${colorScheme}.500`} />
-          <TagLabel>{value || '-'}</TagLabel>
-        </Tag>
+          <Tag.Label>{value || '-'}</Tag.Label>
+        </Tag.Root>
       );
     },
     filter: {

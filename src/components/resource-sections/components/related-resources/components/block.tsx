@@ -85,7 +85,7 @@ export const RelatedResourceBlock = ({
       fontSize='sm'
       px={2}
       py={2}
-      spacing={1.5}
+      gap={1.5}
       w='100%'
       {...props}
     >
@@ -117,38 +117,37 @@ export const RelatedResourceBlock = ({
               )}
               {/* Type */}
               {type && (
-                <Tag
+                <Tag.Root
                   size='sm'
-                  colorScheme='primary'
+                  colorPalette='primary'
                   borderRadius='full'
                   variant='subtle'
                   alignSelf='flex-end'
                 >
                   {type}
-                </Tag>
+                </Tag.Root>
               )}
 
               {/* Additional Type */}
               {additionalType && (
-                <Tag
+                <Tag.Root
                   size='sm'
-                  colorScheme='primary'
+                  colorPalette='primary'
                   borderRadius='full'
                   variant='subtle'
                   alignSelf='flex-end'
                 >
                   {additionalType}
-                </Tag>
+                </Tag.Root>
               )}
             </Text>
           )}
         </RelatedResourceBlockItem>
       )}
-
       {/* Show identifiers if available, otherwise we show more datailed information like datePublished, authors and journal */}
       {doi || pmid ? (
         <RelatedResourceBlockItem label='Identifiers'>
-          <VStack flexDirection='column' alignItems='flex-start' spacing={0.5}>
+          <VStack flexDirection='column' alignItems='flex-start' gap={0.5}>
             {/* DOI */}
             {doi && (
               <Text as='span'>
@@ -207,14 +206,12 @@ export const RelatedResourceBlock = ({
           )}
         </>
       )}
-
       {/* Relationship */}
       {'relationship' in data && data?.relationship && (
         <RelatedResourceBlockItem label='Relationship'>
           <Text>{data?.relationship}</Text>
         </RelatedResourceBlockItem>
       )}
-
       {/* Citation */}
       {'citation' in data && data?.citation && (
         <RelatedResourceBlockItem label='Citation'>
@@ -228,7 +225,6 @@ export const RelatedResourceBlock = ({
           )}
         </RelatedResourceBlockItem>
       )}
-
       {/* Source */}
       {'includedInDataCatalog' in data &&
         data?.includedInDataCatalog &&
@@ -245,14 +241,12 @@ export const RelatedResourceBlock = ({
             )}
           </RelatedResourceBlockItem>
         )}
-
       {/* hasPart */}
       {'hasPart' in data && data?.hasPart && data.hasPart?.identifier && (
         <RelatedResourceBlockItem label='Has Part'>
           <Text>{data.hasPart.identifier}</Text>
         </RelatedResourceBlockItem>
       )}
-
       {/* encodingFormat */}
       {'encodingFormat' in data && data?.encodingFormat && (
         <RelatedResourceBlockItem label='Encoding Format'>

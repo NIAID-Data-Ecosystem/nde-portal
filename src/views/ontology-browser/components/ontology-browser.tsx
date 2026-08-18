@@ -1,15 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  Box,
-  Flex,
-  HStack,
-  Spinner,
-  StackDivider,
-} from '@chakra-ui/react';
+import { Alert, Box, Flex, HStack, Spinner, Stack } from '@chakra-ui/react';
 import { useQuery, useQueries } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import {
@@ -178,16 +168,16 @@ export const OntologyBrowser = ({
 
   if (error) {
     return (
-      <Alert status='error' role='alert'>
-        <AlertIcon />
+      <Alert.Root status='error' role='alert'>
+        <Alert.Indicator />
         <Box>
-          <AlertTitle>{error.message}</AlertTitle>
-          <AlertDescription>
+          <Alert.Title>{error.message}</Alert.Title>
+          <Alert.Description>
             There was a network issue communicating with the server. Please try
             again in a few moments.{' '}
-          </AlertDescription>
+          </Alert.Description>
         </Box>
-      </Alert>
+      </Alert.Root>
     );
   }
 
@@ -237,16 +227,12 @@ export const OntologyBrowser = ({
 
                 <OntologyTreeHeaders>
                   <OntologyTreeHeaderItem label='Term name' />
-                  <HStack
-                    justifyContent='flex-end'
-                    flex={1}
-                    divider={<StackDivider borderColor='gray.100' />}
-                    spacing={3}
-                  >
+                  <HStack justifyContent='flex-end' flex={1} gap={3}>
                     <OntologyTreeHeaderItem
                       label='Exact Matches'
                       tooltipLabel={getTooltipLabelByCountType('termCount')}
                     />
+                    <Stack.Separator borderColor='gray.100' />
                     <OntologyTreeHeaderItem
                       label='Matches including sub-terms'
                       tooltipLabel={getTooltipLabelByCountType(

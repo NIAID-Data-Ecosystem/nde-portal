@@ -1,9 +1,6 @@
 import React from 'react';
 import {
   Accordion,
-  AccordionItem,
-  AccordionPanel,
-  AccordionButton,
   Flex,
   Icon,
   Tag,
@@ -112,12 +109,12 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
   return (
     <>
       {/* Details expandable drawer */}
-      <Accordion allowToggle p={0} my={0}>
-        <AccordionItem>
+      <Accordion.Root collapsible p={0} my={0}>
+        <Accordion.Item value='item-0'>
           {({ isExpanded }) => (
             <>
               <h2>
-                <AccordionButton
+                <Accordion.ItemTrigger
                   px={paddingCard}
                   _hover={{ bg: 'page.alt' }}
                   flexDirection={{ base: 'column', md: 'row' }}
@@ -141,12 +138,12 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                           schemaProperty?.description?.['Dataset'] ||
                           '';
                         return (
-                          <Tag
+                          <Tag.Root
                             key={`tag-${id}-${label}`}
                             size='md'
                             variant='subtle'
                             borderRadius='full'
-                            colorScheme={colorScheme}
+                            colorPalette={colorScheme}
                             // darker for variableMeasured
                             color={`${colorScheme}.${
                               property === 'variableMeasured' ? '900' : '700'
@@ -163,12 +160,12 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                               }
                             >
                               <Flex alignItems='center'>
-                                <TagLabel>
+                                <Tag.Label>
                                   <Text color='inherit'>{label}</Text>
-                                </TagLabel>
+                                </Tag.Label>
                               </Flex>
                             </Tooltip>
-                          </Tag>
+                          </Tag.Root>
                         );
                       },
                     )}
@@ -183,117 +180,123 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                       boxSize={3}
                     />
                   </Flex>
-                </AccordionButton>
+                </Accordion.ItemTrigger>
               </h2>
-              <AccordionPanel w='100%' px={paddingCard} my={2} py={4}>
-                {isExpanded ? (
-                  <SimpleGrid
-                    minChildWidth={{ base: 'unset', sm: '280px', xl: '300px' }}
-                    spacingX={20}
-                    spacingY={10}
-                    px={4}
-                  >
-                    {sortedMetadataContent.map(
-                      ({ img, items, name, url, ...props }) => {
-                        const maxItemsCount = 3;
-                        return (
-                          <MetadataBlock
-                            key={`property-${props.id}`}
-                            glyph={props.property}
-                            {...props}
-                          >
-                            {name && (
-                              <MetadataContent
-                                name={name}
-                                img={img}
-                                url={url}
-                                {...content}
-                              />
-                            )}
-                            {items && items.length > 0 && (
-                              <>
-                                <MetadataList>
-                                  {items
-                                    .slice(0, maxItemsCount)
-                                    .map(({ key, ...item }) => {
-                                      return (
-                                        <MetadataListItem
-                                          key={key}
-                                          property={props.property}
-                                        >
-                                          <MetadataContent
-                                            includeOntology
-                                            colorScheme={getMetadataTheme(
-                                              props.property,
-                                            )}
-                                            {...item}
-                                          />
-                                        </MetadataListItem>
-                                      );
-                                    })}
-                                </MetadataList>
-                                {/* For the sample property, render a bullet-free
-                                    "Show more details" link below the list using
-                                    the top-level url set by createSampleContent. */}
-                                {props.property === 'sample' && url && (
-                                  <NextLink href={url}>
-                                    <Link
-                                      as='div'
-                                      lineHeight='short'
-                                      display='flex'
-                                      ml={4}
+              <Accordion.ItemContent w='100%' px={paddingCard} my={2} py={4}>
+                <Accordion.ItemBody>
+                  {isExpanded ? (
+                    <SimpleGrid
+                      minChildWidth={{
+                        base: 'unset',
+                        sm: '280px',
+                        xl: '300px',
+                      }}
+                      spacingX={20}
+                      spacingY={10}
+                      px={4}
+                    >
+                      {sortedMetadataContent.map(
+                        ({ img, items, name, url, ...props }) => {
+                          const maxItemsCount = 3;
+                          return (
+                            <MetadataBlock
+                              key={`property-${props.id}`}
+                              glyph={props.property}
+                              {...props}
+                            >
+                              {name && (
+                                <MetadataContent
+                                  name={name}
+                                  img={img}
+                                  url={url}
+                                  {...content}
+                                />
+                              )}
+                              {items && items.length > 0 && (
+                                <>
+                                  <MetadataList>
+                                    {items
+                                      .slice(0, maxItemsCount)
+                                      .map(({ key, ...item }) => {
+                                        return (
+                                          <MetadataListItem
+                                            key={key}
+                                            property={props.property}
+                                          >
+                                            <MetadataContent
+                                              includeOntology
+                                              colorScheme={getMetadataTheme(
+                                                props.property,
+                                              )}
+                                              {...item}
+                                            />
+                                          </MetadataListItem>
+                                        );
+                                      })}
+                                  </MetadataList>
+                                  {/* For the sample property, render a bullet-free
+                                      "Show more details" link below the list using
+                                      the top-level url set by createSampleContent. */}
+                                  {props.property === 'sample' && url && (
+                                    <NextLink href={url}>
+                                      <Link
+                                        as='div'
+                                        lineHeight='short'
+                                        display='flex'
+                                        ml={4}
+                                      >
+                                        <Text fontSize='xs' lineHeight='short'>
+                                          Show more details
+                                        </Text>
+                                      </Link>
+                                    </NextLink>
+                                  )}
+                                  {items.length > 3 && (
+                                    <NextLink
+                                      href={{
+                                        pathname: '/resources',
+                                        query: {
+                                          id,
+                                          referrerPath,
+                                        },
+                                        hash:
+                                          props.property === 'funding'
+                                            ? 'funding'
+                                            : 'overview',
+                                      }}
                                     >
-                                      <Text fontSize='xs' lineHeight='short'>
-                                        Show more details
-                                      </Text>
-                                    </Link>
-                                  </NextLink>
-                                )}
-                                {items.length > 3 && (
-                                  <NextLink
-                                    href={{
-                                      pathname: '/resources',
-                                      query: {
-                                        id,
-                                        referrerPath,
-                                      },
-                                      hash:
-                                        props.property === 'funding'
-                                          ? 'funding'
-                                          : 'overview',
-                                    }}
-                                  >
-                                    <Link
-                                      as='div'
-                                      lineHeight='short'
-                                      display='flex'
-                                      ml={4}
-                                    >
-                                      <Text fontSize='xs' lineHeight='short'>
-                                        Show {items.length - maxItemsCount} more
-                                        item
-                                        {items.length - maxItemsCount > 1
-                                          ? 's'
-                                          : ''}
-                                      </Text>
-                                    </Link>
-                                  </NextLink>
-                                )}
-                              </>
-                            )}
-                          </MetadataBlock>
-                        );
-                      },
-                    )}
-                  </SimpleGrid>
-                ) : (
-                  <></>
-                )}
-              </AccordionPanel>
+                                      <Link
+                                        as='div'
+                                        lineHeight='short'
+                                        display='flex'
+                                        ml={4}
+                                      >
+                                        <Text fontSize='xs' lineHeight='short'>
+                                          Show {items.length - maxItemsCount}{' '}
+                                          more item
+                                          {items.length - maxItemsCount > 1
+                                            ? 's'
+                                            : ''}
+                                        </Text>
+                                      </Link>
+                                    </NextLink>
+                                  )}
+                                </>
+                              )}
+                            </MetadataBlock>
+                          );
+                        },
+                      )}
+                    </SimpleGrid>
+                  ) : (
+                    <></>
+                  )}
+                </Accordion.ItemBody>
+              </Accordion.ItemContent>
             </>
           )}
-        </AccordionItem>
-      </Accordion>
+        </Accordion.Item>
+      </Accordion.Root>
     </>
   );
 };

@@ -13,11 +13,10 @@ import {
   HStack,
   Icon,
   IconButton,
-  ListItem,
   Text,
-  Tooltip,
-  UnorderedList,
+  List,
 } from '@chakra-ui/react';
+import { Tooltip } from '@/components/ui/tooltip';
 import {
   DropdownInput,
   useDropdownContext,
@@ -276,7 +275,7 @@ export const SearchBar = ({
         renderSubmitButton={() => (
           <HStack height='100%'>
             <Button
-              colorScheme={colorScheme}
+              colorPalette={colorScheme}
               aria-label={ariaLabel}
               size={size}
               type='submit'
@@ -285,28 +284,28 @@ export const SearchBar = ({
               Search Knowledge Center
             </Button>
             <Flex borderLeft='1px solid' borderLeftColor='gray.200' pl={1}>
-              <Tooltip label='View search history.'>
+              <Tooltip content='View search history.'>
                 <IconButton
                   variant='ghost'
                   size={size}
                   aria-label='View search history.'
-                  icon={
-                    <Flex px={2}>
-                      <Icon as={FaClockRotateLeft} />
-                    </Flex>
-                  }
                   onClick={toggleHistory}
-                />
+                >
+                  <Flex px={2}>
+                    <Icon asChild>
+                      <FaClockRotateLeft />
+                    </Icon>
+                  </Flex>
+                </IconButton>
               </Tooltip>
             </Flex>
           </HStack>
         )}
       />
-
       {isOpen && showHistory && (
         <DropdownContent>
-          <UnorderedList ml={0}>
-            <ListItem
+          <List.Root as='ul' ml={0}>
+            <List.Item
               px={2}
               mx={2}
               my={1}
@@ -325,7 +324,7 @@ export const SearchBar = ({
                   ? 'Previous searches'
                   : 'No previous searches.'}
               </Text>
-            </ListItem>
+            </List.Item>
             {historyList.map((str, index) => (
               <SearchHistoryItem
                 key={`history-${str}-${index}`}
@@ -336,21 +335,17 @@ export const SearchBar = ({
                 onClick={handleHistoryClick}
               />
             ))}
-          </UnorderedList>
+          </List.Root>
         </DropdownContent>
       )}
-
       {isOpen && !showHistory && (
         <DropdownContent>
           <Box py={6}>
             {!searchTerm && (
               <Flex flexDirection='column' alignItems='center' margin='0 auto'>
-                <Icon
-                  as={FaMagnifyingGlass}
-                  boxSize={5}
-                  color='primary.400'
-                  mb={4}
-                />
+                <Icon boxSize={5} color='primary.400' mb={4} asChild>
+                  <FaMagnifyingGlass />
+                </Icon>
                 <Text fontWeight='medium' color='gray.600'>
                   Start typing to search…
                 </Text>
@@ -362,7 +357,7 @@ export const SearchBar = ({
               </Text>
             )}
 
-            <UnorderedList ml={0} w='100%'>
+            <List.Root as='ul' ml={0} w='100%'>
               {results?.map((result, index) => (
                 <SearchResultItem
                   key={`result-${result.id}-${index}`}
@@ -373,7 +368,7 @@ export const SearchBar = ({
                   onClick={() => handleResultClick(result.slug)}
                 />
               ))}
-            </UnorderedList>
+            </List.Root>
           </Box>
         </DropdownContent>
       )}

@@ -607,7 +607,7 @@ export const Table: React.FC<TableProps<any>> = ({
               }
             : null;
         return (
-          <Th
+          <Table.ColumnHeader
             key={`table-col-th-${column.property}`}
             as={cellAs}
             label={column.title}
@@ -643,39 +643,43 @@ export const Table: React.FC<TableProps<any>> = ({
       aria-rowcount={rows.length}
     >
       {/* Note: keep for accessibility */}
-      <VisuallyHidden id='table-caption' as='caption'>
-        {caption}
+      <VisuallyHidden id='table-caption' asChild>
+        <caption>{caption}</caption>
       </VisuallyHidden>
-      <Box as='thead' {...stickyHeadProps} {...tableHeadProps}>
-        {renderHeaderRow('tr', 'th')}
+      <Box {...stickyHeadProps} {...tableHeadProps} asChild>
+        <thead>{renderHeaderRow('tr', 'th')}</thead>
       </Box>
-      <Box as='tbody' {...tableBodyProps}>
-        {showEmptyState ? (
-          <Box as='tr' role='row'>
-            <Box as='td' role='cell' colSpan={columns.length}>
-              {emptyState}
+      <Box {...tableBodyProps} asChild>
+        <tbody>
+          {showEmptyState ? (
+            <Box role='row' asChild>
+              <tr>
+                <Box role='cell' colSpan={columns.length} asChild>
+                  <td>{emptyState}</td>
+                </Box>
+              </tr>
             </Box>
-          </Box>
-        ) : (
-          rows.map((row: any, idx: number) => (
-            <Row
-              as='tr'
-              key={`table-tr-${row.key}`}
-              flexDirection='row'
-              borderColor='gray.100'
-              {...(getTableRowProps && getTableRowProps(row, idx))}
-            >
-              <MemoRowCells
-                row={row}
-                columns={columns}
-                getCells={getCells}
-                isLoading={isLoading}
-                stickyFirstColumn={stickyFirstColumn}
-                colorScheme={colorScheme}
-              />
-            </Row>
-          ))
-        )}
+          ) : (
+            rows.map((row: any, idx: number) => (
+              <Row
+                as='tr'
+                key={`table-tr-${row.key}`}
+                flexDirection='row'
+                borderColor='gray.100'
+                {...(getTableRowProps && getTableRowProps(row, idx))}
+              >
+                <MemoRowCells
+                  row={row}
+                  columns={columns}
+                  getCells={getCells}
+                  isLoading={isLoading}
+                  stickyFirstColumn={stickyFirstColumn}
+                  colorScheme={colorScheme}
+                />
+              </Row>
+            ))
+          )}
+        </tbody>
       </Box>
     </ChakraTable>
   );
@@ -799,7 +803,7 @@ export const Table: React.FC<TableProps<any>> = ({
 
   return (
     <Skeleton
-      isLoaded={!isLoading}
+      loading={!!isLoading}
       overflow='auto'
       minH={isLoading ? '500px' : 'unset'}
     >
@@ -842,18 +846,18 @@ export const Table: React.FC<TableProps<any>> = ({
               width: '100%',
             }}
           >
-            <TableContainer
+            <Table.ScrollArea
               {...remainingContainerProps}
               overflowX='visible'
               overflowY='visible'
             >
               {tableMarkup}
-            </TableContainer>
+            </Table.ScrollArea>
           </div>
         ) : (
-          <TableContainer {...tableContainerProps}>
+          <Table.ScrollArea {...tableContainerProps}>
             {tableMarkup}
-          </TableContainer>
+          </Table.ScrollArea>
         )}
 
         {hasPagination && numRows && (

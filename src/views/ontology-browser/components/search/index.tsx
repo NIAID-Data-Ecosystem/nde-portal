@@ -1,17 +1,14 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Button,
   Flex,
   HStack,
   Tag,
   TagLabel,
   Text,
-  UnorderedList,
   VStack,
+  List,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
@@ -171,7 +168,7 @@ export const OntologyBrowserSearch = ({
       className='ontology-search'
       w='100%'
       alignItems='flex-start'
-      spacing={2}
+      gap={2}
     >
       <HStack
         w='100%'
@@ -187,14 +184,10 @@ export const OntologyBrowserSearch = ({
           minWidth={{ base: 'unset', md: '450px' }}
           zIndex='docked'
         >
-          <Text
-            as='label'
-            htmlFor='ontology-browser-search-bar'
-            fontSize='sm'
-            color='gray.800'
-            px={1}
-          >
-            Search taxonomy browser
+          <Text fontSize='sm' color='gray.800' px={1} asChild>
+            <label htmlFor='ontology-browser-search-bar'>
+              Search taxonomy browser
+            </label>
           </Text>
           <InputWithDropdown
             inputValue={debouncedTerm}
@@ -219,11 +212,11 @@ export const OntologyBrowserSearch = ({
               }}
               renderSubmitButton={() => (
                 <Button
-                  colorScheme={colorScheme}
+                  colorPalette={colorScheme}
                   size={size}
                   type='submit'
                   display={{ base: 'none', md: 'flex' }}
-                  isDisabled={
+                  disabled={
                     !!error ||
                     isLoading ||
                     !debouncedTerm.trim() ||
@@ -236,7 +229,7 @@ export const OntologyBrowserSearch = ({
             />
 
             <DropdownContent>
-              <UnorderedList ml={0}>
+              <List.Root as='ul' ml={0}>
                 {suggestions?.map((suggestion, index) => (
                   <DropdownListItem
                     key={`${suggestion.definingOntology}-${suggestion._id}`}
@@ -254,7 +247,7 @@ export const OntologyBrowserSearch = ({
                     {suggestion.label}
                   </DropdownListItem>
                 ))}
-              </UnorderedList>
+              </List.Root>
             </DropdownContent>
           </InputWithDropdown>
         </Flex>
@@ -279,7 +272,7 @@ export const OntologyBrowserSearch = ({
               w='100%'
             >
               Selected ontologies
-              <Tag
+              <Tag.Root
                 variant='outline'
                 color='inherit'
                 borderRadius='full'
@@ -290,8 +283,8 @@ export const OntologyBrowserSearch = ({
                 px={3}
                 ml={2}
               >
-                <TagLabel>{selectedOntologies.length}</TagLabel>
-              </Tag>
+                <Tag.Label>{selectedOntologies.length}</Tag.Label>
+              </Tag.Root>
             </Text>
           }
           size='lg'
@@ -303,13 +296,13 @@ export const OntologyBrowserSearch = ({
       </HStack>
       {/* <!-- Error Message --> */}
       {error && (
-        <Alert status='error' role='alert' flexWrap='wrap'>
-          <AlertIcon />
-          <AlertTitle>{error.message}</AlertTitle>
-          <AlertDescription>
+        <Alert.Root status='error' role='alert' flexWrap='wrap'>
+          <Alert.Indicator />
+          <Alert.Title>{error.message}</Alert.Title>
+          <Alert.Description>
             There was an error processing your search. Please try again later.
-          </AlertDescription>
-        </Alert>
+          </Alert.Description>
+        </Alert.Root>
       )}
       {/* <!-- No Match Found --> */}
       {suggestions &&
@@ -317,25 +310,25 @@ export const OntologyBrowserSearch = ({
         debouncedTerm &&
         !isLoading &&
         !error && (
-          <Alert status='info' flexWrap='wrap'>
-            <AlertIcon />
-            <AlertTitle>No Results Found</AlertTitle>
-            <AlertDescription>
+          <Alert.Root status='info' flexWrap='wrap'>
+            <Alert.Indicator />
+            <Alert.Title>No Results Found</Alert.Title>
+            <Alert.Description>
               No results found for <strong>{debouncedTerm}</strong>. Please try
               a different search term.
-            </AlertDescription>
-          </Alert>
+            </Alert.Description>
+          </Alert.Root>
         )}
       {/* <!-- No Match in Selected Ontologies --> */}
       {hasNoMatch && (
-        <Alert status='info' flexWrap='wrap'>
-          <AlertIcon />
-          <AlertTitle>
+        <Alert.Root status='info' flexWrap='wrap'>
+          <Alert.Indicator />
+          <Alert.Title>
             {suggestions && suggestions.length === 0
               ? 'No match'
               : 'No complete match'}
-          </AlertTitle>
-          <AlertDescription>
+          </Alert.Title>
+          <Alert.Description>
             Search term{' '}
             <Text as='span' textDecoration='underline'>
               {debouncedTerm}
@@ -349,8 +342,8 @@ export const OntologyBrowserSearch = ({
                 </Text>{' '}
               </Text>
             )}
-          </AlertDescription>
-        </Alert>
+          </Alert.Description>
+        </Alert.Root>
       )}
     </VStack>
   );

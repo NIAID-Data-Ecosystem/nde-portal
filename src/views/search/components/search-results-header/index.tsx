@@ -66,7 +66,7 @@ export const SearchResultsHeader = ({
       filters: selectedFilters,
     }) !== -1;
   return (
-    <VStack alignItems='flex-start' spacing={1} fontSize='sm' flex={1}>
+    <VStack alignItems='flex-start' gap={1} fontSize='sm' flex={1}>
       {showAIBanner && (
         <AIBanner>
           <Text lineHeight='short'>
@@ -88,7 +88,7 @@ export const SearchResultsHeader = ({
       <Stack
         // Use row layout for "All Results" and column layout for other queries
         flexDirection={querystring === '__all__' ? 'row' : 'column'}
-        spacing={1}
+        gap={1}
       >
         <SearchResultsHeading as='h1' fontSize='inherit' whiteSpace='nowrap'>
           {querystring === '__all__'
@@ -96,7 +96,7 @@ export const SearchResultsHeader = ({
             : 'Showing results for: '}
         </SearchResultsHeading>
         {/* Query string */}
-        <HStack spacing={1} width='100%' alignItems='flex-start'>
+        <HStack gap={1} width='100%' alignItems='flex-start'>
           {querystring !== '__all__' && (
             <Text color='text.heading' fontSize='inherit' fontWeight='medium'>
               {querystring.replaceAll('\\', '')}

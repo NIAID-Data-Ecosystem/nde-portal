@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
-  Divider,
   Flex,
   HStack,
   Heading,
   Icon,
+  Separator,
 } from '@chakra-ui/react';
 import { useLocalStorage } from 'usehooks-ts';
 import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
@@ -74,7 +74,7 @@ export const Banner = ({
       bg={`status.${state?.toLowerCase()}_lt`}
     >
       <HStack
-        spacing={4}
+        gap={4}
         flex={1}
         flexDirection={{ base: 'column', sm: 'row' }}
         alignItems='flex-end'
@@ -82,7 +82,7 @@ export const Banner = ({
         <HStack
           flex={1}
           width='100%'
-          spacing={{ base: 2, sm: 4 }}
+          gap={{ base: 2, sm: 4 }}
           alignItems='flex-start'
           flexDirection={{ base: 'column', sm: 'row' }}
         >
@@ -102,7 +102,7 @@ export const Banner = ({
         </HStack>
         <Button
           onClick={toggleWarning}
-          colorScheme='primary'
+          colorPalette='primary'
           size='sm'
           variant='solid'
           mt={{ base: 2, sm: 0 }}
@@ -110,11 +110,10 @@ export const Banner = ({
           {isMounted && isOpen ? 'Read Less' : 'Read More'}
         </Button>
       </HStack>
-
       {/* Description / Additional info */}
       {isMounted && isOpen && description && (
         <Box py={2} fontSize='sm'>
-          <Divider />
+          <Separator />
           <Box px={2}>
             <ReactMarkdown
               rehypePlugins={[rehypeRaw, remarkGfm]}

@@ -131,7 +131,7 @@ export const TableOfContents = () => {
                     >
                       {/* Description */}
                       <Stack
-                        spacing={{ base: 4, lg: 6, xl: 10 }}
+                        gap={{ base: 4, lg: 6, xl: 10 }}
                         flexDirection='row'
                         alignItems='unset'
                         flexWrap='wrap-reverse'

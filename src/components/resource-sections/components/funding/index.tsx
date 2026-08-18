@@ -126,27 +126,27 @@ export const Funding: React.FC<FundingProps> = ({
     return <Text>No funding data available.</Text>;
   }
   return (
-    <Skeleton isLoaded={!isLoading} overflow='auto'>
+    <Skeleton loading={!!isLoading} overflow='auto'>
       <Heading as='h4' fontSize='sm' mx={1} mb={4} fontWeight='semibold'>
         Grant and Funding Information
       </Heading>
       <TableWrapper colorScheme='gray'>
-        <TableContainer>
-          <Table
+        <Table.ScrollArea>
+          <Table.Root
             role='table'
             aria-label='Grant and funding information'
             aria-describedby='funding-table-caption'
             aria-rowcount={rows.length}
           >
             {/* Note: keep for accessibility */}
-            <VisuallyHidden id='funding-table-caption' as='caption'>
-              Grant and funding information
+            <VisuallyHidden id='funding-table-caption' asChild>
+              <caption>Grant and funding information</caption>
             </VisuallyHidden>
             <thead>
-              <Tr role='row' flex='1' display='flex' w='100%'>
+              <Table.Row role='row' flex='1' display='flex' w='100%'>
                 {COLUMNS.map(column => {
                   return (
-                    <Th
+                    <Table.ColumnHeader
                       key={`table-col-th-${column.key}`}
                       label={column.title}
                       isSelected={column.key === orderBy}
@@ -163,112 +163,117 @@ export const Funding: React.FC<FundingProps> = ({
                     />
                   );
                 })}
-              </Tr>
+              </Table.Row>
             </thead>
-            <Flex as='tbody' flexDirection='column'>
-              {rows.map(funding => {
-                const funders = Array.isArray(funding?.funder)
-                  ? funding.funder
-                  : [funding.funder];
-                return (
-                  <React.Fragment key={`table-tr-${funding.key}`}>
-                    <Row
-                      as='tr'
-                      flexDirection='row'
-                      borderTop='1px solid'
-                      borderTopColor='gray.200'
-                      borderBottom='none'
-                    >
-                      {COLUMNS.map(column => {
-                        return (
-                          <Cell
-                            key={`table-td-${funding.key}-${column.key}`}
-                            as='td'
-                            role='cell'
-                            {...column.props}
-                          >
-                            {column.key === 'name' && (
-                              <ContentWithTag
-                                label='Funding ID |'
-                                identifier={funding.identifier}
-                                url={funding.url}
-                                name={funding.name}
-                              />
-                            )}
-                            {column.key === 'funderName' &&
-                              funders
-                                .slice(0, SHOW_MAX_FUNDER_NAMES)
-                                .map((funder, idx) => {
-                                  return (
-                                    <React.Fragment
-                                      key={`table-td-funder-${funding.key}-${funder?.identifier}-${funder?.name}-${idx}`}
-                                    >
-                                      <Box
-                                        as='span'
-                                        display='block'
-                                        mb={
-                                          Array.isArray(funding?.funder) ? 2 : 0
-                                        }
+            <Flex flexDirection='column' asChild>
+              <tbody>
+                {rows.map(funding => {
+                  const funders = Array.isArray(funding?.funder)
+                    ? funding.funder
+                    : [funding.funder];
+                  return (
+                    <React.Fragment key={`table-tr-${funding.key}`}>
+                      <Row
+                        as='tr'
+                        flexDirection='row'
+                        borderTop='1px solid'
+                        borderTopColor='gray.200'
+                        borderBottom='none'
+                      >
+                        {COLUMNS.map(column => {
+                          return (
+                            <Cell
+                              key={`table-td-${funding.key}-${column.key}`}
+                              as='td'
+                              role='cell'
+                              {...column.props}
+                            >
+                              {column.key === 'name' && (
+                                <ContentWithTag
+                                  label='Funding ID |'
+                                  identifier={funding.identifier}
+                                  url={funding.url}
+                                  name={funding.name}
+                                />
+                              )}
+                              {column.key === 'funderName' &&
+                                funders
+                                  .slice(0, SHOW_MAX_FUNDER_NAMES)
+                                  .map((funder, idx) => {
+                                    return (
+                                      <React.Fragment
+                                        key={`table-td-funder-${funding.key}-${funder?.identifier}-${funder?.name}-${idx}`}
                                       >
-                                        <ContentWithTag
-                                          label='Funder ID |'
-                                          identifier={funder?.identifier}
-                                          url={funder?.url}
-                                          name={funder?.name}
-                                        />
-                                      </Box>
-                                      {funders.length > SHOW_MAX_FUNDER_NAMES &&
-                                      idx === SHOW_MAX_FUNDER_NAMES - 1 ? (
-                                        <Text as='span' mt={8}>
-                                          {`and ${
-                                            funders.length -
-                                            SHOW_MAX_FUNDER_NAMES
-                                          } more... `}
-                                        </Text>
-                                      ) : (
-                                        ''
-                                      )}
-                                    </React.Fragment>
-                                  );
-                                })}
-
-                            {column.key.toLowerCase().includes('date') &&
-                              (funding[column.key as keyof FundingType] ? (
-                                <>
-                                  {new Date(
-                                    funding[
-                                      column.key as keyof FundingType
-                                    ] as string,
-                                  ).toLocaleDateString('en-US', {
-                                    year: 'numeric',
-                                    month: 'short',
-                                    day: 'numeric',
+                                        <Box
+                                          as='span'
+                                          display='block'
+                                          mb={
+                                            Array.isArray(funding?.funder)
+                                              ? 2
+                                              : 0
+                                          }
+                                        >
+                                          <ContentWithTag
+                                            label='Funder ID |'
+                                            identifier={funder?.identifier}
+                                            url={funder?.url}
+                                            name={funder?.name}
+                                          />
+                                        </Box>
+                                        {funders.length >
+                                          SHOW_MAX_FUNDER_NAMES &&
+                                        idx === SHOW_MAX_FUNDER_NAMES - 1 ? (
+                                          <Text as='span' mt={8}>
+                                            {`and ${
+                                              funders.length -
+                                              SHOW_MAX_FUNDER_NAMES
+                                            } more... `}
+                                          </Text>
+                                        ) : (
+                                          ''
+                                        )}
+                                      </React.Fragment>
+                                    );
                                   })}
-                                </>
-                              ) : (
-                                <EmptyCell />
-                              ))}
-                          </Cell>
-                        );
-                      })}
-                    </Row>
 
-                    {funding?.hasRowDrawer && (
-                      <Row className='row-drawer' border='none'>
-                        <RowWithDrawer as='td' role='cell'>
-                          <FundingDrawerContent
-                            id={funding.key}
-                            funder={funding.funder}
-                          />
-                        </RowWithDrawer>
+                              {column.key.toLowerCase().includes('date') &&
+                                (funding[column.key as keyof FundingType] ? (
+                                  <>
+                                    {new Date(
+                                      funding[
+                                        column.key as keyof FundingType
+                                      ] as string,
+                                    ).toLocaleDateString('en-US', {
+                                      year: 'numeric',
+                                      month: 'short',
+                                      day: 'numeric',
+                                    })}
+                                  </>
+                                ) : (
+                                  <EmptyCell />
+                                ))}
+                            </Cell>
+                          );
+                        })}
                       </Row>
-                    )}
-                  </React.Fragment>
-                );
-              })}
+
+                      {funding?.hasRowDrawer && (
+                        <Row className='row-drawer' border='none'>
+                          <RowWithDrawer as='td' role='cell'>
+                            <FundingDrawerContent
+                              id={funding.key}
+                              funder={funding.funder}
+                            />
+                          </RowWithDrawer>
+                        </Row>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+              </tbody>
             </Flex>
-          </Table>
-        </TableContainer>
+          </Table.Root>
+        </Table.ScrollArea>
         <TablePagination
           total={funding.length}
           size={size}
@@ -375,7 +380,7 @@ const FundingDrawerContent = React.memo(
                       <Label as='dt' textTransform='capitalize' px={2}>
                         Funder
                       </Label>
-                      <VStack px={4} py={1} spacing={1} alignItems='flex-start'>
+                      <VStack px={4} py={1} gap={1} alignItems='flex-start'>
                         {funder?.name && (
                           <dd>
                             <Content fontWeight='semibold' my={0}>

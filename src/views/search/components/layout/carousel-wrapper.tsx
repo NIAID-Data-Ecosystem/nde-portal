@@ -29,14 +29,17 @@ export const CarouselWrapper = ({
       }}
       width='100%'
       maxW='100%'
-      sx={{
+      css={{
         contain: 'layout style size',
-        '& *': {
+
+        '& & *': {
           maxWidth: '100% !important',
           boxSizing: 'border-box !important',
         },
+
         height: 'auto',
-        '& .padded-carousel': {
+
+        '& & .padded-carousel': {
           height: 'auto',
           paddingLeft: '4px',
           paddingRight: '4px',

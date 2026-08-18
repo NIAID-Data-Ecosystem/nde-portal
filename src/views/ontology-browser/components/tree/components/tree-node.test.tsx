@@ -8,7 +8,7 @@ import {
   cleanup,
 } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ChakraProvider, UnorderedList } from '@chakra-ui/react';
+import { ChakraProvider, List } from '@chakra-ui/react';
 import {
   fetchChildrenFromBioThingsAPI,
   fetchPortalCounts,
@@ -286,9 +286,9 @@ describe('TreeNode', () => {
     };
     (fetchChildrenFromBioThingsAPI as jest.Mock).mockResolvedValue([]);
     const { container } = render(
-      <UnorderedList>
+      <List.Root as='ul'>
         <TreeNode {...props} />
-      </UnorderedList>,
+      </List.Root>,
       { wrapper },
     );
     const ulElement = container.querySelector('ul');

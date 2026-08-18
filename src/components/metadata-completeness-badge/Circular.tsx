@@ -300,13 +300,15 @@ export const CompletenessBadgeCircle = ({
         >
           Metadata Compatibility{' '}
           <Icon
-            as={FaInfo}
             boxSize={3.5}
             border='1px solid'
             borderRadius='full'
             p={0.5}
             color='gray.800!important'
-          />
+            asChild
+          >
+            <FaInfo />
+          </Icon>
         </Link>
       </Tooltip>
     </Flex>

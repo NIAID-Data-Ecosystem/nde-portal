@@ -12,7 +12,14 @@ export const CardContainer: React.FC<CardContainerProps> = ({
   heading,
 }) => {
   return (
-    <Card flex={1} ml={[0, 0, 4]} my={2} sx={{ '>*': { p: [2, 4, 4, 6] } }}>
+    <Card.Root
+      flex={1}
+      ml={[0, 0, 4]}
+      my={2}
+      css={{
+        '& >*': { p: [2, 4, 4, 6] },
+      }}
+    >
       <Box w='100%'>
         <Heading
           as='h2'
@@ -26,6 +33,6 @@ export const CardContainer: React.FC<CardContainerProps> = ({
 
         {children}
       </Box>
-    </Card>
+    </Card.Root>
   );
 };

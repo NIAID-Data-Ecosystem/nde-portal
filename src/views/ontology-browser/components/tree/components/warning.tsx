@@ -26,7 +26,7 @@ export const Warning = ({ node, onClick }: WarningProps) => {
       </Text>
       {/* Button to update config to show hidden dataset */}
       <Button
-        variant='link'
+        variant='plain'
         color='yellow.700'
         size='sm'
         onClick={onClick}

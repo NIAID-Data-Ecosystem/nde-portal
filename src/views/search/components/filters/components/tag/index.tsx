@@ -116,7 +116,7 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
     return (
       <Box>
         <SearchResultsHeading as='h2'>Filtered by: </SearchResultsHeading>
-        <HStack flexWrap='wrap' spacing={1.5} py={1}>
+        <HStack flexWrap='wrap' gap={1.5} py={1}>
           {/* Clear all filters button */}
           <Button
             size='xs'
@@ -124,7 +124,7 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
               resetPagination();
               removeAllFilters();
             }}
-            colorScheme='secondary'
+            colorPalette='secondary'
             variant='outline'
             lineHeight='unset'
             fontWeight='medium'
@@ -134,13 +134,13 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
 
           {/* Render each tag with close button */}
           {tags.map(({ key, name, value, displayValue, filterKey }) => (
-            <Tag key={key} {...tagStyles}>
-              <TagLabel>{`${name}: ${displayValue}`}</TagLabel>
+            <Tag.Root key={key} {...tagStyles}>
+              <Tag.Label>{`${name}: ${displayValue}`}</Tag.Label>
 
-              <TagCloseButton
+              <Tag.CloseTrigger
                 onClick={() => removeSelectedFilter(filterKey, value)}
               />
-            </Tag>
+            </Tag.Root>
           ))}
         </HStack>
       </Box>

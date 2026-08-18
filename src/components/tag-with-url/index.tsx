@@ -63,10 +63,7 @@ export const TagWithUrl = ({
       </Text>
     );
   return (
-    <Tag
-      as={NextLink}
-      href={href}
-      target={isExternal ? '_blank' : '_self'}
+    <Tag.Root
       size='sm'
       variant='subtle'
       alignItems='center'
@@ -77,23 +74,29 @@ export const TagWithUrl = ({
       }}
       lineHeight='shorter'
       {...props}
+      asChild
     >
-      {leftIcon && <TagLeftIcon as={leftIcon} mr={0} />}
-
-      <TagLabel fontSize='inherit' lineHeight='inherit' display='inline'>
-        <Label />
-        <Text
-          as='span'
-          className='tag-text'
-          textDecoration='underline'
-          fontSize='inherit'
-          lineHeight='inherit'
-          color='inherit'
-        >
-          {children}
-        </Text>
-      </TagLabel>
-      {isExternal && <TagRightIcon as={FaSquareArrowUpRight} ml={1} />}
-    </Tag>
+      <NextLink href={href} target={isExternal ? '_blank' : '_self'}>
+        {leftIcon && <Tag.StartElement as={leftIcon} mr={0} />}
+        <Tag.Label fontSize='inherit' lineHeight='inherit' display='inline'>
+          <Label />
+          <Text
+            as='span'
+            className='tag-text'
+            textDecoration='underline'
+            fontSize='inherit'
+            lineHeight='inherit'
+            color='inherit'
+          >
+            {children}
+          </Text>
+        </Tag.Label>
+        {isExternal && (
+          <Tag.EndElement ml={1} asChild>
+            <FaSquareArrowUpRight />
+          </Tag.EndElement>
+        )}
+      </NextLink>
+    </Tag.Root>
   );
 };

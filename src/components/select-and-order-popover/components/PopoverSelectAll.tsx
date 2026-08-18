@@ -21,7 +21,7 @@ export const PopoverSelectAll = ({
   clearAllLabel = 'Clear All',
 }: PopoverSelectAllProps) => (
   <Flex justifyContent='flex-end' mt={1}>
-    <Button size='xs' variant='link' colorScheme='black' onClick={onToggle}>
+    <Button size='xs' variant='plain' colorPalette='black' onClick={onToggle}>
       {allSelected ? clearAllLabel : `${selectAllLabel} (${totalCount})`}
     </Button>
   </Flex>

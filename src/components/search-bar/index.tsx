@@ -3,16 +3,8 @@ import { FaClockRotateLeft, FaMagnifyingGlass } from 'react-icons/fa6';
 import { uniq } from 'lodash';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import {
-  Button,
-  Flex,
-  Icon,
-  IconButton,
-  ListItem,
-  Text,
-  Tooltip,
-  UnorderedList,
-} from '@chakra-ui/react';
+import { Button, Flex, Icon, IconButton, Text, List } from '@chakra-ui/react';
+import { Tooltip } from '@/components/ui/tooltip';
 import { useLocalStorage, useReadLocalStorage } from 'usehooks-ts';
 import {
   DropdownInput,
@@ -59,7 +51,7 @@ const SearchInput = ({
               </Flex>
             )}
             <Button
-              colorScheme={inputProps.colorScheme}
+              colorPalette={inputProps.colorScheme}
               aria-label={inputProps.ariaLabel}
               size='sm'
               type='submit'
@@ -70,10 +62,12 @@ const SearchInput = ({
               mr={2}
               alignSelf='flex-start'
             >
-              <Icon as={FaMagnifyingGlass} />
+              <Icon asChild>
+                <FaMagnifyingGlass />
+              </Icon>
             </Button>
             <Button
-              colorScheme={inputProps.colorScheme}
+              colorPalette={inputProps.colorScheme}
               aria-label={inputProps.ariaLabel}
               size={inputProps.size}
               type='submit'
@@ -88,18 +82,19 @@ const SearchInput = ({
                 borderLeftColor='gray.200'
                 pl={1}
               >
-                <Tooltip label='View search history.'>
+                <Tooltip content='View search history.'>
                   <IconButton
                     variant='ghost'
                     size={inputProps.size}
                     aria-label='View search history.'
-                    icon={
-                      <Flex px={2}>
-                        <Icon as={FaClockRotateLeft} />
-                      </Flex>
-                    }
                     onClick={() => setIsOpen(!isOpen)}
-                  />
+                  >
+                    <Flex px={2}>
+                      <Icon asChild>
+                        <FaClockRotateLeft />
+                      </Icon>
+                    </Flex>
+                  </IconButton>
                 </Tooltip>
               </Flex>
             )}
@@ -244,7 +239,6 @@ const SearchBar = ({
           return '';
         }}
       />
-
       {(showOptionsMenu || showSearchHistory) && (
         <Flex
           mt='-1px'
@@ -273,28 +267,28 @@ const SearchBar = ({
             />
           )}
           {showSearchHistory && (
-            <Tooltip label='View search history.'>
+            <Tooltip content='View search history.'>
               <IconButton
                 variant='ghost'
                 size='sm'
                 bg='white'
                 aria-label='View search history.'
-                icon={
-                  <Flex px={2}>
-                    <Icon as={FaClockRotateLeft} />
-                  </Flex>
-                }
                 onClick={() => setIsOpen(!isOpen)}
-              />
+              >
+                <Flex px={2}>
+                  <Icon asChild>
+                    <FaClockRotateLeft />
+                  </Icon>
+                </Flex>
+              </IconButton>
             </Tooltip>
           )}
         </Flex>
       )}
-
       {isOpen && showSearchHistory && historyList && (
         <DropdownContent>
-          <UnorderedList ml={0}>
-            <ListItem
+          <List.Root as='ul' ml={0}>
+            <List.Item
               px={2}
               mx={2}
               my={1}
@@ -319,7 +313,7 @@ const SearchBar = ({
                 size='sm'
                 onClick={() => setIsOpen(false)}
               /> */}
-            </ListItem>
+            </List.Item>
             {historyList.map((str, index) => {
               return (
                 <SearchHistoryItem
@@ -332,7 +326,7 @@ const SearchBar = ({
                 />
               );
             })}
-          </UnorderedList>
+          </List.Root>
         </DropdownContent>
       )}
     </>

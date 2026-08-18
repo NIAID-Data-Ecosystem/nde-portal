@@ -20,7 +20,7 @@ const FilesTable: React.FC<FilesTableProps> = ({ isLoading, distribution }) => {
           <Text py={2}>No results found.</Text>
         </Flex>
       ) : (
-        <Table
+        <Table.Root
           ariaLabel='List of downloadable files.'
           caption='List of downloadable files.'
           data={distribution || []}
@@ -124,7 +124,7 @@ export const DistributionCells = ({
           column.property === 'dateCreated' ||
           column.property === 'dateModified' ||
           column.property === 'datePublished') && (
-          <Text fontSize='xs' noOfLines={3}>
+          <Text fontSize='xs' lineClamp={3}>
             {data[column.property]}
           </Text>
         )}
@@ -138,10 +138,12 @@ export const DistributionCells = ({
                       {format.name}
                       {format?.icon && format?.icon?.icon && (
                         <Icon
-                          as={format.icon.icon}
                           color={format.icon.color || undefined}
                           ml={2}
-                        />
+                          asChild
+                        >
+                          <format.icon.icon />
+                        </Icon>
                       )}
                     </Text>
                   );

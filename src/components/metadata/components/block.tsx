@@ -94,12 +94,14 @@ export const MetadataTooltip = ({
           cursor='pointer'
           borderRadius='full'
           variant='outline'
-          colorScheme='gray'
+          colorPalette='gray'
           p={0}
           borderColor={isDisabled ? 'gray.500' : 'gray.600'}
           color={isDisabled ? 'gray.500' : 'gray.600'}
         >
-          <Icon as={FaInfo} boxSize='0.75rem' p={0.5} />
+          <Icon boxSize='0.75rem' p={0.5} asChild>
+            <FaInfo />
+          </Icon>
         </Button>
       </Flex>
     </Tooltip>

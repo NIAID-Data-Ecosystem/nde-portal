@@ -4,9 +4,8 @@ import {
   Flex,
   Icon,
   IconButton,
-  ListItem,
   SkeletonText,
-  UnorderedList,
+  List,
 } from '@chakra-ui/react';
 import { FaAngleDown, FaAngleRight } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
@@ -45,7 +44,7 @@ export const DocumentItem = ({
   }, [isSelected, activePageSlug]);
 
   return (
-    <ListItem w='100%' display='flex' flexDirection='column'>
+    <List.Item w='100%' display='flex' flexDirection='column'>
       <Flex w='100%' alignItems='center'>
         <NextLink
           style={{ display: 'flex', flex: 1 }}
@@ -88,23 +87,18 @@ export const DocumentItem = ({
           {hasToc && !isLoading && (
             <IconButton
               aria-label={isExpanded ? 'Collapse sections' : 'Expand sections'}
-              icon={
-                <Icon
-                  as={isExpanded ? FaAngleDown : FaAngleRight}
-                  boxSize={4}
-                />
-              }
               size='sm'
               variant='ghost'
               onClick={() => setIsExpanded(!isExpanded)}
-            />
+            >
+              <Icon as={isExpanded ? FaAngleDown : FaAngleRight} boxSize={4} />
+            </IconButton>
           )}
         </Box>
       </Flex>
-
       {/* Table of contents (TOC) items (sections and subsections): only render depth 2 items, their children will be nested */}
       {hasToc && isExpanded && (
-        <UnorderedList ml={0} mt={1}>
+        <List.Root as='ul' ml={0} mt={1}>
           {tocItems
             .filter(tocItem => tocItem.depth === 2)
             .map((tocItem, idx) => (
@@ -118,8 +112,8 @@ export const DocumentItem = ({
                 activePageSlug={activePageSlug}
               />
             ))}
-        </UnorderedList>
+        </List.Root>
       )}
-    </ListItem>
+    </List.Item>
   );
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { UnorderedList } from '@chakra-ui/react';
+import { List } from '@chakra-ui/react';
 import {
   OntologyLineageItemWithCounts,
   OntologyLineageRequestParams,
@@ -48,7 +48,7 @@ export const Tree = ({
   return (
     <>
       {/* Breadcrumbs for collapsed portion of the tree */}
-      <UnorderedList ml={0}>
+      <List.Root as='ul' ml={0}>
         {rootNodes.map(node => (
           <TreeNode
             key={node.id}
@@ -61,7 +61,7 @@ export const Tree = ({
             updateLineage={updateLineage}
           />
         ))}
-      </UnorderedList>
+      </List.Root>
     </>
   );
 };

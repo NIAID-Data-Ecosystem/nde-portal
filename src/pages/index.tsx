@@ -9,11 +9,10 @@ import {
   Image,
   Text,
   Heading,
-  Divider,
   VStack,
   Stack,
   Card,
-  CardBody,
+  Separator,
 } from '@chakra-ui/react';
 import {
   getPageSeoConfig,
@@ -111,18 +110,18 @@ const Home: NextPage<{
         title={HOMEPAGE_COPY.sections.hero.heading}
         subtitle={HOMEPAGE_COPY.sections.hero.subtitle}
       >
-        <Card
+        <Card.Root
           w='100%'
           overflow='visible'
           bg='rgba(255, 255, 255, 0.70)'
           maxWidth='1100px'
         >
-          <CardBody overflow='visible'>
+          <Card.Body overflow='visible'>
             <Stack
               flexDirection='column'
               w='100%'
               alignItems='flex-start'
-              spacing={{ base: 4, sm: 3 }}
+              gap={{ base: 4, sm: 3 }}
               zIndex={2}
             >
               <Flex w='100%' flexDirection='column' maxWidth='1000px'>
@@ -145,33 +144,36 @@ const Home: NextPage<{
                   {HOME_QUERIES.map(query => {
                     return (
                       <Button
-                        key={query.title}
-                        as={NextLink}
-                        href={{
-                          pathname: `/search`,
-                          query: {
-                            q: query.searchTerms.join(' OR '),
-                            ...(SHOW_AI_ASSISTED_SEARCH && enableAISearch
-                              ? {
-                                  use_ai_search: 'true',
-                                }
-                              : {}),
-                          },
-                        }}
-                        leftIcon={<FaMagnifyingGlass />}
                         size='sm'
-                        colorScheme='niaid'
+                        colorPalette='niaid'
                         fontWeight='semibold'
+                        asChild
                       >
-                        {query.title}
+                        <NextLink
+                          key={query.title}
+                          href={{
+                            pathname: `/search`,
+                            query: {
+                              q: query.searchTerms.join(' OR '),
+                              ...(SHOW_AI_ASSISTED_SEARCH && enableAISearch
+                                ? {
+                                    use_ai_search: 'true',
+                                  }
+                                : {}),
+                            },
+                          }}
+                        >
+                          <FaMagnifyingGlass />
+                          {query.title}
+                        </NextLink>
                       </Button>
                     );
                   })}
                 </Stack>
               </Box>
             </Stack>
-          </CardBody>
-        </Card>
+          </Card.Body>
+        </Card.Root>
       </HeroBanner>
       <>
         {/**** Repositories Table section *****/}
@@ -214,7 +216,7 @@ const Home: NextPage<{
                   <VStack
                     w='100%'
                     alignItems='flex-start'
-                    spacing={4}
+                    gap={4}
                     justifyContent='center'
                     px={{ base: 0, xl: 8 }}
                   >
@@ -229,14 +231,15 @@ const Home: NextPage<{
                       more...
                     </Text>
                     <Button
-                      as={NextLink}
-                      href='/knowledge-center/getting-started-with-niaid-data-ecosystem-discovery-portal'
                       size={{ base: 'md', sm: 'sm' }}
                       width={{ base: '100%', sm: 'auto' }}
+                      asChild
                     >
-                      <Text isTruncated color='inherit'>
-                        Read more about getting started
-                      </Text>
+                      <NextLink href='/knowledge-center/getting-started-with-niaid-data-ecosystem-discovery-portal'>
+                        <Text isTruncated color='inherit'>
+                          Read more about getting started
+                        </Text>
+                      </NextLink>
                     </Button>
                   </VStack>
                 </Flex>
@@ -259,7 +262,7 @@ const Home: NextPage<{
                   NIAID Data Ecosystem
                 </Text>
                 <Flex justifyContent='flex-end' fontSize='sm' />
-                <Divider my={4} />
+                <Separator my={4} />
 
                 <TableWithSearch
                   ariaLabel='List of repositories and resource catalogs'
@@ -307,7 +310,7 @@ const Home: NextPage<{
                 />
 
                 <ButtonGroup
-                  spacing={[0, 2]}
+                  gap={[0, 2]}
                   flexWrap={['wrap', 'nowrap']}
                   w='100%'
                   display='flex'
@@ -340,8 +343,8 @@ const Home: NextPage<{
                               variant={index % 2 ? 'solid' : 'outline'}
                               my={[1, 2, 0]}
                               maxWidth={['unset', '250px']}
-                              leftIcon={<Icon as={icon} />}
                             >
+                              <Icon as={icon} />
                               {route.title}
                             </Button>
                           </NextLink>

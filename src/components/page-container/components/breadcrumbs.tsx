@@ -1,14 +1,6 @@
 import { IconType } from 'react-icons';
 import { FaAngleRight, FaHouse } from 'react-icons/fa6';
-import {
-  Breadcrumb,
-  BreadcrumbItem as ChakraBreadcrumbItem,
-  BreadcrumbLink,
-  Icon,
-  Flex,
-  HStack,
-  Text,
-} from '@chakra-ui/react';
+import { Breadcrumb, Icon, Flex, HStack, Text } from '@chakra-ui/react';
 import { BreadcrumbSegment } from '../hooks/useBreadcrumbs';
 
 interface BreadcrumbItemProps {
@@ -24,7 +16,7 @@ export const BreadcrumbItem = ({
     <HStack
       cursor={isCurrentPage ? 'default' : 'pointer'}
       alignItems='center'
-      spacing={2}
+      gap={2}
       color={isCurrentPage ? 'gray.800' : 'niaid.500'}
       py={1}
       px={2}
@@ -36,11 +28,13 @@ export const BreadcrumbItem = ({
       }}
     >
       {path?.icon && (
-        <Icon as={path.icon} boxSize={4} mb={0.5} fill='niaid.500' />
+        <Icon boxSize={4} mb={0.5} fill='niaid.500' asChild>
+          <path.icon />
+        </Icon>
       )}
       <Text
         lineHeight='shorter'
-        noOfLines={1}
+        lineClamp={1}
         fontSize='sm'
         fontWeight='semibold'
         color='inherit'
@@ -61,42 +55,35 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ segments }) => {
 
   return (
     <Flex px={6} py={2}>
-      <Breadcrumb
-        spacing={1}
-        alignItems='center'
-        separator={
-          <Flex>
-            <Icon as={FaAngleRight} color='gray.400' boxSize={3} />
-          </Flex>
-        }
-      >
-        {/* home */}
-        <ChakraBreadcrumbItem key='home-page'>
-          <BreadcrumbLink href='/'>
-            <BreadcrumbItem
-              key='home-page'
-              path={{
-                name: 'Home',
-                icon: FaHouse,
-              }}
-            />
-          </BreadcrumbLink>
-        </ChakraBreadcrumbItem>
-
-        {segments.map((path, idx) => {
-          const isCurrentPage = idx === segments.length - 1;
-          return (
-            <ChakraBreadcrumbItem
-              key={path.name + idx}
-              isCurrentPage={isCurrentPage}
-            >
-              <BreadcrumbLink href={path.route}>
-                <BreadcrumbItem isCurrentPage={isCurrentPage} path={path} />
-              </BreadcrumbLink>
-            </ChakraBreadcrumbItem>
-          );
-        })}
-      </Breadcrumb>
+      <Breadcrumb.Root alignItems='center'>
+        <Breadcrumb.List gap={1}>
+          {/* home */}
+          <ChakraBreadcrumbItem key='home-page'>
+            <Breadcrumb.Link href='/'>
+              <BreadcrumbItem
+                key='home-page'
+                path={{
+                  name: 'Home',
+                  icon: FaHouse,
+                }}
+              />
+            </Breadcrumb.Link>
+          </ChakraBreadcrumbItem>
+          {segments.map((path, idx) => {
+            const isCurrentPage = idx === segments.length - 1;
+            return (
+              <ChakraBreadcrumbItem
+                key={path.name + idx}
+                isCurrentPage={isCurrentPage}
+              >
+                <Breadcrumb.Link href={path.route}>
+                  <BreadcrumbItem isCurrentPage={isCurrentPage} path={path} />
+                </Breadcrumb.Link>
+              </ChakraBreadcrumbItem>
+            );
+          })}
+        </Breadcrumb.List>
+      </Breadcrumb.Root>
     </Flex>
   );
 };

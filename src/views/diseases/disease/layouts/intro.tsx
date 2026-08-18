@@ -33,11 +33,11 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
   return (
     <Stack
       flexDirection={{ base: 'column', sm: 'row' }}
-      spacing={{ base: 6, lg: 16 }}
+      gap={{ base: 6, lg: 16 }}
       flexWrap='wrap'
     >
       <VStack
-        spacing={4}
+        gap={4}
         alignItems='flex-start'
         flex={3}
         minWidth={{ base: '100%', sm: '450px' }}
@@ -56,7 +56,7 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
 
         {/* Subtitle */}
         {(subtitle || isLoading) && (
-          <SkeletonText isLoaded={!isLoading} noOfLines={2} skeletonHeight={5}>
+          <SkeletonText isLoaded={!isLoading} lineClamp={2} skeletonHeight={5}>
             <Text color='gray.700' lineHeight='short'>
               {subtitle}
             </Text>
@@ -67,7 +67,7 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
         {(topicEmphasizedDescription || isLoading) && (
           <SkeletonText
             isLoaded={!isLoading}
-            noOfLines={5}
+            lineClamp={5}
             skeletonHeight={4}
             maxWidth={{ base: 'unset', xl: 800 }}
           >
@@ -82,7 +82,6 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
           </SkeletonText>
         )}
       </VStack>
-
       {/* Image */}
       {image?.url && (
         <Box

@@ -204,7 +204,7 @@ export const StackedBarChart = ({
                         as='span'
                         color='inherit'
                         fontWeight='semibold'
-                        noOfLines={1}
+                        lineClamp={1}
                       >
                         {bar.data.label}
                       </ChakraText>

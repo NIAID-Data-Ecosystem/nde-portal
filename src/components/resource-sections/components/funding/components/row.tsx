@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  Flex,
-  FlexProps,
-  Icon,
-  Text,
-} from '@chakra-ui/react';
+import { Accordion, Flex, FlexProps, Icon, Text } from '@chakra-ui/react';
 import { FaMinus, FaPlus } from 'react-icons/fa6';
 
 // Row component - represents a row in the table, containing multiple cells.
@@ -32,12 +23,12 @@ export const RowWithDrawer = React.memo(
         flex={1}
       >
         <Flex as='td' py={0} flexDirection='column' flex={1}>
-          <Accordion allowToggle>
-            <AccordionItem border='none'>
+          <Accordion.Root collapsible>
+            <Accordion.Item border='none' value='item-0'>
               {({ isExpanded }) => (
                 <>
                   <h2>
-                    <AccordionButton px={4} py={1} bg='white'>
+                    <Accordion.ItemTrigger px={4} py={1} bg='white'>
                       <Flex alignItems='center'>
                         <Text fontSize='xs'>
                           {isExpanded ? 'Less' : 'More'}
@@ -48,15 +39,17 @@ export const RowWithDrawer = React.memo(
                           mx={1}
                         />
                       </Flex>
-                    </AccordionButton>
+                    </Accordion.ItemTrigger>
                   </h2>
-                  <AccordionPanel py={4}>
-                    {isExpanded && children}
-                  </AccordionPanel>
+                  <Accordion.ItemContent py={4}>
+                    <Accordion.ItemBody>
+                      {isExpanded && children}
+                    </Accordion.ItemBody>
+                  </Accordion.ItemContent>
                 </>
               )}
-            </AccordionItem>
-          </Accordion>
+            </Accordion.Item>
+          </Accordion.Root>
         </Flex>
       </Flex>
     );

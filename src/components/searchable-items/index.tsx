@@ -130,9 +130,9 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
       ))}
       {uniqueItems.length > itemLimit && (
         <Button
-          colorScheme={colorScheme}
+          colorPalette={colorScheme}
           size='xs'
-          variant='link'
+          variant='plain'
           justifyContent='flex-end'
           m={1}
           color={linkColor}

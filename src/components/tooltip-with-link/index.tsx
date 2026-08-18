@@ -30,14 +30,16 @@ const TooltipWithLink: React.FC<TooltipProps> = ({
       >
         {children}{' '}
         <Icon
-          as={FaInfo}
           boxSize={3.5}
           border='1px solid'
           borderRadius='full'
           p={0.5}
           ml={1}
           color='gray.800!important'
-        />
+          asChild
+        >
+          <FaInfo />
+        </Icon>
       </Link>
     </Tooltip>
   );

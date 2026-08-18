@@ -7,6 +7,7 @@ import {
   Skeleton,
   Text,
   VStack,
+  Stack,
 } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import {
@@ -133,7 +134,7 @@ const Overview: React.FC<OverviewProps> = ({
               return (
                 <Skeleton
                   key={`block-${props.id}-${props.property}`}
-                  isLoaded={!isLoading}
+                  loading={!!isLoading}
                 >
                   <MetadataBlock
                     tooltipLabel={getMetadataDescription(
@@ -213,7 +214,7 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
     .map(s => s.name);
 
   return (
-    <Skeleton key={`block-${id}-spatioTemporal`} isLoaded={!isLoading}>
+    <Skeleton key={`block-${id}-spatioTemporal`} loading={!!isLoading}>
       <MetadataBlock
         label='Spatiotemporal Coverage'
         property='spatialCoverage'
@@ -233,8 +234,9 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
           </>
         }
       >
-        <VStack alignItems='flex-start' divider={<Divider />}>
+        <VStack alignItems='flex-start'>
           {/* Geographic information of dataset */}
+          <Stack.Separator />
           {spatialInformation && (
             <>
               <Text fontWeight='medium' color='gray.800'>
@@ -243,8 +245,9 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
               <MetadataContent name={spatialInformation.join(', ')} />
             </>
           )}
-
+          <Stack.Separator />
           {/* Period information of dataset */}
+          <Stack.Separator />
           {temporalCoverage &&
             temporalCoverage.map((coverage, idx) => {
               if (!coverage) {
@@ -288,8 +291,9 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
                 </React.Fragment>
               );
             })}
-
+          <Stack.Separator />
           {/* Language of dataset */}
+          <Stack.Separator />
           {inLanguage?.name && (
             <>
               <Text fontWeight='medium' color='gray.800'>

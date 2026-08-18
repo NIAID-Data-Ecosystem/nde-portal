@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  Accordion,
-  AccordionButton,
-  AccordionItem,
-  AccordionPanel,
-  BoxProps,
-  Icon,
-  Skeleton,
-} from '@chakra-ui/react';
+import { Accordion, BoxProps, Icon, Skeleton } from '@chakra-ui/react';
 import { StyledSectionHead, StyledSectionHeading } from './styles';
 import { FaMinus, FaPlus } from 'react-icons/fa6';
 
@@ -35,7 +27,7 @@ const Section: React.FC<SectionProps> = ({
   const Content = () => {
     return (
       <Skeleton
-        isLoaded={!isLoading}
+        loading={!!isLoading}
         height={isLoading ? '200px' : 'unset'}
         p={{ base: 0, sm: 4 }}
         {...props}
@@ -49,13 +41,20 @@ const Section: React.FC<SectionProps> = ({
   if (isCollapsible) {
     return (
       <section id={id} style={{ padding: 0 }}>
-        <Accordion allowToggle defaultIndex={isDefaultOpen ? 0 : undefined}>
-          <AccordionItem borderColor='transparent' border={'none'}>
+        <Accordion.Root
+          collapsible
+          defaultValue={isDefaultOpen ? 0 : undefined}
+        >
+          <Accordion.Item
+            borderColor='transparent'
+            border={'none'}
+            value='item-0'
+          >
             {({ isExpanded }) => (
               <>
                 {name && (
                   <h2>
-                    <AccordionButton
+                    <Accordion.ItemTrigger
                       aria-label={`show more details about ${name}`}
                       bg={bg || isExpanded ? 'page.alt' : 'white'}
                       color={color}
@@ -74,16 +73,18 @@ const Section: React.FC<SectionProps> = ({
                         </StyledSectionHeading>
                       )}
                       <Icon as={isExpanded ? FaMinus : FaPlus} fontSize='xs' />
-                    </AccordionButton>
+                    </Accordion.ItemTrigger>
                   </h2>
                 )}
-                <AccordionPanel>
-                  <Content />
-                </AccordionPanel>
+                <Accordion.ItemContent>
+                  <Accordion.ItemBody>
+                    <Content />
+                  </Accordion.ItemBody>
+                </Accordion.ItemContent>
               </>
             )}
-          </AccordionItem>
-        </Accordion>
+          </Accordion.Item>
+        </Accordion.Root>
       </section>
     );
   }

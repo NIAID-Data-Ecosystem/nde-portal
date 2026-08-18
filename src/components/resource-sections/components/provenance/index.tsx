@@ -2,13 +2,13 @@ import React from 'react';
 import {
   Box,
   Button,
-  Divider,
   Flex,
   FlexProps,
   Skeleton,
   Stack,
   Tag,
   Text,
+  Separator,
 } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import { formatDate } from 'src/utils/api/helpers';
@@ -72,7 +72,7 @@ const Provenance: React.FC<Provenance> = ({
             <Text fontSize='xs' fontWeight='semibold' lineHeight='tall'>
               {label}
             </Text>
-            <Divider />
+            <Separator />
           </>
         )}
         <>{children}</>
@@ -119,7 +119,7 @@ const Provenance: React.FC<Provenance> = ({
   );
 
   return (
-    <Skeleton isLoaded={!isLoading}>
+    <Skeleton loading={!!isLoading}>
       {/* Source  information */}
       <Text fontSize='xs' fontWeight='semibold' lineHeight='tall' mt={4}>
         Source information
@@ -165,7 +165,7 @@ const Provenance: React.FC<Provenance> = ({
                 <Text fontSize='xs' fontWeight='semibold' lineHeight='tall'>
                   Original Source
                 </Text>
-                <Divider />
+                <Separator />
                 <dl>
                   {(Array.isArray(sdPublisher)
                     ? sdPublisher
@@ -187,9 +187,9 @@ const Provenance: React.FC<Provenance> = ({
                             )}
                             <br />
                             {publisher?.identifier && (
-                              <Tag size='sm' variant='subtle' my={0 / 5}>
+                              <Tag.Root size='sm' variant='subtle' my={0 / 5}>
                                 ID | {publisher.identifier}
-                              </Tag>
+                              </Tag.Root>
                             )}
                           </>
                         )}
@@ -202,7 +202,6 @@ const Provenance: React.FC<Provenance> = ({
           </Block>
         )}
       </ScrollContainer>
-
       {/* Collection information */}
       {sourceOrganization && (
         <>
@@ -211,7 +210,7 @@ const Provenance: React.FC<Provenance> = ({
           </Text>
           <ScrollContainer display='flex' py={2}>
             <Stack
-              spacing={4}
+              gap={4}
               direction={{ base: 'column', xl: 'row' }}
               flexWrap='wrap'
               w='100%'
@@ -250,7 +249,7 @@ const Provenance: React.FC<Provenance> = ({
                       </Field>
                       {organization.description && (
                         <Field label='About'>
-                          <Text noOfLines={10}>{organization.description}</Text>
+                          <Text lineClamp={10}>{organization.description}</Text>
                         </Field>
                       )}
                     </Box>
@@ -258,40 +257,38 @@ const Provenance: React.FC<Provenance> = ({
                       flexDirection='row'
                       justifyContent='space-between'
                       flexWrap='wrap'
-                      spacing={1}
+                      gap={1}
                       alignSelf='baseline'
                       w='100%'
                     >
                       <Tooltip label='Search for results from this program collection.'>
                         <Button
-                          as={NextLink}
                           variant='solid'
                           size='sm'
-                          leftIcon={<FaMagnifyingGlass />}
                           mt={2}
                           w={{ base: '100%', sm: 'auto' }}
-                          href={{
-                            pathname: '/search',
-                            query: {
-                              q: `sourceOrganization.name:"${organization.name}"`,
-                            },
-                          }}
+                          asChild
                         >
-                          <Text isTruncated color='inherit'>
-                            View collection
-                          </Text>
+                          <NextLink
+                            href={{
+                              pathname: '/search',
+                              query: {
+                                q: `sourceOrganization.name:"${organization.name}"`,
+                              },
+                            }}
+                          >
+                            <FaMagnifyingGlass />
+                            <Text isTruncated color='inherit'>
+                              View collection
+                            </Text>
+                          </NextLink>
                         </Button>
                       </Tooltip>
                       {organization?.url && (
                         <NextLink href={organization.url} target='_blank'>
-                          <Button
-                            as='span'
-                            variant='outline'
-                            size='sm'
-                            rightIcon={<FaArrowRight />}
-                            mt={2}
-                          >
+                          <Button as='span' variant='outline' size='sm' mt={2}>
                             View program site
+                            <FaArrowRight />
                           </Button>
                         </NextLink>
                       )}

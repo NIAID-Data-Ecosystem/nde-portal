@@ -2,15 +2,13 @@ import React from 'react';
 import { FormattedResource } from 'src/utils/api/types';
 import {
   Box,
-  Divider,
   Flex,
-  ListItem,
   SimpleGrid,
   Skeleton,
   Stack,
-  StackDivider,
-  UnorderedList,
   VStack,
+  Separator,
+  List,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import {
@@ -80,9 +78,7 @@ const Sections = ({
       />
       {/* Banner showing data type and publish date. For computational tools, operating system info is displayed when available. */}
       {data?.author && <ResourceAuthors authors={data.author} />}
-
       <ResourceBanner data={data} />
-
       {/*<--- AI Generated short description -->*/}
       {process.env.NEXT_PUBLIC_APP_ENV !== 'production' &&
         data?.disambiguatingDescription && (
@@ -109,7 +105,6 @@ const Sections = ({
         )} */}
           </Flex>
         )}
-
       {sections.map(section => {
         return (
           <Section
@@ -142,9 +137,9 @@ const Sections = ({
                 <Stack
                   flexWrap='wrap'
                   direction={{ base: 'column', md: 'row' }}
-                  divider={<StackDivider borderColor='gray.100' />}
                 >
                   {/* Badge indicating completeness of metadata */}
+                  <Stack.Separator borderColor='gray.100' />
                   {data && data['_meta'] && (
                     <Flex
                       px={4}
@@ -161,7 +156,9 @@ const Sections = ({
                       />
                     </Flex>
                   )}
+                  <Stack.Separator borderColor='gray.100' />
                   {/* External links to access data, documents or dataset at the source. */}
+                  <Stack.Separator borderColor='gray.100' />
                   <ExternalAccess
                     data={data}
                     isLoading={isLoading}
@@ -308,7 +305,7 @@ const Sections = ({
             )}
             {/* Show keywords */}
             {section.hash === 'keywords' && (
-              <Skeleton isLoaded={!isLoading}>
+              <Skeleton loading={!!isLoading}>
                 {data?.keywords && data?.keywords?.length > 0 && (
                   <SearchableItems
                     generateButtonLabel={(
@@ -332,7 +329,7 @@ const Sections = ({
             )}
             {/* Show application category */}
             {section.hash === 'applicationCategory' && (
-              <Skeleton isLoaded={!isLoading}>
+              <Skeleton loading={!!isLoading}>
                 {data?.applicationCategory &&
                   data?.applicationCategory?.length > 0 && (
                     <SearchableItems
@@ -357,7 +354,7 @@ const Sections = ({
             )}
             {/* Show programming language */}
             {section.hash === 'programmingLanguage' && (
-              <Skeleton isLoaded={!isLoading}>
+              <Skeleton loading={!!isLoading}>
                 {data?.programmingLanguage &&
                   data?.programmingLanguage?.length > 0 && (
                     <SearchableItems
@@ -380,7 +377,6 @@ const Sections = ({
                   )}
               </Skeleton>
             )}
-
             {/* Show description */}
             {section.hash === 'description' &&
               (data?.description || data?.abstract) && (
@@ -392,7 +388,7 @@ const Sections = ({
                         content={`**Abstract:** ${data.abstract}` || ''}
                         overflow='auto'
                       />
-                      <Divider my={2} />
+                      <Separator my={2} />
                     </>
                   )}
 
@@ -405,7 +401,6 @@ const Sections = ({
                   )}
                 </>
               )}
-
             {/* Show smaples */}
             {section.hash === 'samples' && !SHOULD_HIDE_SAMPLES('samples') && (
               <SamplesDisplay
@@ -413,28 +408,26 @@ const Sections = ({
                 resourceIdentifier={data?.identifier ?? undefined}
               />
             )}
-
             {/* Show provenance */}
             {section.hash === 'provenance' && (
               <ResourceProvenance isLoading={isLoading} {...data} />
             )}
-
             {/* Show downloads */}
             {section.hash === 'downloads' && (
               <>
                 {/* Downloads for computational tools is a list of links. */}
                 {data?.downloadUrl && (
-                  <UnorderedList>
+                  <List.Root as='ul'>
                     {data.downloadUrl.map(({ name }) => {
                       return (
-                        <ListItem key={name}>
+                        <List.Item key={name}>
                           <Link href={name} isExternal>
                             {name}
                           </Link>
-                        </ListItem>
+                        </List.Item>
                       );
                     })}
-                  </UnorderedList>
+                  </List.Root>
                 )}
                 {/* Downloads for datasets is a table with multiple properties. */}
                 {data?.distribution && (
@@ -445,12 +438,10 @@ const Sections = ({
                 )}
               </>
             )}
-
             {/* Show funding */}
             {section.hash === 'funding' && (
               <Funding isLoading={isLoading} data={data?.funding || []} />
             )}
-
             {/* Show Based On information */}
             {section.hash === 'isBasedOn' && data?.isBasedOn && (
               <BasedOnTable
@@ -461,7 +452,6 @@ const Sections = ({
                 items={data?.isBasedOn}
               />
             )}
-
             {/* Show citedBy */}
             {section.hash === 'citedBy' && (
               <CitedByTable
@@ -470,7 +460,6 @@ const Sections = ({
                 title={schema['citedBy']['description']?.[type]}
               />
             )}
-
             {/* Show related resources */}
             {section.hash === 'relatedResources' && (
               <RelatedResources
@@ -485,7 +474,6 @@ const Sections = ({
                 }
               />
             )}
-
             {/* Show raw metadata */}
             {section.hash === 'metadata' && data?.rawData && (
               <>

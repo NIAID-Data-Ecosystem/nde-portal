@@ -1,3 +1,11 @@
+/*
+ MIGRATION NOTE: The following Chakra UI hooks have been removed.
+ Please replace them with the suggested alternatives:
+
+//   - useOutsideClick: Use react-use: useClickAway
+
+ See: https://chakra-ui.com/docs/get-started/migration#hooks
+*/
 import React, { useRef } from 'react';
 import { FaAngleDown } from 'react-icons/fa6';
 import {
@@ -11,19 +19,14 @@ import {
   InputProps,
   InputRightElement,
   UseDisclosureProps,
-  useOutsideClick,
   VisuallyHidden,
 } from '@chakra-ui/react';
 
 export const SelectIcon = ({ size, onClick, ...rest }: IconButtonProps) => {
   return (
-    <IconButton
-      onClick={onClick}
-      variant='ghost'
-      size={size}
-      icon={<FaAngleDown />}
-      {...rest}
-    />
+    <IconButton onClick={onClick} variant='ghost' size={size} {...rest}>
+      <FaAngleDown />
+    </IconButton>
   );
 };
 
@@ -95,8 +98,8 @@ export const SelectWithInput: React.FC<SelectWithInputProps> = ({
         <Input
           id={id}
           onClick={onOpen} // open dropdown options when clicking in input box.
-          isDisabled={isDisabled}
-          colorScheme={colorScheme}
+          disabled={isDisabled}
+          colorPalette={colorScheme}
           {...props}
         />
         <InputRightElement p={1} w='unset'>
@@ -143,8 +146,9 @@ export const SelectWithButton: React.FC<SelectWithButtonProps> = ({
       onClose={onClose}
       renderList={() => children}
     >
-      <Button rightIcon={<FaAngleDown />} onClick={onToggle} {...props}>
+      <Button onClick={onToggle} {...props}>
         {name}
+        <FaAngleDown />
       </Button>
     </SelectWrapper>
   );

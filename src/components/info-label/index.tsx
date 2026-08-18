@@ -28,14 +28,16 @@ export const InfoLabel: React.FC<InfoLabelProps> = ({
         {title}
         {tooltipText && (
           <Icon
-            as={FaInfo}
             boxSize={3.5}
             border='1px solid'
             borderRadius='full'
             p={0.5}
             mx={1}
             color='gray.800!important'
-          />
+            asChild
+          >
+            <FaInfo />
+          </Icon>
         )}
       </Text>
     </Tooltip>

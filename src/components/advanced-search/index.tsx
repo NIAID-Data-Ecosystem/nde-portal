@@ -1,20 +1,15 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
   Box,
   Button,
-  Collapse,
+  Collapsible,
   Flex,
   Heading,
   Icon,
-  ListItem,
   Text,
-  UnorderedList,
   useDisclosure,
+  List,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import {
@@ -83,7 +78,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
 
   const [resetForm, setResetForm] = useState(false);
 
-  const { isOpen: showRawQuery, onToggle: toggleShowRawQuery } = useDisclosure({
+  const { open: showRawQuery, onToggle: toggleShowRawQuery } = useDisclosure({
     defaultIsOpen: true,
   });
   const [items, setItems] = useState<TreeItem[]>([]);
@@ -174,7 +169,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
               w={['100%', 'unset']}
               my={[2, 2, 0]}
               mx={1}
-              colorScheme='gray'
+              colorPalette='gray'
               color='text.body'
               size='sm'
               onClick={() => setItems(buildTree(query.items))}
@@ -184,7 +179,6 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
           );
         })}
       </Box>
-
       {/* Query Builder Area */}
       <Box m={2} mt={6}>
         <Flex>
@@ -197,17 +191,17 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             Query Builder
           </Heading>
           <Button
-            colorScheme='primary'
+            colorPalette='primary'
             size='sm'
-            leftIcon={<FaArrowRotateLeft />}
             variant='outline'
-            isDisabled={!items.length}
+            disabled={!items.length}
             onClick={() => {
               setItems([]);
               setResetForm(true);
             }}
             ml={4}
           >
+            <FaArrowRotateLeft />
             Clear query
           </Button>
         </Flex>
@@ -231,30 +225,38 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
         </Box>
 
         <Box w='100%'>
-          <Collapse in={showRawQuery}>
-            <Box my={2}>
-              <EditableQueryText
-                queryObj={items}
-                updateQueryObj={updateItems}
-                errors={errors}
-                setErrors={setErrors}
-              />
-            </Box>
-          </Collapse>
+          <Collapsible.Root open={showRawQuery}>
+            <Collapsible.Content>
+              <Box my={2}>
+                <EditableQueryText
+                  queryObj={items}
+                  updateQueryObj={updateItems}
+                  errors={errors}
+                  setErrors={setErrors}
+                />
+              </Box>
+            </Collapsible.Content>
+          </Collapsible.Root>
 
           <Button
-            isDisabled={items.length === 0}
-            rightIcon={showRawQuery ? <FaAngleUp /> : <FaAngleDown />}
+            disabled={items.length === 0}
             onClick={toggleShowRawQuery}
-            colorScheme='gray'
+            colorPalette='gray'
             color='text.body'
             size='sm'
             mt={2}
-            leftIcon={
-              showRawQuery ? <Icon as={FaEyeSlash} /> : <Icon as={FaEye} />
-            }
           >
-            {showRawQuery ? 'hide' : 'view'} raw query
+            {showRawQuery ? (
+              <Icon asChild>
+                <FaEyeSlash />
+              </Icon>
+            ) : (
+              <Icon asChild>
+                <FaEye />
+              </Icon>
+            )}
+            {showRawQuery ? 'hide' : 'view'}raw query
+            {showRawQuery ? <FaAngleUp /> : <FaAngleDown />}
           </Button>
         </Box>
 
@@ -263,9 +265,9 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
           {renderButtonGroup && renderButtonGroup({ colorScheme })}
           {handleSubmit && (
             <Button
-              colorScheme={colorScheme}
+              colorPalette={colorScheme}
               onClick={handleSubmit}
-              isDisabled={
+              disabled={
                 items.length === 0 ||
                 errors.filter(({ type }) => type == 'error').length > 0
               }
@@ -275,10 +277,10 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             </Button>
           )}
         </Flex>
-        <Accordion my={4} defaultIndex={[0]} allowToggle>
-          <AccordionItem>
+        <Accordion.Root my={4} defaultValue={['0']} collapsible>
+          <Accordion.Item value='item-0'>
             <h2>
-              <AccordionButton
+              <Accordion.ItemTrigger
                 _hover={{ bg: 'transparent' }}
                 _focus={{ boxShadow: 'none' }}
               >
@@ -290,92 +292,95 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                   alignItems='center'
                   flex={1}
                 >
-                  <Icon
-                    as={FaClockRotateLeft}
-                    mx={2}
-                    color='status.info'
-                  ></Icon>
+                  <Icon mx={2} color='status.info' asChild>
+                    <FaClockRotateLeft />
+                  </Icon>
                   Search History
                 </Text>
-                <AccordionIcon />
-              </AccordionButton>
+                <Accordion.ItemIndicator />
+              </Accordion.ItemTrigger>
             </h2>
-            <AccordionPanel px={[1, 4]}>
-              <UnorderedList ml={0}>
-                {isMounted &&
-                  searchHistory.length > 0 &&
-                  searchHistory.reverse().map((query, index) => {
-                    return (
-                      <ListItem
-                        key={index}
-                        onClick={() => {
-                          setItems(
-                            convertQueryString2Object(query.querystring),
-                          );
-                        }}
-                        _hover={{
-                          cursor: 'pointer',
-                          ['.hist-querystring']: {
-                            textDecoration: 'underline',
-                          },
-                        }}
-                        bg='status.info'
-                        borderRadius='semi'
-                        my={0.5}
-                      >
-                        <Flex
-                          className='hist-row'
-                          bg={index % 2 ? 'whiteAlpha.800' : 'whiteAlpha.900'}
-                          flexDirection={{ base: 'column', md: 'row-reverse' }}
-                          alignItems={{ base: 'flex-start', md: 'center' }}
-                          justifyContent={{ base: 'space-between' }}
-                          px={2}
+            <Accordion.ItemContent px={[1, 4]}>
+              <Accordion.ItemBody>
+                <List.Root as='ul' ml={0}>
+                  {isMounted &&
+                    searchHistory.length > 0 &&
+                    searchHistory.reverse().map((query, index) => {
+                      return (
+                        <List.Item
+                          key={index}
+                          onClick={() => {
+                            setItems(
+                              convertQueryString2Object(query.querystring),
+                            );
+                          }}
+                          _hover={{
+                            cursor: 'pointer',
+                            ['.hist-querystring']: {
+                              textDecoration: 'underline',
+                            },
+                          }}
+                          bg='status.info'
+                          borderRadius='semi'
+                          my={0.5}
                         >
                           <Flex
-                            bg='status.info'
-                            m={2}
-                            py={1}
+                            className='hist-row'
+                            bg={index % 2 ? 'whiteAlpha.800' : 'whiteAlpha.900'}
+                            flexDirection={{
+                              base: 'column',
+                              md: 'row-reverse',
+                            }}
+                            alignItems={{ base: 'flex-start', md: 'center' }}
+                            justifyContent={{ base: 'space-between' }}
                             px={2}
-                            alignItems='flex-end'
-                            flexDirection='column'
-                            borderRadius='semi'
-                            alignSelf={{ base: 'flex-end', md: 'center' }}
                           >
-                            <Text
-                              whiteSpace='normal'
-                              fontWeight='semibold'
-                              fontSize='md'
-                              color='#fff'
+                            <Flex
+                              bg='status.info'
+                              m={2}
+                              py={1}
+                              px={2}
+                              alignItems='flex-end'
+                              flexDirection='column'
+                              borderRadius='semi'
+                              alignSelf={{ base: 'flex-end', md: 'center' }}
                             >
-                              {formatNumber(query.count)}
                               <Text
-                                as='span'
-                                fontSize='12px'
-                                color='inherit'
-                                ml={2}
+                                whiteSpace='normal'
+                                fontWeight='semibold'
+                                fontSize='md'
+                                color='#fff'
                               >
-                                results
+                                {formatNumber(query.count)}
+                                <Text
+                                  as='span'
+                                  fontSize='12px'
+                                  color='inherit'
+                                  ml={2}
+                                >
+                                  results
+                                </Text>
                               </Text>
-                            </Text>
+                            </Flex>
+                            <Box>
+                              <Text
+                                className='hist-querystring'
+                                fontSize='xs'
+                                fontWeight='medium'
+                                lineClamp={3}
+                              >
+                                {query.querystring}
+                              </Text>
+                            </Box>
                           </Flex>
-                          <Box>
-                            <Text
-                              className='hist-querystring'
-                              fontSize='xs'
-                              fontWeight='medium'
-                              noOfLines={3}
-                            >
-                              {query.querystring}
-                            </Text>
-                          </Box>
-                        </Flex>
-                      </ListItem>
-                    );
-                  })}
-              </UnorderedList>
-            </AccordionPanel>
-          </AccordionItem>
-        </Accordion>
+                        </List.Item>
+                      );
+                    })}
+                </List.Root>
+              </Accordion.ItemBody>
+            </Accordion.ItemContent>
+          </Accordion.Item>
+        </Accordion.Root>
       </Box>
     </>
   );

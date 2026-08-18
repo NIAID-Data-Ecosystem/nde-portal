@@ -1,11 +1,13 @@
+/*
+ MIGRATION NOTE: The following Chakra UI hooks have been removed.
+ Please replace them with the suggested alternatives:
+
+//   - usePrefersReducedMotion: Use usehooks-ts: usePrefersReducedMotion
+
+ See: https://chakra-ui.com/docs/get-started/migration#hooks
+*/
 import React from 'react';
-import {
-  Button,
-  Flex,
-  usePrefersReducedMotion,
-  Stack,
-  ButtonProps,
-} from '@chakra-ui/react';
+import { Button, Flex, Stack, ButtonProps } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import NextLink from 'next/link';
 import { FaArrowRight } from 'react-icons/fa6';
@@ -24,7 +26,7 @@ interface DataAccessProps {
   recordType?: string | null;
   creativeWorkStatus?: FormattedResource['creativeWorkStatus'];
   children?: React.ReactNode;
-  colorScheme?: ButtonProps['colorScheme'];
+  colorPalette?: ButtonProps['colorPalette'];
 }
 
 const AccessResourceButton: React.FC<{ url: string; colorScheme: string }> = ({
@@ -37,8 +39,9 @@ const AccessResourceButton: React.FC<{ url: string; colorScheme: string }> = ({
 
   return (
     <NextLink href={url} target={isInternalLink ? undefined : '_blank'}>
-      <Button colorScheme={colorScheme} size='sm' rightIcon={<FaArrowRight />}>
+      <Button colorPalette={colorScheme} size='sm'>
         Access Resource
+        <FaArrowRight />
       </Button>
     </NextLink>
   );
@@ -67,7 +70,7 @@ export const DataAccess: React.FC<DataAccessProps> = ({
       : [];
 
   return (
-    <Stack mt={4} flexDirection='column' alignItems='flex-start' spacing={4}>
+    <Stack mt={4} flexDirection='column' alignItems='flex-start' gap={4}>
       {sources.map(source => (
         <React.Fragment key={source.name}>
           <SourceLogo.Component
@@ -85,8 +88,8 @@ export const DataAccess: React.FC<DataAccessProps> = ({
               w='100%'
               mt={2}
               justifyContent='flex-end'
-              sx={{
-                svg: {
+              css={{
+                '& svg': {
                   transform: 'translateX(-2px)',
                   transition: 'transform 0.2s ease-in-out',
                 },

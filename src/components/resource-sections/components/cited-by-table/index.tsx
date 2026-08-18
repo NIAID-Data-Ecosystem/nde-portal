@@ -91,29 +91,29 @@ export const CitedByTable: React.FC<CitedByTable> = ({
   }
 
   return (
-    <Skeleton isLoaded={!isLoading} overflow='auto'>
+    <Skeleton loading={!!isLoading} overflow='auto'>
       {title && (
         <Heading as='h4' fontSize='sm' mx={1} mb={4} fontWeight='semibold'>
           {title}
         </Heading>
       )}
       <TableWrapper colorScheme='gray'>
-        <TableContainer>
-          <Table
+        <Table.ScrollArea>
+          <Table.Root
             role='table'
             aria-label='Cited by information'
             aria-describedby='citedby-table-caption'
             aria-rowcount={rows.length}
           >
             {/* Note: keep for accessibility */}
-            <VisuallyHidden id='citedby-table-caption' as='caption'>
-              Publications that cite the work.
+            <VisuallyHidden id='citedby-table-caption' asChild>
+              <caption>Publications that cite the work.</caption>
             </VisuallyHidden>
             <thead>
-              <Tr role='row' flex='1' display='flex' w='100%'>
+              <Table.Row role='row' flex='1' display='flex' w='100%'>
                 {COLUMNS.map(column => {
                   return (
-                    <Th
+                    <Table.ColumnHeader
                       key={`table-col-th-${column.key}`}
                       label={column.title}
                       isSelected={column.key === orderBy}
@@ -127,10 +127,10 @@ export const CitedByTable: React.FC<CitedByTable> = ({
                         },
                       }}
                       {...column.props}
-                    ></Th>
+                    ></Table.ColumnHeader>
                   );
                 })}
-              </Tr>
+              </Table.Row>
             </thead>
             <tbody>
               {rows.map(item => {
@@ -141,101 +141,100 @@ export const CitedByTable: React.FC<CitedByTable> = ({
                     flexDirection='column'
                     borderColor='gray.200'
                   >
-                    <Flex as='td' role='cell'>
-                      {COLUMNS.map(column => {
-                        return (
-                          <Cell
-                            key={`table-td-${item.key}-${column.key}`}
-                            as='div'
-                            {...column.props}
-                          >
-                            {column.key === 'name' && (
-                              <>
-                                {item?.url ? (
-                                  <Link href={item.url} isExternal mb={2}>
-                                    <Text fontSize='inherit' noOfLines={3}>
-                                      {item.name ||
-                                        item.url ||
-                                        '[No title provided]'}
+                    <Flex role='cell' asChild>
+                      <td>
+                        {COLUMNS.map(column => {
+                          return (
+                            <Cell
+                              key={`table-td-${item.key}-${column.key}`}
+                              as='div'
+                              {...column.props}
+                            >
+                              {column.key === 'name' && (
+                                <>
+                                  {item?.url ? (
+                                    <Link href={item.url} isExternal mb={2}>
+                                      <Text fontSize='inherit' lineClamp={3}>
+                                        {item.name ||
+                                          item.url ||
+                                          '[No title provided]'}
+                                      </Text>
+                                    </Link>
+                                  ) : (
+                                    <Text
+                                      fontWeight='medium'
+                                      lineClamp={3}
+                                      mb={2}
+                                    >
+                                      {item.name || '[No title provided]'}
                                     </Text>
-                                  </Link>
+                                  )}
+                                  <Stack gap={1} mt={1}>
+                                    {item.identifier && (
+                                      <TagWithUrl label='ID |'>
+                                        {item.identifier}
+                                      </TagWithUrl>
+                                    )}
+                                    {item.pmid && (
+                                      <TagWithUrl label='PMID |'>
+                                        {item.pmid}
+                                      </TagWithUrl>
+                                    )}
+                                    {item.doi && (
+                                      <TagWithUrl label='DOI |'>
+                                        {item.doi}
+                                      </TagWithUrl>
+                                    )}
+                                  </Stack>
+                                </>
+                              )}
+                              {column.key === '@type' &&
+                                (item['@type'] ? (
+                                  <>
+                                    <TagWithUrl colorScheme='primary'>
+                                      {item['@type']}
+                                    </TagWithUrl>
+                                  </>
                                 ) : (
-                                  <Text
-                                    fontWeight='medium'
-                                    noOfLines={3}
-                                    mb={2}
-                                  >
-                                    {item.name || '[No title provided]'}
-                                  </Text>
-                                )}
-                                <Stack spacing={1} mt={1}>
-                                  {item.identifier && (
-                                    <TagWithUrl label='ID |'>
-                                      {item.identifier}
-                                    </TagWithUrl>
-                                  )}
-                                  {item.pmid && (
-                                    <TagWithUrl label='PMID |'>
-                                      {item.pmid}
-                                    </TagWithUrl>
-                                  )}
-                                  {item.doi && (
-                                    <TagWithUrl label='DOI |'>
-                                      {item.doi}
-                                    </TagWithUrl>
-                                  )}
-                                </Stack>
-                              </>
-                            )}
-
-                            {column.key === '@type' &&
-                              (item['@type'] ? (
-                                <>
-                                  <TagWithUrl colorScheme='primary'>
-                                    {item['@type']}
-                                  </TagWithUrl>
-                                </>
-                              ) : (
-                                <EmptyCell />
-                              ))}
-
-                            {column.key === 'journalName' &&
-                              (item['journalName'] ? (
-                                <>
-                                  <Text fontSize='inherit' noOfLines={3}>
-                                    {item['journalName']}
-                                  </Text>
-                                </>
-                              ) : (
-                                <EmptyCell />
-                              ))}
-
-                            {column.key.toLowerCase().includes('date') &&
-                              (item[column.key as keyof CitedByType] ? (
-                                <>
-                                  {new Date(
-                                    item[
-                                      column.key as keyof CitedByType
-                                    ] as string,
-                                  ).toLocaleDateString('en-US', {
-                                    year: 'numeric',
-                                    month: 'short',
-                                    day: 'numeric',
-                                  })}
-                                </>
-                              ) : (
-                                <EmptyCell />
-                              ))}
-                          </Cell>
-                        );
-                      })}
+                                  <EmptyCell />
+                                ))}
+                              {column.key === 'journalName' &&
+                                (item['journalName'] ? (
+                                  <>
+                                    <Text fontSize='inherit' lineClamp={3}>
+                                      {item['journalName']}
+                                    </Text>
+                                  </>
+                                ) : (
+                                  <EmptyCell />
+                                ))}
+                              {column.key.toLowerCase().includes('date') &&
+                                (item[column.key as keyof CitedByType] ? (
+                                  <>
+                                    {new Date(
+                                      item[
+                                        column.key as keyof CitedByType
+                                      ] as string,
+                                    ).toLocaleDateString('en-US', {
+                                      year: 'numeric',
+                                      month: 'short',
+                                      day: 'numeric',
+                                    })}
+                                  </>
+                                ) : (
+                                  <EmptyCell />
+                                ))}
+                            </Cell>
+                          );
+                        })}
+                      </td>
                     </Flex>
                   </Row>
                 );
               })}
             </tbody>
-          </Table>
-        </TableContainer>
+          </Table.Root>
+        </Table.ScrollArea>
         <TablePagination
           total={citedBy.length}
           size={size}

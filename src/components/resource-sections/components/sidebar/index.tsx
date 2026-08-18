@@ -1,14 +1,6 @@
 import React, { useEffect } from 'react';
 import NextLink from 'next/link';
-import {
-  Box,
-  Card,
-  Collapse,
-  Flex,
-  Icon,
-  ListItem,
-  UnorderedList,
-} from '@chakra-ui/react';
+import { Box, Card, Collapsible, Flex, Icon, List } from '@chakra-ui/react';
 import { Navigation } from 'src/components/resource-sections/components';
 import { Route } from 'src/components/resource-sections/helpers';
 import { useLocalStorage } from 'usehooks-ts';
@@ -45,7 +37,14 @@ export const Sidebar = ({
       display={{ base: 'none', lg: 'block' }}
     >
       <Box className='sidebar' position='sticky' top='0px'>
-        <Card flex={1} ml={[0, 0, 4]} my={[2, 2, 0]} sx={{ '>*': { p: 0 } }}>
+        <Card.Root
+          flex={1}
+          ml={[0, 0, 4]}
+          my={[2, 2, 0]}
+          css={{
+            '& >*': { p: 0 },
+          }}
+        >
           {data && data['_meta'] && (
             <CompletenessBadgeCircle
               type={data['@type']}
@@ -56,53 +55,59 @@ export const Sidebar = ({
           {/* External links to access data, documents or dataset at the source. */}
           <ExternalAccess data={data} isLoading={isLoading} hasDivider={true} />
           <UsageInfo data={data} isLoading={isLoading} />
-        </Card>
+        </Card.Root>
 
         {/* Local navigation for page */}
         {sections.length > 0 && (
-          <Card
+          <Card.Root
             flex={1}
             ml={[0, 0, 4]}
             my={2}
-            sx={{ '>*': { p: [2, 4, 4, 6] } }}
+            css={{
+              '& >*': { p: [2, 4, 4, 6] },
+            }}
           >
             <Navigation routes={sections} />
-          </Card>
+          </Card.Root>
         )}
 
         {/* Search History links */}
         {isMounted && (
-          <Collapse in={!!searchHistory.length}>
-            <CardContainer heading='Previous Searches'>
-              <ScrollContainer maxH={250}>
-                <UnorderedList ml={0} spacing={2} my={2}>
-                  {searchHistory.slice(0, 3).map((search, idx) => (
-                    <ListItem key={idx} lineHeight='short' display='flex'>
-                      <Icon
-                        as={FaMagnifyingGlass}
-                        color='link.color'
-                        boxSize={3}
-                        m={1}
-                        mr={1.5}
-                        mt={1.5}
-                        lineHeight='short'
-                      />
-                      <NextLink
-                        href={{
-                          pathname: '/search',
-                          query: { q: search },
-                        }}
-                      >
-                        <Link as='span' fontSize='sm'>
-                          {search}
-                        </Link>
-                      </NextLink>
-                    </ListItem>
-                  ))}
-                </UnorderedList>
-              </ScrollContainer>
-            </CardContainer>
-          </Collapse>
+          <Collapsible.Root open={!!searchHistory.length}>
+            <Collapsible.Content>
+              <CardContainer heading='Previous Searches'>
+                <ScrollContainer maxH={250}>
+                  <List.Root as='ul' ml={0} gap={2} my={2}>
+                    {searchHistory.slice(0, 3).map((search, idx) => (
+                      <List.Item key={idx} lineHeight='short' display='flex'>
+                        <Icon
+                          color='link.color'
+                          boxSize={3}
+                          m={1}
+                          mr={1.5}
+                          mt={1.5}
+                          lineHeight='short'
+                          asChild
+                        >
+                          <FaMagnifyingGlass />
+                        </Icon>
+                        <NextLink
+                          href={{
+                            pathname: '/search',
+                            query: { q: search },
+                          }}
+                        >
+                          <Link as='span' fontSize='sm'>
+                            {search}
+                          </Link>
+                        </NextLink>
+                      </List.Item>
+                    ))}
+                  </List.Root>
+                </ScrollContainer>
+              </CardContainer>
+            </Collapsible.Content>
+          </Collapsible.Root>
         )}
       </Box>
     </Flex>

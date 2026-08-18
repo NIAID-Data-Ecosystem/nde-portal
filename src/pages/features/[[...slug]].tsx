@@ -87,7 +87,7 @@ const FeaturedPage: NextPage<{
                 {/* Banner img */}
                 {(isLoading || data?.banner) && (
                   <Skeleton
-                    isLoaded={!isLoading}
+                    loading={!!isLoading}
                     backgroundImage={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${data?.banner?.url}`}
                     backgroundSize='cover'
                     display={{ base: 'none', sm: 'flex' }}

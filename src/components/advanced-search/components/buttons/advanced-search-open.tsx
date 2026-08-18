@@ -17,7 +17,7 @@ export const AdvancedSearchOpen: React.FC<AdvancedSearchButtonProps> = ({
       variant='outline'
       size='sm'
       transition='0.2s ease-in-out'
-      colorScheme={colorScheme}
+      colorPalette={colorScheme}
       fontWeight='semibold'
       _hover={{
         bg: `${colorScheme}.600`,
@@ -30,17 +30,17 @@ export const AdvancedSearchOpen: React.FC<AdvancedSearchButtonProps> = ({
         },
         ..._hover,
       }}
-      leftIcon={
-        <Icon
-          as={FaMagnifyingGlass}
-          ml={2}
-          boxSize={3}
-          transform='translateX(-4px)'
-          transition='0.2s transform ease-in-out'
-        />
-      }
       {...rest}
     >
+      <Icon
+        ml={2}
+        boxSize={3}
+        transform='translateX(-4px)'
+        transition='0.2s transform ease-in-out'
+        asChild
+      >
+        <FaMagnifyingGlass />
+      </Icon>
       {props.children || 'Advanced Search'}
     </Button>
   );

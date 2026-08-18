@@ -29,14 +29,14 @@ const siteConfig = SITE_CONFIG as SiteConfig;
 // Displays empty message when no data exists.
 const EmptyState = () => {
   return (
-    <Card w='100%'>
+    <Card.Root w='100%'>
       <Empty message='No data available.' alignSelf='center' h='50vh'>
         <Text>No information about this dataset is available.</Text>
         <NextLink href={{ pathname: '/search' }}>
           <Button mt={4}>Go to search</Button>
         </NextLink>
       </Empty>
-    </Card>
+    </Card.Root>
   );
 };
 
@@ -164,7 +164,8 @@ const ResourcePage: NextPage = () => {
                             <Link
                               key={`${label}-${idx}`}
                               href={href}
-                              isExternal={isExternal}
+                              target='_blank'
+                              rel='noopener noreferrer'
                             >
                               {label}
                             </Link>
@@ -205,12 +206,14 @@ const ResourcePage: NextPage = () => {
                     p={{ sm: 0, md: 2 }}
                     flexDirection={['column', 'column', 'row']}
                   >
-                    <Card
+                    <Card.Root
                       className='main-content'
                       flex={3}
                       p={0}
                       width='100%'
-                      sx={{ '>*': { p: 0 } }}
+                      css={{
+                        '& >*': { p: 0 },
+                      }}
                       minW={150}
                       overflow='unset'
                     >
@@ -219,7 +222,7 @@ const ResourcePage: NextPage = () => {
                         data={data}
                         sections={sections}
                       />
-                    </Card>
+                    </Card.Root>
 
                     <Sidebar
                       data={data}

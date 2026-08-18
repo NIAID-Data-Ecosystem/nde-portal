@@ -3,12 +3,11 @@ import {
   Box,
   Flex,
   Heading,
-  ListItem,
   SimpleGrid,
   SkeletonText,
   Text,
-  UnorderedList,
   useMediaQuery,
+  List,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import type { GetStaticProps, NextPage } from 'next';
@@ -127,7 +126,6 @@ const Docs: NextPage<{
         subtitle={DOCUMENTATION_COPY.sections.hero.subtitle}
         body={!props.slug ? DOCUMENTATION_COPY.sections.hero.body : ''}
       />
-
       <Flex
         w='100%'
         justifyContent='flex-end'
@@ -229,7 +227,7 @@ const Docs: NextPage<{
                   // List of categories with associated documents
                   <SimpleGrid
                     columns={{ base: 1, md: 2, lg: 3, xl: 4 }}
-                    spacing={{ base: 8, md: 10, lg: '50px' }}
+                    gap={{ base: 8, md: 10, lg: '50px' }}
                     margin='0 auto'
                     w='100%'
                     maxW='1400px'
@@ -248,9 +246,9 @@ const Docs: NextPage<{
                         >
                           {doc.name}
                         </Heading>
-                        <UnorderedList ml={0}>
+                        <List.Root as='ul' ml={0}>
                           {doc.items.map(item => (
-                            <ListItem key={item.id} my={2}>
+                            <List.Item key={item.id} my={2}>
                               <SkeletonText
                                 isLoaded={!isLoading}
                                 width={isLoading ? '75%' : '100%'}
@@ -286,9 +284,9 @@ const Docs: NextPage<{
                                   </Link>
                                 </NextLink>
                               </SkeletonText>
-                            </ListItem>
+                            </List.Item>
                           ))}
-                        </UnorderedList>
+                        </List.Root>
                       </Box>
                     ))}
                   </SimpleGrid>

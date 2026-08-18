@@ -20,7 +20,7 @@ export const PopoverSearchInput = ({
       size='sm'
       placeholder={placeholder}
       value={value}
-      onChange={e => onChange(e.target.value)}
+      onValueChange={e => onChange(e.target.value)}
     />
   </Flex>
 );

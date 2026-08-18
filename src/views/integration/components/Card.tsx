@@ -69,8 +69,8 @@ export const StepCard = ({
         </Text>
       </Flex>
       {tabItems.length > 0 ? (
-        <Tabs colorScheme='primary'>
-          <TabList px={4}>
+        <Tabs.Root colorPalette='primary'>
+          <Tabs.List px={4}>
             {tabItems.map(({ id, name }) => (
               <Tab
                 key={id}
@@ -88,7 +88,7 @@ export const StepCard = ({
                 {name}
               </Tab>
             ))}
-          </TabList>
+          </Tabs.List>
           <TabPanels>
             {tabItems.map(({ id, content, icon }) => (
               <TabPanel key={id} bg='page.alt'>
@@ -113,7 +113,7 @@ export const StepCard = ({
               </TabPanel>
             ))}
           </TabPanels>
-        </Tabs>
+        </Tabs.Root>
       ) : (
         <></>
       )}

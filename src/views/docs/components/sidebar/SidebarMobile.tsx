@@ -37,7 +37,9 @@ export const SidebarMobile = ({
             <Text as='span' size='sm' flex={1} color='inherit'>
               {menuTitle || 'Documentation Menu'}
             </Text>
-            <Icon as={FaArrowsUpDown} />
+            <Icon asChild>
+              <FaArrowsUpDown />
+            </Icon>
           </Flex>
         </MenuButton>
       </Flex>
@@ -58,18 +60,18 @@ export const SidebarMobile = ({
                 // a bare <a> as a direct child of role="menu", which fails axe's
                 // `aria-required-children` (a menu may only contain menuitems).
                 <MenuItem
-                  key={item.id}
-                  as={NextLink}
-                  href={item.href}
                   pl={6}
                   color={
                     isSelected ? `${colorScheme}.600!important` : 'inherit'
                   }
                   bg={isSelected ? `${colorScheme}.100` : 'transparent'}
+                  asChild
                 >
-                  <Text fontSize='sm' color='inherit'>
-                    {item.name}
-                  </Text>
+                  <NextLink key={item.id} href={item.href}>
+                    <Text fontSize='sm' color='inherit'>
+                      {item.name}
+                    </Text>
+                  </NextLink>
                 </MenuItem>
               );
             })}

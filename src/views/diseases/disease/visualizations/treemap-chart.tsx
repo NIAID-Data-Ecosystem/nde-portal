@@ -278,7 +278,7 @@ export const TreemapChart = ({
                                 as='span'
                                 color='inherit'
                                 fontWeight='semibold'
-                                noOfLines={2}
+                                lineClamp={2}
                                 textDecoration={
                                   isHovered || isFocused ? 'underline' : 'none'
                                 }

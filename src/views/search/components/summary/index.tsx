@@ -1,15 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Flex,
-  Icon,
-  SimpleGrid,
-  Text,
-} from '@chakra-ui/react';
+import { Accordion, Flex, Icon, SimpleGrid, Text } from '@chakra-ui/react';
 import { SearchState } from './types';
 import { FilterConfig } from '../filters';
 import { VisualizationCard } from './components/visualization-card';
@@ -73,18 +63,17 @@ const SummaryGrid = (props: SummaryGridProps) => {
   return (
     <Flex direction='column' width='100%' bg='white' p={4} gap={1}>
       {props.activeVizIds.length > 0 && (
-        <Accordion
-          allowToggle
-          index={accordionIndex}
-          onChange={handleAccordionChange}
-          reduceMotion={true}
+        <Accordion.Root
+          collapsible
+          value={accordionIndex}
+          onValueChange={({ value: value }) => handleAccordionChange(value)}
         >
-          <AccordionItem border='none'>
+          <Accordion.Item border='none' value='item-0'>
             {/* Section header with tooltip */}
             {({ isExpanded }) => (
               <>
                 <h2>
-                  <AccordionButton px={0} _hover={{ bg: 'transparent' }}>
+                  <Accordion.ItemTrigger px={0} _hover={{ bg: 'transparent' }}>
                     <Flex
                       flexDirection='column'
                       width='100%'
@@ -121,45 +110,47 @@ const SummaryGrid = (props: SummaryGridProps) => {
                       fontSize='xs'
                       aria-label={isExpanded ? 'Collapse' : 'Expand'}
                     />
-                  </AccordionButton>
+                  </Accordion.ItemTrigger>
                 </h2>
 
-                <AccordionPanel px={0}>
-                  <SimpleGrid
-                    templateColumns={{
-                      base: 'repeat(auto-fill, minmax(325px, 1fr))',
-                      '2xl': 'repeat(3, minmax(325px, 1fr))',
-                    }}
-                    spacing={4}
-                    mt={2}
-                  >
-                    {/* Map over config to render visualizations - only for configs with chart config */}
-                    {props.configs
-                      .filter(config => !!config.chart)
-                      .map(config => {
-                        // Use filterProperty if provided, otherwise fall back to property
-                        const filterKey =
-                          config.filterProperty || config.property;
-                        return (
-                          <VisualizationCard
-                            key={config.id}
-                            config={config}
-                            searchState={props.searchParams}
-                            isActive={props.activeVizIds.includes(config.id)}
-                            removeActiveVizId={props.removeActiveVizId}
-                            onFilterUpdate={props.onFilterUpdate}
-                            selectedFilters={
-                              props.selectedFilters[filterKey] || []
-                            }
-                          />
-                        );
-                      })}
-                  </SimpleGrid>
-                </AccordionPanel>
+                <Accordion.ItemContent px={0} animation='none'>
+                  <Accordion.ItemBody>
+                    <SimpleGrid
+                      templateColumns={{
+                        base: 'repeat(auto-fill, minmax(325px, 1fr))',
+                        '2xl': 'repeat(3, minmax(325px, 1fr))',
+                      }}
+                      gap={4}
+                      mt={2}
+                    >
+                      {/* Map over config to render visualizations - only for configs with chart config */}
+                      {props.configs
+                        .filter(config => !!config.chart)
+                        .map(config => {
+                          // Use filterProperty if provided, otherwise fall back to property
+                          const filterKey =
+                            config.filterProperty || config.property;
+                          return (
+                            <VisualizationCard
+                              key={config.id}
+                              config={config}
+                              searchState={props.searchParams}
+                              isActive={props.activeVizIds.includes(config.id)}
+                              removeActiveVizId={props.removeActiveVizId}
+                              onFilterUpdate={props.onFilterUpdate}
+                              selectedFilters={
+                                props.selectedFilters[filterKey] || []
+                              }
+                            />
+                          );
+                        })}
+                    </SimpleGrid>
+                  </Accordion.ItemBody>
+                </Accordion.ItemContent>
               </>
             )}
-          </AccordionItem>
-        </Accordion>
+          </Accordion.Item>
+        </Accordion.Root>
       )}
     </Flex>
   );

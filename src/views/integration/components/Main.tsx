@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
   Box,
   Circle,
-  Divider,
   Flex,
   Heading,
   Icon,
@@ -12,6 +11,7 @@ import {
   TabPanels,
   Tabs,
   Text,
+  Separator,
 } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
@@ -137,8 +137,8 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
                 slug={content.tabs.slug}
                 textAlign='center'
               >
-                <Tabs colorScheme='primary'>
-                  <TabList>
+                <Tabs.Root colorPalette='primary'>
+                  <Tabs.List>
                     {content.tabs.panels?.map(({ id, title }) => (
                       <Tab
                         key={id}
@@ -155,7 +155,7 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
                         {title}
                       </Tab>
                     ))}
-                  </TabList>
+                  </Tabs.List>
                   <TabPanels>
                     {content.tabs.panels?.map(({ id, cards }) => {
                       let stepIndex = 0;
@@ -180,10 +180,12 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
                                   >
                                     <Circle bg='whiteAlpha.900' p={2} m={2}>
                                       <Icon
-                                        as={FaLightbulb}
                                         color='status.warning'
                                         boxSize={4}
-                                      />
+                                        asChild
+                                      >
+                                        <FaLightbulb />
+                                      </Icon>
                                     </Circle>
                                     <Text
                                       p={2}
@@ -208,7 +210,7 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
                       );
                     })}
                   </TabPanels>
-                </Tabs>
+                </Tabs.Root>
               </ParagraphSection>
             ) : (
               <></>
@@ -216,12 +218,12 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
             {content?.textBlocks?.map((block, i) => {
               return (
                 <React.Fragment key={block.id}>
-                  {i === content.textBlocks!.length - 1 && <Divider />}
+                  {i === content.textBlocks!.length - 1 && <Separator />}
                   <ParagraphSection textAlign='center' {...block} />
                 </React.Fragment>
               );
             })}
-            <Divider orientation='horizontal' mt={8} mb={4} />
+            <Separator orientation='horizontal' mt={8} mb={4} />
             <Text
               fontStyle='italic'
               fontSize='xs'

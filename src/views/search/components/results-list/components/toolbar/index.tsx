@@ -79,7 +79,7 @@ export const SearchResultsToolbar = ({
         <Stack
           flexDirection={{ base: 'column', sm: 'row' }}
           flexWrap='wrap'
-          spacing={[1, 4]}
+          gap={[1, 4]}
         >
           {/* Sort menu */}
           <SelectWithLabel

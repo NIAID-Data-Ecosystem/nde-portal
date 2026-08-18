@@ -175,48 +175,48 @@ export const CompatibilityBadge = ({
       const fill = fieldIsCompatible ? color(bin.count) : `url(#${patternId})`;
 
       return (
-        <Box
-          as='g'
-          className='visx-heatmap-rect'
-          key={`heatmap-rect-${bin.type}-${idx}`}
-          onMouseMove={(e: React.MouseEvent | React.TouchEvent) =>
-            handleMouseMove(e, {
-              x: margin.left + x + BIN_SIZE / 2,
-              y: groupTop + y + BIN_SIZE,
-              data: bin,
-            })
-          }
-          onTouchMove={(e: React.MouseEvent | React.TouchEvent) =>
-            handleMouseMove(e, {
-              x: margin.left + x + BIN_SIZE / 2,
-              y: groupTop + y + BIN_SIZE,
-              data: bin,
-            })
-          }
-          onMouseLeave={handleMouseLeave}
-          rx={RADIUS}
-          ry={RADIUS}
-        >
-          <rect
-            width={BIN_SIZE}
-            height={BIN_SIZE}
-            x={x}
-            y={y}
-            rx={RADIUS}
-            ry={RADIUS}
-            fill={fill}
-            fillOpacity={1}
-          />
-          {bin.augmented && (
-            <Icon
-              as={FaRegCircleUp}
-              color={fieldIsCompatible ? 'white' : color(0)}
-              x={x + BIN_SIZE / 2}
-              y={y + BIN_SIZE / 2}
-              style={{ transform: 'translate(-5px, -5px)' }}
-              size={10}
+        <Box className='visx-heatmap-rect' rx={RADIUS} ry={RADIUS} asChild>
+          <g
+            key={`heatmap-rect-${bin.type}-${idx}`}
+            onMouseMove={(e: React.MouseEvent | React.TouchEvent) =>
+              handleMouseMove(e, {
+                x: margin.left + x + BIN_SIZE / 2,
+                y: groupTop + y + BIN_SIZE,
+                data: bin,
+              })
+            }
+            onTouchMove={(e: React.MouseEvent | React.TouchEvent) =>
+              handleMouseMove(e, {
+                x: margin.left + x + BIN_SIZE / 2,
+                y: groupTop + y + BIN_SIZE,
+                data: bin,
+              })
+            }
+            onMouseLeave={handleMouseLeave}
+          >
+            <rect
+              width={BIN_SIZE}
+              height={BIN_SIZE}
+              x={x}
+              y={y}
+              rx={RADIUS}
+              ry={RADIUS}
+              fill={fill}
+              fillOpacity={1}
             />
-          )}
+            {bin.augmented && (
+              <Icon
+                color={fieldIsCompatible ? 'white' : color(0)}
+                x={x + BIN_SIZE / 2}
+                y={y + BIN_SIZE / 2}
+                style={{ transform: 'translate(-5px, -5px)' }}
+                size={10}
+                asChild
+              >
+                <FaRegCircleUp />
+              </Icon>
+            )}
+          </g>
         </Box>
       );
     });
@@ -226,8 +226,8 @@ export const CompatibilityBadge = ({
       width={`${width}px`}
       height={`${totalHeight}px`}
       position='relative'
-      sx={{
-        '.visx-heatmap-rect:hover': {
+      css={{
+        '& .visx-heatmap-rect:hover': {
           strokeWidth: 2,
           stroke: theme.colors.status.warning,
         },
@@ -264,14 +264,16 @@ export const CompatibilityBadge = ({
             top={0}
           >
             <Box
-              as='text'
               x={0}
               y={LABEL_HEIGHT - 4}
               fontSize='12px'
               fill='gray.800'
+              asChild
             >
-              Recommended{' | '}
-              {Math.round(data.percent_recommended_fields * 100)}%
+              <text>
+                Recommended{' | '}
+                {Math.round(data.percent_recommended_fields * 100)}%
+              </text>
             </Box>
           </Tooltip>
           {renderBins(
@@ -290,14 +292,16 @@ export const CompatibilityBadge = ({
             top={0}
           >
             <Box
-              as='text'
               x={0}
               y={LABEL_HEIGHT - 4}
               fontSize='12px'
               fill='gray.800'
+              asChild
             >
-              Fundamental{' | '}
-              {Math.round(data.percent_required_fields * 100)}%
+              <text>
+                Fundamental{' | '}
+                {Math.round(data.percent_required_fields * 100)}%
+              </text>
             </Box>
           </Tooltip>
           {renderBins(
@@ -339,27 +343,21 @@ export const CompatibilityBadge = ({
                 {tooltipData.type.charAt(0).toUpperCase() +
                   tooltipData.type.slice(1)}
               </Text>
-              <Stack p={2} spacing={1} fontSize='xs'>
+              <Stack p={2} gap={1} fontSize='xs'>
                 {tooltipData.count ? (
                   <>
                     <Text lineHeight='shorter'>
-                      <Icon
-                        as={FaCircleCheck}
-                        color='green.500'
-                        boxSize={3}
-                        mr={0.5}
-                      />
+                      <Icon color='green.500' boxSize={3} mr={0.5} asChild>
+                        <FaCircleCheck />
+                      </Icon>
                       <strong>{tooltipData.label} </strong>
                       metadata is collected and available for this source.
                     </Text>
                     {tooltipData.augmented ? (
                       <Text mt={1} lineHeight='shorter'>
-                        <Icon
-                          as={FaRegCircleUp}
-                          color='green.500'
-                          boxSize={3}
-                          mr={0.5}
-                        />
+                        <Icon color='green.500' boxSize={3} mr={0.5} asChild>
+                          <FaRegCircleUp />
+                        </Icon>
                         <strong>{tooltipData.label} </strong>
                         was also augmented for this source.
                       </Text>
@@ -371,12 +369,9 @@ export const CompatibilityBadge = ({
                   <Text lineHeight='short'>
                     {tooltipData.augmented ? (
                       <Text as='span' mt={1}>
-                        <Icon
-                          as={FaRegCircleUp}
-                          color='green.500'
-                          boxSize={3}
-                          mr={0.5}
-                        />
+                        <Icon color='green.500' boxSize={3} mr={0.5} asChild>
+                          <FaRegCircleUp />
+                        </Icon>
                         <strong>{tooltipData.label} </strong> metadata was not
                         found for this source, but was augmented for this
                         source.

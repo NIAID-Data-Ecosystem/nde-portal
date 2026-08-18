@@ -97,7 +97,7 @@ export const DiseaseContent: React.FC<DiseaseContentProps> = ({
                 flexDirection='column'
                 justifyContent='space-between'
                 maxWidth={{ base: 'unset', lg: 700, xl: 1000 }}
-                spacing={4}
+                gap={4}
                 w='50%'
               >
                 {/* Chart: Resource types */}

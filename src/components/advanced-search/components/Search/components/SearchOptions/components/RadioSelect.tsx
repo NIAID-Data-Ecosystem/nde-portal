@@ -34,18 +34,17 @@ export const RadioSelect = ({
   return (
     <Flex>
       <Radio
-        isChecked={isChecked}
-        onChange={() => {
+        checked={isChecked}
+        onValueChange={() => {
           updateSearchOption(selected);
         }}
         mr={2}
-        isDisabled={isDisabled}
+        disabled={isDisabled}
       >
         <VisuallyHidden>
           <label>{selected?.label}</label>
         </VisuallyHidden>
       </Radio>
-
       <SelectWithButton
         id='search-type'
         colorScheme='gray'
@@ -57,7 +56,7 @@ export const RadioSelect = ({
         justifyContent='space-between'
         p={2}
         isDisabled={isDisabled}
-        isOpen={disclosure.isOpen}
+        isOpen={disclosure.open}
         onToggle={disclosure.onToggle}
         onClose={disclosure.onClose}
       >
@@ -68,7 +67,7 @@ export const RadioSelect = ({
                 key={option.id}
                 description={option.description}
                 example={option.example}
-                isDisabled={!disclosure.isOpen}
+                isDisabled={!disclosure.open}
               >
                 <div>
                   <OptionItem

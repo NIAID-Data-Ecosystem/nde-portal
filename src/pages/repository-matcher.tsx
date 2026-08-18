@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Checkbox,
-  Divider,
   Flex,
   Heading,
   Stack,
@@ -11,6 +10,7 @@ import {
   TagLabel,
   Text,
   VStack,
+  Separator,
 } from '@chakra-ui/react';
 
 import { NextPage } from 'next';
@@ -282,7 +282,7 @@ const RepositoryMatcher: NextPage = () => {
           by research domain, repository type, and other criteria.
         </Text>
       </Flex>
-      <Divider />
+      <Separator />
       <Flex
         direction={{ base: 'column', md: 'row' }}
         align='flex-start'
@@ -314,7 +314,7 @@ const RepositoryMatcher: NextPage = () => {
         >
           <Stack
             direction='row'
-            spacing={2}
+            gap={2}
             mb={2}
             flexWrap='wrap'
             alignItems='center'
@@ -355,40 +355,40 @@ const RepositoryMatcher: NextPage = () => {
           )}
           <Stack
             direction='row'
-            spacing={2}
+            gap={2}
             flex={1}
             flexWrap='wrap'
             minW={{ base: 0, md: '300px' }}
             my={4}
           >
             {filterTags.length > 0 && (
-              <Tag
+              <Tag.Root
                 key='clear'
                 size='lg'
                 variant='outline'
                 borderRadius='full'
-                colorScheme='primary'
+                colorPalette='primary'
                 borderColor='primary.100'
               >
-                <TagLabel>Clear all</TagLabel>
-                <TagCloseButton onClick={() => setSelectedFilters({})} />
-              </Tag>
+                <Tag.Label>Clear all</Tag.Label>
+                <Tag.CloseTrigger onClick={() => setSelectedFilters({})} />
+              </Tag.Root>
             )}
             {filterTags.map(filter => {
               const { property, value } = filter;
               return (
-                <Tag
+                <Tag.Root
                   key={property + '-' + value}
                   size='lg'
                   variant='subtle'
                   borderRadius='full'
-                  colorScheme='primary'
+                  colorPalette='primary'
                 >
-                  <TagLabel fontWeight='medium'>{value}</TagLabel>
-                  <TagCloseButton
+                  <Tag.Label fontWeight='medium'>{value}</Tag.Label>
+                  <Tag.CloseTrigger
                     onClick={() => removeSingleFilter(property, value)}
                   />
-                </Tag>
+                </Tag.Root>
               );
             })}
           </Stack>
@@ -402,20 +402,26 @@ const RepositoryMatcher: NextPage = () => {
               {sortedData?.length ?? 0} results
             </Text>
             <VStack alignItems='flex-end'>
-              <Checkbox
-                isChecked={stickyFirstColumn}
-                onChange={e => setStickyFirstColumn(e.target.checked)}
-                colorScheme='primary'
+              <Checkbox.Root
+                onCheckedChange={e => setStickyFirstColumn(e.target.checked)}
+                colorPalette='primary'
+                checked={stickyFirstColumn}
               >
-                <Text fontSize='xs'>Pin first column</Text>
-              </Checkbox>
+                <Checkbox.HiddenInput />
+                <Checkbox.Control>
+                  <Checkbox.Indicator />
+                </Checkbox.Control>
+                <Checkbox.Label>
+                  <Text fontSize='xs'>Pin first column</Text>
+                </Checkbox.Label>
+              </Checkbox.Root>
               <CustomizeColumnsPopover
                 onVisibleColumnsChange={handleVisibleColumnsChange}
                 onColumnOrderChange={handleColumnOrderChange}
               />
             </VStack>
           </Flex>
-          <Table
+          <Table.Root
             ariaLabel='Repository matcher table'
             caption='Repositories and resource catalogs available for data deposit'
             columns={tableColumns}

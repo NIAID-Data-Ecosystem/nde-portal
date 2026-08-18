@@ -154,7 +154,7 @@ export function SavedTableSection<TItem>({
     <Flex direction='column' gap={4} px={{ base: 4, lg: 40 }} py={8}>
       <Stack
         direction='row'
-        spacing={6}
+        gap={6}
         justifyContent='space-between'
         flexWrap='wrap'
       >
@@ -189,7 +189,7 @@ export function SavedTableSection<TItem>({
           />
         </Flex>
       </Stack>
-      <Table
+      <Table.Root
         ariaLabel={tableAriaLabel}
         caption={caption}
         columns={tableColumns}

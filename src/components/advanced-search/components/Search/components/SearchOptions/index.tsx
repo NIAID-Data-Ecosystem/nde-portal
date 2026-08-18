@@ -13,16 +13,16 @@ export const SearchOptions: React.FC = () => {
   } = useAdvancedSearchContext();
 
   return (
-    <RadioGroup
+    <RadioGroup.Root
       mb={4}
-      onChange={value => {
+      onValueChange={value => {
         const option = searchTypeOptions.find(option => option.label === value);
         if (option) {
           setSelectedSearchType(option);
         }
       }}
     >
-      <Stack direction={['column', 'column', 'row']} spacing={6}>
+      <Stack direction={['column', 'column', 'row']} gap={6}>
         {searchTypeOptions
           .filter(
             option => !(option.shouldOmit && option.shouldOmit(queryValue)),
@@ -60,6 +60,6 @@ export const SearchOptions: React.FC = () => {
             );
           })}
       </Stack>
-    </RadioGroup>
+    </RadioGroup.Root>
   );
 };

@@ -1,8 +1,5 @@
 import {
   Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
   AccordionProps,
   Box,
   Heading,
@@ -18,11 +15,11 @@ export const AccordionContent = ({
   children: React.ReactNode;
 }) => {
   return (
-    <AccordionItem bg='page.alt'>
+    <Accordion.Item bg='page.alt' value='item-0'>
       {({ isExpanded }) => (
         <>
           <h2>
-            <AccordionButton>
+            <Accordion.ItemTrigger>
               <Heading
                 as='span'
                 flex='1'
@@ -33,14 +30,16 @@ export const AccordionContent = ({
                 {title}
               </Heading>
               <Icon as={isExpanded ? FaMinus : FaPlus} fontSize='xs' />
-            </AccordionButton>
+            </Accordion.ItemTrigger>
           </h2>
-          <AccordionPanel bg='#fff' px={0}>
-            <Box px={2}>{children}</Box>
-          </AccordionPanel>
+          <Accordion.ItemContent bg='#fff' px={0}>
+            <Accordion.ItemBody>
+              <Box px={2}>{children}</Box>
+            </Accordion.ItemBody>
+          </Accordion.ItemContent>
         </>
       )}
-    </AccordionItem>
+    </Accordion.Item>
   );
 };
 
@@ -50,9 +49,9 @@ export const AccordionWrapper = ({
   ...props
 }: AccordionProps) => {
   return (
-    <Accordion
-      defaultIndex={defaultIndex ?? [0]}
-      allowMultiple
+    <Accordion.Root
+      defaultValue={defaultIndex ?? [0]}
+      multiple
       boxShadow='sm'
       border='1px solid'
       borderColor='gray.100'
@@ -61,6 +60,6 @@ export const AccordionWrapper = ({
       {...props}
     >
       {children}
-    </Accordion>
+    </Accordion.Root>
   );
 };

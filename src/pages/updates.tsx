@@ -2,14 +2,12 @@ import React, { useEffect, useState } from 'react';
 import {
   Box,
   Card,
-  CardBody,
   Flex,
   Heading,
   Icon,
   SimpleGrid,
   SkeletonText,
   Stack,
-  StackDivider,
   Text,
   VisuallyHidden,
 } from '@chakra-ui/react';
@@ -206,7 +204,6 @@ const Updates: NextPage<UpdatesProps> = props => {
           ></HeroBannerText>
         </Flex>
       </HeroBannerContainer>
-
       <PageContent
         bg='#fff'
         maxW={{ base: 'unset', lg: '1600px' }}
@@ -362,17 +359,19 @@ const Updates: NextPage<UpdatesProps> = props => {
               <Section id='resources' title='Additional Resources'>
                 <Stack
                   direction={{ base: 'column', sm: 'row' }}
-                  divider={<StackDivider borderColor='primary.200' />}
-                  spacing={4}
+                  gap={4}
                   fontSize='md'
                 >
                   <Link href='/knowledge-center'>Knowledge Center</Link>
+                  <Stack.Separator borderColor='primary.200' />
                   <Link href='/knowledge-center/frequently-asked-questions'>
                     FAQ
                   </Link>
+                  <Stack.Separator borderColor='primary.200' />
                   <Link href='mailto:NIAIDDataEcosystem@mail.nih.gov'>
                     Ask a question
                   </Link>
+                  <Stack.Separator borderColor='primary.200' />
                   <Link href='/changelog'>Changelog</Link>
                 </Stack>
               </Section>
@@ -381,10 +380,10 @@ const Updates: NextPage<UpdatesProps> = props => {
               <Section id='community' title='Join the community'>
                 <SimpleGrid
                   columns={{ base: 1, sm: 2 }}
-                  spacing={4}
+                  gap={4}
                   maxW='700px'
-                  sx={{
-                    '>div': {
+                  css={{
+                    '& >div': {
                       transform: 'translate(0, 2px)',
                       boxShadow: 'sm',
                       border: '1px solid',
@@ -409,8 +408,8 @@ const Updates: NextPage<UpdatesProps> = props => {
                   }}
                 >
                   {/* Email */}
-                  <Card>
-                    <CardBody p={0} px={4} py={1}>
+                  <Card.Root>
+                    <Card.Body p={0} px={4} py={1}>
                       <Text
                         lineHeight='short'
                         color='gray.800'
@@ -421,12 +420,12 @@ const Updates: NextPage<UpdatesProps> = props => {
                           emailing the team
                         </Link>
                       </Text>
-                    </CardBody>
-                  </Card>
+                    </Card.Body>
+                  </Card.Root>
                   {/* Socials */}
                   {NDESOCIALS && NDESOCIALS['socials'] && (
-                    <Card>
-                      <CardBody px={4} py={1}>
+                    <Card.Root>
+                      <Card.Body px={4} py={1}>
                         <Text
                           lineHeight='short'
                           color='gray.800'
@@ -434,7 +433,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                         >
                           Join us on
                         </Text>
-                        <Stack direction='row' spacing={6} fontSize='sm'>
+                        <Stack direction='row' gap={6} fontSize='sm'>
                           {Object.entries(NDESOCIALS['socials']).map(
                             ([platform, href]) => {
                               let icon =
@@ -462,8 +461,8 @@ const Updates: NextPage<UpdatesProps> = props => {
                             },
                           )}
                         </Stack>
-                      </CardBody>
-                    </Card>
+                      </Card.Body>
+                    </Card.Root>
                   )}
                 </SimpleGrid>
               </Section>

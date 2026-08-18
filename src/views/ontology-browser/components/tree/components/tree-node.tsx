@@ -5,10 +5,9 @@ import {
   HStack,
   Icon,
   IconButton,
-  ListItem,
-  StackDivider,
   Text,
-  UnorderedList,
+  Stack,
+  List,
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -236,12 +235,14 @@ export const TreeNode = (props: {
     return <></>;
   }
   return (
-    <ListItem>
+    <List.Item>
       <Flex
         alignItems='center'
         borderTop={depth !== 0 ? '0.25px solid' : 'none'}
         borderColor='gray.200'
-        sx={{ '>*': { px: 4, py: 2 } }}
+        css={{
+          '& >*': { px: 4, py: 2 },
+        }}
         pl={`${(depth + 1) * MARGIN}px`}
         _hover={{
           bg: 'blackAlpha.50',
@@ -256,15 +257,16 @@ export const TreeNode = (props: {
             <IconButton
               aria-label={`Show all children of ${node.label}`}
               aria-expanded={isToggled}
-              icon={<FaAngleRight />}
               variant='ghost'
-              colorScheme='gray'
+              colorPalette='gray'
               size='sm'
               cursor='pointer'
               transform={isToggled ? 'rotate(90deg)' : ''}
               color='currentColor'
               onClick={toggleNode}
-            />
+            >
+              <FaAngleRight />
+            </IconButton>
           ) : (
             <Box mx={4}></Box>
           )}
@@ -292,7 +294,9 @@ export const TreeNode = (props: {
                 } OR infectiousAgent.identifier:${node.taxonId})`}
                 fontSize='xs'
               >
-                <Icon as={FaMagnifyingGlass} mr={1.5} boxSize={3} />
+                <Icon mr={1.5} boxSize={3} asChild>
+                  <FaMagnifyingGlass />
+                </Icon>
                 <Text
                   color={node.state.selected ? 'primary.500' : 'currentColor'}
                   fontWeight={node.state.selected ? 'semibold' : 'medium'}
@@ -307,19 +311,14 @@ export const TreeNode = (props: {
           </Box>
         </Flex>
         <Flex alignItems='center'>
-          <HStack
-            divider={<StackDivider borderColor='gray.100' />}
-            flex={1}
-            alignItems='unset'
-            spacing={3}
-          >
+          <HStack flex={1} alignItems='unset' gap={3}>
             <OntologyBrowserCountTag
               isLoading={isLoading}
               tooltipLabel={getTooltipLabelByCountType('termCount')}
             >
               {node?.counts?.termCount?.toLocaleString() || 0}
             </OntologyBrowserCountTag>
-
+            <Stack.Separator borderColor='gray.100' />
             <OntologyBrowserCountTag
               isLoading={isLoading}
               tooltipLabel={getTooltipLabelByCountType('termAndChildrenCount')}
@@ -335,7 +334,6 @@ export const TreeNode = (props: {
                 ? `Remove ${node.label} from search list`
                 : `Search portal for resources related to ${node.label}`
             }
-            icon={isIncludedInSearch(node.taxonId) ? <FaMinus /> : <FaPlus />}
             size='xs'
             variant='outline'
             fontSize='xs'
@@ -348,12 +346,13 @@ export const TreeNode = (props: {
                 taxonId: node.taxonId,
               });
             }}
-          />
+          >
+            {isIncludedInSearch(node.taxonId) ? <FaMinus /> : <FaPlus />}
+          </IconButton>
         </Flex>
       </Flex>
-
       {isToggled && sortedChildrenList.length > 0 ? (
-        <UnorderedList id='children-list' ml={0}>
+        <List.Root as='ul' id='children-list' ml={0}>
           {sortedChildrenList.map(child => (
             <TreeNode
               key={child.id}
@@ -368,7 +367,7 @@ export const TreeNode = (props: {
           ))}
           {/* If there are only children with 0 counts and the conmfiguration hides them, show a note */}
           {showHiddenElementsWarning && (
-            <ListItem
+            <List.Item
               className='hiddenElementsWarning'
               bg='status.warning_lt'
               fontSize='xs'
@@ -387,12 +386,12 @@ export const TreeNode = (props: {
                   }
                 }}
               />
-            </ListItem>
+            </List.Item>
           )}
 
           {/* Handles pagination when children items exceed the SIZE value */}
           {showPagination && (
-            <ListItem
+            <List.Item
               borderTop='0.25px solid'
               borderColor='gray.200'
               px={4}
@@ -413,12 +412,12 @@ export const TreeNode = (props: {
                   setPageFrom(page);
                 }}
               />
-            </ListItem>
+            </List.Item>
           )}
-        </UnorderedList>
+        </List.Root>
       ) : (
         <></>
       )}
-    </ListItem>
+    </List.Item>
   );
 };

@@ -109,7 +109,7 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
         alignItems='flex-start'
         flexDirection={{ base: 'column', lg: 'row' }}
         flexWrap='wrap'
-        spacing={{ base: 2, lg: 6 }}
+        gap={{ base: 2, lg: 6 }}
         width='100%'
       >
         <Box flex={2}>
@@ -140,15 +140,23 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
           <Text fontWeight='medium' lineHeight='short'>
             Select Chart Type
           </Text>
-          <RadioGroup
-            onChange={value => setListView(value === 'list')}
+          <RadioGroup.Root
+            onValueChange={value => setListView(value === 'list')}
             value={`${listView ? 'list' : 'treemap'}`}
           >
             <Stack direction='row'>
-              <Radio value='list'>List</Radio>
-              <Radio value='treemap'>Treemap</Radio>
+              <RadioGroup.Item value='list'>
+                <RadioGroup.ItemHiddenInput />
+                <RadioGroup.ItemIndicator />
+                <RadioGroup.ItemText>List</RadioGroup.ItemText>
+              </RadioGroup.Item>
+              <RadioGroup.Item value='treemap'>
+                <RadioGroup.ItemHiddenInput />
+                <RadioGroup.ItemIndicator />
+                <RadioGroup.ItemText>Treemap</RadioGroup.ItemText>
+              </RadioGroup.Item>
             </Stack>
-          </RadioGroup>
+          </RadioGroup.Root>
         </Flex>
       </Stack>
       <ChartWrapper
@@ -160,7 +168,7 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
         }}
       >
         {/* Property Charts */}
-        <HStack mt={4} alignItems='flex-start' spacing={6} flexWrap='wrap'>
+        <HStack mt={4} alignItems='flex-start' gap={6} flexWrap='wrap'>
           {data?.map(({ terms, ...facet }) => {
             const props = {
               facet,

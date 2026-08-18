@@ -20,7 +20,7 @@ export const Summary = ({
   description: FormattedResource['disambiguatingDescription'];
   tagLabel: string;
 }) => {
-  const { isOpen, onToggle } = useDisclosure();
+  const { open, onToggle } = useDisclosure();
 
   return (
     <Flex
@@ -50,40 +50,43 @@ export const Summary = ({
         >
           SUMMARY{' '}
           <Icon
-            as={FaInfo}
             boxSize={3.5}
             border='1px solid'
             borderRadius='full'
             p={0.5}
             color='gray.800!important'
-          />
+            asChild
+          >
+            <FaInfo />
+          </Icon>
         </Link>
       </Tooltip>
-
       <Text
         lineHeight='short'
         pt={1}
         mx={1}
         fontSize='lg'
         verticalAlign='bottom'
-        noOfLines={isOpen ? undefined : 5}
+        lineClamp={isOpen ? undefined : 5}
       >
-        <Tag
+        <Tag.Root
           variant='solid'
           size='sm'
           mr={1.5}
-          colorScheme='niaid'
+          colorPalette='niaid'
           bg='status.info'
         >
-          <TagLeftIcon as={FaWandMagicSparkles}></TagLeftIcon>
-          <TagLabel>{tagLabel}</TagLabel>
-        </Tag>
+          <Tag.StartElement asChild>
+            <FaWandMagicSparkles />
+          </Tag.StartElement>
+          <Tag.Label>{tagLabel}</Tag.Label>
+        </Tag.Root>
         {description}
       </Text>
       <Flex flex={1} w='100%' justifyContent='flex-end'>
         <Button
           size='xs'
-          variant='link'
+          variant='plain'
           m={1}
           color='inherit'
           onClick={onToggle}

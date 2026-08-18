@@ -172,7 +172,7 @@ export const Track = ({
   }, [activeItem, controls, positions]);
 
   return (
-    <VStack ref={node} spacing={5} alignItems='stretch'>
+    <VStack ref={node} gap={5} alignItems='stretch'>
       <MotionFlex
         dragConstraints={node}
         onDragStart={handleDragStart}

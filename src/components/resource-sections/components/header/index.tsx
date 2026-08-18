@@ -45,7 +45,7 @@ const Header = ({
   return (
     <>
       <Skeleton
-        isLoaded={!isLoading}
+        loading={!!isLoading}
         w='100%'
         overflow='unset'
         position={['unset', 'unset', 'sticky']}
@@ -161,13 +161,13 @@ const IdWithCopyButton = ({
       fontSize='sm'
       gap={1}
     >
-      <HStack flexWrap='wrap' spacing={1} alignItems='baseline'>
+      <HStack flexWrap='wrap' gap={1} alignItems='baseline'>
         {label && (
           <Text fontWeight='semibold' whiteSpace='nowrap'>
             {label} |
           </Text>
         )}
-        <HStack spacing={1} alignItems='baseline'>
+        <HStack gap={1} alignItems='baseline'>
           <Text>{id}</Text>
           <CopyIconButton
             textToCopy={id}

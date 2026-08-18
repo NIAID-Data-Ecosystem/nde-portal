@@ -77,64 +77,64 @@ export const DatePicker = ({
   };
 
   return (
-    <Flex
-      id='date-picker'
-      as='form'
-      w='100%'
-      mt={0}
-      flexDirection='column'
-      onSubmit={handleSubmit}
-    >
-      <Flex flexWrap='wrap' justifyContent='space-between' gap={2} maxW='500px'>
-        <Box flex={1}>
-          <Text fontSize='xs'>
-            <label htmlFor='start'>Start date:</label>
-          </Text>
-          <Input
-            id='start'
-            {...dateInputProps}
-            min={min}
-            max={endInputValue || max}
-            value={startInputValue}
-            onChange={e => setStartInputValue(e.target.value)}
-          />
-        </Box>
-        <Box flex={1}>
-          <Text fontSize='xs'>
-            <label htmlFor='end'>End date:</label>
-          </Text>
-          <Input
-            id='end'
-            {...dateInputProps}
-            min={startInputValue || min}
-            max={max}
-            value={endInputValue}
-            onChange={e => setEndInputValue(e.target.value)}
-          />
-        </Box>
-      </Flex>
-      <Flex alignItems='center' mt={2}>
-        <Button
-          size='sm'
-          variant='solid'
-          type='submit'
-          colorScheme={colorScheme}
-          mr={1}
-          isDisabled={isDisabled}
+    <Flex id='date-picker' w='100%' mt={0} flexDirection='column' asChild>
+      <form onSubmit={handleSubmit}>
+        <Flex
+          flexWrap='wrap'
+          justifyContent='space-between'
+          gap={2}
+          maxW='500px'
         >
-          Submit
-        </Button>
-        <Button
-          size='sm'
-          variant='outline'
-          colorScheme={colorScheme}
-          onClick={resetFilter}
-          isDisabled={isDisabled || !selectedDates.length}
-          mx={1}
-        >
-          Reset
-        </Button>
-      </Flex>
+          <Box flex={1}>
+            <Text fontSize='xs'>
+              <label htmlFor='start'>Start date:</label>
+            </Text>
+            <Input
+              id='start'
+              {...dateInputProps}
+              min={min}
+              max={endInputValue || max}
+              value={startInputValue}
+              onValueChange={e => setStartInputValue(e.target.value)}
+            />
+          </Box>
+          <Box flex={1}>
+            <Text fontSize='xs'>
+              <label htmlFor='end'>End date:</label>
+            </Text>
+            <Input
+              id='end'
+              {...dateInputProps}
+              min={startInputValue || min}
+              max={max}
+              value={endInputValue}
+              onValueChange={e => setEndInputValue(e.target.value)}
+            />
+          </Box>
+        </Flex>
+        <Flex alignItems='center' mt={2}>
+          <Button
+            size='sm'
+            variant='solid'
+            type='submit'
+            colorPalette={colorScheme}
+            mr={1}
+            disabled={isDisabled}
+          >
+            Submit
+          </Button>
+          <Button
+            size='sm'
+            variant='outline'
+            colorPalette={colorScheme}
+            onClick={resetFilter}
+            disabled={isDisabled || !selectedDates.length}
+            mx={1}
+          >
+            Reset
+          </Button>
+        </Flex>
+      </form>
     </Flex>
   );
 };
