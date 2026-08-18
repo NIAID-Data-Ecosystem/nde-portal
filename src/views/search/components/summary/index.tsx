@@ -17,7 +17,6 @@ import { SelectedFilterType } from '../filters/types';
 import { InfoLabel } from 'src/components/info-label';
 import { SelectedFilterValueType } from '../filters/types';
 import { FiltersDisclaimer } from 'src/views/search/components/filters/components/filters-chart-toggle';
-import { Heading } from 'src/theme/components/heading';
 import { FaMinus, FaPlus } from 'react-icons/fa6';
 
 interface SummaryGridProps {

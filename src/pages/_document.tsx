@@ -6,7 +6,6 @@ import NextDocument, {
   NextScript,
 } from 'next/document';
 import React from 'react';
-import { Box } from '@chakra-ui/react';
 
 export const NAV_HEIGHT = { base: '105px', sm: '77px', md: '89px' };
 
@@ -15,8 +14,11 @@ class Document extends NextDocument {
     return NextDocument.getInitialProps(ctx);
   }
   render() {
+    // `className='light'` pins Chakra's light-mode condition. The app has no
+    // colour-mode toggle, and v3 scopes `_dark` to a `.dark` ancestor, so this
+    // only makes the existing behaviour explicit.
     return (
-      <Box as={Html} lang='en'>
+      <Html lang='en' className='light'>
         <Head>
           <link rel='icon' href='/favicon.png' />
         </Head>
@@ -24,7 +26,7 @@ class Document extends NextDocument {
           <Main />
           <NextScript />
         </body>
-      </Box>
+      </Html>
     );
   }
 }

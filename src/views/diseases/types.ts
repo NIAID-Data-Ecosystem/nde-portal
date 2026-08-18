@@ -1,4 +1,4 @@
-import { ThemingProps } from '@chakra-ui/react';
+import { ColorPalette } from '@chakra-ui/react';
 import { Params } from 'src/utils/api';
 
 /**
@@ -117,6 +117,6 @@ export interface FacetProps {
   label: string;
   value: string;
   fill: string;
-  colorScheme: ThemingProps<any>['colorScheme'];
+  colorPalette: ColorPalette;
   tooltip: string;
 }

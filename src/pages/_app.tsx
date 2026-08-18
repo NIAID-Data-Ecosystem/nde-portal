@@ -1,7 +1,7 @@
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { theme } from 'src/theme';
+import { system } from 'src/theme';
 import { GoogleTagManager } from '@next/third-parties/google';
 import { fonts } from 'lib/fonts';
 import { ChakraProvider } from '@chakra-ui/react';
@@ -34,7 +34,7 @@ function App({ Component, pageProps }: AppProps) {
       </style>
 
       <QueryClientProvider client={queryClient}>
-        <ChakraProvider theme={theme}>
+        <ChakraProvider value={system}>
           <AuthProvider>
             <UserDataProvider>
               <Component {...pageProps} />

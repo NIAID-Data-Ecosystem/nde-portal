@@ -1,15 +1,15 @@
 import React from 'react';
 import {
   Center,
-  Divider,
+  ColorPalette,
   Flex,
   FlexProps,
   IconButton,
-  Select,
-  SelectProps,
+  NativeSelect,
+  Separator,
   Skeleton,
   Text,
-  useMultiStyleConfig,
+  useSlotRecipe,
 } from '@chakra-ui/react';
 import {
   FaAngleLeft,
@@ -53,9 +53,9 @@ export interface TablePaginationProps extends FlexProps {
   setFrom: (n: number) => void;
 
   /**
-   * Color scheme for table. Defaults to gray.
+   * Color palette for table. Defaults to gray.
    */
-  colorScheme?: SelectProps['colorScheme'];
+  colorPalette?: ColorPalette;
 
   /**
    * Options for number of rows to show per page.
@@ -80,43 +80,47 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
   from,
   setFrom,
   pageSizeOptions,
-  colorScheme,
+  colorPalette = 'gray',
   isLoading,
   numPages: totalPages,
   ...props
 }) => {
-  const styles = useMultiStyleConfig('Table', { colorScheme });
+  // `pagination` is not part of Chakra's table anatomy — see
+  // src/theme/slot-recipes/table-shell.slot-recipe.ts.
+  const recipe = useSlotRecipe({ key: 'tableShell' });
+  const styles = recipe();
   const numPages =
     totalPages !== undefined ? totalPages : Math.ceil(total / size);
 
   const ArrowButton = ({
     ariaLabel,
     icon,
-    isDisabled,
+    disabled,
     handleClick,
   }: {
     ariaLabel: string;
     icon: React.ReactElement;
-    isDisabled: boolean;
+    disabled: boolean;
     handleClick: () => void;
   }) => {
     return (
       <IconButton
-        colorScheme={colorScheme}
+        colorPalette={colorPalette}
         size='sm'
         aria-label={ariaLabel}
-        icon={icon}
         variant='outline'
-        isDisabled={isDisabled}
+        disabled={disabled}
         onClick={handleClick}
         mx={0.5}
         display={['none', 'flex']}
-      />
+      >
+        {icon}
+      </IconButton>
     );
   };
 
   return (
-    <Flex __css={styles.pagination} {...props}>
+    <Flex colorPalette={colorPalette} css={styles.pagination} {...props}>
       <Flex
         p={4}
         bg='page.alt'
@@ -128,27 +132,27 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
         <Flex pb={[4, 0]} flex={[1, 'unset']} flexDirection={['column', 'row']}>
           <Text fontSize='sm'>Rows per page: </Text>
           {/* Display row options by increments of 5. */}
-          <Select
-            value={size}
-            onChange={e => {
-              setSize(+e.currentTarget.value);
-              setFrom(0);
-            }}
-            size='sm'
-            colorScheme={colorScheme}
-            mx={[0, 2]}
-            cursor='pointer'
-            bg='white'
-            aria-label='Select number of rows per page'
-          >
-            {pageSizeOptions.map((pageSizeOption, i) => {
-              return (
-                <option key={i} value={pageSizeOption}>
-                  {pageSizeOption}
-                </option>
-              );
-            })}
-          </Select>
+          <NativeSelect.Root size='sm' mx={[0, 2]}>
+            <NativeSelect.Field
+              value={size}
+              onChange={e => {
+                setSize(+e.currentTarget.value);
+                setFrom(0);
+              }}
+              cursor='pointer'
+              bg='white'
+              aria-label='Select number of rows per page'
+            >
+              {pageSizeOptions.map((pageSizeOption, i) => {
+                return (
+                  <option key={i} value={pageSizeOption}>
+                    {pageSizeOption}
+                  </option>
+                );
+              })}
+            </NativeSelect.Field>
+            <NativeSelect.Indicator />
+          </NativeSelect.Root>
         </Flex>
 
         {/* Navigation for pages. */}
@@ -156,44 +160,43 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
           <ArrowButton
             icon={<FaAnglesLeft />}
             ariaLabel='Go to first page.'
-            isDisabled={from === 0}
+            disabled={from === 0}
             handleClick={() => setFrom(0)}
           ></ArrowButton>
           <ArrowButton
             icon={<FaAngleLeft />}
             ariaLabel='Go to previous page.'
-            isDisabled={from === 0}
+            disabled={from === 0}
             handleClick={() => setFrom(from - 1)}
           ></ArrowButton>
-          <Select
-            value={from}
-            onChange={e => setFrom(+e.currentTarget.value)}
-            size='sm'
-            colorScheme={colorScheme}
-            mx={[0, 4]}
-            my={[2, 0]}
-            cursor='pointer'
-            bg='white'
-            aria-label='Select page'
-          >
-            {Array.from(Array(numPages)).map((_, i) => {
-              return (
-                <option key={i} value={i}>
-                  Page {i + 1}
-                </option>
-              );
-            })}
-          </Select>
+          <NativeSelect.Root size='sm' mx={[0, 4]} my={[2, 0]}>
+            <NativeSelect.Field
+              value={from}
+              onChange={e => setFrom(+e.currentTarget.value)}
+              cursor='pointer'
+              bg='white'
+              aria-label='Select page'
+            >
+              {Array.from(Array(numPages)).map((_, i) => {
+                return (
+                  <option key={i} value={i}>
+                    Page {i + 1}
+                  </option>
+                );
+              })}
+            </NativeSelect.Field>
+            <NativeSelect.Indicator />
+          </NativeSelect.Root>
           <ArrowButton
             icon={<FaAngleRight />}
             ariaLabel='Go to next page.'
-            isDisabled={from + 1 === numPages}
+            disabled={from + 1 === numPages}
             handleClick={() => setFrom(from + 1)}
           ></ArrowButton>
           <ArrowButton
             icon={<FaAnglesRight />}
             ariaLabel='Go to last page.'
-            isDisabled={from + 1 === numPages}
+            disabled={from + 1 === numPages}
             handleClick={() => setFrom(numPages - 1)}
           ></ArrowButton>
         </Flex>
@@ -207,15 +210,15 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
         bg='white'
         p={4}
       >
-        <Skeleton isLoaded={!isLoading}>
+        <Skeleton loading={isLoading}>
           <Text fontSize='sm'>
             Page {formatNumber(from + 1)} of {formatNumber(numPages)}
           </Text>
         </Skeleton>
         <Center display={'flex'} h='20px' mx={2}>
-          <Divider orientation='vertical' />
+          <Separator orientation='vertical' />
         </Center>
-        <Skeleton isLoaded={!isLoading}>
+        <Skeleton loading={isLoading}>
           <Text fontSize='sm'>
             {formatNumber(total)} {total > 1 ? 'items' : 'item'}
           </Text>
