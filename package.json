@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --hostname 0.0.0.0",
-    "build:core": "yarn generate-footer-content && yarn generate-metadata-completeness-fields && next build",
+    "theme:typegen": "chakra typegen src/theme/index.ts",
+    "build:core": "yarn theme:typegen && yarn generate-footer-content && yarn generate-metadata-completeness-fields && next build",
     "build": "yarn with-prod-env yarn build:core",
     "build:staging": "env-cmd -f .env.staging yarn build:core",
     "build:dev": "env-cmd -f .env.dev  yarn build:core",
@@ -14,6 +15,7 @@
     "generate-schema-definitions": "yarn with-prod-env tsx scripts/generate-schema-definitions/index.ts",
     "generate-dataset-sitemaps": "yarn with-prod-env tsx scripts/generate-dataset-sitemaps.ts",
     "prepare": "husky install",
+    "postinstall": "yarn theme:typegen",
     "release": "standard-version",
     "release:minor": "standard-version --release-as minor",
     "release:patch": "standard-version --release-as patch",
@@ -24,11 +26,11 @@
     "test:a11y:nobuild": "playwright test",
     "test:a11y:ui": "playwright test --ui",
     "test:a11y:report": "playwright show-report",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "yarn theme:typegen && tsc --noEmit",
     "with-prod-env": "env-cmd -f .env.production"
   },
   "dependencies": {
-    "@chakra-ui/react": "^2.10.7",
+    "@chakra-ui/react": "^3",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@next/third-parties": "^15.0.0",
@@ -43,6 +45,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",
+    "@chakra-ui/cli": "^3.36.1",
     "@commitlint/cli": "^17.4.2",
     "@commitlint/config-conventional": "^17.4.2",
     "@dnd-kit/core": "^6.0.5",
