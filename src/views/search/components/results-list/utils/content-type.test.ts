@@ -130,4 +130,25 @@ describe('getContentTypeLabel', () => {
     );
     expect(getContentTypeLabel({})).toEqual('');
   });
+
+  it("leaves the API's already-readable displayName untouched", () => {
+    expect(
+      getContentTypeLabel({
+        name: 'MolecularSequence',
+        displayName: 'Molecular Sequence',
+      }),
+    ).toEqual('Molecular Sequence');
+    expect(
+      getContentTypeLabel({ name: '3D EM Map', displayName: '3D EM Map' }),
+    ).toEqual('3D EM Map');
+  });
+
+  it('splits a PascalCase name when displayName is missing', () => {
+    expect(getContentTypeLabel({ name: 'GeneVariant' })).toEqual(
+      'Gene Variant',
+    );
+    expect(getContentTypeLabel({ name: 'ClinicalStudy' })).toEqual(
+      'Clinical Study',
+    );
+  });
 });

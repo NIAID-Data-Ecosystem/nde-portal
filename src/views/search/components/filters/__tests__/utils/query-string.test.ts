@@ -93,4 +93,66 @@ describe('filters/utils/query-string', () => {
     expect(queryFilterString2Object(q!)).toEqual({ date: ['2020-01-01'] });
     expect(queryFilterString2Object('')).toBeNull();
   });
+
+  // The Content Type filter maps to two API fields: about.name and
+  // exampleOfWork.about.name. The generated query must apply the selected
+  // values to both fields with OR, and parsing that query back must preserve
+  // the original filter so the selection is not lost after a page reload.
+  describe('merged multi-field filters', () => {
+    const ABOUT = 'about.name';
+    const EXAMPLE_OF_WORK = 'exampleOfWork.about.name';
+
+    it('emits one OR-joined clause per field', () => {
+      expect(queryFilterObject2String({ [ABOUT]: ['Genome'] })).toBe(
+        `((${ABOUT}:("Genome")) OR (${EXAMPLE_OF_WORK}:("Genome")))`,
+      );
+    });
+
+    it('repeats every selected value across both fields', () => {
+      expect(
+        queryFilterObject2String({ [ABOUT]: ['Genome', 'Tomogram'] }),
+      ).toBe(
+        `((${ABOUT}:("Genome" OR "Tomogram")) OR ` +
+          `(${EXAMPLE_OF_WORK}:("Genome" OR "Tomogram")))`,
+      );
+    });
+
+    it('retargets _exists_ values at the field of their own clause', () => {
+      expect(
+        queryFilterObject2String({ [ABOUT]: [{ _exists_: [ABOUT] }] }),
+      ).toBe(
+        `((${ABOUT}:(_exists_:("${ABOUT}"))) OR ` +
+          `(${EXAMPLE_OF_WORK}:(_exists_:("${EXAMPLE_OF_WORK}"))))`,
+      );
+    });
+
+    it.each([
+      ['a single value', { [ABOUT]: ['Genome'] }],
+      ['several values', { [ABOUT]: ['Genome', 'Tomogram'] }],
+      ['an _exists_ value', { [ABOUT]: [{ _exists_: [ABOUT] }] }],
+    ])('round-trips %s back to the filter object', (_label, filters) => {
+      const built = queryFilterObject2String(filters);
+      expect(queryFilterString2Object(built!)).toEqual(filters);
+    });
+
+    it('round-trips alongside other filters joined by AND', () => {
+      const filters = {
+        'topicCategory.name.raw': ['Genomics'],
+        [ABOUT]: ['Genome'],
+      };
+      const built = queryFilterObject2String(filters);
+
+      expect(built).toBe(
+        '(topicCategory.name.raw:("Genomics")) AND ' +
+          `((${ABOUT}:("Genome")) OR (${EXAMPLE_OF_WORK}:("Genome")))`,
+      );
+      expect(queryFilterString2Object(built!)).toEqual(filters);
+    });
+
+    it('still parses the pre-merge single-field form, so old URLs keep working', () => {
+      expect(queryFilterString2Object(`(${ABOUT}:("Genome"))`)).toEqual({
+        [ABOUT]: ['Genome'],
+      });
+    });
+  });
 });
