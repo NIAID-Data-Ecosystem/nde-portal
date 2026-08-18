@@ -28,7 +28,7 @@ import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 import { Skeleton } from 'src/components/skeleton';
 import { filterWords, getContentTypeItems } from './helpers';
-import { CONTENT_TYPE_TOOLTIP } from '../../utils/content-type';
+import { CONTENT_TYPE_TOOLTIP } from 'src/views/search/config/content-type';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { InfoLabel } from 'src/components/info-label';

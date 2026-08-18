@@ -4,6 +4,8 @@ import { FormattedResource } from 'src/utils/api/types';
 import {
   CONTENT_TYPE_ABOUT_FIELD,
   CONTENT_TYPE_EXAMPLE_OF_WORK_FIELD,
+} from 'src/views/search/config/content-type';
+import {
   getContentTypeLabel,
   getContentTypeTerms,
 } from '../../utils/content-type';

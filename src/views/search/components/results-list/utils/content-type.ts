@@ -1,26 +1,14 @@
 import { FormattedResource } from 'src/utils/api/types';
+import { formatTermLabel } from 'src/utils/formatting/formatTermLabel';
 import { toArray } from '../components/results-table/utils';
 
 /*
- * "Content Type" is a presentation-only concept that merges two API fields:
- * `about` and `exampleOfWork.about`. Both are shown together on the Data
- * Collection card (as searchable pills) and in the Data Collection table (as a
- * single column), so the merging and deduplication live here.
+ * Reads Content Type values from both `about` and `exampleOfWork.about`.
+ * The field names and related filter configuration are defined in
+ * `src/views/search/config/content-type.ts`.
  */
 
-/*
- * Fields backing the merged "Content Type" values. A single card pill searches
- * both at once.
- */
-export const CONTENT_TYPE_ABOUT_FIELD = 'about.name';
-export const CONTENT_TYPE_EXAMPLE_OF_WORK_FIELD = 'exampleOfWork.about.name';
-
-// No "Content Type" entry exists in schema-definitions.json and the value spans
-// two properties.
-export const CONTENT_TYPE_TOOLTIP =
-  'The types of data included in the collection.';
-
-// DefinedTerm-ish shape shared by about[] and exampleOfWork.about[].
+// DefinedTerm-like shape shared by `about` and `exampleOfWork.about`.
 export interface ContentTypeTerm {
   name?: string | null;
   displayName?: string | null;
@@ -81,8 +69,14 @@ export const getContentTypeTerms = (
 };
 
 /*
- * The label shown for a term: its `displayName` when present, since that is the
- * human-readable form.
+ * Returns the label to display for a Content Type.
+ *
+ * Prefers the API's human-readable `displayName`, falling back to `name` when
+ * it is unavailable. The fallback is formatted because `name` uses raw
+ * PascalCase values such as "GeneVariant".
  */
-export const getContentTypeLabel = (term: ContentTypeTerm): string =>
-  trimmed(term.displayName) || trimmed(term.name) || trimmed(term.url);
+export const getContentTypeLabel = (term: ContentTypeTerm): string => {
+  const name = trimmed(term.displayName) || trimmed(term.name);
+  // A URL is already formatted for display, so return it unchanged.
+  return name ? formatTermLabel(name) : trimmed(term.url);
+};
