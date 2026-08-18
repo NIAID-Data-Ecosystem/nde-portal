@@ -419,7 +419,7 @@ const RepositoryMatcher: NextPage = () => {
               />
             </VStack>
           </Flex>
-          <Table.Root
+          <Table
             ariaLabel='Repository matcher table'
             caption='Repositories and resource catalogs available for data deposit'
             columns={tableColumns}

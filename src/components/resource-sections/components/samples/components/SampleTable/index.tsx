@@ -34,7 +34,7 @@ export const SampleTable = ({
           )}
         </Heading>
       )}
-      <Table.Root
+      <Table
         ariaLabel={label}
         caption={caption}
         stickyHeader

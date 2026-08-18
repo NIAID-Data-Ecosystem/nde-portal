@@ -130,7 +130,7 @@ export const Funding: React.FC<FundingProps> = ({
         Grant and Funding Information
       </Heading>
       <TableWrapper colorPalette='gray'>
-        <Table.ScrollArea>
+        <TableContainer>
           <Table.Root
             role='table'
             aria-label='Grant and funding information'
@@ -272,7 +272,7 @@ export const Funding: React.FC<FundingProps> = ({
               </tbody>
             </Flex>
           </Table.Root>
-        </Table.ScrollArea>
+        </TableContainer>
         <TablePagination
           total={funding.length}
           size={size}

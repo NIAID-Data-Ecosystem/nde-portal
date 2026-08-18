@@ -20,7 +20,7 @@ const FilesTable: React.FC<FilesTableProps> = ({ isLoading, distribution }) => {
           <Text py={2}>No results found.</Text>
         </Flex>
       ) : (
-        <Table.Root
+        <Table
           ariaLabel='List of downloadable files.'
           caption='List of downloadable files.'
           data={distribution || []}
@@ -115,7 +115,7 @@ export const DistributionCells = ({
         {...column.props}
       >
         {column.property === 'contentUrl' && (
-          <Link href={data?.[column.property] || ''} isExternal noOfLines={2}>
+          <Link href={data?.[column.property] || ''} isExternal lineClamp={2}>
             {data?.[column.property]}
           </Link>
         )}

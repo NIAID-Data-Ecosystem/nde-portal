@@ -98,7 +98,7 @@ export const RelatedResourceBlock = ({
               {label && (
                 <>
                   {linkProps ? (
-                    <Link noOfLines={3} mr={1.5} display='unset' {...linkProps}>
+                    <Link lineClamp={3} mr={1.5} display='unset' {...linkProps}>
                       {label}
                     </Link>
                   ) : (

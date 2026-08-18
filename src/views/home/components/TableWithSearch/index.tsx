@@ -161,7 +161,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
           </Stack>
 
           {/* <!-- Table --> */}
-          <Table.Root
+          <Table
             emptyState={emptyState}
             stickyHeader
             data={isLoading ? Array(10).fill({}) : filteredData}

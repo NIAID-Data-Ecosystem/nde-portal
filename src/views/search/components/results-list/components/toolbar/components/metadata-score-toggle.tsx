@@ -61,10 +61,10 @@ export const MetadataScoreToggle = React.memo(
     //     </Tooltip>
     //     <Switch
     //       id='metadata-score-toggle'
-    //       isChecked={isChecked}
+    //       checked={isChecked}
     //       onChange={handleToggle}
     //       colorPalette='secondary'
-    //       isDisabled={isDisabled}
+    //       disabled={isDisabled}
     //     />
     //   </FormControl>
     // );

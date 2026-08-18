@@ -159,7 +159,7 @@ const BasedOnTable = ({
         </Heading>
       )}
       <TableWrapper colorPalette='primary'>
-        <Table.ScrollArea>
+        <TableContainer>
           <Table.Root
             role='table'
             aria-label={title}
@@ -352,7 +352,7 @@ const BasedOnTable = ({
               })}
             </tbody>
           </Table.Root>
-        </Table.ScrollArea>
+        </TableContainer>
         <TablePagination
           total={items.length}
           size={size}

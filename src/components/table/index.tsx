@@ -7,16 +7,19 @@ import React, {
   useState,
 } from 'react';
 import {
+  ColorPalette,
   Box,
   Flex,
   Table as ChakraTable,
   VisuallyHidden,
   HTMLChakraProps,
-  TableContainerProps,
   Skeleton,
 } from '@chakra-ui/react';
 import { VariableSizeList, ListChildComponentProps } from 'react-window';
-import { TableContainer } from 'src/components/table/components/table-container';
+import {
+  TableContainer,
+  TableContainerProps,
+} from 'src/components/table/components/table-container';
 import { TableWrapper } from 'src/components/table/components/wrapper';
 import { TablePagination } from 'src/components/table/components/pagination';
 import { useTableSort } from 'src/components/table/hooks/useTableSort';
@@ -50,7 +53,7 @@ export interface TableProps<TData extends Record<string, string | number>> {
     data: TData;
     isLoading?: boolean;
   }) => React.ReactNode;
-  colorPalette?: string;
+  colorPalette?: ColorPalette;
   isLoading?: boolean;
   numRows?: number[];
   hasPagination?: boolean;
@@ -123,7 +126,7 @@ interface MemoRowCellsProps {
   isLoading?: boolean;
   cellAs?: any;
   stickyFirstColumn?: boolean;
-  colorPalette?: string;
+  colorPalette?: ColorPalette;
 }
 
 // Cells are isolated in their own memo'd component so that re-rendering a
@@ -180,7 +183,7 @@ interface VirtualizedRowItemProps {
   rowProps?: any;
   onResize: (index: number, height: number) => void;
   stickyFirstColumn?: boolean;
-  colorPalette?: string;
+  colorPalette?: ColorPalette;
 }
 
 // One virtualized row. Measures its own natural height after layout and
@@ -259,7 +262,7 @@ interface VirtualizedBodyProps {
   tableBodyProps?: HTMLChakraProps<'tbody'>;
   listRef?: React.MutableRefObject<VariableSizeList | null>;
   stickyFirstColumn?: boolean;
-  colorPalette?: string;
+  colorPalette?: ColorPalette;
 }
 
 // Virtualized body: only the rows in view (plus overscan) are mounted.
@@ -607,7 +610,7 @@ export const Table: React.FC<TableProps<any>> = ({
               }
             : null;
         return (
-          <Table.ColumnHeader
+          <Th
             key={`table-col-th-${column.property}`}
             as={cellAs}
             label={column.title}
@@ -636,7 +639,7 @@ export const Table: React.FC<TableProps<any>> = ({
 
   /// Inner table markup
   const tableMarkup = (
-    <ChakraTable
+    <ChakraTable.Root
       role='table'
       aria-label={ariaLabel}
       aria-describedby='table-caption'
@@ -681,7 +684,7 @@ export const Table: React.FC<TableProps<any>> = ({
           )}
         </tbody>
       </Box>
-    </ChakraTable>
+    </ChakraTable.Root>
   );
 
   const {
@@ -794,7 +797,7 @@ export const Table: React.FC<TableProps<any>> = ({
             setFrom={setFrom}
             pageSizeOptions={numRows}
             colorPalette='gray'
-            __css={{ '>div': { py: 1 } }}
+            css={{ '>div': { py: 1 } }}
           />
         )}
       </TableWrapper>
@@ -846,18 +849,18 @@ export const Table: React.FC<TableProps<any>> = ({
               width: '100%',
             }}
           >
-            <Table.ScrollArea
+            <TableContainer
               {...remainingContainerProps}
               overflowX='visible'
               overflowY='visible'
             >
               {tableMarkup}
-            </Table.ScrollArea>
+            </TableContainer>
           </div>
         ) : (
-          <Table.ScrollArea {...tableContainerProps}>
+          <TableContainer {...tableContainerProps}>
             {tableMarkup}
-          </Table.ScrollArea>
+          </TableContainer>
         )}
 
         {hasPagination && numRows && (
@@ -869,7 +872,7 @@ export const Table: React.FC<TableProps<any>> = ({
             setFrom={setFrom}
             pageSizeOptions={numRows}
             colorPalette='gray'
-            __css={{ '>div': { py: 1 } }}
+            css={{ '>div': { py: 1 } }}
           />
         )}
       </TableWrapper>

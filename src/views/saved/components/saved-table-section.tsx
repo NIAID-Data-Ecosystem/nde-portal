@@ -189,7 +189,7 @@ export function SavedTableSection<TItem>({
           />
         </Flex>
       </Stack>
-      <Table.Root
+      <Table
         ariaLabel={tableAriaLabel}
         caption={caption}
         columns={tableColumns}

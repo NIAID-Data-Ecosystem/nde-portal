@@ -97,7 +97,7 @@ export const CitedByTable: React.FC<CitedByTable> = ({
         </Heading>
       )}
       <TableWrapper colorPalette='gray'>
-        <Table.ScrollArea>
+        <TableContainer>
           <Table.Root
             role='table'
             aria-label='Cited by information'
@@ -233,7 +233,7 @@ export const CitedByTable: React.FC<CitedByTable> = ({
               })}
             </tbody>
           </Table.Root>
-        </Table.ScrollArea>
+        </TableContainer>
         <TablePagination
           total={citedBy.length}
           size={size}

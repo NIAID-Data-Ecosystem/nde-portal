@@ -140,7 +140,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
                   //     display='flex'
                   //     colorPalette={colorPalette}
                   //     aria-label={ariaLabel}
-                  //     // isDisabled={isLoading || false}
+                  //     // disabled={isLoading || false}
                   //     size={size}
                   //     {...props}
                   //   >

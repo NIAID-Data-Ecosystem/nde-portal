@@ -17,7 +17,6 @@ export const BookmarkIconButton: React.FC<
         aria-label={label}
         onClick={onClick}
         variant='ghost'
-        isRound={true}
         borderRadius='50%'
         size='sm'
         colorPalette='blue'
