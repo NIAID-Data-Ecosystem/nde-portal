@@ -19,11 +19,11 @@ export const SidebarContainer = ({
   bg,
   ...props
 }: SidebarContainerProps) => {
-  const { open, onOpen, onClose } = useDisclosure({ defaultIsOpen: true });
+  const { open, onOpen, onClose } = useDisclosure({ defaultOpen: true });
 
   return (
     <>
-      {!isOpen && (
+      {!open && (
         <Button
           aria-label='Expand documentation navigation menu'
           onClick={onOpen}
@@ -47,8 +47,8 @@ export const SidebarContainer = ({
         bg={bg || 'white'}
         borderRight='1px solid'
         borderColor='gray.100'
-        w={isOpen ? '350px' : '0px'}
-        transform={isOpen ? 'translateX(0)' : 'translateX(-100%)'}
+        w={open ? '350px' : '0px'}
+        transform={open ? 'translateX(0)' : 'translateX(-100%)'}
         maxW='400px'
         transitionDuration='fast'
         transitionProperty='width, transform'
@@ -59,7 +59,7 @@ export const SidebarContainer = ({
           <Flex
             h='100%'
             flexDirection='column'
-            overflow={isOpen ? 'visible' : 'hidden'}
+            overflow={open ? 'visible' : 'hidden'}
           >
             <Button
               aria-label='Collapse documentation navigation menu'

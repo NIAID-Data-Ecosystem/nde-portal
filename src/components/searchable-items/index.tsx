@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { FlexProps, Button, TagProps } from '@chakra-ui/react';
+import { Button, FlexProps, Tag } from '@chakra-ui/react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { TagWithUrl } from 'src/components/tag-with-url';
@@ -21,9 +21,9 @@ interface SearchableItemsProps extends Omit<FlexProps, 'onToggle'> {
   items: SearchableItem[];
   /** Extra params merged into every item's /search link, e.g. `{ tab: 'dc' }`. */
   searchParams?: Record<string, string>;
-  colorPalette?: TagProps['colorPalette'];
+  colorPalette?: Tag.RootProps['colorPalette'];
   linkColor?: string;
-  tagColor?: TagProps['color'];
+  tagColor?: Tag.RootProps['color'];
   generateButtonLabel?: (limit: number, length: number) => string;
   itemLimit?: number;
   name?: React.ReactNode;

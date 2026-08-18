@@ -1,12 +1,9 @@
 import { useState } from 'react';
 import {
   Flex,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput as ChakraNumberInput,
-  NumberInputField,
-  NumberInputStepper,
   NativeSelect,
+  NumberInput,
+  NumberInput as ChakraNumberInput,
 } from '@chakra-ui/react';
 
 import { AdvancedSearchInputProps } from '../types';

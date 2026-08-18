@@ -1,12 +1,5 @@
 import React, { ReactNode } from 'react';
-import {
-  Card,
-  CardProps,
-  BoxProps,
-  TextProps,
-  Text,
-  Skeleton,
-} from '@chakra-ui/react';
+import { BoxProps, Card, Skeleton, Text, TextProps } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { TypeBanner } from 'src/components/resource-sections/components';
 import { TypeBannerProps } from 'src/components/resource-sections/components/type-banner';
@@ -20,7 +13,7 @@ const CARD_HEIGHTS = {
 } as const;
 
 // Base compact card wrapper component
-interface BaseProps extends Omit<CardProps, 'children' | 'as'> {
+interface BaseProps extends Omit<Card.RootProps, 'children' | 'as'> {
   isLoading?: boolean;
   children: ReactNode;
 }

@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { Box, Flex, Tag, TagLabel, Text } from '@chakra-ui/react';
+import { Box, Flex, Tag, Text } from '@chakra-ui/react';
 import {
   getFieldDetails,
   getSearchOptionsForField,

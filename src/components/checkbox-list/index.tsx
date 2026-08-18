@@ -1,14 +1,13 @@
 import {
   Button,
-  CheckboxGroup,
-  Checkbox,
-  Flex,
-  Stack,
-  Popover,
-  Text,
-  FlexProps,
-  PopoverProps,
   ButtonProps,
+  Checkbox,
+  CheckboxGroup,
+  Flex,
+  FlexProps,
+  Popover,
+  Stack,
+  Text,
 } from '@chakra-ui/react';
 import React from 'react';
 import { FaCaretDown } from 'react-icons/fa6';
@@ -27,7 +26,7 @@ export interface CheckboxListProps<T extends Option> extends FlexProps {
   label: string | React.ReactNode;
   options: T[];
   selectedOptions: T[];
-  size?: PopoverProps['size'];
+  size?: Popover.RootProps['size'];
   showSelectAll?: boolean;
 }
 

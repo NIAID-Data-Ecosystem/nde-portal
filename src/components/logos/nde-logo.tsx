@@ -1,6 +1,6 @@
-import { Image, ImgProps } from '@chakra-ui/react';
+import { Image, ImageProps } from '@chakra-ui/react';
 
-export const NDELogo = (props: ImgProps) => {
+export const NDELogo = (props: ImageProps) => {
   return (
     <>
       <Image

@@ -5,7 +5,6 @@ import {
   Icon,
   Popover,
   PopoverContentProps,
-  PopoverProps,
   Text,
 } from '@chakra-ui/react';
 import { FaSliders } from 'react-icons/fa6';
@@ -86,7 +85,7 @@ export interface SelectAndSortPopoverProps {
   triggerProps?: Omit<ButtonProps, 'children'>;
 
   /** Forwarded to Chakra's `Popover`. */
-  popoverProps?: Omit<PopoverProps, 'children'>;
+  popoverProps?: Omit<Popover.RootProps, 'children'>;
 
   /** Forwarded to Chakra's `PopoverContent` (sizing, etc.). */
   popoverContentProps?: PopoverContentProps;

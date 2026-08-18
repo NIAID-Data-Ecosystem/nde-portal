@@ -1,10 +1,4 @@
-import {
-  Accordion,
-  AccordionProps,
-  Box,
-  Heading,
-  Icon,
-} from '@chakra-ui/react';
+import { Accordion, Box, Heading, Icon } from '@chakra-ui/react';
 import { FaMinus, FaPlus } from 'react-icons/fa6';
 
 export const AccordionContent = ({
@@ -47,7 +41,7 @@ export const AccordionWrapper = ({
   children,
   defaultIndex,
   ...props
-}: AccordionProps) => {
+}: Accordion.RootProps) => {
   return (
     <Accordion.Root
       defaultValue={defaultIndex ?? [0]}

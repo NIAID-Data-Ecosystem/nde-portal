@@ -176,7 +176,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         </Text>
       </Button>
       <Drawer.Root
-        open={isOpen}
+        open={open}
         placement='start'
         finalFocusEl={() => btnRef.current}
         size={screenSize === 'mobile' ? 'full' : 'md'}

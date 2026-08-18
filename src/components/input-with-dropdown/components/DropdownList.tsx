@@ -1,8 +1,8 @@
 import React from 'react';
-import { ListProps, List } from '@chakra-ui/react';
+import { List } from '@chakra-ui/react';
 import { useDropdownContext } from '..';
 
-interface DropdownListProps extends ListProps {}
+interface DropdownListProps extends List.RootProps {}
 
 // List wrapper that open when an input is entered.
 export const DropdownList: React.FC<DropdownListProps> = ({

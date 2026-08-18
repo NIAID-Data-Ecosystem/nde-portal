@@ -1,10 +1,10 @@
 import {
   Box,
-  Divider,
   Flex,
+  HStack,
   Heading,
   HeadingProps,
-  HStack,
+  Separator,
   Skeleton,
   Stack,
   StackProps,

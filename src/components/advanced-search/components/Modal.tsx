@@ -1,9 +1,10 @@
 import React from 'react';
-import { Box, ModalProps, Dialog, Portal } from '@chakra-ui/react';
+import { Box, Dialog, Portal } from '@chakra-ui/react';
 
-export interface AdvancedSearchModalProps extends Omit<ModalProps, 'onClose'> {
+export interface AdvancedSearchModalProps
+  extends Omit<Dialog.RootProps, 'onClose'> {
   isOpen: boolean;
-  handleClose: ModalProps['onClose'];
+  handleClose: Dialog.RootProps['onClose'];
 }
 
 export const AdvancedSearchModal: React.FC<AdvancedSearchModalProps> = ({

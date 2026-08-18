@@ -1,18 +1,11 @@
 import React from 'react';
 import { FaSquareArrowUpRight } from 'react-icons/fa6';
-import {
-  Tag,
-  TagLabel,
-  TagLeftIcon,
-  TagProps,
-  TagRightIcon,
-  Text,
-} from '@chakra-ui/react';
+import { Tag, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import type { UrlObject } from 'url';
 import { IconType } from 'react-icons';
 
-interface TagWithUrlProps extends TagProps {
+interface TagWithUrlProps extends Tag.RootProps {
   href?: string | UrlObject | null;
   label?: string;
   isExternal?: boolean;

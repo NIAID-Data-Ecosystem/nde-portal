@@ -4,13 +4,11 @@ import {
   Checkbox,
   Flex,
   Heading,
+  Separator,
   Stack,
   Tag,
-  TagCloseButton,
-  TagLabel,
   Text,
   VStack,
-  Separator,
 } from '@chakra-ui/react';
 
 import { NextPage } from 'next';

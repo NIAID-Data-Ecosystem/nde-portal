@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  Accordion,
-  Flex,
-  Icon,
-  Tag,
-  TagLabel,
-  Text,
-  SimpleGrid,
-} from '@chakra-ui/react';
+import { Accordion, Flex, Icon, SimpleGrid, Tag, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { FaMinus, FaPlus } from 'react-icons/fa6';
 import { Link } from 'src/components/link';

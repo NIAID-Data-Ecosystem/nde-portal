@@ -3,13 +3,12 @@ import {
   Box,
   Flex,
   FlexProps,
-  Table,
-  Tr,
-  Text,
-  VisuallyHidden,
   Heading,
   Skeleton,
+  Table,
+  Text,
   VStack,
+  VisuallyHidden,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { Funding as FundingType } from 'src/utils/api/types';

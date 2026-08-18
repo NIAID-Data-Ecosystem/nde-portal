@@ -50,10 +50,10 @@ export const Navigation: React.FC<FlexProps> = props => {
         </Stack>
 
         {/* For mobile / tablet */}
-        <Nav.Toggle isOpen={isOpen} onToggle={onToggle} />
+        <Nav.Toggle isOpen={open} onToggle={onToggle} />
       </Nav.Bar>
       {/* Popout navigation in mobile mode */}
-      {isOpen && <Nav.MobileMenu isOpen={isOpen} routes={navigation} />}
+      {open && <Nav.MobileMenu isOpen={open} routes={navigation} />}
     </Nav.Wrapper>
   );
 };

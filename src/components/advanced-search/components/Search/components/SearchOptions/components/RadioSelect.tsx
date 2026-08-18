@@ -1,4 +1,9 @@
-import { Flex, Radio, VisuallyHidden, useDisclosure } from '@chakra-ui/react';
+import {
+  Flex,
+  RadioGroup,
+  VisuallyHidden,
+  useDisclosure,
+} from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import {
   OptionItem,
@@ -33,7 +38,7 @@ export const RadioSelect = ({
 
   return (
     <Flex>
-      <Radio
+      <RadioGroup.Item
         checked={isChecked}
         onValueChange={() => {
           updateSearchOption(selected);
@@ -44,7 +49,7 @@ export const RadioSelect = ({
         <VisuallyHidden>
           <label>{selected?.label}</label>
         </VisuallyHidden>
-      </Radio>
+      </RadioGroup.Item>
       <SelectWithButton
         id='search-type'
         colorPalette='gray'

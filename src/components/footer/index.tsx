@@ -4,11 +4,10 @@ import {
   Flex,
   Heading,
   HeadingProps,
-  ListProps,
+  List,
   SimpleGrid,
   Stack,
   TextProps,
-  List,
 } from '@chakra-ui/react';
 import { Logo } from 'src/components/logos';
 import SITE_CONFIG from 'configs/site.config.json';
@@ -42,7 +41,7 @@ export const Footer = () => {
   interface NestedList {
     label: string;
     routes?: FooterRoute[];
-    listProps?: ListProps;
+    listProps?: List.RootProps;
     headingProps?: HeadingProps;
   }
 

@@ -1,9 +1,9 @@
 import React from 'react';
-import { ListProps, List } from '@chakra-ui/react';
+import { List } from '@chakra-ui/react';
 import { FaCircle } from 'react-icons/fa6';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 
-export const MetadataList = ({ children, ...props }: ListProps) => {
+export const MetadataList = ({ children, ...props }: List.RootProps) => {
   return (
     <List.Root
       as='ul'

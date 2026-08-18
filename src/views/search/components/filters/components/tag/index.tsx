@@ -1,12 +1,5 @@
 import React, { useMemo } from 'react';
-import {
-  Box,
-  Button,
-  HStack,
-  Tag,
-  TagCloseButton,
-  TagLabel,
-} from '@chakra-ui/react';
+import { Box, Button, HStack, Tag } from '@chakra-ui/react';
 import {
   FilterConfig,
   SelectedFilterType,

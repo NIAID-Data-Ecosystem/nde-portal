@@ -245,7 +245,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
               borderRadius='semi'
               bg='white'
             >
-              <Collapsible.Root open={isOpen}>
+              <Collapsible.Root open={open}>
                 <Collapsible.Content>
                   <List.Root as='ul' ml={0}>
                     {options.map((option, idx) => {

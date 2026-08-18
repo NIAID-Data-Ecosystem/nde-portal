@@ -1,18 +1,14 @@
 import {
+  Field,
   Flex,
   HStack,
   Icon,
   Popover,
   Switch,
-  SwitchProps,
   Tag,
-  TagLabel,
-  TagProps,
   Text,
   TooltipProps,
   useDisclosure,
-  PopoverProps,
-  Field,
 } from '@chakra-ui/react';
 import { FaRegCircleQuestion } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
@@ -41,7 +37,7 @@ const DEFAULT_AI_TOOLTIP_CONTENT = (
 );
 
 interface AIToggleTooltipProps
-  extends Omit<PopoverProps, 'children' | 'content'> {
+  extends Omit<Popover.RootProps, 'children' | 'content'> {
   children: React.ReactNode;
   content?: React.ReactNode | null;
 }
@@ -95,7 +91,7 @@ const AIToggleTooltip: React.FC<AIToggleTooltipProps> = ({
 
   return (
     <Popover.Root
-      open={isOpen}
+      open={open}
       closeOnInteractOutside
       // This is a hover/focus tooltip, not a dialog: don't let Chakra move focus
       // into the popover on open or yank it back to the trigger on close. Those
@@ -156,7 +152,7 @@ interface AIToggleLabelProps {
   label: string;
   colorPalette?: string;
   enableAiSearch: boolean;
-  tagProps?: TagProps;
+  tagProps?: Tag.RootProps;
 }
 
 export const AIToggleLabel = ({
@@ -198,9 +194,9 @@ export const AIToggleLabel = ({
   );
 };
 
-interface AIToggleProps extends SwitchProps {
+interface AIToggleProps extends Switch.RootProps {
   label?: string;
-  tagProps?: TagProps;
+  tagProps?: Tag.RootProps;
   tooltipProps?: TooltipProps;
   tooltipContent?: React.ReactNode;
 }

@@ -1,15 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import NextLink from 'next/link';
-import {
-  Box,
-  Flex,
-  SkeletonText,
-  Stack,
-  Tag,
-  TagLabel,
-  TagCloseButton,
-  Text,
-} from '@chakra-ui/react';
+import { Box, Flex, SkeletonText, Stack, Tag, Text } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { Table } from 'src/components/table';
 import { SearchInput, SearchInputProps } from 'src/components/search-input';

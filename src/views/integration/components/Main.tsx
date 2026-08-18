@@ -5,13 +5,9 @@ import {
   Flex,
   Heading,
   Icon,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
+  Separator,
   Tabs,
   Text,
-  Separator,
 } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
@@ -140,7 +136,7 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
                 <Tabs.Root colorPalette='primary'>
                   <Tabs.List>
                     {content.tabs.panels?.map(({ id, title }) => (
-                      <Tab
+                      <Tabs.Trigger
                         key={id}
                         fontSize='sm'
                         color='blackAlpha.500'
@@ -153,17 +149,17 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
                         }}
                       >
                         {title}
-                      </Tab>
+                      </Tabs.Trigger>
                     ))}
                   </Tabs.List>
-                  <TabPanels>
+                  <Tabs.ContentGroup>
                     {content.tabs.panels?.map(({ id, cards }) => {
                       let stepIndex = 0;
                       const total_steps = cards?.filter(
                         card => card.content && card.isRequired,
                       ).length;
                       return (
-                        <TabPanel key={id} p={0} py={2}>
+                        <Tabs.Content key={id} p={0} py={2}>
                           {cards?.map(card => {
                             if (card.isRequired) {
                               stepIndex++;
@@ -206,10 +202,10 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
                               </React.Fragment>
                             );
                           })}
-                        </TabPanel>
+                        </Tabs.Content>
                       );
                     })}
-                  </TabPanels>
+                  </Tabs.ContentGroup>
                 </Tabs.Root>
               </ParagraphSection>
             ) : (

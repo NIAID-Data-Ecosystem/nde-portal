@@ -99,7 +99,7 @@ export const Filters: React.FC<FiltersProps> = ({
           Filters
         </Button>
         <Drawer.Root
-          open={isOpen}
+          open={open}
           placement='end'
           size='full'
           onOpenChange={e => {

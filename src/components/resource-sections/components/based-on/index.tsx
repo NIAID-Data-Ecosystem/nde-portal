@@ -8,7 +8,6 @@ import {
   Stack,
   Table,
   Text,
-  Tr,
   VisuallyHidden,
   useDisclosure,
 } from '@chakra-ui/react';
@@ -32,11 +31,11 @@ const TruncatedDescription = React.memo(
 
     if (!description) return <></>;
 
-    const { text, hasMore } = getTruncatedText(description, isOpen);
+    const { text, hasMore } = getTruncatedText(description, open);
     return text ? (
       <Text fontSize='inherit' w='100%'>
         {text}
-        {!isOpen && hasMore ? '...' : ''}
+        {!open && hasMore ? '...' : ''}
         {hasMore ? (
           <Button
             variant='plain'
@@ -44,7 +43,7 @@ const TruncatedDescription = React.memo(
             mx={1}
             onClick={onToggle}
           >
-            {isOpen ? 'read less' : 'read more'}
+            {open ? 'read less' : 'read more'}
           </Button>
         ) : (
           <></>

@@ -1,6 +1,9 @@
-import { ListProps, List } from '@chakra-ui/react';
+import { List } from '@chakra-ui/react';
 
-export const OptionsList: React.FC<ListProps> = ({ children, ...props }) => {
+export const OptionsList: React.FC<List.RootProps> = ({
+  children,
+  ...props
+}) => {
   return (
     <List.Root
       as='ul'

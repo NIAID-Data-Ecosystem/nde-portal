@@ -1,4 +1,4 @@
-import { BadgeProps, Tag, TagLabel, TagLeftIcon } from '@chakra-ui/react';
+import { BadgeProps, Tag } from '@chakra-ui/react';
 import React from 'react';
 import { IconType } from 'react-icons';
 import Tooltip from 'src/components/tooltip';

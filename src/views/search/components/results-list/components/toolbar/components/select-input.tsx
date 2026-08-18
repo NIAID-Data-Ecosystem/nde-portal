@@ -1,7 +1,7 @@
 import React from 'react';
-import { Flex, NativeSelect, SelectProps, Text } from '@chakra-ui/react';
+import { Flex, NativeSelect, Text } from '@chakra-ui/react';
 
-interface SelectWithLabelProps extends SelectProps {
+interface SelectWithLabelProps extends NativeSelect.RootProps {
   id: string;
   label: string;
   handleChange: (value: string | number) => void;

@@ -1,6 +1,6 @@
 import React, { useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
-import { TabPanel } from '@chakra-ui/react';
+import { Tabs } from '@chakra-ui/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSearchTabsContext } from '../../context/search-tabs-context';
 import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
@@ -431,7 +431,7 @@ export const SearchResultsController = ({
             const defaultIndices = getAccordionDefaultIndices(sections);
 
             return (
-              <TabPanel key={tab.id}>
+              <Tabs.Content key={tab.id}>
                 <AccordionWrapper
                   key={`${tab.id}-${defaultIndices.join('-')}`}
                   defaultIndex={defaultIndices}
@@ -517,7 +517,7 @@ export const SearchResultsController = ({
                     );
                   })}
                 </AccordionWrapper>
-              </TabPanel>
+              </Tabs.Content>
             );
           })
         }

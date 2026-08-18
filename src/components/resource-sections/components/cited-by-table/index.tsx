@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Flex,
-  Table,
-  Tr,
-  Text,
-  VisuallyHidden,
   Heading,
   Skeleton,
   Stack,
+  Table,
+  Text,
+  VisuallyHidden,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { CitedBy as CitedByType } from 'src/utils/api/types';

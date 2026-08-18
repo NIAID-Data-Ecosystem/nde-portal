@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  Button,
-  ButtonProps,
-  ModalProps,
-  useDisclosure,
-} from '@chakra-ui/react';
+import { Button, ButtonProps, Dialog, useDisclosure } from '@chakra-ui/react';
 import { AdvancedSearchModal } from './components/Modal';
 import { AdvancedSearchOpen } from './components/buttons';
 import { AdvancedSearchProps } from '.';
@@ -16,7 +11,7 @@ const AdvancedSearch = dynamic(() =>
 
 interface AdvancedSearchPropsWithModal extends AdvancedSearchProps {
   buttonProps?: ButtonProps;
-  modalProps?: ModalProps;
+  modalProps?: Dialog.RootProps;
 }
 
 export const AdvancedSearchWithModal: React.FC<
@@ -29,12 +24,8 @@ export const AdvancedSearchWithModal: React.FC<
     <>
       <AdvancedSearchOpen onClick={onOpen} {...buttonProps} />
 
-      <AdvancedSearchModal
-        isOpen={isOpen}
-        handleClose={onClose}
-        {...modalProps}
-      >
-        {isOpen && (
+      <AdvancedSearchModal isOpen={open} handleClose={onClose} {...modalProps}>
+        {open && (
           <AdvancedSearch
             onValidSubmit={onClose}
             renderButtonGroup={(props: any) => (

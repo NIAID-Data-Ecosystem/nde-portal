@@ -4,13 +4,11 @@ import {
   Box,
   Button,
   HStack,
+  Skeleton,
   SkeletonText,
   Tag,
-  TagLabel,
-  TagProps,
   Text,
   TextProps,
-  Skeleton,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { DefinedTerm } from 'src/utils/api/types';
@@ -77,7 +75,7 @@ export const TagCell = ({
   value: string;
   noOfLines?: number;
   isLoading?: boolean;
-} & TagProps) => {
+} & Tag.RootProps) => {
   const [isTruncated, setIsTruncated] = useState(false);
   const labelRef = useRef<HTMLSpanElement>(null);
 

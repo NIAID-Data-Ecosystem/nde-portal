@@ -1,4 +1,4 @@
-import { Radio, RadioProps, Text } from '@chakra-ui/react';
+import { RadioGroup, Text } from '@chakra-ui/react';
 import Tooltip from '../../../../../../tooltip';
 import { SearchTypesConfigProps } from '../../../search-types-config';
 
@@ -37,7 +37,7 @@ export const RadioTooltip: React.FC<Partial<RadioItemProps>> = ({
 };
 
 interface RadioItemProps
-  extends Omit<RadioProps, 'name' | 'value'>,
+  extends Omit<RadioGroup.ItemProps, 'name' | 'value'>,
     Omit<SearchTypesConfigProps, 'id' | 'value'> {
   hasTooltip?: boolean;
 }
@@ -59,7 +59,7 @@ export const RadioItem: React.FC<RadioItemProps> = ({
     );
   };
   return (
-    <Radio
+    <RadioGroup.Item
       disabled={isDisabled}
       _focus={{
         boxShadow: props.isChecked && !isDisabled ? 'outline' : 'none',
@@ -77,6 +77,6 @@ export const RadioItem: React.FC<RadioItemProps> = ({
       ) : (
         <>{label && <RadioText name={label} />}</>
       )}
-    </Radio>
+    </RadioGroup.Item>
   );
 };

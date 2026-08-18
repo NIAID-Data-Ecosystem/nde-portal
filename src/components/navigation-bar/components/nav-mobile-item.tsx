@@ -18,7 +18,7 @@ export const MobileNavItem = ({
         <NavDropdownItem
           label={label}
           icon={icon}
-          isOpen={isOpen}
+          isOpen={open}
           onClick={onToggle}
         />
       ) : (
@@ -30,7 +30,7 @@ export const MobileNavItem = ({
         />
       )}
       {routes?.length ? (
-        <Collapsible.Root open={isOpen}>
+        <Collapsible.Root open={open}>
           <Collapsible.Content>
             <Stack
               mt={0}

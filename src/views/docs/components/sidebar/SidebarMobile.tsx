@@ -1,13 +1,4 @@
-import {
-  Flex,
-  Icon,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  MenuGroup,
-  Text,
-} from '@chakra-ui/react';
+import { Flex, Icon, Menu, Text } from '@chakra-ui/react';
 import { FaArrowsUpDown } from 'react-icons/fa6';
 import LoadingSpinner from 'src/components/loading';
 import NextLink from 'next/link';
@@ -24,7 +15,7 @@ export const SidebarMobile = ({
   return (
     <Menu matchWidth>
       <Flex bg='white'>
-        <MenuButton
+        <Menu.Trigger
           bg='blackAlpha.100'
           borderRadius='semi'
           color='page.placeholder'
@@ -41,25 +32,25 @@ export const SidebarMobile = ({
               <FaArrowsUpDown />
             </Icon>
           </Flex>
-        </MenuButton>
+        </Menu.Trigger>
       </Flex>
-      <MenuList w='100%'>
+      <Menu.Content w='100%'>
         {isLoading && (
-          <MenuItem>
+          <Menu.Item>
             <LoadingSpinner isLoading={isLoading} />
-          </MenuItem>
+          </Menu.Item>
         )}
         {sections?.map(category => (
-          <MenuGroup key={category.id} title={category.name}>
+          <Menu.ItemGroup key={category.id} title={category.name}>
             {category.items.map(item => {
               if (!item?.slug) return null;
               const isSelected = selectedSlug === item.slug;
               return (
-                // Compose the link onto the MenuItem so the `menuitem` role is on
-                // the anchor itself. Wrapping a MenuItem in NextLink instead puts
+                // Compose the link onto the Menu.Item so the `menuitem` role is on
+                // the anchor itself. Wrapping a Menu.Item in NextLink instead puts
                 // a bare <a> as a direct child of role="menu", which fails axe's
                 // `aria-required-children` (a menu may only contain menuitems).
-                <MenuItem
+                <Menu.Item
                   pl={6}
                   color={
                     isSelected ? `${colorPalette}.600!important` : 'inherit'
@@ -72,12 +63,12 @@ export const SidebarMobile = ({
                       {item.name}
                     </Text>
                   </NextLink>
-                </MenuItem>
+                </Menu.Item>
               );
             })}
-          </MenuGroup>
+          </Menu.ItemGroup>
         ))}
-      </MenuList>
+      </Menu.Content>
     </Menu>
   );
 };

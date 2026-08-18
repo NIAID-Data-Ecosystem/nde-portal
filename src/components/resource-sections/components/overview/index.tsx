@@ -1,14 +1,14 @@
 import React from 'react';
 import {
   Box,
-  Divider,
   Flex,
+  Separator,
   SimpleGrid,
   Skeleton,
-  Text,
-  VStack,
   Stack,
   StackSeparator,
+  Text,
+  VStack,
 } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import {

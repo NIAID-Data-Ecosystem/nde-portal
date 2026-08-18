@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Flex,
-  HStack,
-  Radio,
-  RadioGroup,
-  Stack,
-  Text,
-} from '@chakra-ui/react';
+import { Box, Flex, HStack, RadioGroup, Stack, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 import { InfoLabel } from 'src/components/info-label';

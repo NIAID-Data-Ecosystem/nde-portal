@@ -1,9 +1,9 @@
 import React from 'react';
-import { ModalProps, Dialog, Portal } from '@chakra-ui/react';
+import { Dialog, Portal } from '@chakra-ui/react';
 import { Dialog, Portal } from '@chakra-ui/react';
 import { VisualizationCardHeading } from './card-header';
 
-interface ModalViewerProps extends ModalProps {
+interface ModalViewerProps extends Dialog.RootProps {
   children: React.ReactNode;
   label: string;
 }

@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  Tag,
-  Text,
-  TabsProps,
-} from '@chakra-ui/react';
+import { Tabs, Tag, Text } from '@chakra-ui/react';
 import { TabType } from '../../types';
 import { TAB_LABELS } from '../../config/tabs';
 
@@ -17,7 +9,7 @@ interface TabWithCounts extends Omit<TabType, 'types'> {
   })[];
 }
 
-interface SearchTabsProps extends Omit<TabsProps, 'children'> {
+interface SearchTabsProps extends Omit<Tabs.RootProps, 'children'> {
   colorPalette?: string;
   tabs: TabWithCounts[];
   renderTabPanels: () => React.ReactNode;
@@ -46,7 +38,7 @@ export const SearchTabs = ({
         bg='page.alt'
       >
         {tabs.map(tab => (
-          <Tab
+          <Tabs.Trigger
             key={tab.id}
             id={tab.id}
             aria-label={tab.types.map(t => t.label).join(', ')}
@@ -58,10 +50,10 @@ export const SearchTabs = ({
             }}
           >
             <TabLabels types={tab.types} colorPalette={colorPalette} />
-          </Tab>
+          </Tabs.Trigger>
         ))}
       </Tabs.List>
-      <TabPanels>{renderTabPanels()}</TabPanels>
+      <Tabs.ContentGroup>{renderTabPanels()}</Tabs.ContentGroup>
     </Tabs.Root>
   );
 };

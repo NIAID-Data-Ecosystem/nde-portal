@@ -1,14 +1,5 @@
 import { FormattedResource } from 'src/utils/api/types';
-import {
-  Button,
-  Flex,
-  Icon,
-  Tag,
-  TagLabel,
-  TagLeftIcon,
-  Text,
-  useDisclosure,
-} from '@chakra-ui/react';
+import { Button, Flex, Icon, Tag, Text, useDisclosure } from '@chakra-ui/react';
 import { FaInfo, FaWandMagicSparkles } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
 import Tooltip from 'src/components/tooltip';
@@ -67,7 +58,7 @@ export const Summary = ({
         mx={1}
         fontSize='lg'
         verticalAlign='bottom'
-        lineClamp={isOpen ? undefined : 5}
+        lineClamp={open ? undefined : 5}
       >
         <Tag.Root
           variant='solid'
@@ -91,7 +82,7 @@ export const Summary = ({
           color='inherit'
           onClick={onToggle}
         >
-          read {isOpen ? 'less' : 'full summary'}
+          read {open ? 'less' : 'full summary'}
         </Button>
       </Flex>
     </Flex>

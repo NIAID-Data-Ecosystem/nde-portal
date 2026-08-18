@@ -1,16 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Flex,
-  Heading,
-  Image,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  Text,
-} from '@chakra-ui/react';
+import { Box, Flex, Heading, Image, Tabs, Text } from '@chakra-ui/react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
@@ -72,7 +61,7 @@ export const StepCard = ({
         <Tabs.Root colorPalette='primary'>
           <Tabs.List px={4}>
             {tabItems.map(({ id, name }) => (
-              <Tab
+              <Tabs.Trigger
                 key={id}
                 lineHeight='tall'
                 fontSize='inherit'
@@ -86,12 +75,12 @@ export const StepCard = ({
                 }}
               >
                 {name}
-              </Tab>
+              </Tabs.Trigger>
             ))}
           </Tabs.List>
-          <TabPanels>
+          <Tabs.ContentGroup>
             {tabItems.map(({ id, content, icon }) => (
-              <TabPanel key={id} bg='page.alt'>
+              <Tabs.Content key={id} bg='page.alt'>
                 <Flex
                   p={2}
                   alignItems={['flex-start', 'center']}
@@ -110,9 +99,9 @@ export const StepCard = ({
                     {content}
                   </Text>
                 </Flex>
-              </TabPanel>
+              </Tabs.Content>
             ))}
-          </TabPanels>
+          </Tabs.ContentGroup>
         </Tabs.Root>
       ) : (
         <></>
