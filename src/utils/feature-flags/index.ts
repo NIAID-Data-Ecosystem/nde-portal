@@ -1,8 +1,5 @@
 // [Feature Flags]
 // This file contains feature flags to enable/disable certain features or sections of the application
-
-import { truncate } from 'fs';
-
 // based on the environment or other conditions.
 const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
 
