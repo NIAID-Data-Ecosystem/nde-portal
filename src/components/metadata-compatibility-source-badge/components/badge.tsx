@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { Group } from '@visx/group';
 import { scaleLinear } from '@visx/scale';
 import { MetadataSource } from 'src/hooks/api/types';
-import { theme } from 'src/theme';
+import { system } from 'src/theme';
 import { PatternLines } from '@visx/pattern';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { Box, Icon, Stack, Text } from '@chakra-ui/react';
@@ -21,8 +21,8 @@ interface Bin {
   augmented: number | null;
 }
 
-const primary2 = theme.colors.pink[500];
-const secondary2 = theme.colors.secondary[500];
+const primary2 = system.token('colors.pink.500');
+const secondary2 = system.token('colors.secondary.500');
 
 const colorMax = (bins: Bin[]) =>
   bins.reduce((m, b) => Math.max(m, b.count), 0);
@@ -229,7 +229,7 @@ export const CompatibilityBadge = ({
       css={{
         '& .visx-heatmap-rect:hover': {
           strokeWidth: 2,
-          stroke: theme.colors.status.warning,
+          stroke: system.token('colors.status.warning'),
         },
       }}
       onMouseLeave={handleMouseLeave}
@@ -239,7 +239,7 @@ export const CompatibilityBadge = ({
           id='fundamental-lines'
           height={5}
           width={5}
-          stroke={theme.colors.pink[400]}
+          stroke={system.token('colors.pink.400')}
           strokeWidth={1}
           orientation={['diagonal']}
         />
@@ -247,7 +247,7 @@ export const CompatibilityBadge = ({
           id='secondary-lines'
           height={5}
           width={5}
-          stroke={theme.colors.secondary[500]}
+          stroke={system.token('colors.secondary.500')}
           strokeWidth={1}
           orientation={['diagonal']}
         />

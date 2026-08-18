@@ -13,7 +13,7 @@ import {
   Textarea,
   VisuallyHidden,
 } from '@chakra-ui/react';
-import { theme } from 'src/theme';
+import { system } from 'src/theme';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { useDropdownContext } from '..';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
@@ -228,7 +228,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
               p={1}
               w='unset'
               h='100%'
-              zIndex={theme.zIndices['dropdown']}
+              zIndex={system.token('zIndex.dropdown')}
               alignItems='flex-start'
             >
               {onClose && inputValue.length > 0 && (

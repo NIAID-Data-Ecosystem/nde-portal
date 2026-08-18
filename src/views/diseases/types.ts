@@ -117,7 +117,7 @@ export interface FacetProps {
   value: string;
   fill: string;
   /**
-   * A raw colour palette object (e.g. `theme.colors.blue`), indexed at numeric
+   * A raw colour palette object (built by `palette('blue')`), indexed at numeric
    * steps for chart fills and strokes — *not* a Chakra `colorPalette` name.
    *
    * v2 typed this as `ThemingProps['colorScheme']`, which never matched what the

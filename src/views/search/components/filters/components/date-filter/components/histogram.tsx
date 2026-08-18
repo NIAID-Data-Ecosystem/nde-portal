@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { Box, Flex, Text } from '@chakra-ui/react';
-import { theme } from 'src/theme';
+import { system } from 'src/theme';
 import { Group } from '@visx/group';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { Bar } from '@visx/shape';
@@ -39,11 +39,11 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
       height: 180,
       padding: 0.1,
       fill: {
-        inactive: theme.colors.blackAlpha[100],
-        gray: theme.colors.gray[200],
+        inactive: system.token('colors.blackAlpha.100'),
+        gray: system.token('colors.gray.200'),
       },
       hover: {
-        gray: theme.colors.blackAlpha[200],
+        gray: system.token('colors.blackAlpha.200'),
       },
       opacity: { hover: 0.65, active: 1 },
     }),
@@ -295,7 +295,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
                         let fill = `url("#histogram-gradient")`;
 
                         if (count === 0 && updatedCount === 0) {
-                          fill = theme.colors.gray[200];
+                          fill = system.token('colors.gray.200');
                         }
 
                         return (
@@ -348,7 +348,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
                         y={height / 2}
                         dy='1rem'
                         textAnchor='middle'
-                        fill={theme.colors.gray[800]}
+                        fill={system.token('colors.gray.800')}
                         fontSize='14'
                       >
                         No data available. Please use a different date range.
@@ -405,10 +405,10 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
                       scale={xScale}
                       tickValues={xAxisTickValues}
                       tickFormat={i => visibleData[i as number]?.label || ''}
-                      stroke={theme.colors.gray[300]}
-                      tickStroke={theme.colors.gray[300]}
+                      stroke={system.token('colors.gray.300')}
+                      tickStroke={system.token('colors.gray.300')}
                       tickLabelProps={() => ({
-                        fill: theme.colors.gray[600],
+                        fill: system.token('colors.gray.600'),
                         fontSize: 13,
                         textAnchor: 'middle',
                       })}

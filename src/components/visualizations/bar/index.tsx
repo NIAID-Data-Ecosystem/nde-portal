@@ -12,7 +12,7 @@ import {
   useTooltip,
   useTooltipInPortal,
 } from '@visx/tooltip';
-import { theme } from 'src/theme';
+import { system } from 'src/theme';
 import {
   TooltipWrapper,
   TooltipTitle,
@@ -43,7 +43,7 @@ const barStyles = {
   },
   padding: { y: 8 },
   rx: 2.5,
-  fill: theme.colors.gray[200],
+  fill: system.token('colors.gray.200'),
   fillOpacity: 0.6,
 };
 // label styles are minimal since we're hiding the axis line and ticks, but we need to reserve space for the tick labels
@@ -235,10 +235,10 @@ export const BarChart = ({
                   tickFormat={v => Number(v).toLocaleString()}
                   tickLabelProps={() => ({
                     style: {
-                      fontFamily: theme.fonts.body,
-                      fontSize: theme.fontSizes['2xs'],
-                      fontWeight: theme.fontWeights.semibold,
-                      fill: theme.colors.text.heading,
+                      fontFamily: system.token('fonts.body'),
+                      fontSize: system.token('fontSizes.2xs'),
+                      fontWeight: system.token('fontWeights.semibold'),
+                      fill: system.token('colors.text.heading'),
                       textAnchor: 'middle',
                     },
                   })}

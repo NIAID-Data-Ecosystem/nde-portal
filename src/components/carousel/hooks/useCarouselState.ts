@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useMediaQuery } from '@chakra-ui/react';
-import { theme } from 'src/theme';
+import { system } from 'src/theme';
 import { PROGRESS_BAR_THRESHOLDS } from '../constants';
 
 interface CarouselStateProps {
@@ -21,12 +21,14 @@ export const useCarouselState = ({
   const [controlsWidth, setControlsWidth] = useState(0);
   const [showProgressBar, setShowProgressBar] = useState(false);
 
-  const breakpoints = theme.breakpoints as unknown as {
-    base: string;
-    sm: string;
-    md: string;
-    lg: string;
-    xl: string;
+  /*
+  `useMediaQuery` takes a real media query string, so these have to be literal
+  widths rather than token references.
+  */
+  const breakpoints = {
+    base: system.token('breakpoints.base'),
+    md: system.token('breakpoints.md'),
+    xl: system.token('breakpoints.xl'),
   };
 
   const [isBetweenBaseAndMd] = useMediaQuery(

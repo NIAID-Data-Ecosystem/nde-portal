@@ -14,7 +14,7 @@ import { Bounds } from '@visx/brush/lib/types';
 import BaseBrush from '@visx/brush/lib/BaseBrush';
 import { BrushHandle } from 'src/components/brush/components/brush-handle';
 import { useBrushKeyboardNavigation } from 'src/components/brush/hooks/useBrushKeyboardNavigation';
-import { theme } from 'src/theme';
+import { system } from 'src/theme';
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
 
 interface DateBrushProps {
@@ -531,9 +531,9 @@ export const DateBrush = ({
               onBrushEnd={handleBrushEnd}
               onBrushStart={handleBrushStart}
               selectedBoxStyle={{
-                fill: theme.colors.secondary?.[500],
+                fill: system.token('colors.secondary.500'),
                 fillOpacity: 0.3,
-                stroke: theme.colors.secondary?.[500],
+                stroke: system.token('colors.secondary.500'),
                 strokeWidth: isFocused ? 2 : 1.5,
                 strokeOpacity: isFocused ? 1 : 0.8,
               }}
@@ -553,8 +553,8 @@ export const DateBrush = ({
                       activeHandle && props.className?.includes(activeHandle),
                     )}
                     label={label}
-                    strokeColor={theme.colors.secondary?.[500]}
-                    labelColor={theme.colors.secondary?.[500]}
+                    strokeColor={system.token('colors.secondary.500')}
+                    labelColor={system.token('colors.secondary.500')}
                     labelOptions={{
                       padding: 6,
                       fontSize: 13,
@@ -572,10 +572,10 @@ export const DateBrush = ({
               scale={xScale}
               tickValues={tickValues}
               tickFormat={tickFormat}
-              stroke={theme.colors.gray[300]}
-              tickStroke={theme.colors.gray[300]}
+              stroke={system.token('colors.gray.300')}
+              tickStroke={system.token('colors.gray.300')}
               tickLabelProps={() => ({
-                fill: theme.colors.gray[600],
+                fill: system.token('colors.gray.600'),
                 fontSize: 13,
                 textAnchor: 'middle',
               })}

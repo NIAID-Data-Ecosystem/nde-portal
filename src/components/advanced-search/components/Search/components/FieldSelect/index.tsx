@@ -8,7 +8,7 @@ import {
   VisuallyHidden,
 } from '@chakra-ui/react';
 import Tooltip from '../../../../../tooltip';
-import { theme } from 'src/theme';
+import { system } from 'src/theme';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 import Select, { components, OptionProps, ControlProps } from 'react-select';
@@ -188,6 +188,20 @@ interface FieldSelectProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
+/*
+react-select builds plain CSS-in-JS objects, so it needs literal colours rather
+than the `var()` a token reference resolves to. Read once here instead of on
+every render. Shared with ../SearchInput/components/EnumInput.
+*/
+export const selectColors = {
+  border: system.token('colors.gray.200'),
+  focusBorder: system.token('colors.primary.500'),
+  focusRing: system.token('colors.primary.600'),
+  optionHoverBg: system.token('colors.primary.100'),
+  optionSelectedBg: system.token('colors.primary.500'),
+  optionText: system.token('colors.text.body'),
+};
+
 export const customStyles: any = {
   sm: {
     control: {
@@ -309,18 +323,18 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
               control: base => {
                 return {
                   ...base,
-                  borderColor: theme.colors.gray[200],
+                  borderColor: selectColors.border,
                   boxShadow: 'none',
                   ':hover': {
-                    borderColor: theme.colors.gray[200],
+                    borderColor: selectColors.border,
                   },
                   ':focus': {
-                    borderColor: theme.colors.primary[500],
-                    boxShadow: `0 0 0 1px ${theme.colors.primary[600]}`,
+                    borderColor: selectColors.focusBorder,
+                    boxShadow: `0 0 0 1px ${selectColors.focusRing}`,
                   },
                   ':focus-within': {
-                    borderColor: theme.colors.primary[500],
-                    boxShadow: `0 0 0 1px ${theme.colors.primary[600]}`,
+                    borderColor: selectColors.focusBorder,
+                    boxShadow: `0 0 0 1px ${selectColors.focusRing}`,
                   },
                   ...customStyles[size]?.control,
                 };
@@ -330,17 +344,17 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
                 return {
                   ...base,
                   backgroundColor: isSelected
-                    ? theme.colors.primary[500]
+                    ? selectColors.optionSelectedBg
                     : isFocused
-                    ? theme.colors.primary[100]
+                    ? selectColors.optionHoverBg
                     : 'transparent',
-                  color: isSelected ? 'white' : theme.colors.text.body,
+                  color: isSelected ? 'white' : selectColors.optionText,
                   borderBottom: '1px solid',
-                  borderBottomColor: theme.colors.primary[100],
+                  borderBottomColor: selectColors.optionHoverBg,
                   ':hover': {
                     background: isSelected
-                      ? theme.colors.primary[500]
-                      : theme.colors.primary[100],
+                      ? selectColors.optionSelectedBg
+                      : selectColors.optionHoverBg,
                   },
 
                   ...customStyles[size]?.option,

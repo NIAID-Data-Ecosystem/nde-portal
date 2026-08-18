@@ -13,7 +13,7 @@ import {
   VisuallyHidden,
 } from '@chakra-ui/react';
 import Tooltip from '../../../tooltip';
-import { theme } from 'src/theme';
+import { system } from 'src/theme';
 import { MouseEventHandler, useEffect, useState } from 'react';
 import { FaCheck, FaRegPenToSquare, FaXmark } from 'react-icons/fa6';
 import { useQuery } from '@tanstack/react-query';
@@ -294,9 +294,11 @@ export const EditableQueryText = ({
           invalid={hasErrors}
           _focus={{
             boxShadow: hasErrors
-              ? `0 0 0 1px ${theme.colors.status.error}`
+              ? `0 0 0 1px ${system.token('colors.status.error')}`
               : '0 0 0 1px #3182ce',
-            borderColor: hasErrors ? theme.colors.status.error : '#3182ce',
+            borderColor: hasErrors
+              ? system.token('colors.status.error')
+              : '#3182ce',
           }}
           asChild
         >

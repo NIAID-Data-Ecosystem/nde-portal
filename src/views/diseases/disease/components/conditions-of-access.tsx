@@ -2,7 +2,7 @@ import { Box, Flex, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import NextLink from 'next/link';
 import { Link } from 'src/components/link';
-import { theme } from 'src/theme';
+import { system } from 'src/theme';
 import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import {
@@ -51,7 +51,7 @@ export const ConditionsOfAccess = ({ query, topic }: TopicQueryProps) => {
             label: label || '',
             description: getConditionsOfAccessTooltip(label),
             colorScheme,
-            fill: theme.colors[colorScheme][300] as string,
+            fill: system.token(`colors.${colorScheme}.300`) as string,
           };
         }) || [];
       return {

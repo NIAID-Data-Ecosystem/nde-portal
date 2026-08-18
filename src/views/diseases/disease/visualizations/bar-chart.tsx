@@ -24,7 +24,7 @@ import {
 import { UrlObject } from 'url';
 import { InfoLabel } from 'src/components/info-label';
 import { MetadataSource } from 'src/hooks/api/types';
-import { theme } from 'src/theme';
+import { system } from 'src/theme';
 import { FacetTerm } from 'src/utils/api/types';
 import {
   customTooltipStyles,
@@ -82,10 +82,10 @@ const barStyles = { minHeight: 10, padding: 25, rx: 2.5 };
 const domainStyles = {
   IID: {
     fillOpacity: 0.6,
-    stroke: theme.colors.page.placeholder,
+    stroke: system.token('colors.page.placeholder'),
   },
   Generalist: {
-    fill: theme.colors.page.placeholder,
+    fill: system.token('colors.page.placeholder'),
     fillOpacity: 0.2,
   },
 };
@@ -394,7 +394,7 @@ const IIDPattern = ({ id }: { id: string }) => {
       width={6}
       height={6}
       // stroke='black'
-      stroke={theme.colors.page.placeholder}
+      stroke={system.token('colors.page.placeholder')}
       strokeWidth={1}
       orientation={['diagonal']}
     />

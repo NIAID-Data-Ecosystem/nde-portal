@@ -44,7 +44,7 @@ import {
 import type { FlattenedItem, SensorContext, TreeItem } from './types';
 import { CSS } from '@dnd-kit/utilities';
 import { Box, List } from '@chakra-ui/react';
-import { theme } from 'src/theme';
+import { system } from 'src/theme';
 import { SortableTreeItem } from './components/SortableTreeItem';
 import { sortableTreeKeyboardCoordinates } from './keyboardCoordinates';
 
@@ -307,7 +307,7 @@ export function SortableWithCombine({
                     <DragOverlay
                       dropAnimation={dropAnimationConfig}
                       modifiers={indicator ? [adjustTranslate] : undefined}
-                      zIndex={theme.zIndices['popover']}
+                      zIndex={system.token('zIndex.popover')}
                     >
                       {activeId && activeItem ? (
                         <SortableTreeItem

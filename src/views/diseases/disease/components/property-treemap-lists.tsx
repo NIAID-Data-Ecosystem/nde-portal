@@ -3,7 +3,7 @@ import { Box, Flex, HStack, RadioGroup, Stack, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 import { InfoLabel } from 'src/components/info-label';
-import { theme } from 'src/theme';
+import { palette, system } from 'src/theme';
 import { fetchSearchResults } from 'src/utils/api';
 import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
 import { ChartWrapper } from '../layouts/chart-wrapper';
@@ -23,22 +23,28 @@ const facets = [
   {
     label: 'Health Condition',
     value: 'healthCondition.name',
-    fill: theme.colors[getMetadataTheme('healthCondition')][300] as string,
-    colorScheme: theme.colors[getMetadataTheme('healthCondition')],
+    fill: system.token(
+      `colors.${getMetadataTheme('healthCondition')}.300`,
+    ) as string,
+    colorScheme: palette(getMetadataTheme('healthCondition')),
     tooltip: getMetadataDescription('healthCondition', 'Dataset'),
   },
   {
     label: 'Measurement Technique',
     value: 'measurementTechnique.name',
-    fill: theme.colors[getMetadataTheme('measurementTechnique')][300] as string,
-    colorScheme: theme.colors[getMetadataTheme('measurementTechnique')],
+    fill: system.token(
+      `colors.${getMetadataTheme('measurementTechnique')}.300`,
+    ) as string,
+    colorScheme: palette(getMetadataTheme('measurementTechnique')),
     tooltip: getMetadataDescription('measurementTechnique', 'Dataset'),
   },
   {
     label: 'Pathogen',
     value: 'infectiousAgent.name',
-    fill: theme.colors[getMetadataTheme('infectiousAgent')][300] as string,
-    colorScheme: theme.colors[getMetadataTheme('infectiousAgent')],
+    fill: system.token(
+      `colors.${getMetadataTheme('infectiousAgent')}.300`,
+    ) as string,
+    colorScheme: palette(getMetadataTheme('infectiousAgent')),
     tooltip: getMetadataDescription('infectiousAgent', 'Dataset'),
   },
 ] as FacetProps[];
