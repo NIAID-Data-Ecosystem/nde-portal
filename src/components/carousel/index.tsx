@@ -10,7 +10,7 @@ import { Item } from './components/Item';
 
 export const Carousel = ({
   children,
-  colorScheme = 'primary',
+  colorPalette = 'primary',
   gap = 32,
   isLoading = false,
 }: CarouselProps) => {
@@ -70,7 +70,7 @@ export const Carousel = ({
     maxActiveItem,
     constraint,
     totalDots,
-    colorScheme,
+    colorPalette,
     gap,
     childrenLength: children.length,
     showProgressBar,

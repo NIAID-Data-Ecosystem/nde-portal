@@ -17,7 +17,7 @@ const TooltipWithLink: React.FC<TooltipProps> = ({
   ...props
 }) => {
   return (
-    <Tooltip label={label} {...props}>
+    <Tooltip content={label} {...props}>
       <Link
         href={url}
         mt={2}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Flex, FlexProps, Icon } from '@chakra-ui/react';
-import { Tooltip } from '@/components/ui/tooltip';
+import Tooltip from '../../../../../../../components/tooltip';
 import { FaComputer } from 'react-icons/fa6';
 import { operatingSystemIcons } from 'src/utils/helpers/operating-system-icons';
 

@@ -14,7 +14,7 @@ Two v2 behaviours are worth calling out, because they explain what is *absent*
 here:
 
   - `solid` branched on a `colorMap` whose only entry was `negative`, and no
-    call site ever passes `colorScheme='negative'`. Every live palette hit
+    call site ever passes `colorPalette='negative'`. Every live palette hit
     `if (!config) return {}`, so `solid` was always Chakra's stock solid. It
     stays absent here for the same reason.
 
@@ -106,7 +106,7 @@ export const buttonRecipe = defineRecipe({
     },
   },
   /*
-  v2 also set `colorScheme: 'primary'` in defaultProps. `colorPalette` is a
+  v2 also set `colorPalette: 'primary'` in defaultProps. `colorPalette` is a
   style prop rather than a recipe variant, so it has no `defaultVariants`
   equivalent — it is applied globally in ../global-css.ts instead.
   */

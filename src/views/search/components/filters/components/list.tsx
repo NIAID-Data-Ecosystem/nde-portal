@@ -207,7 +207,7 @@ export const groupTerms = (
 
 // Define the props interface for the FiltersList component
 interface FiltersListProps {
-  colorScheme: string;
+  colorPalette: string;
   terms: FilterTermType[];
   searchPlaceholder: string;
   selectedFilters: string[];
@@ -219,7 +219,7 @@ interface FiltersListProps {
 
 export const FiltersList: React.FC<FiltersListProps> = React.memo(
   ({
-    colorScheme,
+    colorPalette,
     config,
     handleSelectedFilters,
     isLoading,
@@ -296,7 +296,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
               size='sm'
               value={searchTerm}
               handleChange={handleSearchChange}
-              colorScheme={colorScheme}
+              colorPalette={colorPalette}
               onClose={() => setSearchTerm('')}
             />
           )}
@@ -311,7 +311,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
               <Checkbox
                 isLoading={isLoading}
                 isUpdating={isUpdating}
-                colorScheme={colorScheme}
+                colorPalette={colorPalette}
                 filterName={config.name}
                 {...props}
               />

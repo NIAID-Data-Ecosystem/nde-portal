@@ -159,7 +159,7 @@ const Sources: NextPage<SourcesProps> = ({ data }) => {
                           {/* Add tag to show source is funded by NIAID */}
                           {source.isNiaidFunded && (
                             <BadgeWithTooltip
-                              colorScheme='blue'
+                              colorPalette='blue'
                               variant='subtle'
                               mx={2}
                             >

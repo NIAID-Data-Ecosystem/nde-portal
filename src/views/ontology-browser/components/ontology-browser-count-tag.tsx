@@ -43,7 +43,7 @@ export const OntologyBrowserCountTag = ({
 }) => {
   return (
     <Flex minW={120} maxW={130}>
-      <Tooltip label={tooltipLabel} mx={1}>
+      <Tooltip content={tooltipLabel} mx={1}>
         {isLoading ? (
           <Spinner size='sm' color='primary.500' />
         ) : (

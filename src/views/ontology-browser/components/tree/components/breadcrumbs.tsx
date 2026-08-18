@@ -65,7 +65,7 @@ export const OntologyTreeBreadcrumbs = ({
       - The button updates the selected node index to show the parent node.
       - The button is disabled when the selected node is the root node.
       */}
-      <Tooltip label='Show parent'>
+      <Tooltip content='Show parent'>
         <Flex
           alignItems='center'
           borderY='0.25px solid'

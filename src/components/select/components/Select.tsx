@@ -1,12 +1,5 @@
-/*
- MIGRATION NOTE: The following Chakra UI hooks have been removed.
- Please replace them with the suggested alternatives:
-
-//   - useOutsideClick: Use react-use: useClickAway
-
- See: https://chakra-ui.com/docs/get-started/migration#hooks
-*/
 import React, { useRef } from 'react';
+import { useOnClickOutside } from 'usehooks-ts';
 import { FaAngleDown } from 'react-icons/fa6';
 import {
   Box,
@@ -39,12 +32,9 @@ export const SelectWrapper: React.FC<{
 }> = ({ children, handleOnClickOutside, isOpen, onClose, renderList }) => {
   // Handles when the user clicks outside the select dropdown.
   const ref = useRef(null);
-  useOutsideClick({
-    ref: ref,
-    handler: () => {
-      handleOnClickOutside && handleOnClickOutside();
-      onClose && onClose();
-    },
+  useOnClickOutside(ref, () => {
+    handleOnClickOutside && handleOnClickOutside();
+    onClose && onClose();
   });
 
   return (
@@ -75,7 +65,7 @@ export const SelectWithInput: React.FC<SelectWithInputProps> = ({
   size = 'md',
   isDisabled,
   children,
-  colorScheme,
+  colorPalette,
   handleOnClickOutside,
   renderButton,
   isOpen,
@@ -99,7 +89,7 @@ export const SelectWithInput: React.FC<SelectWithInputProps> = ({
           id={id}
           onClick={onOpen} // open dropdown options when clicking in input box.
           disabled={isDisabled}
-          colorPalette={colorScheme}
+          colorPalette={colorPalette}
           {...props}
         />
         <InputRightElement p={1} w='unset'>
@@ -107,14 +97,14 @@ export const SelectWithInput: React.FC<SelectWithInputProps> = ({
             renderButton({
               'aria-label': ariaLabel,
               onClick: onToggle,
-              colorScheme,
+              colorPalette,
               size,
             })
           ) : (
             <SelectIcon
               onClick={onToggle}
               variant='ghost'
-              colorScheme={colorScheme}
+              colorPalette={colorPalette}
               size={size}
               aria-label={ariaLabel}
               icon={<FaAngleDown />}

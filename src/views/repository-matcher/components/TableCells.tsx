@@ -10,11 +10,11 @@ import {
   TagProps,
   Text,
   TextProps,
+  Skeleton,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { DefinedTerm } from 'src/utils/api/types';
 import Tooltip from 'src/components/tooltip';
-import { Skeleton } from 'src/components/skeleton';
 
 const DEFAULT_MAX_VISIBLE_TAGS = 10;
 
@@ -97,10 +97,10 @@ export const TagCell = ({
   }, [isLoading, label, noOfLines]);
 
   if (isLoading) {
-    return <Skeleton isLoaded={false} width='80px' height='20px' />;
+    return <Skeleton loading width='80px' height='20px' />;
   }
   return (
-    <Tooltip label={label} isDisabled={!value || !isTruncated} hasArrow>
+    <Tooltip content={label} disabled={!value || !isTruncated} showArrow>
       <Box>
         <Tag.Root
           variant='subtle'
@@ -148,7 +148,7 @@ export const TextCell = ({
   const clampLines = expandable && expanded ? undefined : noOfLines;
 
   return (
-    <SkeletonText isLoaded={!isLoading} lineClamp={noOfLines} gap='2' w='100%'>
+    <SkeletonText loading={isLoading} noOfLines={noOfLines} gap='2' w='100%'>
       <Text
         ref={textRef}
         lineClamp={clampLines}
@@ -187,7 +187,7 @@ export const TextCellWithLink = ({
   isExternal?: boolean;
 }) => {
   return (
-    <SkeletonText isLoaded={!isLoading} lineClamp={2} fontSize='xs' w='100%'>
+    <SkeletonText loading={isLoading} noOfLines={2} fontSize='xs' w='100%'>
       {url ? (
         <NextLink href={url} prefetch={false} passHref>
           <Link as='div' isExternal={isExternal}>

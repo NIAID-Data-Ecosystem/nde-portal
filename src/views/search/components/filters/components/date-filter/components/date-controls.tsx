@@ -5,7 +5,7 @@ import { formatNumber } from 'src/utils/helpers';
 import { FilterItem } from '../../../types';
 
 interface DateControlsProps {
-  colorScheme: string;
+  colorPalette: string;
   selectedDates: string[];
   resourcesWithNoDate: FilterItem[];
   onDateSelect: (dates: string[]) => void;
@@ -13,7 +13,7 @@ interface DateControlsProps {
 }
 
 export const DateControls: React.FC<DateControlsProps> = ({
-  colorScheme,
+  colorPalette,
   selectedDates,
   resourcesWithNoDate,
   onDateSelect,
@@ -53,7 +53,7 @@ export const DateControls: React.FC<DateControlsProps> = ({
   return (
     <Flex bg='secondary.50' flexDirection='column' px={4} py={2}>
       <DatePicker
-        colorScheme={colorScheme}
+        colorPalette={colorPalette}
         selectedDates={selectedDates}
         handleSelectedFilter={onDateSelect}
         resetFilter={onResetFilter}

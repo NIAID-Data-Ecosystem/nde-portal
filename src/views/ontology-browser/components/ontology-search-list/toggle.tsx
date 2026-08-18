@@ -17,7 +17,7 @@ export const ListToggle = ({
   return (
     <>
       {!isOpen && (
-        <Tooltip label={label}>
+        <Tooltip content={label}>
           <Button
             aria-label={label}
             onClick={toggleOpen}

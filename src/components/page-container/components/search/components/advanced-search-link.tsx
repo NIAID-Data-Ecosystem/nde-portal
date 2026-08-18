@@ -19,7 +19,7 @@ export const AdvancedSearchLink: React.FC<LinkProps> = props => {
       <Link
         href={ADVANCED_SEARCH_PATH}
         color='primary.600'
-        colorScheme='primary'
+        colorPalette='primary'
         fontSize='sm'
         fontWeight='medium'
         lineHeight='shorter'

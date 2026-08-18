@@ -1,12 +1,4 @@
-/*
- MIGRATION NOTE: The following Chakra UI hooks have been removed.
- Please replace them with the suggested alternatives:
-
-//   - useClipboard: Use react-use: useCopyToClipboard
-
- See: https://chakra-ui.com/docs/get-started/migration#hooks
-*/
-import { Button, ButtonProps, Icon } from '@chakra-ui/react';
+import { Button, ButtonProps, Icon, useClipboard } from '@chakra-ui/react';
 import { FaCopy, FaRegCopy } from 'react-icons/fa6';
 import Tooltip from '../tooltip';
 
@@ -27,17 +19,17 @@ export const CopyButton = ({
   copiedText = 'Copied!',
   buttonProps,
 }: CopyButtonProps) => {
-  const { onCopy, hasCopied } = useClipboard(textToCopy);
+  const { copy, copied } = useClipboard({ value: textToCopy });
 
   return (
     <Button
       variant='solid'
       colorPalette='primary'
-      onClick={onCopy}
+      onClick={copy}
       {...buttonProps}
     >
       <FaCopy />
-      {hasCopied ? copiedText : buttonText}
+      {copied ? copiedText : buttonText}
     </Button>
   );
 };
@@ -48,15 +40,15 @@ export const CopyIconButton = ({
   copiedText = 'Copied!',
   buttonProps,
 }: CopyButtonProps) => {
-  const { onCopy, hasCopied } = useClipboard(textToCopy);
+  const { copy, copied } = useClipboard({ value: textToCopy });
 
   return (
-    <Tooltip label={hasCopied ? copiedText : buttonText} closeOnClick={false}>
+    <Tooltip content={copied ? copiedText : buttonText} closeOnClick={false}>
       <Button
         variant='ghost'
         colorPalette='gray'
-        onClick={onCopy}
-        aria-label={hasCopied ? copiedText : buttonText}
+        onClick={copy}
+        aria-label={copied ? copiedText : buttonText}
         gap={1}
         size='sm'
         {...buttonProps}
@@ -64,7 +56,7 @@ export const CopyIconButton = ({
         <Icon asChild>
           <FaRegCopy />
         </Icon>
-        {hasCopied ? copiedText : ''}
+        {copied ? copiedText : ''}
       </Button>
     </Tooltip>
   );

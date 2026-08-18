@@ -6,7 +6,7 @@ export const Handle = React.memo(
     return (
       <IconButton
         ref={ref}
-        colorPalette={props.colorScheme || 'gray'}
+        colorPalette={props.colorPalette || 'gray'}
         variant='ghost'
         bg={props.bg}
         color={props.color || 'gray.600'}

@@ -4,7 +4,7 @@ import { useDateRangeContext } from '../hooks/useDateRangeContext';
 import { formatISOString } from 'src/utils/api/helpers';
 
 interface DatePickerProps {
-  colorScheme: string;
+  colorPalette: string;
   selectedDates: string[];
   handleSelectedFilter: (arg: string[]) => void;
   resetFilter: () => void;
@@ -13,7 +13,7 @@ interface DatePickerProps {
 const EXIST_FILTERS = ['_exists_', '-_exists_'] as const;
 
 export const DatePicker = ({
-  colorScheme,
+  colorPalette,
   selectedDates,
   handleSelectedFilter,
   resetFilter,
@@ -71,7 +71,7 @@ export const DatePicker = ({
   // Shared date input configuration
   const dateInputProps = {
     type: 'date' as const,
-    colorScheme: colorScheme,
+    colorPalette: colorPalette,
     bg: 'white',
     isDisabled,
   };
@@ -117,7 +117,7 @@ export const DatePicker = ({
             size='sm'
             variant='solid'
             type='submit'
-            colorPalette={colorScheme}
+            colorPalette={colorPalette}
             mr={1}
             disabled={isDisabled}
           >
@@ -126,7 +126,7 @@ export const DatePicker = ({
           <Button
             size='sm'
             variant='outline'
-            colorPalette={colorScheme}
+            colorPalette={colorPalette}
             onClick={resetFilter}
             disabled={isDisabled || !selectedDates.length}
             mx={1}

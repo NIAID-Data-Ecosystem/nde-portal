@@ -10,7 +10,7 @@ export const Action = React.memo((props: ActionProps) => {
   return (
     <IconButton
       aria-label={props['aria-label']}
-      colorPalette={props.colorScheme || 'gray'}
+      colorPalette={props.colorPalette || 'gray'}
       variant='ghost'
       bg={props.bg}
       color={props.color || 'gray.600'}

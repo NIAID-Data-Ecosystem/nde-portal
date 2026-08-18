@@ -1,12 +1,5 @@
-/*
- MIGRATION NOTE: The following Chakra UI hooks have been removed.
- Please replace them with the suggested alternatives:
-
-//   - usePrefersReducedMotion: Use usehooks-ts: usePrefersReducedMotion
-
- See: https://chakra-ui.com/docs/get-started/migration#hooks
-*/
 import React from 'react';
+import { useMediaQuery } from 'usehooks-ts';
 import { Button, Flex, Stack, ButtonProps } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import NextLink from 'next/link';
@@ -29,9 +22,9 @@ interface DataAccessProps {
   colorPalette?: ButtonProps['colorPalette'];
 }
 
-const AccessResourceButton: React.FC<{ url: string; colorScheme: string }> = ({
+const AccessResourceButton: React.FC<{ url: string; colorPalette: string }> = ({
   url,
-  colorScheme,
+  colorPalette,
 }) => {
   // Internal routes (e.g. the retired resources page) should navigate
   // in the same tab; external source links continue to open in a new tab.
@@ -39,7 +32,7 @@ const AccessResourceButton: React.FC<{ url: string; colorScheme: string }> = ({
 
   return (
     <NextLink href={url} target={isInternalLink ? undefined : '_blank'}>
-      <Button colorPalette={colorScheme} size='sm'>
+      <Button colorPalette={colorPalette} size='sm'>
         Access Resource
         <FaArrowRight />
       </Button>
@@ -53,9 +46,11 @@ export const DataAccess: React.FC<DataAccessProps> = ({
   url,
   recordType,
   creativeWorkStatus,
-  colorScheme = 'secondary',
+  colorPalette = 'secondary',
 }) => {
-  const prefersReducedMotion = usePrefersReducedMotion();
+  const prefersReducedMotion = useMediaQuery(
+    '(prefers-reduced-motion: reduce)',
+  );
 
   // If resource is part of a catalog, only show DDE as source
 
@@ -110,7 +105,7 @@ export const DataAccess: React.FC<DataAccessProps> = ({
                   url,
                   creativeWorkStatus,
                 })}
-                colorScheme={colorScheme}
+                colorPalette={colorPalette}
               />
             </Flex>
           )}

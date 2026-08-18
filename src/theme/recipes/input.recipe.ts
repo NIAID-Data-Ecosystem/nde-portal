@@ -5,14 +5,14 @@ Ported from the v2 `Input` style config. Two structural changes:
 
   - v3's Input is a single-part recipe, so the v2 `field` slot is flattened
     away.
-  - v2's variants each called `styleInputBorder(colorScheme)` to pick a focus
+  - v2's variants each called `styleInputBorder(colorPalette)` to pick a focus
     border. That per-palette value is now the `inputFocusBorder` semantic role
     in ../semantic-tokens/colors.ts, letting one static recipe cover every
     palette.
 
 v2's `filled` variant is named `subtle` in v3. `defaultProps._placeholder` is
 dropped: v2 merged defaultProps into the props bag handed to the style
-functions, and Input's functions only destructured `colorScheme`, so it never
+functions, and Input's functions only destructured `colorPalette`, so it never
 reached CSS (the real placeholder colour comes from `base` below).
 */
 export const inputRecipe = defineRecipe({

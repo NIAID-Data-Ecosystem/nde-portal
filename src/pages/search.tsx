@@ -226,7 +226,7 @@ const Search: NextPage<{
               >
                 {/* Filters sidebar */}
                 <Filters
-                  colorScheme='secondary'
+                  colorPalette='secondary'
                   selectedFilters={selectedFilters}
                   isDisabled={appliedFilters.length === 0}
                   removeAllFilters={removeAllFilters}

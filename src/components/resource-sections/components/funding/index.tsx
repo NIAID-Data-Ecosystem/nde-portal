@@ -130,7 +130,7 @@ export const Funding: React.FC<FundingProps> = ({
       <Heading as='h4' fontSize='sm' mx={1} mb={4} fontWeight='semibold'>
         Grant and Funding Information
       </Heading>
-      <TableWrapper colorScheme='gray'>
+      <TableWrapper colorPalette='gray'>
         <Table.ScrollArea>
           <Table.Root
             role='table'
@@ -281,7 +281,7 @@ export const Funding: React.FC<FundingProps> = ({
           from={from}
           setFrom={setFrom}
           pageSizeOptions={ROW_SIZES}
-          colorScheme='gray'
+          colorPalette='gray'
           __css={{ '>div': { py: 1 } }}
         />
       </TableWrapper>
@@ -326,7 +326,7 @@ const ContentWithTag = React.memo(
 
         {identifier && (
           <TagWithUrl
-            colorScheme='orange'
+            colorPalette='orange'
             href={href || ''}
             label={label}
             isExternal

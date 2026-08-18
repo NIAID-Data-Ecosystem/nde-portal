@@ -20,7 +20,7 @@ export const globalCss = defineGlobalStyles({
     lineHeight: 'base',
   },
   /*
-  v2 set `colorScheme: 'primary'` in the Button style config's `defaultProps`.
+  v2 set `colorPalette: 'primary'` in the Button style config's `defaultProps`.
   `colorPalette` is a style prop rather than a recipe variant, so it cannot go
   in `defaultVariants` — scoping it here is the v3 equivalent, and mirrors how
   Chakra itself applies `colorPalette: 'gray'` to `html`.

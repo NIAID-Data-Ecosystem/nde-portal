@@ -7,7 +7,7 @@ interface MetadataWithTagProps extends BoxProps {
   label?: string;
   value: string;
   url?: string | null;
-  colorScheme?: string;
+  colorPalette?: string;
   tooltipLabel?: string;
 }
 
@@ -15,13 +15,13 @@ export const MetadataWithTag = ({
   label,
   url,
   value,
-  colorScheme = 'gray',
+  colorPalette = 'gray',
   tooltipLabel,
 }: MetadataWithTagProps) => {
   return (
-    <Tooltip label={tooltipLabel} fontSize='12px'>
+    <Tooltip content={tooltipLabel} fontSize='12px'>
       <TagWithUrl
-        colorScheme={colorScheme}
+        colorPalette={colorPalette}
         fontSize='13px'
         href={url}
         isExternal

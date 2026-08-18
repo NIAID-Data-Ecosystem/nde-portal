@@ -68,9 +68,9 @@ export const SectionTitle = ({
     return (
       <>
         <SkeletonText
-          isLoaded={!isLoading}
-          lineClamp={1}
-          skeletonHeight={skeletonHeight}
+          loading={isLoading}
+          noOfLines={1}
+          height={skeletonHeight}
           width='100%'
           mb={mb}
         >
@@ -88,12 +88,7 @@ export const SectionTitle = ({
   }
 
   return (
-    <SkeletonText
-      isLoaded={!isLoading}
-      lineClamp={4}
-      skeletonHeight={4}
-      width='100%'
-    >
+    <SkeletonText loading={isLoading} noOfLines={4} height={4} width='100%'>
       <Text as={as} {...props}>
         {children}
       </Text>

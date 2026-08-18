@@ -33,7 +33,7 @@ export const SelectWithLabel = ({
             id={id}
             aria-label={label}
             size={size}
-            onValueChange={e => handleChange(e.target.value)}
+            onChange={e => handleChange(e.target.value)}
             value={value}
             bg='white'
             borderColor='gray.200'

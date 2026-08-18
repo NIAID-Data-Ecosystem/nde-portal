@@ -10,6 +10,7 @@ import {
   Stack,
   Text,
   VisuallyHidden,
+  StackSeparator,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import type { NextPage } from 'next';
@@ -363,15 +364,15 @@ const Updates: NextPage<UpdatesProps> = props => {
                   fontSize='md'
                 >
                   <Link href='/knowledge-center'>Knowledge Center</Link>
-                  <Stack.Separator borderColor='primary.200' />
+                  <StackSeparator borderColor='primary.200' />
                   <Link href='/knowledge-center/frequently-asked-questions'>
                     FAQ
                   </Link>
-                  <Stack.Separator borderColor='primary.200' />
+                  <StackSeparator borderColor='primary.200' />
                   <Link href='mailto:NIAIDDataEcosystem@mail.nih.gov'>
                     Ask a question
                   </Link>
-                  <Stack.Separator borderColor='primary.200' />
+                  <StackSeparator borderColor='primary.200' />
                   <Link href='/changelog'>Changelog</Link>
                 </Stack>
               </Section>

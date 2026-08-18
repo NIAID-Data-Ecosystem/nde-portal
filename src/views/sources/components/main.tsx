@@ -11,6 +11,7 @@ import {
   Text,
   VStack,
   Stack,
+  StackSeparator,
 } from '@chakra-ui/react';
 import { BadgeWithTooltip } from 'src/components/badges';
 import { Link } from 'src/components/link';
@@ -73,7 +74,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
       </SectionHeader>
       <Flex justifyContent='space-between' flexWrap='wrap-reverse'>
         <VStack minW='250px' alignItems='flex-start' m={0.5} flex={1}>
-          <SkeletonText isLoaded={!isLoading} lineClamp={1} skeletonHeight={5}>
+          <SkeletonText loading={isLoading} noOfLines={1} height={5}>
             <Flex alignItems='center'>
               <Text
                 fontSize='xs'
@@ -95,7 +96,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
               )}
             </Flex>
           </SkeletonText>
-          <SkeletonText isLoaded={!isLoading} lineClamp={1} skeletonHeight={5}>
+          <SkeletonText loading={isLoading} noOfLines={1} height={5}>
             {metadata?.date && (
               <Text fontSize='xs' lineHeight='short' fontWeight='semibold'>
                 Data last harvested:
@@ -147,7 +148,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
               tags={
                 <>
                   {sourceObj.isNiaidFunded && (
-                    <BadgeWithTooltip colorScheme='blue' variant='subtle'>
+                    <BadgeWithTooltip colorPalette='blue' variant='subtle'>
                       NIAID
                     </BadgeWithTooltip>
                   )}
@@ -185,7 +186,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                         : 'N/A'}
                     </Text>
                   </Text>
-                  <Stack.Separator borderColor='gray.100' />
+                  <StackSeparator borderColor='gray.100' />
                   <Text fontSize='xs' fontWeight='semibold' color='text.body'>
                     First Released:{' '}
                     <Text as='span' fontWeight='normal'>

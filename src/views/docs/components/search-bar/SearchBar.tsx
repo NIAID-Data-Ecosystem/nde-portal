@@ -16,7 +16,7 @@ import {
   Text,
   List,
 } from '@chakra-ui/react';
-import { Tooltip } from '@/components/ui/tooltip';
+import Tooltip from '../../../../components/tooltip';
 import {
   DropdownInput,
   useDropdownContext,
@@ -37,7 +37,7 @@ import {
 export const SearchBar = ({
   ariaLabel,
   placeholder,
-  colorScheme = 'primary',
+  colorPalette = 'primary',
   size = DEFAULT_SIZE,
   searchHistory,
   setSearchHistory,
@@ -262,7 +262,7 @@ export const SearchBar = ({
         id='docs-search-bar'
         ariaLabel={ariaLabel}
         placeholder={placeholder}
-        colorScheme={colorScheme}
+        colorPalette={colorPalette}
         size={size}
         type='text'
         onChange={updateSearchTerm}
@@ -275,7 +275,7 @@ export const SearchBar = ({
         renderSubmitButton={() => (
           <HStack height='100%'>
             <Button
-              colorPalette={colorScheme}
+              colorPalette={colorPalette}
               aria-label={ariaLabel}
               size={size}
               type='submit'
@@ -329,7 +329,7 @@ export const SearchBar = ({
               <SearchHistoryItem
                 key={`history-${str}-${index}`}
                 index={index}
-                colorScheme={colorScheme}
+                colorPalette={colorPalette}
                 searchTerm=''
                 value={str}
                 onClick={handleHistoryClick}
@@ -364,7 +364,7 @@ export const SearchBar = ({
                   index={index}
                   result={result}
                   searchTerm={searchTerm}
-                  colorScheme={colorScheme}
+                  colorPalette={colorPalette}
                   onClick={() => handleResultClick(result.slug)}
                 />
               ))}

@@ -9,8 +9,8 @@ Ported from the v2 `Table` style config, minus two things:
     keys. `parts` was inert in v2, and neither `pagination` nor `wrapper` is
     part of v3's table anatomy, so they move to ./table-shell.slot-recipe.ts.
 
-  - v2's `baseStyle` was a function of `{ borderColor, colorScheme }`. No call
-    site ever passes `borderColor`, and `defaultProps.colorScheme` was
+  - v2's `baseStyle` was a function of `{ borderColor, colorPalette }`. No call
+    site ever passes `borderColor`, and `defaultProps.colorPalette` was
     `primary`, so the border always resolved to `primary.500`;
     `colorPalette.500` reproduces that.
 

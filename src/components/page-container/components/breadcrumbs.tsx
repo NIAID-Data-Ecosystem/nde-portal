@@ -58,7 +58,7 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ segments }) => {
       <Breadcrumb.Root alignItems='center'>
         <Breadcrumb.List gap={1}>
           {/* home */}
-          <ChakraBreadcrumbItem key='home-page'>
+          <Breadcrumb.Item key='home-page'>
             <Breadcrumb.Link href='/'>
               <BreadcrumbItem
                 key='home-page'
@@ -68,18 +68,18 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ segments }) => {
                 }}
               />
             </Breadcrumb.Link>
-          </ChakraBreadcrumbItem>
+          </Breadcrumb.Item>
           {segments.map((path, idx) => {
             const isCurrentPage = idx === segments.length - 1;
             return (
-              <ChakraBreadcrumbItem
+              <Breadcrumb.Item
                 key={path.name + idx}
                 isCurrentPage={isCurrentPage}
               >
                 <Breadcrumb.Link href={path.route}>
                   <BreadcrumbItem isCurrentPage={isCurrentPage} path={path} />
                 </Breadcrumb.Link>
-              </ChakraBreadcrumbItem>
+              </Breadcrumb.Item>
             );
           })}
         </Breadcrumb.List>

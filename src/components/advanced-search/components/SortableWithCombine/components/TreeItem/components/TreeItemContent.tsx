@@ -89,7 +89,7 @@ export const TreeItemContent = React.memo((props: TreeItemContentProps) => {
       </Box>
       {field && (
         <Tag.Root
-          colorPalette={union ? getUnionTheme(union).colorScheme : 'gray'}
+          colorPalette={union ? getUnionTheme(union).colorPalette : 'gray'}
           variant='subtle'
           size='sm'
           mr={2}

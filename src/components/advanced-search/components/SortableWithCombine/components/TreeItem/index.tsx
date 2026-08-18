@@ -120,9 +120,9 @@ export const TreeItem = React.memo(
                 <Box p={1} py={2} maxW='100px'>
                   <UnionButton
                     id={id}
-                    colorScheme={
+                    colorPalette={
                       value.union
-                        ? getUnionTheme(value.union).colorScheme
+                        ? getUnionTheme(value.union).colorPalette
                         : 'primary'
                     }
                     selectedOption={value.union}
@@ -139,7 +139,7 @@ export const TreeItem = React.memo(
                 borderColor='gray.200'
                 borderLeftColor={
                   !ghost && value.union
-                    ? `${getUnionTheme(value.union).colorScheme}.300`
+                    ? `${getUnionTheme(value.union).colorPalette}.300`
                     : 'gray.200'
                 }
               >

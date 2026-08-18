@@ -23,7 +23,7 @@ export const ConditionsOfAccess = ({
 
   return (
     <BadgeWithTooltip
-      colorScheme={getColorScheme(conditionsOfAccess)}
+      colorPalette={getColorScheme(conditionsOfAccess)}
       value={transformConditionsOfAccessLabel(conditionsOfAccess)}
       tooltipLabel={getConditionsOfAccessTooltip(conditionsOfAccess)}
       {...props}

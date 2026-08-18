@@ -11,7 +11,7 @@ custom properties. Two jobs here:
      untouched built-in (Select, Menu, Alert, Checkbox...).
 
   2. Custom roles (`outline*`, `ghost*`, `badgeSolidBg`) that let a *static*
-     recipe reproduce the v2 theme's per-`colorScheme` branching. v2 styled
+     recipe reproduce the v2 theme's per-`colorPalette` branching. v2 styled
      these with functions of the props bag, which v3 recipes do not receive; by
      moving the per-palette differences into tokens, one static recipe covers
      every palette. See ../recipes/button.recipe.ts and badge.recipe.ts.
@@ -58,7 +58,7 @@ export const semanticColors = defineSemanticTokens.colors({
   secondary: palette('secondary'),
   niaid: {
     ...palette('niaid'),
-    // v2 Badge `solid` + colorScheme='niaid' was a literal black.
+    // v2 Badge `solid` + colorPalette='niaid' was a literal black.
     badgeSolidBg: { value: '{colors.black}' },
     // v2 `styleInputBorder()` singled niaid out for the link colour.
     inputFocusBorder: { value: '{colors.link.color}' },

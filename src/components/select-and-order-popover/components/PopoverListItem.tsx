@@ -1,6 +1,6 @@
 import React from 'react';
 import { Checkbox, Flex, Icon, IconButton, Text } from '@chakra-ui/react';
-import { Tooltip } from '@/components/ui/tooltip';
+import Tooltip from '../../tooltip';
 import { FaAngleDown, FaAngleUp, FaGripVertical } from 'react-icons/fa6';
 import { useSortable } from '@dnd-kit/sortable';
 import { PopoverItem } from '../types';

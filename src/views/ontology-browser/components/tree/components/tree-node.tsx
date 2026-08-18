@@ -8,6 +8,7 @@ import {
   Text,
   Stack,
   List,
+  StackSeparator,
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -283,7 +284,7 @@ export const TreeNode = (props: {
               {node.ontologyName} | {node.taxonId}
             </Text>
             <Tooltip
-              label={getTooltipLabelByCountType('termCount')}
+              content={getTooltipLabelByCountType('termCount')}
               placement='bottom'
             >
               <Link
@@ -318,7 +319,7 @@ export const TreeNode = (props: {
             >
               {node?.counts?.termCount?.toLocaleString() || 0}
             </OntologyBrowserCountTag>
-            <Stack.Separator borderColor='gray.100' />
+            <StackSeparator borderColor='gray.100' />
             <OntologyBrowserCountTag
               isLoading={isLoading}
               tooltipLabel={getTooltipLabelByCountType('termAndChildrenCount')}

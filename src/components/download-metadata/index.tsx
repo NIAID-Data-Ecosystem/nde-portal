@@ -264,7 +264,9 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
                             py={2}
                             cursor='pointer'
                             _hover={{
-                              bg: `${buttonProps?.colorScheme || 'primary'}.50`,
+                              bg: `${
+                                buttonProps?.colorPalette || 'primary'
+                              }.50`,
                             }}
                             asChild
                           >

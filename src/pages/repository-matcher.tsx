@@ -330,7 +330,7 @@ const RepositoryMatcher: NextPage = () => {
               alignItems='flex-end'
               onClose={() => setSearchTerm('')}
               width='100%'
-              colorScheme='primary'
+              colorPalette='primary'
             />
           </Stack>
           <Box display={{ base: 'block', md: 'none' }} mb={3}>

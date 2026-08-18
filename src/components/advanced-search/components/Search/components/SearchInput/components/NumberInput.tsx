@@ -21,7 +21,7 @@ interface NumberInputProps extends AdvancedSearchInputProps {
 
 export const NumberInput: React.FC<NumberInputProps> = ({
   isDisabled,
-  colorScheme,
+  colorPalette,
   size,
   handleSubmit,
   renderSubmitButton,
@@ -52,8 +52,8 @@ export const NumberInput: React.FC<NumberInputProps> = ({
       >
         <NativeSelect.Root>
           <NativeSelect.Field
-            colorPalette={colorScheme}
-            // bg={colorScheme ? `${colorScheme}.50` : `gray.100`}
+            colorPalette={colorPalette}
+            // bg={colorPalette ? `${colorPalette}.50` : `gray.100`}
             size='lg'
             mr={2}
             variant='outline'
@@ -81,7 +81,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
           onValueChange={value => {
             setCount(value);
           }}
-          colorPalette={colorScheme} // [to do] - implement colorscheme.
+          colorPalette={colorPalette} // [to do] - implement colorscheme.
           clampValueOnBlur={true}
           disabled={isDisabled}
           allowMouseWheel

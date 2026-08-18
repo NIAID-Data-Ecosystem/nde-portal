@@ -11,7 +11,7 @@ import {
 import { UnionTypes } from 'src/components/advanced-search/types';
 
 interface UnionButtonProps
-  extends Pick<DropdownButtonProps, 'colorScheme' | 'selectedOption'> {
+  extends Pick<DropdownButtonProps, 'colorPalette' | 'selectedOption'> {
   id: UniqueIdentifier;
   setSelectedOption:
     | ((id: UniqueIdentifier, union: UnionTypes) => void)
@@ -19,7 +19,7 @@ interface UnionButtonProps
 }
 
 export const UnionButton = React.memo((props: UnionButtonProps) => {
-  const { colorScheme, selectedOption } = props;
+  const { colorPalette, selectedOption } = props;
   return (
     <DropdownButton
       size='sm'
@@ -37,7 +37,7 @@ export const UnionButton = React.memo((props: UnionButtonProps) => {
           },
         };
       })}
-      colorScheme={colorScheme}
+      colorPalette={colorPalette}
       selectedOption={selectedOption}
       setSelectedOption={union => {
         const unionValue = union as UnionTypes;

@@ -28,7 +28,7 @@ export const Input: React.FC<Partial<SearchBarWithDropdownProps>> = ({
       optionMenuProps={{
         buttonProps: {
           borderRadius: 'full',
-          colorScheme: 'primary',
+          colorPalette: 'primary',
         },
         label: 'Type',
         description: SCHEMA_DEFINITIONS['type'].abstract['Dataset'],

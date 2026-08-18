@@ -1,7 +1,6 @@
 import React from 'react';
-import { Text } from '@chakra-ui/react';
+import { Text, Skeleton } from '@chakra-ui/react';
 import { DiseasePageProps } from 'src/views/diseases/types';
-import { Skeleton } from 'src/components/skeleton';
 import { CompactCard } from '../compact-card';
 import { TAB_LABELS } from 'src/views/search/config/tabs';
 import ReactMarkdown from 'react-markdown';
@@ -59,7 +58,7 @@ export const DiseaseOverviewCard = ({
         )}
       </CompactCard.Header>
       <CompactCard.Body>
-        <Skeleton isLoaded={!isLoading} flex='1'>
+        <Skeleton loading={isLoading} flex='1'>
           {/* Description (if present) */}
           {topicEmphasizedDescription || description ? (
             <>

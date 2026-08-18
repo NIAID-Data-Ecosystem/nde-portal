@@ -217,8 +217,8 @@ export const RepositoryCells = ({
       {column.property === 'name' && (
         <SkeletonText
           data-testid={isLoading ? 'loading' : 'loaded'}
-          isLoaded={Boolean(!isLoading && data._id)}
-          lineClamp={2}
+          loading={!Boolean(!isLoading && data._id)}
+          noOfLines={2}
           w='100%'
           fontSize='sm'
         >
@@ -235,7 +235,7 @@ export const RepositoryCells = ({
       {column.property === 'abstract' && (
         <SkeletonText
           data-testid={isLoading ? 'loading' : 'loaded'}
-          isLoaded={Boolean(!isLoading && data._id)}
+          loading={!Boolean(!isLoading && data._id)}
           gap='2'
           w='100%'
           fontSize='sm'
@@ -250,11 +250,11 @@ export const RepositoryCells = ({
         <SkeletonText
           fontWeight='semibold'
           data-testid={isLoading ? 'loading' : 'loaded'}
-          isLoaded={Boolean(!isLoading && data._id)}
+          loading={!Boolean(!isLoading && data._id)}
           w='100%'
           h='100%'
           fontSize='sm'
-          lineClamp={2}
+          noOfLines={2}
         >
           {column.property === 'type' &&
             (data.type && data.type.length > 0

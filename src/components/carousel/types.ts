@@ -2,7 +2,7 @@ import React from 'react';
 
 export interface CarouselProps {
   gap?: number;
-  colorScheme?: string;
+  colorPalette?: string;
   children: React.ReactNode[];
   isLoading?: boolean;
 }
@@ -12,7 +12,7 @@ export interface CarouselControlsProps {
   maxActiveItem: number;
   constraint: number;
   totalDots: number;
-  colorScheme: string;
+  colorPalette: string;
   gap: number;
   handleDecrementClick: () => void;
   handleIncrementClick: () => void;

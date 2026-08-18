@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import { Skeleton } from 'src/components/skeleton';
 import { Table } from 'src/components/table';
 import { BaseColumn, ResultsTableProps } from './types';
 import { deriveControlledSortProps, getApiSortFieldForProperty } from './utils';
@@ -81,7 +80,7 @@ export const ResultsTable = <TColumn extends BaseColumn>({
   }, [onSortChange, columns]);
 
   return (
-    <Skeleton isLoaded={!isLoading} width='100%'>
+    <Skeleton loading={isLoading} width='100%'>
       <Table
         ariaLabel={ariaLabel}
         caption={caption}

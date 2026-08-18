@@ -27,13 +27,13 @@ import { useDebounceValue } from 'usehooks-ts';
 import { DropdownListItem } from './dropdown-list-item';
 
 interface OntologyBrowserSearchProps {
-  colorScheme?: string;
+  colorPalette?: string;
   size?: 'sm' | 'md' | 'lg';
   ontologyMenuOptions?: OntologyOption[];
 }
 
 export const OntologyBrowserSearch = ({
-  colorScheme = 'primary',
+  colorPalette = 'primary',
   size = 'md',
   ontologyMenuOptions = [],
 }: OntologyBrowserSearchProps) => {
@@ -192,7 +192,7 @@ export const OntologyBrowserSearch = ({
           <InputWithDropdown
             inputValue={debouncedTerm}
             cursorMax={suggestions?.length || 0}
-            colorScheme={colorScheme}
+            colorPalette={colorPalette}
           >
             <DropdownInput
               id='ontology-browser-search-bar'
@@ -212,7 +212,7 @@ export const OntologyBrowserSearch = ({
               }}
               renderSubmitButton={() => (
                 <Button
-                  colorPalette={colorScheme}
+                  colorPalette={colorPalette}
                   size={size}
                   type='submit'
                   display={{ base: 'none', md: 'flex' }}

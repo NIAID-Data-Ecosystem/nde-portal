@@ -16,7 +16,7 @@ most of it did nothing, so most of it is deliberately *not* carried over:
   - `focusVisibleRing`, `focusRingWidth`, `lineClamp` and `borderRadius: 'l1'`
     are v3-only APIs that produced no CSS under v2. Dropped rather than newly
     enabled, which would be a visual change.
-  - The `subtle` variant was a function reading `theme.colors[colorScheme][200]`
+  - The `subtle` variant was a function reading `theme.colors[colorPalette][200]`
     to build a shadow, but the default variant is `solid`, so it never ran.
 
 What remains is what actually rendered: the `semi` radius, the label line

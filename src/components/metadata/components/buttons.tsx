@@ -39,7 +39,7 @@ export const OntologyButton = ({
   }
 
   return (
-    <Tooltip label={ariaLabel || 'See ontology information.'}>
+    <Tooltip content={ariaLabel || 'See ontology information.'}>
       {label || inDefinedTermSet ? (
         <Button
           variant='outline'
@@ -109,7 +109,7 @@ export const SearchButton = ({
   }
 
   return (
-    <Tooltip label={ariaLabel || `Search the NDE for this property value`}>
+    <Tooltip content={ariaLabel || `Search the NDE for this property value`}>
       <Button
         cursor='pointer'
         colorPalette='gray'

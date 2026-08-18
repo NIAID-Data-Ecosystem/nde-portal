@@ -202,7 +202,7 @@ export const DateHistogram = (props: DateHistogramProps) => {
 
   return (
     <DateFilter
-      colorScheme='secondary'
+      colorPalette='secondary'
       queryParams={histogramQueryParams}
       selectedDates={selected || []}
       handleSelectedFilter={values => handleSelectedFilters(values, property)}

@@ -30,7 +30,7 @@ export const DocsSearchBar = (props: DocsSearchBarProps) => {
         <InputWithDropdown
           inputValue={currentInputValue}
           cursorMax={currentCursorMax}
-          colorScheme={props.colorScheme}
+          colorPalette={props.colorPalette}
         >
           <SearchBar
             searchHistory={searchHistory}

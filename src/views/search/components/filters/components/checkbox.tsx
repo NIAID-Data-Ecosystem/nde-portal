@@ -14,7 +14,7 @@ import { FilterItem } from '../types';
 interface FilterCheckboxProps extends FilterItem {
   isLoading: boolean;
   isUpdating?: boolean;
-  colorScheme?: string;
+  colorPalette?: string;
   filterName: string;
 }
 
@@ -76,7 +76,7 @@ const transformCheckboxLabel = ({
 
 export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
   ({
-    colorScheme,
+    colorPalette,
     count,
     filterName,
     isHeader,
@@ -138,7 +138,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
         py={1.5}
         alignItems='flex-start'
         _hover={{
-          bg: `${colorScheme}.50`,
+          bg: `${colorPalette}.50`,
         }}
         css={{
           '& >.chakra-checkbox__control': {
@@ -160,7 +160,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
           alignItems='center'
           flex={1}
         >
-          <Tooltip label={getTooltipLabel(term, filterName)}>
+          <Tooltip content={getTooltipLabel(term, filterName)}>
             <Text
               as='span'
               flex={1}
@@ -198,7 +198,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
               className='tag-count'
               variant='subtle'
               size='sm'
-              colorPalette={colorScheme}
+              colorPalette={colorPalette}
               borderRadius='full'
               alignSelf='flex-start'
             >

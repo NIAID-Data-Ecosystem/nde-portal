@@ -58,20 +58,20 @@ export interface SidebarMobileProps {
   menuTitle?: string;
   sections?: SidebarContent[];
   selectedSlug?: string;
-  colorScheme?: string;
+  colorPalette?: string;
 }
 
 export interface SidebarDesktopProps {
   isLoading: boolean;
   sections?: SidebarContent[];
   selectedSlug?: string;
-  colorScheme?: string;
+  colorPalette?: string;
 }
 
 export interface DocumentItemProps {
   item: SidebarContent['items'][0];
   selectedSlug?: string;
-  colorScheme: string;
+  colorPalette: string;
   isLoading: boolean;
   activePageSlug?: string;
 }
@@ -96,14 +96,14 @@ export interface SearchResultItemProps {
   index: number;
   result: SearchResult;
   searchTerm: string;
-  colorScheme: string;
+  colorPalette: string;
   onClick: () => void;
 }
 
 export interface SearchBarProps {
   ariaLabel: string;
   placeholder: string;
-  colorScheme?: string;
+  colorPalette?: string;
   size?: string;
   searchHistory: string[];
   setSearchHistory: React.Dispatch<React.SetStateAction<string[]>>;
@@ -116,6 +116,6 @@ export interface SearchBarProps {
 export interface DocsSearchBarProps {
   ariaLabel: string;
   placeholder: string;
-  colorScheme?: string;
+  colorPalette?: string;
   size?: string;
 }

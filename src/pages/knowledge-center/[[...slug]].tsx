@@ -250,7 +250,7 @@ const Docs: NextPage<{
                           {doc.items.map(item => (
                             <List.Item key={item.id} my={2}>
                               <SkeletonText
-                                isLoaded={!isLoading}
+                                loading={isLoading}
                                 width={isLoading ? '75%' : '100%'}
                               >
                                 <NextLink

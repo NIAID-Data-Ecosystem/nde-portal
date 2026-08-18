@@ -97,7 +97,7 @@ export const CitedByTable: React.FC<CitedByTable> = ({
           {title}
         </Heading>
       )}
-      <TableWrapper colorScheme='gray'>
+      <TableWrapper colorPalette='gray'>
         <Table.ScrollArea>
           <Table.Root
             role='table'
@@ -191,7 +191,7 @@ export const CitedByTable: React.FC<CitedByTable> = ({
                               {column.key === '@type' &&
                                 (item['@type'] ? (
                                   <>
-                                    <TagWithUrl colorScheme='primary'>
+                                    <TagWithUrl colorPalette='primary'>
                                       {item['@type']}
                                     </TagWithUrl>
                                   </>
@@ -242,7 +242,7 @@ export const CitedByTable: React.FC<CitedByTable> = ({
           from={from}
           setFrom={setFrom}
           pageSizeOptions={ROW_SIZES}
-          colorScheme='gray'
+          colorPalette='gray'
           __css={{ '>div': { py: 1 } }}
         />
       </TableWrapper>

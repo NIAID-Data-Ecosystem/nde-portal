@@ -12,7 +12,7 @@ export const Remove: React.FC<RemoveProps> = React.memo(props => {
   return (
     <IconButton
       aria-label={props['aria-label']}
-      colorPalette={props.colorScheme || 'gray'}
+      colorPalette={props.colorPalette || 'gray'}
       variant='ghost'
       bg={props.bg}
       color={props.color || 'gray.600'}

@@ -154,7 +154,7 @@ const AIToggleTooltip: React.FC<AIToggleTooltipProps> = ({
 interface AIToggleLabelProps {
   id: string;
   label: string;
-  colorScheme?: string;
+  colorPalette?: string;
   enableAiSearch: boolean;
   tagProps?: TagProps;
 }
@@ -162,7 +162,7 @@ interface AIToggleLabelProps {
 export const AIToggleLabel = ({
   id,
   label,
-  colorScheme,
+  colorPalette,
   enableAiSearch,
   tagProps,
 }: AIToggleLabelProps) => {
@@ -186,8 +186,8 @@ export const AIToggleLabel = ({
         <Tag.Root
           variant='subtle'
           borderRadius='full'
-          color={`${colorScheme}.500`}
-          colorPalette={colorScheme}
+          color={`${colorPalette}.500`}
+          colorPalette={colorPalette}
           fontWeight='inherit'
           {...tagProps}
         >
@@ -208,7 +208,7 @@ interface AIToggleProps extends SwitchProps {
 export const AIToggle: React.FC<AIToggleProps> = ({
   id = 'ai-search',
   label = 'AI-assisted search',
-  colorScheme = 'primary',
+  colorPalette = 'primary',
   tagProps,
   tooltipProps,
   tooltipContent = DEFAULT_AI_TOOLTIP_CONTENT,
@@ -297,7 +297,7 @@ export const AIToggle: React.FC<AIToggleProps> = ({
       <HStack>
         <Switch
           id={id}
-          colorPalette={colorScheme}
+          colorPalette={colorPalette}
           checked={enableAiSearch}
           onValueChange={e => handleToggle(e.target.checked)}
           {...rest}
@@ -314,7 +314,7 @@ export const AIToggle: React.FC<AIToggleProps> = ({
           <AIToggleLabel
             id={id}
             label={label}
-            colorScheme={colorScheme}
+            colorPalette={colorPalette}
             enableAiSearch={enableAiSearch}
             tagProps={tagProps}
           />

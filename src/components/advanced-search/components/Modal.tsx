@@ -8,7 +8,7 @@ export interface AdvancedSearchModalProps extends Omit<ModalProps, 'onClose'> {
 
 export const AdvancedSearchModal: React.FC<AdvancedSearchModalProps> = ({
   children,
-  colorScheme = 'primary',
+  colorPalette = 'primary',
   isOpen,
   handleClose,
   ...props

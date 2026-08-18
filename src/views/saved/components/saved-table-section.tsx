@@ -185,7 +185,7 @@ export function SavedTableSection<TItem>({
             alignItems='flex-end'
             onClose={() => setSearchTerm('')}
             width='100%'
-            colorScheme='primary'
+            colorPalette='primary'
           />
         </Flex>
       </Stack>

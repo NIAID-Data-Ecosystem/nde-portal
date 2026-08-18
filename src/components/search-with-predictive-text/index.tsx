@@ -11,7 +11,7 @@ interface SearchWithPredictiveTextProps {
   term?: string; //default term to search with,
   size?: InputProps['size'];
   isLoading?: boolean;
-  colorScheme?: InputProps['colorScheme'];
+  colorPalette?: InputProps['colorPalette'];
   handleSubmit: (
     inputValue: string,
     field: string,

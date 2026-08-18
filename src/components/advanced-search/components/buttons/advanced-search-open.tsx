@@ -7,7 +7,7 @@ export interface AdvancedSearchButtonProps extends ButtonProps {
 }
 
 export const AdvancedSearchOpen: React.FC<AdvancedSearchButtonProps> = ({
-  colorScheme = 'primary',
+  colorPalette = 'primary',
   ...props
 }) => {
   const { _hover, ...rest } = props;
@@ -17,10 +17,10 @@ export const AdvancedSearchOpen: React.FC<AdvancedSearchButtonProps> = ({
       variant='outline'
       size='sm'
       transition='0.2s ease-in-out'
-      colorPalette={colorScheme}
+      colorPalette={colorPalette}
       fontWeight='semibold'
       _hover={{
-        bg: `${colorScheme}.600`,
+        bg: `${colorPalette}.600`,
         color: 'white',
         transition: '0.2s ease-in-out',
 

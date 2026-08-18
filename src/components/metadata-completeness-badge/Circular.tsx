@@ -168,7 +168,7 @@ export const CompletenessBadgeCircle = ({
         <Tooltip
           maxWidth='unset'
           maxW='90vw'
-          label={
+          content={
             <TooltipContent
               type={type}
               data={[
@@ -287,7 +287,7 @@ export const CompletenessBadgeCircle = ({
           </span>
         </Tooltip>
       </Box>
-      <Tooltip label='See metadata compatibility documentation.'>
+      <Tooltip content='See metadata compatibility documentation.'>
         <Link
           href='/knowledge-center/metadata-compatibility-score'
           mt={2}

@@ -3,7 +3,7 @@ import { addMissingYears, getYear } from '../helpers';
 import { FilterTermType, FilterItem } from '../../../types';
 
 export interface ContextProps {
-  colorScheme: string;
+  colorPalette: string;
   allData: FilterTermType[]; // All data from complete dataset
   filteredData: FilterTermType[]; // Data within selected date range
   dates: (string | null)[];
@@ -20,7 +20,7 @@ export interface ContextProps {
 }
 
 export const defaultContext: ContextProps = {
-  colorScheme: 'primary',
+  colorPalette: 'primary',
   allData: [],
   filteredData: [],
   dates: ['', ''],
@@ -45,7 +45,7 @@ interface DateRangeProps {
   data: FilterItem[];
   isLoading: boolean;
   selectedDates: string[];
-  colorScheme: ContextProps['colorScheme'];
+  colorPalette: ContextProps['colorPalette'];
   children: React.ReactNode;
 }
 
@@ -54,7 +54,7 @@ export const DateRange = ({
   data: datesData,
   isLoading,
   selectedDates = [],
-  colorScheme = 'primary',
+  colorPalette = 'primary',
 }: DateRangeProps) => {
   const [initialData, setInitialData] = useState<FilterItem[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -154,7 +154,7 @@ export const DateRange = ({
   );
 
   const context = {
-    colorScheme,
+    colorPalette,
     allData,
     filteredData,
     data: filteredData, // Legacy

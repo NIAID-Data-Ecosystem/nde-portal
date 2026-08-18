@@ -44,7 +44,7 @@ export interface TagInfo {
  */
 
 const tagStyles = {
-  colorScheme: 'secondary',
+  colorPalette: 'secondary',
   size: 'sm',
   variant: 'solid',
 };

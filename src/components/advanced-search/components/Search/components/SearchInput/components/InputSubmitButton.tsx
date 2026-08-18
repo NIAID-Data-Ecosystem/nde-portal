@@ -10,14 +10,14 @@ import { useAdvancedSearchContext } from '../../AdvancedSearchFormContext';
 
 export interface InputSubmitButtonProps {
   isDisabled: boolean;
-  colorScheme?: InputProps['colorScheme'];
+  colorPalette?: InputProps['colorPalette'];
   items: TreeItem[];
   size: InputProps['size'];
 }
 
 // Submit button for input.
 export const InputSubmitButton: React.FC<InputSubmitButtonProps> = ({
-  colorScheme = 'primary',
+  colorPalette = 'primary',
   size = 'md',
   items,
   isDisabled,
@@ -64,7 +64,7 @@ export const InputSubmitButton: React.FC<InputSubmitButtonProps> = ({
       {...props}
       py={0}
       size={size}
-      colorScheme={union ? getUnionTheme(union).colorScheme : colorScheme}
+      colorPalette={union ? getUnionTheme(union).colorPalette : colorPalette}
       isDisabled={isDisabled}
     />
   );

@@ -54,12 +54,12 @@ const CAROUSEL_RESULTS_FIELDS = [
 const EMPTY_DISEASES: never[] = [];
 
 interface SearchResultsControllerProps {
-  colorScheme?: string;
+  colorPalette?: string;
   initialData: FetchSearchResultsResponse;
 }
 
 export const SearchResultsController = ({
-  colorScheme = 'secondary',
+  colorPalette = 'secondary',
   initialData,
 }: SearchResultsControllerProps) => {
   const router = useRouter();
@@ -423,7 +423,7 @@ export const SearchResultsController = ({
       <SearchTabs
         index={selectedIndex}
         onChange={handleTabChange}
-        colorScheme={colorScheme}
+        colorPalette={colorPalette}
         tabs={tabsWithFacetCounts}
         renderTabPanels={() =>
           tabsWithFacetCounts.map(tab => {

@@ -1,5 +1,5 @@
 import { Radio, RadioProps, Text } from '@chakra-ui/react';
-import { Tooltip } from '@/components/ui/tooltip';
+import Tooltip from '../../../../../../tooltip';
 import { SearchTypesConfigProps } from '../../../search-types-config';
 
 export const RadioTooltip: React.FC<Partial<RadioItemProps>> = ({

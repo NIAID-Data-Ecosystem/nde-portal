@@ -25,16 +25,16 @@ export const SearchResultsHeading = ({ children, ...props }: TextProps) => {
   );
 };
 
-const AIBanner: React.FC<FlexProps & { colorScheme?: string }> = ({
-  colorScheme = 'primary',
+const AIBanner: React.FC<FlexProps & { colorPalette?: string }> = ({
+  colorPalette = 'primary',
   children,
   ...rest
 }) => {
   return (
     <Flex
-      bg={`${colorScheme}.100`}
+      bg={`${colorPalette}.100`}
       borderRadius='semi'
-      color={`${colorScheme}.600`}
+      color={`${colorPalette}.600`}
       flex={1}
       fontWeight='medium'
       lineHeight='shorter'

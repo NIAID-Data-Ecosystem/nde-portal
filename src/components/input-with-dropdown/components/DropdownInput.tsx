@@ -57,7 +57,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const {
-    colorScheme,
+    colorPalette,
     cursor,
     inputValue,
     setInputValue,
@@ -163,7 +163,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
             children={
               isLoading ? (
                 <Spinner
-                  color={`${colorScheme}.500`}
+                  color={`${colorPalette}.500`}
                   emptyColor='gray.200'
                   label='loading'
                   size='sm'

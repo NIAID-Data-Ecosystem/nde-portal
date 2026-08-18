@@ -51,22 +51,12 @@ const Main = ({ data, isLoading }: MainContentProps) => {
       >
         {isLoading || data ? (
           <>
-            <SkeletonText
-              isLoaded={!isLoading}
-              mb={2}
-              lineClamp={1}
-              skeletonHeight={10}
-            >
+            <SkeletonText loading={isLoading} mb={2} noOfLines={1} height={10}>
               <Heading as='h1' size='xl'>
                 {data?.title || ''}
               </Heading>
             </SkeletonText>
-            <SkeletonText
-              isLoaded={!isLoading}
-              mb={4}
-              lineClamp={1}
-              skeletonHeight={6}
-            >
+            <SkeletonText loading={isLoading} mb={4} noOfLines={1} height={6}>
               <Text color='gray.700' lineHeight='short'>
                 {data?.subtitle || ''}
               </Text>
@@ -101,11 +91,7 @@ const Main = ({ data, isLoading }: MainContentProps) => {
             </Skeleton>
 
             <Separator orientation='horizontal' my={4} />
-            <SkeletonText
-              isLoaded={!isLoading}
-              lineClamp={1}
-              skeletonHeight={4}
-            >
+            <SkeletonText loading={isLoading} noOfLines={1} height={4}>
               <Text
                 fontStyle='italic'
                 fontSize='xs'

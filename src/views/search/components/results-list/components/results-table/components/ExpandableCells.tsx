@@ -15,7 +15,7 @@ const toggleButtonProps = {
   variant: 'link' as const,
   size: 'xs' as const,
   fontSize: 'sm' as const,
-  colorScheme: 'primary' as const,
+  colorPalette: 'primary' as const,
   fontWeight: 'medium' as const,
 };
 

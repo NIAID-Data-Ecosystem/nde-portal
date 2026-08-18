@@ -7,7 +7,7 @@ import {
   useDisclosure,
   VisuallyHidden,
 } from '@chakra-ui/react';
-import { Tooltip } from '@/components/ui/tooltip';
+import Tooltip from '../../../../../tooltip';
 import { theme } from 'src/theme';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';

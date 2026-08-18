@@ -12,7 +12,7 @@ interface TextInputProps extends AdvancedSearchInputProps {
   hideSuggestions?: boolean;
 }
 export const TextInput: React.FC<TextInputProps> = ({
-  colorScheme = 'primary',
+  colorPalette = 'primary',
   inputValue,
   isDisabled,
   hideSuggestions,
@@ -58,7 +58,7 @@ export const TextInput: React.FC<TextInputProps> = ({
       <PredictiveSearch
         ariaLabel='Add'
         placeholder='Search for resources'
-        colorScheme={colorScheme}
+        colorPalette={colorPalette}
         size={size}
         inputValue={stringInputValue}
         isDisabled={isDisabled}

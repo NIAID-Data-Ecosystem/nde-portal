@@ -18,13 +18,13 @@ interface TabWithCounts extends Omit<TabType, 'types'> {
 }
 
 interface SearchTabsProps extends Omit<TabsProps, 'children'> {
-  colorScheme?: string;
+  colorPalette?: string;
   tabs: TabWithCounts[];
   renderTabPanels: () => React.ReactNode;
 }
 
 export const SearchTabs = ({
-  colorScheme = 'secondary',
+  colorPalette = 'secondary',
   index,
   onChange,
   renderTabPanels,
@@ -34,7 +34,7 @@ export const SearchTabs = ({
     <Tabs.Root
       value={index}
       onValueChange={onChange}
-      colorPalette={colorScheme}
+      colorPalette={colorPalette}
       bg='#fff'
       lazyMount
     >
@@ -52,12 +52,12 @@ export const SearchTabs = ({
             aria-label={tab.types.map(t => t.label).join(', ')}
             css={{
               '& _selected': {
-                color: `${colorScheme}.500`,
+                color: `${colorPalette}.500`,
                 bg: '#fff',
               },
             }}
           >
-            <TabLabels types={tab.types} colorScheme={colorScheme} />
+            <TabLabels types={tab.types} colorPalette={colorPalette} />
           </Tab>
         ))}
       </Tabs.List>
@@ -68,10 +68,10 @@ export const SearchTabs = ({
 
 const TabLabels = ({
   types,
-  colorScheme,
+  colorPalette,
 }: {
   types: TabWithCounts['types'];
-  colorScheme: string;
+  colorPalette: string;
 }) => {
   const datasetType = types.find(type => type.type === 'Dataset');
   const resourceCatalogType = types.find(
@@ -81,7 +81,7 @@ const TabLabels = ({
 
   const tagStyles = {
     borderRadius: 'full',
-    colorScheme,
+    colorPalette,
     ml: 1.5,
     my: 1,
     size: 'sm',

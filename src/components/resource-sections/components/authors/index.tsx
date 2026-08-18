@@ -11,7 +11,7 @@ import {
   HStack,
   List,
 } from '@chakra-ui/react';
-import { Tooltip } from '@/components/ui/tooltip';
+import Tooltip from '../../../tooltip';
 import { Link } from 'src/components/link';
 import { FormattedResource } from 'src/utils/api/types';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';

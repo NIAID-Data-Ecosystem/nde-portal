@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Flex, Text } from '@chakra-ui/react';
+import { Accordion, Box, Flex, Text } from '@chakra-ui/react';
 import Tooltip from 'src/components/tooltip';
 import { FiltersChartToggle } from './filters-chart-toggle';
 
@@ -60,7 +60,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                     }}
                   >
                     <Tooltip
-                      label={
+                      content={
                         description.charAt(0).toUpperCase() +
                         description.slice(1)
                       }
@@ -81,7 +81,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                   </Accordion.ItemTrigger>
                   {filterId && (
                     <Tooltip
-                      label={
+                      content={
                         isVizActive
                           ? `Remove ${name} visualisation chart`
                           : `Add ${name} visualisation chart`

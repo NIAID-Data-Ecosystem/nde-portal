@@ -418,7 +418,7 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
             return (
               <TagCell
                 key={str}
-                colorScheme='secondary'
+                colorPalette='secondary'
                 value={str}
                 noOfLines={1}
                 isLoading={isLoading}

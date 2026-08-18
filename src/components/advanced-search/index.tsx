@@ -43,7 +43,7 @@ import { formatNumber } from 'src/utils/helpers';
 import { ErrorBanner } from '../error/ErrorBanner';
 
 export interface AdvancedSearchProps {
-  colorScheme?: string;
+  colorPalette?: string;
   sampleQueries?: {
     name: string;
     items: FlattenedItem[];
@@ -57,7 +57,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   querystring: initialQuerystring,
   onValidSubmit,
   renderButtonGroup,
-  colorScheme = 'primary',
+  colorPalette = 'primary',
   sampleQueries = SampleQueriesData as {
     name: string;
     items: FlattenedItem[];
@@ -262,10 +262,10 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
 
         <ErrorBanner errors={errors} setErrors={setErrors} />
         <Flex my={4} justifyContent='flex-end'>
-          {renderButtonGroup && renderButtonGroup({ colorScheme })}
+          {renderButtonGroup && renderButtonGroup({ colorPalette })}
           {handleSubmit && (
             <Button
-              colorPalette={colorScheme}
+              colorPalette={colorPalette}
               onClick={handleSubmit}
               disabled={
                 items.length === 0 ||

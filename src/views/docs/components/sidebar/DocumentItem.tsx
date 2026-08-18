@@ -18,14 +18,14 @@ import { MAX_HEADING_DEPTH } from '../../constants';
 export const DocumentItem = ({
   item,
   selectedSlug,
-  colorScheme,
+  colorPalette,
   isLoading,
   activePageSlug,
 }: DocumentItemProps) => {
   const isSelected = selectedSlug === item.slug;
-  const bg = isSelected ? `${colorScheme}.100` : 'transparent';
+  const bg = isSelected ? `${colorPalette}.100` : 'transparent';
   const color = isSelected
-    ? `${colorScheme}.600!important`
+    ? `${colorPalette}.600!important`
     : 'text.body!important';
 
   // Extract section and subsection names from description
@@ -70,7 +70,7 @@ export const DocumentItem = ({
             }}
           >
             <SkeletonText
-              isLoaded={!isLoading}
+              loading={isLoading}
               width={isLoading ? '75%' : '100%'}
             >
               {item.name}

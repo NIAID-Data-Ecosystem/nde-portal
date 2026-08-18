@@ -6,7 +6,7 @@ import { FaMagnifyingGlass } from 'react-icons/fa6';
 export const DropdownListItem = React.memo(
   ({
     children,
-    colorScheme = 'primary',
+    colorPalette = 'primary',
     handleSubmit,
     id,
     index,
@@ -14,7 +14,7 @@ export const DropdownListItem = React.memo(
     highlight,
   }: {
     children: string;
-    colorScheme?: string;
+    colorPalette?: string;
     handleSubmit: () => void;
     id: string;
     index: number;
@@ -45,7 +45,7 @@ export const DropdownListItem = React.memo(
           {ontology && (
             <Text
               fontSize='12px'
-              color={`${colorScheme}.800`}
+              color={`${colorPalette}.800`}
               wordBreak='break-word'
               fontWeight='light'
               textAlign='left'
@@ -67,7 +67,7 @@ export const DropdownListItem = React.memo(
               styles={{
                 fontWeight: 'bold',
                 textDecoration: 'underline',
-                color: `${colorScheme}.600`,
+                color: `${colorPalette}.600`,
                 bg: 'transparent',
               }}
             >

@@ -10,17 +10,17 @@ export interface BadgeWithTooltipProps extends BadgeProps {
 }
 export const BadgeWithTooltip = ({
   children,
-  colorScheme,
+  colorPalette,
   tooltipLabel,
   leftIcon,
   value,
   ...props
 }: BadgeWithTooltipProps) => {
   return (
-    <Tooltip label={tooltipLabel}>
+    <Tooltip content={tooltipLabel}>
       <Tag.Root
         size='md'
-        colorPalette={colorScheme}
+        colorPalette={colorPalette}
         borderRadius='full'
         variant='subtle'
         {...props}

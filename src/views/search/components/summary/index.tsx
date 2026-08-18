@@ -101,7 +101,7 @@ const SummaryGrid = (props: SummaryGridProps) => {
                           </Flex>
                         }
                         textProps={{ fontSize: 'sm', fontWeight: 'semibold' }}
-                        tooltipProps={{ hasArrow: true }}
+                        tooltipProps={{ showArrow: true }}
                       />
                       <FiltersDisclaimer />
                     </Flex>

@@ -12,7 +12,7 @@ export const BookmarkIconButton: React.FC<
     ariaLabel || (isFavorited ? 'Remove from saved' : 'Save this resource');
 
   return (
-    <Tooltip label={label}>
+    <Tooltip content={label}>
       <IconButton
         aria-label={label}
         onClick={onClick}

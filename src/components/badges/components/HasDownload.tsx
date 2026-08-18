@@ -50,7 +50,7 @@ export const HasDownload = ({
 
   return (
     <BadgeWithTooltip
-      colorScheme={getColorScheme()}
+      colorPalette={getColorScheme()}
       tooltipLabel={getTooltipLabel()}
       {...props}
     >

@@ -12,7 +12,7 @@ overwrite real anatomy slots if the upstream order ever changed.
 
 Consumers must set `colorPalette` on the same element that receives these
 styles, so the `--chakra-colors-color-palette-*` variables exist to resolve
-against. v2's fallback was `props.colorScheme ? \`${colorScheme}.200\` :
+against. v2's fallback was `props.colorPalette ? \`${colorPalette}.200\` :
 'gray.200'`, and gray is Chakra v3's global default palette, so an unset
 `colorPalette` still lands on `gray.200`.
 */

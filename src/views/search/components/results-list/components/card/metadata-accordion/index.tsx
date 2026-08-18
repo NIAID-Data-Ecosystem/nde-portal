@@ -127,7 +127,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                   >
                     {sortedMetadataContent.map(
                       ({ label, property, glyph, isDisabled }) => {
-                        const colorScheme = isDisabled
+                        const colorPalette = isDisabled
                           ? 'gray'
                           : getMetadataTheme(property);
                         const schemaProperty = schema[property];
@@ -143,9 +143,9 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                             size='md'
                             variant='subtle'
                             borderRadius='full'
-                            colorPalette={colorScheme}
+                            colorPalette={colorPalette}
                             // darker for variableMeasured
-                            color={`${colorScheme}.${
+                            color={`${colorPalette}.${
                               property === 'variableMeasured' ? '900' : '700'
                             }`}
                             m={0.5}
@@ -153,7 +153,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                             opacity={isDisabled ? 0.65 : 1}
                           >
                             <Tooltip
-                              label={
+                              content={
                                 isDisabled
                                   ? `No ${label.toLocaleLowerCase()} data.`
                                   : description
@@ -225,7 +225,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                                           >
                                             <MetadataContent
                                               includeOntology
-                                              colorScheme={getMetadataTheme(
+                                              colorPalette={getMetadataTheme(
                                                 props.property,
                                               )}
                                               {...item}

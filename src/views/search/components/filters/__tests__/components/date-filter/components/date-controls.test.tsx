@@ -20,7 +20,7 @@ describe('date-controls', () => {
     const onDateSelect = jest.fn();
     render(
       <DateControls
-        colorScheme='secondary'
+        colorPalette='secondary'
         selectedDates={[]}
         resourcesWithNoDate={
           [{ term: '-_exists_', label: 'No', count: 10 }] as any
@@ -38,7 +38,7 @@ describe('date-controls', () => {
     const onDateSelect = jest.fn();
     const { rerender } = render(
       <DateControls
-        colorScheme='secondary'
+        colorPalette='secondary'
         selectedDates={['_exists_']}
         resourcesWithNoDate={
           [{ term: '-_exists_', label: 'No', count: 1 }] as any
@@ -53,7 +53,7 @@ describe('date-controls', () => {
 
     rerender(
       <DateControls
-        colorScheme='secondary'
+        colorPalette='secondary'
         selectedDates={['2020-01-01', '2020-12-31']}
         resourcesWithNoDate={
           [{ term: '-_exists_', label: 'No', count: 1 }] as any
@@ -73,7 +73,7 @@ describe('date-controls', () => {
   it('disables no-date checkbox when no no-date resources exist', () => {
     render(
       <DateControls
-        colorScheme='secondary'
+        colorPalette='secondary'
         selectedDates={[]}
         resourcesWithNoDate={[] as any}
         onDateSelect={jest.fn()}

@@ -19,7 +19,7 @@ import { FilterResults } from '../../types';
 import { SearchQueryParams } from 'src/views/search/types';
 
 interface DateFilterProps {
-  colorScheme: string;
+  colorPalette: string;
   queryParams: SearchQueryParams;
   selectedDates: string[];
   handleSelectedFilter: (dates: string[]) => void;
@@ -62,7 +62,7 @@ const DateFilterContent: React.FC<
     isUpdating: boolean;
   }
 > = ({
-  colorScheme,
+  colorPalette,
   results,
   initialResults,
   error,
@@ -112,7 +112,7 @@ const DateFilterContent: React.FC<
 
       {showDateControls && (
         <DateControls
-          colorScheme={colorScheme}
+          colorPalette={colorPalette}
           selectedDates={selectedDates}
           resourcesWithNoDate={resourcesWithNoDate}
           onDateSelect={handleSelectedFilter}
@@ -190,7 +190,7 @@ export const DateFilter: React.FC<DateFilterProps> = props => {
       data={initialResults?.date?.terms || []}
       isLoading={initialLoading}
       selectedDates={selectedDates}
-      colorScheme='secondary'
+      colorPalette='secondary'
     >
       <DateFilterContent
         results={updatedResults}

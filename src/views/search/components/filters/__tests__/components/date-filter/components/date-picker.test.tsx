@@ -19,7 +19,7 @@ describe('date-picker', () => {
     const handleSelectedFilter = jest.fn();
     render(
       <DatePicker
-        colorScheme='secondary'
+        colorPalette='secondary'
         selectedDates={['2020-01-01', '2022-12-31']}
         handleSelectedFilter={handleSelectedFilter}
         resetFilter={jest.fn()}
@@ -45,7 +45,7 @@ describe('date-picker', () => {
     const resetFilter = jest.fn();
     render(
       <DatePicker
-        colorScheme='secondary'
+        colorPalette='secondary'
         selectedDates={['2020-01-01', '2099-12-31'] as any}
         handleSelectedFilter={handleSelectedFilter}
         resetFilter={resetFilter}

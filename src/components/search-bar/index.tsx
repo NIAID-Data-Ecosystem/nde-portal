@@ -4,7 +4,7 @@ import { uniq } from 'lodash';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import { Button, Flex, Icon, IconButton, Text, List } from '@chakra-ui/react';
-import { Tooltip } from '@/components/ui/tooltip';
+import Tooltip from '../tooltip';
 import { useLocalStorage, useReadLocalStorage } from 'usehooks-ts';
 import {
   DropdownInput,
@@ -51,7 +51,7 @@ const SearchInput = ({
               </Flex>
             )}
             <Button
-              colorPalette={inputProps.colorScheme}
+              colorPalette={inputProps.colorPalette}
               aria-label={inputProps.ariaLabel}
               size='sm'
               type='submit'
@@ -67,7 +67,7 @@ const SearchInput = ({
               </Icon>
             </Button>
             <Button
-              colorPalette={inputProps.colorScheme}
+              colorPalette={inputProps.colorPalette}
               aria-label={inputProps.ariaLabel}
               size={inputProps.size}
               type='submit'
@@ -109,7 +109,7 @@ interface SearchBarProps extends SearchBarWithDropdownProps {
   value?: string;
   ariaLabel: string;
   placeholder: string;
-  colorScheme?: string;
+  colorPalette?: string;
   size?: string;
   searchHistory?: string[];
   setSearchHistory: React.Dispatch<React.SetStateAction<string[]>>;
@@ -118,7 +118,7 @@ interface SearchBarProps extends SearchBarWithDropdownProps {
 const SearchBar = ({
   ariaLabel,
   placeholder,
-  colorScheme = 'primary',
+  colorPalette = 'primary',
   size = 'md',
   optionMenuProps,
   searchHistory,
@@ -222,7 +222,7 @@ const SearchBar = ({
     <>
       <SearchInput
         id='search-bar'
-        colorScheme={colorScheme}
+        colorPalette={colorPalette}
         ariaLabel={ariaLabel}
         placeholder={placeholder}
         size={size}
@@ -319,7 +319,7 @@ const SearchBar = ({
                 <SearchHistoryItem
                   key={str}
                   index={index}
-                  colorScheme={colorScheme}
+                  colorPalette={colorPalette}
                   searchTerm={searchTerm}
                   value={str}
                   onClick={value => handleSubmit(value)}
@@ -344,7 +344,7 @@ export interface SearchBarWithDropdownProps {
   value?: string;
   ariaLabel: string;
   placeholder: string;
-  colorScheme?: string;
+  colorPalette?: string;
   size?: string;
   showSearchHistory?: boolean;
   showOptionsMenu?: boolean;
@@ -378,7 +378,7 @@ export const DropdownSearchInput = (props: SearchBarWithDropdownProps) => {
     <InputWithDropdown
       inputValue={defaultInputValue}
       cursorMax={searchHistory.length}
-      colorScheme={props.colorScheme}
+      colorPalette={props.colorPalette}
     >
       <SearchBar
         searchHistory={searchHistory}

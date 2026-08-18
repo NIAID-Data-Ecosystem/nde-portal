@@ -17,7 +17,7 @@ export const SidebarDesktop = ({
   isLoading,
   sections,
   selectedSlug,
-  colorScheme = DEFAULT_COLOR_SCHEME,
+  colorPalette = DEFAULT_COLOR_SCHEME,
 }: SidebarDesktopProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -95,10 +95,10 @@ export const SidebarDesktop = ({
                   aria-label={isLoading ? 'Loading' : undefined}
                 >
                   <SkeletonText
-                    isLoaded={!isLoading}
+                    loading={isLoading}
                     width={isLoading ? '80%' : '100%'}
-                    lineClamp={1}
-                    skeletonHeight={4}
+                    noOfLines={1}
+                    height={4}
                     display='flex'
                     alignItems='center'
                     flex={1}
@@ -146,7 +146,7 @@ export const SidebarDesktop = ({
                           key={item.id}
                           item={item}
                           selectedSlug={selectedSlug}
-                          colorScheme={colorScheme}
+                          colorPalette={colorPalette}
                           isLoading={isLoading}
                           activePageSlug={selectedSlug}
                         />

@@ -34,7 +34,7 @@ export const Summary = ({
       bg='status.info_lt'
       borderRadius='semi'
     >
-      <Tooltip label='This summary is based on the description field using ChatGPT4.'>
+      <Tooltip content='This summary is based on the description field using ChatGPT4.'>
         <Link
           href='/knowledge-center/ai-generated'
           mx={1}

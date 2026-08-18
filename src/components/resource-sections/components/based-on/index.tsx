@@ -12,7 +12,7 @@ import {
   VisuallyHidden,
   useDisclosure,
 } from '@chakra-ui/react';
-import { Tooltip } from '@/components/ui/tooltip';
+import Tooltip from '../../../tooltip';
 import { Link } from 'src/components/link';
 import { IsBasedOn, IsBasisFor } from 'src/utils/api/types';
 import { uniqueId } from 'lodash';
@@ -159,7 +159,7 @@ const BasedOnTable = ({
           {title}
         </Heading>
       )}
-      <TableWrapper colorScheme='primary'>
+      <TableWrapper colorPalette='primary'>
         <Table.ScrollArea>
           <Table.Root
             role='table'
@@ -292,7 +292,7 @@ const BasedOnTable = ({
                                             <span>
                                               <TagWithUrl
                                                 href={type?.url || ''}
-                                                colorScheme='primary'
+                                                colorPalette='primary'
                                                 isExternal
                                               >
                                                 {type?.name ||
@@ -361,7 +361,7 @@ const BasedOnTable = ({
           from={from}
           setFrom={setFrom}
           pageSizeOptions={ROW_SIZES}
-          colorScheme='primary'
+          colorPalette='primary'
           __css={{
             '>div': { py: 1 },
           }}

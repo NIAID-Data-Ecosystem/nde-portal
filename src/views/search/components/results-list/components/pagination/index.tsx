@@ -126,7 +126,7 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
               borderColor='gray.200'
               cursor='pointer'
               display={{ base: 'block', md: 'none' }}
-              onValueChange={e => handleSelectedPage(+e.target.value)}
+              onChange={e => handleSelectedPage(+e.target.value)}
               p={1}
               size='md'
               value={selectedPage}

@@ -19,8 +19,8 @@ export const MetadataScoreToggle = React.memo(
     //   <FormControl display='flex' alignItems='center'>
     //     <Tooltip
     //       bg='white'
-    //       isDisabled={isDisabled}
-    //       label={
+    //       disabled={isDisabled}
+    //       content={
     //         <Stack color='text.body' lineHeight='shorter' p={1}>
     //           <Text color='inherit'>
     //             Ranks results based on the presence of unique fields.
@@ -63,7 +63,7 @@ export const MetadataScoreToggle = React.memo(
     //       id='metadata-score-toggle'
     //       isChecked={isChecked}
     //       onChange={handleToggle}
-    //       colorScheme='secondary'
+    //       colorPalette='secondary'
     //       isDisabled={isDisabled}
     //     />
     //   </FormControl>

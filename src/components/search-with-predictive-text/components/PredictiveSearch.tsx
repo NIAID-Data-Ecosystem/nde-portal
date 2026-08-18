@@ -41,7 +41,7 @@ export interface SearchWithPredictiveTextProps
   hideSuggestions?: boolean;
   isDisabled?: boolean;
   isInvalid?: boolean;
-  colorScheme?: InputProps['colorScheme'];
+  colorPalette?: InputProps['colorPalette'];
   inputValue?: string;
   onClose?: () => void; // triggered when input 'x' is pressed.
   onClick?: (
@@ -64,7 +64,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
   placeholder,
   size = 'sm',
   type = 'text',
-  colorScheme = 'primary',
+  colorPalette = 'primary',
   hideSuggestions,
   handleSubmit,
   renderSubmitButton,
@@ -108,7 +108,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
       {/* Keep dropdown agnostic from results. */}
       <InputWithDropdown
         inputValue={inputValue !== undefined ? inputValue : searchTerm}
-        colorScheme={colorScheme}
+        colorPalette={colorPalette}
         cursorMax={suggestions.length}
       >
         <DropdownInput
@@ -128,7 +128,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
             renderSubmitButton
               ? props => {
                   return renderSubmitButton({
-                    colorScheme,
+                    colorPalette,
                     ariaLabel,
                     size,
                     isDisabled: isLoading || !searchTerm || false,
@@ -138,7 +138,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
                   // return (
                   //   <Button
                   //     display='flex'
-                  //     colorScheme={colorScheme}
+                  //     colorPalette={colorPalette}
                   //     aria-label={ariaLabel}
                   //     // isDisabled={isLoading || false}
                   //     size={size}

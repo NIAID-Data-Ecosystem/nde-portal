@@ -1,8 +1,14 @@
 import React, { ReactNode } from 'react';
-import { Card, CardProps, BoxProps, TextProps, Text } from '@chakra-ui/react';
+import {
+  Card,
+  CardProps,
+  BoxProps,
+  TextProps,
+  Text,
+  Skeleton,
+} from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { TypeBanner } from 'src/components/resource-sections/components';
-import { Skeleton } from 'src/components/skeleton';
 import { TypeBannerProps } from 'src/components/resource-sections/components/type-banner';
 
 const CARD_HEIGHTS = {
@@ -48,7 +54,7 @@ const Banner = ({
 }: BannerProps) => {
   return (
     <Skeleton
-      isLoaded={!isLoading}
+      loading={isLoading}
       height={isLoading ? '40px' : 'auto'}
       borderTopRadius='md'
     >
@@ -95,7 +101,7 @@ const Header = ({ isLoading = false, children, ...boxProps }: HeaderProps) => {
       }}
       {...boxProps}
     >
-      <Skeleton isLoaded={!isLoading} minHeight='27px' flex={1}>
+      <Skeleton loading={isLoading} minHeight='27px' flex={1}>
         {!isLoading && children}
       </Skeleton>
     </Card.Header>

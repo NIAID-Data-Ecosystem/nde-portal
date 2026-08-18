@@ -1,4 +1,3 @@
-import { ColorPalette } from '@chakra-ui/react';
 import { Params } from 'src/utils/api';
 
 /**
@@ -117,6 +116,14 @@ export interface FacetProps {
   label: string;
   value: string;
   fill: string;
-  colorPalette: ColorPalette;
+  /**
+   * A raw colour palette object (e.g. `theme.colors.blue`), indexed at numeric
+   * steps for chart fills and strokes — *not* a Chakra `colorPalette` name.
+   *
+   * v2 typed this as `ThemingProps['colorScheme']`, which never matched what the
+   * call sites actually assign or read. Some fallbacks pass `''`, hence the
+   * string arm and the optional chaining at every read site.
+   */
+  colorScheme: Record<string, string> | string;
   tooltip: string;
 }

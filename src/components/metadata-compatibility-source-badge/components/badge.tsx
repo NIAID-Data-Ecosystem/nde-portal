@@ -28,14 +28,14 @@ const colorMax = (bins: Bin[]) =>
   bins.reduce((m, b) => Math.max(m, b.count), 0);
 
 const rectColorScale = (bins: Bin[], type?: string) => {
-  const colorScheme = !type
+  const colorPalette = !type
     ? [primary2, primary2]
     : type === 'required'
     ? [primary2, primary2]
     : [secondary2, secondary2];
 
   return scaleLinear<string>({
-    range: colorScheme,
+    range: colorPalette,
     domain: [0, colorMax(bins)],
   });
 };
@@ -258,7 +258,7 @@ export const CompatibilityBadge = ({
           left={margin.left}
         >
           <Tooltip
-            label='Recommended fields coverage.'
+            content='Recommended fields coverage.'
             position='absolute'
             left={0}
             top={0}
@@ -286,7 +286,7 @@ export const CompatibilityBadge = ({
 
         <Group className='required-fields' top={requiredTop} left={margin.left}>
           <Tooltip
-            label='Fundamental fields coverage.'
+            content='Fundamental fields coverage.'
             position='absolute'
             left={0}
             top={0}

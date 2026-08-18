@@ -8,6 +8,7 @@ import {
   Text,
   VStack,
   Stack,
+  StackSeparator,
 } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import {
@@ -236,7 +237,7 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
       >
         <VStack alignItems='flex-start'>
           {/* Geographic information of dataset */}
-          <Stack.Separator />
+          <StackSeparator />
           {spatialInformation && (
             <>
               <Text fontWeight='medium' color='gray.800'>
@@ -245,9 +246,9 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
               <MetadataContent name={spatialInformation.join(', ')} />
             </>
           )}
-          <Stack.Separator />
+          <StackSeparator />
           {/* Period information of dataset */}
-          <Stack.Separator />
+          <StackSeparator />
           {temporalCoverage &&
             temporalCoverage.map((coverage, idx) => {
               if (!coverage) {
@@ -291,9 +292,9 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
                 </React.Fragment>
               );
             })}
-          <Stack.Separator />
+          <StackSeparator />
           {/* Language of dataset */}
-          <Stack.Separator />
+          <StackSeparator />
           {inLanguage?.name && (
             <>
               <Text fontWeight='medium' color='gray.800'>

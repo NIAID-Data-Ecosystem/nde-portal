@@ -45,7 +45,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   isResponsive = true,
   buttonVariant,
   ariaLabel,
-  colorScheme,
+  colorPalette,
   isLoading,
   ...props
 }) => {
@@ -91,7 +91,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
           ]}
           size={size}
           _focusWithin={{
-            svg: { color: `${colorScheme}.500` },
+            svg: { color: `${colorPalette}.500` },
           }}
         >
           <InputLeftElement
@@ -108,7 +108,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
             variant='shadow'
             size={size}
             onValueChange={e => handleChange(e)}
-            colorPalette={colorScheme}
+            colorPalette={colorPalette}
             pr={handleSubmit ? sizeConfig[size].width : 0}
             bg={bg}
             height={sizeConfig[size].height}
@@ -130,7 +130,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
               {handleSubmit && (
                 <Button
                   size={size}
-                  colorPalette={colorScheme}
+                  colorPalette={colorPalette}
                   loading={isLoading}
                   aria-label='search'
                   type='submit'
@@ -153,7 +153,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
             right={0}
             ml={4}
             aria-label='Open search input'
-            colorPalette={colorScheme}
+            colorPalette={colorPalette}
             variant={buttonVariant || 'outline'}
             onClick={() => setShowInput(!showInput)}
             data-active={showInput}

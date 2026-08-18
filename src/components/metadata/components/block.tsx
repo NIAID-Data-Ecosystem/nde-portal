@@ -76,7 +76,7 @@ export const MetadataTooltip = ({
   tooltipLabel,
 }: Pick<MetadataBlockProps, 'isDisabled' | 'tooltipLabel'>) => {
   return (
-    <Tooltip label={tooltipLabel}>
+    <Tooltip content={tooltipLabel}>
       <Flex
         minW={4}
         minH={4}

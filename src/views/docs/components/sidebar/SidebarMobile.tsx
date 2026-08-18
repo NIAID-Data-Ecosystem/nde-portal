@@ -19,7 +19,7 @@ export const SidebarMobile = ({
   menuTitle,
   sections,
   selectedSlug,
-  colorScheme = DEFAULT_COLOR_SCHEME,
+  colorPalette = DEFAULT_COLOR_SCHEME,
 }: SidebarMobileProps) => {
   return (
     <Menu matchWidth>
@@ -62,9 +62,9 @@ export const SidebarMobile = ({
                 <MenuItem
                   pl={6}
                   color={
-                    isSelected ? `${colorScheme}.600!important` : 'inherit'
+                    isSelected ? `${colorPalette}.600!important` : 'inherit'
                   }
-                  bg={isSelected ? `${colorScheme}.100` : 'transparent'}
+                  bg={isSelected ? `${colorPalette}.100` : 'transparent'}
                   asChild
                 >
                   <NextLink key={item.id} href={item.href}>

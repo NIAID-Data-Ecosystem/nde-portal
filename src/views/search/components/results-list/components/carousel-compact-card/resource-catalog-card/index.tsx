@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Flex, Text, Button } from '@chakra-ui/react';
-import { Tooltip } from '@/components/ui/tooltip';
+import { Flex, Text, Button, Skeleton } from '@chakra-ui/react';
+import Tooltip from '../../../../../../../components/tooltip';
 import { FormattedResource } from 'src/utils/api/types';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 import { ConditionsOfAccess, CreativeWorkStatus } from 'src/components/badges';
@@ -8,7 +8,6 @@ import { HasAPI } from 'src/components/badges/components/HasAPI';
 import { MetadataLabel } from 'src/components/metadata';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { SearchableItems } from 'src/components/searchable-items';
-import { Skeleton } from 'src/components/skeleton';
 import { CompactCard } from '../compact-card';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 import { hasSourceOrganization } from 'src/components/resource-sections/components/type-banner';
@@ -113,7 +112,7 @@ export const ResourceCatalogCard = ({
       </CompactCard.Header>
       <CompactCard.Body>
         {/* Date and badges */}
-        <Skeleton isLoaded={!isLoading} minHeight='30px'>
+        <Skeleton loading={isLoading} minHeight='30px'>
           {date && (
             <Flex
               bg={cardBg}
@@ -152,7 +151,7 @@ export const ResourceCatalogCard = ({
                     mx={0.5}
                     size='sm'
                     {...(isRetired && {
-                      colorScheme: 'gray',
+                      colorPalette: 'gray',
                       color: 'gray.900',
                     })}
                   />
@@ -163,7 +162,7 @@ export const ResourceCatalogCard = ({
                       mx={0.5}
                       size='sm'
                       {...(isRetired && {
-                        colorScheme: 'gray',
+                        colorPalette: 'gray',
                         color: 'gray.900',
                       })}
                     />
@@ -181,7 +180,7 @@ export const ResourceCatalogCard = ({
         </Skeleton>
 
         {/* Content types */}
-        <Skeleton isLoaded={!isLoading} px={-1}>
+        <Skeleton loading={isLoading} px={-1}>
           {aboutItems.length > 0 && (
             <Flex bg={cardBg} direction='column'>
               <MetadataLabel label='Content Types' />
@@ -189,7 +188,7 @@ export const ResourceCatalogCard = ({
                 <SearchableItems
                   items={aboutItems}
                   itemLimit={2}
-                  colorScheme={isRetired ? 'gray' : 'primary'}
+                  colorPalette={isRetired ? 'gray' : 'primary'}
                   tagColor={isRetired ? 'gray.900' : undefined}
                   linkColor={isRetired ? 'gray.900' : undefined}
                   isExpanded={showAllTypes}
@@ -206,7 +205,7 @@ export const ResourceCatalogCard = ({
         </Skeleton>
 
         {/* Description */}
-        <Skeleton isLoaded={!isLoading} flex='1' mt={2} mb={1}>
+        <Skeleton loading={isLoading} flex='1' mt={2} mb={1}>
           {description && (
             <>
               {shouldShowDescription ? (

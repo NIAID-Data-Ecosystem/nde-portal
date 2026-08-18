@@ -4,7 +4,7 @@ import { Highlight, Icon, Text, List } from '@chakra-ui/react';
 import { useDropdownContext } from '../../input-with-dropdown';
 
 interface SearchHistoryItemProps {
-  colorScheme: string;
+  colorPalette: string;
   index: number;
   searchTerm: string;
   value: string;
@@ -12,7 +12,7 @@ interface SearchHistoryItemProps {
 }
 export const SearchHistoryItem = React.memo(
   ({
-    colorScheme,
+    colorPalette,
     index,
     searchTerm,
     value,
@@ -54,7 +54,7 @@ export const SearchHistoryItem = React.memo(
             '& * > .search-term': {
               fontWeight: 'bold',
               textDecoration: 'underline',
-              color: `${colorScheme}.400`,
+              color: `${colorPalette}.400`,
               bg: 'transparent',
             },
           }}
@@ -64,7 +64,7 @@ export const SearchHistoryItem = React.memo(
             styles={{
               fontWeight: 'bold',
               textDecoration: 'underline',
-              color: `${colorScheme}.400`,
+              color: `${colorPalette}.400`,
               bg: 'transparent',
             }}
           >

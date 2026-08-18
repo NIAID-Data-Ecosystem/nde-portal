@@ -20,7 +20,7 @@ export const ChartTypePicker = (props: {
           size='xs'
           value={props.value}
           disabled={props.isDisabled}
-          onValueChange={e => props.onChange(e.target.value as ChartType)}
+          onChange={e => props.onChange(e.target.value as ChartType)}
           style={{ textTransform: 'capitalize' }}
         >
           {props.options.map(o => (

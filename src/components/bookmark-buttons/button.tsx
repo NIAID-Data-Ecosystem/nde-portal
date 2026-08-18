@@ -5,10 +5,10 @@ export const BookmarkButton: React.FC<
   ButtonProps & {
     isFavorited: boolean;
   }
-> = ({ children, colorScheme = 'primary', isFavorited, onClick, ...rest }) => {
+> = ({ children, colorPalette = 'primary', isFavorited, onClick, ...rest }) => {
   return (
     <Button
-      colorPalette={colorScheme}
+      colorPalette={colorPalette}
       onClick={onClick}
       variant='ghost'
       size='sm'

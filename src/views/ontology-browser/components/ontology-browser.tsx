@@ -1,5 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Box, Flex, HStack, Spinner, Stack } from '@chakra-ui/react';
+import {
+  Alert,
+  Box,
+  Flex,
+  HStack,
+  Spinner,
+  Stack,
+  StackSeparator,
+} from '@chakra-ui/react';
 import { useQuery, useQueries } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import {
@@ -232,7 +240,7 @@ export const OntologyBrowser = ({
                       label='Exact Matches'
                       tooltipLabel={getTooltipLabelByCountType('termCount')}
                     />
-                    <Stack.Separator borderColor='gray.100' />
+                    <StackSeparator borderColor='gray.100' />
                     <OntologyTreeHeaderItem
                       label='Matches including sub-terms'
                       tooltipLabel={getTooltipLabelByCountType(

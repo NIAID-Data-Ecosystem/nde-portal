@@ -50,7 +50,7 @@ export interface TableProps<TData extends Record<string, string | number>> {
     data: TData;
     isLoading?: boolean;
   }) => React.ReactNode;
-  colorScheme?: string;
+  colorPalette?: string;
   isLoading?: boolean;
   numRows?: number[];
   hasPagination?: boolean;
@@ -123,7 +123,7 @@ interface MemoRowCellsProps {
   isLoading?: boolean;
   cellAs?: any;
   stickyFirstColumn?: boolean;
-  colorScheme?: string;
+  colorPalette?: string;
 }
 
 // Cells are isolated in their own memo'd component so that re-rendering a
@@ -137,7 +137,7 @@ const MemoRowCells = React.memo(
     isLoading,
     cellAs = 'td',
     stickyFirstColumn,
-    colorScheme = 'gray',
+    colorPalette = 'gray',
   }: MemoRowCellsProps) => (
     <>
       {columns.map((column, idx) => {
@@ -149,7 +149,7 @@ const MemoRowCells = React.memo(
                 zIndex: 1,
                 bg: 'inherit',
                 borderRight: '1px solid',
-                borderColor: `${colorScheme}.200`,
+                borderColor: `${colorPalette}.200`,
               }
             : null;
         return (
@@ -180,7 +180,7 @@ interface VirtualizedRowItemProps {
   rowProps?: any;
   onResize: (index: number, height: number) => void;
   stickyFirstColumn?: boolean;
-  colorScheme?: string;
+  colorPalette?: string;
 }
 
 // One virtualized row. Measures its own natural height after layout and
@@ -195,7 +195,7 @@ const VirtualizedRowItem = React.memo(
     rowProps,
     onResize,
     stickyFirstColumn,
-    colorScheme,
+    colorPalette,
   }: VirtualizedRowItemProps) => {
     const ref = useRef<HTMLDivElement>(null);
     useLayoutEffect(() => {
@@ -225,7 +225,7 @@ const VirtualizedRowItem = React.memo(
             isLoading={isLoading}
             cellAs='div'
             stickyFirstColumn={stickyFirstColumn}
-            colorScheme={colorScheme}
+            colorPalette={colorPalette}
           />
         </Row>
       </div>
@@ -259,7 +259,7 @@ interface VirtualizedBodyProps {
   tableBodyProps?: HTMLChakraProps<'tbody'>;
   listRef?: React.MutableRefObject<VariableSizeList | null>;
   stickyFirstColumn?: boolean;
-  colorScheme?: string;
+  colorPalette?: string;
 }
 
 // Virtualized body: only the rows in view (plus overscan) are mounted.
@@ -275,7 +275,7 @@ const VirtualizedBody: React.FC<VirtualizedBodyProps> = ({
   tableBodyProps,
   listRef: externalListRef,
   stickyFirstColumn,
-  colorScheme,
+  colorPalette,
 }) => {
   const internalListRef = useRef<VariableSizeList | null>(null);
   const setListRef = useCallback(
@@ -344,7 +344,7 @@ const VirtualizedBody: React.FC<VirtualizedBodyProps> = ({
                 rowProps={rowProps}
                 onResize={handleResize}
                 stickyFirstColumn={stickyFirstColumn}
-                colorScheme={colorScheme}
+                colorPalette={colorPalette}
               />
             </div>
           );
@@ -357,7 +357,7 @@ const VirtualizedBody: React.FC<VirtualizedBodyProps> = ({
 export const Table: React.FC<TableProps<any>> = ({
   ariaLabel,
   caption,
-  colorScheme = 'gray',
+  colorPalette = 'gray',
   columns,
   data,
   getCells,
@@ -603,7 +603,7 @@ export const Table: React.FC<TableProps<any>> = ({
                 zIndex: stickyHeader ? 3 : 2,
                 bg: isSelected ? 'page.alt' : 'white',
                 borderRight: '1px solid',
-                borderColor: `${colorScheme}.200`,
+                borderColor: `${colorPalette}.200`,
               }
             : null;
         return (
@@ -613,7 +613,7 @@ export const Table: React.FC<TableProps<any>> = ({
             label={column.title}
             tooltip={column.tooltip}
             isSelected={isSelected}
-            borderBottomColor={`${colorScheme}.200`}
+            borderBottomColor={`${colorPalette}.200`}
             isSortable={column.isSortable}
             tableSortToggleProps={{
               isSelected,
@@ -674,7 +674,7 @@ export const Table: React.FC<TableProps<any>> = ({
                   getCells={getCells}
                   isLoading={isLoading}
                   stickyFirstColumn={stickyFirstColumn}
-                  colorScheme={colorScheme}
+                  colorPalette={colorPalette}
                 />
               </Row>
             ))
@@ -695,7 +695,7 @@ export const Table: React.FC<TableProps<any>> = ({
     // SSR / pre-mount placeholder. Same outer box so the page doesn't jump
     // when the virtualized list takes over.
     return (
-      <TableWrapper colorScheme={colorScheme} overflow='visible'>
+      <TableWrapper colorPalette={colorPalette} overflow='visible'>
         <div
           role='table'
           aria-label={ariaLabel}
@@ -710,7 +710,7 @@ export const Table: React.FC<TableProps<any>> = ({
 
   if (virtualized) {
     return (
-      <TableWrapper colorScheme={colorScheme} overflow='visible'>
+      <TableWrapper colorPalette={colorPalette} overflow='visible'>
         {/*
           Single horizontal scroll container. The outer div owns horizontal
           scroll for the entire table; header and virtualized body live
@@ -779,7 +779,7 @@ export const Table: React.FC<TableProps<any>> = ({
                 tableBodyProps={tableBodyProps}
                 listRef={virtualListRef}
                 stickyFirstColumn={stickyFirstColumn}
-                colorScheme={colorScheme}
+                colorPalette={colorPalette}
               />
             )}
           </div>
@@ -793,7 +793,7 @@ export const Table: React.FC<TableProps<any>> = ({
             from={from}
             setFrom={setFrom}
             pageSizeOptions={numRows}
-            colorScheme='gray'
+            colorPalette='gray'
             __css={{ '>div': { py: 1 } }}
           />
         )}
@@ -807,7 +807,7 @@ export const Table: React.FC<TableProps<any>> = ({
       overflow='auto'
       minH={isLoading ? '500px' : 'unset'}
     >
-      <TableWrapper colorScheme={colorScheme}>
+      <TableWrapper colorPalette={colorPalette}>
         {/* Top scrollbar */}
         {/* Rendered only when showTopScrollbar is requested AND the table
             content is actually wider than the container. When there is no
@@ -868,7 +868,7 @@ export const Table: React.FC<TableProps<any>> = ({
             from={from}
             setFrom={setFrom}
             pageSizeOptions={numRows}
-            colorScheme='gray'
+            colorPalette='gray'
             __css={{ '>div': { py: 1 } }}
           />
         )}

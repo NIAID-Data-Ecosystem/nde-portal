@@ -56,7 +56,7 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
 
         {/* Subtitle */}
         {(subtitle || isLoading) && (
-          <SkeletonText isLoaded={!isLoading} lineClamp={2} skeletonHeight={5}>
+          <SkeletonText loading={isLoading} noOfLines={2} height={5}>
             <Text color='gray.700' lineHeight='short'>
               {subtitle}
             </Text>
@@ -66,9 +66,9 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
         {/* Description */}
         {(topicEmphasizedDescription || isLoading) && (
           <SkeletonText
-            isLoaded={!isLoading}
-            lineClamp={5}
-            skeletonHeight={4}
+            loading={isLoading}
+            noOfLines={5}
+            height={4}
             maxWidth={{ base: 'unset', xl: 800 }}
           >
             {topicEmphasizedDescription && (

@@ -9,6 +9,7 @@ import {
   VStack,
   Separator,
   List,
+  StackSeparator,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import {
@@ -139,7 +140,7 @@ const Sections = ({
                   direction={{ base: 'column', md: 'row' }}
                 >
                   {/* Badge indicating completeness of metadata */}
-                  <Stack.Separator borderColor='gray.100' />
+                  <StackSeparator borderColor='gray.100' />
                   {data && data['_meta'] && (
                     <Flex
                       px={4}
@@ -156,9 +157,9 @@ const Sections = ({
                       />
                     </Flex>
                   )}
-                  <Stack.Separator borderColor='gray.100' />
+                  <StackSeparator borderColor='gray.100' />
                   {/* External links to access data, documents or dataset at the source. */}
-                  <Stack.Separator borderColor='gray.100' />
+                  <StackSeparator borderColor='gray.100' />
                   <ExternalAccess
                     data={data}
                     isLoading={isLoading}
@@ -198,7 +199,7 @@ const Sections = ({
                           ).map((genre, index) => (
                             <TagWithUrl
                               key={index}
-                              colorScheme='primary'
+                              colorPalette='primary'
                               href={{
                                 pathname: '/search',
                                 query: {
@@ -480,7 +481,7 @@ const Sections = ({
                 <Flex w='100%' justifyContent='flex-end' pb={2}>
                   <DownloadMetadata
                     buttonProps={{
-                      colorScheme: 'primary',
+                      colorPalette: 'primary',
                       variant: 'outline',
                       size: 'sm',
                       mb: 1,

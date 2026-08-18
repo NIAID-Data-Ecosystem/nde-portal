@@ -47,7 +47,7 @@ export const RadioSelect = ({
       </Radio>
       <SelectWithButton
         id='search-type'
-        colorScheme='gray'
+        colorPalette='gray'
         _hover={{ bg: 'gray.100' }}
         _focus={{ boxShadow: 'none' }}
         name={selected?.label}

@@ -75,7 +75,7 @@ export const Search = ({
             <Box zIndex={1} w='100%'>
               <SearchInput
                 size='md'
-                colorScheme='primary'
+                colorPalette='primary'
                 errors={errors}
                 setErrors={setErrors}
                 resetForm={resetForm}
@@ -119,7 +119,7 @@ export const Search = ({
                   <InputSubmitButton
                     items={items}
                     size='md'
-                    colorScheme='primary'
+                    colorPalette='primary'
                     // Button is disabled when the text input is needed but empty.
                     isDisabled={
                       selectedSearchType.id !== '_exists_' &&

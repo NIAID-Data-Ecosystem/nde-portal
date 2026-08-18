@@ -106,7 +106,7 @@ describe('filters/components/date-filter/index', () => {
 
     renderWithQueryClient(
       <DateFilter
-        colorScheme='secondary'
+        colorPalette='secondary'
         queryParams={{ q: 'abc', extra_filter: '(date:("2020"))' } as any}
         selectedDates={['2021-01-01', '2021-12-31']}
         handleSelectedFilter={jest.fn()}
@@ -158,7 +158,7 @@ describe('filters/components/date-filter/index', () => {
 
     renderWithQueryClient(
       <DateFilter
-        colorScheme='secondary'
+        colorPalette='secondary'
         queryParams={{ q: 'abc', extra_filter: '' } as any}
         selectedDates={[]}
         handleSelectedFilter={jest.fn()}

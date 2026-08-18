@@ -53,7 +53,7 @@ export const SearchLabel = ({
           _focus={{ borderColor: 'page.placeholder' }}
           _hover={{ bg: 'page.alt' }}
           value={selectedSearchType.id}
-          onValueChange={e => {
+          onChange={e => {
             const searchType = searchOptions.find(
               ({ id }) => id === e.target.value,
             );

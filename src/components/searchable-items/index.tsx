@@ -21,7 +21,7 @@ interface SearchableItemsProps extends Omit<FlexProps, 'onToggle'> {
   items: SearchableItem[];
   /** Extra params merged into every item's /search link, e.g. `{ tab: 'dc' }`. */
   searchParams?: Record<string, string>;
-  colorScheme?: TagProps['colorScheme'];
+  colorPalette?: TagProps['colorPalette'];
   linkColor?: string;
   tagColor?: TagProps['color'];
   generateButtonLabel?: (limit: number, length: number) => string;
@@ -51,8 +51,8 @@ const generateDefaultLabel = (limit: number, length: number) => {
  * 2. Controlled mode: when isExpanded and onToggle are provided, state is managed externally
  */
 export const SearchableItems: React.FC<SearchableItemsProps> = ({
-  colorScheme = 'primary',
-  linkColor = `${colorScheme}.500`,
+  colorPalette = 'primary',
+  linkColor = `${colorPalette}.500`,
   tagColor,
   generateButtonLabel = generateDefaultLabel,
   itemLimit = 3,
@@ -113,7 +113,7 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
       {uniqueItems.slice(0, currentLimit).map(item => (
         <TagWithUrl
           key={getItemQuery(item)}
-          colorScheme={colorScheme}
+          colorPalette={colorPalette}
           color={tagColor}
           href={{
             pathname: '/search',
@@ -130,7 +130,7 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
       ))}
       {uniqueItems.length > itemLimit && (
         <Button
-          colorPalette={colorScheme}
+          colorPalette={colorPalette}
           size='xs'
           variant='plain'
           justifyContent='flex-end'

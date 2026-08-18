@@ -261,7 +261,7 @@ const Provenance: React.FC<Provenance> = ({
                       alignSelf='baseline'
                       w='100%'
                     >
-                      <Tooltip label='Search for results from this program collection.'>
+                      <Tooltip content='Search for results from this program collection.'>
                         <Button
                           variant='solid'
                           size='sm'

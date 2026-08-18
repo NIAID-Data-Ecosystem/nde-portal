@@ -12,7 +12,7 @@ import {
   useEditableContext,
   VisuallyHidden,
 } from '@chakra-ui/react';
-import { Tooltip } from '@/components/ui/tooltip';
+import Tooltip from '../../../tooltip';
 import { theme } from 'src/theme';
 import { MouseEventHandler, useEffect, useState } from 'react';
 import { FaCheck, FaRegPenToSquare, FaXmark } from 'react-icons/fa6';

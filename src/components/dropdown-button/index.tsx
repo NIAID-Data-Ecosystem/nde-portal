@@ -33,7 +33,7 @@ export interface DropdownButtonProps extends ButtonGroupProps {
 export const DropdownButton: React.FC<DropdownButtonProps> = ({
   ariaLabel,
   size,
-  colorScheme = 'primary',
+  colorPalette = 'primary',
   isDisabled,
   type,
   selectedOption,
@@ -50,7 +50,7 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
         attached
         variant='solid'
         size={size}
-        colorPalette={colorScheme}
+        colorPalette={colorPalette}
         height={height}
         {...props}
       >
@@ -70,9 +70,9 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
             alignItems='center'
             onClick={() => setOptionsOpen(!optionsOpen)}
             onMouseEnter={() => setOptionsOpen(true)}
-            bg={`${colorScheme}.400`}
+            bg={`${colorPalette}.400`}
             _hover={{
-              bg: `${colorScheme}.600`,
+              bg: `${colorPalette}.600`,
             }}
             _focus={{ boxShadow: 'none' }}
             {...props.iconButtonProps}
@@ -105,12 +105,12 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
                     px={4}
                     py={1}
                     mt={0.5}
-                    bg={`${colorScheme}.500`}
+                    bg={`${colorPalette}.500`}
                     cursor='pointer'
                     color='white'
                     whiteSpace='nowrap'
                     userSelect='none'
-                    _hover={{ bg: `${colorScheme}.400` }}
+                    _hover={{ bg: `${colorPalette}.400` }}
                     fontWeight='medium'
                     onClick={() => setSelectedOption(option.value)}
                     {...option.props}

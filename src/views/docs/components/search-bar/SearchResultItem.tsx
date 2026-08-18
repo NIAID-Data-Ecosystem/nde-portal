@@ -8,7 +8,7 @@ export const SearchResultItem = React.memo(
     index,
     result,
     searchTerm,
-    colorScheme,
+    colorPalette,
     onClick,
   }: SearchResultItemProps) => {
     const { cursor, getListItemProps } = useDropdownContext();
@@ -42,7 +42,7 @@ export const SearchResultItem = React.memo(
               styles={{
                 fontWeight: 'bold',
                 textDecoration: 'underline',
-                color: `${colorScheme}.400`,
+                color: `${colorPalette}.400`,
                 bg: 'transparent',
               }}
             >
@@ -57,7 +57,7 @@ export const SearchResultItem = React.memo(
               styles={{
                 fontWeight: 'bold',
                 textDecoration: 'underline',
-                color: `${colorScheme}.400`,
+                color: `${colorPalette}.400`,
                 bg: 'transparent',
               }}
             >

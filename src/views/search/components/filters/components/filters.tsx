@@ -23,7 +23,7 @@ import { useSharedDatasetAggregation } from 'src/views/search/hooks/useSharedDat
 import { useDataCollectionAggregation } from 'src/views/search/hooks/useDataCollectionAggregation';
 
 interface FiltersProps {
-  colorScheme?: string;
+  colorPalette?: string;
   isDisabled?: boolean;
   selectedFilters: SelectedFilterType;
   removeAllFilters: () => void;
@@ -33,7 +33,7 @@ interface FiltersProps {
 
 export const Filters = React.memo(
   ({
-    colorScheme = 'primary',
+    colorPalette = 'primary',
     isDisabled,
     selectedFilters,
     removeAllFilters,
@@ -317,7 +317,7 @@ export const Filters = React.memo(
                           >
                             {id === 'date' ? (
                               <DateFilter
-                                colorScheme={colorScheme}
+                                colorPalette={colorPalette}
                                 handleSelectedFilter={values =>
                                   handleSelectedFilters(values, property)
                                 }
@@ -334,7 +334,7 @@ export const Filters = React.memo(
                             ) : (
                               <FiltersList
                                 config={filterConfig}
-                                colorScheme={colorScheme}
+                                colorPalette={colorPalette}
                                 searchPlaceholder={`Search ${name.toLowerCase()} filters`}
                                 terms={results?.[id]?.terms || []}
                                 selectedFilters={selected || []}
