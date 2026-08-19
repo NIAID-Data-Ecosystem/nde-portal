@@ -329,6 +329,10 @@ export const FILTER_CONFIGS: FilterConfig[] = [
   if (!SHOW_DATA_COLLECTIONS_TAB && config.category === 'Data Collection') {
     return false;
   }
+  // Content Type is released with the Data Collections tab.
+  if (!SHOW_DATA_COLLECTIONS_TAB && config.id === CONTENT_TYPE_ABOUT_FIELD) {
+    return false;
+  }
   return true;
 }) as FilterConfig[];
 
