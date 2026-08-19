@@ -165,7 +165,6 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
                 <Spinner
                   color={`${colorPalette}.500`}
                   css={{ '--spinner-track-color': 'colors.gray.200' }}
-                  label='loading'
                   size='sm'
                 />
               ) : (

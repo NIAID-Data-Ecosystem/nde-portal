@@ -6,6 +6,7 @@ import {
   Heading,
   Icon,
   Separator,
+  Spinner,
   Tabs,
   Text,
 } from '@chakra-ui/react';
@@ -26,7 +27,6 @@ import {
 } from 'src/views/integration/components/Blocks';
 import { StepCard } from 'src/views/integration/components/Card';
 import { FaLightbulb } from 'react-icons/fa6';
-import Loading from 'src/components/loading';
 
 interface IntegrationProps {
   data?: { page: ContentProps };
@@ -233,7 +233,7 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
             </Text>
           </Flex>
         ) : isLoading || isFetching ? (
-          <Loading isLoading={isLoading} />
+          <Spinner />
         ) : (
           <Empty>No content for this page exists.</Empty>
         )}
