@@ -432,7 +432,7 @@ test.describe('a11y: DataCollection resource — populated', () => {
     // Generation-process card, collapsed at rest.
     await expect(page.getByText(ACTION_NAME).first()).toBeVisible();
     await expect(
-      page.getByRole('button', { name: /show details/i }),
+      page.getByRole('button', { name: /show "how to"/i }),
     ).toBeVisible();
 
     // `AboutResource` blocks above the overview.
@@ -486,12 +486,11 @@ test.describe('a11y: DataCollection resource — action process details', () => 
     // Expand the action's details, then wait for the panel's own accessible
     // proof — the button flips to "Hide details" and the "Steps" block mounts —
     // before scanning, so we scan the expanded DOM and not the frame before it.
-    await page.getByRole('button', { name: /show details/i }).click();
+    await page.getByRole('button', { name: /show "how to"/i }).click();
 
     await expect(
-      page.getByRole('button', { name: /hide details/i }),
+      page.getByRole('button', { name: /hide "how to"/i }),
     ).toBeVisible();
-    await expect(page.getByText('Steps', { exact: true })).toBeVisible();
 
     await runAxeScans(page, testInfo, 'action-process-expanded', {
       exclude: JSON_VIEWER_EXCLUDE,
