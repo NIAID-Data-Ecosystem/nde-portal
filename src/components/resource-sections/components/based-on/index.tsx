@@ -376,20 +376,6 @@ export const BasedOnTable = ({
   );
 };
 
-// ActionProcessDetail: labelled block of secondary details within an action process card.
-const ActionProcessDetail = ({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) => (
-  <Box>
-    <Text fontWeight='semibold'>{label}</Text>
-    {children}
-  </Box>
-);
-
 // BasedOnActionProcess: describes how a DataCollection was generated.
 // Detailed description and steps are nested under the action name,
 // see https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/444#issuecomment-5267360271
@@ -419,55 +405,41 @@ export const BasedOnActionProcess = ({
         <AccordionItem border='none'>
           {({ isExpanded }) => (
             <>
-              <Flex
-                flexWrap='wrap'
-                alignItems='flex-end'
-                columnGap={3}
-                rowGap={0.5}
-                lineHeight='short'
-              >
+              <Flex flexDirection='column' rowGap={0.5} lineHeight='short'>
                 {/* Name of action */}
-                <Flex flexDirection='column' gap={0.5}>
-                  <Text fontWeight='semibold'>
-                    {name || 'Generation process'}
+                <Text fontWeight='semibold'>
+                  {name || 'Generation process'}
+                </Text>
+                {disambiguatingDescription && (
+                  <Text fontWeight='medium' fontSize='xs'>
+                    {disambiguatingDescription}
                   </Text>
-                  {disambiguatingDescription && (
-                    <Text fontWeight='medium'>{disambiguatingDescription}</Text>
-                  )}
-                </Flex>
+                )}
+                {description && <Text fontSize='xs'>{description}</Text>}
                 <AccordionButton
                   w='auto'
                   gap={2}
                   px={0}
                   py={0}
-                  mb={0.5}
+                  my={0.5}
                   flexShrink={0}
-                  fontSize='sm'
+                  fontSize='xs'
                   fontWeight='medium'
                   textDecoration='underline'
                   _hover={{ textDecoration: 'none' }}
                 >
-                  <Text as='span' fontSize='xs'>
-                    {isExpanded ? 'Hide details' : 'Show details'}
-                  </Text>
+                  {isExpanded ? 'Hide "How To"' : 'Show "How To"'}
                   <Icon as={isExpanded ? FaMinus : FaPlus} fontSize='2xs' />
                 </AccordionButton>
               </Flex>
               <AccordionPanel px={0} pt={1} pb={1}>
                 <VStack alignItems='start' spacing={1} fontSize='xs'>
-                  {description && (
-                    <ActionProcessDetail label='Description'>
-                      <Text>{description}</Text>
-                    </ActionProcessDetail>
-                  )}
                   {steps.length > 0 && (
-                    <ActionProcessDetail label='Steps'>
-                      <VStack alignItems='start' spacing={1}>
-                        {steps.map((step, index) => (
-                          <Text key={index}>{step}</Text>
-                        ))}
-                      </VStack>
-                    </ActionProcessDetail>
+                    <VStack alignItems='start' spacing={1.5}>
+                      {steps.map((step, index) => (
+                        <Text key={index}>{step}</Text>
+                      ))}
+                    </VStack>
                   )}
                 </VStack>
               </AccordionPanel>
