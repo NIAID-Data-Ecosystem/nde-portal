@@ -7,6 +7,21 @@ import { tokens } from './tokens';
 import { breakpoints } from './tokens/breakpoints';
 
 /*
+Global @keyframes. Chakra emits these as real `@keyframes <name>` rules and
+registers the names as `animationName` tokens, so `animation='shake 0.2s
+ease-in-out'` works from any style prop. Emotion's `keyframes` helper does not:
+interpolating it into a plain template string yields the generated name without
+ever inserting the rule, so the animation silently no-ops.
+*/
+const keyframes = {
+  shake: {
+    '0%, 100%': { transform: 'translateX(0)' },
+    '25%': { transform: 'translateX(0.25rem)' },
+    '75%': { transform: 'translateX(-0.25rem)' },
+  },
+};
+
+/*
 Nothing under ./recipes or ./slot-recipes may import from this module or from
 ./index — they refer to tokens by name (`colorPalette.200`, `status.error`)
 rather than by value. That is what keeps the cycle out: under v2, three of the
@@ -23,6 +38,7 @@ export const config = defineConfig({
   globalCss,
   theme: {
     breakpoints,
+    keyframes,
     tokens,
     semanticTokens,
     recipes,
