@@ -40,11 +40,7 @@ import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { RelatedResources } from './components/related-resources';
 import { SamplesDisplay } from './components/samples';
-import { CreditText } from './components/sidebar/components/external/components/credit-text';
-import {
-  SHOW_CREDIT_TEXT_SECTION,
-  SHOULD_HIDE_SAMPLES,
-} from 'src/utils/feature-flags';
+import { SHOULD_HIDE_SAMPLES } from 'src/utils/feature-flags';
 import { ExampleOfWorkDisplay } from './components/example-of-work';
 import { AboutResource } from './components/about';
 import { DescriptionSection } from './components/description';
@@ -217,22 +213,6 @@ const Sections = ({
                     my={4}
                   >
                     <ResourceCitations citations={data?.citation} />
-                  </OverviewSectionWrapper>
-                )}
-
-                {/* Resource credit text */}
-                {SHOW_CREDIT_TEXT_SECTION && (
-                  <OverviewSectionWrapper
-                    isLoading={isLoading}
-                    label='Credit Text'
-                    tooltipLabel={getMetadataDescription(
-                      'creditText',
-                      data?.['@type'],
-                    )}
-                    my={4}
-                    scrollContainerProps={{ maxHeight: 'unset' }}
-                  >
-                    <CreditText data={data} px={2} />
                   </OverviewSectionWrapper>
                 )}
               </>

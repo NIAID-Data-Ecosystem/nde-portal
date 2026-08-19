@@ -13,12 +13,6 @@ export const SHOW_SAMPLES_TAB = true;
 // Hide the data collections tab on the search results page in production builds until approved. To enable tab in production, set this flag to `true`.
 export const SHOW_DATA_COLLECTIONS_TAB = !isProd;
 
-// Show credit text section in non-production environments for testing/review. To enable section in production, set this flag to `true`.
-// Note that we currently have two separate sections where credit text appears:
-// - In the sidebar under "Resource Access": src/components/resource-sections/components/sidebar/components/external/index.tsx
-// - As a standalone section in the overview section: src/components/resource-sections/index.tsx
-export const SHOW_CREDIT_TEXT_SECTION = !isProd;
-
 // Show AI-assisted search toggle and related components (e.g. banner) in non-production environments for testing/review. To enable in production, set this flag to `true`.
 export const SHOW_AI_ASSISTED_SEARCH = true;
 
