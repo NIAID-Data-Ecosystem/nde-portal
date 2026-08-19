@@ -14,7 +14,7 @@ describe('BasedOnActionProcess', () => {
 
     expect(screen.getByText('No details provided.')).toBeInTheDocument();
     expect(
-      screen.queryByRole('button', { name: /Show details/ }),
+      screen.queryByRole('button', { name: /Show "How To"/ }),
     ).not.toBeInTheDocument();
   });
 
@@ -60,18 +60,23 @@ describe('BasedOnActionProcess', () => {
     expect(screen.getByText('Manually curated')).toBeInTheDocument();
   });
 
-  it('collapses the details by default', () => {
+  it('collapses the how-to steps by default', () => {
     renderWithChakra(
       <BasedOnActionProcess
         name='Curation workflow'
         description='How the collection was built.'
+        actionProcess={{
+          '@type': 'HowTo',
+          step: ['Search the source'],
+        }}
       />,
     );
 
     expect(
-      screen.getByRole('button', { name: /Show details/ }),
+      screen.getByRole('button', { name: /Show "How To"/ }),
     ).toBeInTheDocument();
-    expect(screen.getByText('How the collection was built.')).not.toBeVisible();
+    expect(screen.getByText('How the collection was built.')).toBeVisible();
+    expect(screen.getByText('Search the source')).not.toBeVisible();
   });
 
   it('reveals the description and steps when the toggle is clicked', async () => {
@@ -87,14 +92,15 @@ describe('BasedOnActionProcess', () => {
       />,
     );
 
-    await user.click(screen.getByRole('button', { name: /Show details/ }));
+    await user.click(screen.getByRole('button', { name: /Show "How To"/ }));
 
     expect(
-      screen.getByRole('button', { name: /Hide details/ }),
+      screen.getByRole('button', { name: /Hide "How To"/ }),
     ).toBeInTheDocument();
-    await waitFor(() => expect(screen.getByText('Description')).toBeVisible());
     expect(screen.getByText('How the collection was built.')).toBeVisible();
-    expect(screen.getByText('Steps')).toBeVisible();
+    await waitFor(() =>
+      expect(screen.getByText('Search the source')).toBeVisible(),
+    );
     expect(screen.getByText('Search the source')).toBeVisible();
     expect(screen.getByText('Review the records')).toBeVisible();
   });
@@ -109,9 +115,8 @@ describe('BasedOnActionProcess', () => {
       />,
     );
 
-    await user.click(screen.getByRole('button', { name: /Show details/ }));
+    await user.click(screen.getByRole('button', { name: /Show "How To"/ }));
 
-    await waitFor(() => expect(screen.getByText('Steps')).toBeVisible());
     expect(screen.getByText('Only step')).toBeVisible();
   });
 
@@ -124,13 +129,12 @@ describe('BasedOnActionProcess', () => {
       />,
     );
 
-    await user.click(screen.getByRole('button', { name: /Show details/ }));
+    await user.click(screen.getByRole('button', { name: /Show "How To"/ }));
 
     expect(screen.queryByText('Description')).not.toBeInTheDocument();
   });
 
-  it('omits the Steps block when only a description is provided', async () => {
-    const user = userEvent.setup();
+  it('omits how to button when no actionProcess is provided', async () => {
     renderWithChakra(
       <BasedOnActionProcess
         name='Curation workflow'
@@ -138,9 +142,9 @@ describe('BasedOnActionProcess', () => {
       />,
     );
 
-    await user.click(screen.getByRole('button', { name: /Show details/ }));
-
-    expect(screen.queryByText('Steps')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: /Show "How To"/ }),
+    ).not.toBeInTheDocument();
   });
 });
 

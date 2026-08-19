@@ -400,7 +400,7 @@ export const BasedOnActionProcess = ({
       lineHeight='short'
       p={[2, 4]}
     >
-      {/* Description and steps are collapsed by default to keep the card compact. */}
+      {/* "How to" steps are collapsed by default to keep the card compact. */}
       <Accordion allowToggle>
         <AccordionItem border='none'>
           {({ isExpanded }) => (
@@ -416,33 +416,35 @@ export const BasedOnActionProcess = ({
                   </Text>
                 )}
                 {description && <Text fontSize='xs'>{description}</Text>}
-                <AccordionButton
-                  w='auto'
-                  gap={2}
-                  px={0}
-                  py={0}
-                  my={0.5}
-                  flexShrink={0}
-                  fontSize='xs'
-                  fontWeight='medium'
-                  textDecoration='underline'
-                  _hover={{ textDecoration: 'none' }}
-                >
-                  {isExpanded ? 'Hide "How To"' : 'Show "How To"'}
-                  <Icon as={isExpanded ? FaMinus : FaPlus} fontSize='2xs' />
-                </AccordionButton>
+                {steps.length > 0 && (
+                  <AccordionButton
+                    w='auto'
+                    gap={2}
+                    px={0}
+                    py={0}
+                    my={0.5}
+                    flexShrink={0}
+                    fontSize='xs'
+                    fontWeight='medium'
+                    textDecoration='underline'
+                    _hover={{ textDecoration: 'none' }}
+                  >
+                    {isExpanded ? 'Hide "How To"' : 'Show "How To"'}
+                    <Icon as={isExpanded ? FaMinus : FaPlus} fontSize='2xs' />
+                  </AccordionButton>
+                )}
               </Flex>
-              <AccordionPanel px={0} pt={1} pb={1}>
-                <VStack alignItems='start' spacing={1} fontSize='xs'>
-                  {steps.length > 0 && (
+              {steps.length > 0 && (
+                <AccordionPanel px={0} pt={1} pb={1}>
+                  <VStack alignItems='start' spacing={1} fontSize='xs'>
                     <VStack alignItems='start' spacing={1.5}>
                       {steps.map((step, index) => (
                         <Text key={index}>{step}</Text>
                       ))}
                     </VStack>
-                  )}
-                </VStack>
-              </AccordionPanel>
+                  </VStack>
+                </AccordionPanel>
+              )}
             </>
           )}
         </AccordionItem>
