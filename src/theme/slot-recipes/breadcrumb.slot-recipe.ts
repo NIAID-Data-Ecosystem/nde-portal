@@ -1,7 +1,7 @@
 import { defineSlotRecipe } from '@chakra-ui/react';
 import { breadcrumbAnatomy } from '@chakra-ui/react/anatomy';
 
-const breadcrumb = defineSlotRecipe({
+export const breadcrumbSlotRecipe = defineSlotRecipe({
   slots: breadcrumbAnatomy.keys(),
   base: {},
   variants: {
@@ -35,5 +35,3 @@ const breadcrumb = defineSlotRecipe({
     variant: 'nav',
   },
 });
-
-export default breadcrumb;

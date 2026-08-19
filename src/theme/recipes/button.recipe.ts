@@ -53,6 +53,7 @@ export const buttonRecipe = defineRecipe({
       },
     },
     variant: {
+      solid: {},
       outline: {
         borderColor: 'colorPalette.outlineBorder',
         color: 'colorPalette.outlineFg',

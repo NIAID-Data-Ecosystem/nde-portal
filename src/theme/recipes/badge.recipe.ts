@@ -13,20 +13,21 @@ Also dropped: v2 declared `fontWeight: 'semibold'` and `fontSize: '12px'` in
 *functions*, and Badge's functions only destructured `colorPalette`, so neither
 value ever reached CSS. Reinstating them would be a visual change, not a port.
 */
+// [chakra-todo]: adjust based on needs
 export const badgeRecipe = defineRecipe({
   base: {
-    lineHeight: 'short',
+    // lineHeight: 'short',
   },
   variants: {
     variant: {
       solid: {
-        bg: 'colorPalette.badgeSolidBg',
-        color: 'white',
+        // bg: 'colorPalette.badgeSolidBg',
+        // color: 'white',
       },
       subtle: {},
       outline: {
-        color: 'colorPalette.fg',
-        boxShadow: 'inset 0 0 0px 1px {colors.colorPalette.border}',
+        // color: 'colorPalette.fg',
+        // boxShadow: 'inset 0 0 0px 1px {colors.colorPalette.border}',
       },
     },
   },

@@ -1,4 +1,5 @@
 import { defineSlotRecipe } from '@chakra-ui/react';
+import { tagAnatomy } from '@chakra-ui/react/anatomy';
 
 /*
 Tag styles based on: https://designsystem.niaid.nih.gov/components/atoms
@@ -22,39 +23,50 @@ most of it did nothing, so most of it is deliberately *not* carried over:
 What remains is what actually rendered: the `semi` radius, the label line
 height, close-trigger sizing, and the per-size gap/padding/icon dimensions.
 */
+// [chakra-todo]: adjust based on needs
 export const tagSlotRecipe = defineSlotRecipe({
-  slots: ['root', 'label', 'closeTrigger', 'startElement', 'endElement'],
+  slots: tagAnatomy.keys(),
   base: {
-    root: {
-      borderRadius: 'semi',
-      display: 'inline-flex',
-      alignItems: 'center',
-      verticalAlign: 'top',
-      lineHeight: '1.2',
-      maxWidth: '100%',
-      outline: 0,
-      userSelect: 'none',
-    },
-    label: {
-      lineHeight: '1rem',
-    },
+    // root: {
+    //   borderRadius: 'semi',
+    //   display: 'inline-flex',
+    //   alignItems: 'center',
+    //   verticalAlign: 'top',
+    //   lineHeight: '1.2',
+    //   maxWidth: '100%',
+    //   outline: 0,
+    //   userSelect: 'none',
+    // },
+    // label: {
+    //   lineHeight: '1rem',
+    // },
     closeTrigger: {
-      fontSize: 'lg',
-      w: '5',
-      h: '5',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      margin: 0,
-      outline: '0',
-      color: 'currentColor',
-      svg: {
-        width: '1em',
-        height: '1em',
+      cursor: 'pointer',
+      color: 'currentColor/80',
+      _hover: {
+        color: 'currentColor/100',
       },
     },
+    // closeTrigger: {
+    //   fontSize: 'lg',
+    //   w: '5',
+    //   h: '5',
+    //   display: 'flex',
+    //   alignItems: 'center',
+    //   justifyContent: 'center',
+    //   margin: 0,
+    //   outline: '0',
+    //   color: 'currentColor',
+    //   svg: {
+    //     width: '1em',
+    //     height: '1em',
+    //   },
+    // },
   },
   variants: {
+    variant: {
+      solid: {},
+    },
     size: {
       sm: {
         root: {
@@ -86,7 +98,6 @@ export const tagSlotRecipe = defineSlotRecipe({
     },
   },
   defaultVariants: {
-    // v3 defaults to `surface`; v2 defaulted to `solid`.
     variant: 'solid',
     size: 'md',
   },
