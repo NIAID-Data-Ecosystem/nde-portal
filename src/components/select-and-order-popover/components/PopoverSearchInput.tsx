@@ -1,5 +1,5 @@
-import React from 'react';
 import { Flex, Input } from '@chakra-ui/react';
+import React from 'react';
 
 interface PopoverSearchInputProps {
   value: string;
@@ -20,7 +20,7 @@ export const PopoverSearchInput = ({
       size='sm'
       placeholder={placeholder}
       value={value}
-      onValueChange={e => onChange(e.target.value)}
+      onChange={e => onChange(e.target.value)}
     />
   </Flex>
 );

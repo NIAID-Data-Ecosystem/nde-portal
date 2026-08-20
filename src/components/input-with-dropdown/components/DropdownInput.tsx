@@ -1,4 +1,3 @@
-import React, { useRef, useCallback, useEffect } from 'react';
 import {
   ButtonProps,
   CloseButton,
@@ -13,10 +12,12 @@ import {
   Textarea,
   VisuallyHidden,
 } from '@chakra-ui/react';
-import { system } from 'src/theme';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
-import { useDropdownContext } from '..';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
+import { system } from 'src/theme';
+
+import { useDropdownContext } from '..';
 
 /*
 [Component Information]: [DropdownInput] is a regular input field with a list of suggestions based on the user typing.
@@ -138,124 +139,108 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
     return () => observer.disconnect();
   }, [autoResize]);
 
+  // Render the start element (spinner or search icon) based on loading state
+  const startElement = isLoading ? (
+    <Spinner
+      color={`${colorPalette}.500`}
+      css={{ '--spinner-track-color': 'colors.gray.200' }}
+      size='sm'
+    />
+  ) : (
+    <Icon color='gray.300'>
+      <FaMagnifyingGlass />
+    </Icon>
+  );
+  // Render the end element (close button and/or submit button) if either is provided
+  const endElement = (renderSubmitButton || onClose) && (
+    <>
+      {onClose && inputValue.length > 0 && (
+        <CloseButton
+          onClick={() => {
+            onClose();
+            setInputValue('');
+            resetHeight(); // reset height when input is cleared
+          }}
+          mr={2}
+          size='md'
+          colorPalette='primary'
+          aria-label='Clear search input'
+          my={1}
+        />
+      )}
+      {renderSubmitButton &&
+        renderSubmitButton({
+          type: 'submit',
+          w: '100%',
+          h: '100%',
+          // set padding top and bottom for safari, do not remove.
+          py: 0,
+        })}
+    </>
+  );
+
   return (
-    <Flex flex={1} asChild>
-      <form onSubmit={handleSubmit}>
-        {/* Label for accessibility */}
-        <VisuallyHidden>
-          <label htmlFor={id}>{ariaLabel}</label>
-        </VisuallyHidden>
-        {/* Search input */}
-        {/* Loading spinner/Search icon */}
-        <InputGroup
-          size={size}
-          zIndex='dropdown'
-          alignItems='flex-start'
-          border='1px solid'
-          borderColor='gray.200'
-          borderRadius='md'
-          bg='white'
-        >
-          <InputLeftElement
-            pointerEvents='none'
-            my={1}
-            // eslint-disable-next-line react/no-children-prop
-            children={
-              isLoading ? (
-                <Spinner
-                  color={`${colorPalette}.500`}
-                  css={{ '--spinner-track-color': 'colors.gray.200' }}
-                  size='sm'
-                />
-              ) : (
-                <Icon color='gray.300' asChild>
-                  <FaMagnifyingGlass />
-                </Icon>
-              )
-            }
-          />
+    <Flex as='form' flex={1} onSubmit={handleSubmit}>
+      {/* Label for accessibility */}
+      <VisuallyHidden>
+        <label htmlFor={id}>{ariaLabel}</label>
+      </VisuallyHidden>
 
-          <Textarea
-            ref={textareaRef}
-            variant='unstyled'
-            resize='none'
-            overflow='hidden'
-            _placeholder={{
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-            }}
-            // optional, make growth feel smoother
-            onInput={autoResize}
-            {...getInputProps({
-              id,
-              placeholder: placeholder || 'Search',
-              tabIndex: 0,
-              type,
-              flex: 1,
-              size,
-              mr: renderSubmitButton ? { base: 24, sm: rightElWidth } : 4,
-              isDisabled,
-              isInvalid,
-              onKeyDown: (
-                e: React.KeyboardEvent<HTMLTextAreaElement>,
-                index: number,
-              ) => {
-                if (index !== null && index > -1) {
-                  const updatedInputValue = getInputValue(index);
-                  updatedInputValue && setInputValue(updatedInputValue);
-                }
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  handleSubmit(e);
-                }
-              },
-              onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-                onChange ? onChange(e.currentTarget.value) : void 0;
-              },
-            })}
-            rows={1}
-            maxLength={2048}
-            minH='3rem'
-            pl='2.5rem'
-            py={3}
-          />
-
-          {/* Optional submit button. */}
-          {(renderSubmitButton || onClose) && (
-            <InputRightElement
-              ref={inputRightRef}
-              p={1}
-              w='unset'
-              h='100%'
-              zIndex={system.token('zIndex.dropdown')}
-              alignItems='flex-start'
-            >
-              {onClose && inputValue.length > 0 && (
-                <CloseButton
-                  onClick={() => {
-                    onClose();
-                    setInputValue('');
-                    resetHeight(); // reset height when input is cleared
-                  }}
-                  mr={2}
-                  size='md'
-                  colorPalette='primary'
-                  aria-label='Clear search input'
-                  my={1}
-                />
-              )}
-              {renderSubmitButton &&
-                renderSubmitButton({
-                  type: 'submit',
-                  w: '100%',
-                  h: '100%',
-                  // set padding top and bottom for safari, do not remove.
-                  py: 0,
-                })}
-            </InputRightElement>
-          )}
-        </InputGroup>
-      </form>
+      <InputGroup
+        zIndex='dropdown'
+        alignItems='flex-start'
+        border='1px solid'
+        borderColor='gray.200'
+        borderRadius='md'
+        bg='white'
+        startElement={startElement}
+        endElement={endElement}
+      >
+        <Textarea
+          ref={textareaRef}
+          variant='unstyled'
+          resize='none'
+          overflow='hidden'
+          _placeholder={{
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+          // optional, make growth feel smoother
+          onInput={autoResize}
+          {...getInputProps({
+            id,
+            placeholder: placeholder || 'Search',
+            tabIndex: 0,
+            type,
+            flex: 1,
+            size,
+            mr: renderSubmitButton ? { base: 24, sm: rightElWidth } : 4,
+            isDisabled,
+            isInvalid,
+            onKeyDown: (
+              e: React.KeyboardEvent<HTMLTextAreaElement>,
+              index: number,
+            ) => {
+              if (index !== null && index > -1) {
+                const updatedInputValue = getInputValue(index);
+                updatedInputValue && setInputValue(updatedInputValue);
+              }
+              if (e.key === 'Enter' && !e.shiftKey) {
+                handleSubmit(e);
+              }
+            },
+            onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+              onChange ? onChange(e.currentTarget.value) : void 0;
+            },
+          })}
+          rows={1}
+          maxLength={2048}
+          minH='3rem'
+          pl='2.5rem'
+          py={3}
+        />
+      </InputGroup>
     </Flex>
   );
 };

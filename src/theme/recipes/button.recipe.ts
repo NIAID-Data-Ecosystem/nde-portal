@@ -1,16 +1,9 @@
 import { defineRecipe } from '@chakra-ui/react';
 
 /*
-The `Link` wrapper in src/components/link wraps its children in a span classed
-`child-string` or `child-node`, so a Button rendered `as={Link}` needs to reach
-through that span to colour its text and icons.
-*/
-const CHILDREN = '.child-string, .child-node, .child-node p, svg';
-
-/*
 Ported from the v2 `Button` style config.
 
-Two v2 behaviours are worth calling out, because they explain what is *absent*
+Three v2 behaviours are worth calling out, because they explain what is *absent*
 here:
 
   - `solid` branched on a `colorMap` whose only entry was `negative`, and no
@@ -21,6 +14,12 @@ here:
   - `outline` and `ghost` had real entries for primary/secondary/gray. Those
     move into the `outline*` / `ghost*` semantic roles in
     ../semantic-tokens/colors.ts, so one static recipe covers every palette.
+
+  - each variant repeated its `color` on a `.child-string, .child-node,
+    .child-node p, svg` selector, to reach through the wrapper span that
+    src/components/link used to add. That wrapper is gone, and an `svg` child
+    already paints itself with `currentColor`, so the button's own `color`
+    covers text and icons alike.
 
 Hover/active use raw `&:hover` / `&:active` rather than Chakra's `_hover` /
 `_active`, matching the v2 recipe's bare `:hover`. v3's `_hover` wraps the rule
@@ -62,32 +61,26 @@ export const buttonRecipe = defineRecipe({
           borderColor: 'colorPalette.outlineHoverBg',
           bg: 'colorPalette.outlineHoverBg',
           color: 'white',
-          [CHILDREN]: { color: 'white' },
           '&:disabled': {
             bg: 'white',
             color: 'colorPalette.outlineFg',
             borderColor: 'colorPalette.outlineBorder',
-            [CHILDREN]: { color: 'colorPalette.outlineFg' },
           },
         },
         _visited: {
           color: 'colorPalette.outlineFg',
-          [CHILDREN]: { color: 'colorPalette.outlineFg' },
           '&:hover': {
             color: 'white',
-            [CHILDREN]: { color: 'white' },
           },
         },
       },
       ghost: {
         color: 'colorPalette.ghostFg',
-        [CHILDREN]: { color: 'colorPalette.ghostFg' },
         '&:hover': {
           bg: 'colorPalette.ghostHoverBg',
         },
         _visited: {
           color: 'colorPalette.ghostFg',
-          [CHILDREN]: { color: 'colorPalette.ghostFg' },
         },
       },
       link: {
@@ -106,11 +99,7 @@ export const buttonRecipe = defineRecipe({
       },
     },
   },
-  /*
-  v2 also set `colorPalette: 'primary'` in defaultProps. `colorPalette` is a
-  style prop rather than a recipe variant, so it has no `defaultVariants`
-  equivalent — it is applied globally in ../global-css.ts instead.
-  */
+
   defaultVariants: {
     size: 'base',
     variant: 'solid',

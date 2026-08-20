@@ -1,4 +1,5 @@
 import { Box, Flex, Input, Text } from '@chakra-ui/react';
+
 import { getDateQuerystring } from '../helpers';
 import { AdvancedSearchInputProps } from '../types';
 
@@ -34,7 +35,7 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
             min={undefined}
             max={endDate || undefined} // set the max start date to the end date in the current selection to prevent setting a start date later than the end date.
             value={startDate || ''}
-            onValueChange={e => {
+            onChange={e => {
               const value = getDateQuerystring({ startDate, endDate });
 
               handleChange({
@@ -56,7 +57,7 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
             min={startDate} // set the minimum end date to the start date in the current selection to prevent setting an end date earlier than the start date.
             max={undefined}
             value={endDate || ''}
-            onValueChange={e => {
+            onChange={e => {
               const value = getDateQuerystring({ startDate, endDate });
 
               handleChange({
@@ -72,7 +73,7 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
             renderSubmitButton({
               type: 'submit',
               w: '100%',
-              isDisabled: false,
+              disabled: false,
             })}
         </Flex>
       </form>

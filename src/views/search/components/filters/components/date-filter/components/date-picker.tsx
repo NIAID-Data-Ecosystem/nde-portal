@@ -1,7 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Button, Flex, Input, Text } from '@chakra-ui/react';
-import { useDateRangeContext } from '../hooks/useDateRangeContext';
+import React, { useEffect, useMemo, useState } from 'react';
 import { formatISOString } from 'src/utils/api/helpers';
+
+import { useDateRangeContext } from '../hooks/useDateRangeContext';
 
 interface DatePickerProps {
   colorPalette: string;
@@ -95,7 +96,7 @@ export const DatePicker = ({
               min={min}
               max={endInputValue || max}
               value={startInputValue}
-              onValueChange={e => setStartInputValue(e.target.value)}
+              onChange={e => setStartInputValue(e.target.value)}
             />
           </Box>
           <Box flex={1}>
@@ -108,7 +109,7 @@ export const DatePicker = ({
               min={startInputValue || min}
               max={max}
               value={endInputValue}
-              onValueChange={e => setEndInputValue(e.target.value)}
+              onChange={e => setEndInputValue(e.target.value)}
             />
           </Box>
         </Flex>

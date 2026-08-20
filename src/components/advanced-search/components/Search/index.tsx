@@ -1,17 +1,18 @@
-import { useEffect, useState } from 'react';
+import { Box, Field, Flex, List, Text } from '@chakra-ui/react';
 import { uniqueId } from 'lodash';
-import { Box, Flex, Text, Field, List } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
+import { QueryStringError } from 'src/components/error/types';
+
 import { TreeItem } from '../SortableWithCombine';
 import { useAdvancedSearchContext } from './components/AdvancedSearchFormContext';
 import { Disclaimer } from './components/Disclaimer';
-import { SearchInput } from './components/SearchInput';
-import { SearchOptions } from './components/SearchOptions';
 import { FieldSelectWithContext } from './components/FieldSelect';
+import { SearchInput } from './components/SearchInput';
 import {
   InputSubmitButton,
   InputSubmitButtonProps,
 } from './components/SearchInput/components';
-import { QueryStringError } from 'src/components/error/types';
+import { SearchTypePicker } from './components/SearchTypePicker';
 
 interface SearchProps {
   items: TreeItem[];
@@ -53,7 +54,7 @@ export const Search = ({
         justifyContent={['flex-start', 'flex-start', 'flex-end']}
         my={[4, 2, 0]}
       >
-        <SearchOptions />
+        <SearchTypePicker />
       </Flex>
       <Flex w='100%' alignItems='flex-end'>
         <Field.Root invalid={errors.length > 0}>

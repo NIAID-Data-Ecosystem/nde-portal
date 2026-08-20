@@ -7,10 +7,10 @@ import {
   Text,
   VisuallyHidden,
 } from '@chakra-ui/react';
-import Tooltip from 'src/components/tooltip';
-import { FaMagnifyingGlass, FaSitemap } from 'react-icons/fa6';
 import { useRouter } from 'next/router';
+import { FaMagnifyingGlass, FaSitemap } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
+import Tooltip from 'src/components/tooltip';
 
 export const MetadataButtonGroup = ({
   children,
@@ -47,21 +47,6 @@ export const OntologyButton = ({
           fontSize='12px'
           fontWeight='medium'
           color='gray.800'
-          css={{
-            '& .child-node': {
-              borderBottom: 'none',
-              display: 'inline-flex',
-              alignItems: 'center',
-            },
-
-            '& .child-node p': { borderBottom: 'none' },
-          }}
-          _visited={{
-            '.child-node p, .child-node svg': {
-              borderBottom: 'none',
-              color: 'inherit',
-            },
-          }}
           asChild
         >
           <Link href={value} target='_blank'>
