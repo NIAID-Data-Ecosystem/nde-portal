@@ -185,8 +185,19 @@ export const fetchFieldDetails = async () => {
       .get(SCHEMA_API_URL)
       .then(
         (response: { data: { hits: any[]; source: { '@graph': any[] } } }) => {
+          // `hits` and `source['@graph']` do not have a one-to-on relationship.
+          // They can differ in length and order, and `@graph` also contains
+          // property definitions. Match schema types by their class label
+          // instead of relying on their array positions.
+          const abstractsByLabel = new Map<string, string>(
+            (response.data.source?.['@graph'] || []).map((entry: any) => [
+              entry?.['rdfs:label'],
+              entry?.abstract || '',
+            ]),
+          );
+
           const types_enum = [] as string[];
-          return response.data.hits.map((schema, idx) => {
+          return response.data.hits.map(schema => {
             let schemaType;
             if (schema?.label && RESOURCE_TYPES.includes(schema.label)) {
               schemaType = schema.label;
@@ -195,8 +206,16 @@ export const fetchFieldDetails = async () => {
                 ...schema?.properties,
                 ...getNestedSchemaProperties(schema?.validation?.properties),
               ];
-              const abstract =
-                response.data.source['@graph'][idx]?.abstract || '';
+              // Every resource type in `hits` must have a corresponding class
+              // in `@graph`. Throw if it is missing so a missing schema
+              // definition does not go unnoticed. An existing entry without
+              // an abstract is valid. Falls back to `description`.
+              if (!abstractsByLabel.has(schema.label)) {
+                throw new Error(
+                  `No '@graph' entry found for schema type '${schema.label}' — cannot resolve its abstract.`,
+                );
+              }
+              const abstract = abstractsByLabel.get(schema.label) || '';
               // Create a type field with the definitions of the schema type
               formatFieldDetails(
                 {
