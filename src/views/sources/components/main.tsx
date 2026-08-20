@@ -163,16 +163,15 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                   >
                     <Flex flex={1}>
                       {sourceObj.resourceCatalogUrl && (
-                        <NextLink href={sourceObj.resourceCatalogUrl} passHref>
-                          <Button
-                            as='a'
-                            maxWidth='500px'
-                            size='sm'
-                            variant='outline'
-                          >
-                            Learn about source
-                          </Button>
-                        </NextLink>
+                        <Button
+                          as='a'
+                          maxWidth='500px'
+                          size='sm'
+                          href={sourceObj.resourceCatalogUrl}
+                          variant='outline'
+                        >
+                          Learn about source
+                        </Button>
                       )}
                     </Flex>
                     <StyledCardButton
