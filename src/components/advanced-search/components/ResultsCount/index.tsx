@@ -1,21 +1,19 @@
-import { useEffect } from 'react';
 import { Flex, Heading, Spinner } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { formatNumber } from 'src/utils/helpers';
-import { QueryStringError } from 'src/components/error/types';
+
 import { injectBioSampleScope } from '../../utils/query-helpers';
 
 interface ResultsCountProps {
   queryString: string;
-  handleErrors: (errors: QueryStringError[]) => void;
   setCount: (count: number) => void;
 }
 
 export const ResultsCount: React.FC<ResultsCountProps> = ({
   queryString,
-  handleErrors,
   setCount,
 }) => {
   // Rewrite any @type:Sample token to (@type:Sample AND additionalType:"BioSample")
@@ -84,9 +82,9 @@ export const ResultsCount: React.FC<ResultsCountProps> = ({
             css={{ '--spinner-track-color': 'colors.gray.200' }}
             borderWidth='2px'
             mx={2}
-          ></Spinner>
+          />
         ) : (
-          <Heading as='span' mx={1} size='inherit' color='inherit'>
+          <Heading as='span' mx={1} fontSize='inherit' color='inherit'>
             {data?.total ? formatNumber(data.total) : 0}
           </Heading>
         )}
