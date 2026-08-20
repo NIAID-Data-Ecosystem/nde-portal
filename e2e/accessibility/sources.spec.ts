@@ -188,7 +188,7 @@ test.describe('a11y: Sources — populated', () => {
     // Also wait for the per-source CTA, which only renders with resolved data.
     await expect(
       page.getByRole('link', {
-        name: new RegExp(`Search for ${FIXTURE_SOURCE_NAME} resources`, 'i'),
+        name: new RegExp(`See search results`, 'i'),
       }),
     ).toBeVisible();
     // The CTA is a Chakra solid button (primary.500, #0B8484 — 4.52:1 on white,
