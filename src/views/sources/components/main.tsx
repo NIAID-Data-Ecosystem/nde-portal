@@ -238,8 +238,8 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                         textAlign='left'
                         lineHeight='short'
                       >
-                        Visualization of {sourceObj.name} properties transformed
-                        to the NIAID Data Ecosystem
+                        Mapping of {sourceObj.name} Properties to NIAID Data
+                        Ecosystem Properties
                       </Text>
                       <Flex alignItems='center'>
                         <Text mx={2} fontSize='xs' color='gray.800'>
