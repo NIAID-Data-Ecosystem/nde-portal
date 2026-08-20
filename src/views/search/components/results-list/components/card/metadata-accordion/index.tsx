@@ -89,8 +89,13 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
           funding: data?.funding,
           license: data?.license,
           measurementTechnique: data?.measurementTechnique,
-          // Include sample data only when the feature flag is enabled.
-          ...(SHOW_SAMPLE_UI_PILL ? { sample: data?.sample } : {}),
+          // Include sample data only when the feature flag is enabled. Data
+          // Collections aggregate records from other sources rather than
+          // describing a sample source, so the pill is omitted there instead
+          // of rendering permanently disabled.
+          ...(SHOW_SAMPLE_UI_PILL && type !== 'DataCollection'
+            ? { sample: data?.sample }
+            : {}),
           species: data?.species,
           usageInfo: data?.usageInfo,
           variableMeasured: data?.variableMeasured,

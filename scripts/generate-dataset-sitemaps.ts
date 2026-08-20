@@ -20,6 +20,11 @@ const OUTPUT_CSV_PATH = './public/sitemap-datasets.csv';
 const OUTPUT_SITEMAP_DIR = './public/sitemaps/datasets';
 const LOC_PATH = `${process.env.BASE_URL}/resources?id=`;
 
+// Public URL + filename for the sitemap index that lists every source sitemap.
+// This is the single file to submit to Google Search Console.
+const SITEMAP_URL_PATH = `${process.env.BASE_URL}/sitemaps/datasets`;
+const SITEMAP_INDEX_FILENAME = 'sitemap-index.xml';
+
 // Sources that should be omitted from the sitemap.
 const OMITTED_SOURCES = ['Data Discovery Engine'];
 
@@ -51,6 +56,21 @@ const buildSitemapXML = (urls: string[]): string => {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urlSet}
 </urlset>`;
+};
+
+// Build a sitemap index pointing at each of the per-source sitemap files.
+const buildSitemapIndexXML = (filenames: string[], lastmod: string): string => {
+  const sitemapSet = filenames
+    .map(
+      filename =>
+        `<sitemap><loc>${SITEMAP_URL_PATH}/${filename}</loc><lastmod>${lastmod}</lastmod></sitemap>`,
+    )
+    .join('\n');
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${sitemapSet}
+</sitemapindex>`;
 };
 
 const toCsv = (groups: { source: string; results: FormattedResource[] }[]) => {
@@ -340,6 +360,9 @@ const writeSitemapContentPerSource = async (
     fs.mkdirSync(OUTPUT_SITEMAP_DIR, { recursive: true });
   }
 
+  // Filenames of the sitemaps successfully written, used to build the index.
+  const writtenSitemaps: string[] = [];
+
   for (const { source, results } of sources) {
     if (results.length === 0) {
       console.warn(`⚠️ No results found for source: ${source}`);
@@ -354,15 +377,17 @@ const writeSitemapContentPerSource = async (
 
     chunks.forEach((chunk, index) => {
       const label = String(index + 1).padStart(2, '0'); // 01, 02, 03
-      const sitemapPath =
+      const filename =
         chunks.length === 1
-          ? path.join(OUTPUT_SITEMAP_DIR, `${safeSourceName}.xml`)
-          : path.join(OUTPUT_SITEMAP_DIR, `${safeSourceName}-${label}.xml`);
+          ? `${safeSourceName}.xml`
+          : `${safeSourceName}-${label}.xml`;
+      const sitemapPath = path.join(OUTPUT_SITEMAP_DIR, filename);
 
       const sitemapContent = buildSitemapXML(chunk);
 
       try {
         fs.writeFileSync(sitemapPath, sitemapContent);
+        writtenSitemaps.push(filename);
         console.log(
           `✅ Sitemap written for ${source} [part ${index + 1}/${
             chunks.length
@@ -375,6 +400,29 @@ const writeSitemapContentPerSource = async (
         );
       }
     });
+  }
+
+  writeSitemapIndex(writtenSitemaps);
+};
+
+// Write a sitemap index listing every sitemap written in this run.
+const writeSitemapIndex = (filenames: string[]) => {
+  if (filenames.length === 0) {
+    console.warn('⚠️ No sitemaps were written — skipping sitemap index.');
+    return;
+  }
+
+  const indexPath = path.join(OUTPUT_SITEMAP_DIR, SITEMAP_INDEX_FILENAME);
+  const lastmod = new Date().toISOString();
+  const indexContent = buildSitemapIndexXML([...filenames].sort(), lastmod);
+
+  try {
+    fs.writeFileSync(indexPath, indexContent);
+    console.log(
+      `✅ Sitemap index written with ${filenames.length} sitemaps: ${indexPath}`,
+    );
+  } catch (error: any) {
+    console.error('❌ Error writing sitemap index:', error.message);
   }
 };
 

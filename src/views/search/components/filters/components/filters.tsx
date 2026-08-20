@@ -22,7 +22,7 @@ import { DateFilter } from './date-filter';
 import { updateRoute } from '../../../utils/update-route';
 import { useSearchQueryFromURL } from '../../../hooks/useSearchQueryFromURL';
 import { usePaginationContext } from '../../../context/pagination-context';
-import { FILTER_CONFIGS } from '../config';
+import { FILTER_CONFIGS, getFacetPropertiesForCategory } from '../config';
 import { APPLY_DEFAULT_DATE_PARAM } from 'src/views/search/config/defaultQuery';
 import { useSearchResultsFetchedContext } from 'src/views/search/context/search-results-fetched-context';
 import { useBioSampleAggregation } from 'src/views/search/hooks/useBioSampleAggregation';
@@ -123,7 +123,10 @@ export const Filters = React.memo(
       { enabled: router.isReady },
     );
 
-    // Data Collection filters: @type:DataCollection
+    // Data Collection filters: @type:DataCollection.
+    // The category currently has no filters of its own — Content Type covers
+    // DataCollection records from the Shared/Dataset section — so skip the
+    // request rather than send one with no `facets` param.
     const dataCollectionAgg = useDataCollectionAggregation(
       {
         q: queryParams.q,
@@ -131,21 +134,28 @@ export const Filters = React.memo(
         advancedSearch: queryParams.advancedSearch,
         extra_filter: filtersAggParams.extra_filter,
       },
-      { enabled: router.isReady },
+      {
+        enabled:
+          router.isReady &&
+          getFacetPropertiesForCategory('Data Collection') !== '',
+      },
     );
 
-    // Use simplified filter queries hook
+    // Use simplified filter queries hook.
+    // The four scoped aggregations above cover every filter category, so the
+    // unscoped all-facet aggregation is disabled here.
     const filtersAggQuery = useFilterQueries({
       configs: visibleFiltersList,
       enabled: isFiltersFetchEnabled,
+      enableMainAggregation: false,
       params: filtersAggParams,
-      bioSampleAggregationData: bioSampleAgg.data,
-      computationalToolAggregationData: computationalToolAgg.data,
-      sharedDatasetAggregationData: sharedDatasetAgg.data,
-      dataCollectionAggregationData: dataCollectionAgg.data,
+      bioSampleAggregation: bioSampleAgg,
+      computationalToolAggregation: computationalToolAgg,
+      sharedDatasetAggregation: sharedDatasetAgg,
+      dataCollectionAggregation: dataCollectionAgg,
     });
 
-    const { results, error, isUpdating } = filtersAggQuery;
+    const { results, error } = filtersAggQuery;
 
     const groupedFilters = useMemo(() => {
       return visibleFiltersList.reduce((groups, config) => {
@@ -345,9 +355,8 @@ export const Filters = React.memo(
                                 handleSelectedFilters(values, property)
                               }
                               isLoading={results?.[id]?.isLoading ?? true}
-                              isUpdating={
-                                results?.[id]?.isUpdating || isUpdating
-                              }
+                              // Per-filter state only
+                              isUpdating={results?.[id]?.isUpdating}
                             />
                           )}
                         </FiltersSection>

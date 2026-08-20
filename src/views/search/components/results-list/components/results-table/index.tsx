@@ -108,7 +108,7 @@ export const ResultsTable = <TColumn extends BaseColumn>({
           },
         }}
         getTableRowProps={(_, idx) => ({
-          bg: idx % 2 === 0 ? 'white' : 'page.alt',
+          bg: idx % 2 === 0 ? 'white' : '#FAFBFD',
         })}
         controlledSortProperty={controlledSortProperty}
         controlledSortAsc={controlledSortAsc}

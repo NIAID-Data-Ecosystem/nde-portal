@@ -37,6 +37,13 @@ export interface FacetTerm {
   [key: string]: NestedFacet;
 }
 
+export interface About {
+  description: string;
+  displayName: string;
+  name: string;
+  url: string;
+  inDefinedTermSet?: string;
+}
 // Conditions of access for dataset or tool.
 export type AccessTypes =
   | 'Open'
@@ -48,9 +55,11 @@ export type AccessTypes =
   | 'Unknown';
 
 export interface AdditionalProperty {
-  '@type'?: 'PropertyValue';
-  propertyID: string;
-  value: string;
+  '@type'?: string;
+  name?: string;
+  propertyID?: string;
+  unitText?: string;
+  value?: string;
 }
 
 export interface AdditionalType {
@@ -207,6 +216,12 @@ export interface InteractionStatistics {
   interactionType: string | null;
 }
 
+export interface IsBasedOnActionProcess {
+  '@type': string;
+  // may be a single step or a list of steps.
+  step?: string | string[];
+}
+
 export interface IsBasedOn {
   '@type'?: string;
   abstract?: string;
@@ -214,12 +229,14 @@ export interface IsBasedOn {
   citation?: string;
   codeRepository?: string;
   datePublished?: string;
+  disambiguatingDescription?: string;
   description?: string;
   doi?: string;
   identifier?: string;
   name?: string;
   pmid?: string;
   url?: string;
+  actionProcess?: IsBasedOnActionProcess;
 }
 
 export interface IsBasisFor {
@@ -371,6 +388,34 @@ export interface OutputProperties {
   inDefinedTermSet?: string;
 }
 
+interface exampleOfWorkEncodingFormat {
+  '@type': string;
+  inDefinedTermSet?: string;
+  identifier?: string;
+  name?: string;
+  url?: string;
+}
+
+export interface ExampleOfWork {
+  '@type'?: string;
+  about?: {
+    '@type': string;
+    displayName?: string;
+    inDefinedTermSet?: string;
+    name?: string;
+    termCode?: string;
+    url?: string;
+  };
+  encodingFormat?: exampleOfWorkEncodingFormat | exampleOfWorkEncodingFormat[];
+  potentialAction?: {
+    '@type'?: string;
+    name?: string;
+    target?: string;
+  };
+  schemaVersion?: string;
+  additionalProperty?: AdditionalProperty | AdditionalProperty[];
+}
+
 export interface FeatureListProperties {
   identifier?: string;
   name?: string;
@@ -469,14 +514,7 @@ export interface FormattedResource {
   id: string;
   '@type': APIResourceType; // "Dataset" | "ComputationalTool" | "Resource Catalog"
   name: string;
-  about:
-    | {
-        description: string;
-        displayName: string;
-        name: string;
-        url: string;
-      }[]
-    | null;
+  about: About | About[] | null;
   abstract: string | null;
   aggregateRating: AggregateRating | null;
   alternateName: string | null;
@@ -505,6 +543,7 @@ export interface FormattedResource {
   distribution: Distribution[] | null;
   doi: string | null;
   downloadUrl: { name: string }[] | null;
+  exampleOfWork: ExampleOfWork | null;
   featureList: FeatureListProperties[] | null;
   funding: Funding[] | null;
   genre: Domain | string[] | null;

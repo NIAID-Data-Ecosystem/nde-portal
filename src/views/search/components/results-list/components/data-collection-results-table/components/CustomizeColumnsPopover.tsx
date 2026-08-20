@@ -14,8 +14,7 @@ export const CUSTOM_COLUMN_ORDER_STORAGE_KEY =
 export const DEFAULT_VISIBLE_COLUMN_IDS = [
   'name',
   'source',
-  'about',
-  'exampleOfWork',
+  'contentType',
   'conditionsOfAccess',
   'date',
   'description',

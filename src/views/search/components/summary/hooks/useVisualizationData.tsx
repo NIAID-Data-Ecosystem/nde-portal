@@ -1,11 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChartDatum, ChartType, SearchState } from '../types';
 import { FilterConfig } from '../../filters';
-import {
-  useAggregation,
-  AggregationQueryParams,
-} from 'src/views/search/hooks/useAggregation';
-import { ALL_FACET_PROPERTIES } from '../../filters/config';
 import { usePreferredChartType } from './usePreferredChartType';
 import {
   bucketSmallValues,
@@ -15,6 +10,7 @@ import {
 } from '../helpers';
 import { SelectedFilterValueType } from '../../filters/types';
 import { queryFilterObject2String } from '../../filters/utils/query-string';
+import { mergeFacets } from '../../filters/utils/merge-facets';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { useBioSampleAggregation } from 'src/views/search/hooks/useBioSampleAggregation';
 import { useComputationalToolAggregation } from 'src/views/search/hooks/useComputationalToolAggregation';
@@ -44,11 +40,13 @@ interface UseVisualizationDataParams {
  *       (all types except non-BioSample Sample records)
  *   - "Data Collection": dataCollectionAggregationData
  *       (@type:DataCollection)
- *   - anything else: main (unscoped) aggregation as fallback
+ *
+ * Every FilterConfig belongs to one of these four categories, so there is no
+ * unscoped fallback: a chart reads exactly the response whose record-type
+ * scoping matches its filter section.
  */
 const selectAggregationForConfig = (
   config: FilterConfig,
-  mainResponse: FetchSearchResultsResponse | undefined,
   bioSampleData: FetchSearchResultsResponse | undefined,
   computationalToolData: FetchSearchResultsResponse | undefined,
   sharedDatasetData: FetchSearchResultsResponse | undefined,
@@ -56,15 +54,14 @@ const selectAggregationForConfig = (
 ): FetchSearchResultsResponse | undefined => {
   switch (config.category) {
     case 'Sample':
-      return bioSampleData ?? mainResponse;
+      return bioSampleData;
     case 'Computational Tool':
-      return computationalToolData ?? mainResponse;
-    case 'Shared / Dataset':
-      return sharedDatasetData ?? mainResponse;
+      return computationalToolData;
     case 'Data Collection':
-      return dataCollectionData ?? mainResponse;
+      return dataCollectionData;
+    case 'Shared / Dataset':
     default:
-      return mainResponse;
+      return sharedDatasetData;
   }
 };
 
@@ -151,39 +148,12 @@ export const useVisualizationData = ({
     enabled: isActive && hasChartConfig,
   });
 
-  // Kept as a fallback and for cache-warming. Always requests ALL facet
-  // properties + hist=date so the query key is stable.
-  const aggParams: AggregationQueryParams = useMemo(
-    () => ({
-      q: searchState.q || '',
-      extra_filter: extraFilter,
-      facets: ALL_FACET_PROPERTIES,
-      use_ai_search: searchState.use_ai_search ?? 'false',
-      advancedSearch: searchState.advancedSearch,
-      hist: 'date',
-    }),
-    [
-      searchState.q,
-      extraFilter,
-      searchState.use_ai_search,
-      searchState.advancedSearch,
-    ],
-  );
-
-  // Main aggregation: used as fallback when no scoped response is available
-  const aggQuery = useAggregation({
-    params: aggParams,
-    enabled: isActive && hasChartConfig,
-  });
-
-  // The active response is the category-scoped one when available, falling
-  // back to the main aggregation. This ensures chart counts match the filter
-  // panel counts exactly.
+  // The response for this chart's category. This ensures chart counts match the
+  // filter panel counts exactly.
   const activeAggResponse = useMemo(
     () =>
       selectAggregationForConfig(
         config,
-        aggQuery.data,
         bioSampleAgg.data,
         computationalToolAgg.data,
         sharedDatasetAgg.data,
@@ -191,7 +161,6 @@ export const useVisualizationData = ({
       ),
     [
       config,
-      aggQuery.data,
       bioSampleAgg.data,
       computationalToolAgg.data,
       sharedDatasetAgg.data,
@@ -207,12 +176,11 @@ export const useVisualizationData = ({
         return bioSampleAgg;
       case 'Computational Tool':
         return computationalToolAgg;
-      case 'Shared / Dataset':
-        return sharedDatasetAgg;
       case 'Data Collection':
         return dataCollectionAgg;
+      case 'Shared / Dataset':
       default:
-        return aggQuery;
+        return sharedDatasetAgg;
     }
   }, [
     config.category,
@@ -220,7 +188,6 @@ export const useVisualizationData = ({
     computationalToolAgg,
     sharedDatasetAgg,
     dataCollectionAgg,
-    aggQuery,
   ]);
 
   const aggData = {
@@ -243,8 +210,15 @@ export const useVisualizationData = ({
     [sharedDatasetAgg.data],
   );
 
+  // Filters spanning several API fields have their terms merged, so the chart
+  // shows the same values as the sidebar list (see mergeFacets).
   const facetTerms = useMemo(
-    () => activeAggResponse?.facets?.[config.property]?.terms,
+    () =>
+      mergeFacets(
+        activeAggResponse?.facets,
+        config.property,
+        activeAggResponse?.total ?? 0,
+      )?.terms,
     [activeAggResponse, config.property],
   );
 

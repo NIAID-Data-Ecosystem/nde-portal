@@ -27,7 +27,8 @@ import { ToggleContainer } from 'src/components/toggle-container';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 import { Skeleton } from 'src/components/skeleton';
-import { filterWords } from './helpers';
+import { filterWords, getContentTypeItems } from './helpers';
+import { CONTENT_TYPE_TOOLTIP } from 'src/views/search/config/content-type';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { InfoLabel } from 'src/components/info-label';
@@ -86,6 +87,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     isLoading || !includedInDataCatalog
       ? []
       : formatSourcesWithLogos(includedInDataCatalog) || [];
+
+  // `about` and `exampleOfWork.about` values, merged into one unlabeled pill
+  // list. Data Collections only.
+  const contentTypeItems = useMemo(() => getContentTypeItems(data), [data]);
 
   const highlightProps = useMemo(
     () =>
@@ -418,6 +423,38 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     />
                   </Flex>
                 )}
+
+              {contentTypeItems.length > 0 && (
+                <Flex
+                  borderBottom='1px solid'
+                  borderBottomColor='gray.200'
+                  px={paddingCard}
+                  py={1}
+                >
+                  <SearchableItems
+                    generateButtonLabel={(
+                      limit,
+                      length,
+                      itemLabel = 'content types',
+                    ) =>
+                      limit === length
+                        ? `Show fewer ${itemLabel}`
+                        : `Show all ${itemLabel} (${length - limit} more)`
+                    }
+                    itemLimit={3}
+                    items={contentTypeItems}
+                    // These values only exist on Data Collections, so a search
+                    // without the tab param would land on the empty Datasets tab.
+                    searchParams={{ tab: 'dc' }}
+                    name={
+                      <InfoLabel
+                        title='Content Type'
+                        tooltipText={CONTENT_TYPE_TOOLTIP}
+                      />
+                    }
+                  />
+                </Flex>
+              )}
 
               {data?.applicationCategory &&
                 data?.applicationCategory.length > 0 && (

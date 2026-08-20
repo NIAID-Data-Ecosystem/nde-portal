@@ -1,7 +1,7 @@
 import React from 'react';
 import { Flex, FlexProps, Icon, Text } from '@chakra-ui/react';
 import { FaRegClock } from 'react-icons/fa6';
-import { FormattedResource } from 'src/utils/api/types';
+import { FormattedResource, SourceOrganization } from 'src/utils/api/types';
 import { StyledLabel } from './styles';
 import { APIResourceType } from 'src/utils/formatting/formatResourceType';
 import Tooltip from 'src/components/tooltip';
@@ -15,16 +15,40 @@ export interface TypeBannerProps extends FlexProps {
   sourceName?: string[] | null;
   isNiaidFunded?: boolean;
   creativeWorkStatus?: FormattedResource['creativeWorkStatus'];
+  // True when this ResourceCatalog has a non-empty sourceOrganization.
+  // Renders as "Program Resource" with cyan styling instead of the
+  // default ResourceCatalog treatment.
+  isProgramResource?: boolean;
 }
+
+// Determines whether a record's sourceOrganization should be treated as
+// "present" for the Program Resource banner override (i.e. not null/undefined
+// and, if an array, non-empty).
+export const hasSourceOrganization = (
+  sourceOrganization?: SourceOrganization[] | SourceOrganization | null,
+): boolean => {
+  if (sourceOrganization == null) return false;
+  if (Array.isArray(sourceOrganization)) {
+    return sourceOrganization.length > 0;
+  }
+  return true;
+};
 
 export const getTypeColor = (
   type?: APIResourceType | string,
   isRetired?: boolean,
+  isProgramResource?: boolean,
 ) => {
   // Retired ResourceCatalogs use a gray treatment instead of the usual
   // per-type colors.
   if (isRetired) {
     return { lt: 'gray.800', dk: 'gray.300' };
+  }
+
+  // ResourceCatalogs with a sourceOrganization are displayed as
+  // "Program Resource" and use a distinct cyan treatment.
+  if (isProgramResource) {
+    return { lt: 'cyan.900', dk: 'cyan.600' };
   }
 
   const typeLower = type?.toLowerCase();
@@ -39,12 +63,16 @@ export const getTypeColor = (
     dk = 'primary.700';
   } else if (typeLower?.includes('tool') || typeLower?.includes('software')) {
     lt = 'primary.800';
+  } else if (typeLower === 'datacollection') {
+    lt = 'blue.800';
+    dk = 'blue.300';
   } else if (typeLower === 'disease') {
     lt = 'purple.600';
     dk = 'purple.800';
   } else {
     lt = 'niaid.500';
   }
+
   return { lt, dk };
 };
 
@@ -56,6 +84,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
   pl,
   isNiaidFunded,
   creativeWorkStatus,
+  isProgramResource,
   ...props
 }) => {
   // Retired ResourceCatalogs get the gray banner treatment; every other
@@ -65,7 +94,14 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
     SHOW_RETIRED_RESOURCE_CATALOG_UI &&
     type === 'ResourceCatalog' &&
     creativeWorkStatus === 'Retired';
-  const colorScheme = getTypeColor(type, isRetired);
+
+  const colorScheme = getTypeColor(type, isRetired, isProgramResource);
+
+  // Most types pair a light label (lt) with a dark banner (dk), so the white
+  // "NIAID" sub-label reads against dk. Retired catalogs and Data Collections
+  // invert that pairing.
+  const hasLightBanner = isRetired || type === 'DataCollection';
+
   const abstract = SCHEMA_DEFINITIONS['@type']?.['abstract'];
   const description = SCHEMA_DEFINITIONS['@type']?.['description'];
 
@@ -79,15 +115,17 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
       ? (description as Record<string, string>)[type]
       : '';
 
+  // ResourceCatalogs that have a sourceOrganization are labeled
+  // "Program Resource" instead of the default type label.
+  const displayLabel =
+    isProgramResource && type === 'ResourceCatalog'
+      ? 'Program Resource'
+      : label;
+
   return (
-    <Flex
-      flexWrap='wrap'
-      w='100%'
-      bg={props.bg || colorScheme['dk']}
-      {...props}
-    >
+    <Flex flexWrap='wrap' w='100%' bg={props.bg || colorScheme.dk} {...props}>
       <Flex
-        bg={props.bg || colorScheme['dk']}
+        bg={props.bg || colorScheme.dk}
         px={{ base: 2, lg: 4 }}
         pl={pl}
         py={0}
@@ -96,19 +134,19 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
       >
         <StyledLabel
           _before={{
-            bg: colorScheme['lt'],
+            bg: colorScheme.lt,
           }}
         >
           <Tooltip label={abstractTooltipLabel || descriptionTooltipLabel}>
             <Text
               fontSize='xs'
-              color={type ? 'white' : colorScheme['lt']}
+              color={type ? 'white' : colorScheme.lt}
               px={2}
               fontWeight='semibold'
               whiteSpace='nowrap'
               textTransform='uppercase'
             >
-              {label || 'Unknown'}
+              {displayLabel || 'Unknown'}
             </Text>
           </Tooltip>
         </StyledLabel>
@@ -116,7 +154,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
         {isNiaidFunded && (
           <StyledLabel
             _before={{
-              bg: isRetired ? colorScheme['lt'] : colorScheme['dk'],
+              bg: hasLightBanner ? colorScheme.lt : colorScheme.dk,
             }}
           >
             <Text
@@ -131,15 +169,16 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
           </StyledLabel>
         )}
       </Flex>
+
       <Flex
-        bg={props.bg || colorScheme['dk']}
+        bg={props.bg || colorScheme.dk}
         overflow='hidden'
         flex={1}
         minW='250px'
       >
         {date && (
           <Flex alignItems='center' px={{ base: 2, lg: 4 }} py={[2, 1]}>
-            <Icon as={FaRegClock} mr={2}></Icon>
+            <Icon as={FaRegClock} mr={2} />
             <Text fontSize='xs' fontWeight='semibold' whiteSpace='nowrap'>
               {date}
             </Text>

@@ -4,13 +4,26 @@ import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { TagWithUrl } from 'src/components/tag-with-url';
 
+export interface SearchableItem {
+  name: string;
+  value: string;
+  field: string;
+  /**
+   * Complete querystring for this item's search link, used verbatim instead of
+   * the default `field:"value"`. For pills that must search more than one field
+   * at once such as the Data Collection "Content Type" pills, which OR
+   * `about.name` with `exampleOfWork.about.name`.
+   */
+  query?: string;
+}
+
 interface SearchableItemsProps extends Omit<FlexProps, 'onToggle'> {
-  items: {
-    name: string;
-    value: string;
-    field: string;
-  }[];
+  items: SearchableItem[];
+  /** Extra params merged into every item's /search link, e.g. `{ tab: 'dc' }`. */
+  searchParams?: Record<string, string>;
   colorScheme?: TagProps['colorScheme'];
+  linkColor?: string;
+  tagColor?: TagProps['color'];
   generateButtonLabel?: (limit: number, length: number) => string;
   itemLimit?: number;
   name?: React.ReactNode;
@@ -18,6 +31,9 @@ interface SearchableItemsProps extends Omit<FlexProps, 'onToggle'> {
   isExpanded?: boolean;
   onToggle?: (expanded: boolean) => void;
 }
+
+const getItemQuery = (item: SearchableItem) =>
+  item.query ?? `${item.field}:"${item.value}"`;
 
 const generateDefaultLabel = (limit: number, length: number) => {
   return limit === length
@@ -36,9 +52,12 @@ const generateDefaultLabel = (limit: number, length: number) => {
  */
 export const SearchableItems: React.FC<SearchableItemsProps> = ({
   colorScheme = 'primary',
+  linkColor = `${colorScheme}.500`,
+  tagColor,
   generateButtonLabel = generateDefaultLabel,
   itemLimit = 3,
   items,
+  searchParams,
   name,
   isExpanded,
   onToggle,
@@ -93,12 +112,14 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
       {name}
       {uniqueItems.slice(0, currentLimit).map(item => (
         <TagWithUrl
-          key={item.value}
+          key={getItemQuery(item)}
           colorScheme={colorScheme}
+          color={tagColor}
           href={{
             pathname: '/search',
             query: {
-              q: `${item.field}:"${item.value}"`,
+              q: getItemQuery(item),
+              ...searchParams,
             },
           }}
           m={0.5}
@@ -114,7 +135,7 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
           variant='link'
           justifyContent='flex-end'
           m={1}
-          color={`${colorScheme}.500`}
+          color={linkColor}
           onClick={toggleLimit}
         >
           {buttonLabel}

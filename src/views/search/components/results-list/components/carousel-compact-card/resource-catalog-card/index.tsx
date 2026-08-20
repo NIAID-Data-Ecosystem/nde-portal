@@ -10,7 +10,11 @@ import { SearchableItems } from 'src/components/searchable-items';
 import { Skeleton } from 'src/components/skeleton';
 import { CompactCard } from '../compact-card';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
-import { SHOW_RETIRED_RESOURCE_CATALOG_UI } from 'src/utils/feature-flags';
+import { hasSourceOrganization } from 'src/components/resource-sections/components/type-banner';
+import {
+  SHOW_PROGRAM_RESOURCE_UI,
+  SHOW_RETIRED_RESOURCE_CATALOG_UI,
+} from 'src/utils/feature-flags';
 
 interface ResourceCatalogCardProps {
   data?: FormattedResource | null;
@@ -37,7 +41,16 @@ export const ResourceCatalogCard = ({
     creativeWorkStatus,
     about,
     description,
+    sourceOrganization,
   } = data || {};
+
+  // ResourceCatalogs with a non-null sourceOrganization are displayed as
+  // "Program Resource" with cyan banner styling instead of the default
+  // ResourceCatalog treatment.
+  const isProgramResource =
+    SHOW_PROGRAM_RESOURCE_UI &&
+    type === 'ResourceCatalog' &&
+    hasSourceOrganization(sourceOrganization);
 
   const handleTypesToggle = (expanded: boolean) => {
     setShowAllTypes(expanded);
@@ -48,15 +61,15 @@ export const ResourceCatalogCard = ({
   };
 
   // Transform about array to string array for SearchableItems
-  const aboutItems = useMemo(
-    () =>
-      about?.map(a => ({
-        name: a.displayName,
-        value: a.displayName,
-        field: 'about.displayName',
-      })) || [],
-    [about],
-  );
+  const aboutItems = useMemo(() => {
+    if (!about) return [];
+    const aboutArray = Array.isArray(about) ? about : [about];
+    return aboutArray.map(a => ({
+      name: a.displayName,
+      value: a.displayName,
+      field: 'about.displayName',
+    }));
+  }, [about]);
 
   const shouldShowDescription = !showAllTypes;
 
@@ -67,7 +80,8 @@ export const ResourceCatalogCard = ({
     SHOW_RETIRED_RESOURCE_CATALOG_UI &&
     type === 'ResourceCatalog' &&
     creativeWorkStatus === 'Retired';
-  const cardBg = isRetired ? 'page.alt' : 'white';
+
+  const cardBg = 'white';
 
   const linkProps = id
     ? {
@@ -87,6 +101,7 @@ export const ResourceCatalogCard = ({
         isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
         isLoading={isLoading}
         creativeWorkStatus={creativeWorkStatus}
+        isProgramResource={isProgramResource}
       />
 
       <CompactCard.Header isLoading={isLoading}>
@@ -137,6 +152,10 @@ export const ResourceCatalogCard = ({
                     conditionsOfAccess={conditionsOfAccess}
                     mx={0.5}
                     size='sm'
+                    {...(isRetired && {
+                      colorScheme: 'gray',
+                      color: 'gray.900',
+                    })}
                   />
                   {hasAPI && (
                     <HasAPI
@@ -144,6 +163,10 @@ export const ResourceCatalogCard = ({
                       hasAPI={data?.hasAPI}
                       mx={0.5}
                       size='sm'
+                      {...(isRetired && {
+                        colorScheme: 'gray',
+                        color: 'gray.900',
+                      })}
                     />
                   )}
                   <CreativeWorkStatus
@@ -167,7 +190,9 @@ export const ResourceCatalogCard = ({
                 <SearchableItems
                   items={aboutItems}
                   itemLimit={2}
-                  colorScheme='primary'
+                  colorScheme={isRetired ? 'gray' : 'primary'}
+                  tagColor={isRetired ? 'gray.900' : undefined}
+                  linkColor={isRetired ? 'gray.900' : undefined}
                   isExpanded={showAllTypes}
                   onToggle={handleTypesToggle}
                   generateButtonLabel={(limit, length) =>
@@ -199,6 +224,7 @@ export const ResourceCatalogCard = ({
                   minH='auto'
                   height='auto'
                   fontSize='xs'
+                  {...(isRetired && { color: 'gray.900' })}
                 >
                   See description
                 </Button>

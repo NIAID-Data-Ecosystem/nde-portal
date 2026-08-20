@@ -1,11 +1,12 @@
 import React from 'react';
 import { Flex, FlexProps, Icon, Text } from '@chakra-ui/react';
 import { FaRegClock, FaComputer } from 'react-icons/fa6';
-import TypeBanner from '../type-banner';
+import TypeBanner, { hasSourceOrganization } from '../type-banner';
 import { FormattedResource } from 'src/utils/api/types';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 import { operatingSystemIcons } from 'src/utils/helpers/operating-system-icons';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+import { SHOW_PROGRAM_RESOURCE_UI } from 'src/utils/feature-flags';
 
 interface DateTagProps extends FlexProps {
   type?: string;
@@ -67,6 +68,14 @@ const ResourceBanner: React.FC<ResourceBannerProps> = ({ data }) => {
 
   const type = data?.['@type'];
 
+  // ResourceCatalogs with a non-null sourceOrganization are displayed as
+  // "Program Resource" with cyan banner styling instead of the default
+  // ResourceCatalog treatment.
+  const isProgramResource =
+    SHOW_PROGRAM_RESOURCE_UI &&
+    type === 'ResourceCatalog' &&
+    hasSourceOrganization(data.sourceOrganization);
+
   return (
     <TypeBanner
       label={formatAPIResourceTypeForDisplay(type)}
@@ -74,6 +83,7 @@ const ResourceBanner: React.FC<ResourceBannerProps> = ({ data }) => {
       creativeWorkStatus={data?.creativeWorkStatus}
       bg='status.info_lt'
       isNiaidFunded={isSourceFundedByNiaid(data.includedInDataCatalog)}
+      isProgramResource={isProgramResource}
     >
       <Flex flexWrap='wrap' ml={[0, 0, 4]}>
         {date_data.map((date, i) => {

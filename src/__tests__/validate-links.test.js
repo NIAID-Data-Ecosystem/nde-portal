@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 const axios = require('axios');
-const puppeteer = require('puppeteer');
+const { chromium } = require('@playwright/test');
 
 const buildSlackBlocks = () => {
   const dividerBlock = {
@@ -98,9 +98,7 @@ describe('Check for broken links', () => {
   let page;
 
   beforeAll(async () => {
-    browser = await puppeteer.launch({
-      headless: 'false',
-
+    browser = await chromium.launch({
       args: [
         '--disable-gpu',
         '--disable-setuid-sandbox',

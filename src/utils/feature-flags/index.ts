@@ -1,8 +1,5 @@
 // [Feature Flags]
 // This file contains feature flags to enable/disable certain features or sections of the application
-
-import { truncate } from 'fs';
-
 // based on the environment or other conditions.
 const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
 
@@ -11,16 +8,10 @@ export const SHOULD_HIDE_SAMPLES = (hash: string) => false;
 
 // Hide the samples tab on the search results page in production builds until
 // approved. To enable tab in production, set this flag to `true`.
-export const SHOW_SAMPLES_TAB = !isProd;
+export const SHOW_SAMPLES_TAB = true;
 
 // Hide the data collections tab on the search results page in production builds until approved. To enable tab in production, set this flag to `true`.
 export const SHOW_DATA_COLLECTIONS_TAB = !isProd;
-
-// Show credit text section in non-production environments for testing/review. To enable section in production, set this flag to `true`.
-// Note that we currently have two separate sections where credit text appears:
-// - In the sidebar under "Resource Access": src/components/resource-sections/components/sidebar/components/external/index.tsx
-// - As a standalone section in the overview section: src/components/resource-sections/index.tsx
-export const SHOW_CREDIT_TEXT_SECTION = !isProd;
 
 // Show AI-assisted search toggle and related components (e.g. banner) in non-production environments for testing/review. To enable in production, set this flag to `true`.
 export const SHOW_AI_ASSISTED_SEARCH = true;
@@ -64,7 +55,15 @@ export const SHOW_SAMPLE_UI_PILL = true;
 // link redirecting to the knowledge-center/retired-resources page) in
 // non-production environments for testing/review. To enable in production,
 // set this flag to `true`.
-export const SHOW_RETIRED_RESOURCE_CATALOG_UI = !isProd;
+export const SHOW_RETIRED_RESOURCE_CATALOG_UI = true;
+
+// Show the "Program Resource" treatment for ResourceCatalog resources that have
+// a sourceOrganization (cyan type banner + "Program Resource" label on cards and
+// resource pages, and sourceOrganization names in the Collection information
+// section linked to the /program-collections page) in non-production
+// environments for testing/review. To enable in production, set this flag to
+// `true`.
+export const SHOW_PROGRAM_RESOURCE_UI = true;
 
 // Show the mutual-exclusivity behavior for the "Any <filter>" (_exists_) and
 // "No <filter>" (-_exists_) filter checkboxes in the search filters panel in
@@ -82,3 +81,9 @@ export const SHOW_FILTER_ANY_NO_EXCLUSIVITY = true;
 export const SHOW_FILTER_SPECIFIED_UNSPECIFIED_LABELS = true;
 
 export const USE_MERGED_SOURCES_AND_CATALOGS = !isProd;
+// Show the search results "View mode" radio (Card / Table) and the
+// alternate views it switches between in non-production environments.
+// When disabled, the Datasets and Computational Tools tabs always render
+// cards and the Data Collections tab always renders the table.
+// To enable in production, set this flag to `true`.
+export const SHOW_SEARCH_VIEW_MODES = !isProd;

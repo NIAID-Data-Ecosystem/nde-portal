@@ -261,7 +261,9 @@ const UNIFORM_HIDE_PROPS = new Set<string>([
 const collectAdditionalPropertyIds = (samples: SampleAggregate[]): string[] => [
   ...new Set(
     samples.flatMap(sample =>
-      normalizeAdditionalProperty(sample).map(p => p.propertyID),
+      normalizeAdditionalProperty(sample)
+        .map(p => p.propertyID)
+        .filter((propertyID): propertyID is string => Boolean(propertyID)),
     ),
   ),
 ];
@@ -380,10 +382,14 @@ export const getSampleCollectionItemsRows = (
 ): Record<string, unknown>[] =>
   samples.map(sample => {
     const additionalPropertyEntries = Object.fromEntries(
-      normalizeAdditionalProperty(sample).map(({ propertyID, value }) => [
-        toAdditionalPropertyKey(propertyID),
-        value,
-      ]),
+      normalizeAdditionalProperty(sample)
+        // Columns are keyed by propertyID, so an entry without one has no
+        // column to fill.
+        .filter(({ propertyID }) => Boolean(propertyID))
+        .map(({ propertyID, value }) => [
+          toAdditionalPropertyKey(propertyID as string),
+          value,
+        ]),
     );
 
     // When identifier is an array of strings, fall back to _id (with the

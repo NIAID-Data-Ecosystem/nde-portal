@@ -1,15 +1,13 @@
 import React from 'react';
 import { FormattedResource } from 'src/utils/api/types';
 import {
-  Box,
-  Divider,
   Flex,
   ListItem,
-  SimpleGrid,
   Skeleton,
   Stack,
   StackDivider,
   UnorderedList,
+  Text,
   VStack,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
@@ -25,32 +23,27 @@ import {
 import { Route } from './helpers';
 import FilesTable from './components/files-table';
 import { CitedByTable } from './components/cited-by-table';
-import { DisplayHTMLContent } from '../html-content';
 import {
   ExternalAccess,
   UsageInfo,
 } from './components/sidebar/components/external';
 import { Funding } from './components/funding';
 import { JsonViewer } from '../json-viewer';
-import BasedOnTable from './components/based-on';
+import { BasedOnTable, BasedOnActionProcess } from './components/based-on';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
-import { ResourceCatalogCollection } from './components/collection-information';
 import { DownloadMetadata } from '../download-metadata';
 import { SearchableItems } from 'src/components/searchable-items';
 import { Summary } from './components/summary';
 import { OverviewSectionWrapper } from './components/overview-section-wrapper';
 import { getMetadataDescription } from '../metadata';
-import { TagWithUrl } from '../tag-with-url';
-import { FaMagnifyingGlass } from 'react-icons/fa6';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { RelatedResources } from './components/related-resources';
 import { SamplesDisplay } from './components/samples';
-import { CreditText } from './components/sidebar/components/external/components/credit-text';
-import {
-  SHOW_CREDIT_TEXT_SECTION,
-  SHOULD_HIDE_SAMPLES,
-} from 'src/utils/feature-flags';
+import { SHOULD_HIDE_SAMPLES } from 'src/utils/feature-flags';
+import { ExampleOfWorkDisplay } from './components/example-of-work';
+import { AboutResource } from './components/about';
+import { DescriptionSection } from './components/description';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -65,7 +58,11 @@ const Sections = ({
   sections: Route[];
 }) => {
   const type = data?.['@type'] || 'Dataset';
-
+  const isBasedOn = data?.isBasedOn?.filter(item => item['@type'] !== 'Action');
+  const isDataCollectionType = type === 'DataCollection';
+  const isBasedOnActionProcess = data?.isBasedOn?.filter(
+    item => item['@type'] === 'Action',
+  );
   return (
     <>
       <ResourceHeader
@@ -91,39 +88,46 @@ const Sections = ({
               description={data.disambiguatingDescription}
               tagLabel='AI Generated'
             />
-            {/* Badge indicating completeness of metadata */}
-            {/* {data && data['_meta'] && (
-          <Flex
-            px={4}
-            py={4}
-            justifyContent='center'
-            minWidth='250px'
-            display={{ base: 'none', lg: 'flex' }}
-          >
-            <CompletenessBadgeCircle
-              type={data['@type']}
-              stats={data['_meta']}
-              size='lg'
-            />
-          </Flex>
-        )} */}
           </Flex>
         )}
 
+      {/* isBasedOn action property used for DataCollection contains an explanation of how the DataCollection was created */}
+      {isDataCollectionType && (
+        <Stack flexDirection='column' w='100%' px={4} my={4}>
+          {/* Show description */}
+          <Stack flexDirection='column' w='100%' gap={0.5} px={[0, 0, 4]}>
+            <Text fontWeight='semibold' lineHeight='short' fontSize='sm'>
+              Description
+            </Text>
+            <DescriptionSection
+              description={data?.description}
+              isLoading={isLoading}
+            />
+          </Stack>
+          {isBasedOnActionProcess &&
+            isBasedOnActionProcess.map((action, index) => (
+              <BasedOnActionProcess key={index} {...action} />
+            ))}
+        </Stack>
+      )}
+
       {sections.map(section => {
+        const getSectionName = () => {
+          if (section.hash === 'samples') {
+            if (data?.sample?.['@type'] === 'Sample') {
+              return 'Population Sample';
+            } else if (data?.sample?.['@type'] === 'SampleCollection') {
+              return 'Experimental Samples';
+            }
+          }
+          return section.title;
+        };
+
         return (
           <Section
             id={section.hash}
             key={section.hash}
-            name={
-              section.hash === 'samples'
-                ? data?.sample?.['@type'] === 'Sample'
-                  ? 'Population Sample'
-                  : data?.sample?.['@type'] === 'SampleCollection'
-                  ? 'Experimental Samples'
-                  : section.title
-                : section.title
-            }
+            name={getSectionName()}
             isLoading={isLoading}
             isCollapsible={section?.ui?.isCollapsible}
           >
@@ -172,103 +176,26 @@ const Sections = ({
                 <UsageInfo data={data} isLoading={isLoading} />
               </Flex>
             )}
+
             {section.hash === 'overview' && (
               <>
-                <ResourceOverview isLoading={isLoading} {...data} />
-                {/* Overview secondary section */}
-                {(data?.genre || data?.about || data?.collectionSize) && (
-                  <SimpleGrid
-                    minChildWidth={{ base: 'unset', sm: '280px', xl: '300px' }}
-                    spacingX={14}
-                    spacingY={10}
-                    mt={4}
-                    w='100%'
-                  >
-                    {/* Col 1: Genre & Content Types */}
-                    <VStack>
-                      {data?.genre && (
-                        <OverviewSectionWrapper
-                          isLoading={isLoading}
-                          label='Research Domain'
-                          scrollContainerProps={{
-                            border: 'none',
-                            py: 0,
-                          }}
-                        >
-                          {(Array.isArray(data?.genre)
-                            ? data?.genre
-                            : [data?.genre]
-                          ).map((genre, index) => (
-                            <TagWithUrl
-                              key={index}
-                              colorScheme='primary'
-                              href={{
-                                pathname: '/search',
-                                query: {
-                                  q: `genre:"${genre}"`,
-                                },
-                              }}
-                              m={0.5}
-                              leftIcon={FaMagnifyingGlass}
-                            >
-                              {genre}
-                            </TagWithUrl>
-                          ))}
-                        </OverviewSectionWrapper>
-                      )}
-
-                      {data?.about && data?.about?.length > 0 && (
-                        <OverviewSectionWrapper
-                          isLoading={isLoading}
-                          label='Content Types'
-                          scrollContainerProps={{
-                            border: 'none',
-                            py: 0,
-                            maxHeight: 'unset',
-                          }}
-                        >
-                          <SearchableItems
-                            generateButtonLabel={(
-                              limit,
-                              length,
-                              itemLabel = 'about',
-                            ) =>
-                              limit === length
-                                ? `Show fewer ${itemLabel}`
-                                : `Show all ${itemLabel} (${
-                                    length - limit
-                                  } more)`
-                            }
-                            itemLimit={20}
-                            items={data?.about.map(about => ({
-                              name: about.displayName,
-                              value: about.displayName,
-                              field: 'about.displayName',
-                            }))}
-                          />
-                        </OverviewSectionWrapper>
-                      )}
-                    </VStack>
-                    {/* Col 2: Size of collection */}
-                    {data?.collectionSize && (
-                      <OverviewSectionWrapper
-                        isLoading={isLoading}
-                        label='Collection Size Details'
-                        maxWidth={{ base: 'unset', xl: '500px' }}
-                        scrollContainerProps={{
-                          maxHeight: 'unset',
-                          py: 0,
-                        }}
-                      >
-                        <ResourceCatalogCollection
-                          collectionSize={data?.collectionSize}
-                        />
-                      </OverviewSectionWrapper>
-                    )}
-                    {/* Empty placeholder for third column at xl screens */}
-                    <Box display={{ base: 'none', xl: 'block' }} aria-hidden />
-                  </SimpleGrid>
-                )}
+                {/* If type is DataCollection, show AboutResource above the main overview */}
+                {/* If type is not DataCollection, show AboutResource below the main overview */}
+                <VStack
+                  flexDirection={
+                    isDataCollectionType ? 'column' : 'column-reverse'
+                  }
+                  spacing={4}
+                >
+                  <AboutResource
+                    about={data?.about}
+                    collectionSize={data?.collectionSize}
+                    exampleOfWork={data?.exampleOfWork}
+                    genre={data?.genre}
+                    isLoading={isLoading}
+                  />
+                  <ResourceOverview isLoading={isLoading} {...data} />
+                </VStack>
 
                 {/* Resource citation(s) */}
                 {data?.citation && (
@@ -286,22 +213,6 @@ const Sections = ({
                     my={4}
                   >
                     <ResourceCitations citations={data?.citation} />
-                  </OverviewSectionWrapper>
-                )}
-
-                {/* Resource credit text */}
-                {SHOW_CREDIT_TEXT_SECTION && (
-                  <OverviewSectionWrapper
-                    isLoading={isLoading}
-                    label='Credit Text'
-                    tooltipLabel={getMetadataDescription(
-                      'creditText',
-                      data?.['@type'],
-                    )}
-                    my={4}
-                    scrollContainerProps={{ maxHeight: 'unset' }}
-                  >
-                    <CreditText data={data} px={2} />
                   </OverviewSectionWrapper>
                 )}
               </>
@@ -382,29 +293,13 @@ const Sections = ({
             )}
 
             {/* Show description */}
-            {section.hash === 'description' &&
-              (data?.description || data?.abstract) && (
-                <>
-                  {/* Abstract text */}
-                  {data.abstract && (
-                    <>
-                      <DisplayHTMLContent
-                        content={`**Abstract:** ${data.abstract}` || ''}
-                        overflow='auto'
-                      />
-                      <Divider my={2} />
-                    </>
-                  )}
-
-                  {/* Description text */}
-                  {data.description && (
-                    <DisplayHTMLContent
-                      content={data.description}
-                      overflow='auto'
-                    />
-                  )}
-                </>
-              )}
+            {!isDataCollectionType && section.hash === 'description' && (
+              <DescriptionSection
+                description={data?.description}
+                abstract={data?.abstract}
+                isLoading={isLoading}
+              />
+            )}
 
             {/* Show smaples */}
             {section.hash === 'samples' && !SHOULD_HIDE_SAMPLES('samples') && (
@@ -452,13 +347,13 @@ const Sections = ({
             )}
 
             {/* Show Based On information */}
-            {section.hash === 'isBasedOn' && data?.isBasedOn && (
+            {section.hash === 'isBasedOn' && isBasedOn && (
               <BasedOnTable
                 id='software-information-is-based-on'
                 title={schema['isBasedOn']['description']?.[type]}
                 caption='Table showing resources that this resource is based on.'
                 isLoading={isLoading}
-                items={data?.isBasedOn}
+                items={isBasedOn}
               />
             )}
 
@@ -484,6 +379,11 @@ const Sections = ({
                   }
                 }
               />
+            )}
+
+            {/* Display what the work on the source site looks like, ex: schema, properties */}
+            {section.hash === 'exampleOfWork' && data?.exampleOfWork && (
+              <ExampleOfWorkDisplay {...data.exampleOfWork} />
             )}
 
             {/* Show raw metadata */}

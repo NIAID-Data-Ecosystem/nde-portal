@@ -237,14 +237,14 @@ export const mockRepositoriesMetadata = {
       version: '2024-04-22T22:23:30Z',
       upload_date: '2024-04-26T21:07:24.742000',
       sourceInfo: {
-        name: 'AccessClinicalData@NIAID',
+        name: 'accessclinicaldata@NIAID',
         abstract:
           'AccessClinicalData is a NIAID supported IID repository that includes clinical trials data.',
         description:
-          'AccessClinicalData@NIAID is a NIAID cloud-based, secure data platform that enables sharing of and access to reports and data sets from NIAID COVID-19 and other sponsored clinical trials for the basic and clinical research community.',
+          'accessclinicaldata@NIAID is a NIAID cloud-based, secure data platform that enables sharing of and access to reports and data sets from NIAID COVID-19 and other sponsored clinical trials for the basic and clinical research community.',
 
         url: 'https://accessclinicaldata.niaid.nih.gov/',
-        identifier: 'AccessClinicalData@NIAID',
+        identifier: 'accessclinicaldata@NIAID',
         conditionsOfAccess: 'Varied',
         genre: 'IID',
       },
