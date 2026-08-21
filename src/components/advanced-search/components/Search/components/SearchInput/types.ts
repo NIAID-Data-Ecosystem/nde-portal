@@ -54,7 +54,7 @@ export interface SearchInputProps {
 
 export interface AdvancedSearchInputProps {
   colorPalette?: SearchInputProps['colorPalette'];
-  isDisabled?: boolean;
+  disabled?: boolean;
   size: SearchInputProps['size'];
   inputValue: SearchInputProps['defaultInputValue'];
   errors: SearchInputProps['errors'];

@@ -31,7 +31,6 @@ export const TreeItemActions = React.memo(
           boxSize={3}
           transition='transform 250ms ease'
           transform={collapsed ? `rotate(-90deg)` : `rotate(0deg)`}
-          asChild
         >
           <FaAngleDown />
         </Icon>
@@ -58,8 +57,9 @@ export const TreeItemActions = React.memo(
             variant='ghost'
             color='page.placeholder'
             mx={1}
-            icon={collapseIcon}
-          />
+          >
+            {collapseIcon}
+          </Action>
         )}
         <Flex flex={1}>{children}</Flex>
         {!clone && onUpdate && (
@@ -71,12 +71,9 @@ export const TreeItemActions = React.memo(
             variant='ghost'
             color='page.placeholder'
             mx={1}
-            icon={
-              <Icon asChild>
-                <FaRegPenToSquare />
-              </Icon>
-            }
-          />
+          >
+            <FaRegPenToSquare />
+          </Action>
         )}
         {/* Button to delete item. */}
         {!clone && onRemove && (

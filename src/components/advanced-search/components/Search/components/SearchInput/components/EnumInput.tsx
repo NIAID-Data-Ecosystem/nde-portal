@@ -13,7 +13,7 @@ interface EnumInputProps extends AdvancedSearchInputProps {
 }
 
 export const EnumInput: React.FC<EnumInputProps> = ({
-  isDisabled,
+  disabled,
   options = [],
   inputValue,
   size,
@@ -51,7 +51,7 @@ export const EnumInput: React.FC<EnumInputProps> = ({
       >
         <Select
           defaultValue={defaultOption}
-          isDisabled={isDisabled}
+          isDisabled={disabled}
           isSearchable={true}
           name='Field options'
           value={selectedOption}
@@ -123,7 +123,7 @@ export const EnumInput: React.FC<EnumInputProps> = ({
             renderSubmitButton({
               type: 'submit',
               w: '100%',
-              isDisabled: false,
+              disabled: false,
             })}
         </Flex>
       </form>

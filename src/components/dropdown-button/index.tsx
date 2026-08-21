@@ -28,13 +28,14 @@ export interface DropdownButtonProps extends ButtonGroupProps {
   }[];
   iconButtonProps?: IconButtonProps;
   placeholder?: string;
+  disabled?: ButtonProps['disabled'];
 }
 
 export const DropdownButton: React.FC<DropdownButtonProps> = ({
   ariaLabel,
   size,
   colorPalette = 'primary',
-  isDisabled,
+  disabled,
   type,
   selectedOption,
   setSelectedOption,
@@ -59,7 +60,7 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
           type={type}
           height={height}
           _focus={{ boxShadow: 'none' }}
-          disabled={isDisabled}
+          disabled={disabled}
         >
           {selectedOption || placeholder}
         </Button>

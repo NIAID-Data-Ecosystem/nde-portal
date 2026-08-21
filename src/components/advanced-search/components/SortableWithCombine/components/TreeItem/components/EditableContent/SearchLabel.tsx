@@ -42,12 +42,10 @@ export const SearchLabel = ({
       <VisuallyHidden>
         <label id='field-select-label'>Select field</label>
       </VisuallyHidden>
-      <NativeSelect.Root>
+      <NativeSelect.Root size='sm' variant='outline'>
         <NativeSelect.Field
           aria-labelledby='field-select-label'
-          size='sm'
           w='170px'
-          variant='outline'
           borderRadius='semi'
           mb={2}
           _focus={{ borderColor: 'page.placeholder' }}

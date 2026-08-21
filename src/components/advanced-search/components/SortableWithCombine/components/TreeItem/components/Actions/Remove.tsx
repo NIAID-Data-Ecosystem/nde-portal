@@ -22,7 +22,7 @@ export const Remove: React.FC<RemoveProps> = React.memo(props => {
       onClick={() => props.handleClick && props.handleClick(props.id)}
       _focus={{ boxShadow: 'none' }}
     >
-      <Icon boxSize={4} transition='transform 250ms ease' asChild>
+      <Icon boxSize={4} transition='transform 250ms ease'>
         <FaXmark />
       </Icon>
     </IconButton>

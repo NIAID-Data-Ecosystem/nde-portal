@@ -20,7 +20,7 @@ export const Action = React.memo((props: ActionProps) => {
       onClick={() => props.handleClick(props.id)}
       _focus={{ boxShadow: 'none' }}
     >
-      {props.icon}
+      {props.children}
     </IconButton>
   );
 });

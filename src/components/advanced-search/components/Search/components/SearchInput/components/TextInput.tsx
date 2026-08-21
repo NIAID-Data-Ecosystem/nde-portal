@@ -14,7 +14,7 @@ interface TextInputProps extends AdvancedSearchInputProps {
 export const TextInput: React.FC<TextInputProps> = ({
   colorPalette = 'primary',
   inputValue,
-  isDisabled,
+  disabled,
   hideSuggestions,
   size,
   errors,
@@ -61,7 +61,7 @@ export const TextInput: React.FC<TextInputProps> = ({
         colorPalette={colorPalette}
         size={size}
         inputValue={stringInputValue}
-        isDisabled={isDisabled}
+        disabled={disabled}
         hideSuggestions={hideSuggestions}
         isInvalid={errors.length > 0}
         onClose={
@@ -145,7 +145,7 @@ export const TextInput: React.FC<TextInputProps> = ({
             ? props =>
                 renderSubmitButton({
                   ...props,
-                  isDisabled:
+                  disabled:
                     (selectedSearchType.id !== '_exists_' &&
                       selectedSearchType.id !== '-_exists_' &&
                       inputValue === '') ||

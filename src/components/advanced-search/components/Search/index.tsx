@@ -114,15 +114,13 @@ export const Search = ({
                   });
                 }}
                 defaultInputValue={''}
-                renderSubmitButton={(
-                  props: Partial<InputSubmitButtonProps>,
-                ) => (
+                renderSubmitButton={props => (
                   <InputSubmitButton
                     items={items}
                     size='md'
                     colorPalette='primary'
                     // Button is disabled when the text input is needed but empty.
-                    isDisabled={
+                    disabled={
                       selectedSearchType.id !== '_exists_' &&
                       selectedSearchType.id !== '-_exists_'
                     }

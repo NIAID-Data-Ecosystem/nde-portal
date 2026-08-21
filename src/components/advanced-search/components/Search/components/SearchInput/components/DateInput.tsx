@@ -43,7 +43,7 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
                 value: { ...dateInputValue, startDate: e.target.value },
               });
             }}
-            disabled={props.isDisabled}
+            disabled={props.disabled}
           />
         </Box>
         <Box flex={1} mr={2}>
@@ -65,7 +65,7 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
                 value: { ...dateInputValue, endDate: e.target.value },
               });
             }}
-            disabled={props.isDisabled}
+            disabled={props.disabled}
           />
         </Box>
         <Flex mt={8} alignItems='center'>

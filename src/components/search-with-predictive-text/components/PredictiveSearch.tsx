@@ -39,7 +39,7 @@ export interface SearchWithPredictiveTextProps
   size?: InputProps['size'];
   type?: InputProps['type'];
   hideSuggestions?: boolean;
-  isDisabled?: boolean;
+  disabled?: boolean;
   isInvalid?: boolean;
   colorPalette?: InputProps['colorPalette'];
   inputValue?: string;
@@ -71,7 +71,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
   onClose,
   onChange,
   onClick,
-  isDisabled,
+  disabled,
   isInvalid,
   isLoading,
   inputValue,
@@ -113,7 +113,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
       >
         <DropdownInput
           id='predictive-search-input'
-          isDisabled={isDisabled}
+          disabled={disabled}
           ariaLabel={ariaLabel}
           placeholder={placeholder}
           size={size}
@@ -131,7 +131,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
                     colorPalette,
                     ariaLabel,
                     size,
-                    isDisabled: isLoading || !searchTerm || false,
+                    disabled: isLoading || !searchTerm || false,
                     ...props,
                   });
 

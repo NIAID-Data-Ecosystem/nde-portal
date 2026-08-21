@@ -174,7 +174,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
               size='sm'
               onClick={() => setItems(buildTree(query.items))}
             >
-              <Text isTruncated>{query.name}</Text>
+              <Text truncate>{query.name}</Text>
             </Button>
           );
         })}
@@ -211,7 +211,6 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
         </Text>
         <ResultsCount
           queryString={convertObject2QueryString(items)}
-          handleErrors={handleErrors}
           setCount={setCount}
         />
 
@@ -285,7 +284,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                 _focus={{ boxShadow: 'none' }}
               >
                 <Text
-                  size='sm'
+                  fontSize='sm'
                   fontWeight='semibold'
                   color='text.heading'
                   display='flex'
@@ -316,7 +315,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                           }}
                           _hover={{
                             cursor: 'pointer',
-                            ['.hist-querystring']: {
+                            '&.hist-querystring': {
                               textDecoration: 'underline',
                             },
                           }}

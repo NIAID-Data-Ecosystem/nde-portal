@@ -16,9 +16,9 @@ interface NumberInputProps extends AdvancedSearchInputProps {
 }
 
 export const NumberInput: React.FC<NumberInputProps> = ({
-  isDisabled,
+  disabled,
   colorPalette,
-  size,
+  size = 'lg',
   handleSubmit,
   renderSubmitButton,
 }) => {
@@ -46,10 +46,14 @@ export const NumberInput: React.FC<NumberInputProps> = ({
           });
         }}
       >
-        <NativeSelect.Root size='lg' mr={2} variant='outline'>
+        <NativeSelect.Root
+          size={size}
+          mr={2}
+          variant='outline'
+          disabled={disabled}
+        >
           <NativeSelect.Field
             colorPalette={colorPalette}
-            disabled={isDisabled}
             value={options.findIndex(option => option.label === operator.label)}
             onChange={e => {
               setOperator(options[+e.target.value]);
@@ -75,7 +79,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
           }}
           colorPalette={colorPalette}
           clampValueOnBlur={true}
-          disabled={isDisabled}
+          disabled={disabled}
           allowMouseWheel
           step={50}
           defaultValue='0'
@@ -93,7 +97,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
             renderSubmitButton({
               type: 'submit',
               w: '100%',
-              isDisabled,
+              disabled,
             })}
         </Flex>
       </form>
