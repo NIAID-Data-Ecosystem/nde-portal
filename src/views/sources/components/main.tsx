@@ -13,7 +13,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { BadgeWithTooltip } from 'src/components/badges';
-import { Link } from 'src/components/link';
 import { MetadataCompatibilitySourceBadge } from 'src/components/metadata-compatibility-source-badge';
 import {
   StyledCard,
@@ -27,6 +26,7 @@ import { TagWithUrl } from 'src/components/tag-with-url';
 import type { SourceResponse } from 'src/pages/sources';
 import { formatDate } from 'src/utils/api/helpers';
 import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-string';
+import NextLink from 'next/link';
 
 interface Main {
   data?: SourceResponse[];
@@ -155,20 +155,40 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
               }
               renderCTA={() =>
                 sourceObj.id ? (
-                  <StyledCardButton
-                    maxWidth='500px'
-                    href={{
-                      pathname: `/search`,
-                      query: {
-                        q: '',
-                        filters: queryFilterObject2String({
-                          'includedInDataCatalog.name': [sourceObj.id],
-                        }),
-                      },
-                    }}
+                  <Flex
+                    justifyContent='space-between'
+                    flexWrap='wrap'
+                    gap={2}
+                    w='100%'
                   >
-                    Search for {sourceObj.name} resources
-                  </StyledCardButton>
+                    <Flex flex={1}>
+                      {sourceObj.resourceCatalogUrl && (
+                        <Button
+                          as='a'
+                          maxWidth='500px'
+                          size='sm'
+                          href={sourceObj.resourceCatalogUrl}
+                          variant='outline'
+                        >
+                          Learn about source
+                        </Button>
+                      )}
+                    </Flex>
+                    <StyledCardButton
+                      maxWidth='500px'
+                      href={{
+                        pathname: `/search`,
+                        query: {
+                          q: '',
+                          filters: queryFilterObject2String({
+                            'includedInDataCatalog.name': [sourceObj.id],
+                          }),
+                        },
+                      }}
+                    >
+                      See search results
+                    </StyledCardButton>
+                  </Flex>
                 ) : (
                   <></>
                 )
@@ -195,19 +215,20 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                   </Text>
                 </HStack>
 
-                {/* Description */}
+                {/* Description, with the link to the source's website
+                inlined at the end of the text. */}
                 {sourceObj?.description && (
-                  <StyledCardDescription>
-                    {sourceObj?.description}
-                  </StyledCardDescription>
+                  <Box fontSize='sm' lineHeight='short' color='text.body'>
+                    <StyledCardDescription>
+                      {sourceObj.url
+                        ? `${sourceObj.description.trimEnd()} [Visit ${
+                            sourceObj.name
+                          } website](<${sourceObj.url}>)`
+                        : sourceObj.description}
+                    </StyledCardDescription>
+                  </Box>
                 )}
 
-                {/* Link to source's website */}
-                {sourceObj.url && (
-                  <Link href={sourceObj.url} isExternal>
-                    {`${sourceObj.name} website`}
-                  </Link>
-                )}
                 {/* Source Compatibility */}
                 {metadataCompatibilityData && (
                   <Box my={2}>
@@ -238,8 +259,8 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                         textAlign='left'
                         lineHeight='short'
                       >
-                        Visualization of {sourceObj.name} properties transformed
-                        to the NIAID Data Ecosystem
+                        Mapping of {sourceObj.name} Properties to NIAID Data
+                        Ecosystem Properties
                       </Text>
                       <Flex alignItems='center'>
                         <Text mx={2} fontSize='xs' color='gray.800'>

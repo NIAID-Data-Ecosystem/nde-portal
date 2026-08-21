@@ -35,6 +35,7 @@ export interface SourceResponse extends MetadataSource {
   schema: MetadataSource['sourceInfo']['schema'];
   url: MetadataSource['sourceInfo']['url'];
   isNiaidFunded?: boolean;
+  resourceCatalogUrl: MetadataSource['sourceInfo']['sameAs'];
 }
 
 interface SourcesProps {
@@ -96,6 +97,7 @@ const Sources: NextPage<SourcesProps> = ({ data }) => {
           schema: (source?.sourceInfo && source?.sourceInfo?.schema) || null,
           url: (source?.sourceInfo && source?.sourceInfo?.url) || '',
           isNiaidFunded: getFundedByNIAID(source.sourceInfo?.name),
+          resourceCatalogUrl: source?.sourceInfo?.sameAs || '',
         };
       });
       return {
