@@ -47,10 +47,3 @@ export interface ItemProps {
   index: number;
   gap: number;
 }
-
-export interface DragEndInfo {
-  point: { x: number; y: number };
-  delta: { x: number; y: number };
-  offset: { x: number; y: number };
-  velocity: { x: number; y: number };
-}

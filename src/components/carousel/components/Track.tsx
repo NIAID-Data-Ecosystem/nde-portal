@@ -1,10 +1,13 @@
+import { chakra, VStack } from '@chakra-ui/react';
+import { motion, PanInfo, useAnimation, useMotionValue } from 'framer-motion';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { motion, useAnimation, useMotionValue } from 'framer-motion';
-import { Flex, VStack } from '@chakra-ui/react';
-import { TrackProps, DragEndInfo } from '../types';
-import { TRANSITION_PROPS } from '../constants';
 
-const MotionFlex = motion(Flex);
+import { TRANSITION_PROPS } from '../constants';
+import { TrackProps } from '../types';
+
+const MotionFlex = chakra(motion.div, {
+  base: { display: 'flex' },
+});
 
 export const Track = ({
   setTrackIsActive,
@@ -24,7 +27,7 @@ export const Track = ({
 
   const handleDragStart = () => setDragStartPosition(positions[activeItem]);
 
-  const handleDragEnd = (_: Event, info: DragEndInfo) => {
+  const handleDragEnd = (_: unknown, info: PanInfo) => {
     const distance = info.offset.x;
     const velocity = info.velocity.x * multiplier;
     const direction = velocity < 0 || distance < 0 ? 1 : -1;
