@@ -247,12 +247,20 @@ export const SearchResults = ({
     SHOW_SEARCH_VIEW_MODES && id === 'd' && viewMode === 'table';
   const isComputationalToolTable =
     SHOW_SEARCH_VIEW_MODES && id === 'ct' && viewMode === 'table';
+  // Data Collections also offer both views, but default to cards. Unlike the
+  // two tabs above, this tab predates the view mode radio and was table-only,
+  // so when the flag hides the radio it must fall back to the table rather
+  // than to the card default.
+  const isDataCollectionTable =
+    isDataCollectionTab && (!SHOW_SEARCH_VIEW_MODES || viewMode === 'table');
 
-  // Each tab type uses a minimal, table-specific field list rather than the
-  // shared RESULT_FIELDS base (which carries many card-only fields that the
-  // tables never render). The Dataset table intentionally reuses
-  // RESULT_FIELDS: an identical field list keeps the query key the same for
-  // both view modes, so toggling card/table never triggers a refetch.
+  // Each tab type uses a minimal, tab-specific field list rather than the
+  // shared RESULT_FIELDS base (which carries many fields that other tabs never
+  // render). Note these are selected by tab, not by view mode: an identical
+  // field list keeps the query key the same for both view modes, so toggling
+  // card/table never triggers a refetch, and it stays matched to the prefetch
+  // in the tabs controller. The Dataset table reuses RESULT_FIELDS for the same
+  // reason.
   const fields = isSamplesTab
     ? SAMPLE_FIELDS
     : isDataCollectionTab
@@ -271,12 +279,12 @@ export const SearchResults = ({
     isSamplesTab ? getInitialColumnOrder() : ALL_SAMPLE_COLUMNS.map(c => c.id),
   );
   const [dcVisibleColumnIds, setDcVisibleColumnIds] = useState<string[]>(() =>
-    isDataCollectionTab
+    isDataCollectionTable
       ? getInitialDataCollectionVisibleColumnIds()
       : DC_DEFAULT_VISIBLE_COLUMN_IDS,
   );
   const [dcColumnOrder, setDcColumnOrder] = useState<string[]>(() =>
-    isDataCollectionTab
+    isDataCollectionTable
       ? getInitialDataCollectionColumnOrder()
       : ALL_DATA_COLLECTION_COLUMNS.map(c => c.id),
   );
@@ -421,7 +429,7 @@ export const SearchResults = ({
   return (
     <>
       <VStack borderRadius='semi' bg='white' px={4} py={2}>
-        {/* Toolbar controls: Sort, size, download metadata, and optional extra actions. Whenever a table is being rendered (Samples, DataCollections, and Datasets in table view) the "Customize Columns" button is injected via the extraActions prop so it appears to the left of Download Metadata. */}
+        {/* Toolbar controls: Sort, size, download metadata, and optional extra actions. Whenever a table is being rendered (Samples, and Datasets/Computational Tools/Data Collections in table view) the "Customize Columns" button is injected via the extraActions prop so it appears to the left of Download Metadata. */}
         <SearchResultsToolbar
           id={id}
           params={params}
@@ -437,7 +445,7 @@ export const SearchResults = ({
                 onVisibleColumnsChange={setVisibleColumnIds}
                 onColumnOrderChange={setColumnOrder}
               />
-            ) : isDataCollectionTab ? (
+            ) : isDataCollectionTable ? (
               <DataCollectionCustomizeColumnsPopover
                 columnsList={DATA_COLLECTION_COLUMN_CONFIGS}
                 onVisibleColumnsChange={setDcVisibleColumnIds}
@@ -489,8 +497,8 @@ export const SearchResults = ({
             currentSort={sort}
             onSortChange={handleSortChange}
           />
-        ) : isDataCollectionTab ? (
-          /* DataCollection tab */
+        ) : isDataCollectionTable ? (
+          /* DataCollection tab in table view */
           <DataCollectionResultsTable
             results={data?.results || []}
             isLoading={!router.isReady || isLoading}
@@ -498,6 +506,7 @@ export const SearchResults = ({
             columnOrder={dcColumnOrder}
             currentSort={sort}
             onSortChange={handleSortChange}
+            referrerPath={router.asPath}
           />
         ) : isDatasetTable ? (
           /* Datasets tab in table view */
@@ -522,7 +531,7 @@ export const SearchResults = ({
             referrerPath={router.asPath}
           />
         ) : (
-          /* Dataset / ComputationalTool tabs in card view: render result cards */
+          /* Dataset / ComputationalTool / DataCollection tabs in card view: render result cards */
           numCards > 0 && (
             <VStack
               as={UnorderedList}

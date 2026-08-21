@@ -8,6 +8,12 @@ import {
   formatConditionsOfAccess,
   transformConditionsOfAccessLabel,
 } from 'src/utils/formatting/formatConditionsOfAccess';
+import {
+  CONTENT_TYPE_ABOUT_FIELD,
+  CONTENT_TYPE_TOOLTIP,
+  getFacetProperties,
+} from 'src/views/search/config/content-type';
+import { formatTermLabel } from 'src/utils/formatting/formatTermLabel';
 
 /**
  * Default chart configuration for bar and pie visualizations
@@ -156,6 +162,34 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     tabIds: ['d', 'ct'],
   },
   {
+    // Content Type uses both `about` and `exampleOfWork.about`.
+    // See MERGED_FILTER_FIELDS for the corresponding merged-filter
+    // configuration.
+    // These fields are only present on ResourceCatalog and DataCollection
+    // records, so their facet counts are already limited to those
+    // record types.
+    id: CONTENT_TYPE_ABOUT_FIELD,
+    name: 'Content Type',
+    property: CONTENT_TYPE_ABOUT_FIELD,
+    queryType: 'facet',
+    // `missing` would count all records without either field, including
+    // datasets that cannot have a Content Type. Hide it because
+    // "No content type" is not a useful option for this filter.
+    showMissing: false,
+    description: CONTENT_TYPE_TOOLTIP,
+    chart: DEFAULT_BAR_PIE_CHART,
+    // Facets contain the indexed `name` value (e.g., "MolecularSequence"),
+    // while cards and tables display `about.displayName`. Format the
+    // facet term here so the filter, tag, chart, cards, and table use
+    // the same label.
+    transformData: (item: { count: number; term: string; label?: string }) => ({
+      ...item,
+      label: formatTermLabel(item.label || item.term),
+    }),
+    category: 'Shared / Dataset',
+    tabIds: ['d', 'dc'],
+  },
+  {
     id: 'applicationCategory.raw',
     name: 'Application Category',
     property: 'applicationCategory.raw',
@@ -285,26 +319,6 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     category: 'Sample',
     tabIds: ['s'],
   },
-  {
-    id: 'about.name',
-    name: 'Data Type',
-    property: 'about.name',
-    queryType: 'facet',
-    description: getMetadataDescription('about') || '',
-    chart: DEFAULT_BAR_PIE_CHART,
-    category: 'Data Collection',
-    tabIds: ['dc'],
-  },
-  {
-    id: 'exampleOfWork.about.name.raw',
-    name: 'Asset Type',
-    property: 'exampleOfWork.about.name.raw',
-    queryType: 'facet',
-    description: getMetadataDescription('exampleOfWork') || '',
-    chart: DEFAULT_BAR_PIE_CHART,
-    category: 'Data Collection',
-    tabIds: ['dc'],
-  },
 ].filter(config => {
   // If SHOW_SAMPLES_TAB is false, filter out any filters in the "Sample" category.
   if (!SHOW_SAMPLES_TAB && config.category === 'Sample') {
@@ -315,16 +329,23 @@ export const FILTER_CONFIGS: FilterConfig[] = [
   if (!SHOW_DATA_COLLECTIONS_TAB && config.category === 'Data Collection') {
     return false;
   }
+  // Content Type is released with the Data Collections tab.
+  if (!SHOW_DATA_COLLECTIONS_TAB && config.id === CONTENT_TYPE_ABOUT_FIELD) {
+    return false;
+  }
   return true;
 }) as FilterConfig[];
 
 /**
  * Static comma-separated list of all facet properties from FILTER_CONFIGS.
  * Used to ensure a stable query key across all consumers (filters, date filter, visual summary).
+ *
+ * A filter that spans multiple API fields contributes all of those fields so
+ * the aggregation response contains every key needed to build its facet data.
  */
-export const ALL_FACET_PROPERTIES = FILTER_CONFIGS.map(c => c.property).join(
-  ',',
-);
+export const ALL_FACET_PROPERTIES = FILTER_CONFIGS.flatMap(c =>
+  getFacetProperties(c.property),
+).join(',');
 
 /**
  * Facet properties partitioned by the category that consumes them, as a
@@ -343,9 +364,10 @@ export const ALL_FACET_PROPERTIES = FILTER_CONFIGS.map(c => c.property).join(
  */
 export const FACET_PROPERTIES_BY_CATEGORY = FILTER_CONFIGS.reduce(
   (acc, config) => {
+    const properties = getFacetProperties(config.property).join(',');
     acc[config.category] = acc[config.category]
-      ? `${acc[config.category]},${config.property}`
-      : config.property;
+      ? `${acc[config.category]},${properties}`
+      : properties;
     return acc;
   },
   {} as Record<FilterCategory, string>,
