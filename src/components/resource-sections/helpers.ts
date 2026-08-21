@@ -64,11 +64,7 @@ export const hasNonEmptyValue = (value: unknown): boolean => {
 
 // Helper function determines whether to show section in nav based on availability of metadata.
 export const showSection = (section: Route, data?: FormattedResource) => {
-  if (
-    !section ||
-    !section.properties ||
-    section.ui?.showInNavigation === false
-  ) {
+  if (!section || !section.properties) {
     return false;
   }
 

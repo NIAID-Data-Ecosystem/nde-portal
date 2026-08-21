@@ -1,9 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+  Accordion,
+  AccordionButton,
+  AccordionItem,
+  AccordionPanel,
   Box,
   Button,
   Flex,
   Heading,
+  Icon,
   Skeleton,
   Stack,
   Table,
@@ -12,10 +17,12 @@ import {
   VisuallyHidden,
   useDisclosure,
   Tooltip,
+  VStack,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { IsBasedOn, IsBasisFor } from 'src/utils/api/types';
-import { uniqueId } from 'lodash';
+import { castArray, uniqueId } from 'lodash';
+import { FaMinus, FaPlus } from 'react-icons/fa6';
 import { Cell, EmptyCell, Th } from 'src/components/table/components/cell';
 import { Row } from 'src/components/table/components/row';
 import { TableContainer } from 'src/components/table/components/table-container';
@@ -84,7 +91,7 @@ interface Row extends Item {
 
 type Rows = Row[];
 // BasedOnTable: Main component for rendering a paginated and sortable table
-const BasedOnTable = ({
+export const BasedOnTable = ({
   id,
   isLoading,
   caption,
@@ -369,4 +376,79 @@ const BasedOnTable = ({
   );
 };
 
-export default BasedOnTable;
+// BasedOnActionProcess: describes how a DataCollection was generated.
+// Detailed description and steps are nested under the action name,
+// see https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/444#issuecomment-5267360271
+export const BasedOnActionProcess = ({
+  name,
+  description,
+  disambiguatingDescription,
+  actionProcess,
+}: IsBasedOn) => {
+  // step may come back from the API as a single string or a list.
+  const steps = castArray(actionProcess?.step ?? []).filter(Boolean);
+
+  if (!description && steps.length === 0) return <>No details provided.</>;
+
+  return (
+    <Stack
+      gap={0.5}
+      w='100%'
+      bg='status.info_lt'
+      borderRadius='sm'
+      fontSize='sm'
+      lineHeight='short'
+      p={[2, 4]}
+    >
+      {/* "How to" steps are collapsed by default to keep the card compact. */}
+      <Accordion allowToggle>
+        <AccordionItem border='none'>
+          {({ isExpanded }) => (
+            <>
+              <Flex flexDirection='column' rowGap={0.5} lineHeight='short'>
+                {/* Name of action */}
+                <Text fontWeight='semibold'>
+                  {name || 'Generation process'}
+                </Text>
+                {disambiguatingDescription && (
+                  <Text fontWeight='medium' fontSize='xs'>
+                    {disambiguatingDescription}
+                  </Text>
+                )}
+                {description && <Text fontSize='xs'>{description}</Text>}
+                {steps.length > 0 && (
+                  <AccordionButton
+                    w='auto'
+                    gap={2}
+                    px={0}
+                    py={0}
+                    my={0.5}
+                    flexShrink={0}
+                    fontSize='xs'
+                    fontWeight='medium'
+                    textDecoration='underline'
+                    _hover={{ textDecoration: 'none' }}
+                  >
+                    {isExpanded ? 'Hide "How To"' : 'Show "How To"'}
+                    <Icon as={isExpanded ? FaMinus : FaPlus} fontSize='2xs' />
+                  </AccordionButton>
+                )}
+              </Flex>
+              {steps.length > 0 && (
+                <AccordionPanel px={0} pt={1} pb={1}>
+                  <VStack alignItems='start' spacing={1} fontSize='xs'>
+                    <VStack alignItems='start' spacing={1.5}>
+                      {steps.map((step, index) => (
+                        <Text key={index}>{step}</Text>
+                      ))}
+                    </VStack>
+                  </VStack>
+                </AccordionPanel>
+              )}
+            </>
+          )}
+        </AccordionItem>
+      </Accordion>
+    </Stack>
+  );
+};

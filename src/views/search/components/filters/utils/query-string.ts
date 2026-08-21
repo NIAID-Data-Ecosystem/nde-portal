@@ -2,10 +2,16 @@ import { SelectedFilterType, SelectedFilterValueType } from '../types';
 import { formatResourceTypeForAPI } from 'src/utils/formatting/formatResourceType';
 import { SHOW_FILTER_ANY_NO_EXCLUSIVITY } from 'src/utils/feature-flags';
 import { APPLY_DEFAULT_DATE_FILTER_KEY } from 'src/views/search/config/defaultQuery';
+import { MERGED_FILTER_FIELDS } from 'src/views/search/config/content-type';
 
 // Regex to split filter values by quoted/bare OR and TO separators.
 // Matches: " OR ", OR, " TO ", TO (used in both date ranges and multi-value filters)
 const VALUE_SPLIT_PATTERN = /(?:" OR ")| OR |(?:" TO ")| TO /;
+
+// Matches the first clause of a merged multi-field filter, such as `a:(x)`
+// in `((a:(x)) OR (b:(x)))`. The non-greedy match stops at the first `) OR (`.
+// Quoted value separators such as `" OR "` do not match this pattern.
+const MERGED_CLAUSE_PATTERN = /^\(\((.+?)\)\s+OR\s+\(/;
 
 const coerceFilterValues = (values: unknown): SelectedFilterValueType[] => {
   if (Array.isArray(values)) {
@@ -83,7 +89,27 @@ export const queryFilterObject2String = (
         }
       }
 
-      return valueString ? `(${filterName}:${valueString})` : null;
+      if (!valueString) return null;
+
+      // A filter spanning multiple API fields produces one clause for each field, joined with OR:
+      //   ((about.name:("Genome")) OR (exampleOfWork.about.name:("Genome")))
+      // Each clause keeps its own `field:(...)` structure so the filter can be
+      // parsed back by queryFilterString2Object.
+      const mergedFields = MERGED_FILTER_FIELDS[filterName];
+      if (mergedFields) {
+        const clauses = mergedFields.map(({ filter }) => {
+          // _exists_ values contain the field name they check, so that field
+          //  name must be changed for each merged-field clause.
+          const fieldValueString =
+            objectValues.length > 0
+              ? valueString.split(`"${filterName}"`).join(`"${filter}"`)
+              : valueString;
+          return `(${filter}:${fieldValueString})`;
+        });
+        return `(${clauses.join(' OR ')})`;
+      }
+
+      return `(${filterName}:${valueString})`;
     })
     .filter(Boolean);
 
@@ -106,9 +132,17 @@ export const queryFilterString2Object = (
     : [queryString];
 
   return filterParts.reduce((acc, part) => {
-    // Strip outer parentheses: "(key:value)" -> "key:value"
     let cleanPart = part;
-    if (cleanPart.startsWith('(') && cleanPart.endsWith(')')) {
+
+    // A merged multi-field filter is serialized as `((a:(x)) OR (b:(x)))`.
+    // Every clause contains the same values, so parsing the first clause is
+    // enough to recover the selection. Its field is the filter's `property`,
+    // which is the key used by the rest of the application.
+    const mergedClause = part.match(MERGED_CLAUSE_PATTERN);
+    if (mergedClause) {
+      cleanPart = mergedClause[1];
+    } else if (cleanPart.startsWith('(') && cleanPart.endsWith(')')) {
+      // Strip outer parentheses: "(key:value)" -> "key:value"
       cleanPart = cleanPart.slice(1, -1);
     }
 

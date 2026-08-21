@@ -1,4 +1,14 @@
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { SearchableItem } from 'src/components/searchable-items';
+import { FormattedResource } from 'src/utils/api/types';
+import {
+  CONTENT_TYPE_ABOUT_FIELD,
+  CONTENT_TYPE_EXAMPLE_OF_WORK_FIELD,
+} from 'src/views/search/config/content-type';
+import {
+  getContentTypeLabel,
+  getContentTypeTerms,
+} from '../../utils/content-type';
 
 const schemaProperties = Object.values(SCHEMA_DEFINITIONS).map(definition => {
   if (definition.dotfield === '@id') {
@@ -29,3 +39,27 @@ export const filterWords = (inputString: string) => {
     .sort((a, b) => b.length - a.length);
   return filteredWords;
 };
+
+/*
+ * Builds the "Content Type" pills for a card from the record's merged `about`
+ * and `exampleOfWork.about` terms. Each pill's link searches both fields with
+ * OR, so the results are the same no matter which field supplied the value.
+ */
+export const getContentTypeItems = (
+  data?: FormattedResource | null,
+): SearchableItem[] =>
+  // Ordering is left to SearchableItems, which sorts by label.
+  getContentTypeTerms(data).map(term => {
+    // `name` is the only property indexed under both fields, so it is always
+    // the searched value.
+    const value = term.name as string;
+
+    return {
+      name: getContentTypeLabel(term),
+      value,
+      // Primary field, kept so the item still resolves to a sensible query if
+      // `query` is ever dropped.
+      field: CONTENT_TYPE_ABOUT_FIELD,
+      query: `(${CONTENT_TYPE_ABOUT_FIELD}:"${value}" OR ${CONTENT_TYPE_EXAMPLE_OF_WORK_FIELD}:"${value}")`,
+    };
+  });

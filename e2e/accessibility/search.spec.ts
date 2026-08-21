@@ -5907,9 +5907,10 @@ test.describe('a11y: Search — error', () => {
 // page chrome). We deliberately DON'T re-scan "more of the same" surfaces: the
 // predictive-search dropdown (same InputWithDropdown already scanned in
 // advanced-search.spec.ts) or sibling result tabs (re-render the same card
-// list). The Customize Columns popover lives only on the Samples/DataCollections
-// table tabs (feature-gated) — covered by the repository-matcher spec's table
-// popover, the same SelectAndSortPopover component.
+// list). The Customize Columns popover only appears on the Samples tab and on
+// the tabs currently in table view (feature-gated) — covered by the
+// repository-matcher spec's table popover, the same SelectAndSortPopover
+// component.
 
 /** Put the page into the populated, results-rendered state used by the
  * interaction scans below (mirrors the populated describe block). */

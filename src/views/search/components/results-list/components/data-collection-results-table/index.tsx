@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Text } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { Column } from 'src/components/table';
@@ -11,7 +11,16 @@ import {
   ExpandableList,
   ExpandableText,
 } from '../results-table/components/ExpandableCells';
+import {
+  LinkOrTextCell,
+  ResourceNameCell,
+} from '../results-table/components/SharedCells';
 import { DATA_COLLECTION_REQUIRED_COLUMN_IDS } from '../results-table/constants';
+import {
+  ContentTypeTerm,
+  getContentTypeLabel,
+  getContentTypeTerms,
+} from '../../utils/content-type';
 
 export interface DataCollectionColumn extends BaseColumn {}
 
@@ -33,20 +42,12 @@ export const ALL_DATA_COLLECTION_COLUMNS: DataCollectionColumn[] = [
     props: withWidth('160px'),
   },
   {
-    id: 'about',
-    title: 'Data Type',
-    property: 'about',
-    isSortable: true,
-    apiSortField: 'about.name',
-    props: withWidth('200px'),
-  },
-  {
-    id: 'exampleOfWork',
-    title: 'Asset Type',
-    property: 'exampleOfWork',
+    id: 'contentType',
+    title: 'Content Type',
+    property: 'contentType',
     isSortable: false,
     apiSortField: null,
-    props: withWidth('200px'),
+    props: withWidth('220px'),
   },
   {
     id: 'conditionsOfAccess',
@@ -82,7 +83,7 @@ export const ALL_DATA_COLLECTION_COLUMNS: DataCollectionColumn[] = [
   },
   {
     id: 'infectiousAgent',
-    title: 'Infectious Agent',
+    title: 'Pathogen Species',
     property: 'infectiousAgent',
     isSortable: false,
     apiSortField: null,
@@ -139,179 +140,152 @@ export const toRow = (resource: FormattedResource): Record<string, unknown> => {
     includedInDataCatalog: catalog
       ? { name: catalog.name ?? '', url: catalogUrl }
       : null,
+    // `about` and `exampleOfWork.about` are shown together as one column, so
+    // they are merged and deduplicated here.
+    contentType: getContentTypeTerms(resource),
   };
 };
 
-export const getCells = ({
-  column,
-  data,
-  isLoading,
-}: {
-  column: Column;
-  data: Record<string, unknown>;
-  isLoading?: boolean;
-}) => {
-  const value = data?.[column.property];
+// Builds the cell renderer for this table.
+export const createGetCells =
+  (referrerPath?: string) =>
+  ({
+    column,
+    data,
+    isLoading,
+  }: {
+    column: Column;
+    data: Record<string, unknown>;
+    isLoading?: boolean;
+  }) => {
+    const value = data?.[column.property];
 
-  // Name: plain text
-  if (column.property === 'name') {
-    return value ? <Text fontSize='sm'>{String(value)}</Text> : null;
-  }
-
-  // Source: { name, url } => link or plain text
-  if (column.property === 'includedInDataCatalog') {
-    const cat = value as { name: string; url: string | null } | null;
-    if (!cat) return null;
-    return cat.url ? (
-      <Link href={cat.url} isExternal fontSize='sm'>
-        {cat.name || cat.url}
-      </Link>
-    ) : (
-      <Text fontSize='sm'>{cat.name}</Text>
-    );
-  }
-
-  // About: comma-separated list of about[].name values.
-  // Normalizes to array first since the API may return a single object
-  // instead of an array when there is only one entry.
-  if (column.property === 'about') {
-    if (!value) return null;
-    const aboutArray = Array.isArray(value) ? value : [value];
-    const names = aboutArray
-      .map(
-        (item: {
-          name: string;
-          displayName: string;
-          url: string;
-          description: string;
-        }) => item.name,
-      )
-      .filter(Boolean)
-      .join(', ');
-    return names ? <Text fontSize='sm'>{names}</Text> : null;
-  }
-
-  // Example of Work: render each exampleOfWork.about[] entry as an external
-  // link (name, url), stacked vertically.
-  if (column.property === 'exampleOfWork') {
-    if (!value) return null;
-
-    // exampleOfWork is a single CreativeWork object, not an array.
-    const exampleOfWorkObj = value as {
-      about?:
-        | Array<{ displayName?: string; name?: string; url?: string }>
-        | { displayName?: string; name?: string; url?: string };
-    };
-
-    const aboutItems = exampleOfWorkObj.about
-      ? Array.isArray(exampleOfWorkObj.about)
-        ? exampleOfWorkObj.about
-        : [exampleOfWorkObj.about]
-      : [];
-
-    const validItems = aboutItems
-      .filter(item => item.displayName || item.name || item.url)
-      .sort((a, b) => {
-        const labelA = a.displayName || a.name || a.url || '';
-        const labelB = b.displayName || b.name || b.url || '';
-        return labelA.localeCompare(labelB);
-      });
-    if (validItems.length === 0) return null;
-
-    return (
-      <ExpandableList>
-        {validItems.map((item, idx) => {
-          const label = item.displayName || item.name || item.url || '';
-          return item.url ? (
-            <Link key={idx} href={item.url} isExternal fontSize='sm'>
-              {label}
-            </Link>
-          ) : (
-            <Text key={idx} fontSize='sm'>
-              {label}
-            </Text>
-          );
-        })}
-      </ExpandableList>
-    );
-  }
-
-  // Conditions of Access and Date: plain text
-  if (column.property === 'conditionsOfAccess' || column.property === 'date') {
-    return value ? <Text fontSize='sm'>{String(value)}</Text> : null;
-  }
-
-  // Description: clamped to a few lines with a "Show more" / "Show less" toggle.
-  if (column.property === 'description') {
-    return (
-      <ExpandableText
-        text={(value as string) || ''}
-        noOfLines={4}
-        isLoading={isLoading}
-      />
-    );
-  }
-
-  // isBasedOn: render the name of each entry whose @type is "Action" as
-  // plain text. Multiple matching entries are stacked vertically.
-  if (column.property === 'isBasedOn') {
-    if (!value) return null;
-    const entries = Array.isArray(value) ? value : [value];
-    const actionNames = entries
-      .filter(
-        (entry: { '@type'?: string; name?: string }) =>
-          entry?.['@type'] === 'Action' && entry?.name,
-      )
-      .map((entry: { name: string }) => entry.name);
-
-    if (actionNames.length === 0) return null;
-
-    return (
-      <ExpandableList>
-        {actionNames.map((name: string, idx: number) => (
-          <Text key={idx} fontSize='sm'>
-            {name}
-          </Text>
-        ))}
-      </ExpandableList>
-    );
-  }
-
-  // collectionSize: renders as "<minValue>+ <unitText lowercase>" per entry.
-  // The API may return a single object or an array; both are handled.
-  // Multiple entries are stacked vertically.
-  if (column.property === 'collectionSize') {
-    if (!value) return null;
-    const entries = Array.isArray(value) ? value : [value];
-    const formatted = entries
-      .map((entry: { minValue?: number; unitText?: string }) => {
-        const numericPart =
-          entry.minValue != null ? `${entry.minValue}+` : null;
-        const unitPart = entry.unitText ? entry.unitText.toLowerCase() : null;
-        if (!numericPart && !unitPart) return null;
-        return [numericPart, unitPart].filter(Boolean).join(' ');
-      })
-      .filter((s): s is string => s !== null);
-
-    if (formatted.length === 0) return null;
-    if (formatted.length === 1) {
-      return <Text fontSize='sm'>{formatted[0]}</Text>;
+    // Name: links to the resource page.
+    if (column.property === 'name') {
+      return (
+        <ResourceNameCell
+          label={(value as string) || (data?.alternateName as string) || ''}
+          id={data?.id as string | undefined}
+          referrerPath={referrerPath}
+        />
+      );
     }
-    return (
-      <ExpandableList>
-        {formatted.map((text, idx) => (
-          <Text key={idx} fontSize='sm'>
-            {text}
-          </Text>
-        ))}
-      </ExpandableList>
-    );
-  }
 
-  // healthCondition, infectiousAgent, species, topicCategory, and any other
-  // DefinedTerm / QuantitativeValue fields.
-  return renderCellData({ column, data: value as any, isLoading });
-};
+    // Source: { name, url } => link or plain text
+    if (column.property === 'includedInDataCatalog') {
+      const cat = value as { name: string; url: string | null } | null;
+      if (!cat) return null;
+      return cat.url ? (
+        <Link href={cat.url} isExternal fontSize='sm'>
+          {cat.name || cat.url}
+        </Link>
+      ) : (
+        <Text fontSize='sm'>{cat.name}</Text>
+      );
+    }
+
+    // Content Type: the merged `about` + `exampleOfWork.about` terms built in
+    // toRow, sorted alphabetically and stacked one per line. Each links out to
+    // the term's ontology entry when it has one.
+    if (column.property === 'contentType') {
+      const entries = ((value as ContentTypeTerm[] | undefined) ?? [])
+        .map(term => ({
+          label: getContentTypeLabel(term),
+          url: term.url ?? null,
+        }))
+        .filter(entry => entry.label)
+        .sort((a, b) => a.label.localeCompare(b.label));
+
+      if (entries.length === 0) return null;
+
+      return (
+        <ExpandableList>
+          {entries.map((entry, idx) => (
+            <LinkOrTextCell key={idx} label={entry.label} url={entry.url} />
+          ))}
+        </ExpandableList>
+      );
+    }
+
+    // Conditions of Access and Date: plain text
+    if (
+      column.property === 'conditionsOfAccess' ||
+      column.property === 'date'
+    ) {
+      return value ? <Text fontSize='sm'>{String(value)}</Text> : null;
+    }
+
+    // Description: clamped to a few lines with a "Show more" / "Show less" toggle.
+    if (column.property === 'description') {
+      return (
+        <ExpandableText
+          text={(value as string) || ''}
+          noOfLines={4}
+          isLoading={isLoading}
+        />
+      );
+    }
+
+    // isBasedOn: render the name of each entry whose @type is "Action" as
+    // plain text. Multiple matching entries are stacked vertically.
+    if (column.property === 'isBasedOn') {
+      if (!value) return null;
+      const entries = Array.isArray(value) ? value : [value];
+      const actionNames = entries
+        .filter(
+          (entry: { '@type'?: string; name?: string }) =>
+            entry?.['@type'] === 'Action' && entry?.name,
+        )
+        .map((entry: { name: string }) => entry.name);
+
+      if (actionNames.length === 0) return null;
+
+      return (
+        <ExpandableList>
+          {actionNames.map((name: string, idx: number) => (
+            <Text key={idx} fontSize='sm'>
+              {name}
+            </Text>
+          ))}
+        </ExpandableList>
+      );
+    }
+
+    // collectionSize: renders as "<minValue>+ <unitText lowercase>" per entry.
+    // The API may return a single object or an array; both are handled.
+    // Multiple entries are stacked vertically.
+    if (column.property === 'collectionSize') {
+      if (!value) return null;
+      const entries = Array.isArray(value) ? value : [value];
+      const formatted = entries
+        .map((entry: { minValue?: number; unitText?: string }) => {
+          const numericPart =
+            entry.minValue != null ? `${entry.minValue}+` : null;
+          const unitPart = entry.unitText ? entry.unitText.toLowerCase() : null;
+          if (!numericPart && !unitPart) return null;
+          return [numericPart, unitPart].filter(Boolean).join(' ');
+        })
+        .filter((s): s is string => s !== null);
+
+      if (formatted.length === 0) return null;
+      if (formatted.length === 1) {
+        return <Text fontSize='sm'>{formatted[0]}</Text>;
+      }
+      return (
+        <ExpandableList>
+          {formatted.map((text, idx) => (
+            <Text key={idx} fontSize='sm'>
+              {text}
+            </Text>
+          ))}
+        </ExpandableList>
+      );
+    }
+
+    // healthCondition, infectiousAgent, species, topicCategory, and any other
+    // DefinedTerm / QuantitativeValue fields.
+    return renderCellData({ column, data: value as any, isLoading });
+  };
 
 interface DataCollectionResultsTableProps {
   results: FormattedResource[];
@@ -340,6 +314,11 @@ interface DataCollectionResultsTableProps {
    * Receives the API sort field and the desired direction.
    */
   onSortChange?: (apiField: string, ascending: boolean) => void;
+  /**
+   * Current path of the search page, forwarded to the resource page by the
+   * Name cell's link so its breadcrumb can point back to this search.
+   */
+  referrerPath?: string;
 }
 
 export const DataCollectionResultsTable = ({
@@ -349,21 +328,26 @@ export const DataCollectionResultsTable = ({
   columnOrder,
   currentSort,
   onSortChange,
-}: DataCollectionResultsTableProps) => (
-  <ResultsTable
-    columns={ALL_DATA_COLLECTION_COLUMNS}
-    results={results}
-    isLoading={isLoading}
-    toRow={toRow}
-    getCells={getCells}
-    ariaLabel='Data collection search results'
-    caption='Table of data collection search results'
-    requiredColumnIds={
-      DATA_COLLECTION_REQUIRED_COLUMN_IDS as unknown as string[]
-    }
-    visibleColumnIds={visibleColumnIds}
-    columnOrder={columnOrder}
-    currentSort={currentSort}
-    onSortChange={onSortChange}
-  />
-);
+  referrerPath,
+}: DataCollectionResultsTableProps) => {
+  const getCells = useMemo(() => createGetCells(referrerPath), [referrerPath]);
+
+  return (
+    <ResultsTable
+      columns={ALL_DATA_COLLECTION_COLUMNS}
+      results={results}
+      isLoading={isLoading}
+      toRow={toRow}
+      getCells={getCells}
+      ariaLabel='Data collection search results'
+      caption='Table of data collection search results'
+      requiredColumnIds={
+        DATA_COLLECTION_REQUIRED_COLUMN_IDS as unknown as string[]
+      }
+      visibleColumnIds={visibleColumnIds}
+      columnOrder={columnOrder}
+      currentSort={currentSort}
+      onSortChange={onSortChange}
+    />
+  );
+};
