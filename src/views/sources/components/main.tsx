@@ -166,7 +166,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                         <Button
                           as='a'
                           width={{ base: '100%', md: 'unset' }}
-                          maxWidth='400px'
+                          maxWidth='500px'
                           size='sm'
                           href={sourceObj.resourceCatalogUrl}
                           variant='outline'
