@@ -1,8 +1,14 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See
-[standard-version](https://github.com/conventional-changelog/standard-version)
-for commit guidelines.
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [6.4.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v6.3.0...v6.4.0) (2026-08-21)
+
+
+### 🚀 Features
+
+* add Google OAuth providers ([#524](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/524)) ([b88ccbd](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/b88ccbd0a11edb36e409f11728cea78f4d7d0456)), closes [#515](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/515) [#516](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/516) [#517](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/517) [#518](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/518) [#519](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/519) [#520](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/520) [#523](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/523)
+* create DataCollection Resource view page [#444](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/444) ([#529](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/529)) ([9f9385c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/9f9385c724ce933f1e9423545fd17241db16b998))
 
 ## [6.3.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v6.2.2...v6.3.0) (2026-08-12)
 
