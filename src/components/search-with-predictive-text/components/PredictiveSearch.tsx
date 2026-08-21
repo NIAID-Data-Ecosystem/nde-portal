@@ -1,23 +1,24 @@
-import React, { ReactElement, useMemo } from 'react';
-import { groupBy, uniqBy } from 'lodash';
 import {
   Box,
   Circle,
   Flex,
   Icon,
   InputProps,
-  Text,
   Separator,
+  Text,
 } from '@chakra-ui/react';
+import { groupBy, uniqBy } from 'lodash';
+import dynamic from 'next/dynamic';
+import React, { ReactElement, useMemo } from 'react';
 import { FaInfo } from 'react-icons/fa6';
-import { FormattedResource } from 'src/utils/api/types';
-import { usePredictiveSearchResponse } from '../hooks/usePredictiveSearch';
 import {
-  InputWithDropdown,
   DropdownInput,
+  InputWithDropdown,
 } from 'src/components/input-with-dropdown';
 import { DropdownListItem } from 'src/components/input-with-dropdown/components/DropdownListItem';
-import dynamic from 'next/dynamic';
+import { FormattedResource } from 'src/utils/api/types';
+
+import { usePredictiveSearchResponse } from '../hooks/usePredictiveSearch';
 
 const DropdownContent = dynamic(() =>
   import('src/components/input-with-dropdown/components/DropdownContent').then(
@@ -40,7 +41,6 @@ export interface SearchWithPredictiveTextProps
   type?: InputProps['type'];
   hideSuggestions?: boolean;
   disabled?: boolean;
-  isInvalid?: boolean;
   colorPalette?: InputProps['colorPalette'];
   inputValue?: string;
   onClose?: () => void; // triggered when input 'x' is pressed.
@@ -72,7 +72,6 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
   onChange,
   onClick,
   disabled,
-  isInvalid,
   isLoading,
   inputValue,
   ...props
@@ -119,7 +118,6 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
           size={size}
           type={type}
           isLoading={isLoading}
-          isInvalid={isInvalid}
           onChange={onChange ? onChange : updateSearchTerm}
           onSubmit={(value, idx) => {
             handleSubmit(value, searchField, results[idx]);

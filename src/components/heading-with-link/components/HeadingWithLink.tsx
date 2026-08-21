@@ -6,7 +6,7 @@ Heading with slug used to link to a specific section of the page.
 */
 
 export const HeadingWithLinkStyles = {
-  span: {
+  '& span': {
     color: 'status.info',
     cursor: 'pointer',
     fontWeight: 'extrabold',
@@ -15,7 +15,7 @@ export const HeadingWithLinkStyles = {
     transition: 'opacity 0.1s ease-in-out',
   },
   _hover: {
-    span: {
+    '& span': {
       opacity: 1,
       textDecoration: 'underline',
       transition: 'opacity 0.1s ease-in-out',
@@ -38,7 +38,7 @@ export const HeadingWithLink = ({
   return (
     <a href={'#' + slug}>
       <Heading
-        sx={HeadingWithLinkStyles}
+        css={HeadingWithLinkStyles}
         scrollMarginTop='1rem'
         display='inline-block!important'
         {...rest}

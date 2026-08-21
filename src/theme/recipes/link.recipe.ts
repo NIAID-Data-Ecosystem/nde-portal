@@ -39,6 +39,13 @@ export const linkRecipe = defineRecipe({
           textDecorationColor: 'transparent',
         },
       },
+      hover: {
+        color: 'link.default',
+        textUnderlineOffset: '4px',
+        _hover: {
+          textDecorationColor: 'currentColor/80',
+        },
+      },
       // plain: no underline. on hover, underline with partial opacity.
       plain: {
         color: 'currentColor',

@@ -1,5 +1,5 @@
-import React from 'react';
 import { Portal, Tooltip as ChakraTooltip } from '@chakra-ui/react';
+import React from 'react';
 
 export interface TooltipProps extends ChakraTooltip.RootProps {
   /** Tooltip body. Replaces v2's `label`. */

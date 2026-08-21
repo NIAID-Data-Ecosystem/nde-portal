@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Button,
   Collapsible,
@@ -8,8 +7,10 @@ import {
   Progress,
   Text,
 } from '@chakra-ui/react';
-import { FaCircleExclamation, FaXmark } from 'react-icons/fa6';
 import dynamic from 'next/dynamic';
+import React from 'react';
+import { FaCircleExclamation, FaXmark } from 'react-icons/fa6';
+
 import { DownloadArgs } from '../helpers';
 
 const Disclaimer = dynamic(() =>
@@ -62,7 +63,6 @@ export const DownloadMetadataProgress: React.FC<DownloadMetadataProgressProps> =
                     striped
                     value={percentComplete}
                     colorPalette='primary'
-                    indeterminate={percentComplete === 0}
                     animated
                   >
                     <Progress.Track>

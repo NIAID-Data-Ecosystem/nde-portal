@@ -1,21 +1,22 @@
-import React, { useState } from 'react';
-import { FaAngleDown } from 'react-icons/fa6';
 import {
   Box,
   chakra,
   Collapsible,
   Flex,
   Heading,
-  Image,
-  Text,
-  ImageProps,
-  Icon,
   HStack,
+  Icon,
+  Image,
+  ImageProps,
   List,
+  Text,
 } from '@chakra-ui/react';
-import { Link } from 'src/components/link';
+import React, { useState } from 'react';
+import { FaAngleDown } from 'react-icons/fa6';
 import { HeadingWithLink } from 'src/components/heading-with-link/components/HeadingWithLink';
+import { Link } from 'src/components/link';
 import { transformString2Hash } from 'src/views/docs/utils/markdown';
+
 import { normalizeResponsiveProps } from '../helpers';
 
 const Details = (props: any) => {
@@ -117,7 +118,7 @@ export const MDXComponents = {
         href={href}
         isExternal={isExternal}
         {...parsedProps}
-        sx={{
+        css={{
           // Workaround for Emotion warning with ":first-child" pseudo class is potentially unsafe when doing server-side rendering.
           '*:not(:not(:last-child) ~ *)': {
             borderBottom: '0.0625rem solid',
@@ -418,7 +419,13 @@ export const MDXComponents = {
       );
     if (containsImgEl) {
       return (
-        <Text as='span' mt={2} size='sm' lineHeight='tall' color='text.body'>
+        <Text
+          as='span'
+          mt={2}
+          fontSize='sm'
+          lineHeight='tall'
+          color='text.body'
+        >
           {props.children}
         </Text>
       );

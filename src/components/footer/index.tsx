@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   Flex,
@@ -9,11 +8,13 @@ import {
   Stack,
   TextProps,
 } from '@chakra-ui/react';
-import { Logo } from 'src/components/logos';
 import SITE_CONFIG from 'configs/site.config.json';
-import { FooterLink, FooterSocialLinks } from './components/link';
+import React from 'react';
+import { Logo } from 'src/components/logos';
 import { useMetadata } from 'src/hooks/api/useMetadata';
+
 import { SiteConfig } from '../page-container/types';
+import { FooterLink, FooterSocialLinks } from './components/link';
 import { FooterRoute } from './types';
 
 export interface ListHeaderProps extends TextProps {}
@@ -84,7 +85,7 @@ export const Footer = () => {
                     <FooterLink
                       href={route.href}
                       isExternal={route.isExternal ?? false}
-                      variant='ghost'
+                      variant='hover'
                     >
                       {route.label}
                     </FooterLink>
@@ -146,7 +147,7 @@ export const Footer = () => {
                             mt={1}
                             mb={3}
                             _hover={{
-                              svg: {
+                              '& svg': {
                                 opacity: '100%',
                                 transform: 'translateX(0)',
                                 transition: 'all .3s ease',
@@ -156,7 +157,7 @@ export const Footer = () => {
                             <FooterLink
                               href={href}
                               isExternal={isExternal ?? false}
-                              variant='ghost'
+                              variant='hover'
                             >
                               {label}
                             </FooterLink>

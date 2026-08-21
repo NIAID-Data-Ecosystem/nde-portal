@@ -3,19 +3,16 @@ import {
   CloseButton,
   Flex,
   Icon,
-  Input,
   InputGroup,
-  InputLeftElement,
   InputProps,
-  InputRightElement,
   Spinner,
   Textarea,
+  useFieldContext,
   VisuallyHidden,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
-import { system } from 'src/theme';
 
 import { useDropdownContext } from '..';
 
@@ -31,7 +28,6 @@ export interface DropdownInputProps {
   type: InputProps['type'];
   placeholder?: string;
   disabled?: boolean;
-  isInvalid?: boolean;
   isLoading?: boolean;
   getInputValue: (arg: number) => string;
   renderSubmitButton?: (props: ButtonProps) => ReactElement;
@@ -48,7 +44,6 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   size = 'sm',
   type,
   disabled,
-  isInvalid,
   renderSubmitButton,
   getInputValue,
   onChange,
@@ -56,6 +51,11 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   onSubmit,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Invalid state comes from the enclosing <Field.Root invalid> when there is
+  // one; undefined otherwise.
+  const field = useFieldContext();
+  const invalid = field?.invalid;
 
   const {
     colorPalette,
@@ -190,7 +190,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
         zIndex='dropdown'
         alignItems='flex-start'
         border='1px solid'
-        borderColor='gray.200'
+        borderColor={invalid ? 'status.error' : 'gray.200'}
         borderRadius='md'
         bg='white'
         startElement={startElement}
@@ -217,7 +217,6 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
             size,
             mr: renderSubmitButton ? { base: 24, sm: rightElWidth } : 4,
             disabled,
-            isInvalid,
             onKeyDown: (
               e: React.KeyboardEvent<HTMLTextAreaElement>,
               index: number,

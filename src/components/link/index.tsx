@@ -1,19 +1,18 @@
-import React from 'react';
 import {
   Icon,
   Link as ChakraLink,
   LinkProps as ChakraLinkProps,
 } from '@chakra-ui/react';
+import React from 'react';
 import { FaArrowUpRightFromSquare } from 'react-icons/fa6';
 
 export interface LinkProps extends ChakraLinkProps {
   color?: string;
-  variant?: 'base' | 'unstyled' | 'ghost';
   /**
    * Opens the link in a new tab and appends an external-link icon.
    *
    * Chakra dropped its own `isExternal` in v3; this keeps the prop as part of
-   * this component's API, since the icon is ours either way.
+   * this component's API.
    */
   isExternal?: boolean;
 }

@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
 import { useMediaQuery } from '@chakra-ui/react';
+import { useEffect, useMemo, useState } from 'react';
 import { system } from 'src/theme';
+
 import { PROGRESS_BAR_THRESHOLDS } from '../constants';
 
 interface CarouselStateProps {
@@ -31,13 +32,15 @@ export const useCarouselState = ({
     xl: system.token('breakpoints.xl'),
   };
 
-  const [isBetweenBaseAndMd] = useMediaQuery(
-    `(min-width: ${breakpoints.base}) and (max-width: ${breakpoints.md})`,
+  // v3's `useMediaQuery` takes an array of queries and returns an array of
+  // booleans, one per query.
+  const [isBetweenBaseAndMd, isBetweenMdAndXl, isGreaterThanXL] = useMediaQuery(
+    [
+      `(min-width: ${breakpoints.base}) and (max-width: ${breakpoints.md})`,
+      `(min-width: ${breakpoints.md}) and (max-width: ${breakpoints.xl})`,
+      `(min-width: ${breakpoints.xl})`,
+    ],
   );
-  const [isBetweenMdAndXl] = useMediaQuery(
-    `(min-width: ${breakpoints.md}) and (max-width: ${breakpoints.xl})`,
-  );
-  const [isGreaterThanXL] = useMediaQuery(`(min-width: ${breakpoints.xl})`);
 
   // Calculate item positions based on width
   const positions = useMemo(

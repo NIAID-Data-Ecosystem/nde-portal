@@ -1,15 +1,15 @@
-import React, { useCallback, useMemo } from 'react';
-import { Group } from '@visx/group';
-import { scaleLinear } from '@visx/scale';
-import { MetadataSource } from 'src/hooks/api/types';
-import { system } from 'src/theme';
-import { PatternLines } from '@visx/pattern';
-import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { Box, Icon, Stack, Text } from '@chakra-ui/react';
+import { Group } from '@visx/group';
+import { PatternLines } from '@visx/pattern';
+import { scaleLinear } from '@visx/scale';
+import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import React, { useCallback, useMemo } from 'react';
+import { FaCircleCheck, FaRegCircleUp } from 'react-icons/fa6';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import Tooltip from 'src/components/tooltip';
-import { FaCircleCheck, FaRegCircleUp } from 'react-icons/fa6';
+import { MetadataSource } from 'src/hooks/api/types';
+import { system } from 'src/theme';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -175,9 +175,14 @@ export const CompatibilityBadge = ({
       const fill = fieldIsCompatible ? color(bin.count) : `url(#${patternId})`;
 
       return (
-        <Box className='visx-heatmap-rect' rx={RADIUS} ry={RADIUS} asChild>
+        <Box
+          key={`heatmap-rect-${bin.type}-${idx}`}
+          className='visx-heatmap-rect'
+          rx={RADIUS}
+          ry={RADIUS}
+          asChild
+        >
           <g
-            key={`heatmap-rect-${bin.type}-${idx}`}
             onMouseMove={(e: React.MouseEvent | React.TouchEvent) =>
               handleMouseMove(e, {
                 x: margin.left + x + BIN_SIZE / 2,
@@ -210,7 +215,7 @@ export const CompatibilityBadge = ({
                 x={x + BIN_SIZE / 2}
                 y={y + BIN_SIZE / 2}
                 style={{ transform: 'translate(-5px, -5px)' }}
-                size={10}
+                boxSize={10}
                 asChild
               >
                 <FaRegCircleUp />
@@ -259,9 +264,7 @@ export const CompatibilityBadge = ({
         >
           <Tooltip
             content='Recommended fields coverage.'
-            position='absolute'
-            left={0}
-            top={0}
+            positioning={{ placement: 'top-start' }}
           >
             <Box
               x={0}
@@ -287,9 +290,7 @@ export const CompatibilityBadge = ({
         <Group className='required-fields' top={requiredTop} left={margin.left}>
           <Tooltip
             content='Fundamental fields coverage.'
-            position='absolute'
-            left={0}
-            top={0}
+            positioning={{ placement: 'top-start' }}
           >
             <Box
               x={0}

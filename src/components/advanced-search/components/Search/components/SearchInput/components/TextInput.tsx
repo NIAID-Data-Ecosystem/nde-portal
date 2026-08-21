@@ -1,12 +1,13 @@
-import React, { useEffect } from 'react';
 import { Box } from '@chakra-ui/react';
-import { PredictiveSearch } from 'src/components/search-with-predictive-text/components/PredictiveSearch';
-import { useAdvancedSearchContext } from '../../AdvancedSearchFormContext';
-import { wildcardQueryString } from 'src/components/advanced-search/utils/query-helpers';
-import { usePredictiveSearch } from 'src/components/search-with-predictive-text';
-import { checkBalancedPunctuation } from 'src/components/advanced-search/utils/validation-checks';
-import { AdvancedSearchInputProps } from '../types';
+import React, { useEffect } from 'react';
 import { QueryValue } from 'src/components/advanced-search/types';
+import { wildcardQueryString } from 'src/components/advanced-search/utils/query-helpers';
+import { checkBalancedPunctuation } from 'src/components/advanced-search/utils/validation-checks';
+import { usePredictiveSearch } from 'src/components/search-with-predictive-text';
+import { PredictiveSearch } from 'src/components/search-with-predictive-text/components/PredictiveSearch';
+
+import { useAdvancedSearchContext } from '../../AdvancedSearchFormContext';
+import { AdvancedSearchInputProps } from '../types';
 
 interface TextInputProps extends AdvancedSearchInputProps {
   hideSuggestions?: boolean;
@@ -63,7 +64,6 @@ export const TextInput: React.FC<TextInputProps> = ({
         inputValue={stringInputValue}
         disabled={disabled}
         hideSuggestions={hideSuggestions}
-        isInvalid={errors.length > 0}
         onClose={
           stringInputValue.length
             ? () => {

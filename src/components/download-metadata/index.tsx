@@ -6,21 +6,21 @@ import {
   Flex,
   FlexProps,
   Icon,
+  List,
   Progress,
   Text,
   useDisclosure,
-  List,
 } from '@chakra-ui/react';
-import React, { useCallback, useEffect, useState } from 'react';
-import { FaDownload, FaCircleExclamation } from 'react-icons/fa6';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Params, fetchAllSearchResults } from 'src/utils/api';
-import { DownloadArgs, downloadAsCsv, downloadAsJson } from './helpers';
-import { Disclaimer } from './components/Disclaimer';
-import { FaXmark } from 'react-icons/fa6';
-import { encodeString } from 'src/utils/querystring-helpers';
 import { sendGTMEvent } from '@next/third-parties/google';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
+import React, { useCallback, useEffect, useState } from 'react';
+import { FaCircleExclamation, FaDownload } from 'react-icons/fa6';
+import { FaXmark } from 'react-icons/fa6';
+import { fetchAllSearchResults, Params } from 'src/utils/api';
+
+import { Disclaimer } from './components/Disclaimer';
+import { DownloadArgs, downloadAsCsv, downloadAsJson } from './helpers';
 
 /*
  [COMPONENT INFO]: Download data button that gives JSON or CSV download options.
@@ -184,7 +184,6 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
                 striped
                 value={percentComplete}
                 colorPalette='primary'
-                indeterminate={percentComplete === 0}
                 animated
               >
                 <Progress.Track>

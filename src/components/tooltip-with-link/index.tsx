@@ -1,23 +1,21 @@
-import Tooltip from 'src/components/tooltip';
-import {
-  Icon,
-  Link,
-  TooltipProps as ChakraTooltipProps,
-} from '@chakra-ui/react';
+import { Icon, Link, Tooltip as ChakraTooltip } from '@chakra-ui/react';
 import { FaInfo } from 'react-icons/fa6';
+import Tooltip from 'src/components/tooltip';
 
-interface TooltipProps extends ChakraTooltipProps {
+interface TooltipProps extends ChakraTooltip.RootProps {
+  content: React.ReactNode;
   url: string;
+  children: React.ReactNode;
 }
 
 const TooltipWithLink: React.FC<TooltipProps> = ({
-  label,
+  content,
   url,
   children,
   ...props
 }) => {
   return (
-    <Tooltip content={label} {...props}>
+    <Tooltip content={content} {...props}>
       <Link
         href={url}
         mt={2}

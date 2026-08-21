@@ -1,6 +1,7 @@
+import { Box, BoxProps, ListItemProps } from '@chakra-ui/react';
 import React, { useRef } from 'react';
 import { useOnClickOutside } from 'usehooks-ts';
-import { Box, BoxProps, ListItemProps } from '@chakra-ui/react';
+
 import { useDropdownInput } from './hooks/useDropdownInput';
 
 interface DropdownListItemProps extends ListItemProps {

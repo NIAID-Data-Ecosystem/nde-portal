@@ -1,13 +1,14 @@
-import React from 'react';
 import {
   Flex,
   FlexProps,
   Heading,
+  Separator,
   SkeletonText,
   Text,
   TextProps,
-  Separator,
 } from '@chakra-ui/react';
+import Link from 'next/link';
+import React from 'react';
 import { HeadingWithLinkStyles } from 'src/components/heading-with-link/components/HeadingWithLink';
 
 type HeadingLevel = 'h1' | 'h2' | 'h3' | 'h4' | 'h5';
@@ -103,11 +104,13 @@ export const SectionTitleWithLink = ({
   children: React.ReactNode;
   slug: string;
 }) => (
-  <Flex as='a' href={slug} alignItems='center' sx={HeadingWithLinkStyles}>
-    {children}
-    <Text as='span' fontWeight='bold' fontSize='inherit'>
-      #
-    </Text>
+  <Flex asChild alignItems='center' css={HeadingWithLinkStyles}>
+    <Link href={slug}>
+      {children}
+      <Text as='span' fontWeight='bold' fontSize='inherit'>
+        #
+      </Text>
+    </Link>
   </Flex>
 );
 

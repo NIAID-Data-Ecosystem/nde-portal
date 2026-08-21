@@ -1,12 +1,12 @@
-import React from 'react';
 import { Icon, Text, TextProps } from '@chakra-ui/react';
-import type { TooltipProps } from 'src/components/tooltip';
+import React from 'react';
 import { FaInfo } from 'react-icons/fa6';
+import type { TooltipProps } from 'src/components/tooltip';
 import Tooltip from 'src/components/tooltip';
 
 interface InfoLabelProps {
   title: string;
-  tooltipText?: TooltipProps['label'];
+  tooltipText?: TooltipProps['content'];
   textProps?: TextProps;
   tooltipProps?: Omit<TooltipProps, 'children'>;
 }

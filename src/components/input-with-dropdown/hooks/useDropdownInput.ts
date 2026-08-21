@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
 import { InputProps, ListItemProps } from '@chakra-ui/react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { callAllHandlers } from 'src/utils/functions';
+
 import { ContextProps } from '../index';
 
 interface DropdownInputProps extends Omit<InputProps, 'onKeyDown'> {
@@ -78,9 +79,15 @@ export const useDropdownInput = ({
     onKeyDown,
     ...props
   }: DropdownInputProps) => ({
-    colorPalette: props.isInvalid ? 'red' : colorPalette,
-    borderColor: props.isInvalid ? 'status.error' : 'gray.200',
-    _focus: { borderColor: props.isInvalid ? 'status.error' : 'inherit' },
+    colorPalette,
+    borderColor: 'gray.200',
+    _focus: { borderColor: 'inherit' },
+    // Invalid state is owned by the enclosing <Field.Root invalid>, which puts
+    // data-invalid on the control, so style off that rather than a prop.
+    _invalid: {
+      borderColor: 'status.error',
+      _focus: { borderColor: 'status.error' },
+    },
     bg: 'white',
     type: 'search',
     value: inputValue,
@@ -156,7 +163,6 @@ export const useDropdownInput = ({
     setInputValue,
     setIsOpen,
     getInputProps,
-    // getListProps,
     getListItemProps,
   };
 };
