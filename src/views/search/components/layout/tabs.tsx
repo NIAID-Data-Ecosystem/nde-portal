@@ -1,7 +1,8 @@
-import React from 'react';
 import { Tabs, Tag, Text } from '@chakra-ui/react';
-import { TabType } from '../../types';
+import React from 'react';
+
 import { TAB_LABELS } from '../../config/tabs';
+import { TabType } from '../../types';
 
 interface TabWithCounts extends Omit<TabType, 'types'> {
   types: (TabType['types'][number] & {
@@ -17,15 +18,15 @@ interface SearchTabsProps extends Omit<Tabs.RootProps, 'children'> {
 
 export const SearchTabs = ({
   colorPalette = 'secondary',
-  index,
-  onChange,
+  value,
+  onValueChange,
   renderTabPanels,
   tabs,
 }: SearchTabsProps) => {
   return (
     <Tabs.Root
-      value={index}
-      onValueChange={onChange}
+      value={value}
+      onValueChange={onValueChange}
       colorPalette={colorPalette}
       bg='#fff'
       lazyMount
@@ -41,9 +42,10 @@ export const SearchTabs = ({
           <Tabs.Trigger
             key={tab.id}
             id={tab.id}
+            value={tab.id}
             aria-label={tab.types.map(t => t.label).join(', ')}
             css={{
-              '& _selected': {
+              '&[data-selected]': {
                 color: `${colorPalette}.500`,
                 bg: '#fff',
               },
@@ -76,8 +78,8 @@ const TabLabels = ({
     colorPalette,
     ml: 1.5,
     my: 1,
-    size: 'sm',
-    variant: 'subtle',
+    size: 'sm' as const,
+    variant: 'subtle' as const,
   };
   const textStyles = {
     color: 'inherit',

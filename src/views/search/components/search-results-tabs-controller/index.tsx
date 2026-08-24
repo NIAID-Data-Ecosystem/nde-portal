@@ -83,7 +83,8 @@ export const SearchResultsController = ({
   initialData,
 }: SearchResultsControllerProps) => {
   const router = useRouter();
-  const { selectedIndex, setSelectedIndex } = useSearchTabsContext();
+  const { selectedIndex, setSelectedIndex, selectedTab, setSelectedTab } =
+    useSearchTabsContext();
   const { getPagination, setPagination } = usePaginationContext();
   const queryClient = useQueryClient();
 
@@ -91,9 +92,9 @@ export const SearchResultsController = ({
   // override the user choice if there are no results for that tab.
   const userSelectedTabRef = useRef<string | null>(null);
 
-  const handleTabChange = (index: number) => {
-    setSelectedIndex(index);
-    const selectedTab = tabs[index];
+  const handleTabChange = (tabIndex: number) => {
+    setSelectedIndex(tabIndex);
+    const selectedTab = tabs[tabIndex];
 
     // Record the user choice so the auto-tab respects it.
     userSelectedTabRef.current = selectedTab.id;
@@ -288,6 +289,9 @@ export const SearchResultsController = ({
     queryParams.filters,
     router.isReady,
     router.query.q,
+    router,
+    selectedIndex,
+    setSelectedIndex,
   ]);
 
   const hasResourceCatalogRecords = useMemo(() => {
@@ -429,8 +433,8 @@ export const SearchResultsController = ({
   return (
     <>
       <SearchTabs
-        index={selectedIndex}
-        onChange={handleTabChange}
+        value={`${selectedIndex}`}
+        onValueChange={e => handleTabChange(+e.value)}
         colorPalette={colorPalette}
         tabs={tabsWithFacetCounts}
         renderTabPanels={() =>
@@ -439,7 +443,7 @@ export const SearchResultsController = ({
             const defaultValues = getAccordionDefaultValues(sections);
 
             return (
-              <Tabs.Content key={tab.id}>
+              <Tabs.Content key={tab.id} value={tab.id}>
                 <AccordionWrapper
                   key={`${tab.id}-${defaultValues.join('|')}`}
                   defaultValue={defaultValues}

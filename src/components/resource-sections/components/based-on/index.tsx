@@ -175,7 +175,7 @@ const BasedOnTable = ({
               <Table.Row role='row' flex='1' display='flex' w='100%'>
                 {columns.map(column => {
                   return (
-                    <Table.ColumnHeader
+                    <Th
                       key={`table-col-th-${column.key}`}
                       label={column.title}
                       isSelected={column.key === orderBy}
@@ -189,7 +189,7 @@ const BasedOnTable = ({
                         },
                       }}
                       {...column.props}
-                    ></Table.ColumnHeader>
+                    ></Th>
                   );
                 })}
               </Table.Row>
@@ -357,7 +357,7 @@ const BasedOnTable = ({
           setFrom={setFrom}
           pageSizeOptions={ROW_SIZES}
           colorPalette='primary'
-          __css={{
+          css={{
             '>div': { py: 1 },
           }}
         />

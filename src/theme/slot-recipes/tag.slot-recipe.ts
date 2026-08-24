@@ -66,6 +66,9 @@ export const tagSlotRecipe = defineSlotRecipe({
   variants: {
     variant: {
       solid: {},
+      subtle: {},
+      outline: {},
+      surface: {},
     },
     size: {
       sm: {
