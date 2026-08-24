@@ -1,28 +1,30 @@
-import React, { useState } from 'react';
+import { ChakraProvider } from '@chakra-ui/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   act,
+  fireEvent,
   render,
   screen,
-  fireEvent,
   waitFor,
 } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ChakraProvider } from '@chakra-ui/react';
+import React, { useState } from 'react';
+import { system } from 'src/theme';
+import { OntologyLineageItemWithCounts } from 'src/views/ontology-browser/types';
+import { mergePreviousLineageWithChildrenData } from 'src/views/ontology-browser/utils/ontology-helpers';
+import { useLocalStorage } from 'usehooks-ts';
+
 import {
   fetchChildrenFromBioThingsAPI,
   fetchPortalCounts,
 } from '../../../utils/api-helpers';
+import { transformSettingsToLocalStorageConfig } from '../../settings/helpers';
+import { Tree } from '..';
 import {
   mockBiothingsChildrenApiResponse,
   mockBiothingsChildrenPaginatedApiResponse,
 } from '../__mocks__/mockBiothingsChildrenApiResponse';
-import { mockPortalCountsResponse } from '../__mocks__/mockPortalCountsResponse';
-import { Tree } from '..';
-import { mergePreviousLineageWithChildrenData } from 'src/views/ontology-browser/utils/ontology-helpers';
-import { OntologyLineageItemWithCounts } from 'src/views/ontology-browser/types';
 import { mockBiothingsLineageFromBioThingsAPIResponse } from '../__mocks__/mockBiothingsLineageFromBioThingsAPIResponse';
-import { transformSettingsToLocalStorageConfig } from '../../settings/helpers';
-import { useLocalStorage } from 'usehooks-ts';
+import { mockPortalCountsResponse } from '../__mocks__/mockPortalCountsResponse';
 
 let viewSettingsMock = transformSettingsToLocalStorageConfig({
   isCondensed: { label: 'Show condensed view?', value: true },
@@ -64,7 +66,7 @@ describe('Tree', () => {
 
   const wrapper = ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>
-      <ChakraProvider>{children}</ChakraProvider>
+      <ChakraProvider value={system}>{children}</ChakraProvider>
     </QueryClientProvider>
   );
 

@@ -1,11 +1,13 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
+import { system } from 'src/theme';
 import { fetchSearchResults } from 'src/utils/api';
 import { getSearchResultsRoute } from 'src/views/diseases/helpers';
-import { useQuery } from '@tanstack/react-query';
-import { DataTypes } from '../data-types';
 import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
+
+import { DataTypes } from '../data-types';
 
 jest.mock('src/views/diseases/chart-utils', () => ({
   getFillColor: jest.fn((key: string) => {
@@ -49,7 +51,7 @@ describe('DataTypes Component', () => {
     const queryClient = new QueryClient();
     return render(
       <QueryClientProvider client={queryClient}>
-        <ChakraProvider>{ui}</ChakraProvider>
+        <ChakraProvider value={system}>{ui}</ChakraProvider>
       </QueryClientProvider>,
     );
   };
