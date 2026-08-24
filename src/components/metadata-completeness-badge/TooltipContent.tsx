@@ -1,15 +1,15 @@
-import React from 'react';
 import {
   Box,
   Flex,
   Grid,
   GridItem,
   Icon,
+  Separator,
   Stack,
   Text,
-  Separator,
 } from '@chakra-ui/react';
-import { FaRegCircleUp, FaCircleCheck } from 'react-icons/fa6';
+import React from 'react';
+import { FaCircleCheck, FaRegCircleUp } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 
 interface Stat {
@@ -59,7 +59,7 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
   }, 0);
 
   return (
-    <Flex flexDirection='column' p={1} minW={200}>
+    <Flex flexDirection='column' p={1} minW={200} maxWidth='90vw'>
       <Text fontWeight='semibold' fontSize='sm'>
         Metadata Compatibility
       </Text>
