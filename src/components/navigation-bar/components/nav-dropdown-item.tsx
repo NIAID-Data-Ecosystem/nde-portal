@@ -1,10 +1,11 @@
+import { Box, Flex, Icon, Link, Text } from '@chakra-ui/react';
 import React from 'react';
-import { Box, Flex, Link, Text, Icon } from '@chakra-ui/react';
 import {
   FaAngleDown,
   FaAngleRight,
   FaArrowUpRightFromSquare,
 } from 'react-icons/fa6';
+
 import { TransformedNavigationDropdown } from '../types';
 
 /*
@@ -24,7 +25,7 @@ import { TransformedNavigationDropdown } from '../types';
 
 //** Shared styles
 
-const ICON_COLOR = { '> *': { color: 'niaid.700' } };
+const ICON_COLOR = { '& > *': { color: 'niaid.700' } };
 
 const SHARED_DROPDOWN_ITEM_STYLES = {
   display: 'flex',
@@ -90,7 +91,7 @@ const DropdownItemArrowIcon = (): JSX.Element => (
     justify='flex-end'
     align='center'
   >
-    <Icon sx={ICON_COLOR} w={3} h={3} asChild>
+    <Icon css={ICON_COLOR} w={3} h={3} asChild>
       <FaAngleRight />
     </Icon>
   </Flex>
@@ -103,7 +104,7 @@ const DropdownItemToggleIcon = ({
   isOpen?: boolean;
 }): JSX.Element => (
   <Icon
-    sx={ICON_COLOR}
+    css={ICON_COLOR}
     transition='all .25s ease-in-out'
     transform={
       isOpen ? 'translateX(-10px) rotate(180deg)' : 'translateX(-10px)'
@@ -160,8 +161,8 @@ export const NavDropdownItem = ({
       _hover={{
         bg: 'niaid.50',
         color: 'niaid.600',
-        '.label': { color: 'niaid.500' },
-        '.icon': { transform: 'translateX(0)' },
+        '& .label': { color: 'niaid.500' },
+        '& .icon': { transform: 'translateX(0)' },
       }}
       _visited={{ color: 'niaid.800' }}
       cursor='pointer'

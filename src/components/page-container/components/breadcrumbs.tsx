@@ -1,6 +1,7 @@
+import { Breadcrumb, Flex, HStack, Icon, Text } from '@chakra-ui/react';
 import { IconType } from 'react-icons';
 import { FaAngleRight, FaHouse } from 'react-icons/fa6';
-import { Breadcrumb, Icon, Flex, HStack, Text } from '@chakra-ui/react';
+
 import { BreadcrumbSegment } from '../hooks/useBreadcrumbs';
 
 interface BreadcrumbItemProps {
@@ -71,14 +72,18 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ segments }) => {
           </Breadcrumb.Item>
           {segments.map((path, idx) => {
             const isCurrentPage = idx === segments.length - 1;
+            // [chakra-todo] - consider refactor.
             return (
-              <Breadcrumb.Item
-                key={path.name + idx}
-                isCurrentPage={isCurrentPage}
-              >
-                <Breadcrumb.Link href={path.route}>
-                  <BreadcrumbItem isCurrentPage={isCurrentPage} path={path} />
-                </Breadcrumb.Link>
+              <Breadcrumb.Item key={path.name + idx}>
+                {isCurrentPage ? (
+                  <Breadcrumb.CurrentLink>
+                    <BreadcrumbItem isCurrentPage={isCurrentPage} path={path} />
+                  </Breadcrumb.CurrentLink>
+                ) : (
+                  <Breadcrumb.Link href={path.route}>
+                    <BreadcrumbItem isCurrentPage={isCurrentPage} path={path} />
+                  </Breadcrumb.Link>
+                )}
               </Breadcrumb.Item>
             );
           })}

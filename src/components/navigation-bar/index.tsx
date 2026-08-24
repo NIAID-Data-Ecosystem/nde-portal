@@ -1,13 +1,14 @@
-import React from 'react';
-import { FlexProps, Stack, useDisclosure } from '@chakra-ui/react';
+import { BoxProps, Stack, useDisclosure } from '@chakra-ui/react';
 import SITE_CONFIG from 'configs/site.config.json';
-import { DesktopAuthAction } from './components/nav-auth-action';
 import { useRouter } from 'next/router';
+import React from 'react';
+
 import { SiteConfig } from '../page-container/types';
 import { Nav } from './components/index';
+import { DesktopAuthAction } from './components/nav-auth-action';
 import { buildNavigationFromConfig, filterRoutesByEnv } from './utils';
 
-export const Navigation: React.FC<FlexProps> = props => {
+export const Navigation: React.FC<BoxProps> = props => {
   const { open, onToggle } = useDisclosure();
   const router = useRouter();
   const appEnvironment = process.env.NEXT_PUBLIC_APP_ENV || '';

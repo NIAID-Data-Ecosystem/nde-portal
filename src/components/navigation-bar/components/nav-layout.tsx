@@ -1,12 +1,12 @@
-import React from 'react';
 import {
   Box,
   BoxProps,
   Flex,
-  IconButton,
   FlexProps,
   Icon,
+  IconButton,
 } from '@chakra-ui/react';
+import React from 'react';
 import { FaBars, FaXmark } from 'react-icons/fa6';
 import { Logo } from 'src/components/logos';
 
