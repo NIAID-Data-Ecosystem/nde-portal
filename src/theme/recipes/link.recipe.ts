@@ -22,8 +22,8 @@ export const linkRecipe = defineRecipe({
 
   variants: {
     variant: {
-      // noline: no underline, no hover effect.
-      noline: {
+      // unstyled: no underline, no hover effect.
+      unstyled: {
         color: 'inherit',
         textDecoration: 'none',
         _hover: {

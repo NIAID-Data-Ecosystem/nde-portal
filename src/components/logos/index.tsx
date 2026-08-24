@@ -30,7 +30,7 @@ export const Logo = ({ href, isLazy }: LogoProps) => {
           display='flex'
           alignItems='center'
           href={href?.endsWith('/') ? href : `${href}/`}
-          variant='noline'
+          variant='unstyled'
           rel='preload'
         >
           <NDELogo loading={isLazy ? 'lazy' : 'eager'} />
