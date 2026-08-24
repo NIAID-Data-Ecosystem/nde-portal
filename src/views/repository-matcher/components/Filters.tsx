@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Accordion,
   Box,
@@ -7,20 +6,22 @@ import {
   Flex,
   Heading,
   Icon,
+  Portal,
   Text,
   useBreakpointValue,
   useDisclosure,
-  Portal,
 } from '@chakra-ui/react';
+import React from 'react';
 import { FaFilter } from 'react-icons/fa6';
+import { SelectedRepositoryMatcherFilters } from 'src/views/repository-matcher/hooks/useRepositoryMatcherFilters';
+import { FILTERABLE_REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
 import { FiltersList } from 'src/views/search/components/filters/components/list';
 import { FiltersSection } from 'src/views/search/components/filters/components/section';
 import {
   FilterConfig,
   FilterTermType,
 } from 'src/views/search/components/filters/types';
-import { FILTERABLE_REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
-import { SelectedRepositoryMatcherFilters } from 'src/views/repository-matcher/hooks/useRepositoryMatcherFilters';
+
 import { RepositoryMatcherColumn } from '../types';
 
 interface FiltersProps {
@@ -48,13 +49,20 @@ const FiltersAccordion: React.FC<
 > = ({ termsByColumnId, selected, onChange, loading }) => (
   <Accordion.Root
     multiple
-    defaultValue={FILTERABLE_REPOSITORY_MATCHER_COLUMNS.map((_, i) => i)}
+    defaultValue={FILTERABLE_REPOSITORY_MATCHER_COLUMNS.map(
+      ({ id }) => `item-${id}`,
+    )}
   >
     {FILTERABLE_REPOSITORY_MATCHER_COLUMNS.map(col => {
       const config = toFilterConfig(col);
       const { description, name } = config;
       return (
-        <FiltersSection key={col.id} name={name} description={description}>
+        <FiltersSection
+          key={col.id}
+          id={col.id}
+          name={name}
+          description={description}
+        >
           <FiltersList
             config={config}
             colorPalette='primary'

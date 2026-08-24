@@ -1,26 +1,27 @@
-import React, { useCallback, useMemo, useState } from 'react';
 import { Accordion, Box, Text } from '@chakra-ui/react';
-import { useFilterQueries } from '../hooks/useFilterQueries';
-import {
-  queryFilterObject2String,
-  sanitizeExistsFilterValues,
-} from '../utils/query-string';
-import { SelectedFilterType } from '../types';
 import { useRouter } from 'next/router';
-import { FiltersSection } from './section';
-import { FiltersList } from './list';
-import { FiltersContainer } from './container';
-import { DateFilter } from './date-filter';
-import { updateRoute } from '../../../utils/update-route';
-import { useSearchQueryFromURL } from '../../../hooks/useSearchQueryFromURL';
-import { usePaginationContext } from '../../../context/pagination-context';
-import { FILTER_CONFIGS } from '../config';
+import React, { useCallback, useMemo, useState } from 'react';
 import { APPLY_DEFAULT_DATE_PARAM } from 'src/views/search/config/defaultQuery';
 import { useSearchResultsFetchedContext } from 'src/views/search/context/search-results-fetched-context';
 import { useBioSampleAggregation } from 'src/views/search/hooks/useBioSampleAggregation';
 import { useComputationalToolAggregation } from 'src/views/search/hooks/useComputationalToolAggregation';
-import { useSharedDatasetAggregation } from 'src/views/search/hooks/useSharedDatasetAggregation';
 import { useDataCollectionAggregation } from 'src/views/search/hooks/useDataCollectionAggregation';
+import { useSharedDatasetAggregation } from 'src/views/search/hooks/useSharedDatasetAggregation';
+
+import { usePaginationContext } from '../../../context/pagination-context';
+import { useSearchQueryFromURL } from '../../../hooks/useSearchQueryFromURL';
+import { updateRoute } from '../../../utils/update-route';
+import { FILTER_CONFIGS } from '../config';
+import { useFilterQueries } from '../hooks/useFilterQueries';
+import { SelectedFilterType } from '../types';
+import {
+  queryFilterObject2String,
+  sanitizeExistsFilterValues,
+} from '../utils/query-string';
+import { FiltersContainer } from './container';
+import { DateFilter } from './date-filter';
+import { FiltersList } from './list';
+import { FiltersSection } from './section';
 
 interface FiltersProps {
   colorPalette?: string;
@@ -159,7 +160,7 @@ export const Filters = React.memo(
 
     const categoryAccordionDefaultIndex = useMemo(() => {
       if (groupedCategories.length === 0) {
-        return [] as number[];
+        return [] as string[];
       }
 
       const categoriesWithActiveFilters = new Set(
@@ -169,16 +170,16 @@ export const Filters = React.memo(
               const values = selectedFilters?.[filterConfig.property];
               return Array.isArray(values) && values.length > 0;
             });
-            return hasSelection ? index : -1;
+            return hasSelection ? `item-${index}` : '';
           })
-          .filter(index => index !== -1),
+          .filter(idx => idx !== ''),
       );
 
       if (categoriesWithActiveFilters.size === 0) {
-        return [0];
+        return ['item-0'];
       }
 
-      return Array.from(categoriesWithActiveFilters).sort((a, b) => a - b);
+      return Array.from(categoriesWithActiveFilters).sort();
     }, [groupedCategories, selectedFilters]);
 
     const handleUpdate = useCallback(
@@ -233,7 +234,9 @@ export const Filters = React.memo(
         return filtersInCategory
           .map((config, index) => {
             const values = selectedFilters?.[config.property];
-            return Array.isArray(values) && values.length > 0 ? index : -1;
+            return Array.isArray(values) && values.length > 0
+              ? `item-${index}`
+              : -1;
           })
           .filter(index => index !== -1);
       },
@@ -257,9 +260,13 @@ export const Filters = React.memo(
         }}
       >
         <Accordion.Root multiple defaultValue={categoryAccordionDefaultIndex}>
-          {groupedCategories.map(([category, filtersInCategory]) => {
+          {groupedCategories.map(([category, filtersInCategory], idx) => {
             return (
-              <Accordion.Item key={category} border='none' value='item-0'>
+              <Accordion.Item
+                key={category}
+                border='none'
+                value={`item-${idx}`}
+              >
                 <h2>
                   <Accordion.ItemTrigger
                     px={4}
@@ -290,7 +297,7 @@ export const Filters = React.memo(
                         filtersInCategory,
                       )}
                     >
-                      {filtersInCategory.map(filterConfig => {
+                      {filtersInCategory.map((filterConfig, idx) => {
                         const { id, name, property, description } =
                           filterConfig;
                         const selected = selectedFilters?.[property]?.map(
@@ -304,6 +311,7 @@ export const Filters = React.memo(
 
                         return (
                           <FiltersSection
+                            id={`item-${idx}`}
                             key={name}
                             name={name}
                             description={description}

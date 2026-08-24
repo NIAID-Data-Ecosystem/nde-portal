@@ -1,4 +1,3 @@
-import React, { useCallback, useEffect, useState } from 'react';
 import {
   Accordion,
   Box,
@@ -7,40 +6,42 @@ import {
   Flex,
   Heading,
   Icon,
+  List,
   Text,
   useDisclosure,
-  List,
 } from '@chakra-ui/react';
+import SampleQueriesData from 'configs/sample-queries.json';
 import { useRouter } from 'next/router';
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  FaAngleDown,
+  FaAngleUp,
+  FaArrowRotateLeft,
+  FaClockRotateLeft,
+  FaEye,
+  FaEyeSlash,
+} from 'react-icons/fa6';
+import { QueryStringError } from 'src/components/error/types';
+import { formatNumber } from 'src/utils/helpers';
+import { useLocalStorage } from 'usehooks-ts';
+
+import { ErrorBanner } from '../error/ErrorBanner';
+import { EditableQueryText } from './components/EditableQueryText';
+import { validateQueryString } from './components/EditableQueryText/utils';
+import { ResultsCount } from './components/ResultsCount';
+import { AdvancedSearchFormContext, Search } from './components/Search';
+import { SEARCH_TYPES_CONFIG } from './components/Search/search-types-config';
 import {
   buildTree,
-  TreeItem,
   FlattenedItem,
   SortableWithCombine,
+  TreeItem,
 } from './components/SortableWithCombine';
 import {
   convertObject2QueryString,
   convertQueryString2Object,
 } from './utils/query-helpers';
-import {
-  FaAngleDown,
-  FaAngleUp,
-  FaEye,
-  FaEyeSlash,
-  FaClockRotateLeft,
-  FaArrowRotateLeft,
-} from 'react-icons/fa6';
-import { AdvancedSearchFormContext, Search } from './components/Search';
-import { ResultsCount } from './components/ResultsCount';
-import SampleQueriesData from 'configs/sample-queries.json';
-import { EditableQueryText } from './components/EditableQueryText';
-import { SEARCH_TYPES_CONFIG } from './components/Search/search-types-config';
 import { removeDuplicateErrors } from './utils/validation-checks';
-import { QueryStringError } from 'src/components/error/types';
-import { validateQueryString } from './components/EditableQueryText/utils';
-import { useLocalStorage } from 'usehooks-ts';
-import { formatNumber } from 'src/utils/helpers';
-import { ErrorBanner } from '../error/ErrorBanner';
 
 export interface AdvancedSearchProps {
   colorPalette?: string;
@@ -276,7 +277,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             </Button>
           )}
         </Flex>
-        <Accordion.Root my={4} defaultValue={['0']} collapsible>
+        <Accordion.Root my={4} defaultValue={['item-0']} collapsible>
           <Accordion.Item value='item-0'>
             <h2>
               <Accordion.ItemTrigger
@@ -307,7 +308,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                     searchHistory.reverse().map((query, index) => {
                       return (
                         <List.Item
-                          key={index}
+                          key={`li-${index}`}
                           onClick={() => {
                             setItems(
                               convertQueryString2Object(query.querystring),

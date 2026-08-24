@@ -1,6 +1,7 @@
-import React from 'react';
 import { Accordion } from '@chakra-ui/react';
 import { fireEvent, render, screen } from '@testing-library/react';
+import React from 'react';
+
 import { FiltersSection } from '../../components/section';
 
 jest.mock('src/components/tooltip', () => ({
@@ -20,7 +21,7 @@ describe('filters/components/section', () => {
   it('renders and expands panel content', () => {
     render(
       <Accordion.Root multiple>
-        <FiltersSection name='Topic' description='topic description'>
+        <FiltersSection id='topic' name='Topic' description='topic description'>
           <div>section-content</div>
         </FiltersSection>
       </Accordion.Root>,
@@ -35,6 +36,7 @@ describe('filters/components/section', () => {
     render(
       <Accordion.Root multiple>
         <FiltersSection
+          id='topic'
           name='Topic'
           description='topic description'
           filterId='topic'
