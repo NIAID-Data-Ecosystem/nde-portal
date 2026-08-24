@@ -24,6 +24,8 @@ export const inputRecipe = defineRecipe({
   },
   variants: {
     size: {
+      xs: {},
+      sm: {},
       md: { h: 12 },
       lg: { h: 14 },
     },
