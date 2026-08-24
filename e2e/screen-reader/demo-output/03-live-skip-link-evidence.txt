@@ -1,0 +1,19 @@
+16 announcements before the page title, none a skip link
+========================================================
+
+ 1. Main navigation navigation
+ 2. NDE Desktop Logo link
+ 3. Home link
+ 4. Search dialog pop up collapsed button
+ 5. About dialog pop up collapsed button
+ 6. Resources dialog pop up collapsed button
+ 7. Log In button
+ 8. Main navigation navigation
+ 9. image
+10. This is the alpha version of the NIAID Data Ecosystem Discovery Portal.
+11. Read Less button
+12. Currently using the:
+13. Staging API link
+14. A complex network of interconnected lines and nodes, resembling a molecular or neural network structure. The image features various shades of blue and white, with nodes of different sizes connected by thin lines, creating a web-like pattern. image
+15. An abstract graphic featuring three hexagons. The top-right hexagon shows a person typing on a keyboard with a microscope in the background, symbolizing a blend of technology and science. image
+16. Discovery Portal heading level 1
