@@ -1,4 +1,3 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Flex,
@@ -7,26 +6,27 @@ import {
   Skeleton,
   Table,
   Text,
-  VStack,
   VisuallyHidden,
+  VStack,
 } from '@chakra-ui/react';
-import { Link } from 'src/components/link';
-import { Funding as FundingType } from 'src/utils/api/types';
 import { uniqueId } from 'lodash';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { getMetadataTheme } from 'src/components/icon/helpers';
+import { Link } from 'src/components/link';
 import {
   Cell,
-  Label,
   Content,
   EmptyCell,
+  Label,
   Th,
 } from 'src/components/table/components/cell';
+import { TablePagination } from 'src/components/table/components/pagination';
 import { Row, RowWithDrawer } from 'src/components/table/components/row';
 import { TableContainer } from 'src/components/table/components/table-container';
 import { TableWrapper } from 'src/components/table/components/wrapper';
-import { TablePagination } from 'src/components/table/components/pagination';
 import { useTableSort } from 'src/components/table/hooks/useTableSort';
 import { TagWithUrl } from 'src/components/tag-with-url';
+import { Funding as FundingType } from 'src/utils/api/types';
 
 // Constants for table configuration.
 // [ROW_SIZES]: num of rows per page
@@ -145,7 +145,7 @@ export const Funding: React.FC<FundingProps> = ({
               <Table.Row role='row' flex='1' display='flex' w='100%'>
                 {COLUMNS.map(column => {
                   return (
-                    <Table.ColumnHeader
+                    <Th
                       key={`table-col-th-${column.key}`}
                       label={column.title}
                       isSelected={column.key === orderBy}
@@ -281,7 +281,7 @@ export const Funding: React.FC<FundingProps> = ({
           setFrom={setFrom}
           pageSizeOptions={ROW_SIZES}
           colorPalette='gray'
-          __css={{ '>div': { py: 1 } }}
+          css={{ '>div': { py: 1 } }}
         />
       </TableWrapper>
     </Skeleton>

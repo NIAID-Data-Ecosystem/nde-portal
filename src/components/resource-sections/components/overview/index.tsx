@@ -1,31 +1,29 @@
-import React from 'react';
 import {
   Box,
   Flex,
-  Separator,
   SimpleGrid,
   Skeleton,
-  Stack,
   StackSeparator,
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { FormattedResource } from 'src/utils/api/types';
+import React from 'react';
 import {
   generateMetadataContentforCompToolCard,
   SORT_ORDER,
   SORT_ORDER_COMPTOOL,
 } from 'src/components/metadata';
 import {
+  generateMetadataContent,
+  getMetadataDescription,
   MetadataBlock,
   MetadataContent,
   MetadataList,
   MetadataListItem,
-  generateMetadataContent,
-  getMetadataDescription,
   sortMetadataArray,
 } from 'src/components/metadata';
 import { ScrollContainer } from 'src/components/scroll-container';
+import { FormattedResource } from 'src/utils/api/types';
 
 export interface OverviewProps extends Partial<FormattedResource> {
   loading: boolean;
@@ -107,8 +105,8 @@ const Overview: React.FC<OverviewProps> = ({
       <Flex alignItems='center' w='100%'>
         <SimpleGrid
           minChildWidth={{ base: 'unset', sm: '280px', xl: '300px' }}
-          spacingX={14}
-          spacingY={10}
+          rowGap={14}
+          columnGap={10}
           p={4}
           border='1px solid'
           borderColor='gray.100'

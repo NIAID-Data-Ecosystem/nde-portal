@@ -1,8 +1,6 @@
-import React from 'react';
-import { useMediaQuery } from 'usehooks-ts';
-import { Button, Flex, Stack, ButtonProps } from '@chakra-ui/react';
-import { FormattedResource } from 'src/utils/api/types';
+import { Button, ButtonProps, Flex, Stack } from '@chakra-ui/react';
 import NextLink from 'next/link';
+import React from 'react';
 import { FaArrowRight } from 'react-icons/fa6';
 import { SourceLogo } from 'src/components/source-logo';
 import {
@@ -11,6 +9,8 @@ import {
   getDDECatalog,
   getSourceLogoLinkOut,
 } from 'src/components/source-logo/helpers';
+import { FormattedResource } from 'src/utils/api/types';
+import { useMediaQuery } from 'usehooks-ts';
 
 interface DataAccessProps {
   loading: boolean;
@@ -22,10 +22,10 @@ interface DataAccessProps {
   colorPalette?: ButtonProps['colorPalette'];
 }
 
-const AccessResourceButton: React.FC<{ url: string; colorPalette: string }> = ({
-  url,
-  colorPalette,
-}) => {
+const AccessResourceButton: React.FC<{
+  url: string;
+  colorPalette: ButtonProps['colorPalette'];
+}> = ({ url, colorPalette }) => {
   // Internal routes (e.g. the retired resources page) should navigate
   // in the same tab; external source links continue to open in a new tab.
   const isInternalLink = url.startsWith('/');
@@ -90,7 +90,7 @@ export const DataAccess: React.FC<DataAccessProps> = ({
                 },
               }}
               _hover={{
-                svg: prefersReducedMotion
+                '& svg': prefersReducedMotion
                   ? {}
                   : {
                       transform: 'translateX(4px)',

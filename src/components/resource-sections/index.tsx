@@ -1,55 +1,56 @@
-import React from 'react';
-import { FormattedResource } from 'src/utils/api/types';
 import {
   Box,
   Flex,
+  List,
+  Separator,
   SimpleGrid,
   Skeleton,
   Stack,
-  VStack,
-  Separator,
-  List,
   StackSeparator,
+  VStack,
 } from '@chakra-ui/react';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import React from 'react';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { Link } from 'src/components/link';
+import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
+import { SearchableItems } from 'src/components/searchable-items';
+import { FormattedResource } from 'src/utils/api/types';
 import {
-  ResourceHeader,
+  SHOULD_HIDE_SAMPLES,
+  SHOW_CREDIT_TEXT_SECTION,
+} from 'src/utils/feature-flags';
+
+import { DownloadMetadata } from '../download-metadata';
+import { DisplayHTMLContent } from '../html-content';
+import { JsonViewer } from '../json-viewer';
+import { getMetadataDescription } from '../metadata';
+import { TagWithUrl } from '../tag-with-url';
+import {
+  ResourceAuthors,
   ResourceBanner,
+  ResourceCitations,
+  ResourceHeader,
   ResourceOverview,
   ResourceProvenance,
   Section,
-  ResourceCitations,
-  ResourceAuthors,
 } from './components';
-import { Route } from './helpers';
-import FilesTable from './components/files-table';
+import BasedOnTable from './components/based-on';
 import { CitedByTable } from './components/cited-by-table';
-import { DisplayHTMLContent } from '../html-content';
+import { ResourceCatalogCollection } from './components/collection-information';
+import FilesTable from './components/files-table';
+import { Funding } from './components/funding';
+import { OverviewSectionWrapper } from './components/overview-section-wrapper';
+import { RelatedResources } from './components/related-resources';
+import { SamplesDisplay } from './components/samples';
 import {
   ExternalAccess,
   UsageInfo,
 } from './components/sidebar/components/external';
-import { Funding } from './components/funding';
-import { JsonViewer } from '../json-viewer';
-import BasedOnTable from './components/based-on';
-import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
-import { ResourceCatalogCollection } from './components/collection-information';
-import { DownloadMetadata } from '../download-metadata';
-import { SearchableItems } from 'src/components/searchable-items';
-import { Summary } from './components/summary';
-import { OverviewSectionWrapper } from './components/overview-section-wrapper';
-import { getMetadataDescription } from '../metadata';
-import { TagWithUrl } from '../tag-with-url';
-import { FaMagnifyingGlass } from 'react-icons/fa6';
-import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
-import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
-import { RelatedResources } from './components/related-resources';
-import { SamplesDisplay } from './components/samples';
 import { CreditText } from './components/sidebar/components/external/components/credit-text';
-import {
-  SHOW_CREDIT_TEXT_SECTION,
-  SHOULD_HIDE_SAMPLES,
-} from 'src/utils/feature-flags';
+import { Summary } from './components/summary';
+import { Route } from './helpers';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -177,8 +178,8 @@ const Sections = ({
                 {(data?.genre || data?.about || data?.collectionSize) && (
                   <SimpleGrid
                     minChildWidth={{ base: 'unset', sm: '280px', xl: '300px' }}
-                    spacingX={14}
-                    spacingY={10}
+                    rowGap={14}
+                    columnGap={10}
                     mt={4}
                     w='100%'
                   >

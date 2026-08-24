@@ -1,9 +1,12 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { ChakraProvider } from '@chakra-ui/react';
 import '@testing-library/jest-dom';
-import { SampleCollectionItemsTable } from '.';
+
+import { ChakraProvider } from '@chakra-ui/react';
+import { render, screen } from '@testing-library/react';
+import React from 'react';
+import { system } from 'src/theme';
+
 import { useSampleCollectionItems } from '../../hooks/useSampleCollectionItems';
+import { SampleCollectionItemsTable } from '.';
 
 jest.mock('../../hooks/useSampleCollectionItems', () => ({
   useSampleCollectionItems: jest.fn(),
@@ -78,7 +81,7 @@ jest.mock('../../helpers', () => ({
 }));
 
 const renderWithChakra = (ui: React.ReactElement) =>
-  render(<ChakraProvider>{ui}</ChakraProvider>);
+  render(<ChakraProvider value={system}>{ui}</ChakraProvider>);
 
 describe('SampleCollectionItemsTable', () => {
   beforeEach(() => {

@@ -1,9 +1,12 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { ChakraProvider } from '@chakra-ui/react';
 import '@testing-library/jest-dom';
-import { SAMPLE_TABLE_CONFIG } from './config';
+
+import { ChakraProvider } from '@chakra-ui/react';
+import { render, screen } from '@testing-library/react';
+import React from 'react';
+import { system } from 'src/theme';
+
 import { SamplesDisplay } from '.';
+import { SAMPLE_TABLE_CONFIG } from './config';
 
 const mockSampleTable = jest.fn((props: any) => {
   return <div data-testid='sample-table'>{props.label}</div>;
@@ -53,7 +56,7 @@ jest.mock('./config', () => ({
 }));
 
 const renderWithChakra = (ui: React.ReactElement) =>
-  render(<ChakraProvider>{ui}</ChakraProvider>);
+  render(<ChakraProvider value={system}>{ui}</ChakraProvider>);
 
 describe('SamplesDisplay', () => {
   beforeEach(() => {

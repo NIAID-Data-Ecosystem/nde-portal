@@ -1,25 +1,25 @@
-import React from 'react';
 import {
   Box,
   Button,
   Flex,
   FlexProps,
+  Separator,
   Skeleton,
   Stack,
   Tag,
   Text,
-  Separator,
 } from '@chakra-ui/react';
-import { FormattedResource } from 'src/utils/api/types';
-import { formatDate } from 'src/utils/api/helpers';
-import { FaArrowRight, FaMagnifyingGlass } from 'react-icons/fa6';
 import NextLink from 'next/link';
-import { ScrollContainer } from 'src/components/scroll-container';
+import React from 'react';
+import { FaArrowRight, FaMagnifyingGlass } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
-import Tooltip from 'src/components/tooltip';
-import { getSourceLogoLinkOut } from 'src/components/source-logo/helpers';
-import { SHOW_PROGRAM_RESOURCE_UI } from 'src/utils/feature-flags';
+import { ScrollContainer } from 'src/components/scroll-container';
 import { SourceLogo } from 'src/components/source-logo';
+import { getSourceLogoLinkOut } from 'src/components/source-logo/helpers';
+import Tooltip from 'src/components/tooltip';
+import { formatDate } from 'src/utils/api/helpers';
+import { FormattedResource } from 'src/utils/api/types';
+import { SHOW_PROGRAM_RESOURCE_UI } from 'src/utils/feature-flags';
 
 interface Provenance {
   loading: boolean;
@@ -278,7 +278,7 @@ const Provenance: React.FC<Provenance> = ({
                             }}
                           >
                             <FaMagnifyingGlass />
-                            <Text isTruncated color='inherit'>
+                            <Text truncate color='inherit'>
                               View collection
                             </Text>
                           </NextLink>
