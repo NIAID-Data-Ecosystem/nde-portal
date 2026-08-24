@@ -1,4 +1,3 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Flex,
   Heading,
@@ -8,16 +7,17 @@ import {
   Text,
   VisuallyHidden,
 } from '@chakra-ui/react';
-import { Link } from 'src/components/link';
-import { CitedBy as CitedByType } from 'src/utils/api/types';
 import { uniqueId } from 'lodash';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link } from 'src/components/link';
 import { Cell, EmptyCell, Th } from 'src/components/table/components/cell';
+import { TablePagination } from 'src/components/table/components/pagination';
 import { Row } from 'src/components/table/components/row';
 import { TableContainer } from 'src/components/table/components/table-container';
 import { TableWrapper } from 'src/components/table/components/wrapper';
-import { TablePagination } from 'src/components/table/components/pagination';
 import { useTableSort } from 'src/components/table/hooks/useTableSort';
 import { TagWithUrl } from 'src/components/tag-with-url';
+import { CitedBy as CitedByType } from 'src/utils/api/types';
 
 // Constants for table configuration.
 // [ROW_SIZES]: num of rows per page
@@ -112,11 +112,10 @@ export const CitedByTable: React.FC<CitedByTable> = ({
               <Table.Row role='row' flex='1' display='flex' w='100%'>
                 {COLUMNS.map(column => {
                   return (
-                    <Table.ColumnHeader
+                    <Th
                       key={`table-col-th-${column.key}`}
-                      label={column.title}
-                      isSelected={column.key === orderBy}
                       borderBottomColor='primary.200'
+                      isSelected={column.key === orderBy}
                       isSortable={true}
                       tableSortToggleProps={{
                         isSelected: column.key === orderBy,
@@ -126,7 +125,9 @@ export const CitedByTable: React.FC<CitedByTable> = ({
                         },
                       }}
                       {...column.props}
-                    ></Table.ColumnHeader>
+                    >
+                      {column.title}
+                    </Th>
                   );
                 })}
               </Table.Row>
@@ -242,7 +243,7 @@ export const CitedByTable: React.FC<CitedByTable> = ({
           setFrom={setFrom}
           pageSizeOptions={ROW_SIZES}
           colorPalette='gray'
-          __css={{ '>div': { py: 1 } }}
+          css={{ '& >div': { py: 1 } }}
         />
       </TableWrapper>
     </Skeleton>

@@ -1,10 +1,10 @@
-import React from 'react';
 import { Box, Flex, Icon, Text } from '@chakra-ui/react';
-import { Distribution, FormattedResource } from 'src/utils/api/types';
-import { Table } from 'src/components/table';
+import React from 'react';
 import { Link } from 'src/components/link';
+import { Table } from 'src/components/table';
 import { EmptyCell } from 'src/components/table/components/cell';
 import { getFileIcon } from 'src/components/table/helpers';
+import { Distribution, FormattedResource } from 'src/utils/api/types';
 import { formatNumber } from 'src/utils/helpers';
 
 interface FilesTableProps {
@@ -130,28 +130,25 @@ export const DistributionCells = ({
         )}
         {column.property === 'encodingFormat' && (
           <Box>
-            {column.property === 'encodingFormat' && (
-              <Text size='sm' fontSize='xs' mb={1}>
-                {encodingFormats.map(format => {
-                  return (
-                    <Text key={format.name} size='sm' fontSize='xs' mb={1}>
-                      {format.name}
-                      {format?.icon && format?.icon?.icon && (
-                        <Icon
-                          color={format.icon.color || undefined}
-                          ml={2}
-                          asChild
-                        >
-                          <format.icon.icon />
-                        </Icon>
-                      )}
-                    </Text>
-                  );
-                })}
-              </Text>
-            )}
+            {column.property === 'encodingFormat' &&
+              encodingFormats.map(format => {
+                return (
+                  <Text key={format.name} fontSize='xs' mb={1}>
+                    {format.name}
+                    {format?.icon && format?.icon?.icon && (
+                      <Icon
+                        color={format.icon.color || undefined}
+                        ml={2}
+                        asChild
+                      >
+                        <format.icon.icon />
+                      </Icon>
+                    )}
+                  </Text>
+                );
+              })}
             {data?.['contentSize'] && (
-              <Text size='sm' fontSize='xs' mb={1}>
+              <Text fontSize='xs' mb={1}>
                 <strong>size: </strong> {formatNumber(data['contentSize'])}
               </Text>
             )}

@@ -1,4 +1,3 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Button,
@@ -8,21 +7,23 @@ import {
   Stack,
   Table,
   Text,
-  VisuallyHidden,
   useDisclosure,
+  VisuallyHidden,
 } from '@chakra-ui/react';
-import Tooltip from '../../../tooltip';
-import { Link } from 'src/components/link';
-import { IsBasedOn, IsBasisFor } from 'src/utils/api/types';
 import { uniqueId } from 'lodash';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link } from 'src/components/link';
 import { Cell, EmptyCell, Th } from 'src/components/table/components/cell';
+import { TablePagination } from 'src/components/table/components/pagination';
 import { Row } from 'src/components/table/components/row';
 import { TableContainer } from 'src/components/table/components/table-container';
+import { TableWrapper } from 'src/components/table/components/wrapper';
 import { getTruncatedText } from 'src/components/table/helpers';
 import { useTableSort } from 'src/components/table/hooks/useTableSort';
-import { TableWrapper } from 'src/components/table/components/wrapper';
-import { TablePagination } from 'src/components/table/components/pagination';
 import { TagWithUrl } from 'src/components/tag-with-url';
+import { IsBasedOn, IsBasisFor } from 'src/utils/api/types';
+
+import Tooltip from '../../../tooltip';
 
 // TruncatedDescription: Component for displaying truncated text with 'read more/less' option
 const TruncatedDescription = React.memo(
@@ -282,11 +283,6 @@ const BasedOnTable = ({
                                                 : ''
                                             }
                                             showArrow
-                                            bg='white'
-                                            color='text.body'
-                                            fontWeight='normal'
-                                            fontSize='12px'
-                                            boxShadow='base'
                                           >
                                             <span>
                                               <TagWithUrl

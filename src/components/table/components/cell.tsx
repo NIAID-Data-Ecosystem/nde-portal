@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   BoxProps,
@@ -8,7 +7,9 @@ import {
   Text,
   TextProps,
 } from '@chakra-ui/react';
+import React from 'react';
 import Tooltip from 'src/components/tooltip';
+
 import { TableSortToggle } from './sort-toggle';
 
 // Label component - displays text in a specific style.
@@ -109,7 +110,6 @@ export const Th = React.memo(
       <Flex
         role='columnheader'
         scope='col'
-        label={label}
         alignItems='center'
         bg={bg}
         borderBottom='1px solid'
