@@ -11,7 +11,7 @@ interface MetadataBlockProps {
   isDisabled?: boolean;
   children?: React.ReactNode;
   bg?: string;
-  tooltipLabel?: TooltipProps['label'];
+  tooltipLabel?: TooltipProps['content'];
 }
 
 // Themed block for metadata
