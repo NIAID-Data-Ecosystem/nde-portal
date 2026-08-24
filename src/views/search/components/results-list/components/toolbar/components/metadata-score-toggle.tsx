@@ -6,11 +6,11 @@ import { FaInfo } from 'react-icons/fa6';
 export const MetadataScoreToggle = React.memo(
   ({
     isChecked,
-    isDisabled,
+    disabled,
     handleToggle,
   }: {
     isChecked: boolean;
-    isDisabled: boolean;
+    disabled: boolean;
     handleToggle: () => void;
   }) => {
     return <></>;
@@ -19,7 +19,7 @@ export const MetadataScoreToggle = React.memo(
     //   <FormControl display='flex' alignItems='center'>
     //     <Tooltip
     //       bg='white'
-    //       disabled={isDisabled}
+    //       disabled={disabled}
     //       content={
     //         <Stack color='text.body' lineHeight='shorter' p={1}>
     //           <Text color='inherit'>
@@ -43,7 +43,7 @@ export const MetadataScoreToggle = React.memo(
     //         mr={2}
     //         display='flex'
     //         alignItems='start'
-    //         opacity={isDisabled ? 0.4 : 1}
+    //         opacity={disabled ? 0.4 : 1}
     //         fontWeight='normal'
     //         fontSize='sm'
     //       >
@@ -64,7 +64,7 @@ export const MetadataScoreToggle = React.memo(
     //       checked={isChecked}
     //       onChange={handleToggle}
     //       colorPalette='secondary'
-    //       disabled={isDisabled}
+    //       disabled={disabled}
     //     />
     //   </FormControl>
     // );

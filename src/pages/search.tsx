@@ -228,7 +228,7 @@ const Search: NextPage<{
                 <Filters
                   colorPalette='secondary'
                   selectedFilters={selectedFilters}
-                  isDisabled={appliedFilters.length === 0}
+                  disabled={appliedFilters.length === 0}
                   removeAllFilters={removeAllFilters}
                   onToggleViz={toggleViz}
                   isVizActive={isVizActive}

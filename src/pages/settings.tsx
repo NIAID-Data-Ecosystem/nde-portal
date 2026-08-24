@@ -138,7 +138,7 @@ function SettingToggle({
   onChange,
   showBorder,
   alert,
-  isDisabled,
+  disabled,
 }: {
   label: string;
   description: ReactNode;
@@ -146,7 +146,7 @@ function SettingToggle({
   onChange: (checked: boolean) => void;
   showBorder?: boolean;
   alert?: ReactNode;
-  isDisabled?: boolean;
+  disabled?: boolean;
 }) {
   return (
     <HStack
@@ -184,7 +184,7 @@ function SettingToggle({
         colorPalette='primary'
         aria-label={label}
         checked={isChecked}
-        disabled={isDisabled}
+        disabled={disabled}
         onValueChange={e => onChange(e.target.checked)}
       />
     </HStack>

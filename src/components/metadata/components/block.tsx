@@ -8,7 +8,7 @@ import Tooltip from 'src/components/tooltip';
 interface MetadataBlockProps {
   label: string;
   property: string;
-  isDisabled?: boolean;
+  disabled?: boolean;
   children?: React.ReactNode;
   bg?: string;
   tooltipLabel?: TooltipProps['content'];
@@ -17,7 +17,7 @@ interface MetadataBlockProps {
 // Themed block for metadata
 
 export const MetadataBlock = ({
-  isDisabled,
+  disabled,
   label,
   property,
   children,
@@ -25,26 +25,23 @@ export const MetadataBlock = ({
   tooltipLabel,
 }: MetadataBlockProps) => {
   return (
-    <Box flexDirection='column' color={isDisabled ? 'gray.700' : 'text.body'}>
+    <Box flexDirection='column' color={disabled ? 'gray.700' : 'text.body'}>
       <Flex alignItems='baseline'>
         <MetadataLabel label={label}></MetadataLabel>
         {tooltipLabel && (
-          <MetadataTooltip
-            tooltipLabel={tooltipLabel}
-            isDisabled={isDisabled}
-          />
+          <MetadataTooltip tooltipLabel={tooltipLabel} disabled={disabled} />
         )}
       </Flex>
 
       <Box
         mb={2}
         py={0.5}
-        bg={isDisabled ? 'gray.500' : bg || `${getMetadataTheme(property)}.300`}
+        bg={disabled ? 'gray.500' : bg || `${getMetadataTheme(property)}.300`}
         borderRadius='semi'
       />
 
       <Box fontSize='xs' mx={1} lineHeight='short'>
-        {isDisabled ? <></> : children}
+        {disabled ? <></> : children}
       </Box>
     </Box>
   );
@@ -73,9 +70,9 @@ export const MetadataLabel = ({
 
 // Tooltip for metadata usually for property definition
 export const MetadataTooltip = ({
-  isDisabled,
+  disabled,
   tooltipLabel,
-}: Pick<MetadataBlockProps, 'isDisabled' | 'tooltipLabel'>) => {
+}: Pick<MetadataBlockProps, 'disabled' | 'tooltipLabel'>) => {
   return (
     <Tooltip content={tooltipLabel}>
       <Flex
@@ -97,8 +94,8 @@ export const MetadataTooltip = ({
           variant='outline'
           colorPalette='gray'
           p={0}
-          borderColor={isDisabled ? 'gray.500' : 'gray.600'}
-          color={isDisabled ? 'gray.500' : 'gray.600'}
+          borderColor={disabled ? 'gray.500' : 'gray.600'}
+          color={disabled ? 'gray.500' : 'gray.600'}
         >
           <Icon boxSize='0.75rem' p={0.5} asChild>
             <FaInfo />

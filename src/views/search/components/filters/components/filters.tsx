@@ -24,7 +24,7 @@ import { useDataCollectionAggregation } from 'src/views/search/hooks/useDataColl
 
 interface FiltersProps {
   colorPalette?: string;
-  isDisabled?: boolean;
+  disabled?: boolean;
   selectedFilters: SelectedFilterType;
   removeAllFilters: () => void;
   onToggleViz?: (filterId: string) => void;
@@ -34,7 +34,7 @@ interface FiltersProps {
 export const Filters = React.memo(
   ({
     colorPalette = 'primary',
-    isDisabled,
+    disabled,
     selectedFilters,
     removeAllFilters,
     onToggleViz,
@@ -249,7 +249,7 @@ export const Filters = React.memo(
         title='Search Filters'
         error={error}
         filtersList={FILTER_CONFIGS}
-        isDisabled={isDisabled}
+        disabled={disabled}
         onVisibleFiltersChange={setUserSelectedFilters}
         removeAllFilters={() => {
           resetPagination();

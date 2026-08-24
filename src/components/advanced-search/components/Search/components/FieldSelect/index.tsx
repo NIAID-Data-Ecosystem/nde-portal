@@ -180,7 +180,7 @@ const Control = (props: ControlProps<any>) => {
 };
 
 interface FieldSelectProps {
-  isDisabled?: boolean;
+  disabled?: boolean;
   selectedField?: QueryValue['field'];
   setSelectedField: (field: QueryValue['field']) => void;
   defaultMenuIsOpen?: boolean;
@@ -231,7 +231,7 @@ export const customStyles: any = {
 
 export const FieldSelect: React.FC<FieldSelectProps> = ({
   size = 'md',
-  isDisabled = false,
+  disabled = false,
   selectedField,
   setSelectedField,
   defaultMenuIsOpen = false,
@@ -284,7 +284,7 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
                   )[0]
                 : fields[0]
             }
-            isDisabled={isDisabled}
+            isDisabled={disabled}
             defaultMenuIsOpen={defaultMenuIsOpen}
             // is clearable when not the default "all fields" selection.
             isClearable={selectedField !== ''}

@@ -91,7 +91,7 @@ const Overview: React.FC<OverviewProps> = ({
               id: `${id}-spatialCoverage`,
               label: 'Spatiotemporal Coverage',
               property: 'spatialCoverage',
-              isDisabled: !(
+              disabled: !(
                 spatialCoverage ||
                 temporalCoverage ||
                 inLanguage?.name ||
@@ -122,7 +122,7 @@ const Overview: React.FC<OverviewProps> = ({
                   <SpatiotemporalCoverage
                     key={`block-${props.id}`}
                     id={props.id}
-                    isDisabled={props.isDisabled}
+                    disabled={props.disabled}
                     loading={loading}
                     inLanguage={inLanguage}
                     spatialCoverage={spatialCoverage}
@@ -191,11 +191,11 @@ interface SpatiotemporalCoverageProps
     'loading' | 'id' | 'inLanguage' | 'spatialCoverage' | 'temporalCoverage'
   > {
   type?: FormattedResource['@type'];
-  isDisabled: boolean;
+  disabled: boolean;
 }
 const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
   id,
-  isDisabled,
+  disabled,
   loading,
   inLanguage,
   spatialCoverage,
@@ -219,7 +219,7 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
       <MetadataBlock
         label='Spatiotemporal Coverage'
         property='spatialCoverage'
-        isDisabled={isDisabled}
+        disabled={disabled}
         bg='gray.900'
         tooltipLabel={
           <>

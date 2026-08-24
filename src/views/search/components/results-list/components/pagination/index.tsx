@@ -100,7 +100,7 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
         </VisuallyHidden>
         <Flex w={['100%', 'unset']} justifyContent='center'>
           <PaginationButton
-            isDisabled={selectedPage - 1 === 0}
+            disabled={selectedPage - 1 === 0}
             onClick={() => handleSelectedPage(1)}
             display={{ base: 'none', sm: 'flex' }}
           >
@@ -110,7 +110,7 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
             </Icon>
           </PaginationButton>
           <PaginationButton
-            isDisabled={selectedPage - 1 === 0}
+            disabled={selectedPage - 1 === 0}
             onClick={() => handleSelectedPage(selectedPage - 1)}
           >
             <VisuallyHidden>Previous page</VisuallyHidden>
@@ -174,7 +174,7 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
             </Flex>
           )}
           <PaginationButton
-            isDisabled={selectedPage === totalPages}
+            disabled={selectedPage === totalPages}
             onClick={() => handleSelectedPage(selectedPage + 1)}
           >
             <VisuallyHidden>Next Page</VisuallyHidden>
@@ -183,7 +183,7 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
             </Icon>
           </PaginationButton>
           <PaginationButton
-            isDisabled={selectedPage === totalPages}
+            disabled={selectedPage === totalPages}
             onClick={() => handleSelectedPage(totalPages)}
             display={{ base: 'none', sm: 'flex' }}
           >

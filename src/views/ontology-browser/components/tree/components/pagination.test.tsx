@@ -28,7 +28,7 @@ describe('Pagination Component', () => {
     render(
       <Pagination
         hasMore={false}
-        isDisabled={false}
+        disabled={false}
         loading={false}
         node={mockNode}
         numChildrenDisplayed={5}
@@ -43,7 +43,7 @@ describe('Pagination Component', () => {
     render(
       <Pagination
         hasMore={true}
-        isDisabled={false}
+        disabled={false}
         loading={false}
         node={mockNode}
         numChildrenDisplayed={5}
@@ -58,7 +58,7 @@ describe('Pagination Component', () => {
     render(
       <Pagination
         hasMore={false}
-        isDisabled={false}
+        disabled={false}
         loading={false}
         node={mockNode}
         numChildrenDisplayed={5}
@@ -74,7 +74,7 @@ describe('Pagination Component', () => {
     render(
       <Pagination
         hasMore={true}
-        isDisabled={false}
+        disabled={false}
         loading={false}
         node={mockNode}
         numChildrenDisplayed={5}
@@ -86,11 +86,11 @@ describe('Pagination Component', () => {
     expect(onShowMoreMock).toHaveBeenCalled();
   });
 
-  test('"Show more" button is disabled when isDisabled is true', () => {
+  test('"Show more" button is disabled when disabled is true', () => {
     render(
       <Pagination
         hasMore={true}
-        isDisabled={true}
+        disabled={true}
         loading={false}
         node={mockNode}
         numChildrenDisplayed={5}
@@ -105,7 +105,7 @@ describe('Pagination Component', () => {
     render(
       <Pagination
         hasMore={true}
-        isDisabled={false}
+        disabled={false}
         loading={true}
         node={mockNode}
         numChildrenDisplayed={5}

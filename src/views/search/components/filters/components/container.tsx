@@ -17,7 +17,7 @@ import { CustomizeFiltersPopover } from './customize-filters-popover';
 
 export interface FiltersContainerProps {
   title?: string;
-  isDisabled?: boolean;
+  disabled?: boolean;
   removeAllFilters: () => void;
   error: Error | null;
   filtersList: FilterConfig[];
@@ -58,7 +58,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   error,
   children,
   filtersList,
-  isDisabled = false,
+  disabled = false,
   removeAllFilters,
   onVisibleFiltersChange,
 }) => {
@@ -117,7 +117,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
             variant='plain'
             size='xs'
             onClick={removeAllFilters}
-            disabled={isDisabled}
+            disabled={disabled}
             _disabled={{ opacity: 1, color: 'gray.700' }}
           >
             Clear All

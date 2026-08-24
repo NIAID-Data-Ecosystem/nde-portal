@@ -21,16 +21,16 @@ jest.mock('../nav-desktop-dropdown', () => ({
   NavDropdownTrigger: ({
     label,
     children,
-    isDisabled,
+    disabled,
     loading,
   }: {
     label: string;
     children: React.ReactNode;
-    isDisabled?: boolean;
+    disabled?: boolean;
     loading?: boolean;
   }) => (
     <div>
-      <button disabled={isDisabled} data-loading={loading ? '' : undefined}>
+      <button disabled={disabled} data-loading={loading ? '' : undefined}>
         {label}
       </button>
       {children}

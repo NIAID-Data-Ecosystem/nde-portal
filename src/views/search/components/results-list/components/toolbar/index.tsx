@@ -49,7 +49,7 @@ export const SearchResultsToolbar = ({
       {process.env.NEXT_PUBLIC_APP_ENV !== 'production' && (
         <MetadataScoreToggle
           isChecked={params.use_metadata_score === 'true'}
-          isDisabled={params.sort !== '_score'}
+          disabled={params.sort !== '_score'}
           handleToggle={() => {
             const newUseMetadataScore =
               params.use_metadata_score === 'true' ? 'false' : 'true';

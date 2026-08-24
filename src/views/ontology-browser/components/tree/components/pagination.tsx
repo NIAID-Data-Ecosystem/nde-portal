@@ -4,7 +4,7 @@ import { OntologyLineageItemWithCounts } from 'src/views/ontology-browser/types'
 
 interface PaginationProps {
   hasMore: boolean;
-  isDisabled: boolean;
+  disabled: boolean;
   loading: boolean;
   // The current node being displayed.
   node: OntologyLineageItemWithCounts;
@@ -18,7 +18,7 @@ interface PaginationProps {
 
 export const Pagination = ({
   hasMore,
-  isDisabled,
+  disabled,
   loading,
   node,
   numChildrenDisplayed,
@@ -45,7 +45,7 @@ export const Pagination = ({
       </Text>
       {hasMore && (
         <Button
-          disabled={isDisabled}
+          disabled={disabled}
           loading={loading}
           size='sm'
           variant='plain'

@@ -43,7 +43,7 @@ export const DatePicker = ({
     };
   }, [allData]);
 
-  const isDisabled = !allData || !allData.length;
+  const disabled = !allData || !allData.length;
 
   // Extract actual date values (excluding _exists_ filters)
   const getActualDates = (dates: string[]) =>
@@ -74,7 +74,7 @@ export const DatePicker = ({
     type: 'date' as const,
     colorPalette: colorPalette,
     bg: 'white',
-    isDisabled,
+    disabled,
   };
 
   return (
@@ -120,7 +120,7 @@ export const DatePicker = ({
             type='submit'
             colorPalette={colorPalette}
             mr={1}
-            disabled={isDisabled}
+            disabled={disabled}
           >
             Submit
           </Button>
@@ -129,7 +129,7 @@ export const DatePicker = ({
             variant='outline'
             colorPalette={colorPalette}
             onClick={resetFilter}
-            disabled={isDisabled || !selectedDates.length}
+            disabled={disabled || !selectedDates.length}
             mx={1}
           >
             Reset

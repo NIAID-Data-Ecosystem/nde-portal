@@ -8,7 +8,7 @@ interface GlyphProps {
   stroke?: string;
   fill?: string;
   title?: string;
-  isDisabled?: boolean;
+  disabled?: boolean;
 }
 
 const Glyph: React.FC<GlyphProps> = ({
@@ -17,7 +17,7 @@ const Glyph: React.FC<GlyphProps> = ({
   stroke,
   fill,
   title,
-  isDisabled,
+  disabled,
 }) => {
   switch (glyph) {
     case 'bam':
@@ -57,7 +57,7 @@ const Glyph: React.FC<GlyphProps> = ({
         </>
       );
     case 'funding':
-      if (isDisabled) {
+      if (disabled) {
         return (
           <path
             fill={fill}
@@ -87,7 +87,7 @@ const Glyph: React.FC<GlyphProps> = ({
         />
       );
     case 'healthCondition':
-      if (isDisabled) {
+      if (disabled) {
         return (
           <path
             fill={fill}
@@ -110,7 +110,7 @@ const Glyph: React.FC<GlyphProps> = ({
         />
       );
     case 'infectiousAgent':
-      if (isDisabled) {
+      if (disabled) {
         return (
           <g fill={fill} stroke={stroke}>
             <path
@@ -299,7 +299,7 @@ const Glyph: React.FC<GlyphProps> = ({
         />
       );
     case 'license':
-      if (isDisabled) {
+      if (disabled) {
         return (
           <path
             fill={fill}
@@ -341,7 +341,7 @@ const Glyph: React.FC<GlyphProps> = ({
         />
       );
     case 'measurementTechnique':
-      if (isDisabled) {
+      if (disabled) {
         return (
           <path
             d='M15.6,143.4L0,158.9V57.4c0-3.1,1.8-5.9,4.7-7.2c2.8-1.3,6.1-0.7,8.4,1.4l49.4,45.2l-11.2,11.1L15.6,75.1V143.4z
@@ -364,7 +364,7 @@ const Glyph: React.FC<GlyphProps> = ({
       );
 
     case 'spatialCoverage':
-      if (isDisabled) {
+      if (disabled) {
         return (
           <path d='M200,100c0,15.7-3.6,30.6-10.1,43.8l-57.1-57c0.1-0.7,0.5-1.4,1-1.9c2.2-2.2,5.5-3,8.5-2l5.5,1.8   c4.8,1.6,10-0.6,12.3-5.1c1.4-2.7,4.4-4.2,7.4-3.6l10.7,2.1c-9.5-34.3-41-59.5-78.3-59.5c-10.5,0-20.4,2-29.6,5.6L56.1,10.1   C69.4,3.6,84.3,0,100,0C155.2,0,200,44.8,200,100z M137.4,61.8c0-3.4-1.9-6.5-4.9-8l-11.4-5.7c-1.4-0.7-3.2-0.4-4.3,0.7l-1.5,1.5   c-1.8,1.8-4.3,2.8-6.8,2.8c-1.5,0-3-0.4-4.3-1l-5.9-3c-1.2-0.6-2.4-0.8-3.7-0.6l24.7,24.7l11.3-2.8   C134.6,69.5,137.4,65.9,137.4,61.8z M19.2,15.2l166.3,166.2l-17,17l-14.3-14.3C138.6,194.1,120,200,100,200C44.8,200,0,155.2,0,100   c0-20,5.8-38.5,15.9-54.1L2.2,32.2L19.2,15.2z M93.8,125c0.5,0,1.1,0.1,1.5,0.2L62.7,92.7c-0.1,0.9-0.2,1.7-0.2,2.6v10.9   c0,10.4,8.4,18.8,18.8,18.8H93.8z M124.7,154.6l-24.9-24.9c0.1,0.5,0.2,1,0.2,1.6V150c0,6.9,5.6,12.5,12.5,12.5c3.9,0,7.7-1.8,10-5   L124.7,154.6z' />
         );
@@ -378,7 +378,7 @@ const Glyph: React.FC<GlyphProps> = ({
         />
       );
     case 'species':
-      if (isDisabled) {
+      if (disabled) {
         return (
           <g fill={fill} stroke={stroke}>
             <path
@@ -445,7 +445,7 @@ const Glyph: React.FC<GlyphProps> = ({
         />
       );
     case 'usageInfo': {
-      if (isDisabled) {
+      if (disabled) {
         return (
           <path
             fill={fill}
@@ -476,7 +476,7 @@ const Glyph: React.FC<GlyphProps> = ({
       );
     }
     case 'variableMeasured': {
-      if (isDisabled) {
+      if (disabled) {
         return (
           <path
             fill={fill}

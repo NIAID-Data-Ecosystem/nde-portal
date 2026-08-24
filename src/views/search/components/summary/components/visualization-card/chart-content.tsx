@@ -86,7 +86,7 @@ export const ChartContent = ({
               value={chartType}
               options={chartOptions}
               onChange={onChartTypeChange}
-              isDisabled={!isActive}
+              disabled={!isActive}
               label={label}
             />
           )}

@@ -118,8 +118,8 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                     alignItems='center'
                   >
                     {sortedMetadataContent.map(
-                      ({ label, property, glyph, isDisabled }) => {
-                        const colorPalette = isDisabled
+                      ({ label, property, glyph, disabled }) => {
+                        const colorPalette = disabled
                           ? 'gray'
                           : getMetadataTheme(property);
                         const schemaProperty = schema[property];
@@ -141,12 +141,12 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                               property === 'variableMeasured' ? '900' : '700'
                             }`}
                             m={0.5}
-                            aria-disabled={isDisabled}
-                            opacity={isDisabled ? 0.65 : 1}
+                            aria-disabled={disabled}
+                            opacity={disabled ? 0.65 : 1}
                           >
                             <Tooltip
                               content={
-                                isDisabled
+                                disabled
                                   ? `No ${label.toLocaleLowerCase()} data.`
                                   : description
                               }

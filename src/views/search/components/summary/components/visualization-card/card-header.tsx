@@ -81,7 +81,7 @@ export const CardHeader = ({
               </Icon>
             }
             onClick={onExpand}
-            isDisabled={!isActive}
+            disabled={!isActive}
           />
         )}
         <VisualizationCardIconButton
@@ -93,7 +93,7 @@ export const CardHeader = ({
             </Icon>
           }
           onClick={onRemove}
-          isDisabled={!isActive}
+          disabled={!isActive}
         />
       </HStack>
     </Flex>

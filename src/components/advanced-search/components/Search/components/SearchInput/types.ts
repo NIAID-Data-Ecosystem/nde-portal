@@ -40,7 +40,7 @@ export interface SearchInputProps {
  *
  * @interface AdvancedSearchInputProps
  *
- * @isDisabled {boolean} - disable input field.
+ * @disabled {boolean} - disable input field.
  * @colorPalette {InputProps['colorPalette']} - color scheme for input field.
  * @size {InputProps['size']} - size of input field.
  * @inputValue {any} - value of input field.

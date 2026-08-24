@@ -23,7 +23,7 @@ export interface IconProps extends ChakraIconProps {
   glyph?: string;
   label?: string; // label for icon for accessibility
   title?: string; // title for svg (accessibility)
-  isDisabled?: boolean; // if true, icon is displayed as disable (with bar through it)
+  disabled?: boolean; // if true, icon is displayed as disable (with bar through it)
 }
 
 // Icon displaying symbol
@@ -35,7 +35,7 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
       title,
       color,
       fill,
-      isDisabled,
+      disabled,
       boxSize,
       viewBox,
       ...props
@@ -108,12 +108,7 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
             aria-label={title}
             {...props}
           >
-            <Glyph
-              id={id}
-              glyph={glyph}
-              title={title}
-              isDisabled={isDisabled}
-            />
+            <Glyph id={id} glyph={glyph} title={title} disabled={disabled} />
           </Icon>
         )}
       </Flex>
