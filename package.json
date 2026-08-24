@@ -10,6 +10,7 @@
     "build:dev": "env-cmd -f .env.dev  yarn build:core",
     "start": "next start",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "generate-footer-content": "tsx scripts/generate-footer-content.ts",
     "generate-metadata-completeness-fields": "tsx scripts/generate-metadata-completeness-fields.ts",
     "generate-schema-definitions": "yarn with-prod-env tsx scripts/generate-schema-definitions/index.ts",

@@ -1,0 +1,20 @@
+{
+  // Shared workspace config (committed on purpose — see .gitignore). Requires
+  // the extensions in ./extensions.json. Mirrors what `yarn lint` and the
+  // pre-commit hook enforce, so the editor and CLI agree.
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    // Applies ESLint auto-fixes (e.g. simple-import-sort) on an explicit save.
+    "source.fixAll.eslint": "explicit"
+  },
+  // ESLint 9 flat config: ../eslint.config.mjs. Needs vscode-eslint v3+.
+  "eslint.useFlatConfig": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "eslint.workingDirectories": [{ "mode": "auto" }]
+}
