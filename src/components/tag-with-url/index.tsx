@@ -1,9 +1,9 @@
-import React from 'react';
-import { FaSquareArrowUpRight } from 'react-icons/fa6';
 import { Tag, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
-import type { UrlObject } from 'url';
+import React from 'react';
 import { IconType } from 'react-icons';
+import { FaSquareArrowUpRight } from 'react-icons/fa6';
+import type { UrlObject } from 'url';
 
 interface TagWithUrlProps extends Tag.RootProps {
   href?: string | UrlObject | null;
@@ -27,7 +27,7 @@ export const TagWithUrl = ({
   href,
   isExternal,
   leftIcon,
-  noOfLines = 1,
+  lineClamp = 1,
   ...props
 }: TagWithUrlProps) => {
   const Label = () =>
@@ -61,7 +61,7 @@ export const TagWithUrl = ({
       variant='subtle'
       alignItems='center'
       _hover={{
-        '.tag-text': {
+        '& .tag-text': {
           textDecoration: 'none',
         },
       }}

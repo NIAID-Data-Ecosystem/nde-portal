@@ -1,3 +1,12 @@
+import {
+  Box,
+  ColorPalette,
+  Flex,
+  HTMLChakraProps,
+  Skeleton,
+  Table as ChakraTable,
+  VisuallyHidden,
+} from '@chakra-ui/react';
 import React, {
   useCallback,
   useEffect,
@@ -6,25 +15,16 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {
-  ColorPalette,
-  Box,
-  Flex,
-  Table as ChakraTable,
-  VisuallyHidden,
-  HTMLChakraProps,
-  Skeleton,
-} from '@chakra-ui/react';
-import { VariableSizeList, ListChildComponentProps } from 'react-window';
+import { ListChildComponentProps, VariableSizeList } from 'react-window';
+import { Cell, Th } from 'src/components/table/components/cell';
+import { TablePagination } from 'src/components/table/components/pagination';
+import { Row } from 'src/components/table/components/row';
 import {
   TableContainer,
   TableContainerProps,
 } from 'src/components/table/components/table-container';
 import { TableWrapper } from 'src/components/table/components/wrapper';
-import { TablePagination } from 'src/components/table/components/pagination';
 import { useTableSort } from 'src/components/table/hooks/useTableSort';
-import { Row } from 'src/components/table/components/row';
-import { Cell, Th } from 'src/components/table/components/cell';
 
 export interface Column {
   title: string;
@@ -657,7 +657,7 @@ export const Table: React.FC<TableProps<any>> = ({
           {showEmptyState ? (
             <Box role='row' asChild>
               <tr>
-                <Box role='cell' colSpan={columns.length} asChild>
+                <Box role='cell' asChild>
                   <td>{emptyState}</td>
                 </Box>
               </tr>

@@ -1,22 +1,31 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { FaClockRotateLeft, FaMagnifyingGlass } from 'react-icons/fa6';
+import {
+  Button,
+  Flex,
+  Icon,
+  IconButton,
+  InputProps,
+  List,
+  Text,
+} from '@chakra-ui/react';
 import { uniq } from 'lodash';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import { Button, Flex, Icon, IconButton, Text, List } from '@chakra-ui/react';
-import Tooltip from '../tooltip';
+import React, { useEffect, useMemo, useState } from 'react';
+import { FaClockRotateLeft, FaMagnifyingGlass } from 'react-icons/fa6';
+import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
+import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-string';
+import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
 import { useLocalStorage, useReadLocalStorage } from 'usehooks-ts';
+
+import { CheckboxList, CheckboxListProps } from '../checkbox-list';
 import {
   DropdownInput,
   DropdownInputProps,
   InputWithDropdown,
   useDropdownContext,
 } from '../input-with-dropdown';
+import Tooltip from '../tooltip';
 import { SearchHistoryItem } from './components/search-history-item';
-import { CheckboxList, CheckboxListProps } from '../checkbox-list';
-import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
-import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-string';
-import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
 
 const DropdownContent = dynamic(() =>
   import('src/components/input-with-dropdown/components/DropdownContent').then(
@@ -109,8 +118,6 @@ interface SearchBarProps extends SearchBarWithDropdownProps {
   value?: string;
   ariaLabel: string;
   placeholder: string;
-  colorPalette?: string;
-  size?: string;
   searchHistory?: string[];
   setSearchHistory: React.Dispatch<React.SetStateAction<string[]>>;
 }
@@ -208,8 +215,8 @@ const SearchBar = ({
         ...resolvedOptionMenuProps,
         buttonProps: {
           ...(resolvedOptionMenuProps.buttonProps || {}),
-          size: 'sm',
-          variant: 'ghost',
+          size: 'sm' as const,
+          variant: 'ghost' as const,
           bg: 'white',
           borderRadius: 'sm',
           minW: 'unset',
@@ -345,7 +352,7 @@ export interface SearchBarWithDropdownProps {
   ariaLabel: string;
   placeholder: string;
   colorPalette?: string;
-  size?: string;
+  size?: InputProps['size'];
   showSearchHistory?: boolean;
   showOptionsMenu?: boolean;
   // Start with all properties from CheckboxListProps<OptionProps>,

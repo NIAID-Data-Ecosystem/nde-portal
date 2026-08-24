@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
   Button,
-  Icon,
-  Flex,
-  useDisclosure,
   ButtonProps,
+  Flex,
+  Icon,
   SystemStyleObject,
+  useDisclosure,
 } from '@chakra-ui/react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FaAngleDown } from 'react-icons/fa6';
 
 // Expandable container.
@@ -16,7 +16,6 @@ export interface ToggleContainerProps extends ButtonProps {
   noOfLines?: [number, number] | number;
   ariaLabel: string;
   alignIcon?: SystemStyleObject['alignItems'];
-  variant?: 'border';
 }
 
 export const ToggleContainer: React.FC<ToggleContainerProps> = ({
@@ -26,7 +25,6 @@ export const ToggleContainer: React.FC<ToggleContainerProps> = ({
   noOfLines,
   minHeight,
   ariaLabel,
-  variant,
   ...props
 }) => {
   const { open, onOpen, onClose } = useDisclosure({
@@ -72,7 +70,6 @@ export const ToggleContainer: React.FC<ToggleContainerProps> = ({
   const isExpandable = (isOverflowing && !open) || open;
   return (
     <Button
-      variant={variant}
       bg={open ? 'blackAlpha.50' : 'white'}
       onClick={() => (open ? onClose() : onOpen())}
       flexWrap={['wrap', 'nowrap']}
@@ -88,9 +85,9 @@ export const ToggleContainer: React.FC<ToggleContainerProps> = ({
       height='unset'
       textAlign='unset'
       borderRadius='none'
-      borderTop={variant === 'border' ? '1px solid' : undefined}
-      borderBottom={variant === 'border' ? '1px solid' : undefined}
-      borderColor={variant === 'border' ? 'gray.200' : 'transparent'}
+      borderTop={undefined}
+      borderBottom={undefined}
+      borderColor={'transparent'}
       _hover={{
         bg: 'blackAlpha.50',
         transition: 'all 0.2s ease-in-out',

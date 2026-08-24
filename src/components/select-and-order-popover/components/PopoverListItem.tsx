@@ -1,8 +1,9 @@
-import React from 'react';
 import { Checkbox, Flex, Icon, IconButton, Text } from '@chakra-ui/react';
-import Tooltip from '../../tooltip';
-import { FaAngleDown, FaAngleUp, FaGripVertical } from 'react-icons/fa6';
 import { useSortable } from '@dnd-kit/sortable';
+import React from 'react';
+import { FaAngleDown, FaAngleUp, FaGripVertical } from 'react-icons/fa6';
+
+import Tooltip from '../../tooltip';
 import { PopoverItem } from '../types';
 
 interface PopoverListItemProps {
@@ -105,7 +106,7 @@ export const PopoverListItem = ({
       <Checkbox.Root
         value={item.id}
         disabled={isRequired}
-        onCheckedChange={e => onCheck(item.id, e.target.checked)}
+        onCheckedChange={e => onCheck(item.id, !!e.checked)}
         flex={1}
         minW={0}
         checked={isChecked}
