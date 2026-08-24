@@ -1,9 +1,9 @@
-import React from 'react';
 import { Box, Button, Flex, Icon, Text } from '@chakra-ui/react';
-import type { TooltipProps } from 'src/components/tooltip';
-import { getMetadataTheme } from 'src/components/icon/helpers';
-import Tooltip from 'src/components/tooltip';
+import React from 'react';
 import { FaInfo } from 'react-icons/fa6';
+import { getMetadataTheme } from 'src/components/icon/helpers';
+import type { TooltipProps } from 'src/components/tooltip';
+import Tooltip from 'src/components/tooltip';
 
 interface MetadataBlockProps {
   label: string;
@@ -83,7 +83,7 @@ export const MetadataTooltip = ({
         minH={4}
         p={1}
         _hover={{
-          div: {
+          '& div': {
             bg: 'gray.800',
             borderColor: 'gray.800',
             color: 'white',
