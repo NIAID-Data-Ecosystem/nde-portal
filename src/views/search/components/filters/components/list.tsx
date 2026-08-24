@@ -212,7 +212,7 @@ interface FiltersListProps {
   searchPlaceholder: string;
   selectedFilters: string[];
   handleSelectedFilters: (arg: string[]) => void;
-  isLoading: boolean;
+  loading: boolean;
   isUpdating?: boolean;
   config: FilterConfig;
 }
@@ -222,7 +222,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
     colorPalette,
     config,
     handleSelectedFilters,
-    isLoading,
+    loading,
     isUpdating,
     searchPlaceholder,
     selectedFilters,
@@ -284,7 +284,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
       <>
         {/* Search through filter terms */}
         <Box p={2} pt={4}>
-          {!isLoading && !isUpdating && !terms?.length ? (
+          {!loading && !isUpdating && !terms?.length ? (
             <Text fontStyle='italic' color='gray.800' mt={1} textAlign='center'>
               No results with {config.name.toLocaleLowerCase()} information.
             </Text>
@@ -309,7 +309,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
           <VirtualizedList items={searchedTerms}>
             {props => (
               <Checkbox
-                isLoading={isLoading}
+                loading={loading}
                 isUpdating={isUpdating}
                 colorPalette={colorPalette}
                 filterName={config.name}

@@ -26,11 +26,11 @@ interface TableWithSearchProps {
   caption: string;
   columns: Column[];
   data?: TableData[];
-  isLoading?: boolean;
+  loading?: boolean;
   getCells?: (props: {
     column: Column;
     data: any;
-    isLoading?: boolean;
+    loading?: boolean;
   }) => React.ReactNode;
   searchInputProps?: Partial<SearchInputProps>;
   emptyState?: React.ReactNode;
@@ -38,7 +38,7 @@ interface TableWithSearchProps {
 
 export const TableWithSearch: React.FC<TableWithSearchProps> = ({
   data = [],
-  isLoading,
+  loading,
   columns,
   searchInputProps,
   emptyState,
@@ -80,7 +80,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
 
   return (
     <>
-      {!isLoading && !data?.length ? (
+      {!loading && !data?.length ? (
         <Flex justifyContent='center'>
           <Text py={2}>No results found.</Text>
         </Flex>
@@ -164,15 +164,13 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
           <Table
             emptyState={emptyState}
             stickyHeader
-            data={isLoading ? Array(10).fill({}) : filteredData}
+            data={loading ? Array(10).fill({}) : filteredData}
             tableHeadProps={{ bg: 'page.alt' }}
             getTableRowProps={(_, idx: number) => ({
               bg: idx % 2 ? 'page.alt' : 'white',
             })}
             tableContainerProps={{ overflowY: 'auto', maxHeight: '500px' }}
-            getCells={props => (
-              <RepositoryCells {...props} isLoading={isLoading} />
-            )}
+            getCells={props => <RepositoryCells {...props} loading={loading} />}
             columns={columns}
             {...props}
           />
@@ -192,11 +190,11 @@ interface Column {
 export const RepositoryCells = ({
   column,
   data,
-  isLoading,
+  loading,
 }: {
   column: Column;
   data: TableData;
-  isLoading?: boolean;
+  loading?: boolean;
 }) => {
   const tab = data?.type?.includes('Computational Tool Repository')
     ? getTabIdFromTypeLabel('ComputationalTool')
@@ -207,8 +205,8 @@ export const RepositoryCells = ({
       {/* Repository/Resource Catalog name */}
       {column.property === 'name' && (
         <SkeletonText
-          data-testid={isLoading ? 'loading' : 'loaded'}
-          loading={!Boolean(!isLoading && data._id)}
+          data-testid={loading ? 'loading' : 'loaded'}
+          loading={!Boolean(!loading && data._id)}
           noOfLines={2}
           w='100%'
           fontSize='sm'
@@ -225,8 +223,8 @@ export const RepositoryCells = ({
       {/* Repository/Resource Catalog brief description */}
       {column.property === 'abstract' && (
         <SkeletonText
-          data-testid={isLoading ? 'loading' : 'loaded'}
-          loading={!Boolean(!isLoading && data._id)}
+          data-testid={loading ? 'loading' : 'loaded'}
+          loading={!Boolean(!loading && data._id)}
           gap='2'
           w='100%'
           fontSize='sm'
@@ -240,8 +238,8 @@ export const RepositoryCells = ({
         column.property === 'conditionsOfAccess') && (
         <SkeletonText
           fontWeight='semibold'
-          data-testid={isLoading ? 'loading' : 'loaded'}
-          loading={!Boolean(!isLoading && data._id)}
+          data-testid={loading ? 'loading' : 'loaded'}
+          loading={!Boolean(!loading && data._id)}
           w='100%'
           h='100%'
           fontSize='sm'

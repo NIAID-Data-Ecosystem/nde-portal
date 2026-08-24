@@ -77,7 +77,7 @@ const ResourcePage: NextPage = () => {
     },
   });
 
-  const isLoading = loadingData || !router.isReady;
+  const loading = loadingData || !router.isReady;
 
   // embed metadata
   useEffect(() => {
@@ -113,8 +113,8 @@ const ResourcePage: NextPage = () => {
     error && getQueryStatusError(error as unknown as { status: string });
 
   if (
-    (!isLoading && Boolean(!id || id.toString() === 'undefined')) ||
-    (!isLoading && !data)
+    (!loading && Boolean(!id || id.toString() === 'undefined')) ||
+    (!loading && !data)
   ) {
     // Redirect to 404 page if no id is provided or no data is found for the given id.
     router.push('/404');
@@ -187,7 +187,7 @@ const ResourcePage: NextPage = () => {
                   </Box>
                 </Flex>
               </Error>
-            ) : !isLoading && !data ? (
+            ) : !loading && !data ? (
               // [EMPTY STATE]: No Results
               <EmptyState />
             ) : (
@@ -218,7 +218,7 @@ const ResourcePage: NextPage = () => {
                       overflow='unset'
                     >
                       <Sections
-                        isLoading={isLoading}
+                        loading={loading}
                         data={data}
                         sections={sections}
                       />
@@ -226,7 +226,7 @@ const ResourcePage: NextPage = () => {
 
                     <Sidebar
                       data={data}
-                      isLoading={isLoading}
+                      loading={loading}
                       sections={sections}
                     />
                   </Flex>

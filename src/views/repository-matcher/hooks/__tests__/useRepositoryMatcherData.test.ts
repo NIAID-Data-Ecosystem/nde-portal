@@ -69,7 +69,7 @@ describe('useRepositoryMatcherData', () => {
   it('reports loading when either source is loading and returns no rows', () => {
     setHooks({ repositoriesIsLoading: true });
     const { result } = renderHook(() => useRepositoryMatcherData());
-    expect(result.current.isLoading).toBe(true);
+    expect(result.current.loading).toBe(true);
     expect(result.current.data).toEqual([]);
   });
 

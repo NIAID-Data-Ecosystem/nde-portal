@@ -5,7 +5,7 @@ import type { SidebarMobileProps } from '../../types';
 import { DEFAULT_COLOR_SCHEME } from '../../constants';
 
 export const SidebarMobile = ({
-  isLoading,
+  loading,
   menuTitle,
   sections,
   selectedSlug,
@@ -22,7 +22,7 @@ export const SidebarMobile = ({
           my={2}
           flex={1}
           _hover={{ color: 'text.body' }}
-          disabled={isLoading || !sections?.length}
+          disabled={loading || !sections?.length}
         >
           <Flex px={4} py={2} alignItems='center' justifyContent='center'>
             <Text as='span' fontSize='sm' flex={1} color='inherit'>
@@ -35,7 +35,7 @@ export const SidebarMobile = ({
         </Menu.Trigger>
       </Flex>
       <Menu.Content w='100%'>
-        {!isLoading &&
+        {!loading &&
           sections?.map(category => (
             <Menu.ItemGroup key={category.id} title={category.name}>
               {category.items.map(item => {

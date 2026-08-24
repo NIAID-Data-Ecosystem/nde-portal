@@ -20,7 +20,7 @@ describe('SectionTitle', () => {
     );
   });
 
-  it('renders nothing when children and isLoading are not provided', () => {
+  it('renders nothing when children and loading are not provided', () => {
     renderComponent({});
     expect(screen.queryByRole('heading')).not.toBeInTheDocument();
   });

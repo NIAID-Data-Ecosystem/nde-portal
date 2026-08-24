@@ -54,7 +54,7 @@ export interface SidebarContent {
 }
 
 export interface SidebarMobileProps {
-  isLoading: boolean;
+  loading: boolean;
   menuTitle?: string;
   sections?: SidebarContent[];
   selectedSlug?: string;
@@ -62,7 +62,7 @@ export interface SidebarMobileProps {
 }
 
 export interface SidebarDesktopProps {
-  isLoading: boolean;
+  loading: boolean;
   sections?: SidebarContent[];
   selectedSlug?: string;
   colorPalette?: string;
@@ -72,7 +72,7 @@ export interface DocumentItemProps {
   item: SidebarContent['items'][0];
   selectedSlug?: string;
   colorPalette: string;
-  isLoading: boolean;
+  loading: boolean;
   activePageSlug?: string;
 }
 

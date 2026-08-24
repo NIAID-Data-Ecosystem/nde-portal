@@ -474,7 +474,7 @@ export const SearchResults = ({
           selectedPage={from}
           selectedPerPage={size}
           handleSelectedPage={handlePageChange}
-          isLoading={isLoading || isRefetching}
+          loading={isLoading || isRefetching}
           total={data?.total || 0}
         />
 
@@ -493,7 +493,7 @@ export const SearchResults = ({
         {isSamplesTab ? (
           <SampleResultsTable
             results={data?.results || []}
-            isLoading={!router.isReady || isLoading}
+            loading={!router.isReady || isLoading}
             visibleColumnIds={visibleColumnIds}
             columnOrder={columnOrder}
             currentSort={sort}
@@ -503,7 +503,7 @@ export const SearchResults = ({
           /* DataCollection tab in table view */
           <DataCollectionResultsTable
             results={data?.results || []}
-            isLoading={!router.isReady || isLoading}
+            loading={!router.isReady || isLoading}
             visibleColumnIds={dcVisibleColumnIds}
             columnOrder={dcColumnOrder}
             currentSort={sort}
@@ -513,7 +513,7 @@ export const SearchResults = ({
           /* Datasets tab in table view */
           <DatasetResultsTable
             results={data?.results || []}
-            isLoading={!router.isReady || isLoading}
+            loading={!router.isReady || isLoading}
             visibleColumnIds={datasetVisibleColumnIds}
             columnOrder={datasetColumnOrder}
             currentSort={sort}
@@ -524,7 +524,7 @@ export const SearchResults = ({
           /* Computational Tools tab in table view */
           <ComputationalToolResultsTable
             results={data?.results || []}
-            isLoading={!router.isReady || isLoading}
+            loading={!router.isReady || isLoading}
             visibleColumnIds={ctVisibleColumnIds}
             columnOrder={ctColumnOrder}
             currentSort={sort}
@@ -550,7 +550,7 @@ export const SearchResults = ({
                     return (
                       <List.Item key={data?.results?.[idx]._id || idx} w='100%'>
                         <Card
-                          isLoading={!router.isReady || isLoading}
+                          loading={!router.isReady || isLoading}
                           data={data?.results[idx]}
                           referrerPath={router.asPath}
                           querystring={urlQueryParams.q}
@@ -570,7 +570,7 @@ export const SearchResults = ({
           selectedPage={from}
           selectedPerPage={size}
           handleSelectedPage={handlePageChange}
-          isLoading={isLoading || isRefetching}
+          loading={isLoading || isRefetching}
           total={data?.total || 0}
         />
       </VStack>

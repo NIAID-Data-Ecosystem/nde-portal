@@ -19,7 +19,7 @@ import { deriveControlledSortProps, getApiSortFieldForProperty } from './utils';
 export const ResultsTable = <TColumn extends BaseColumn>({
   columns,
   results,
-  isLoading,
+  loading,
   toRow,
   getCells,
   ariaLabel,
@@ -80,14 +80,14 @@ export const ResultsTable = <TColumn extends BaseColumn>({
   }, [onSortChange, columns]);
 
   return (
-    <Skeleton loading={isLoading} width='100%'>
+    <Skeleton loading={loading} width='100%'>
       <Table
         ariaLabel={ariaLabel}
         caption={caption}
         columns={visibleColumns}
         data={rows as any}
         getCells={getCells as any}
-        isLoading={isLoading}
+        loading={loading}
         hasPagination={false}
         // Sticky headers require a bounded maxHeight + overflowY on the
         // container so the browser has a scroll boundary for position:sticky.

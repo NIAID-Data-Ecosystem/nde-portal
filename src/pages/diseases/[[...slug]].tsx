@@ -101,7 +101,7 @@ const DiseasePage: NextPage<{
             <DiseaseContent
               data={data}
               query={query}
-              isLoading={isLoading}
+              loading={isLoading}
               topic={topic}
               totalCount={totalQuery.data?.total || 0}
             />

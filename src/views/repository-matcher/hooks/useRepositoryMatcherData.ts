@@ -42,10 +42,10 @@ export const useRepositoryMatcherData = (fields: string[] = ['@type']) => {
     error: repositoriesError,
   } = useRepoData({ refetchOnWindowFocus: false, refetchOnMount: false });
 
-  const isLoading = resourceCatalogsIsLoading || repositoriesIsLoading;
+  const loading = resourceCatalogsIsLoading || repositoriesIsLoading;
 
   const data = useMemo<RepositoryMatcherRow[]>(() => {
-    if (isLoading) return [];
+    if (loading) return [];
     const combined: RepositoryMatcherItem[] = [
       ...(resourceCatalogs || []),
       ...(repositories || []),
@@ -91,11 +91,11 @@ export const useRepositoryMatcherData = (fields: string[] = ['@type']) => {
         rows.push(row);
       });
     return rows;
-  }, [resourceCatalogs, repositories, isLoading]);
+  }, [resourceCatalogs, repositories, loading]);
 
   return {
     data,
-    isLoading,
+    loading,
     error: resourceCatalogsError || repositoriesError,
   };
 };

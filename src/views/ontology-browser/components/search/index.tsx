@@ -196,7 +196,7 @@ export const OntologyBrowserSearch = ({
             <DropdownInput
               id='ontology-browser-search-bar'
               ariaLabel='Search taxonomy browser'
-              isLoading={isLoading}
+              loading={isLoading}
               placeholder='Enter a taxonomy name or identifier'
               size={size}
               type='text'

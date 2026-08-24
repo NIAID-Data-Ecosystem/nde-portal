@@ -14,7 +14,7 @@ import type { SidebarDesktopProps, SidebarContent } from '../../types';
 import { DEFAULT_COLOR_SCHEME } from '../../constants';
 
 export const SidebarDesktop = ({
-  isLoading,
+  loading,
   sections,
   selectedSlug,
   colorPalette = DEFAULT_COLOR_SCHEME,
@@ -22,7 +22,7 @@ export const SidebarDesktop = ({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const categories = (
-    isLoading
+    loading
       ? [...Array(5)].map((_, i) => ({
           id: i,
           name: 'Loading...',
@@ -92,11 +92,11 @@ export const SidebarDesktop = ({
                   mb={1}
                   // While loading the category name is hidden by the skeleton,
                   // so give the button an accessible name to satisfy button-name.
-                  aria-label={isLoading ? 'Loading' : undefined}
+                  aria-label={loading ? 'Loading' : undefined}
                 >
                   <SkeletonText
-                    loading={isLoading}
-                    width={isLoading ? '80%' : '100%'}
+                    loading={loading}
+                    width={loading ? '80%' : '100%'}
                     noOfLines={1}
                     height={4}
                     display='flex'
@@ -147,7 +147,7 @@ export const SidebarDesktop = ({
                           item={item}
                           selectedSlug={selectedSlug}
                           colorPalette={colorPalette}
-                          isLoading={isLoading}
+                          loading={loading}
                           activePageSlug={selectedSlug}
                         />
                       );

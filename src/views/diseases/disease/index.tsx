@@ -17,7 +17,7 @@ import {
 
 export interface DiseaseContentProps {
   data?: DiseasePageProps;
-  isLoading?: boolean;
+  loading?: boolean;
   totalCount: number;
   query?: TopicQueryProps['query'];
   topic: TopicQueryProps['topic'];
@@ -25,7 +25,7 @@ export interface DiseaseContentProps {
 export const DiseaseContent: React.FC<DiseaseContentProps> = ({
   data,
   query,
-  isLoading,
+  loading,
   topic,
   totalCount,
 }) => {
@@ -49,7 +49,7 @@ export const DiseaseContent: React.FC<DiseaseContentProps> = ({
           topicEmphasizedDescription={data?.topicEmphasizedDescription}
           links={data?.contacts}
           image={data?.image}
-          isLoading={isLoading}
+          loading={loading}
         />
         <SectionWrapper
           id='about-datasets'

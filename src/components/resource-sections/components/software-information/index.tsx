@@ -14,7 +14,7 @@ import { FaFileExport, FaFileImport } from 'react-icons/fa6';
 import InputOutput from './components/input-output';
 
 interface SoftwareInformation {
-  isLoading: boolean;
+  loading: boolean;
   keys?: (keyof FormattedResource)[];
   applicationCategory?: FormattedResource['applicationCategory'];
   discussionUrl?: FormattedResource['discussionUrl'];
@@ -31,7 +31,7 @@ interface SoftwareInformation {
 }
 
 const SoftwareInformation: React.FC<SoftwareInformation> = ({
-  isLoading,
+  loading,
   keys,
   ...props
 }) => {
@@ -69,7 +69,7 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
   // Number of fields that have a value in this section. Used for layout.
   const properties = keys?.filter(key => props[key] !== null) || [];
   return (
-    <Skeleton loading={!!isLoading}>
+    <Skeleton loading={!!loading}>
       <Stack alignItems='flex-start'>
         <SimpleGrid
           gap={6}

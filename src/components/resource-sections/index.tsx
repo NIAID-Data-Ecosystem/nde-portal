@@ -55,11 +55,11 @@ const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
 // use config file to show content in sections.
 const Sections = ({
-  isLoading,
+  loading,
   data,
   sections,
 }: {
-  isLoading: boolean;
+  loading: boolean;
   data?: FormattedResource;
   sections: Route[];
 }) => {
@@ -68,7 +68,7 @@ const Sections = ({
   return (
     <>
       <ResourceHeader
-        isLoading={isLoading}
+        loading={loading}
         name={data?.name}
         alternateName={data?.alternateName}
         id={data?.id}
@@ -120,7 +120,7 @@ const Sections = ({
                   : section.title
                 : section.title
             }
-            isLoading={isLoading}
+            loading={loading}
             isCollapsible={section?.ui?.isCollapsible}
           >
             {/* for mobile viewing */}
@@ -162,17 +162,17 @@ const Sections = ({
                   <StackSeparator borderColor='gray.100' />
                   <ExternalAccess
                     data={data}
-                    isLoading={isLoading}
+                    loading={loading}
                     hasDivider={false}
                     minWidth={{ base: 'unset', sm: '350px' }}
                   />
                 </Stack>
-                <UsageInfo data={data} isLoading={isLoading} />
+                <UsageInfo data={data} loading={loading} />
               </Flex>
             )}
             {section.hash === 'overview' && (
               <>
-                <ResourceOverview isLoading={isLoading} {...data} />
+                <ResourceOverview loading={loading} {...data} />
                 {/* Overview secondary section */}
                 {(data?.genre || data?.about || data?.collectionSize) && (
                   <SimpleGrid
@@ -186,7 +186,7 @@ const Sections = ({
                     <VStack>
                       {data?.genre && (
                         <OverviewSectionWrapper
-                          isLoading={isLoading}
+                          loading={loading}
                           label='Research Domain'
                           scrollContainerProps={{
                             border: 'none',
@@ -217,7 +217,7 @@ const Sections = ({
 
                       {data?.about && data?.about?.length > 0 && (
                         <OverviewSectionWrapper
-                          isLoading={isLoading}
+                          loading={loading}
                           label='Content Types'
                           scrollContainerProps={{
                             border: 'none',
@@ -250,7 +250,7 @@ const Sections = ({
                     {/* Col 2: Size of collection */}
                     {data?.collectionSize && (
                       <OverviewSectionWrapper
-                        isLoading={isLoading}
+                        loading={loading}
                         label='Collection Size Details'
                         maxWidth={{ base: 'unset', xl: '500px' }}
                         scrollContainerProps={{
@@ -271,7 +271,7 @@ const Sections = ({
                 {/* Resource citation(s) */}
                 {data?.citation && (
                   <OverviewSectionWrapper
-                    isLoading={isLoading}
+                    loading={loading}
                     label={`Citation${
                       data?.citation.length > 1
                         ? `s (${data?.citation.length})`
@@ -290,7 +290,7 @@ const Sections = ({
                 {/* Resource credit text */}
                 {SHOW_CREDIT_TEXT_SECTION && (
                   <OverviewSectionWrapper
-                    isLoading={isLoading}
+                    loading={loading}
                     label='Credit Text'
                     tooltipLabel={getMetadataDescription(
                       'creditText',
@@ -306,7 +306,7 @@ const Sections = ({
             )}
             {/* Show keywords */}
             {section.hash === 'keywords' && (
-              <Skeleton loading={!!isLoading}>
+              <Skeleton loading={!!loading}>
                 {data?.keywords && data?.keywords?.length > 0 && (
                   <SearchableItems
                     generateButtonLabel={(
@@ -330,7 +330,7 @@ const Sections = ({
             )}
             {/* Show application category */}
             {section.hash === 'applicationCategory' && (
-              <Skeleton loading={!!isLoading}>
+              <Skeleton loading={!!loading}>
                 {data?.applicationCategory &&
                   data?.applicationCategory?.length > 0 && (
                     <SearchableItems
@@ -355,7 +355,7 @@ const Sections = ({
             )}
             {/* Show programming language */}
             {section.hash === 'programmingLanguage' && (
-              <Skeleton loading={!!isLoading}>
+              <Skeleton loading={!!loading}>
                 {data?.programmingLanguage &&
                   data?.programmingLanguage?.length > 0 && (
                     <SearchableItems
@@ -411,7 +411,7 @@ const Sections = ({
             )}
             {/* Show provenance */}
             {section.hash === 'provenance' && (
-              <ResourceProvenance isLoading={isLoading} {...data} />
+              <ResourceProvenance loading={loading} {...data} />
             )}
             {/* Show downloads */}
             {section.hash === 'downloads' && (
@@ -433,7 +433,7 @@ const Sections = ({
                 {/* Downloads for datasets is a table with multiple properties. */}
                 {data?.distribution && (
                   <FilesTable
-                    isLoading={isLoading}
+                    loading={loading}
                     distribution={data.distribution}
                   />
                 )}
@@ -441,7 +441,7 @@ const Sections = ({
             )}
             {/* Show funding */}
             {section.hash === 'funding' && (
-              <Funding isLoading={isLoading} data={data?.funding || []} />
+              <Funding loading={loading} data={data?.funding || []} />
             )}
             {/* Show Based On information */}
             {section.hash === 'isBasedOn' && data?.isBasedOn && (
@@ -449,14 +449,14 @@ const Sections = ({
                 id='software-information-is-based-on'
                 title={schema['isBasedOn']['description']?.[type]}
                 caption='Table showing resources that this resource is based on.'
-                isLoading={isLoading}
+                loading={loading}
                 items={data?.isBasedOn}
               />
             )}
             {/* Show citedBy */}
             {section.hash === 'citedBy' && (
               <CitedByTable
-                isLoading={isLoading}
+                loading={loading}
                 data={data?.citedBy || []}
                 title={schema['citedBy']['description']?.[type]}
               />

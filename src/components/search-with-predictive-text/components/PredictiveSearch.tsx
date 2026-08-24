@@ -72,7 +72,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
   onChange,
   onClick,
   disabled,
-  isLoading,
+  loading,
   inputValue,
   ...props
 }) => {
@@ -117,7 +117,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
           placeholder={placeholder}
           size={size}
           type={type}
-          isLoading={isLoading}
+          loading={loading}
           onChange={onChange ? onChange : updateSearchTerm}
           onSubmit={(value, idx) => {
             handleSubmit(value, searchField, results[idx]);
@@ -129,7 +129,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
                     colorPalette,
                     ariaLabel,
                     size,
-                    disabled: isLoading || !searchTerm || false,
+                    disabled: loading || !searchTerm || false,
                     ...props,
                   });
 
@@ -138,7 +138,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
                   //     display='flex'
                   //     colorPalette={colorPalette}
                   //     aria-label={ariaLabel}
-                  //     // disabled={isLoading || false}
+                  //     // disabled={loading || false}
                   //     size={size}
                   //     {...props}
                   //   >
@@ -159,7 +159,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
         {!hideSuggestions && (
           <DropdownContent>
             {/* if no suggestions are listed, remind users that sometimes data is missing from data sources. */}
-            {!isLoading && !suggestions.length && searchField && searchTerm && (
+            {!loading && !suggestions.length && searchField && searchTerm && (
               <Flex flexDirection='column' alignItems='center'>
                 <Text fontStyle='italic' p={2} fontSize='xs'>
                   No results

@@ -66,7 +66,7 @@ interface BarChartProps {
   };
 
   /** State of the data loading. */
-  isLoading?: boolean;
+  loading?: boolean;
 
   /** Function to get the route for a given term. */
   getRoute: (term: string) => UrlObject;
@@ -96,7 +96,7 @@ export const BarChart = ({
   description,
   data,
   defaultDimensions,
-  isLoading,
+  loading,
   getRoute,
   handleGATracking,
   useLogScale = false,
@@ -311,7 +311,7 @@ export const BarChart = ({
                             lineHeight='normal'
                             maxWidth={`${xMax}px`}
                             lineClamp={1}
-                            visibility={isLoading ? 'hidden' : 'visible'}
+                            visibility={loading ? 'hidden' : 'visible'}
                           >
                             {datum?.info?.name || datum.term} |{' '}
                             {datum.count.toLocaleString()}
@@ -326,7 +326,7 @@ export const BarChart = ({
           </svg>
 
           {/* Tooltip */}
-          {!isLoading && tooltipOpen && tooltipData && (
+          {!loading && tooltipOpen && tooltipData && (
             <TooltipWithBounds
               key={Math.random()}
               data-testid='tooltip'

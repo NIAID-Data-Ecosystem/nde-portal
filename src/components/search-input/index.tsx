@@ -28,7 +28,7 @@ export interface SearchInputProps extends Omit<InputProps, 'size'> {
   // Should input resize responsively
   isResponsive?: boolean;
   // Button reflects loading state
-  isLoading?: boolean;
+  loading?: boolean;
   // For accessibility, we need to link label and input with identical for and id field.
   ariaLabel: string;
   size?: SizeOptions;
@@ -49,7 +49,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   buttonVariant,
   ariaLabel,
   colorPalette,
-  isLoading,
+  loading,
   ...props
 }) => {
   const [showInput, setShowInput] = useState(false);
@@ -90,7 +90,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         <Button
           size={size}
           colorPalette={colorPalette}
-          loading={isLoading}
+          loading={loading}
           aria-label='search'
           type='submit'
           display='flex'

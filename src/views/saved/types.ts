@@ -34,7 +34,7 @@ export type SavedColumn<TItem = SavedItem, TValue = unknown> = {
   transform: (item: TItem) => TValue;
   component: (props: {
     value: TValue;
-    isLoading?: boolean;
+    loading?: boolean;
     data: TItem;
   }) => React.ReactNode;
   /**

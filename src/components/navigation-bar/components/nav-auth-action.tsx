@@ -1,11 +1,12 @@
-import React from 'react';
 import { Button, ButtonProps } from '@chakra-ui/react';
-import { useAuth } from 'src/hooks/useAuth';
-import { NavDropdownItem } from './nav-dropdown-item';
-import { NavDropdown, NavDropdownTrigger } from './nav-desktop-dropdown';
-import { ENABLE_AUTH } from 'src/utils/feature-flags';
-import { MobileNavItem } from './nav-mobile-item';
+import React from 'react';
 import { FaCircleUser } from 'react-icons/fa6';
+import { useAuth } from 'src/hooks/useAuth';
+import { ENABLE_AUTH } from 'src/utils/feature-flags';
+
+import { NavDropdown, NavDropdownTrigger } from './nav-desktop-dropdown';
+import { NavDropdownItem } from './nav-dropdown-item';
+import { MobileNavItem } from './nav-mobile-item';
 
 const ACCOUNTS_CONFIG = {
   default: 'Account',
@@ -32,27 +33,27 @@ const getDisplayName = (name?: string, username?: string) => {
 };
 
 const useAuthActionData = () => {
-  const { user, isAuthenticated, isLoading, login, logout } = useAuth();
+  const { user, isAuthenticated, loading, login, logout } = useAuth();
 
   return {
     displayName: getDisplayName(user?.name, user?.username),
     isAuthenticated,
-    isLoading,
+    loading,
     login,
     logout,
   };
 };
 
 const DesktopLoginAction = ({
-  isLoading,
+  loading,
   onLogin,
 }: {
-  isLoading?: boolean;
+  loading?: boolean;
   onLogin: () => void;
 }) => {
   return (
     <Button
-      loading={isLoading}
+      loading={loading}
       variant='outline'
       colorPalette='white'
       bg='transparent'
@@ -90,21 +91,21 @@ const LogoutButton = ({
 
 const DesktopAccountAction = ({
   displayName,
-  isLoading,
+  loading,
   onLogout,
 }: {
   displayName: string;
-  isLoading: boolean;
+  loading: boolean;
   onLogout: () => void;
 }) => {
   return (
     <NavDropdownTrigger
-      label={isLoading ? ACCOUNTS_CONFIG.default : displayName}
+      label={loading ? ACCOUNTS_CONFIG.default : displayName}
       icon={FaCircleUser}
-      isLoading={isLoading}
-      isDisabled={isLoading}
+      loading={loading}
+      disabled={loading}
     >
-      {!isLoading && (
+      {!loading && (
         <NavDropdown>
           {ACCOUNTS_CONFIG['routes'].map(route => (
             <NavDropdownItem key={`${route.href ?? route.label}`} {...route} />
@@ -159,34 +160,34 @@ const MobileAccountAction = ({
 };
 
 export const DesktopAuthAction = () => {
-  const { displayName, isAuthenticated, isLoading, login, logout } =
+  const { displayName, isAuthenticated, loading, login, logout } =
     useAuthActionData();
 
   if (!ENABLE_AUTH) return null;
 
-  if (isLoading) {
-    return <DesktopLoginAction isLoading={false} onLogin={login} />;
+  if (loading) {
+    return <DesktopLoginAction loading={false} onLogin={login} />;
   }
 
   if (isAuthenticated) {
     return (
       <DesktopAccountAction
-        isLoading={isLoading}
+        loading={loading}
         displayName={displayName ?? ACCOUNTS_CONFIG.default}
         onLogout={logout}
       />
     );
   }
 
-  return <DesktopLoginAction isLoading={isLoading} onLogin={login} />;
+  return <DesktopLoginAction loading={loading} onLogin={login} />;
 };
 
 export const MobileAuthAction = () => {
-  const { displayName, isAuthenticated, isLoading, login, logout } =
+  const { displayName, isAuthenticated, loading, login, logout } =
     useAuthActionData();
   if (!ENABLE_AUTH) return null;
 
-  if (isLoading) {
+  if (loading) {
     return <MobileLoadingAction />;
   }
 

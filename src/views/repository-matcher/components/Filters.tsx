@@ -28,7 +28,7 @@ interface FiltersProps {
   selected: SelectedRepositoryMatcherFilters;
   onChange: (columnId: string, values: string[]) => void;
   onClearAll: () => void;
-  isLoading?: boolean;
+  loading?: boolean;
 }
 
 // FiltersList only reads `name` and (optionally) `groupBy` off its config; the
@@ -44,8 +44,8 @@ const toFilterConfig = (col: RepositoryMatcherColumn<any>): FilterConfig => ({
 });
 
 const FiltersAccordion: React.FC<
-  Pick<FiltersProps, 'termsByColumnId' | 'selected' | 'onChange' | 'isLoading'>
-> = ({ termsByColumnId, selected, onChange, isLoading }) => (
+  Pick<FiltersProps, 'termsByColumnId' | 'selected' | 'onChange' | 'loading'>
+> = ({ termsByColumnId, selected, onChange, loading }) => (
   <Accordion.Root
     multiple
     defaultValue={FILTERABLE_REPOSITORY_MATCHER_COLUMNS.map((_, i) => i)}
@@ -62,7 +62,7 @@ const FiltersAccordion: React.FC<
             terms={termsByColumnId[col.id] ?? []}
             selectedFilters={selected[col.id] ?? []}
             handleSelectedFilters={values => onChange(col.id, values)}
-            isLoading={!!isLoading}
+            loading={!!loading}
           />
         </FiltersSection>
       );
@@ -75,7 +75,7 @@ export const Filters: React.FC<FiltersProps> = ({
   selected,
   onChange,
   onClearAll,
-  isLoading,
+  loading,
 }) => {
   const isMobile = useBreakpointValue(
     { base: true, md: false },
@@ -144,7 +144,7 @@ export const Filters: React.FC<FiltersProps> = ({
                     termsByColumnId={termsByColumnId}
                     selected={selected}
                     onChange={onChange}
-                    isLoading={isLoading}
+                    loading={loading}
                   />
                 </Drawer.Body>
                 <Drawer.Footer borderTopWidth='1px' py={3}>
@@ -189,7 +189,7 @@ export const Filters: React.FC<FiltersProps> = ({
           termsByColumnId={termsByColumnId}
           selected={selected}
           onChange={onChange}
-          isLoading={isLoading}
+          loading={loading}
         />
       </Box>
     </Box>

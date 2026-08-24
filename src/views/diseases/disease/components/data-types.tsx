@@ -84,7 +84,7 @@ export const DataTypes = ({ query, topic }: TopicQueryProps) => {
           />
         }
         error={error}
-        isLoading={isLoading || isPlaceholderData}
+        loading={isLoading || isPlaceholderData}
         skeletonProps={{
           minHeight: '200px',
           width: '100%',
@@ -151,7 +151,7 @@ export const DataTypes = ({ query, topic }: TopicQueryProps) => {
                     <LegendItem
                       key={term}
                       count={count}
-                      isLoading={isLoading || isPlaceholderData}
+                      loading={isLoading || isPlaceholderData}
                       swatchBg={getFillColor(term)}
                     >
                       <NextLink
@@ -183,7 +183,7 @@ export const DataTypes = ({ query, topic }: TopicQueryProps) => {
               <LegendItem
                 key='total'
                 count={data?.total}
-                isLoading={isLoading || isPlaceholderData}
+                loading={isLoading || isPlaceholderData}
               >
                 <NextLink
                   onClick={() => {

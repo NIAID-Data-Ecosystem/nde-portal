@@ -18,7 +18,7 @@ import { FeaturedPageProps } from '../types';
 
 export const TableOfContents = ({ data }: { data?: FeaturedPageProps[] }) => {
   // [TO DO]: Fetch all pages from the Strapi API
-  const isLoading = false;
+  const loading = false;
 
   const [searchValue, setSearchValue] = useState('');
 
@@ -90,7 +90,7 @@ export const TableOfContents = ({ data }: { data?: FeaturedPageProps[] }) => {
                 <StyledCard
                   key={page.id}
                   id={page.slug}
-                  isLoading={isLoading}
+                  loading={loading}
                   title={label}
                   thumbnail={
                     imageUrl

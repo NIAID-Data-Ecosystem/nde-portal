@@ -19,7 +19,7 @@ export const DocumentItem = ({
   item,
   selectedSlug,
   colorPalette,
-  isLoading,
+  loading,
   activePageSlug,
 }: DocumentItemProps) => {
   const isSelected = selectedSlug === item.slug;
@@ -62,17 +62,14 @@ export const DocumentItem = ({
             bg={bg}
             // While loading the item name is hidden by the skeleton, so give the
             // link an accessible name to satisfy link-name.
-            aria-label={isLoading ? 'Loading' : undefined}
+            aria-label={loading ? 'Loading' : undefined}
             _hover={{
               bg: isSelected ? bg : 'blackAlpha.50',
               borderRadius: 'base',
               transition: 'fast',
             }}
           >
-            <SkeletonText
-              loading={isLoading}
-              width={isLoading ? '75%' : '100%'}
-            >
+            <SkeletonText loading={loading} width={loading ? '75%' : '100%'}>
               {item.name}
             </SkeletonText>
           </Link>
@@ -84,7 +81,7 @@ export const DocumentItem = ({
           alignItems='center'
           mr={2}
         >
-          {hasToc && !isLoading && (
+          {hasToc && !loading && (
             <IconButton
               aria-label={isExpanded ? 'Collapse sections' : 'Expand sections'}
               size='sm'

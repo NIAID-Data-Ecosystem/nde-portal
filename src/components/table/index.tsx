@@ -39,7 +39,7 @@ export interface Column {
   renderCell?: (props: {
     column: Column;
     data: any;
-    isLoading?: boolean;
+    loading?: boolean;
   }) => React.ReactNode;
 }
 
@@ -51,10 +51,10 @@ export interface TableProps<TData extends Record<string, string | number>> {
   getCells: (props: {
     column: Column;
     data: TData;
-    isLoading?: boolean;
+    loading?: boolean;
   }) => React.ReactNode;
   colorPalette?: ColorPalette;
-  isLoading?: boolean;
+  loading?: boolean;
   numRows?: number[];
   hasPagination?: boolean;
   tableBodyProps?: HTMLChakraProps<'tbody'>;
@@ -121,9 +121,9 @@ interface MemoRowCellsProps {
   getCells: (props: {
     column: Column;
     data: any;
-    isLoading?: boolean;
+    loading?: boolean;
   }) => React.ReactNode;
-  isLoading?: boolean;
+  loading?: boolean;
   cellAs?: any;
   stickyFirstColumn?: boolean;
   colorPalette?: ColorPalette;
@@ -137,7 +137,7 @@ const MemoRowCells = React.memo(
     row,
     columns,
     getCells,
-    isLoading,
+    loading,
     cellAs = 'td',
     stickyFirstColumn,
     colorPalette = 'gray',
@@ -165,7 +165,7 @@ const MemoRowCells = React.memo(
             {...column.props}
             {...stickyProps}
           >
-            {getCells({ column, data: row, isLoading })}
+            {getCells({ column, data: row, loading })}
           </Cell>
         );
       })}
@@ -179,7 +179,7 @@ interface VirtualizedRowItemProps {
   index: number;
   columns: Column[];
   getCells: MemoRowCellsProps['getCells'];
-  isLoading?: boolean;
+  loading?: boolean;
   rowProps?: any;
   onResize: (index: number, height: number) => void;
   stickyFirstColumn?: boolean;
@@ -194,7 +194,7 @@ const VirtualizedRowItem = React.memo(
     index,
     columns,
     getCells,
-    isLoading,
+    loading,
     rowProps,
     onResize,
     stickyFirstColumn,
@@ -225,7 +225,7 @@ const VirtualizedRowItem = React.memo(
             row={row}
             columns={columns}
             getCells={getCells}
-            isLoading={isLoading}
+            loading={loading}
             cellAs='div'
             stickyFirstColumn={stickyFirstColumn}
             colorPalette={colorPalette}
@@ -257,7 +257,7 @@ interface VirtualizedBodyProps {
   columns: Column[];
   getCells: MemoRowCellsProps['getCells'];
   getTableRowProps?: (row: any, idx: number) => any;
-  isLoading?: boolean;
+  loading?: boolean;
   height: number;
   tableBodyProps?: HTMLChakraProps<'tbody'>;
   listRef?: React.MutableRefObject<VariableSizeList | null>;
@@ -273,7 +273,7 @@ const VirtualizedBody: React.FC<VirtualizedBodyProps> = ({
   columns,
   getCells,
   getTableRowProps,
-  isLoading,
+  loading,
   height,
   tableBodyProps,
   listRef: externalListRef,
@@ -343,7 +343,7 @@ const VirtualizedBody: React.FC<VirtualizedBodyProps> = ({
                 index={index}
                 columns={columns}
                 getCells={getCells}
-                isLoading={isLoading}
+                loading={loading}
                 rowProps={rowProps}
                 onResize={handleResize}
                 stickyFirstColumn={stickyFirstColumn}
@@ -365,7 +365,7 @@ export const Table: React.FC<TableProps<any>> = ({
   data,
   getCells,
   hasPagination,
-  isLoading,
+  loading,
   numRows = NUM_ROWS,
   tableHeadProps,
   tableBodyProps,
@@ -527,7 +527,7 @@ export const Table: React.FC<TableProps<any>> = ({
     [hasPagination, displayData, from, size],
   );
 
-  const showEmptyState = !isLoading && rows.length === 0 && emptyState != null;
+  const showEmptyState = !loading && rows.length === 0 && emptyState != null;
 
   // When stickyHeader is enabled, position:sticky is applied to the thead
   // element itself rather than individual th cells.
@@ -675,7 +675,7 @@ export const Table: React.FC<TableProps<any>> = ({
                   row={row}
                   columns={columns}
                   getCells={getCells}
-                  isLoading={isLoading}
+                  loading={loading}
                   stickyFirstColumn={stickyFirstColumn}
                   colorPalette={colorPalette}
                 />
@@ -777,7 +777,7 @@ export const Table: React.FC<TableProps<any>> = ({
                 columns={columns}
                 getCells={getCells}
                 getTableRowProps={getTableRowProps}
-                isLoading={isLoading}
+                loading={loading}
                 height={virtualListHeight}
                 tableBodyProps={tableBodyProps}
                 listRef={virtualListRef}
@@ -806,9 +806,9 @@ export const Table: React.FC<TableProps<any>> = ({
 
   return (
     <Skeleton
-      loading={!!isLoading}
+      loading={!!loading}
       overflow='auto'
-      minH={isLoading ? '500px' : 'unset'}
+      minH={loading ? '500px' : 'unset'}
     >
       <TableWrapper colorPalette={colorPalette}>
         {/* Top scrollbar */}

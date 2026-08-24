@@ -145,11 +145,11 @@ export const toRow = (resource: FormattedResource): Record<string, unknown> => {
 export const getCells = ({
   column,
   data,
-  isLoading,
+  loading,
 }: {
   column: Column;
   data: Record<string, unknown>;
-  isLoading?: boolean;
+  loading?: boolean;
 }) => {
   const value = data?.[column.property];
 
@@ -247,7 +247,7 @@ export const getCells = ({
       <ExpandableText
         text={(value as string) || ''}
         noOfLines={4}
-        isLoading={isLoading}
+        loading={loading}
       />
     );
   }
@@ -310,12 +310,12 @@ export const getCells = ({
 
   // healthCondition, infectiousAgent, species, topicCategory, and any other
   // DefinedTerm / QuantitativeValue fields.
-  return renderCellData({ column, data: value as any, isLoading });
+  return renderCellData({ column, data: value as any, loading });
 };
 
 interface DataCollectionResultsTableProps {
   results: FormattedResource[];
-  isLoading: boolean;
+  loading: boolean;
   /**
    * IDs of columns that should be visible.
    * When undefined, all columns are shown.
@@ -344,7 +344,7 @@ interface DataCollectionResultsTableProps {
 
 export const DataCollectionResultsTable = ({
   results,
-  isLoading,
+  loading,
   visibleColumnIds,
   columnOrder,
   currentSort,
@@ -353,7 +353,7 @@ export const DataCollectionResultsTable = ({
   <ResultsTable
     columns={ALL_DATA_COLLECTION_COLUMNS}
     results={results}
-    isLoading={isLoading}
+    loading={loading}
     toRow={toRow}
     getCells={getCells}
     ariaLabel='Data collection search results'

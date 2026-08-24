@@ -22,7 +22,7 @@ import { SHOW_PROGRAM_RESOURCE_UI } from 'src/utils/feature-flags';
 import { SourceLogo } from 'src/components/source-logo';
 
 interface Provenance {
-  isLoading: boolean;
+  loading: boolean;
   includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
   sdPublisher?: FormattedResource['sdPublisher'];
   sourceOrganization?: FormattedResource['sourceOrganization'];
@@ -36,12 +36,12 @@ const generateProgramCollectionSlug = (name: string) =>
 
 const Provenance: React.FC<Provenance> = ({
   includedInDataCatalog,
-  isLoading,
+  loading,
   sourceOrganization,
   sdPublisher,
 }) => {
   const provenanceCatalogs =
-    !isLoading && includedInDataCatalog
+    !loading && includedInDataCatalog
       ? Array.isArray(includedInDataCatalog)
         ? includedInDataCatalog
         : [includedInDataCatalog]
@@ -119,7 +119,7 @@ const Provenance: React.FC<Provenance> = ({
   );
 
   return (
-    <Skeleton loading={!!isLoading}>
+    <Skeleton loading={!!loading}>
       {/* Source  information */}
       <Text fontSize='xs' fontWeight='semibold' lineHeight='tall' mt={4}>
         Source information

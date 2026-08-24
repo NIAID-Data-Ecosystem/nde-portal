@@ -17,7 +17,7 @@
  *
  * State coverage note — this route is intentionally NOT the full four-state
  * matrix:
- *   - LOADING: `/user_info` kept pending → `isLoading` stays true → the card
+ *   - LOADING: `/user_info` kept pending → `loading` stays true → the card
  *     shows the "Checking authentication status..." spinner. Scanned below.
  *   - POPULATED (logged-out): `/user_info` → 401 → `isAuthenticated=false`, the
  *     login provider buttons render. This is the primary interactive state.

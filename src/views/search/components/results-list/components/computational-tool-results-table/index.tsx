@@ -210,11 +210,11 @@ export const createGetCells =
   ({
     column,
     data,
-    isLoading,
+    loading,
   }: {
     column: Column;
     data: Record<string, unknown>;
-    isLoading?: boolean;
+    loading?: boolean;
   }) => {
     const value = data?.[column.property];
 
@@ -251,9 +251,7 @@ export const createGetCells =
         ',',
         10,
       );
-      return (
-        <ExpandableText text={authors} noOfLines={3} isLoading={isLoading} />
-      );
+      return <ExpandableText text={authors} noOfLines={3} loading={loading} />;
     }
 
     // Description: clamped to a few lines with a "Show more" / "Show less" toggle.
@@ -262,7 +260,7 @@ export const createGetCells =
         <ExpandableText
           text={(value as string) || ''}
           noOfLines={4}
-          isLoading={isLoading}
+          loading={loading}
         />
       );
     }
@@ -295,12 +293,12 @@ export const createGetCells =
     // applicationCategory, programmingLanguage, operatingSystem and
     // softwareVersion are string arrays; input, output, featureList and
     // topicCategory are DefinedTerm arrays. The shared renderer handles both.
-    return renderCellData({ column, data: value as any, isLoading });
+    return renderCellData({ column, data: value as any, loading });
   };
 
 interface ComputationalToolResultsTableProps {
   results: FormattedResource[];
-  isLoading: boolean;
+  loading: boolean;
   /**
    * IDs of columns that should be visible.
    * When undefined, all columns are shown.
@@ -334,7 +332,7 @@ interface ComputationalToolResultsTableProps {
 
 export const ComputationalToolResultsTable = ({
   results,
-  isLoading,
+  loading,
   visibleColumnIds,
   columnOrder,
   currentSort,
@@ -347,7 +345,7 @@ export const ComputationalToolResultsTable = ({
     <ResultsTable
       columns={ALL_COMPUTATIONAL_TOOL_COLUMNS}
       results={results}
-      isLoading={isLoading}
+      loading={loading}
       toRow={toRow}
       getCells={getCells}
       ariaLabel='Computational tool search results'

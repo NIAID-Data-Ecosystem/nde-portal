@@ -45,7 +45,7 @@ import { ENABLE_AUTH } from 'src/utils/feature-flags';
 import { useAuth } from 'src/hooks/useAuth';
 
 interface SearchResultCardProps {
-  isLoading?: boolean;
+  loading?: boolean;
   data?: FormattedResource | null;
   referrerPath?: string;
   querystring: string;
@@ -54,7 +54,7 @@ interface SearchResultCardProps {
 const metadataFields = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
 const SearchResultCard: React.FC<SearchResultCardProps> = ({
-  isLoading,
+  loading,
   data,
   referrerPath,
   querystring,
@@ -85,7 +85,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   const [cardRef, inView] = useInView({ once: true });
 
   const sources =
-    isLoading || !includedInDataCatalog
+    loading || !includedInDataCatalog
       ? []
       : formatSourcesWithLogos(includedInDataCatalog) || [];
 
@@ -142,8 +142,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         w='100%'
       >
         <Skeleton
-          loading={isLoading}
-          minHeight={isLoading ? '81px' : 'unset'}
+          loading={loading}
+          minHeight={loading ? '81px' : 'unset'}
           flex={1}
         >
           <NextLink
@@ -193,10 +193,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         </Skeleton>
       </Card.Header>
       <Skeleton
-        loading={isLoading}
+        loading={loading}
         p='0px!important'
         minHeight={
-          isLoading
+          loading
             ? { base: '580px', sm: '400px', md: '330px', lg: '300px' }
             : 'unset'
         }

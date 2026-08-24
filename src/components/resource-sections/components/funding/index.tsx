@@ -53,7 +53,7 @@ interface Row extends FundingType {
   hasRowDrawer: boolean;
 }
 interface FundingProps {
-  isLoading: boolean;
+  loading: boolean;
   data: FundingType[];
 }
 
@@ -61,7 +61,7 @@ const SHOW_MAX_FUNDER_NAMES = 5;
 // Main Funding component - renders a table with funding data.
 export const Funding: React.FC<FundingProps> = ({
   data: fundingData,
-  isLoading,
+  loading,
 }) => {
   // create custom [properties] for sorting. This is needed because the data is nested.
   const funding = useMemo(
@@ -121,11 +121,11 @@ export const Funding: React.FC<FundingProps> = ({
     setRows(data.slice(from * size, from * size + size));
   }, [data, size, from]);
 
-  if (!isLoading && funding?.length === 0) {
+  if (!loading && funding?.length === 0) {
     return <Text>No funding data available.</Text>;
   }
   return (
-    <Skeleton loading={!!isLoading} overflow='auto'>
+    <Skeleton loading={!!loading} overflow='auto'>
       <Heading as='h4' fontSize='sm' mx={1} mb={4} fontWeight='semibold'>
         Grant and Funding Information
       </Heading>

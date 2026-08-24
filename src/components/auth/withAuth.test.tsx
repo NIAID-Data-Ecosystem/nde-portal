@@ -28,7 +28,7 @@ describe('withAuth', () => {
   it('renders default loading UI while auth status is loading', () => {
     mockedUseAuth.mockReturnValue({
       isAuthenticated: false,
-      isLoading: true,
+      loading: true,
     });
 
     const Wrapped = withAuth(() => <div>Protected</div>);
@@ -41,7 +41,7 @@ describe('withAuth', () => {
   it('renders custom loading component when provided', () => {
     mockedUseAuth.mockReturnValue({
       isAuthenticated: false,
-      isLoading: true,
+      loading: true,
     });
 
     const Wrapped = withAuth(() => <div>Protected</div>, {
@@ -56,7 +56,7 @@ describe('withAuth', () => {
   it('renders wrapped component when authenticated', () => {
     mockedUseAuth.mockReturnValue({
       isAuthenticated: true,
-      isLoading: false,
+      loading: false,
     });
 
     const Wrapped = withAuth(() => <div>Protected</div>);
@@ -68,7 +68,7 @@ describe('withAuth', () => {
   it('stores return path and redirects when unauthenticated', async () => {
     mockedUseAuth.mockReturnValue({
       isAuthenticated: false,
-      isLoading: false,
+      loading: false,
     });
 
     const Wrapped = withAuth(() => <div>Protected</div>, {
@@ -87,7 +87,7 @@ describe('withAuth', () => {
   it('does not redirect when redirectTo is disabled', async () => {
     mockedUseAuth.mockReturnValue({
       isAuthenticated: false,
-      isLoading: false,
+      loading: false,
     });
 
     const Wrapped = withAuth(() => <div>Protected</div>, {

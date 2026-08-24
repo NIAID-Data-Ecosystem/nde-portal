@@ -75,7 +75,7 @@ export const VisualizationCard = (props: VisualizationCardProps) => {
       borderRadius='md'
       position='relative'
     >
-      {aggData.isLoading && <ChartLoadingSpinner />}
+      {aggData.loading && <ChartLoadingSpinner />}
 
       <CardHeader
         label={config.name}

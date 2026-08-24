@@ -34,17 +34,17 @@ export const getTooltipLabelByCountType = (type: keyof CountsType) => {
 
 export const OntologyBrowserCountTag = ({
   children,
-  isLoading,
+  loading,
   tooltipLabel,
 }: {
   children: React.ReactNode;
-  isLoading?: boolean;
+  loading?: boolean;
   tooltipLabel: React.ReactNode;
 }) => {
   return (
     <Flex minW={120} maxW={130}>
       <Tooltip content={tooltipLabel} mx={1}>
-        {isLoading ? (
+        {loading ? (
           <Spinner size='sm' color='primary.500' />
         ) : (
           <Text fontWeight='medium' lineHeight='shorter' fontSize='sm'>

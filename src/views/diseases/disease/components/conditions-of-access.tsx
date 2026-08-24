@@ -104,7 +104,7 @@ export const ConditionsOfAccess = ({ query, topic }: TopicQueryProps) => {
             />
           }
           error={error}
-          isLoading={isLoading || isPlaceholderData}
+          loading={isLoading || isPlaceholderData}
           skeletonProps={{
             minHeight: '200px',
             width: '100%',
@@ -158,7 +158,7 @@ export const ConditionsOfAccess = ({ query, topic }: TopicQueryProps) => {
                       <LegendItem
                         key={term}
                         count={count}
-                        isLoading={isLoading || isPlaceholderData}
+                        loading={isLoading || isPlaceholderData}
                         swatchBg={fill}
                       >
                         <Box>

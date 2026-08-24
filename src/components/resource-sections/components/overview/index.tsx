@@ -28,7 +28,7 @@ import {
 import { ScrollContainer } from 'src/components/scroll-container';
 
 export interface OverviewProps extends Partial<FormattedResource> {
-  isLoading: boolean;
+  loading: boolean;
 }
 
 const DATASET_SORT_ORDER = [...SORT_ORDER, 'spatialCoverage'];
@@ -38,7 +38,7 @@ const Overview: React.FC<OverviewProps> = ({
   id,
   infectiousAgent,
   inLanguage,
-  isLoading,
+  loading,
   locationNames,
   measurementTechnique,
   spatialCoverage,
@@ -123,7 +123,7 @@ const Overview: React.FC<OverviewProps> = ({
                     key={`block-${props.id}`}
                     id={props.id}
                     isDisabled={props.isDisabled}
-                    isLoading={isLoading}
+                    loading={loading}
                     inLanguage={inLanguage}
                     spatialCoverage={spatialCoverage}
                     temporalCoverage={temporalCoverage}
@@ -135,7 +135,7 @@ const Overview: React.FC<OverviewProps> = ({
               return (
                 <Skeleton
                   key={`block-${props.id}-${props.property}`}
-                  loading={!!isLoading}
+                  loading={!!loading}
                 >
                   <MetadataBlock
                     tooltipLabel={getMetadataDescription(
@@ -188,7 +188,7 @@ export default Overview;
 interface SpatiotemporalCoverageProps
   extends Pick<
     OverviewProps,
-    'isLoading' | 'id' | 'inLanguage' | 'spatialCoverage' | 'temporalCoverage'
+    'loading' | 'id' | 'inLanguage' | 'spatialCoverage' | 'temporalCoverage'
   > {
   type?: FormattedResource['@type'];
   isDisabled: boolean;
@@ -196,7 +196,7 @@ interface SpatiotemporalCoverageProps
 const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
   id,
   isDisabled,
-  isLoading,
+  loading,
   inLanguage,
   spatialCoverage,
   temporalCoverage,
@@ -215,7 +215,7 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
     .map(s => s.name);
 
   return (
-    <Skeleton key={`block-${id}-spatioTemporal`} loading={!!isLoading}>
+    <Skeleton key={`block-${id}-spatioTemporal`} loading={!!loading}>
       <MetadataBlock
         label='Spatiotemporal Coverage'
         property='spatialCoverage'

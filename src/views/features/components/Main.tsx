@@ -17,11 +17,11 @@ import Empty from 'src/components/empty';
 import { FeaturedPageProps } from '../types';
 
 interface MainContentProps {
-  isLoading?: boolean;
+  loading?: boolean;
   data?: FeaturedPageProps | null;
 }
 
-const Main = ({ data, isLoading }: MainContentProps) => {
+const Main = ({ data, loading }: MainContentProps) => {
   // Date formatting for last content update date.
   const [updatedAt, setUpdatedAt] = useState('');
 
@@ -49,21 +49,21 @@ const Main = ({ data, isLoading }: MainContentProps) => {
         width='100%'
         m='0 auto'
       >
-        {isLoading || data ? (
+        {loading || data ? (
           <>
-            <SkeletonText loading={isLoading} mb={2} noOfLines={1} height={10}>
+            <SkeletonText loading={loading} mb={2} noOfLines={1} height={10}>
               <Heading as='h1' size='xl'>
                 {data?.title || ''}
               </Heading>
             </SkeletonText>
-            <SkeletonText loading={isLoading} mb={4} noOfLines={1} height={6}>
+            <SkeletonText loading={loading} mb={4} noOfLines={1} height={6}>
               <Text color='gray.700' lineHeight='short'>
                 {data?.subtitle || ''}
               </Text>
             </SkeletonText>
 
             <Skeleton
-              loading={!!isLoading}
+              loading={!!loading}
               height='100%'
               display='flex'
               flexDirection='column'
@@ -91,7 +91,7 @@ const Main = ({ data, isLoading }: MainContentProps) => {
             </Skeleton>
 
             <Separator orientation='horizontal' my={4} />
-            <SkeletonText loading={isLoading} noOfLines={1} height={4}>
+            <SkeletonText loading={loading} noOfLines={1} height={4}>
               <Text
                 fontStyle='italic'
                 fontSize='xs'

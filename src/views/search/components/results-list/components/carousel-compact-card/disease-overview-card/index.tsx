@@ -9,16 +9,16 @@ import remarkGfm from 'remark-gfm';
 
 interface DiseaseOverviewCardProps {
   data?: DiseasePageProps | null;
-  isLoading?: boolean;
+  loading?: boolean;
 }
 
 export const DiseaseOverviewCard = ({
   data,
-  isLoading = false,
+  loading = false,
 }: DiseaseOverviewCardProps) => {
   const { title, description, slug, topicEmphasizedDescription } = data || {};
 
-  if (!isLoading && !slug) {
+  if (!loading && !slug) {
     console.warn(
       'DiseaseOverviewCard: Missing slug for disease overview card',
       {
@@ -46,19 +46,19 @@ export const DiseaseOverviewCard = ({
     : `Learn about resources in the NIAID Data Ecosystem.`;
 
   return (
-    <CompactCard.Base isLoading={isLoading}>
+    <CompactCard.Base loading={loading}>
       <CompactCard.Banner
         label={TAB_LABELS.DISEASE_OVERVIEW}
         type='Disease'
-        isLoading={isLoading}
+        loading={loading}
       />
-      <CompactCard.Header isLoading={isLoading}>
+      <CompactCard.Header loading={loading}>
         {title && (
           <CompactCard.Title linkProps={linkProps}>{title}</CompactCard.Title>
         )}
       </CompactCard.Header>
       <CompactCard.Body>
-        <Skeleton loading={isLoading} flex='1'>
+        <Skeleton loading={loading} flex='1'>
           {/* Description (if present) */}
           {topicEmphasizedDescription || description ? (
             <>

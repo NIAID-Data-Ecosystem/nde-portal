@@ -9,7 +9,7 @@ import { CreativeWorkStatus } from 'src/components/badges';
 import { BookmarkButton } from 'src/components/bookmark-buttons/button';
 
 interface HeaderProps {
-  isLoading: boolean;
+  loading: boolean;
   name?: FormattedResource['name'];
   alternateName?: FormattedResource['alternateName'];
   id?: FormattedResource['id'];
@@ -20,7 +20,7 @@ interface HeaderProps {
 }
 
 const Header = ({
-  isLoading,
+  loading,
   name,
   alternateName,
   id,
@@ -45,7 +45,7 @@ const Header = ({
   return (
     <>
       <Skeleton
-        loading={!!isLoading}
+        loading={!!loading}
         w='100%'
         overflow='unset'
         position={['unset', 'unset', 'sticky']}

@@ -29,7 +29,7 @@ import { MDXComponents as DefaultMDXComponents } from 'src/components/mdx/compon
  */
 
 interface StyledCardProps extends StackProps {
-  isLoading?: boolean;
+  loading?: boolean;
   title?: string;
   subtitle?: string;
   tags?: React.ReactNode;
@@ -39,7 +39,7 @@ interface StyledCardProps extends StackProps {
 
 export const StyledCard: React.FC<StyledCardProps> = ({
   id,
-  isLoading,
+  loading,
   title,
   subtitle,
   children,
@@ -48,7 +48,7 @@ export const StyledCard: React.FC<StyledCardProps> = ({
   renderCTA,
 }) => {
   return (
-    <StyledCardWrapper id={id} isLoading={isLoading}>
+    <StyledCardWrapper id={id} loading={loading}>
       <VStack alignItems='flex-start' lineHeight='short' mt={2}>
         <Stack
           gap={{ base: 4, lg: 6, xl: 10 }}
@@ -130,14 +130,14 @@ export const StyledCardStack: React.FC<StackProps> = ({
 };
 
 export const StyledCardWrapper: React.FC<
-  StackProps & { isLoading?: boolean }
-> = ({ children, id, isLoading, ...props }) => {
+  StackProps & { loading?: boolean }
+> = ({ children, id, loading, ...props }) => {
   return (
     <Skeleton
       as='section'
       id={id}
-      loading={!!isLoading}
-      minHeight={isLoading ? '200px' : 'unset'}
+      loading={!!loading}
+      minHeight={loading ? '200px' : 'unset'}
       w='100%'
       boxShadow='low'
       borderRadius='semi'

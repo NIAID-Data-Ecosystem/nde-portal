@@ -14,11 +14,11 @@ const CARD_HEIGHTS = {
 
 // Base compact card wrapper component
 interface BaseProps extends Omit<Card.RootProps, 'children' | 'as'> {
-  isLoading?: boolean;
+  loading?: boolean;
   children: ReactNode;
 }
 
-const Base = ({ isLoading = false, children, ...cardProps }: BaseProps) => {
+const Base = ({ loading = false, children, ...cardProps }: BaseProps) => {
   return (
     <Card.Root
       variant='niaid'
@@ -35,20 +35,20 @@ const Base = ({ isLoading = false, children, ...cardProps }: BaseProps) => {
 
 // Banner component
 interface BannerProps extends TypeBannerProps {
-  isLoading?: boolean;
+  loading?: boolean;
 }
 
 const Banner = ({
   label,
   type,
   isNiaidFunded,
-  isLoading = false,
+  loading = false,
   ...props
 }: BannerProps) => {
   return (
     <Skeleton
-      loading={isLoading}
-      height={isLoading ? '40px' : 'auto'}
+      loading={loading}
+      height={loading ? '40px' : 'auto'}
       borderTopRadius='md'
     >
       <TypeBanner
@@ -66,11 +66,11 @@ const Banner = ({
 
 // Header wrapper component
 interface HeaderProps extends BoxProps {
-  isLoading?: boolean;
+  loading?: boolean;
   children: ReactNode;
 }
 
-const Header = ({ isLoading = false, children, ...boxProps }: HeaderProps) => {
+const Header = ({ loading = false, children, ...boxProps }: HeaderProps) => {
   return (
     <Card.Header
       bg='transparent'
@@ -94,8 +94,8 @@ const Header = ({ isLoading = false, children, ...boxProps }: HeaderProps) => {
       }}
       {...boxProps}
     >
-      <Skeleton loading={isLoading} minHeight='27px' flex={1}>
-        {!isLoading && children}
+      <Skeleton loading={loading} minHeight='27px' flex={1}>
+        {!loading && children}
       </Skeleton>
     </Card.Header>
   );

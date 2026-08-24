@@ -104,19 +104,19 @@ export const LegendTableHeader: React.FC<TextProps> = ({
 export const LegendItem = ({
   children,
   count,
-  isLoading,
+  loading,
   swatchBg,
 }: {
   children?: React.ReactNode;
   count?: number;
-  isLoading?: boolean;
+  loading?: boolean;
   swatchBg?: string;
 }) => {
   return (
     <Skeleton
-      loading={!!isLoading}
+      loading={!!loading}
       width='100%'
-      height={isLoading ? '20px' : 'unset'}
+      height={loading ? '20px' : 'unset'}
     >
       <HStack
         alignItems='flex-start'

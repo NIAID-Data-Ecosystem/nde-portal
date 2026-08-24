@@ -191,7 +191,7 @@ export const useVisualizationData = ({
 
   const aggData = {
     data: activeAggResponse,
-    isLoading: activeScopedQuery.isLoading,
+    loading: activeScopedQuery.isLoading,
     isFetching: activeScopedQuery.isFetching,
     isPlaceholderData: activeScopedQuery.isPlaceholderData,
     isError: activeScopedQuery.isError,

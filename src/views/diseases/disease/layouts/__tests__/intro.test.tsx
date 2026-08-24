@@ -32,8 +32,8 @@ describe('IntroSection', () => {
     expect(screen.getByText('Test Description')).toBeInTheDocument();
   });
 
-  // it('shows skeleton loaders when isLoading is true', () => {
-  //   renderComponent({ isLoading: true });
+  // it('shows skeleton loaders when loading is true', () => {
+  //   renderComponent({ loading: true });
   //   expect(screen.getAllByRole('status')).toHaveLength(2); // Subtitle and Description skeletons
   // });
 

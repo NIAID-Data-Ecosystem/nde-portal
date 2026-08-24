@@ -268,7 +268,7 @@ const Home: NextPage<{
                   ariaLabel='List of repositories and resource catalogs'
                   caption='List of repositories and resource catalogs'
                   data={tableData}
-                  isLoading={repositoriesIsLoading || resourceCatalogsIsLoading}
+                  loading={repositoriesIsLoading || resourceCatalogsIsLoading}
                   columns={[
                     {
                       title: 'name',

@@ -43,7 +43,7 @@ describe('Table', () => {
         data={data}
         getCells={({ column, data }) => <span>{data[column.property]}</span>}
         hasPagination={false}
-        isLoading={false}
+        loading={false}
       />,
     );
 
@@ -88,7 +88,7 @@ describe('Table', () => {
         data={nullData}
         getCells={({ column, data }) => <span>{data[column.property]}</span>}
         hasPagination={false}
-        isLoading={false}
+        loading={false}
       />,
     );
 
@@ -122,7 +122,7 @@ describe('Table', () => {
         data={data}
         getCells={({ column, data }) => <span>{data[column.property]}</span>}
         hasPagination={true}
-        isLoading={false}
+        loading={false}
         numRows={[5, 10]}
       />,
     );
@@ -171,7 +171,7 @@ describe('Table Pagination', () => {
     setFrom,
     setSize,
     pageSizeOptions: [5, 10, 15],
-    isLoading: false,
+    loading: false,
   };
 
   const renderComponent = (props = {}) => {

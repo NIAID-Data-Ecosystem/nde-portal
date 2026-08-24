@@ -25,7 +25,7 @@ interface PaginationProps {
   //  aria-label for nav element.
   ariaLabel: string;
   // Status of data loading.
-  isLoading: boolean;
+  loading: boolean;
   // API page index
   selectedPage: number;
   // Number of items to display in a page
@@ -43,7 +43,7 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
   ({
     id,
     ariaLabel,
-    isLoading,
+    loading,
     selectedPage,
     selectedPerPage,
     total,
@@ -65,12 +65,12 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
         // If the number of pages exceed the number of allotted pages by the api we return the max allotted by the api.
         const pages = total_pages > max ? max : total_pages;
 
-        if (!isLoading && pages !== prev) {
+        if (!loading && pages !== prev) {
           return pages;
         }
         return prev;
       });
-    }, [total, isLoading, selectedPerPage]);
+    }, [total, loading, selectedPerPage]);
 
     // Function to generate options with two before and after the selected value
     const generateOptions = (selectedVal: number) => {

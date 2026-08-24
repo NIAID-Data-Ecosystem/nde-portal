@@ -70,7 +70,7 @@ export interface TablePaginationProps extends FlexProps {
   /**
    * Loading state for loading indicator.
    */
-  isLoading?: boolean;
+  loading?: boolean;
 }
 
 export const TablePagination: React.FC<TablePaginationProps> = ({
@@ -81,7 +81,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
   setFrom,
   pageSizeOptions,
   colorPalette = 'gray',
-  isLoading,
+  loading,
   numPages: totalPages,
   ...props
 }) => {
@@ -209,7 +209,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
         bg='white'
         p={4}
       >
-        <Skeleton loading={isLoading}>
+        <Skeleton loading={loading}>
           <Text fontSize='sm'>
             Page {formatNumber(from + 1)} of {formatNumber(numPages)}
           </Text>
@@ -217,7 +217,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
         <Center display={'flex'} h='20px' mx={2}>
           <Separator orientation='vertical' />
         </Center>
-        <Skeleton loading={isLoading}>
+        <Skeleton loading={loading}>
           <Text fontSize='sm'>
             {formatNumber(total)} {total > 1 ? 'items' : 'item'}
           </Text>

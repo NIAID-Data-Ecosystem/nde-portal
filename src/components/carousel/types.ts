@@ -4,7 +4,7 @@ export interface CarouselProps {
   gap?: number;
   colorPalette?: string;
   children: React.ReactNode[];
-  isLoading?: boolean;
+  loading?: boolean;
 }
 
 export interface CarouselControlsProps {
@@ -21,7 +21,7 @@ export interface CarouselControlsProps {
   childrenLength: number;
   showProgressBar: boolean;
   progressPercentage: number;
-  isLoading?: boolean;
+  loading?: boolean;
 }
 
 export interface TrackProps {

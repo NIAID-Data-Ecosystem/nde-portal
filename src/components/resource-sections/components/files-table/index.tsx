@@ -8,14 +8,14 @@ import { getFileIcon } from 'src/components/table/helpers';
 import { formatNumber } from 'src/utils/helpers';
 
 interface FilesTableProps {
-  isLoading: boolean;
+  loading: boolean;
   distribution?: FormattedResource['distribution'];
 }
 
-const FilesTable: React.FC<FilesTableProps> = ({ isLoading, distribution }) => {
+const FilesTable: React.FC<FilesTableProps> = ({ loading, distribution }) => {
   return (
     <>
-      {!isLoading && !distribution?.length ? (
+      {!loading && !distribution?.length ? (
         <Flex justifyContent='center'>
           <Text py={2}>No results found.</Text>
         </Flex>
@@ -26,7 +26,7 @@ const FilesTable: React.FC<FilesTableProps> = ({ isLoading, distribution }) => {
           data={distribution || []}
           tableContainerProps={{ overflowY: 'auto' }}
           getCells={props => <DistributionCells {...props} />}
-          isLoading={isLoading}
+          loading={loading}
           hasPagination
           columns={[
             {

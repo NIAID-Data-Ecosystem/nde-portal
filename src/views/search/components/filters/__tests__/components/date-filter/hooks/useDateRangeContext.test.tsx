@@ -35,7 +35,7 @@ describe('useDateRangeContext', () => {
           { term: '-_exists_', label: 'No', count: 1 },
           { term: '2099-01-01', label: '2099', count: 10 },
         ]}
-        isLoading={false}
+        loading={false}
         selectedDates={['2020-01-01', '2022-12-31']}
         colorPalette='secondary'
       >
@@ -58,7 +58,7 @@ describe('useDateRangeContext', () => {
     const { rerender } = render(
       <DateRange
         data={[{ term: '2021-01-01', label: '2021', count: 2 }]}
-        isLoading={false}
+        loading={false}
         selectedDates={[]}
         colorPalette='primary'
       >
@@ -71,7 +71,7 @@ describe('useDateRangeContext', () => {
     rerender(
       <DateRange
         data={[{ term: '2021-01-01', label: '2021', count: 2 }]}
-        isLoading={false}
+        loading={false}
         selectedDates={['_exists_']}
         colorPalette='primary'
       >

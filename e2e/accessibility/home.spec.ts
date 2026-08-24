@@ -12,7 +12,7 @@
  *     TanStack Query hooks, both interceptable with `page.route`:
  *       * useResourceCatalogs -> NDE `/query`    (glob `**​/query*`)
  *       * useRepoData         -> NDE `/metadata` (glob `**​/metadata*`)
- *     The table's `isLoading` is the OR of both hooks.
+ *     The table's `loading` is the OR of both hooks.
  *   - News/events/features come from `getStaticProps` (server-side), served by
  *     the mock Strapi server (e2e/mock-strapi-server.js) via the
  *     NEXT_PUBLIC_STRAPI_API_URL override in playwright.config.ts. The

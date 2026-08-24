@@ -12,7 +12,7 @@ import { FilterItem } from '../types';
 
 // Memoized Checkbox component to prevent unnecessary re-renders
 interface FilterCheckboxProps extends FilterItem {
-  isLoading: boolean;
+  loading: boolean;
   isUpdating?: boolean;
   colorPalette?: string;
   filterName: string;
@@ -80,7 +80,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
     count,
     filterName,
     isHeader,
-    isLoading,
+    loading,
     term,
     isUpdating,
     ...props
@@ -158,7 +158,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
         {/* Loading skeleton only on load  */}
         <ChakraCheckbox.Label>
           <Skeleton
-            loading={!(!isLoading && !isUpdating)}
+            loading={!(!loading && !isUpdating)}
             display='flex'
             alignItems='center'
             flex={1}

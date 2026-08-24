@@ -20,7 +20,7 @@ import { ENABLE_AUTH } from 'src/utils/feature-flags';
 const initialState: AuthState = {
   user: null,
   isAuthenticated: false,
-  isLoading: true,
+  loading: true,
   error: null,
 };
 
@@ -75,14 +75,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
    * Check authentication status by calling /user_info
    */
   const checkAuth = useCallback(async () => {
-    setState(prev => ({ ...prev, isLoading: true, error: null }));
+    setState(prev => ({ ...prev, loading: true, error: null }));
 
     try {
       if (!ENABLE_AUTH) {
         setState({
           user: null,
           isAuthenticated: false,
-          isLoading: false,
+          loading: false,
           error: null,
         });
         return;
@@ -94,14 +94,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setState({
           user,
           isAuthenticated: true,
-          isLoading: false,
+          loading: false,
           error: null,
         });
       } else {
         setState({
           user: null,
           isAuthenticated: false,
-          isLoading: false,
+          loading: false,
           error: null,
         });
       }
@@ -109,7 +109,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setState({
         user: null,
         isAuthenticated: false,
-        isLoading: false,
+        loading: false,
         error: error instanceof Error ? error.message : 'Auth check failed',
       });
     }
@@ -121,7 +121,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     // Only check auth on client side
     if (typeof window === 'undefined') {
-      setState(prev => ({ ...prev, isLoading: false }));
+      setState(prev => ({ ...prev, loading: false }));
       return;
     }
     checkAuth();
@@ -177,7 +177,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setState({
       user: null,
       isAuthenticated: false,
-      isLoading: false,
+      loading: false,
       error: null,
     });
     window.location.href = config.logoutUrl;
@@ -214,6 +214,6 @@ export function useAuth(): AuthContextValue {
  * Hook to check if user is authenticated (convenience hook)
  */
 export function useIsAuthenticated(): boolean {
-  const { isAuthenticated, isLoading } = useAuth();
-  return !isLoading && isAuthenticated;
+  const { isAuthenticated, loading } = useAuth();
+  return !loading && isAuthenticated;
 }

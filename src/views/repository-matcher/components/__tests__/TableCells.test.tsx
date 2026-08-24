@@ -24,7 +24,7 @@ const stubOverflow = () => {
 
 describe('TagCellList', () => {
   it('renders skeleton tags while loading', () => {
-    const { container } = renderWithClient(<TagCellList isLoading />);
+    const { container } = renderWithClient(<TagCellList loading />);
     // Three loading TagCells render as custom skeletons, no placeholder text.
     expect(container.querySelectorAll('.custom-skeleton-loading').length).toBe(
       3,
@@ -72,7 +72,7 @@ describe('TagCellList', () => {
 
 describe('TagCell', () => {
   it('renders a skeleton while loading', () => {
-    const { container } = renderWithClient(<TagCell value='x' isLoading />);
+    const { container } = renderWithClient(<TagCell value='x' loading />);
     expect(
       container.querySelector('.custom-skeleton-loading'),
     ).toBeInTheDocument();
@@ -90,7 +90,7 @@ describe('TagCell', () => {
 describe('TextCell', () => {
   it('renders a skeleton while loading', () => {
     const { container } = renderWithClient(
-      <TextCell value='hello' isLoading noOfLines={1} />,
+      <TextCell value='hello' loading noOfLines={1} />,
     );
     expect(container.querySelector('.chakra-skeleton')).toBeInTheDocument();
   });
@@ -132,7 +132,7 @@ describe('TextCell', () => {
 describe('TextCellWithLink', () => {
   it('renders a skeleton while loading', () => {
     const { container } = renderWithClient(
-      <TextCellWithLink label='Repo' isLoading />,
+      <TextCellWithLink label='Repo' loading />,
     );
     expect(container.querySelector('.chakra-skeleton')).toBeInTheDocument();
   });

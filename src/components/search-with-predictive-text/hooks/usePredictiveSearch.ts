@@ -10,7 +10,7 @@ import { encodeString } from 'src/utils/querystring-helpers';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
 export interface usePredictiveSearchResponse {
-  isLoading: boolean;
+  loading: boolean;
   error: Error | null;
   results: Partial<FormattedResource>[];
   searchTerm: string;
@@ -152,7 +152,7 @@ export const usePredictiveSearch = (
   };
 
   return {
-    isLoading: isLoading || isFetching,
+    loading: isLoading || isFetching,
     error,
     results,
     searchTerm,

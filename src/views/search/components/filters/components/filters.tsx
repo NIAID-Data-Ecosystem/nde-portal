@@ -341,7 +341,7 @@ export const Filters = React.memo(
                                 handleSelectedFilters={values =>
                                   handleSelectedFilters(values, property)
                                 }
-                                isLoading={results?.[id]?.isLoading ?? true}
+                                loading={results?.[id]?.loading ?? true}
                                 // Per-filter state only
                                 isUpdating={results?.[id]?.isUpdating}
                               />

@@ -44,7 +44,7 @@ describe('filters/components/list', () => {
     searchPlaceholder: 'Search',
     selectedFilters: ['a'],
     handleSelectedFilters: jest.fn(),
-    isLoading: false,
+    loading: false,
     config: {
       id: 'x',
       name: 'Test Filter',

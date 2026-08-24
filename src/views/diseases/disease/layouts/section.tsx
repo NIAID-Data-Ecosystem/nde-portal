@@ -39,16 +39,16 @@ export const headingStyles: Record<
 export const SectionTitle = ({
   as,
   children,
-  isLoading,
+  loading,
   slug,
   ...props
 }: {
   as?: HeadingLevel | string;
   children?: string;
-  isLoading?: boolean;
+  loading?: boolean;
   slug?: string;
 } & TextProps) => {
-  if (!children && !isLoading) return null;
+  if (!children && !loading) return null;
 
   if (as && ['h1', 'h2', 'h3', 'h4', 'h5'].includes(as)) {
     const { fontSize, skeletonHeight, mb, fontWeight, color } =
@@ -69,7 +69,7 @@ export const SectionTitle = ({
     return (
       <>
         <SkeletonText
-          loading={isLoading}
+          loading={loading}
           noOfLines={1}
           height={skeletonHeight}
           width='100%'
@@ -89,7 +89,7 @@ export const SectionTitle = ({
   }
 
   return (
-    <SkeletonText loading={isLoading} noOfLines={4} height={4} width='100%'>
+    <SkeletonText loading={loading} noOfLines={4} height={4} width='100%'>
       <Text as={as} {...props}>
         {children}
       </Text>
@@ -119,13 +119,13 @@ export const SectionWrapper: React.FC<
     as?: HeadingLevel;
     children?: React.ReactNode;
     id: string;
-    isLoading?: boolean;
+    loading?: boolean;
     slug?: string;
     title: string;
   }
-> = ({ as = 'h2', id, children, isLoading, slug, title, ...props }) => (
+> = ({ as = 'h2', id, children, loading, slug, title, ...props }) => (
   <Flex as='section' id={id} mt={4} mb={4} flexDirection='column' {...props}>
-    <SectionTitle as={as} isLoading={isLoading} slug={slug}>
+    <SectionTitle as={as} loading={loading} slug={slug}>
       {title}
     </SectionTitle>
     {children}

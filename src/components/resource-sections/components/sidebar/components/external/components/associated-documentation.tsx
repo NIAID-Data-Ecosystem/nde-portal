@@ -8,7 +8,7 @@ import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 
 interface AssociatedDocumentation {
-  isLoading: boolean;
+  loading: boolean;
   type?: FormattedResource['@type'];
   mainEntityOfPage?: FormattedResource['mainEntityOfPage'];
   codeRepository?: FormattedResource['codeRepository'];
@@ -17,12 +17,12 @@ interface AssociatedDocumentation {
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
 export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
-  isLoading,
+  loading,
   codeRepository,
   mainEntityOfPage,
   type,
 }) => {
-  if (!isLoading && !(mainEntityOfPage || codeRepository || type)) {
+  if (!loading && !(mainEntityOfPage || codeRepository || type)) {
     return <></>;
   }
 

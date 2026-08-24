@@ -30,7 +30,7 @@ describe('filters/components/checkbox', () => {
         label='Group A'
         count={0}
         isHeader
-        isLoading={false}
+        loading={false}
         filterName='Source'
       />,
     );
@@ -44,7 +44,7 @@ describe('filters/components/checkbox', () => {
         term='scientific | common'
         label='scientific | common'
         count={3}
-        isLoading={false}
+        loading={false}
         filterName='Species'
       />,
     );
@@ -58,7 +58,7 @@ describe('filters/components/checkbox', () => {
         term='_exists_'
         label='Any'
         count={4}
-        isLoading={false}
+        loading={false}
         filterName='Keywords'
       />,
     );
@@ -69,7 +69,7 @@ describe('filters/components/checkbox', () => {
         term='-_exists_'
         label='No'
         count={4}
-        isLoading={false}
+        loading={false}
         filterName='Keywords'
       />,
     );
@@ -82,7 +82,7 @@ describe('filters/components/checkbox', () => {
         term='_exists_'
         label='Any'
         count={1}
-        isLoading={false}
+        loading={false}
         filterName='Date'
       />,
     );
@@ -95,7 +95,7 @@ describe('filters/components/checkbox', () => {
         term='regular'
         label='Regular'
         count={1}
-        isLoading={false}
+        loading={false}
         filterName='Date'
       />,
     );

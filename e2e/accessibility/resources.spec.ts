@@ -16,7 +16,7 @@
  *     `enabled` only when an id is present) and wait for state-specific UI
  *     before scanning, so we scan the mocked DOM and not a transient frame.
  *   - EMPTY and ERROR are unreachable as in-route states. The component runs
- *     `router.push('/404')` and returns `<></>` whenever `!isLoading && !data`,
+ *     `router.push('/404')` and returns `<></>` whenever `!loading && !data`,
  *     which is true both when the query resolves with no hits AND when it
  *     rejects (on error, `data` is undefined). So the inline `EmptyState` and
  *     `Error` JSX blocks are dead code behind that redirect — exercising either
@@ -1115,7 +1115,7 @@ async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
 test.describe('a11y: Resource — loading', () => {
   test('passes axe while loading', async ({ page }, testInfo) => {
     // Keep the resource request pending so the loading UI stays on screen.
-    // `isLoading` is true while the query is in flight, so the page does not
+    // `loading` is true while the query is in flight, so the page does not
     // redirect to /404 during this state.
     await page.route(API_GLOB, () => new Promise<void>(() => {}));
     await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });

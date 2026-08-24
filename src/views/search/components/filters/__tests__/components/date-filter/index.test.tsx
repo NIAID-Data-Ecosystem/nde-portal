@@ -118,12 +118,12 @@ describe('filters/components/date-filter/index', () => {
               id: 'date',
               terms: [{ term: '2021-01-01', label: '2021', count: 2 }],
               data: [{ term: '2021-01-01', label: '2021', count: 2 }],
-              isLoading: false,
+              loading: false,
               isUpdating: false,
               error: null,
             },
           },
-          isLoading: false,
+          loading: false,
           isUpdating: false,
           error: null,
         }}
@@ -166,7 +166,7 @@ describe('filters/components/date-filter/index', () => {
         enabled
         updatedAggregateQueryData={{
           results: undefined,
-          isLoading: false,
+          loading: false,
           isUpdating: false,
           error: new Error('boom'),
         }}

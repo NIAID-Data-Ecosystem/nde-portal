@@ -85,14 +85,14 @@ type Rows = Row[];
 // BasedOnTable: Main component for rendering a paginated and sortable table
 const BasedOnTable = ({
   id,
-  isLoading,
+  loading,
   caption,
   title,
   items,
   columns = COLUMNS,
 }: {
   id: string;
-  isLoading: boolean;
+  loading: boolean;
   caption: string;
   title?: string;
   items: Items;
@@ -149,10 +149,10 @@ const BasedOnTable = ({
     setRows(data.slice(from * size, from * size + size));
   }, [data, size, from]);
 
-  if (!isLoading && items?.length === 0) return <></>;
+  if (!loading && items?.length === 0) return <></>;
 
   return (
-    <Skeleton loading={!!isLoading} overflow='auto'>
+    <Skeleton loading={!!loading} overflow='auto'>
       {title && (
         <Heading as='h4' fontSize='sm' mx={1} mb={4} fontWeight='semibold'>
           {title}

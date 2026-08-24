@@ -29,7 +29,7 @@ describe('Pagination Component', () => {
       <Pagination
         hasMore={false}
         isDisabled={false}
-        isLoading={false}
+        loading={false}
         node={mockNode}
         numChildrenDisplayed={5}
         onShowMore={() => {}}
@@ -44,7 +44,7 @@ describe('Pagination Component', () => {
       <Pagination
         hasMore={true}
         isDisabled={false}
-        isLoading={false}
+        loading={false}
         node={mockNode}
         numChildrenDisplayed={5}
         onShowMore={() => {}}
@@ -59,7 +59,7 @@ describe('Pagination Component', () => {
       <Pagination
         hasMore={false}
         isDisabled={false}
-        isLoading={false}
+        loading={false}
         node={mockNode}
         numChildrenDisplayed={5}
         onShowMore={() => {}}
@@ -75,7 +75,7 @@ describe('Pagination Component', () => {
       <Pagination
         hasMore={true}
         isDisabled={false}
-        isLoading={false}
+        loading={false}
         node={mockNode}
         numChildrenDisplayed={5}
         onShowMore={onShowMoreMock}
@@ -91,7 +91,7 @@ describe('Pagination Component', () => {
       <Pagination
         hasMore={true}
         isDisabled={true}
-        isLoading={false}
+        loading={false}
         node={mockNode}
         numChildrenDisplayed={5}
         onShowMore={() => {}}
@@ -101,12 +101,12 @@ describe('Pagination Component', () => {
     expect(screen.getByText(/Show more/)).toBeDisabled();
   });
 
-  test('"Show more" button shows loading state when isLoading is true', () => {
+  test('"Show more" button shows loading state when loading is true', () => {
     render(
       <Pagination
         hasMore={true}
         isDisabled={false}
-        isLoading={true}
+        loading={true}
         node={mockNode}
         numChildrenDisplayed={5}
         onShowMore={() => {}}

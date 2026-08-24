@@ -19,13 +19,13 @@ import {
 interface ResourceCatalogCardProps {
   data?: FormattedResource | null;
   referrerPath?: string;
-  isLoading?: boolean;
+  loading?: boolean;
 }
 
 export const ResourceCatalogCard = ({
   data,
   referrerPath,
-  isLoading = false,
+  loading = false,
 }: ResourceCatalogCardProps) => {
   const [showAllTypes, setShowAllTypes] = useState(false);
 
@@ -94,16 +94,16 @@ export const ResourceCatalogCard = ({
     : undefined;
 
   return (
-    <CompactCard.Base isLoading={isLoading} bg={cardBg}>
+    <CompactCard.Base loading={loading} bg={cardBg}>
       <CompactCard.Banner
         label={formatAPIResourceTypeForDisplay(type || 'ResourceCatalog')}
         type={type || 'ResourceCatalog'}
         isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
-        isLoading={isLoading}
+        loading={loading}
         creativeWorkStatus={creativeWorkStatus}
         isProgramResource={isProgramResource}
       />
-      <CompactCard.Header isLoading={isLoading}>
+      <CompactCard.Header loading={loading}>
         {(name || alternateName) && (
           <CompactCard.Title linkProps={linkProps}>
             {name || alternateName || ''}
@@ -112,7 +112,7 @@ export const ResourceCatalogCard = ({
       </CompactCard.Header>
       <CompactCard.Body>
         {/* Date and badges */}
-        <Skeleton loading={isLoading} minHeight='30px'>
+        <Skeleton loading={loading} minHeight='30px'>
           {date && (
             <Flex
               bg={cardBg}
@@ -180,7 +180,7 @@ export const ResourceCatalogCard = ({
         </Skeleton>
 
         {/* Content types */}
-        <Skeleton loading={isLoading} px={-1}>
+        <Skeleton loading={loading} px={-1}>
           {aboutItems.length > 0 && (
             <Flex bg={cardBg} direction='column'>
               <MetadataLabel label='Content Types' />
@@ -205,7 +205,7 @@ export const ResourceCatalogCard = ({
         </Skeleton>
 
         {/* Description */}
-        <Skeleton loading={isLoading} flex='1' mt={2} mb={1}>
+        <Skeleton loading={loading} flex='1' mt={2} mb={1}>
           {description && (
             <>
               {shouldShowDescription ? (

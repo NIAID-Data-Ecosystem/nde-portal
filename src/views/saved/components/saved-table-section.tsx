@@ -133,17 +133,17 @@ export function SavedTableSection<TItem>({
     ({
       column,
       data: row,
-      isLoading: rowLoading,
+      loading: rowLoading,
     }: {
       column: { property: string };
       data: any;
-      isLoading?: boolean;
+      loading?: boolean;
     }) => {
       const col = columns.find(c => c.id === column.property);
       if (!col) return null;
       return col.component({
         value: row?.[col.id],
-        isLoading: rowLoading,
+        loading: rowLoading,
         data: row,
       });
     },
@@ -194,7 +194,7 @@ export function SavedTableSection<TItem>({
         caption={caption}
         columns={tableColumns}
         data={sortedData as any}
-        isLoading={false}
+        loading={false}
         hasPagination={true}
         stickyHeader
         virtualized

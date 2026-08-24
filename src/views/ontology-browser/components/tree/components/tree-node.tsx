@@ -314,14 +314,14 @@ export const TreeNode = (props: {
         <Flex alignItems='center'>
           <HStack flex={1} alignItems='unset' gap={3}>
             <OntologyBrowserCountTag
-              isLoading={isLoading}
+              loading={isLoading}
               tooltipLabel={getTooltipLabelByCountType('termCount')}
             >
               {node?.counts?.termCount?.toLocaleString() || 0}
             </OntologyBrowserCountTag>
             <StackSeparator borderColor='gray.100' />
             <OntologyBrowserCountTag
-              isLoading={isLoading}
+              loading={isLoading}
               tooltipLabel={getTooltipLabelByCountType('termAndChildrenCount')}
             >
               {node?.counts?.termAndChildrenCount?.toLocaleString() || 0}
@@ -402,7 +402,7 @@ export const TreeNode = (props: {
             >
               <Pagination
                 hasMore={showPagination}
-                isLoading={isLoading}
+                loading={isLoading}
                 node={node}
                 numChildrenDisplayed={sortedChildrenList.length}
                 totalElements={pagination?.totalElements || 0}

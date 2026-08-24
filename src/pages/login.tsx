@@ -81,17 +81,17 @@ const ProviderIcon = ({ providerId }: { providerId: string }) => {
 
 function LoginPage() {
   const router = useRouter();
-  const { isAuthenticated, isLoading, loginProviders, login } = useAuth();
+  const { isAuthenticated, loading, loginProviders, login } = useAuth();
 
   React.useEffect(() => {
-    if (!isLoading && isAuthenticated) {
+    if (!loading && isAuthenticated) {
       const returnTo =
         typeof window !== 'undefined'
           ? sessionStorage.getItem('auth_return_to') || '/'
           : '/';
       router.replace(returnTo);
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [isAuthenticated, loading, router]);
 
   // If auth is disabled via feature flag, redirect to home page
   React.useEffect(() => {
@@ -157,7 +157,7 @@ function LoginPage() {
             p={{ base: 6, md: 8 }}
             zIndex={1}
           >
-            {isLoading ? (
+            {loading ? (
               <Stack align='center' py={4}>
                 <Spinner color='niaid.500' />
                 <Text color='gray.700'>Checking authentication status...</Text>

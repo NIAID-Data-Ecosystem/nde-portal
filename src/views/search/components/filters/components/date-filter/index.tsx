@@ -58,7 +58,7 @@ const DateFilterContent: React.FC<
     results?: FilterResults;
     initialResults?: FilterResults;
     error: Error | null;
-    isLoading: boolean;
+    loading: boolean;
     isUpdating: boolean;
   }
 > = ({
@@ -66,7 +66,7 @@ const DateFilterContent: React.FC<
   results,
   initialResults,
   error,
-  isLoading,
+  loading,
   isUpdating,
   selectedDates,
   handleSelectedFilter,
@@ -104,7 +104,7 @@ const DateFilterContent: React.FC<
         <HistogramSection
           data={selectedData || []}
           hasData={hasAnyDateData}
-          isLoading={isLoading}
+          loading={loading}
           isUpdating={isUpdating}
           onDateSelect={handleSelectedFilter}
         />
@@ -179,16 +179,16 @@ export const DateFilter: React.FC<DateFilterProps> = props => {
     () => updatedAggregateQueryData?.results,
     [updatedAggregateQueryData?.results],
   );
-  const initialLoading = resolvedInitialAggQuery?.isLoading;
-  const isLoading = updatedAggregateQueryData?.isLoading;
+  const initialLoading = resolvedInitialAggQuery?.loading;
+  const loading = updatedAggregateQueryData?.loading;
   const isUpdating =
-    (!isLoading && updatedAggregateQueryData?.isUpdating) || false;
+    (!loading && updatedAggregateQueryData?.isUpdating) || false;
   const error = (updatedAggregateQueryData?.error as Error) || null;
 
   return (
     <DateRange
       data={initialResults?.date?.terms || []}
-      isLoading={initialLoading}
+      loading={initialLoading}
       selectedDates={selectedDates}
       colorPalette='secondary'
     >
@@ -196,7 +196,7 @@ export const DateFilter: React.FC<DateFilterProps> = props => {
         results={updatedResults}
         initialResults={initialResults}
         error={error}
-        isLoading={isLoading || initialLoading}
+        loading={loading || initialLoading}
         isUpdating={isUpdating}
         {...props}
       />

@@ -28,7 +28,7 @@ export interface DropdownInputProps {
   type: InputProps['type'];
   placeholder?: string;
   disabled?: boolean;
-  isLoading?: boolean;
+  loading?: boolean;
   getInputValue: (arg: number) => string;
   renderSubmitButton?: (props: ButtonProps) => ReactElement;
   onChange?: (value: string) => void;
@@ -40,7 +40,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   id,
   ariaLabel,
   placeholder,
-  isLoading,
+  loading,
   size = 'sm',
   type,
   disabled,
@@ -140,7 +140,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   }, [autoResize]);
 
   // Render the start element (spinner or search icon) based on loading state
-  const startElement = isLoading ? (
+  const startElement = loading ? (
     <Spinner
       color={`${colorPalette}.500`}
       css={{ '--spinner-track-color': 'colors.gray.200' }}

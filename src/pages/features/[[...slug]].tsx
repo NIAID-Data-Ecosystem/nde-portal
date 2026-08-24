@@ -118,7 +118,7 @@ const FeaturedPage: NextPage<{
                     mb={32}
                     flex={1}
                   >
-                    <Main isLoading={isLoading} data={data} />
+                    <Main loading={isLoading} data={data} />
                   </PageContent>
                 </Flex>
               </Flex>

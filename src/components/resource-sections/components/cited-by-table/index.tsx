@@ -39,7 +39,7 @@ interface Row extends CitedByType {
   key: string;
 }
 interface CitedByTable {
-  isLoading: boolean;
+  loading: boolean;
   data: CitedByType[];
   title?: string;
 }
@@ -47,7 +47,7 @@ interface CitedByTable {
 // Renders a table with citedby data.
 export const CitedByTable: React.FC<CitedByTable> = ({
   data: citedByData,
-  isLoading,
+  loading,
   title,
 }) => {
   // create custom [properties] for sorting. This is needed because the data is nested.
@@ -85,12 +85,12 @@ export const CitedByTable: React.FC<CitedByTable> = ({
     setRows(data.slice(from * size, from * size + size));
   }, [data, size, from]);
 
-  if (!isLoading && citedBy?.length === 0) {
+  if (!loading && citedBy?.length === 0) {
     return <Text>No data available.</Text>;
   }
 
   return (
-    <Skeleton loading={!!isLoading} overflow='auto'>
+    <Skeleton loading={!!loading} overflow='auto'>
       {title && (
         <Heading as='h4' fontSize='sm' mx={1} mb={4} fontWeight='semibold'>
           {title}

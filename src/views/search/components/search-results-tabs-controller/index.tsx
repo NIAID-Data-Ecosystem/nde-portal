@@ -304,7 +304,7 @@ export const SearchResultsController = ({
 
   const {
     diseases: matchingDiseasesRaw,
-    isLoading: diseaseIsLoading,
+    loading: diseaseIsLoading,
     hasMatchingDiseases,
   } = useDiseaseData({
     searchQuery: queryParams.q || '',
@@ -455,7 +455,7 @@ export const SearchResultsController = ({
                         >
                           {isCarouselLoading || shouldShowCarousel ? (
                             <CarouselWrapper>
-                              <Carousel gap={8} isLoading={isCarouselLoading}>
+                              <Carousel gap={8} loading={isCarouselLoading}>
                                 {(isCarouselLoading
                                   ? Array(3).fill({
                                       type: 'resource',
@@ -471,13 +471,13 @@ export const SearchResultsController = ({
                                     {carouselItem.type === 'resource' ? (
                                       <ResourceCatalogCard
                                         data={carouselItem.data}
-                                        isLoading={isCarouselLoading}
+                                        loading={isCarouselLoading}
                                         referrerPath={router.asPath}
                                       />
                                     ) : (
                                       <DiseaseOverviewCard
                                         data={carouselItem.data}
-                                        isLoading={isCarouselLoading}
+                                        loading={isCarouselLoading}
                                       />
                                     )}
                                   </div>

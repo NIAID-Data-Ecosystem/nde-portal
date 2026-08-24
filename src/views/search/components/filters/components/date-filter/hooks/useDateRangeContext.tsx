@@ -43,7 +43,7 @@ DateRangeContext.displayName = 'DateRangeContext';
 */
 interface DateRangeProps {
   data: FilterItem[];
-  isLoading: boolean;
+  loading: boolean;
   selectedDates: string[];
   colorPalette: ContextProps['colorPalette'];
   children: React.ReactNode;
@@ -52,7 +52,7 @@ interface DateRangeProps {
 export const DateRange = ({
   children,
   data: datesData,
-  isLoading,
+  loading,
   selectedDates = [],
   colorPalette = 'primary',
 }: DateRangeProps) => {
@@ -64,10 +64,10 @@ export const DateRange = ({
   >(null);
 
   useEffect(() => {
-    if (!isLoading) {
+    if (!loading) {
       setInitialData(datesData);
     }
-  }, [datesData, isLoading]);
+  }, [datesData, loading]);
 
   // Get current year for all filtering operations
   const currentYear = new Date().getFullYear();

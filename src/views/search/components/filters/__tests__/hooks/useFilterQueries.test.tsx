@@ -228,7 +228,7 @@ describe('useFilterQueries', () => {
       { wrapper: createWrapper() },
     );
 
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    await waitFor(() => expect(result.current.loading).toBe(false));
     const results = result.current.results;
     expect(results).toBeDefined();
     if (!results) {

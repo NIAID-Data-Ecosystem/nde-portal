@@ -10,12 +10,12 @@ interface SectionProps extends BoxProps {
   bg?: string;
   isCollapsible?: boolean;
   isDefaultOpen?: boolean;
-  isLoading?: boolean;
+  loading?: boolean;
 }
 
 const Section: React.FC<SectionProps> = ({
   id,
-  isLoading,
+  loading,
   name,
   children,
   color,
@@ -27,8 +27,8 @@ const Section: React.FC<SectionProps> = ({
   const Content = () => {
     return (
       <Skeleton
-        loading={!!isLoading}
-        height={isLoading ? '200px' : 'unset'}
+        loading={!!loading}
+        height={loading ? '200px' : 'unset'}
         p={{ base: 0, sm: 4 }}
         {...props}
       >

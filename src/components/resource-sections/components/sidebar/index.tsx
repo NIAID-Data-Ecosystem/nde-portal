@@ -14,10 +14,10 @@ import { Link } from 'src/components/link';
 
 export const Sidebar = ({
   data,
-  isLoading,
+  loading,
   sections,
 }: {
-  isLoading: boolean;
+  loading: boolean;
   data?: ResourceData;
   sections: Route[];
 }) => {
@@ -53,8 +53,8 @@ export const Sidebar = ({
             />
           )}
           {/* External links to access data, documents or dataset at the source. */}
-          <ExternalAccess data={data} isLoading={isLoading} hasDivider={true} />
-          <UsageInfo data={data} isLoading={isLoading} />
+          <ExternalAccess data={data} loading={loading} hasDivider={true} />
+          <UsageInfo data={data} loading={loading} />
         </Card.Root>
 
         {/* Local navigation for page */}

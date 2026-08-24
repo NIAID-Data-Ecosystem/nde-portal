@@ -130,7 +130,7 @@ export const OntologyBrowser = ({
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });
-  const isLoading = biothingsIsLoading || visibleQuery.isLoading;
+  const loading = biothingsIsLoading || visibleQuery.isLoading;
   const error = biothingsError || visibleQuery.error;
 
   // --- 4. Merge results into lineage ---
@@ -153,14 +153,14 @@ export const OntologyBrowser = ({
   // --- 5. Handle condensed/expanded view ---
   useEffect(() => {
     const lineage = ontologyLineageData?.lineage || [];
-    if (!isLoading && lineage) {
+    if (!loading && lineage) {
       const condensedStartIndex =
         viewSettings?.isCondensed && lineage.length > MAX_VISIBLE_NODES
           ? lineage.length - 3
           : 0;
       setShowFromIndex(condensedStartIndex);
     }
-  }, [isLoading, ontologyLineageData, viewSettings?.isCondensed]);
+  }, [loading, ontologyLineageData, viewSettings?.isCondensed]);
 
   const updateLineageWithChildren = useCallback(
     (children: OntologyLineageItemWithCounts[]) => {
@@ -220,7 +220,7 @@ export const OntologyBrowser = ({
           borderColor='page.placeholder'
           overflow='hidden'
         >
-          {isLoading || !router.isReady ? (
+          {loading || !router.isReady ? (
             <Spinner size='md' color='primary.500' m={4} />
           ) : (
             lineage && (

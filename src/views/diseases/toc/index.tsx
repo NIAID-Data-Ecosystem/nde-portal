@@ -118,7 +118,7 @@ export const TableOfContents = () => {
           <StyledCardStack>
             {isLoading
               ? Array.from({ length: 3 }, (_, index) => (
-                  <StyledCard key={`loading-${index}`} isLoading={true} />
+                  <StyledCard key={`loading-${index}`} loading={true} />
                 ))
               : diseasePages.map(page => {
                   const label = page?.title;
@@ -127,7 +127,7 @@ export const TableOfContents = () => {
                     <StyledCard
                       key={page.id}
                       id={page.slug}
-                      isLoading={isLoading}
+                      loading={isLoading}
                     >
                       {/* Description */}
                       <Stack

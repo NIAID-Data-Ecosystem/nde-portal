@@ -159,7 +159,7 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
       </Stack>
       <ChartWrapper
         error={error}
-        isLoading={isLoading}
+        loading={isLoading}
         skeletonProps={{
           minHeight: defaultDimensions.height,
           width: '100%',

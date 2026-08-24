@@ -19,14 +19,14 @@ interface IntroSectionProps {
   topicEmphasizedDescription?: DiseasePageProps['topicEmphasizedDescription'];
   links?: DiseasePageProps['contacts'];
   image?: DiseasePageProps['image'];
-  isLoading?: boolean;
+  loading?: boolean;
 }
 export const IntroSection: React.FC<IntroSectionProps> = ({
   title,
   subtitle,
   topicEmphasizedDescription,
   image,
-  isLoading,
+  loading,
 }) => {
   const MDXComponents = useMDXComponents();
 
@@ -43,7 +43,7 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
         minWidth={{ base: '100%', sm: '450px' }}
       >
         {/* Title */}
-        <SectionTitle as='h1' isLoading={isLoading}>
+        <SectionTitle as='h1' loading={loading}>
           {title}
         </SectionTitle>
 
@@ -55,8 +55,8 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
         />
 
         {/* Subtitle */}
-        {(subtitle || isLoading) && (
-          <SkeletonText loading={isLoading} noOfLines={2} height={5}>
+        {(subtitle || loading) && (
+          <SkeletonText loading={loading} noOfLines={2} height={5}>
             <Text color='gray.700' lineHeight='short'>
               {subtitle}
             </Text>
@@ -64,9 +64,9 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
         )}
 
         {/* Description */}
-        {(topicEmphasizedDescription || isLoading) && (
+        {(topicEmphasizedDescription || loading) && (
           <SkeletonText
-            loading={isLoading}
+            loading={loading}
             noOfLines={5}
             height={4}
             maxWidth={{ base: 'unset', xl: 800 }}

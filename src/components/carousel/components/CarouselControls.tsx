@@ -17,7 +17,7 @@ export const CarouselControls = ({
   childrenLength,
   showProgressBar,
   progressPercentage,
-  isLoading = false,
+  loading = false,
 }: CarouselControlsProps) => {
   const shouldShowControls = childrenLength > constraint;
 
@@ -27,7 +27,7 @@ export const CarouselControls = ({
 
   return (
     <Skeleton
-      loading={!!isLoading}
+      loading={!!loading}
       width='100%'
       height='32px'
       display='flex'

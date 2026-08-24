@@ -161,7 +161,7 @@ const Docs: NextPage<{
           ) : isLargerThanSm ? (
             <SidebarContainer>
               <SidebarDesktop
-                isLoading={isLoading}
+                loading={isLoading}
                 sections={documentationPagesList}
                 selectedSlug={
                   Array.isArray(router.query.slug)
@@ -172,7 +172,7 @@ const Docs: NextPage<{
             </SidebarContainer>
           ) : (
             <SidebarMobile
-              isLoading={isLoading}
+              loading={isLoading}
               menuTitle={selectedPage?.name || ''}
               selectedSlug={
                 Array.isArray(router.query.slug)

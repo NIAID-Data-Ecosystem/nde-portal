@@ -86,7 +86,7 @@ describe('SampleCollectionItemsTable', () => {
   });
 
   // 1. Loading: the very first thing the component checks. Nothing else
-  // (fallback or fetched data) matters until isLoading is false.
+  // (fallback or fetched data) matters until loading is false.
   describe('while the fetch is loading', () => {
     it('renders skeleton placeholders and does not render a table', () => {
       (useSampleCollectionItems as jest.Mock).mockReturnValue({

@@ -13,8 +13,8 @@
  *
  * State coverage note — this route covers loading / empty / populated but NOT a
  * distinct error state. `src/pages/repository-matcher.tsx` destructures only
- * `{ data, isLoading }` from `useRepositoryMatcherData` and ignores the hook's
- * `error`. When a request fails, `data` resolves to `[]` and `isLoading`
+ * `{ data, loading }` from `useRepositoryMatcherData` and ignores the hook's
+ * `error`. When a request fails, `data` resolves to `[]` and `loading`
  * becomes false, so the page renders the same "No repositories match" empty UI
  * — there is no error-specific surface (alert, retry) to scan. The empty-state
  * scan below already covers that DOM, so a separate error describe would only

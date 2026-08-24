@@ -13,7 +13,7 @@ import {
 } from 'src/components/source-logo/helpers';
 
 interface DataAccessProps {
-  isLoading: boolean;
+  loading: boolean;
   includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
   url?: FormattedResource['url'];
   recordType?: string | null;
@@ -41,7 +41,7 @@ const AccessResourceButton: React.FC<{ url: string; colorPalette: string }> = ({
 };
 
 export const DataAccess: React.FC<DataAccessProps> = ({
-  isLoading,
+  loading,
   includedInDataCatalog,
   url,
   recordType,
@@ -60,7 +60,7 @@ export const DataAccess: React.FC<DataAccessProps> = ({
       : includedInDataCatalog || [];
 
   const sources =
-    !isLoading && includedInDataCatalog
+    !loading && includedInDataCatalog
       ? formatSourcesWithLogos(catalogForLookup)
       : [];
 

@@ -62,7 +62,7 @@ const RepositoryMatcher: NextPage = () => {
     [],
   );
 
-  const { data, isLoading } = useRepositoryMatcherData([
+  const { data, loading } = useRepositoryMatcherData([
     ...fields,
     'creativeWorkStatus',
   ]);
@@ -224,11 +224,11 @@ const RepositoryMatcher: NextPage = () => {
     ({
       column,
       data: row,
-      isLoading: rowLoading,
+      loading: rowLoading,
     }: {
       column: { property: string };
       data: any;
-      isLoading?: boolean;
+      loading?: boolean;
     }) => {
       const col = REPOSITORY_MATCHER_COLUMNS.find(
         c => c.id === column.property,
@@ -236,7 +236,7 @@ const RepositoryMatcher: NextPage = () => {
       if (!col) return null;
       return col.component({
         value: row?.[col.id],
-        isLoading: rowLoading,
+        loading: rowLoading,
         data: row,
       });
     },
@@ -265,7 +265,7 @@ const RepositoryMatcher: NextPage = () => {
   }, [data]);
 
   const LOADING_ROWS = useMemo(() => Array(10).fill({}), []);
-  const tableData = isLoading ? LOADING_ROWS : sortedData;
+  const tableData = loading ? LOADING_ROWS : sortedData;
 
   const [stickyFirstColumn, setStickyFirstColumn] = useState(false);
 
@@ -299,7 +299,7 @@ const RepositoryMatcher: NextPage = () => {
             selected={selectedFilters}
             onChange={handleFilterChange}
             onClearAll={() => setSelectedFilters({})}
-            isLoading={isLoading}
+            loading={loading}
           />
         </Box>
         <Box
@@ -337,7 +337,7 @@ const RepositoryMatcher: NextPage = () => {
               selected={selectedFilters}
               onChange={handleFilterChange}
               onClearAll={() => setSelectedFilters({})}
-              isLoading={isLoading}
+              loading={loading}
             />
           </Box>
           {/* <!-- Filter Tags--> */}
@@ -424,7 +424,7 @@ const RepositoryMatcher: NextPage = () => {
             caption='Repositories and resource catalogs available for data deposit'
             columns={tableColumns}
             data={tableData as any}
-            isLoading={isLoading}
+            loading={loading}
             hasPagination={false}
             stickyHeader
             stickyFirstColumn={stickyFirstColumn}

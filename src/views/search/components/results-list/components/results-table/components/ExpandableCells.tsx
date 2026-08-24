@@ -27,12 +27,12 @@ const toggleButtonProps = {
 export const ExpandableText = ({
   text,
   noOfLines = 4,
-  isLoading,
+  loading,
   ...props
 }: TextProps & {
   text: string;
   noOfLines?: number;
-  isLoading?: boolean;
+  loading?: boolean;
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
@@ -43,14 +43,14 @@ export const ExpandableText = ({
   // Detect whether the clamped text overflows so the toggle is only shown when
   // there is hidden content to reveal.
   useLayoutEffect(() => {
-    if (isLoading) {
+    if (loading) {
       return;
     }
     const el = textRef.current;
     if (el) {
       setIsTruncated(el.scrollHeight > el.clientHeight);
     }
-  }, [isLoading, text, noOfLines]);
+  }, [loading, text, noOfLines]);
 
   if (!text) {
     return null;
