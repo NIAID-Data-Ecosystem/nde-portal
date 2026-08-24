@@ -1,5 +1,5 @@
-import { FormattedResource } from 'src/utils/api/types';
 import { Box, Table } from '@chakra-ui/react';
+import { FormattedResource } from 'src/utils/api/types';
 
 interface ResourceCatalogCollectionProps {
   collectionSize?: FormattedResource['collectionSize'];

@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-import { FaMinus, FaPlus, FaUpRightFromSquare } from 'react-icons/fa6';
 import {
   Box,
   Button,
@@ -8,11 +6,12 @@ import {
   HStack,
   Icon,
   SkeletonText,
+  StackSeparator,
   Text,
   VStack,
-  Stack,
-  StackSeparator,
 } from '@chakra-ui/react';
+import React, { useState } from 'react';
+import { FaMinus, FaPlus, FaUpRightFromSquare } from 'react-icons/fa6';
 import { BadgeWithTooltip } from 'src/components/badges';
 import { Link } from 'src/components/link';
 import { MetadataCompatibilitySourceBadge } from 'src/components/metadata-compatibility-source-badge';
@@ -60,17 +59,16 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
   return (
     <Box id='sources-main' mb={10} width='100%' height='100%'>
       <SectionHeader title='Data Sources'>
-        <Button
-          as='a'
+        <Link
+          asChild
           href='https://github.com/NIAID-Data-Ecosystem/nde-crawlers/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D'
           target='_blank'
-          colorPalette='secondary'
-          size='sm'
-          variant='outline'
         >
-          Suggest a new source
-          <Icon as={FaUpRightFromSquare} boxSize={3} />
-        </Button>
+          <Button colorPalette='secondary' size='sm' variant='outline'>
+            Suggest a new source
+            <Icon as={FaUpRightFromSquare} boxSize={3} />
+          </Button>
+        </Link>
       </SectionHeader>
       <Flex justifyContent='space-between' flexWrap='wrap-reverse'>
         <VStack minW='250px' alignItems='flex-start' m={0.5} flex={1}>
