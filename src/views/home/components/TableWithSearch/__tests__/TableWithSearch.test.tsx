@@ -116,6 +116,7 @@ describe('TableWithSearch Component', () => {
   });
 
   it('displays filter tags when filters are applied', async () => {
+    const user = userEvent.setup();
     const { rerender } = renderWithClient(
       <TableWithSearch
         data={mockData}
@@ -125,12 +126,12 @@ describe('TableWithSearch Component', () => {
     );
     // Find the filter and simulate a click
     const typeButton = screen.getByRole('button', { name: /type/i });
-    await userEvent.click(typeButton);
-    const checkboxInput = screen.getByRole('checkbox', {
+    await user.click(typeButton);
+    const checkboxInput = await screen.findByRole('checkbox', {
       name: 'Resource Catalog',
     });
     // Simulate the user clicking the checkbox
-    await userEvent.click(checkboxInput);
+    await user.click(checkboxInput);
 
     rerender(
       <TableWithSearch

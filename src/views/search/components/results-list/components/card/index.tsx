@@ -28,6 +28,7 @@ import {
   getAccessResourceURL,
 } from 'src/components/source-logo/helpers';
 import { ToggleContainer } from 'src/components/toggle-container';
+import Tooltip from 'src/components/tooltip';
 import { useAuth } from 'src/hooks/useAuth';
 import { useUserData } from 'src/hooks/useUserData';
 import { FormattedResource } from 'src/utils/api/types';
@@ -35,16 +36,11 @@ import { ENABLE_AUTH } from 'src/utils/feature-flags';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
+import { CONTENT_TYPE_TOOLTIP } from 'src/views/search/config/content-type';
 
-import Tooltip from '../../../../../../components/tooltip';
-import {
-  CONTENT_TYPE_TOOLTIP,
-  filterWords,
-  getContentTypeItems,
-} from './helpers';
+import { filterWords, getContentTypeItems } from './helpers';
 import MetadataAccordion from './metadata-accordion';
 import OperatingSystems from './operating-systems';
-
 interface SearchResultCardProps {
   loading?: boolean;
   data?: FormattedResource | null;
@@ -90,8 +86,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
       ? []
       : formatSourcesWithLogos(includedInDataCatalog) || [];
 
-  // Data Type (`about`) and Asset Type (`exampleOfWork.about`) values, merged
-  // into one unlabeled pill list. Data Collections only.
+  // `about` and `exampleOfWork.about` values, merged into one unlabeled pill
+  // list. Data Collections only.
   const contentTypeItems = useMemo(() => getContentTypeItems(data), [data]);
 
   const highlightProps = useMemo(

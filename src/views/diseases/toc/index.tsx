@@ -1,14 +1,12 @@
-import { useMemo, useState } from 'react';
 import { Flex, Image, Stack } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
-import { DiseasePageProps } from 'src/views/diseases/types';
+import { useMemo, useState } from 'react';
 import { PageContent } from 'src/components/page-container';
-import { fetchAllDiseasePages } from 'src/views/diseases/helpers';
 import {
   StyledCard,
-  StyleCardLabel,
   StyledCardButton,
   StyledCardDescription,
+  StyledCardLabel,
   StyledCardStack,
 } from 'src/components/table-of-contents/components/card';
 import { SectionHeader } from 'src/components/table-of-contents/layouts/section-header';
@@ -17,6 +15,9 @@ import {
   Sidebar,
   SidebarItem,
 } from 'src/components/table-of-contents/layouts/sidebar';
+import { fetchAllDiseasePages } from 'src/views/diseases/helpers';
+import { DiseasePageProps } from 'src/views/diseases/types';
+
 import { normalizeSearchText } from '../helpers';
 
 export const TableOfContents = () => {
@@ -143,7 +144,7 @@ export const TableOfContents = () => {
                           flex={1}
                         >
                           {/* Name */}
-                          <StyleCardLabel>{label}</StyleCardLabel>
+                          <StyledCardLabel>{label}</StyledCardLabel>
 
                           {/* Description */}
                           {page.topicEmphasizedDescription && (

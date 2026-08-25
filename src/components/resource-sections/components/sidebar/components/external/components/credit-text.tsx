@@ -1,9 +1,29 @@
-import { useState, useEffect, useRef } from 'react';
-import { Box, BoxProps, Button, Text } from '@chakra-ui/react';
-import { HeadingWithTooltip } from './heading-with-tooltip';
-import { getAccessResourceURL } from 'src/components/source-logo/helpers';
+import { Box, BoxProps, Button } from '@chakra-ui/react';
+import { useEffect, useRef, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
 import { Link } from 'src/components/link';
+import { getAccessResourceURL } from 'src/components/source-logo/helpers';
 import { FormattedResource } from 'src/utils/api/types';
+
+import { HeadingWithTooltip } from './heading-with-tooltip';
+
+// Render markdown anchors with the themed Link component so credit text links
+// pick up the same color/underline/visited styles as the rest of the portal.
+const markdownComponents = {
+  a: ({ node, href, children, ...props }: any) => (
+    <Link
+      href={href}
+      isExternal
+      wordBreak='break-word'
+      textDecoration='underline'
+      {...props}
+    >
+      {children}
+    </Link>
+  ),
+};
 
 interface CreditTextProps extends BoxProps {
   label?: string;
@@ -26,13 +46,13 @@ export const CreditText = ({
   const [isOverflowing, setIsOverflowing] = useState(false);
 
   // Ref to the Text element so we can measure its height
-  const textRef = useRef<HTMLParagraphElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (!textRef.current) return;
+    if (!containerRef.current) return;
     if (typeof window === 'undefined') return;
 
-    const el = textRef.current;
+    const el = containerRef.current;
 
     // Check whether the clamped text overflows its container
     const checkOverflow = () => {
@@ -61,31 +81,6 @@ export const CreditText = ({
     };
   }, [data?.creditText, expanded]);
 
-  // Display credit text if provided, otherwise show default message with link to resource.
-  const creditContent = data?.creditText || (
-    <>
-      Please{' '}
-      <Link
-        href={
-          data?.includedInDataCatalog &&
-          getAccessResourceURL({
-            recordType: data?.['@type'],
-            source: Array.isArray(data?.includedInDataCatalog)
-              ? data?.includedInDataCatalog[0]
-              : data?.includedInDataCatalog,
-            url: data?.url,
-          })
-        }
-        isExternal
-        target='_blank'
-        rel='noopener noreferrer'
-      >
-        access the resource
-      </Link>{' '}
-      for complete citation guidance.
-    </>
-  );
-
   return (
     <Box {...rest}>
       {/* Optional heading with tooltip */}
@@ -93,9 +88,40 @@ export const CreditText = ({
         <HeadingWithTooltip label={label} tooltipLabel={tooltipLabel || ''} />
       )}
       {/* Collapsed to select number of lines unless expanded */}
-      <Text ref={textRef} lineClamp={expanded ? undefined : noOfLines}>
-        {creditContent}
-      </Text>
+      <Box ref={containerRef} lineClamp={expanded ? undefined : noOfLines}>
+        {data?.creditText ? (
+          <ReactMarkdown
+            rehypePlugins={[rehypeRaw]}
+            remarkPlugins={[remarkGfm]}
+            components={markdownComponents}
+          >
+            {data?.creditText}
+          </ReactMarkdown>
+        ) : (
+          <>
+            Please{' '}
+            <Link
+              href={
+                data?.includedInDataCatalog &&
+                getAccessResourceURL({
+                  recordType: data?.['@type'],
+                  source: Array.isArray(data?.includedInDataCatalog)
+                    ? data?.includedInDataCatalog[0]
+                    : data?.includedInDataCatalog,
+                  url: data?.url,
+                })
+              }
+              isExternal
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              access the resource
+            </Link>{' '}
+            for complete citation guidance.
+          </>
+        )}
+      </Box>
+
       {/* Only show toggle if there's credit text AND it overflows the set noOfLines*/}
       {data?.creditText && isOverflowing && (
         <Button

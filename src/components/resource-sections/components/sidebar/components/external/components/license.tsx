@@ -41,7 +41,7 @@ export const License: React.FC<LicenseProps> = ({ loading, license, type }) => {
       )}
       {licenseInfo?.url ? (
         <Link href={licenseInfo.url} isExternal>
-          {licenseInfo?.title || licenseInfo.url}
+          {licenseInfo?.title}
         </Link>
       ) : (
         <Text>{licenseInfo?.title}</Text>

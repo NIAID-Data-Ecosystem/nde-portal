@@ -72,24 +72,24 @@ export const tableSlotRecipe = defineSlotRecipe({
     striped: {
       true: {
         row: {
-          '&:nth-of-type(odd)': {
-            'th, td': {
-              borderBottomWidth: '1px',
-              borderColor: 'white',
-            },
-            td: {
-              background: 'white',
-            },
-          },
-          '&:nth-of-type(even)': {
-            'th, td': {
-              borderBottomWidth: '1px',
-              borderColor: 'page.alt',
-            },
-            td: {
-              background: 'page.alt',
-            },
-          },
+          // '&:nth-of-type(odd)': {
+          //   'th, td': {
+          //     borderBottomWidth: '1px',
+          //     borderColor: 'white',
+          //   },
+          //   td: {
+          //     background: 'white',
+          //   },
+          // },
+          // '&:nth-of-type(even)': {
+          //   'th, td': {
+          //     borderBottomWidth: '1px',
+          //     borderColor: 'page.alt',
+          //   },
+          //   td: {
+          //     background: 'page.alt',
+          //   },
+          // },
         },
       },
     },

@@ -40,18 +40,11 @@ export const formatNumber = (number: number, separator: string = ',') => {
 // Retrieve img and name for license url.
 export const formatLicense = (license: string) => {
   const formattedLicense = {
-    type: '',
-    title: '',
+    title: 'View license information',
     img: '',
-    url: '',
+    type: license,
+    url: license,
   };
-
-  if (license.includes('http')) {
-    formattedLicense.url = license;
-    formattedLicense.title = 'License';
-  } else {
-    formattedLicense.title = license;
-  }
 
   // Get image for license
   if (license.includes('by/4.0/') || license.includes('CC-BY')) {
@@ -95,9 +88,6 @@ export const formatLicense = (license: string) => {
     formattedLicense.type = 'Harvard Dataverse';
     formattedLicense.title = 'Harvard Dataverse Terms of Use';
     formattedLicense.img = '/assets/resources/dataverse-icon.png';
-  } else {
-    formattedLicense.title = license || 'License';
-    formattedLicense.type = license;
   }
 
   return formattedLicense;

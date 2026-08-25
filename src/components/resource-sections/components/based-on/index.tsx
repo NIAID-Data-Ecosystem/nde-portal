@@ -1,17 +1,21 @@
 import {
+  Accordion,
   Box,
   Button,
   Flex,
   Heading,
+  Icon,
   Skeleton,
   Stack,
   Table,
   Text,
   useDisclosure,
   VisuallyHidden,
+  VStack,
 } from '@chakra-ui/react';
-import { uniqueId } from 'lodash';
+import { castArray, uniqueId } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { FaMinus, FaPlus } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
 import { Cell, EmptyCell, Th } from 'src/components/table/components/cell';
 import { TablePagination } from 'src/components/table/components/pagination';
@@ -21,9 +25,8 @@ import { TableWrapper } from 'src/components/table/components/wrapper';
 import { getTruncatedText } from 'src/components/table/helpers';
 import { useTableSort } from 'src/components/table/hooks/useTableSort';
 import { TagWithUrl } from 'src/components/tag-with-url';
+import Tooltip from 'src/components/tooltip';
 import { IsBasedOn, IsBasisFor } from 'src/utils/api/types';
-
-import Tooltip from '../../../tooltip';
 
 // TruncatedDescription: Component for displaying truncated text with 'read more/less' option
 const TruncatedDescription = React.memo(
@@ -84,7 +87,7 @@ interface Row extends Item {
 
 type Rows = Row[];
 // BasedOnTable: Main component for rendering a paginated and sortable table
-const BasedOnTable = ({
+export const BasedOnTable = ({
   id,
   loading,
   caption,
@@ -366,4 +369,83 @@ const BasedOnTable = ({
   );
 };
 
-export default BasedOnTable;
+// BasedOnActionProcess: describes how a DataCollection was generated.
+// Detailed description and steps are nested under the action name,
+// see https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/444#issuecomment-5267360271
+export const BasedOnActionProcess = ({
+  name,
+  description,
+  disambiguatingDescription,
+  actionProcess,
+}: IsBasedOn) => {
+  // step may come back from the API as a single string or a list.
+  const steps = castArray(actionProcess?.step ?? []).filter(Boolean);
+
+  if (!description && steps.length === 0) return <>No details provided.</>;
+
+  return (
+    <Stack
+      gap={0.5}
+      w='100%'
+      bg='status.info_lt'
+      borderRadius='sm'
+      fontSize='sm'
+      lineHeight='short'
+      p={[2, 4]}
+    >
+      {/* "How to" steps are collapsed by default to keep the card compact. */}
+      <Accordion.Root collapsible>
+        <Accordion.Item border='none' value='action-process'>
+          <Accordion.ItemContext>
+            {({ expanded }) => (
+              <>
+                <Flex flexDirection='column' rowGap={0.5} lineHeight='short'>
+                  {/* Name of action */}
+                  <Text fontWeight='semibold'>
+                    {name || 'Generation process'}
+                  </Text>
+                  {disambiguatingDescription && (
+                    <Text fontWeight='medium' fontSize='xs'>
+                      {disambiguatingDescription}
+                    </Text>
+                  )}
+                  {description && <Text fontSize='xs'>{description}</Text>}
+                  {steps.length > 0 && (
+                    <Accordion.ItemTrigger>
+                      <Button
+                        w='auto'
+                        gap={2}
+                        px={0}
+                        py={0}
+                        my={0.5}
+                        flexShrink={0}
+                        fontSize='xs'
+                        fontWeight='medium'
+                        textDecoration='underline'
+                        _hover={{ textDecoration: 'none' }}
+                      >
+                        {expanded ? 'Hide "How To"' : 'Show "How To"'}
+                        <Icon as={expanded ? FaMinus : FaPlus} fontSize='2xs' />
+                      </Button>
+                    </Accordion.ItemTrigger>
+                  )}
+                </Flex>
+                {steps.length > 0 && (
+                  <Accordion.ItemContent px={0} pt={1} pb={1}>
+                    <Accordion.ItemBody>
+                      <VStack alignItems='start' gap={1.5}>
+                        {steps.map((step, index) => (
+                          <Text key={index}>{step}</Text>
+                        ))}
+                      </VStack>
+                    </Accordion.ItemBody>
+                  </Accordion.ItemContent>
+                )}
+              </>
+            )}
+          </Accordion.ItemContext>
+        </Accordion.Item>
+      </Accordion.Root>
+    </Stack>
+  );
+};

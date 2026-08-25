@@ -9,6 +9,7 @@ import {
   AggregationQueryParams,
 } from 'src/views/search/hooks/useAggregation';
 import { ALL_FACET_PROPERTIES } from '../config';
+import { mergeFacets } from '../utils/merge-facets';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 
 /**
@@ -346,8 +347,13 @@ export const useFilterQueries = ({
             }));
           }
         } else {
-          // Standard facet
-          const facetData = activeResponse.facets[config.property];
+          // Standard facet. Filters that span several API fields have their
+          // terms and Any/No counts merged here (see mergeFacets).
+          const facetData = mergeFacets(
+            activeResponse.facets,
+            config.property,
+            activeResponse.total,
+          );
           if (facetData?.terms) {
             const mappedTerms = facetData.terms.map(t => {
               const transformed = config.transformData
@@ -365,13 +371,12 @@ export const useFilterQueries = ({
               };
             });
 
-            // Prepend "Any" (_exists_) using total - missing
-            const existsCount = activeResponse.total - (facetData.missing || 0);
+            // Prepend "Any" (_exists_)
             terms = [
               {
                 term: '_exists_',
                 label: 'Any',
-                count: existsCount,
+                count: facetData.existsCount,
                 facet: config.property,
               },
               ...mappedTerms,

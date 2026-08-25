@@ -11,7 +11,7 @@ import { useSharedDatasetAggregation } from 'src/views/search/hooks/useSharedDat
 import { usePaginationContext } from '../../../context/pagination-context';
 import { useSearchQueryFromURL } from '../../../hooks/useSearchQueryFromURL';
 import { updateRoute } from '../../../utils/update-route';
-import { FILTER_CONFIGS } from '../config';
+import { FILTER_CONFIGS, getFacetPropertiesForCategory } from '../config';
 import { useFilterQueries } from '../hooks/useFilterQueries';
 import { SelectedFilterType } from '../types';
 import {
@@ -116,7 +116,10 @@ export const Filters = React.memo(
       { enabled: router.isReady },
     );
 
-    // Data Collection filters: @type:DataCollection
+    // Data Collection filters: @type:DataCollection.
+    // The category currently has no filters of its own — Content Type covers
+    // DataCollection records from the Shared/Dataset section — so skip the
+    // request rather than send one with no `facets` param.
     const dataCollectionAgg = useDataCollectionAggregation(
       {
         q: queryParams.q,
@@ -124,7 +127,11 @@ export const Filters = React.memo(
         advancedSearch: queryParams.advancedSearch,
         extra_filter: filtersAggParams.extra_filter,
       },
-      { enabled: router.isReady },
+      {
+        enabled:
+          router.isReady &&
+          getFacetPropertiesForCategory('Data Collection') !== '',
+      },
     );
 
     // Use simplified filter queries hook.

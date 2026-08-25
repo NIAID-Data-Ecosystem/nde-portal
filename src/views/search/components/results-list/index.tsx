@@ -509,6 +509,7 @@ export const SearchResults = ({
             columnOrder={dcColumnOrder}
             currentSort={sort}
             onSortChange={handleSortChange}
+            referrerPath={router.asPath}
           />
         ) : isDatasetTable ? (
           /* Datasets tab in table view */

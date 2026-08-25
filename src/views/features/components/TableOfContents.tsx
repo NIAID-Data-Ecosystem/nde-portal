@@ -1,8 +1,7 @@
+import { Flex } from '@chakra-ui/react';
 import { useMemo, useState } from 'react';
-import { Flex, Image, Stack } from '@chakra-ui/react';
 import { PageContent } from 'src/components/page-container';
 import {
-  StyleCardLabel,
   StyledCard,
   StyledCardButton,
   StyledCardDescription,
@@ -14,6 +13,7 @@ import {
   Sidebar,
   SidebarItem,
 } from 'src/components/table-of-contents/layouts/sidebar';
+
 import { FeaturedPageProps } from '../types';
 
 export const TableOfContents = ({ data }: { data?: FeaturedPageProps[] }) => {

@@ -119,8 +119,7 @@ export const MDXComponents = {
         isExternal={isExternal}
         {...parsedProps}
         css={{
-          // Workaround for Emotion warning with ":first-child" pseudo class is potentially unsafe when doing server-side rendering.
-          '*:not(:not(:last-child) ~ *)': {
+          '& .child-string, .child-node, .child-node p': {
             borderBottom: '0.0625rem solid',
             _hover: { borderBottomColor: 'transparent' },
           },

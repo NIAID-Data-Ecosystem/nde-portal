@@ -10,10 +10,10 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
+import NextLink from 'next/link';
 import React, { useState } from 'react';
 import { FaMinus, FaPlus, FaUpRightFromSquare } from 'react-icons/fa6';
 import { BadgeWithTooltip } from 'src/components/badges';
-import { Link } from 'src/components/link';
 import { MetadataCompatibilitySourceBadge } from 'src/components/metadata-compatibility-source-badge';
 import {
   StyledCard,
@@ -59,16 +59,16 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
   return (
     <Box id='sources-main' mb={10} width='100%' height='100%'>
       <SectionHeader title='Data Sources'>
-        <Link
-          asChild
-          href='https://github.com/NIAID-Data-Ecosystem/nde-crawlers/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D'
-          target='_blank'
-        >
-          <Button colorPalette='secondary' size='sm' variant='outline'>
+        <Button asChild colorPalette='secondary' size='sm' variant='outline'>
+          <NextLink
+            href='https://github.com/NIAID-Data-Ecosystem/nde-crawlers/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D'
+            target='_blank'
+            rel='noopener noreferrer'
+          >
             Suggest a new source
             <Icon as={FaUpRightFromSquare} boxSize={3} />
-          </Button>
-        </Link>
+          </NextLink>
+        </Button>
       </SectionHeader>
       <Flex justifyContent='space-between' flexWrap='wrap-reverse'>
         <VStack minW='250px' alignItems='flex-start' m={0.5} flex={1}>
@@ -154,20 +154,42 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
               }
               renderCTA={() =>
                 sourceObj.id ? (
-                  <StyledCardButton
-                    maxWidth='500px'
-                    href={{
-                      pathname: `/search`,
-                      query: {
-                        q: '',
-                        filters: queryFilterObject2String({
-                          'includedInDataCatalog.name': [sourceObj.id],
-                        }),
-                      },
-                    }}
+                  <Flex
+                    justifyContent='space-between'
+                    flexWrap='wrap'
+                    gap={2}
+                    w='100%'
                   >
-                    Search for {sourceObj.name} resources
-                  </StyledCardButton>
+                    <Flex flex={1}>
+                      {sourceObj.resourceCatalogUrl && (
+                        <Button
+                          asChild
+                          width={{ base: '100%', md: 'unset' }}
+                          maxWidth='500px'
+                          size='sm'
+                          variant='outline'
+                        >
+                          <NextLink href={sourceObj.resourceCatalogUrl}>
+                            Learn about source
+                          </NextLink>
+                        </Button>
+                      )}
+                    </Flex>
+                    <StyledCardButton
+                      maxWidth='500px'
+                      href={{
+                        pathname: `/search`,
+                        query: {
+                          q: '',
+                          filters: queryFilterObject2String({
+                            'includedInDataCatalog.name': [sourceObj.id],
+                          }),
+                        },
+                      }}
+                    >
+                      See search results
+                    </StyledCardButton>
+                  </Flex>
                 ) : (
                   <></>
                 )
@@ -195,19 +217,20 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
                   </Text>
                 </HStack>
 
-                {/* Description */}
+                {/* Description, with the link to the source's website
+                inlined at the end of the text. */}
                 {sourceObj?.description && (
-                  <StyledCardDescription>
-                    {sourceObj?.description}
-                  </StyledCardDescription>
+                  <Box fontSize='sm' lineHeight='short' color='text.body'>
+                    <StyledCardDescription>
+                      {sourceObj.url
+                        ? `${sourceObj.description.trimEnd()} [Visit ${
+                            sourceObj.name
+                          } website](<${sourceObj.url}>)`
+                        : sourceObj.description}
+                    </StyledCardDescription>
+                  </Box>
                 )}
 
-                {/* Link to source's website */}
-                {sourceObj.url && (
-                  <Link href={sourceObj.url} isExternal>
-                    {`${sourceObj.name} website`}
-                  </Link>
-                )}
                 {/* Source Compatibility */}
                 {metadataCompatibilityData && (
                   <Box my={2}>
@@ -238,8 +261,8 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
                         textAlign='left'
                         lineHeight='short'
                       >
-                        Visualization of {sourceObj.name} properties transformed
-                        to the NIAID Data Ecosystem
+                        Mapping of {sourceObj.name} Properties to NIAID Data
+                        Ecosystem Properties
                       </Text>
                       <Flex alignItems='center'>
                         <Text mx={2} fontSize='xs' color='gray.800'>
