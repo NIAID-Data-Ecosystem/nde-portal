@@ -282,10 +282,10 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
                                 color='#fff'
                               >
                                 <tr>
-                                  <Box as='th' scope='col' px={6} py={3}>
+                                  <Box as='th' px={6} py={3}>
                                     {sourceObj.name} Property
                                   </Box>
-                                  <Box as='th' scope='col' px={6} py={3}>
+                                  <Box as='th' px={6} py={3}>
                                     NIAID Data Ecosystem Property
                                   </Box>
                                 </tr>
