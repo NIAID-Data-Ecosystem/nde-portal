@@ -1,12 +1,13 @@
-import { useCallback, useState } from 'react';
+import { Box, Flex, List, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
-import { Box, Flex, Text, List } from '@chakra-ui/react';
-import { UrlObject } from 'url';
+import { useCallback, useState } from 'react';
 import { Link } from 'src/components/link';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { FacetTerm } from 'src/utils/api/types';
-import { BrushableBarChart } from './brushable-bar-chart';
+import { UrlObject } from 'url';
+
 import { FacetProps } from '../../../types';
+import { BrushableBarChart } from './brushable-bar-chart';
 
 interface BrushableListChartProps {
   data: FacetTerm[];
@@ -41,7 +42,7 @@ export const BrushableListChart = ({
       {/* Add Brush */}
       <BrushableBarChart
         data={data}
-        colorScheme={facet.colorScheme}
+        colorPalette={facet.colorPalette}
         onBrushSelection={onBrushSelection}
         {...chartDimensions}
       />
@@ -63,7 +64,7 @@ export const BrushableListChart = ({
         </Flex>
         {/* List of terms and associated counts */}
         <ScrollContainer
-          as={UnorderedList}
+          as={'ul'}
           ml={1}
           mt={1}
           maxHeight={`${SCROLL_HEIGHT}px`}
@@ -91,7 +92,7 @@ export const BrushableListChart = ({
                 href={getSearchRoute(item.term)}
                 passHref
               >
-                <Link as='p'>{item.term}</Link>
+                {item.term}
               </NextLink>
 
               {/* Count */}

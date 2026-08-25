@@ -1,19 +1,20 @@
 import { Flex, VStack } from '@chakra-ui/react';
+import { PageContent } from 'src/components/page-container';
+
 import { DiseasePageProps, TopicQueryProps } from '../types';
 import { ConditionsOfAccess } from './components/conditions-of-access';
 import { DataTypes } from './components/data-types';
 import { ExternalLinksSection } from './components/external-links';
 import { PropertyTreemapLists } from './components/property-treemap-lists';
 import { Sources } from './components/sources';
-import { IntroSection } from './layouts/intro';
-import { SectionWrapper } from './layouts/section';
-import { CardWrapper } from './layouts/card';
-import { PageContent } from 'src/components/page-container';
 import DISEASE_PAGE_COPY from './disease-page.json';
+import { CardWrapper } from './layouts/card';
+import { IntroSection } from './layouts/intro';
 import {
   fillTemplatePlaceholders,
   MarkdownContent,
 } from './layouts/markdown-content';
+import { SectionWrapper } from './layouts/section';
 
 export interface DiseaseContentProps {
   data?: DiseasePageProps;
@@ -89,7 +90,7 @@ export const DiseaseContent: React.FC<DiseaseContentProps> = ({
               flexWrap='wrap'
               mt={6}
               w='100%'
-              spacing={{ base: 4, lg: 14, xl: 28 }}
+              gap={{ base: 4, lg: 14, xl: 28 }}
               justifyContent='space-between'
             >
               <VStack

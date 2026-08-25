@@ -7,22 +7,23 @@ import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import {
   formatConditionsOfAccess,
-  getColorScheme,
+  getColorPalette,
   getConditionsOfAccessTooltip,
 } from 'src/utils/formatting/formatConditionsOfAccess';
 import {
   getSearchResultsRoute,
   trackDiseasesEvent,
 } from 'src/views/diseases/helpers';
+
 import { TopicQueryProps } from '../../types';
+import DISEASE_PAGE_COPY from '../disease-page.json';
 import { ChartWrapper } from '../layouts/chart-wrapper';
+import { MarkdownContent } from '../layouts/markdown-content';
 import {
   FacetTermsWithDetails,
   StackedBarChart,
 } from '../visualizations/stacked-bar-chart';
 import { LegendContainer, LegendItem } from './legend';
-import DISEASE_PAGE_COPY from '../disease-page.json';
-import { MarkdownContent } from '../layouts/markdown-content';
 
 export const ConditionsOfAccess = ({ query, topic }: TopicQueryProps) => {
   // Fetch conditionsOfAccess for query.
@@ -44,14 +45,14 @@ export const ConditionsOfAccess = ({ query, topic }: TopicQueryProps) => {
       const terms =
         data?.facets?.['conditionsOfAccess']?.terms?.map(access => {
           const label = formatConditionsOfAccess(access.term);
-          const colorScheme = getColorScheme(label);
+          const colorPalette = getColorPalette(label);
 
           return {
             ...access,
             label: label || '',
             description: getConditionsOfAccessTooltip(label),
-            colorScheme,
-            fill: system.token(`colors.${colorScheme}.300`) as string,
+            colorPalette,
+            fill: system.token(`colors.${colorPalette}.300`) as string,
           };
         }) || [];
       return {

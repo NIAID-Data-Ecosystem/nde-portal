@@ -4,7 +4,7 @@ import { defineRecipe } from '@chakra-ui/react';
 Ported from the v2 `Badge` style config, which branched all three variants on
 `colorPalette`. Most of that branching was unreachable: it covered `success`,
 `warning`, `negative` and `info`, and no call site passes any of them —
-`getColorScheme()` and the badge components hand it green/gray/red/blue/orange.
+`getColorPalette()` and the badge components hand it green/gray/red/blue/orange.
 So only the niaid and gray branches survive, as the `badgeSolidBg` semantic
 role in ../semantic-tokens/colors.ts.
 

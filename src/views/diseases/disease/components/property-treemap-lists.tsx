@@ -1,23 +1,24 @@
-import React from 'react';
 import { Box, Flex, HStack, RadioGroup, Stack, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
+import React from 'react';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 import { InfoLabel } from 'src/components/info-label';
+import { getMetadataDescription } from 'src/components/metadata';
 import { palette, system } from 'src/theme';
 import { fetchSearchResults } from 'src/utils/api';
 import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
-import { ChartWrapper } from '../layouts/chart-wrapper';
-import { BrushableListChart } from '../visualizations/brushable-list-chart';
-import { TreemapChart } from '../visualizations/treemap-chart';
+
 import { getSearchResultsRoute, trackDiseasesEvent } from '../../helpers';
 import { FacetProps, TopicQueryProps } from '../../types';
+import DISEASE_PAGE_COPY from '../disease-page.json';
+import { ChartWrapper } from '../layouts/chart-wrapper';
 import {
   fillTemplatePlaceholders,
   MarkdownContent,
 } from '../layouts/markdown-content';
 import { headingStyles, SectionTitle } from '../layouts/section';
-import DISEASE_PAGE_COPY from '../disease-page.json';
-import { getMetadataDescription } from 'src/components/metadata';
+import { BrushableListChart } from '../visualizations/brushable-list-chart';
+import { TreemapChart } from '../visualizations/treemap-chart';
 
 const facets = [
   {
@@ -26,7 +27,7 @@ const facets = [
     fill: system.token(
       `colors.${getMetadataTheme('healthCondition')}.300`,
     ) as string,
-    colorScheme: palette(getMetadataTheme('healthCondition')),
+    colorPalette: palette(getMetadataTheme('healthCondition')),
     tooltip: getMetadataDescription('healthCondition', 'Dataset'),
   },
   {
@@ -35,7 +36,7 @@ const facets = [
     fill: system.token(
       `colors.${getMetadataTheme('measurementTechnique')}.300`,
     ) as string,
-    colorScheme: palette(getMetadataTheme('measurementTechnique')),
+    colorPalette: palette(getMetadataTheme('measurementTechnique')),
     tooltip: getMetadataDescription('measurementTechnique', 'Dataset'),
   },
   {
@@ -44,7 +45,7 @@ const facets = [
     fill: system.token(
       `colors.${getMetadataTheme('infectiousAgent')}.300`,
     ) as string,
-    colorScheme: palette(getMetadataTheme('infectiousAgent')),
+    colorPalette: palette(getMetadataTheme('infectiousAgent')),
     tooltip: getMetadataDescription('infectiousAgent', 'Dataset'),
   },
 ] as FacetProps[];
@@ -74,7 +75,7 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
       if (!data)
         return [
           {
-            colorScheme: '',
+            colorPalette: {},
             fill: '',
             label: '',
             value: '',
@@ -139,7 +140,7 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
             Select Chart Type
           </Text>
           <RadioGroup.Root
-            onValueChange={value => setListView(value === 'list')}
+            onValueChange={({ value }) => setListView(value === 'list')}
             value={`${listView ? 'list' : 'treemap'}`}
           >
             <Stack direction='row'>

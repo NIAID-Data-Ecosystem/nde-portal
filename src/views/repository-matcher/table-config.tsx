@@ -7,7 +7,7 @@ import {
 import { AccessTypes, DefinedTerm } from 'src/utils/api/types';
 import {
   formatConditionsOfAccess,
-  getColorScheme,
+  getColorPalette,
   transformConditionsOfAccessLabel,
 } from 'src/utils/formatting/formatConditionsOfAccess';
 
@@ -170,7 +170,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         formatConditionsOfAccess(item.conditionsOfAccess),
       ) || '',
     component: ({ value }: { value: string; loading?: boolean }) => {
-      const colorPalette = getColorScheme(value as AccessTypes);
+      const colorPalette = getColorPalette(value as AccessTypes);
       return (
         <Tag.Root
           colorPalette={colorPalette}

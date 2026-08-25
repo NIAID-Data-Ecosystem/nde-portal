@@ -1,4 +1,5 @@
 import { createSystem, defaultConfig } from '@chakra-ui/react';
+
 import { config } from './config';
 
 /**
@@ -25,13 +26,18 @@ const PALETTE_STEPS = [
 ] as const;
 
 /**
- * One palette's raw hex values, keyed by numeric step.
+ * One palette's raw hex values, keyed by numeric step. Steps a palette does not
+ * define are absent, so reads are `string | undefined`.
+ */
+export type Palette = Partial<Record<(typeof PALETTE_STEPS)[number], string>>;
+
+/**
+ * Build a {@link Palette}.
  *
  * Only for the few chart props typed as a whole palette object rather than a
- * single colour — `FacetProps['colorScheme']`, read at `[300]` and `[600]`.
- * For a single value use `system.token('colors.<name>.<step>')` directly.
+ * single colour. Use `system.token('colors.${name}.${step}')` for a single colour.
  */
-export const palette = (name: string): Record<string, string> =>
+export const palette = (name: string): Palette =>
   Object.fromEntries(
     PALETTE_STEPS.map(step => [step, system.token(`colors.${name}.${step}`)]) //
       .filter(([, value]) => value != null),

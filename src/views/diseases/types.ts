@@ -1,3 +1,4 @@
+import { Palette } from 'src/theme';
 import { Params } from 'src/utils/api';
 
 /**
@@ -120,10 +121,10 @@ export interface FacetProps {
    * A raw colour palette object (built by `palette('blue')`), indexed at numeric
    * steps for chart fills and strokes — *not* a Chakra `colorPalette` name.
    *
-   * v2 typed this as `ThemingProps['colorScheme']`, which never matched what the
-   * call sites actually assign or read. Some fallbacks pass `''`, hence the
-   * string arm and the optional chaining at every read site.
+   * v2 typed this as `ThemingProps['colorPalette']`, which never matched what the
+   * call sites actually assign or read. Empty-data fallbacks pass `{}`, so reads
+   * at a step are `string | undefined`.
    */
-  colorScheme: Record<string, string> | string;
+  colorPalette: Palette;
   tooltip: string;
 }

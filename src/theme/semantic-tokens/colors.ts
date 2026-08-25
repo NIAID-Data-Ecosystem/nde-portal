@@ -83,7 +83,7 @@ export const semanticColors = defineSemanticTokens.colors({
   /*
   Chakra already defines the eight standard roles for its own palettes, so
   these only add the custom roles — needed because `getMetadataTheme()` and
-  `getColorScheme()` hand these names straight to `colorPalette`.
+  `getColorPalette()` hand these names straight to `colorPalette`.
   */
   red: buttonRoles('red'),
   orange: buttonRoles('orange'),

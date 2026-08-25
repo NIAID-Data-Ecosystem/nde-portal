@@ -95,14 +95,14 @@ export default table;
 // export const Table = {
 //   // Table styles based on: https://designsystem.niaid.nih.gov/components/atoms
 //   parts: ['pagination', 'wrapper', 'caption'],
-//   baseStyle: (props: { borderColor: any; colorScheme: string }) => {
+//   baseStyle: (props: { borderColor: any; colorPalette: string }) => {
 //     let borderColor = props.borderColor;
 
-//     if (props.colorScheme === 'gray') {
+//     if (props.colorPalette === 'gray') {
 //       borderColor = 'gray.400';
-//     } else if (props.colorScheme === 'primary') {
+//     } else if (props.colorPalette === 'primary') {
 //       borderColor = 'primary.500';
-//     } else if (props.colorScheme === 'secondary') {
+//     } else if (props.colorPalette === 'secondary') {
 //       borderColor = 'secondary.500';
 //     }
 
@@ -112,8 +112,8 @@ export default table;
 //         w: '100%',
 //         bg: '#fff',
 //         borderTop: '.0625rem solid',
-//         borderColor: props.colorScheme
-//           ? `${props.colorScheme}.200`
+//         borderColor: props.colorPalette
+//           ? `${props.colorPalette}.200`
 //           : 'gray.200',
 //         flexDirection: ['column-reverse', 'row'],
 //         justifyContent: 'space-between',
@@ -122,8 +122,8 @@ export default table;
 //       },
 //       wrapper: {
 //         border: '.0625rem solid',
-//         borderColor: props.colorScheme
-//           ? `${props.colorScheme}.200`
+//         borderColor: props.colorPalette
+//           ? `${props.colorPalette}.200`
 //           : 'gray.200',
 //         borderRadius: 'semi',
 //         overflow: 'auto',
@@ -164,8 +164,8 @@ export default table;
 //       },
 //       caption: {
 //         borderTop: '.0625rem solid',
-//         borderColor: props.colorScheme
-//           ? `${props.colorScheme}.200`
+//         borderColor: props.colorPalette
+//           ? `${props.colorPalette}.200`
 //           : 'gray.200',
 //       },
 //     };
@@ -229,6 +229,6 @@ export default table;
 //   defaultProps: {
 //     size: 'lg',
 //     variant: 'striped',
-//     colorScheme: 'primary',
+//     colorPalette: 'primary',
 //   },
 // };
