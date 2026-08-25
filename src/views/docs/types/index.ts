@@ -1,3 +1,5 @@
+import { InputProps } from '@chakra-ui/react';
+
 export interface DocumentationProps {
   id: number;
   name: string;
@@ -96,26 +98,24 @@ export interface SearchResultItemProps {
   index: number;
   result: SearchResult;
   searchTerm: string;
-  colorPalette: string;
+  colorPalette: SearchBarProps['colorPalette'];
   onClick: () => void;
 }
 
 export interface SearchBarProps {
   ariaLabel: string;
   placeholder: string;
-  colorPalette?: string;
-  size?: string;
+  colorPalette?: InputProps['colorPalette'];
+  size?: InputProps['size'];
   searchHistory: string[];
   setSearchHistory: React.Dispatch<React.SetStateAction<string[]>>;
-  currentCursorMax: number;
   setCurrentCursorMax: React.Dispatch<React.SetStateAction<number>>;
-  currentInputValue: string;
   setCurrentInputValue: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export interface DocsSearchBarProps {
   ariaLabel: string;
   placeholder: string;
-  colorPalette?: string;
-  size?: string;
+  colorPalette?: SearchBarProps['colorPalette'];
+  size?: SearchBarProps['size'];
 }

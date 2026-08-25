@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
 import { Box, Flex } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { InputWithDropdown } from 'src/components/input-with-dropdown';
 import { useLocalStorage } from 'usehooks-ts';
-import { SearchBar } from './SearchBar';
-import type { DocsSearchBarProps } from '../../types';
+
 import { SEARCH_HISTORY_KEY } from '../../constants';
+import type { DocsSearchBarProps } from '../../types';
+import { SearchBar } from './SearchBar';
 
 export const DocsSearchBar = (props: DocsSearchBarProps) => {
   const [searchHistory, setSearchHistory] = useLocalStorage<string[]>(
@@ -35,9 +36,7 @@ export const DocsSearchBar = (props: DocsSearchBarProps) => {
           <SearchBar
             searchHistory={searchHistory}
             setSearchHistory={setSearchHistory}
-            currentCursorMax={currentCursorMax}
             setCurrentCursorMax={setCurrentCursorMax}
-            currentInputValue={currentInputValue}
             setCurrentInputValue={setCurrentInputValue}
             {...props}
           />

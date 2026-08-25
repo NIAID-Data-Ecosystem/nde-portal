@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react';
 import {
   Box,
   Card,
@@ -8,32 +7,33 @@ import {
   SimpleGrid,
   SkeletonText,
   Stack,
+  StackSeparator,
   Text,
   VisuallyHidden,
-  StackSeparator,
 } from '@chakra-ui/react';
-import { Link } from 'src/components/link';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import NDESOCIALS from 'configs/socials.json';
 import type { NextPage } from 'next';
+import { MDXRemoteSerializeResult } from 'next-mdx-remote';
+import React, { useEffect, useState } from 'react';
+import { FaLinkedinIn, FaSquareFacebook, FaTwitter } from 'react-icons/fa6';
+import Empty from 'src/components/empty';
+import { Error } from 'src/components/error';
+import { Link } from 'src/components/link';
 import {
   getPageSeoConfig,
   PageContainer,
   PageContent,
 } from 'src/components/page-container';
-import { MDXRemoteSerializeResult } from 'next-mdx-remote';
-import { Error } from 'src/components/error';
-import axios from 'axios';
-import Empty from 'src/components/empty';
 import Navigation from 'src/components/resource-sections/components/navigation';
-import { Section, SectionList } from 'src/views/news/components/Section';
-import NDESOCIALS from 'configs/socials.json';
-import { FaLinkedinIn, FaSquareFacebook, FaTwitter } from 'react-icons/fa6';
-import { fetchNews } from 'src/views/home/components/NewsCarousel';
-import { useQuery } from '@tanstack/react-query';
-import SectionCard from 'src/views/news/components/SectionCard';
 import {
   HeroBannerContainer,
   HeroBannerText,
 } from 'src/views/home/components/HeroBanner';
+import { fetchNews } from 'src/views/home/components/NewsCarousel';
+import { Section, SectionList } from 'src/views/news/components/Section';
+import SectionCard from 'src/views/news/components/SectionCard';
 
 export interface NewsOrEventsObject {
   id: number;
@@ -195,9 +195,9 @@ const Updates: NextPage<UpdatesProps> = props => {
             maxWidth={{ md: '500px', xl: '680px' }}
             mt={0}
             mb={0}
-            spacing={10}
+            gap={10}
             textAlign={{ base: 'left', lg: 'center' }}
-            sx={{
+            css={{
               h1: {
                 letterSpacing: '1px',
               },

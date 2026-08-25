@@ -1,46 +1,46 @@
-import React, { useEffect } from 'react';
 import {
   Box,
   Flex,
   Heading,
+  List,
   SimpleGrid,
   SkeletonText,
   Text,
   useMediaQuery,
-  List,
 } from '@chakra-ui/react';
-import { Link } from 'src/components/link';
+import { useQuery } from '@tanstack/react-query';
+import DOCUMENTATION_COPY from 'configs/docs.json';
 import type { GetStaticProps, NextPage } from 'next';
+import NextLink from 'next/link';
+import { useRouter } from 'next/router';
+import React, { useEffect } from 'react';
+import Empty from 'src/components/empty';
+import { Error } from 'src/components/error';
+import { Link } from 'src/components/link';
 import {
   getPageSeoConfig,
   PageContainer,
   PageContent,
 } from 'src/components/page-container';
-import DOCUMENTATION_COPY from 'configs/docs.json';
-import { Error } from 'src/components/error';
-import { useQuery } from '@tanstack/react-query';
-import NextLink from 'next/link';
-import { useRouter } from 'next/router';
+import { HeroBanner } from 'src/views/docs/components/HeroBanner';
+import MainContent from 'src/views/docs/components/MainContent';
+import { DocsSearchBar } from 'src/views/docs/components/search-bar';
 import {
+  SidebarContainer,
   SidebarDesktop,
   SidebarMobile,
-  SidebarContainer,
 } from 'src/views/docs/components/sidebar';
-import MainContent from 'src/views/docs/components/MainContent';
-import Empty from 'src/components/empty';
-import IntegrationMain from 'src/views/integration/components/Main';
-import { DocsSearchBar } from 'src/views/docs/components/search-bar';
-import { HeroBanner } from 'src/views/docs/components/HeroBanner';
 import {
+  fetchAllDocumentationSlugs,
   fetchCategories,
   fetchDocumentation,
-  fetchAllDocumentationSlugs,
 } from 'src/views/docs/services/api';
 import type {
   DocumentationByCategories,
   DocumentationProps,
   SidebarContent,
 } from 'src/views/docs/types';
+import IntegrationMain from 'src/views/integration/components/Main';
 
 const Docs: NextPage<{
   slug: string[];
@@ -79,9 +79,9 @@ const Docs: NextPage<{
 
   const router = useRouter();
 
-  const [isLargerThanSm] = useMediaQuery('(min-width: 48em)', {
+  const [isLargerThanSm] = useMediaQuery(['(min-width: 48em)'], {
     ssr: true,
-    fallback: false, // return false on the server, and re-evaluate on the client side
+    fallback: [false], // return false on the server, and re-evaluate on the client side
   });
 
   const selectedPage = documentationPagesList?.reduce<

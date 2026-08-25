@@ -1,6 +1,7 @@
+import { Heading, Highlight, List, Text } from '@chakra-ui/react';
 import React, { useMemo } from 'react';
-import { Heading, Highlight, Text, List } from '@chakra-ui/react';
 import { useDropdownContext } from 'src/components/input-with-dropdown';
+
 import type { SearchResultItemProps } from '../../types';
 
 export const SearchResultItem = React.memo(

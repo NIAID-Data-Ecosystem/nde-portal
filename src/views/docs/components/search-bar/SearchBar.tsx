@@ -1,11 +1,3 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { useRouter } from 'next/router';
 import {
   Box,
   Button,
@@ -13,26 +5,35 @@ import {
   HStack,
   Icon,
   IconButton,
-  Text,
   List,
+  Text,
 } from '@chakra-ui/react';
-import Tooltip from '../../../../components/tooltip';
+import { debounce, uniq } from 'lodash';
+import { useRouter } from 'next/router';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { FaClockRotateLeft, FaMagnifyingGlass } from 'react-icons/fa6';
 import {
   DropdownInput,
   useDropdownContext,
 } from 'src/components/input-with-dropdown';
 import { DropdownContent } from 'src/components/input-with-dropdown/components/DropdownContent';
 import { SearchHistoryItem } from 'src/components/search-bar/components/search-history-item';
-import { debounce, uniq } from 'lodash';
-import { FaMagnifyingGlass, FaClockRotateLeft } from 'react-icons/fa6';
-import { SearchResultItem } from './SearchResultItem';
-import { useDocumentationSearch } from '../../hooks/useDocumentationSearch';
-import type { SearchBarProps, SearchResult } from '../../types';
+import Tooltip from 'src/components/tooltip';
+
 import {
   DEFAULT_SIZE,
-  SEARCH_DEBOUNCE_MS,
   MAX_SEARCH_HISTORY_ITEMS,
+  SEARCH_DEBOUNCE_MS,
 } from '../../constants';
+import { useDocumentationSearch } from '../../hooks/useDocumentationSearch';
+import type { SearchBarProps, SearchResult } from '../../types';
+import { SearchResultItem } from './SearchResultItem';
 
 export const SearchBar = ({
   ariaLabel,
@@ -41,9 +42,7 @@ export const SearchBar = ({
   size = DEFAULT_SIZE,
   searchHistory,
   setSearchHistory,
-  currentCursorMax,
   setCurrentCursorMax,
-  currentInputValue,
   setCurrentInputValue,
 }: SearchBarProps) => {
   const router = useRouter();
@@ -267,7 +266,7 @@ export const SearchBar = ({
         type='text'
         onChange={updateSearchTerm}
         onSubmit={handleSubmit}
-        getInputValue={(idx: number): string => {
+        getInputValue={() => {
           // Return empty string to prevent keyboard navigation from changing the input
           return '';
         }}

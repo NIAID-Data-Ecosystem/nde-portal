@@ -1,10 +1,12 @@
+import { Highlight, Icon, List, Text } from '@chakra-ui/react';
 import React, { useMemo } from 'react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
-import { Highlight, Icon, Text, List } from '@chakra-ui/react';
+import { SearchBarProps } from 'src/views/docs/types';
+
 import { useDropdownContext } from '../../input-with-dropdown';
 
 interface SearchHistoryItemProps {
-  colorPalette: string;
+  colorPalette: SearchBarProps['colorPalette'];
   index: number;
   searchTerm: string;
   value: string;

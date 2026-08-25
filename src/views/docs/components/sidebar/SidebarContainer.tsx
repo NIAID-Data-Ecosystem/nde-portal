@@ -1,8 +1,8 @@
 import {
   Box,
+  BoxProps,
   Button,
   Flex,
-  FlexProps,
   Icon,
   Text,
   useDisclosure,
@@ -10,7 +10,7 @@ import {
 import { FaAnglesLeft, FaAnglesRight } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
 
-interface SidebarContainerProps extends FlexProps {
+interface SidebarContainerProps extends BoxProps {
   children: React.ReactNode;
 }
 
