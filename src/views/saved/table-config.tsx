@@ -1,27 +1,28 @@
-import React from 'react';
 import { Flex, HStack, Text, VStack } from '@chakra-ui/react';
+import React from 'react';
+import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
 import { getMetadataName } from 'src/components/metadata';
+import { useUserData } from 'src/hooks/useUserData';
+import { findSavedQueryIndex } from 'src/hooks/useUserData/helpers';
+import { SavedDataset, SavedQuery } from 'src/hooks/useUserData/types';
+import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+
 import {
   TagCell,
   TextCell,
   TextCellWithLink,
 } from '../repository-matcher/components/TableCells';
-import { SavedColumn, SavedResourceItem, SavedRow } from './types';
 import { defaultSearchValue } from '../repository-matcher/hooks/useRepositoryMatcherData';
-import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
-import { SavedDataset, SavedQuery } from 'src/hooks/useUserData/types';
-import { useUserData } from 'src/hooks/useUserData';
-import { findSavedQueryIndex } from 'src/hooks/useUserData/helpers';
 import {
   FILTER_CONFIGS,
   queryFilterObject2String,
 } from '../search/components/filters';
+import { generateTags } from '../search/components/filters/components/tag/utils';
 import {
   APPLY_DEFAULT_DATE_FILTER_KEY,
   APPLY_DEFAULT_DATE_PARAM,
 } from '../search/config/defaultQuery';
-import { generateTags } from '../search/components/filters/components/tag/utils';
-import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+import { SavedColumn, SavedResourceItem, SavedRow } from './types';
 
 type DateCellValue = { display: string; raw: number } | null;
 
@@ -141,12 +142,12 @@ export const SAVED_RESOURCE_COLUMNS: SavedColumn<SavedResourceItem, any>[] = [
     },
     component: ({ value, loading }: { value: string; loading?: boolean }) => {
       if (!loading && (!value || !value.length))
-        return <TextCell value='' loading={loading} noOfLines={1} />;
+        return <TextCell value='' loading={loading} lineClamp={1} />;
       return (
         <TextCell
           value={value}
           loading={loading}
-          noOfLines={2}
+          lineClamp={2}
           fontWeight='semibold'
         />
       );
@@ -167,7 +168,7 @@ export const SAVED_RESOURCE_COLUMNS: SavedColumn<SavedResourceItem, any>[] = [
       <TextCell
         value={value && value.length ? value.join(', ') : ''}
         loading={loading}
-        noOfLines={2}
+        lineClamp={2}
       />
     ),
   },
@@ -194,7 +195,7 @@ export const SAVED_RESOURCE_COLUMNS: SavedColumn<SavedResourceItem, any>[] = [
         <TextCell
           value={value?.display ?? ''}
           loading={loading}
-          noOfLines={1}
+          lineClamp={1}
         />
       );
     },
@@ -222,7 +223,7 @@ export const SAVED_RESOURCE_COLUMNS: SavedColumn<SavedResourceItem, any>[] = [
         <TextCell
           value={value?.display ?? ''}
           loading={loading}
-          noOfLines={1}
+          lineClamp={1}
         />
       );
     },
@@ -309,7 +310,7 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
           fontWeight='semibold'
           value={value.toLocaleString()}
           loading={loading}
-          noOfLines={1}
+          lineClamp={1}
           mt={0.5}
           ml={-0.5}
         />
@@ -401,7 +402,7 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
                 key={str}
                 colorPalette='secondary'
                 value={str}
-                noOfLines={1}
+                lineClamp={1}
                 loading={loading}
               />
             );
@@ -433,7 +434,7 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
         <TextCell
           value={value?.display ?? ''}
           loading={loading}
-          noOfLines={1}
+          lineClamp={1}
         />
       );
     },
