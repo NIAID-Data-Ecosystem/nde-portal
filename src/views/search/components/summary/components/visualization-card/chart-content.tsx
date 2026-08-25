@@ -1,4 +1,5 @@
 import { Flex } from '@chakra-ui/react';
+
 import { ChartDatum, ChartType } from '../../types';
 import { ChartTypePicker } from './chart-picker';
 import { EmptyState } from './empty-state';
@@ -108,7 +109,7 @@ export const ChartContent = ({
   return (
     <>
       {renderChartView(false)}
-      <ModalViewer label={label} isOpen={isModalOpen} onClose={onModalClose}>
+      <ModalViewer label={label} open={isModalOpen} onOpenChange={onModalClose}>
         {renderChartView(true)}
       </ModalViewer>
     </>

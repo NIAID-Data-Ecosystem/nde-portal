@@ -1,13 +1,14 @@
-import { SearchState } from '../../types';
+import { Flex, useDisclosure } from '@chakra-ui/react';
+
 import { FilterConfig } from '../../../filters';
-import { useDisclosure, Flex } from '@chakra-ui/react';
 import { SelectedFilterValueType } from '../../../filters/types';
 import { DEFAULT_MORE_PARAMS } from '../../helpers';
+import { useVisualizationData } from '../../hooks/useVisualizationData';
+import { SearchState } from '../../types';
 import { CardHeader } from './card-header';
 import { ChartContent } from './chart-content';
-import { DrillStackBreadcrumb } from './drill-stack-breadcrumb';
-import { useVisualizationData } from '../../hooks/useVisualizationData';
 import { ChartLoadingSpinner } from './chart-loading-spinner';
+import { DrillStackBreadcrumb } from './drill-stack-breadcrumb';
 
 type VisualizationCardProps = {
   config: FilterConfig;

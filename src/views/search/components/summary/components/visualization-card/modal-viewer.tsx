@@ -1,6 +1,6 @@
+import { Dialog, Portal } from '@chakra-ui/react';
 import React from 'react';
-import { Dialog, Portal } from '@chakra-ui/react';
-import { Dialog, Portal } from '@chakra-ui/react';
+
 import { VisualizationCardHeading } from './card-header';
 
 interface ModalViewerProps extends Dialog.RootProps {
@@ -11,24 +11,15 @@ interface ModalViewerProps extends Dialog.RootProps {
 export const ModalViewer: React.FC<ModalViewerProps> = ({
   children,
   label,
-  isOpen,
-  onClose,
+  open,
+  onOpenChange,
   ...props
 }) => {
-  if (!isOpen) {
+  if (!open) {
     return null;
   }
   return (
-    <Dialog.Root
-      open={isOpen}
-      size='xl'
-      {...props}
-      onOpenChange={e => {
-        if (!e.open) {
-          onClose();
-        }
-      }}
-    >
+    <Dialog.Root open={open} size='xl' {...props} onOpenChange={onOpenChange}>
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>

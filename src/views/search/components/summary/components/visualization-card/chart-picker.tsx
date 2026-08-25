@@ -1,4 +1,5 @@
 import { Flex, NativeSelect } from '@chakra-ui/react';
+
 import { ChartType } from '../../types';
 
 export const ChartTypePicker = (props: {
@@ -11,15 +12,16 @@ export const ChartTypePicker = (props: {
 }) => {
   return (
     <Flex justifyContent='flex-end'>
-      <NativeSelect.Root>
+      <NativeSelect.Root
+        size='xs'
+        disabled={props.disabled}
+        aria-label={
+          props.label ? `Chart type for ${props.label}` : 'Chart type'
+        }
+      >
         <NativeSelect.Field
-          aria-label={
-            props.label ? `Chart type for ${props.label}` : 'Chart type'
-          }
           width='unset'
-          size='xs'
           value={props.value}
-          disabled={props.disabled}
           onChange={e => props.onChange(e.target.value as ChartType)}
           style={{ textTransform: 'capitalize' }}
         >
