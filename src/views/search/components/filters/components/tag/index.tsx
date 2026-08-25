@@ -1,20 +1,20 @@
-import React, { useMemo } from 'react';
 import { Box, Button, HStack, Tag } from '@chakra-ui/react';
+import { isEqual } from 'lodash';
+import React, { useMemo } from 'react';
+import {
+  APPLY_DEFAULT_DATE_PARAM,
+  defaultQuery,
+} from 'src/views/search/config/defaultQuery';
+import { usePaginationContext } from 'src/views/search/context/pagination-context';
+
+import { SearchResultsHeading } from '../../../search-results-header';
 import {
   FilterConfig,
   SelectedFilterType,
   SelectedFilterValueType,
 } from '../../types';
-import {
-  APPLY_DEFAULT_DATE_PARAM,
-  defaultQuery,
-} from 'src/views/search/config/defaultQuery';
-import { isEqual } from 'lodash';
-import { generateTags } from './utils';
-import { SearchResultsHeading } from '../../../search-results-header';
-import { usePaginationContext } from 'src/views/search/context/pagination-context';
-
 import { queryFilterObject2String } from '../../utils/query-string';
+import { generateTags } from './utils';
 
 interface FilterTagsProps {
   filtersConfig: FilterConfig[];
@@ -37,9 +37,9 @@ export interface TagInfo {
  */
 
 const tagStyles = {
-  colorPalette: 'secondary',
-  size: 'sm',
-  variant: 'solid',
+  colorPalette: 'secondary' as const,
+  size: 'sm' as const,
+  variant: 'solid' as const,
 };
 export const FilterTags: React.FC<FilterTagsProps> = React.memo(
   ({ filtersConfig, selectedFilters, handleRouteUpdate, removeAllFilters }) => {
@@ -129,10 +129,11 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
           {tags.map(({ key, name, value, displayValue, filterKey }) => (
             <Tag.Root key={key} {...tagStyles}>
               <Tag.Label>{`${name}: ${displayValue}`}</Tag.Label>
-
-              <Tag.CloseTrigger
-                onClick={() => removeSelectedFilter(filterKey, value)}
-              />
+              <Tag.EndElement>
+                <Tag.CloseTrigger
+                  onClick={() => removeSelectedFilter(filterKey, value)}
+                />
+              </Tag.EndElement>
             </Tag.Root>
           ))}
         </HStack>

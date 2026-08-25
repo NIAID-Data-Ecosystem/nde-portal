@@ -1,5 +1,7 @@
+import { Skeleton } from '@chakra-ui/react';
 import React, { useMemo } from 'react';
 import { Table } from 'src/components/table';
+
 import { BaseColumn, ResultsTableProps } from './types';
 import { deriveControlledSortProps, getApiSortFieldForProperty } from './utils';
 
@@ -101,9 +103,9 @@ export const ResultsTable = <TColumn extends BaseColumn>({
           overflowY: 'auto',
         }}
         tableHeadProps={{
-          sx: {
-            th: { borderBottom: 'none' },
-            tr: { borderBottom: '1px solid', borderColor: 'gray.200' },
+          css: {
+            '& th': { borderBottom: 'none' },
+            '& tr': { borderBottom: '1px solid', borderColor: 'gray.200' },
           },
         }}
         getTableRowProps={(_, idx) => ({

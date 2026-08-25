@@ -1,9 +1,9 @@
+import { Box, BoxProps, HighlightProps, useHighlight } from '@chakra-ui/react';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
+import { ReactMarkdownOptions } from 'react-markdown/lib/react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-import { Box, BoxProps, HighlightProps, useHighlight } from '@chakra-ui/react';
-import { ReactMarkdownOptions } from 'react-markdown/lib/react-markdown';
 
 /**
  * Displays + formats HTML block content.

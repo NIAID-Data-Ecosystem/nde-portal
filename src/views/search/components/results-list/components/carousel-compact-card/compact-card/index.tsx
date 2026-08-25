@@ -1,6 +1,6 @@
-import React, { ReactNode } from 'react';
 import { BoxProps, Card, Skeleton, Text, TextProps } from '@chakra-ui/react';
 import NextLink from 'next/link';
+import React, { ReactNode } from 'react';
 import { TypeBanner } from 'src/components/resource-sections/components';
 import { TypeBannerProps } from 'src/components/resource-sections/components/type-banner';
 
@@ -81,8 +81,8 @@ const Header = ({ loading = false, children, ...boxProps }: HeaderProps) => {
       w='100%'
       color='link.color'
       _hover={{
-        p: { textDecoration: 'none' },
-        svg: {
+        '& p': { textDecoration: 'none' },
+        '& svg': {
           transform: 'translate(0px)',
           opacity: 0.9,
           transition: '0.2s ease-in-out',
@@ -90,7 +90,7 @@ const Header = ({ loading = false, children, ...boxProps }: HeaderProps) => {
       }}
       _visited={{
         color: 'link.color',
-        svg: { color: 'link.color' },
+        '& svg': { color: 'link.color' },
       }}
       {...boxProps}
     >
@@ -104,7 +104,7 @@ const Header = ({ loading = false, children, ...boxProps }: HeaderProps) => {
 // Title component
 interface LinkProps {
   href: string | { pathname: string; query: Record<string, any> };
-  asChild?: boolean;
+  as?: string;
 }
 
 interface TitleProps extends Omit<TextProps, 'children'> {

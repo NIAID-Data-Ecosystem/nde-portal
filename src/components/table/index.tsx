@@ -112,7 +112,6 @@ export interface TableProps<TData extends Record<string, string | number>> {
 // [NUM_ROWS]: num of rows per page
 const NUM_ROWS = [5, 10, 50, 100];
 
-const CELL_SX = { '>div': { my: 0 } };
 const ESTIMATED_ROW_HEIGHT = 120;
 
 interface MemoRowCellsProps {
@@ -161,7 +160,7 @@ const MemoRowCells = React.memo(
             as={cellAs}
             role='cell'
             alignItems='center'
-            sx={CELL_SX}
+            css={{ '& > div': { my: 0 } }}
             {...column.props}
             {...stickyProps}
           >

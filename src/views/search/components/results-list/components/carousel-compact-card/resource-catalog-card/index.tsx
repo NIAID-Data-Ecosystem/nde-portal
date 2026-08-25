@@ -1,20 +1,21 @@
+import { Button, Flex, Skeleton, Text } from '@chakra-ui/react';
 import React, { useMemo, useState } from 'react';
-import { Flex, Text, Button, Skeleton } from '@chakra-ui/react';
-import Tooltip from '../../../../../../../components/tooltip';
-import { FormattedResource } from 'src/utils/api/types';
-import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 import { ConditionsOfAccess, CreativeWorkStatus } from 'src/components/badges';
 import { HasAPI } from 'src/components/badges/components/HasAPI';
 import { MetadataLabel } from 'src/components/metadata';
+import { hasSourceOrganization } from 'src/components/resource-sections/components/type-banner';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { SearchableItems } from 'src/components/searchable-items';
-import { CompactCard } from '../compact-card';
-import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
-import { hasSourceOrganization } from 'src/components/resource-sections/components/type-banner';
+import { FormattedResource } from 'src/utils/api/types';
 import {
   SHOW_PROGRAM_RESOURCE_UI,
   SHOW_RETIRED_RESOURCE_CATALOG_UI,
 } from 'src/utils/feature-flags';
+import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
+
+import Tooltip from '../../../../../../../components/tooltip';
+import { CompactCard } from '../compact-card';
 
 interface ResourceCatalogCardProps {
   data?: FormattedResource | null;
@@ -125,10 +126,6 @@ export const ResourceCatalogCard = ({
               <Tooltip
                 content='Corresponds to the most recent of date modified, date published and date created.'
                 showArrow
-                bg='#fff'
-                sx={{
-                  color: 'text.body',
-                }}
               >
                 <Text fontSize='13px'>{date}</Text>
               </Tooltip>

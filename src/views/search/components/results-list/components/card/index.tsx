@@ -1,48 +1,49 @@
-import React, { useMemo } from 'react';
 import {
   Button,
   Card,
   Flex,
-  Icon,
-  Text,
-  Stack,
   Highlight,
   HStack,
+  Icon,
   Skeleton,
+  Stack,
+  Text,
 } from '@chakra-ui/react';
-import Tooltip from '../../../../../../components/tooltip';
 import { useInView } from '@react-spring/web';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import NextLink from 'next/link';
-import { FaCircleArrowRight, FaAngleRight, FaRegClock } from 'react-icons/fa6';
-import { FormattedResource } from 'src/utils/api/types';
-import { TypeBanner } from 'src/components/resource-sections/components';
-import MetadataAccordion from './metadata-accordion';
-import OperatingSystems from './operating-systems';
-import { SearchableItems } from 'src/components/searchable-items';
-import { DisplayHTMLContent } from 'src/components/html-content';
+import React, { useMemo } from 'react';
+import { FaAngleRight, FaCircleArrowRight, FaRegClock } from 'react-icons/fa6';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
+import { BookmarkButton } from 'src/components/bookmark-buttons/button';
+import { DisplayHTMLContent } from 'src/components/html-content';
+import { InfoLabel } from 'src/components/info-label';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
+import { TypeBanner } from 'src/components/resource-sections/components';
+import { SearchableItems } from 'src/components/searchable-items';
+import { SourceLogo } from 'src/components/source-logo';
+import {
+  formatSourcesWithLogos,
+  getAccessResourceURL,
+} from 'src/components/source-logo/helpers';
 import { ToggleContainer } from 'src/components/toggle-container';
+import { useAuth } from 'src/hooks/useAuth';
+import { useUserData } from 'src/hooks/useUserData';
+import { FormattedResource } from 'src/utils/api/types';
+import { ENABLE_AUTH } from 'src/utils/feature-flags';
+import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
+
+import Tooltip from '../../../../../../components/tooltip';
 import {
   CONTENT_TYPE_TOOLTIP,
   filterWords,
   getContentTypeItems,
 } from './helpers';
-import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
-import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
-import { InfoLabel } from 'src/components/info-label';
-import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
-import {
-  formatSourcesWithLogos,
-  getAccessResourceURL,
-} from 'src/components/source-logo/helpers';
-import { SourceLogo } from 'src/components/source-logo';
-import { BookmarkButton } from 'src/components/bookmark-buttons/button';
-import { useUserData } from 'src/hooks/useUserData';
-import { ENABLE_AUTH } from 'src/utils/feature-flags';
-import { useAuth } from 'src/hooks/useAuth';
+import MetadataAccordion from './metadata-accordion';
+import OperatingSystems from './operating-systems';
 
 interface SearchResultCardProps {
   loading?: boolean;
@@ -128,8 +129,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         pt={4}
         color='link.color'
         _hover={{
-          p: { textDecoration: 'none' },
-          svg: {
+          '& p': { textDecoration: 'none' },
+          '& svg': {
             transform: 'translate(0px)',
             opacity: 0.9,
             transition: '0.2s ease-in-out',
@@ -137,7 +138,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         }}
         _visited={{
           color: 'link.color',
-          svg: { color: 'link.color' },
+          '& svg': { color: 'link.color' },
         }}
         w='100%'
       >
@@ -162,7 +163,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
             }}
           >
             <DisplayHTMLContent
-              noOfLines={3}
+              lineClamp={3}
               content={name || alternateName || 'N/A'}
               fontWeight='semibold'
               color='inherit'
@@ -277,10 +278,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   <Tooltip
                     content='Corresponds to the most recent of date modified, date published and date created.'
                     showArrow
-                    bg='#fff'
-                    sx={{
-                      color: 'text.body',
-                    }}
                   >
                     <Flex whiteSpace='nowrap' alignItems='center'>
                       <Icon mr={2} asChild>

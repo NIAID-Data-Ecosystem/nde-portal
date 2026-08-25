@@ -1,11 +1,12 @@
+import { Skeleton, Text } from '@chakra-ui/react';
 import React from 'react';
-import { Text, Skeleton } from '@chakra-ui/react';
-import { DiseasePageProps } from 'src/views/diseases/types';
-import { CompactCard } from '../compact-card';
-import { TAB_LABELS } from 'src/views/search/config/tabs';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
+import { DiseasePageProps } from 'src/views/diseases/types';
+import { TAB_LABELS } from 'src/views/search/config/tabs';
+
+import { CompactCard } from '../compact-card';
 
 interface DiseaseOverviewCardProps {
   data?: DiseasePageProps | null;

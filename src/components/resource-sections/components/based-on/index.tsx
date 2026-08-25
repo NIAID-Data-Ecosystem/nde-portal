@@ -209,7 +209,7 @@ const BasedOnTable = ({
                             return (
                               <Cell
                                 key={`table-td-${item.key}-${column.key}`}
-                                sx={{ '>div': { my: 0 } }}
+                                css={{ '& > div': { my: 0 } }}
                                 {...column.props}
                               >
                                 {/* name */}

@@ -1,77 +1,78 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import { Collapsible, List, VStack } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { Collapsible, VStack, List } from '@chakra-ui/react';
-import Card from './components/card';
-import { ErrorMessage } from './components/error';
-import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
-import { useSearchResultsData } from '../../hooks/useSearchResultsData';
-import { EmptyState } from './components/empty';
-import { MAX_RESULTS, Pagination } from './components/pagination';
-import { TabType } from '../../types';
-import { useSearchTabsContext } from '../../context/search-tabs-context';
-import { usePaginationContext } from '../../context/pagination-context';
-import { updateRoute } from '../../utils/update-route';
-import { SearchResultsToolbar } from './components/toolbar';
+import React, { useCallback, useMemo, useState } from 'react';
 import Banner from 'src/components/banner';
 import {
-  SampleResultsTable,
-  ALL_SAMPLE_COLUMNS,
-} from './components/sample-results-table';
+  resolveStoredOrderedIds,
+  resolveStoredVisibleIds,
+} from 'src/components/select-and-order-popover';
+import { FetchSearchResultsResponse } from 'src/utils/api/types';
+import { SHOW_SEARCH_VIEW_MODES } from 'src/utils/feature-flags';
+
 import {
-  DataCollectionResultsTable,
-  ALL_DATA_COLLECTION_COLUMNS,
-} from './components/data-collection-results-table';
-import {
-  DatasetResultsTable,
-  ALL_DATASET_COLUMNS,
-} from './components/dataset-results-table';
-import {
-  ComputationalToolResultsTable,
-  ALL_COMPUTATIONAL_TOOL_COLUMNS,
-} from './components/computational-tool-results-table';
+  DATA_COLLECTION_FIELDS,
+  RESULT_FIELDS,
+  SAMPLE_FIELDS,
+} from '../../config/fields';
+import { TABS_WITH_VIEW_MODE } from '../../config/view-mode';
+import { usePaginationContext } from '../../context/pagination-context';
 import { useSearchResultsFetchedContext } from '../../context/search-results-fetched-context';
+import { useSearchTabsContext } from '../../context/search-tabs-context';
+import { BIOSAMPLE_EXTRA_FILTER } from '../../hooks/useBioSampleAggregation';
+import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
+import { useSearchResultsData } from '../../hooks/useSearchResultsData';
+import { useViewMode } from '../../hooks/useViewMode';
+import { TabType } from '../../types';
+import { updateRoute } from '../../utils/update-route';
+import Card from './components/card';
 import {
-  CustomizeColumnsPopover as SampleCustomizeColumnsPopover,
-  DEFAULT_VISIBLE_COLUMN_IDS as SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS,
-  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as SAMPLE_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-  CUSTOM_COLUMN_ORDER_STORAGE_KEY as SAMPLE_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
-} from './components/sample-results-table/components/CustomizeColumnsPopover';
+  ALL_COMPUTATIONAL_TOOL_COLUMNS,
+  ComputationalToolResultsTable,
+} from './components/computational-tool-results-table';
 import {
-  CustomizeColumnsPopover as DataCollectionCustomizeColumnsPopover,
-  DEFAULT_VISIBLE_COLUMN_IDS as DC_DEFAULT_VISIBLE_COLUMN_IDS,
-  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as DC_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-  CUSTOM_COLUMN_ORDER_STORAGE_KEY as DC_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
-} from './components/data-collection-results-table/components/CustomizeColumnsPopover';
-import {
-  CustomizeColumnsPopover as DatasetCustomizeColumnsPopover,
-  DEFAULT_VISIBLE_COLUMN_IDS as DATASET_DEFAULT_VISIBLE_COLUMN_IDS,
-  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as DATASET_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-  CUSTOM_COLUMN_ORDER_STORAGE_KEY as DATASET_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
-} from './components/dataset-results-table/components/CustomizeColumnsPopover';
-import {
+  CUSTOM_COLUMN_ORDER_STORAGE_KEY as CT_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as CT_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
   CustomizeColumnsPopover as ComputationalToolCustomizeColumnsPopover,
   DEFAULT_VISIBLE_COLUMN_IDS as CT_DEFAULT_VISIBLE_COLUMN_IDS,
-  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as CT_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-  CUSTOM_COLUMN_ORDER_STORAGE_KEY as CT_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
 } from './components/computational-tool-results-table/components/CustomizeColumnsPopover';
+import {
+  ALL_DATA_COLLECTION_COLUMNS,
+  DataCollectionResultsTable,
+} from './components/data-collection-results-table';
+import {
+  CUSTOM_COLUMN_ORDER_STORAGE_KEY as DC_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as DC_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+  CustomizeColumnsPopover as DataCollectionCustomizeColumnsPopover,
+  DEFAULT_VISIBLE_COLUMN_IDS as DC_DEFAULT_VISIBLE_COLUMN_IDS,
+} from './components/data-collection-results-table/components/CustomizeColumnsPopover';
+import {
+  ALL_DATASET_COLUMNS,
+  DatasetResultsTable,
+} from './components/dataset-results-table';
+import {
+  CUSTOM_COLUMN_ORDER_STORAGE_KEY as DATASET_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as DATASET_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+  CustomizeColumnsPopover as DatasetCustomizeColumnsPopover,
+  DEFAULT_VISIBLE_COLUMN_IDS as DATASET_DEFAULT_VISIBLE_COLUMN_IDS,
+} from './components/dataset-results-table/components/CustomizeColumnsPopover';
+import { EmptyState } from './components/empty';
+import { ErrorMessage } from './components/error';
+import { MAX_RESULTS, Pagination } from './components/pagination';
 import {
   COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS,
   DATASET_REQUIRED_COLUMN_IDS,
 } from './components/results-table/constants';
 import {
-  resolveStoredVisibleIds,
-  resolveStoredOrderedIds,
-} from 'src/components/select-and-order-popover';
-import { BIOSAMPLE_EXTRA_FILTER } from '../../hooks/useBioSampleAggregation';
-import { FetchSearchResultsResponse } from 'src/utils/api/types';
+  ALL_SAMPLE_COLUMNS,
+  SampleResultsTable,
+} from './components/sample-results-table';
 import {
-  RESULT_FIELDS,
-  SAMPLE_FIELDS,
-  DATA_COLLECTION_FIELDS,
-} from '../../config/fields';
-import { SHOW_SEARCH_VIEW_MODES } from 'src/utils/feature-flags';
-import { TABS_WITH_VIEW_MODE } from '../../config/view-mode';
-import { useViewMode } from '../../hooks/useViewMode';
+  CUSTOM_COLUMN_ORDER_STORAGE_KEY as SAMPLE_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
+  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as SAMPLE_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+  CustomizeColumnsPopover as SampleCustomizeColumnsPopover,
+  DEFAULT_VISIBLE_COLUMN_IDS as SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS,
+} from './components/sample-results-table/components/CustomizeColumnsPopover';
+import { SearchResultsToolbar } from './components/toolbar';
 import { ViewModeRadio } from './components/toolbar/components/view-mode-radio';
 
 const readFromStorage = (key: string, fallback: string[]): string[] => {
@@ -543,7 +544,7 @@ export const SearchResults = ({
               w='100%'
               asChild
             >
-              <UnorderedList>
+              <List.Root as='ul'>
                 {Array(numCards)
                   .fill(null)
                   .map((_, idx) => {
@@ -558,7 +559,7 @@ export const SearchResults = ({
                       </List.Item>
                     );
                   })}
-              </UnorderedList>
+              </List.Root>
             </VStack>
           )
         )}

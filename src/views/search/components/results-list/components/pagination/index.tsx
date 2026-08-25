@@ -1,19 +1,21 @@
-import React, { useEffect, useState } from 'react';
 import {
   Flex,
   Icon,
   NativeSelect,
-  VisuallyHidden,
   useMediaQuery,
+  VisuallyHidden,
 } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
 import {
-  FaAngleRight,
   FaAngleLeft,
-  FaAnglesRight,
+  FaAngleRight,
   FaAnglesLeft,
+  FaAnglesRight,
 } from 'react-icons/fa6';
+
 import { PaginationButton, PaginationButtonGroup } from './components/buttons';
 
+// [chakra-to-do]: Potentially replace with chakra built-in pagination component. See https://chakra-ui.com/docs/components/pagination
 /*
  [COMPONENT INFO]: Pagination
  Handles pagination for search results. Updates pages count based on the total results and the currently selected page.
@@ -80,9 +82,9 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
     };
 
     const options = generateOptions(selectedPage);
-    const [isLargerThanMd] = useMediaQuery('(min-width: 48em)', {
+    const [isLargerThanMd] = useMediaQuery(['(min-width: 48em)'], {
       ssr: true,
-      fallback: false,
+      fallback: [false],
     });
     return (
       <Flex
@@ -120,7 +122,7 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
           </PaginationButton>
 
           {/* Mobile */}
-          <NativeSelect.Root>
+          <NativeSelect.Root size='md'>
             <NativeSelect.Field
               aria-label={ariaLabel || 'Select page'}
               borderColor='gray.200'
@@ -128,7 +130,6 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
               display={{ base: 'block', md: 'none' }}
               onChange={e => handleSelectedPage(+e.target.value)}
               p={1}
-              size='md'
               value={selectedPage}
             >
               {options.map((option, idx) => {

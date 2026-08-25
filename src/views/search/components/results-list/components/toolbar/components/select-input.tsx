@@ -1,12 +1,13 @@
-import React from 'react';
 import { Flex, NativeSelect, Text } from '@chakra-ui/react';
+import React from 'react';
 
-interface SelectWithLabelProps extends NativeSelect.RootProps {
+interface SelectWithLabelProps
+  extends Omit<NativeSelect.FieldProps, 'onChange' | 'size'> {
   id: string;
   label: string;
   handleChange: (value: string | number) => void;
   options: { name: string; value: string | number; tooltip?: string }[];
-  value: string | number;
+  size?: NativeSelect.RootProps['size'];
 }
 
 /*
@@ -28,12 +29,11 @@ export const SelectWithLabel = ({
         <Text as='span' fontSize='sm' whiteSpace='nowrap' color='gray.900'>
           {label}
         </Text>
-        <NativeSelect.Root>
+        <NativeSelect.Root size={size}>
           <NativeSelect.Field
             id={id}
             aria-label={label}
-            size={size}
-            onChange={e => handleChange(e.target.value)}
+            onChange={e => handleChange(e.currentTarget.value)}
             value={value}
             bg='white'
             borderColor='gray.200'
