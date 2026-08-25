@@ -1,5 +1,3 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
-import NextLink from 'next/link';
 import {
   Box,
   Button,
@@ -10,9 +8,11 @@ import {
   Text,
   TextProps,
 } from '@chakra-ui/react';
+import NextLink from 'next/link';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'src/components/link';
-import { DefinedTerm } from 'src/utils/api/types';
 import Tooltip from 'src/components/tooltip';
+import { DefinedTerm } from 'src/utils/api/types';
 
 const DEFAULT_MAX_VISIBLE_TAGS = 10;
 
@@ -32,7 +32,7 @@ export const TagCellList = ({
     : value ?? [];
 
   if (!loading && items.length === 0) {
-    return <TextCell value={''} loading={loading} noOfLines={1} />;
+    return <TextCell value={''} loading={loading} lineClamp={1} />;
   }
 
   const hiddenCount = loading ? 0 : Math.max(0, items.length - maxVisible);
@@ -46,7 +46,7 @@ export const TagCellList = ({
         <TagCell
           key={i}
           value={v?.name || ''}
-          noOfLines={1}
+          lineClamp={1}
           loading={loading}
           {...tagProps}
         />
@@ -68,12 +68,12 @@ export const TagCellList = ({
 
 export const TagCell = ({
   value,
-  noOfLines = 2,
+  lineClamp = 2,
   loading,
   ...props
 }: {
   value: string;
-  noOfLines?: number;
+  lineClamp?: number;
   loading?: boolean;
 } & Tag.RootProps) => {
   const [isTruncated, setIsTruncated] = useState(false);
@@ -92,7 +92,7 @@ export const TagCell = ({
         el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth,
       );
     }
-  }, [loading, label, noOfLines]);
+  }, [loading, label, lineClamp]);
 
   if (loading) {
     return <Skeleton loading width='80px' height='20px' />;
@@ -102,7 +102,7 @@ export const TagCell = ({
       <Box>
         <Tag.Root
           variant='subtle'
-          lineClamp={noOfLines}
+          lineClamp={lineClamp}
           borderRadius='full'
           {...props}
         >
@@ -116,14 +116,14 @@ export const TagCell = ({
 export const TextCell = ({
   value,
   loading,
-  noOfLines,
+  lineClamp,
   expandable = false,
   children,
   ...props
 }: TextProps & {
   value: string;
   loading?: boolean;
-  // When true, the text is clamped to `noOfLines` and a "Show more"/"Show
+  // When true, the text is clamped to `lineClamp` and a "Show more"/"Show
   // less" toggle is rendered (only if the content is actually truncated).
   expandable?: boolean;
 }) => {
@@ -141,12 +141,12 @@ export const TextCell = ({
     if (el) {
       setIsTruncated(el.scrollHeight > el.clientHeight);
     }
-  }, [expandable, loading, value, children, noOfLines]);
+  }, [expandable, loading, value, children, lineClamp]);
 
-  const clampLines = expandable && expanded ? undefined : noOfLines;
+  const clampLines = expandable && expanded ? undefined : lineClamp;
 
   return (
-    <SkeletonText loading={loading} noOfLines={noOfLines} gap='2' w='100%'>
+    <SkeletonText loading={loading} lineClamp={lineClamp} gap='2' w='100%'>
       <Text
         ref={textRef}
         lineClamp={clampLines}
@@ -185,7 +185,7 @@ export const TextCellWithLink = ({
   isExternal?: boolean;
 }) => {
   return (
-    <SkeletonText loading={loading} noOfLines={2} fontSize='xs' w='100%'>
+    <SkeletonText loading={loading} lineClamp={2} fontSize='xs' w='100%'>
       {url ? (
         <NextLink href={url} prefetch={false} passHref>
           <Link as='div' isExternal={isExternal}>

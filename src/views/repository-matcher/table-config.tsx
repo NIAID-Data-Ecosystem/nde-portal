@@ -1,27 +1,28 @@
-import React from 'react';
 import { Circle, HStack, Tag, Text, VStack } from '@chakra-ui/react';
+import React from 'react';
+import {
+  getMetadataDescription,
+  getMetadataName,
+} from 'src/components/metadata';
 import { AccessTypes, DefinedTerm } from 'src/utils/api/types';
 import {
   formatConditionsOfAccess,
   getColorScheme,
   transformConditionsOfAccessLabel,
 } from 'src/utils/formatting/formatConditionsOfAccess';
+
 import {
-  getMetadataDescription,
-  getMetadataName,
-} from 'src/components/metadata';
-import {
-  TagCellList,
   TagCell,
+  TagCellList,
   TextCell,
   TextCellWithLink,
 } from './components/TableCells';
-import { itemTypes } from './utils';
 import {
   NameValue,
   RepositoryMatcherColumn,
   RepositoryMatcherItem,
 } from './types';
+import { itemTypes } from './utils';
 
 const tagCellStyles = {
   bg: 'page.alt',
@@ -81,7 +82,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         <TextCell
           value={value || ''}
           loading={loading}
-          noOfLines={8}
+          lineClamp={8}
           expandable
         />
       );
@@ -99,7 +100,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   //   }: {
   //     value: RepositoryMatcherItem['abstract'];
   //     loading?: boolean;
-  //   }) => <TextCell value={value || ''} loading={loading} noOfLines={3} />,
+  //   }) => <TextCell value={value || ''} loading={loading} lineClamp={3} />,
   // },
   {
     id: 'researchDomain',
@@ -118,7 +119,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       const items = loading ? Array.from({ length: 3 }, () => '') : value ?? [];
 
       if (!loading && items.length === 0) {
-        return <TextCell value={''} loading={loading} noOfLines={1} />;
+        return <TextCell value={''} loading={loading} lineClamp={1} />;
       }
       return (
         <HStack flexWrap='wrap'>
@@ -126,7 +127,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
             <TagCell
               key={i}
               value={v}
-              noOfLines={1}
+              lineClamp={1}
               loading={loading}
               {...tagCellStyles}
             />
@@ -351,7 +352,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   //             key={i}
   //             value={v.minValue ? `${v.minValue} ${v.unitText || ''}` : ''}
   //             textAlign='end'
-  //             noOfLines={undefined}
+  //             lineClamp={undefined}
   //           >
   //             <Text as='span' fontWeight='semibold' fontSize='inherit'>
   //               {v.minValue?.toLocaleString() || '-'}
@@ -454,7 +455,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       loading?: boolean;
     }) => {
       if (!loading && (!value || !value.some(v => v.name))) {
-        return <TextCell value={''} loading={loading} noOfLines={1} />;
+        return <TextCell value={''} loading={loading} lineClamp={1} />;
       }
       return <TagCellList value={value} loading={loading} {...tagCellStyles} />;
     },
@@ -484,7 +485,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   //     value: string;
   //     loading?: boolean;
   //   }) => {
-  //     return <TextCell value={value} loading={loading} noOfLines={1} />;
+  //     return <TextCell value={value} loading={loading} lineClamp={1} />;
   //   },
   // },
   {
@@ -511,11 +512,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       loading?: boolean;
     }) => {
       if (loading) {
-        return <TextCell value={''} loading={true} noOfLines={1} />;
+        return <TextCell value={''} loading={true} lineClamp={1} />;
       }
       // Format temporal coverage as "startDate - endDate" or just "startDate" if endDate is missing or just endDate if startDate is missing. If multiple temporal coverages are present, separate them with commas.
       if (!value || value.length === 0) {
-        return <TextCell value={''} loading={loading} noOfLines={1} />;
+        return <TextCell value={''} loading={loading} lineClamp={1} />;
       }
       const formatted = value.map(tc => {
         if (!tc.startDate && !tc.endDate && tc.name) {
@@ -574,7 +575,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
           />
         );
       }
-      return <TextCell value={value} loading={loading} noOfLines={1} />;
+      return <TextCell value={value} loading={loading} lineClamp={1} />;
     },
     info: {
       description: getMetadataDescription('license') || '',
@@ -674,13 +675,13 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   //           />
   //         );
   //       }
-  //       return <TextCell value={value} loading={loading} noOfLines={1} />;
+  //       return <TextCell value={value} loading={loading} lineClamp={1} />;
   //     }
 
   //     const usageDetails = Array.isArray(value) ? value : value ? [value] : [];
 
   //     if (!loading && usageDetails.length === 0) {
-  //       return <TextCell value={''} loading={loading} noOfLines={1} />;
+  //       return <TextCell value={''} loading={loading} lineClamp={1} />;
   //     } else if (usageDetails.length > 0) {
   //       return (
   //         <VStack alignItems='flex-start'>
@@ -701,7 +702,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   //                 <TextCell
   //                   value={u.description}
   //                   loading={loading}
-  //                   noOfLines={3}
+  //                   lineClamp={3}
   //                 />
   //               )}
   //             </Box>
@@ -709,7 +710,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   //         </VStack>
   //       );
   //     }
-  //     return <TextCell value={''} loading={loading} noOfLines={1} />;
+  //     return <TextCell value={''} loading={loading} lineClamp={1} />;
   //   },
   // },
 ];

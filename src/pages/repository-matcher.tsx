@@ -1,4 +1,3 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Checkbox,
@@ -10,8 +9,8 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-
 import { NextPage } from 'next';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { SearchInput } from 'src/components/search-input';
 import {
@@ -20,10 +19,11 @@ import {
 } from 'src/components/select-and-order-popover';
 import { Table } from 'src/components/table';
 import {
-  CustomizeColumnsPopover,
   CUSTOM_COLUMN_ORDER_STORAGE_KEY,
   CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+  CustomizeColumnsPopover,
 } from 'src/views/repository-matcher/components/CustomizeColumnsPopover';
+import { DataDictionary } from 'src/views/repository-matcher/components/DataDictionary';
 import { Filters } from 'src/views/repository-matcher/components/Filters';
 import { useRepositoryMatcherData } from 'src/views/repository-matcher/hooks/useRepositoryMatcherData';
 import {
@@ -32,7 +32,6 @@ import {
 } from 'src/views/repository-matcher/hooks/useRepositoryMatcherFilters';
 import { useSearchedData } from 'src/views/repository-matcher/hooks/useSearchedData';
 import { REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
-import { DataDictionary } from 'src/views/repository-matcher/components/DataDictionary';
 
 const TABLE_CONTAINER_PROPS = {
   overflowX: 'auto' as const,
@@ -401,7 +400,7 @@ const RepositoryMatcher: NextPage = () => {
             </Text>
             <VStack alignItems='flex-end'>
               <Checkbox.Root
-                onCheckedChange={e => setStickyFirstColumn(e.target.checked)}
+                onCheckedChange={e => setStickyFirstColumn(!!e.checked)}
                 colorPalette='primary'
                 checked={stickyFirstColumn}
               >
