@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react';
 import {
   Box,
   Circle,
@@ -10,23 +9,24 @@ import {
   Tabs,
   Text,
 } from '@chakra-ui/react';
-import type { NextPage } from 'next';
-import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
-import LocalNavigation from 'src/components/resource-sections/components/navigation';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import type { NextPage } from 'next';
+import React, { useEffect, useState } from 'react';
+import { FaLightbulb } from 'react-icons/fa6';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-import type { ContentProps } from 'src/views/integration/types';
-import { Error } from 'src/components/error';
 import Empty from 'src/components/empty';
+import { Error } from 'src/components/error';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
+import LocalNavigation from 'src/components/resource-sections/components/navigation';
 import {
-  ParagraphSection,
   ListBlock,
+  ParagraphSection,
 } from 'src/views/integration/components/Blocks';
 import { StepCard } from 'src/views/integration/components/Card';
-import { FaLightbulb } from 'react-icons/fa6';
+import type { ContentProps } from 'src/views/integration/types';
 
 interface IntegrationProps {
   data?: { page: ContentProps };
@@ -138,12 +138,13 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
                     {content.tabs.panels?.map(({ id, title }) => (
                       <Tabs.Trigger
                         key={id}
+                        value={id.toString()}
                         fontSize='sm'
                         color='blackAlpha.500'
                         _selected={{
                           borderBottomColor: 'primary.400',
                           color: 'primary.500',
-                          ['.tag']: {
+                          '& .tag': {
                             opacity: 1,
                           },
                         }}
@@ -159,7 +160,12 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
                         card => card.content && card.isRequired,
                       ).length;
                       return (
-                        <Tabs.Content key={id} p={0} py={2}>
+                        <Tabs.Content
+                          key={id}
+                          value={id.toString()}
+                          p={0}
+                          py={2}
+                        >
                           {cards?.map(card => {
                             if (card.isRequired) {
                               stepIndex++;

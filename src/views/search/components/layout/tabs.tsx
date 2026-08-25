@@ -44,11 +44,9 @@ export const SearchTabs = ({
             id={tab.id}
             value={tab.id}
             aria-label={tab.types.map(t => t.label).join(', ')}
-            css={{
-              '&[data-selected]': {
-                color: `${colorPalette}.500`,
-                bg: '#fff',
-              },
+            _selected={{
+              color: `${colorPalette}.500`,
+              bg: '#fff',
             }}
           >
             <TabLabels types={tab.types} colorPalette={colorPalette} />
