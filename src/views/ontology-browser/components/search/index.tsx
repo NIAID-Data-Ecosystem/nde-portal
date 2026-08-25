@@ -1,4 +1,3 @@
-import React, { useEffect, useState, useCallback } from 'react';
 import {
   Alert,
   Button,
@@ -9,20 +8,22 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
-import {
-  OntologyOption,
-  searchOntologyAPI,
-  SearchParams,
-} from '../../utils/api-helpers';
+import { useRouter } from 'next/router';
+import React, { useCallback, useEffect, useState } from 'react';
+import { CheckboxList } from 'src/components/checkbox-list';
 import {
   DropdownInput,
   InputWithDropdown,
 } from 'src/components/input-with-dropdown';
 import { DropdownContent } from 'src/components/input-with-dropdown/components/DropdownContent';
-import { CheckboxList } from 'src/components/checkbox-list';
 import { useDebounceValue } from 'usehooks-ts';
+
+import {
+  OntologyOption,
+  searchOntologyAPI,
+  SearchParams,
+} from '../../utils/api-helpers';
 import { DropdownListItem } from './dropdown-list-item';
 
 interface OntologyBrowserSearchProps {
@@ -264,7 +265,7 @@ export const OntologyBrowserSearch = ({
           label={
             <Text
               as='span'
-              isTruncated
+              truncate
               color='inherit'
               display='flex'
               alignItems='flex-end'

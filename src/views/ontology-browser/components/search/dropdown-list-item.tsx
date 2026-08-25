@@ -1,7 +1,7 @@
+import { Box, Highlight, Icon, List, Text } from '@chakra-ui/react';
 import React from 'react';
-import { Box, Highlight, Icon, Text, List } from '@chakra-ui/react';
-import { useDropdownContext } from 'src/components/input-with-dropdown';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { useDropdownContext } from 'src/components/input-with-dropdown';
 
 export const DropdownListItem = React.memo(
   ({
@@ -55,12 +55,12 @@ export const DropdownListItem = React.memo(
           )}
 
           <Text
-            size='sm'
-            lineHeight='short'
             color='text.body'
-            wordBreak='break-word'
+            fontSize='sm'
             fontWeight='normal'
+            lineHeight='short'
             textAlign='left'
+            wordBreak='break-word'
           >
             <Highlight
               query={highlight}

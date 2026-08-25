@@ -1,44 +1,45 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Flex,
   HStack,
   Icon,
   IconButton,
-  Text,
-  Stack,
   List,
+  Stack,
   StackSeparator,
+  Text,
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   FaAngleRight,
   FaMagnifyingGlass,
   FaMinus,
   FaPlus,
 } from 'react-icons/fa6';
-import {
-  fetchChildrenFromBioThingsAPI,
-  fetchPortalCounts,
-} from '../../../utils/api-helpers';
 import { Link } from 'src/components/link';
+import Tooltip from 'src/components/tooltip';
 import { useLocalStorage } from 'usehooks-ts';
+
 import {
   OntologyLineageItemWithCounts,
   OntologyPagination,
 } from '../../../types';
-import { getChildren, sortChildrenList } from '../../../utils/ontology-helpers';
 import {
-  getTooltipLabelByCountType,
+  fetchChildrenFromBioThingsAPI,
+  fetchPortalCounts,
+} from '../../../utils/api-helpers';
+import { getChildren, sortChildrenList } from '../../../utils/ontology-helpers';
+import { ErrorMessage } from '../../error-message';
+import {
+  getTooltipContentByCountType,
   OntologyBrowserCountTag,
 } from '../../ontology-browser-count-tag';
+import { DEFAULT_ONTOLOGY_BROWSER_SETTINGS } from '../../settings';
+import { transformSettingsToLocalStorageConfig } from '../../settings/helpers';
+import { MARGIN, SIZE, TreeProps } from '..';
 import { Pagination } from '../components/pagination';
 import { Warning } from '../components/warning';
-import { TreeProps, MARGIN, SIZE } from '..';
-import { transformSettingsToLocalStorageConfig } from '../../settings/helpers';
-import { DEFAULT_ONTOLOGY_BROWSER_SETTINGS } from '../../settings';
-import { ErrorMessage } from '../../error-message';
-import Tooltip from 'src/components/tooltip';
 
 const hasZeroCounts = (node: OntologyLineageItemWithCounts) =>
   node?.counts?.termCount === 0 && node?.counts?.termAndChildrenCount === 0;
@@ -284,8 +285,8 @@ export const TreeNode = (props: {
               {node.ontologyName} | {node.taxonId}
             </Text>
             <Tooltip
-              content={getTooltipLabelByCountType('termCount')}
-              placement='bottom'
+              content={getTooltipContentByCountType('termCount')}
+              positioning={{ placement: 'bottom' }}
             >
               <Link
                 href={`/search?q=${
@@ -315,14 +316,16 @@ export const TreeNode = (props: {
           <HStack flex={1} alignItems='unset' gap={3}>
             <OntologyBrowserCountTag
               loading={isLoading}
-              tooltipLabel={getTooltipLabelByCountType('termCount')}
+              tooltipLabel={getTooltipContentByCountType('termCount')}
             >
               {node?.counts?.termCount?.toLocaleString() || 0}
             </OntologyBrowserCountTag>
             <StackSeparator borderColor='gray.100' />
             <OntologyBrowserCountTag
               loading={isLoading}
-              tooltipLabel={getTooltipLabelByCountType('termAndChildrenCount')}
+              tooltipLabel={getTooltipContentByCountType(
+                'termAndChildrenCount',
+              )}
             >
               {node?.counts?.termAndChildrenCount?.toLocaleString() || 0}
             </OntologyBrowserCountTag>

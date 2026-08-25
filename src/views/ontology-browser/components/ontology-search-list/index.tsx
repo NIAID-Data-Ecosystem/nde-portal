@@ -1,5 +1,3 @@
-import React from 'react';
-import NextLink from 'next/link';
 import {
   Box,
   Button,
@@ -12,10 +10,13 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import { FaAnglesRight, FaMagnifyingGlass, FaX } from 'react-icons/fa6';
+import NextLink from 'next/link';
 import { useRouter } from 'next/router';
+import React from 'react';
+import { FaAnglesRight, FaMagnifyingGlass, FaX } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { SearchListItem } from 'src/pages/ontology-browser';
+
 import { ListToggle } from './toggle';
 
 const WIDTH = 400;
@@ -112,7 +113,7 @@ export const OntologySearchList = ({
               <Flex justifyContent='space-between' w='100%' px={4} py={2}>
                 <Flex fontSize='sm'>
                   <RadioGroup.Root
-                    onValueChange={setUnion}
+                    onValueChange={e => e.value && setUnion(e.value)}
                     value={union}
                     size='sm'
                     disabled={searchList.length <= 1}

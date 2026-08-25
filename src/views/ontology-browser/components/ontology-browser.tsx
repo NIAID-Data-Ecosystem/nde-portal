@@ -1,4 +1,3 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   Box,
@@ -8,31 +7,33 @@ import {
   Stack,
   StackSeparator,
 } from '@chakra-ui/react';
-import { useQuery, useQueries } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
-import {
-  fetchLineageFromBioThingsAPI,
-  fetchPortalCounts,
-} from '../utils/api-helpers';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
+
 import {
   OntologyLineageItemWithCounts,
   OntologyLineageRequestParams,
 } from '../types';
+import {
+  fetchLineageFromBioThingsAPI,
+  fetchPortalCounts,
+} from '../utils/api-helpers';
+import { mergePreviousLineageWithChildrenData } from '../utils/ontology-helpers';
+import { getTooltipContentByCountType } from './ontology-browser-count-tag';
 import { OntologyBrowserHeader } from './ontology-browser-header';
 import {
   DEFAULT_ONTOLOGY_BROWSER_SETTINGS,
   OntologyBrowserSettings,
 } from './settings';
+import { transformSettingsToLocalStorageConfig } from './settings/helpers';
 import { Tree } from './tree';
 import { OntologyTreeBreadcrumbs } from './tree/components/breadcrumbs';
-import { transformSettingsToLocalStorageConfig } from './settings/helpers';
-import { mergePreviousLineageWithChildrenData } from '../utils/ontology-helpers';
 import {
   OntologyTreeHeaderItem,
   OntologyTreeHeaders,
 } from './tree/components/tree-headers';
-import { getTooltipLabelByCountType } from './ontology-browser-count-tag';
 
 export const OntologyBrowser = ({
   searchList,
@@ -238,12 +239,12 @@ export const OntologyBrowser = ({
                   <HStack justifyContent='flex-end' flex={1} gap={3}>
                     <OntologyTreeHeaderItem
                       label='Exact Matches'
-                      tooltipLabel={getTooltipLabelByCountType('termCount')}
+                      tooltipContent={getTooltipContentByCountType('termCount')}
                     />
                     <StackSeparator borderColor='gray.100' />
                     <OntologyTreeHeaderItem
                       label='Matches including sub-terms'
-                      tooltipLabel={getTooltipLabelByCountType(
+                      tooltipContent={getTooltipContentByCountType(
                         'termAndChildrenCount',
                       )}
                     />

@@ -1,5 +1,6 @@
 import { Flex, Spinner, Text } from '@chakra-ui/react';
 import Tooltip from 'src/components/tooltip';
+
 import { CountsType } from '../types';
 
 /**
@@ -8,7 +9,7 @@ import { CountsType } from '../types';
  * @returns - The tooltip label for the specified count type.
  *
  */
-export const getTooltipLabelByCountType = (type: keyof CountsType) => {
+export const getTooltipContentByCountType = (type: keyof CountsType) => {
   if (type === 'termCount') {
     return (
       <>
@@ -43,7 +44,7 @@ export const OntologyBrowserCountTag = ({
 }) => {
   return (
     <Flex minW={120} maxW={130}>
-      <Tooltip content={tooltipLabel} mx={1}>
+      <Tooltip content={tooltipLabel} contentProps={{ mx: 1 }}>
         {loading ? (
           <Spinner size='sm' color='primary.500' />
         ) : (
