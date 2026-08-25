@@ -1,51 +1,52 @@
-import React, { useMemo } from 'react';
-import type { NextPage } from 'next';
 import {
   Box,
   Button,
   ButtonGroup,
+  Card,
   Flex,
+  Heading,
   Icon,
   Image,
-  Text,
-  Heading,
-  VStack,
-  Stack,
-  Card,
   Separator,
+  Stack,
+  Text,
+  VStack,
 } from '@chakra-ui/react';
+import HOMEPAGE_COPY from 'configs/homepage.json';
+import HOME_QUERIES from 'configs/queries/home-queries.json';
+import type { NextPage } from 'next';
+import NextLink from 'next/link';
+import React, { useMemo } from 'react';
+import { FaGithub, FaMagnifyingGlass, FaRegEnvelope } from 'react-icons/fa6';
 import {
   getPageSeoConfig,
   PageContainer,
   PageContent,
   Search,
 } from 'src/components/page-container';
-import HOMEPAGE_COPY from 'configs/homepage.json';
-import HOME_QUERIES from 'configs/queries/home-queries.json';
-import NextLink from 'next/link';
-import { FaMagnifyingGlass, FaRegEnvelope, FaGithub } from 'react-icons/fa6';
 import { useRepoData } from 'src/hooks/api/useRepoData';
-import { LandingPageCards } from 'src/views/home/components/LandingPageCards/';
-import {
-  NewsCarousel,
-  fetchNews,
-} from 'src/views/home/components/NewsCarousel';
-import { NewsOrEventsObject, fetchEvents } from './updates';
-import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
-import { HeroBanner } from 'src/views/home/components/HeroBanner';
-import {
-  fetchAllFeaturedPages,
-  transformFeaturedContentForCarousel,
-} from 'src/views/features/helpers';
 import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
-import { useReadLocalStorage } from 'usehooks-ts';
 import {
   formatConditionsOfAccess,
   transformConditionsOfAccessLabel,
 } from 'src/utils/formatting/formatConditionsOfAccess';
+import {
+  fetchAllFeaturedPages,
+  transformFeaturedContentForCarousel,
+} from 'src/views/features/helpers';
+import { HeroBanner } from 'src/views/home/components/HeroBanner';
+import { LandingPageCards } from 'src/views/home/components/LandingPageCards/';
+import {
+  fetchNews,
+  NewsCarousel,
+} from 'src/views/home/components/NewsCarousel';
+import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { formatDomainName } from 'src/views/home/components/TableWithSearch/helpers';
 import { buildItemUrl } from 'src/views/repository-matcher/utils';
+import { useReadLocalStorage } from 'usehooks-ts';
+
+import { fetchEvents, NewsOrEventsObject } from './updates';
 
 const Home: NextPage<{
   data: {
@@ -144,13 +145,13 @@ const Home: NextPage<{
                   {HOME_QUERIES.map(query => {
                     return (
                       <Button
+                        key={query.title}
                         size='sm'
                         colorPalette='niaid'
                         fontWeight='semibold'
                         asChild
                       >
                         <NextLink
-                          key={query.title}
                           href={{
                             pathname: `/search`,
                             query: {
@@ -236,7 +237,7 @@ const Home: NextPage<{
                       asChild
                     >
                       <NextLink href='/knowledge-center/getting-started-with-niaid-data-ecosystem-discovery-portal'>
-                        <Text isTruncated color='inherit'>
+                        <Text truncate color='inherit'>
                           Read more about getting started
                         </Text>
                       </NextLink>
