@@ -81,18 +81,18 @@ export const colors = defineTokens.colors({
   //   alt: { value: '#F5F6FA' },
   //   placeholder: { value: '#9AA6B5' },
   // },
-  // text: {
-  //   body: { value: '#404B56' },
-  //   heading: { value: '#2F2F2F' },
-  // },
+  text: {
+    body: { value: '#404B56' },
+    heading: { value: '#2F2F2F' },
+  },
   // navigation: {
   //   bg: { value: '#262626' },
   //   hover: { value: '#1B1B1B' },
   // },
-  // link: {
-  //   color: { value: '#246CD3' },
-  //   visited: { value: '#6F57B5' },
-  // },
+  link: {
+    color: { value: '#246CD3' },
+    visited: { value: '#6F57B5' },
+  },
   // status: {
   //   success: { value: '#17805F' },
   //   success_lt: { value: '#F2F5F4' },

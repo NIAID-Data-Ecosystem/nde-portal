@@ -1,7 +1,8 @@
 import React from 'react';
+
 import { TransformedNavigationDropdown } from '../types';
-import { NavTopLevelLink } from './nav-desktop-top-level-link';
 import { NavDropdownMenu, NavDropdownTrigger } from './nav-desktop-dropdown';
+import { NavTopLevelLink } from './nav-desktop-top-level-link';
 
 interface NavBarItemProps extends TransformedNavigationDropdown {
   isActive?: boolean;

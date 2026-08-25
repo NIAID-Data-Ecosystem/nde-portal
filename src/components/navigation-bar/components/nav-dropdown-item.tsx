@@ -33,8 +33,8 @@ const SHARED_DROPDOWN_ITEM_STYLES = {
   py: 2,
   rounded: 'md',
   w: '100%',
-  justify: 'space-between',
-  align: 'center',
+  justifyContent: 'space-between',
+  alignItems: 'center',
 };
 
 /** Label + optional description, with an external-link icon when applicable. */
@@ -52,17 +52,16 @@ const DropdownItemContent = ({
       {icon && (
         <Icon as={icon} w={5} h={5} color='niaid.700' aria-hidden='true' />
       )}
-      <Text className='label' transition='all .3s ease' fontWeight={600}>
+      <Text
+        className='label'
+        transition='all .3s ease'
+        fontWeight={600}
+        fontSize='md'
+      >
         {label}
       </Text>
       {isExternal && (
-        <Icon
-          w={3}
-          h={3}
-          color='niaid.700'
-          aria-label='Opens in new tab'
-          asChild
-        >
+        <Icon w={3} h={3} color='inherit' aria-label='Opens in new tab' asChild>
           <FaArrowUpRightFromSquare />
         </Icon>
       )}
@@ -135,17 +134,16 @@ export const NavDropdownItem = ({
         {...SHARED_DROPDOWN_ITEM_STYLES}
         color='gray.900'
         _hover={{ bg: 'niaid.50', color: 'gray.900' }}
-        asChild
+        as='button'
+        onClick={onClick}
       >
-        <button type='button' onClick={onClick}>
-          <DropdownItemContent
-            label={label}
-            icon={icon}
-            description={description}
-            isExternal={isExternal}
-          />
-          <DropdownItemToggleIcon isOpen={isOpen} />
-        </button>
+        <DropdownItemContent
+          label={label}
+          icon={icon}
+          description={description}
+          isExternal={isExternal}
+        />
+        <DropdownItemToggleIcon isOpen={isOpen} />
       </Flex>
     );
   }
@@ -156,6 +154,7 @@ export const NavDropdownItem = ({
       href={href}
       target={isExternal ? '_blank' : undefined}
       rel={isExternal ? 'noopener noreferrer' : undefined}
+      variant='unstyled'
       color='niaid.800'
       {...SHARED_DROPDOWN_ITEM_STYLES}
       _hover={{

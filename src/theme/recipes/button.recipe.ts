@@ -29,8 +29,9 @@ firing on touch devices.
 export const buttonRecipe = defineRecipe({
   base: {
     borderRadius: 'semi',
-    fontWeight: 'normal',
+    fontWeight: 'medium',
     fontFamily: 'body',
+    height: 'unset',
   },
   variants: {
     size: {
@@ -41,12 +42,6 @@ export const buttonRecipe = defineRecipe({
       },
       md: {
         fontSize: 'md',
-        px: 8,
-        py: 4,
-      },
-      // Custom size, additive to Chakra's 2xs-2xl scale. The app default.
-      base: {
-        height: 'unset',
         px: 8,
         py: 4,
       },
@@ -90,6 +85,8 @@ export const buttonRecipe = defineRecipe({
         },
       },
       unstyled: {
+        height: 'unset',
+        borderRadius: 'none',
         background: 'transparent',
         color: 'inherit',
         '&:hover': {
@@ -101,7 +98,8 @@ export const buttonRecipe = defineRecipe({
   },
 
   defaultVariants: {
-    size: 'base',
+    size: 'md',
     variant: 'solid',
+    colorPalette: 'primary',
   },
 });

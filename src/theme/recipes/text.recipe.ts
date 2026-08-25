@@ -12,4 +12,7 @@ export const textRecipe = defineRecipe({
   base: {
     color: 'text.body',
   },
+  defaultVariants: {
+    variant: 'text.body',
+  },
 });
