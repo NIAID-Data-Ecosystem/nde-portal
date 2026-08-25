@@ -1,11 +1,12 @@
+import { Field, Switch, VStack } from '@chakra-ui/react';
 import React from 'react';
-import { Switch, VStack, Field } from '@chakra-ui/react';
 import { useLocalStorage } from 'usehooks-ts';
-import { BrowserSettings } from '../index';
+
 import {
   LocalStorageConfig,
   transformSettingsToLocalStorageConfig,
 } from '../helpers';
+import { BrowserSettings } from '../index';
 
 /**
  * OntologyViewSettings
@@ -43,17 +44,24 @@ export const OntologyViewSettings = ({
           <Field.Label htmlFor={`switch-${key}`} mb='0' fontSize='sm'>
             {setting.label}
           </Field.Label>
-          <Switch
+
+          <Switch.Root
             id={`switch-${key}`}
             colorPalette='primary'
             checked={viewSettings[key as keyof LocalStorageConfig]}
-            onValueChange={() =>
+            onCheckedChange={() =>
               setViewSettings({
                 ...viewSettings,
                 [key]: !viewSettings[key as keyof LocalStorageConfig],
               })
             }
-          />
+          >
+            <Switch.HiddenInput />
+            <Switch.Control>
+              <Switch.Thumb />
+            </Switch.Control>
+            <Switch.Label />
+          </Switch.Root>
         </Field.Root>
       ))}
     </VStack>

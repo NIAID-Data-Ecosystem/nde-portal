@@ -2,23 +2,23 @@
  * User Settings Page - Protected route requiring authentication
  */
 
-import { ReactNode } from 'react';
 import {
   Box,
+  Button,
   Heading,
-  Text,
-  VStack,
   HStack,
   Link,
-  Button,
   Switch,
+  Text,
+  VStack,
 } from '@chakra-ui/react';
-import { useAuth } from 'src/hooks/useAuth';
+import { ReactNode } from 'react';
 import { withAuth } from 'src/components/auth/withAuth';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
+import { useAuth } from 'src/hooks/useAuth';
+import { useUserData } from 'src/hooks/useUserData';
 import { UserPreferencesKeys } from 'src/hooks/useUserData/types';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
-import { useUserData } from 'src/hooks/useUserData';
 
 const SETTINGS_COPY = {
   page: {
@@ -134,7 +134,7 @@ function SettingsSection({
 function SettingToggle({
   label,
   description,
-  isChecked,
+  checked,
   onChange,
   showBorder,
   alert,
@@ -142,7 +142,7 @@ function SettingToggle({
 }: {
   label: string;
   description: ReactNode;
-  isChecked: boolean;
+  checked: boolean;
   onChange: (checked: boolean) => void;
   showBorder?: boolean;
   alert?: ReactNode;
@@ -180,13 +180,19 @@ function SettingToggle({
           </Box>
         )}
       </VStack>
-      <Switch
+      <Switch.Root
         colorPalette='primary'
         aria-label={label}
-        checked={isChecked}
+        checked={checked}
         disabled={disabled}
-        onValueChange={e => onChange(e.target.checked)}
-      />
+        onCheckedChange={e => onChange(e.checked)}
+      >
+        <Switch.HiddenInput />
+        <Switch.Control>
+          <Switch.Thumb />
+        </Switch.Control>
+        <Switch.Label />
+      </Switch.Root>
     </HStack>
   );
 }
@@ -264,7 +270,7 @@ function UserSettingsPage() {
                 key={key}
                 {...SETTINGS_COPY.toggles[key]}
                 checked={getChecked(key)}
-                onValueChange={() => updateSetting(key)}
+                onChange={() => updateSetting(key)}
                 showBorder={index < section.toggleKeys.length - 1}
                 alert={toggleAlerts[key]}
                 disabled={toggleDisabled[key]}
