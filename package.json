@@ -13,7 +13,7 @@
     "generate-metadata-completeness-fields": "tsx scripts/generate-metadata-completeness-fields.ts",
     "generate-schema-definitions": "yarn with-prod-env tsx scripts/generate-schema-definitions/index.ts",
     "generate-dataset-sitemaps": "yarn with-prod-env tsx scripts/generate-dataset-sitemaps.ts",
-    "generate-a11y-audit": "tsx scripts/generate-a11y-audit.ts",
+    "generate-a11y-audit": "yarn with-prod-env tsx scripts/generate-a11y-audit.ts",
     "prepare": "husky install",
     "release": "standard-version",
     "release:minor": "standard-version --release-as minor",

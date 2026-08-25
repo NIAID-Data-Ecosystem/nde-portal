@@ -4,15 +4,28 @@ import path from 'path';
 /**
  * Generates the alt-text and accessible-name audit spreadsheets.
  *
- * This is a hand-maintained inventory, not a parser: the file/line/copy of every
+ * Run with `yarn generate-a11y-audit`, which loads .env.production so the fetch
+ * step below hits the production Strapi and NDE API.
+ *
+ * The inventory is hand-maintained, not parsed: the file/line/copy of every
  * `alt=`, `aria-label`, `aria-labelledby` and inline-SVG `<title>` in `src/` is
- * recorded below, along with the routes that render it. The script's job is to
- * cross-join each entry against those routes so shared and global chrome appear
- * once per route without hand-copying rows.
+ * recorded below, along with the routes that render it. The script then does two
+ * things with it:
+ *
+ *  1. Resolves expressions to real strings. An entry whose copy is `{ariaLabel}`
+ *     or `{icon.alternativeText}` is not reviewable as copy, so its real values
+ *     are registered against it — from the repo for conditionals and prop
+ *     pass-throughs, and from Strapi / the NDE API for everything data-driven.
+ *     Values that are genuinely per-record (a resource name, an ontology term)
+ *     get one marked example instead. Sites with many values are capped at CAP
+ *     and followed by a summary row, so nothing is silently truncated.
+ *  2. Cross-joins each entry against its routes, so shared and global chrome
+ *     appears once per route without hand-copying rows.
  *
  * When you add or move one of those attributes, update the matching entry here.
- * The reconciliation check in docs/accessibility/README is the safety net: the
- * number of distinct (file, line) pairs must equal the grep count in `src/`.
+ * The safety net is the count this prints on every run: the number of distinct
+ * (file, line) pairs must equal a grep of `src/` — 24 for alt, 144 for aria at
+ * the time of writing. Resolving values adds rows, never sites.
  */
 
 const OUT_DIR = 'docs/accessibility';
@@ -81,7 +94,9 @@ const CAROUSEL = ['/', '/search'];
 const IWD = uniq([...SBKC, '/advanced-search', '/ontology-browser']);
 const SELECT = ['/advanced-search', '/repository-matcher', '/search'];
 const SAOP = ['/repository-matcher', '/search'];
-const BOOKMARK = ['/resources', '/saved', '/search'];
+// /resources uses BookmarkButton (bookmark-buttons/button), a different
+// component, so the icon variant is only on these two routes.
+const BOOKMARK = ['/saved', '/search'];
 const NONE = ['(none - component has no consumer)'];
 
 const HARD = 'hardcoded in JSX';
@@ -116,6 +131,12 @@ interface AltEntry {
   source: string;
   scope: string;
   altType: string;
+  /**
+   * Overrides the `file:line` key used to look up resolved values, so one
+   * source site can carry different value sets for different route families
+   * (the MDX handler renders both Knowledge Center and Features markdown).
+   */
+  valueKey?: string;
 }
 
 const LOGO = 'src/components/logos/nde-logo.tsx';
@@ -157,6 +178,32 @@ const altRows: AltEntry[] = [
     scope: GLOBAL_LOGO,
     altType: 'literal',
   },
+  // The MDX img handler renders markdown from several content types. Split by
+  // route family so each set of real values lands on the routes that show it.
+  {
+    routes: KC,
+    file: 'src/components/mdx/components/index.tsx',
+    line: 376,
+    image:
+      '{src} - Strapi /uploads path prefixed with NEXT_PUBLIC_STRAPI_API_URL',
+    copy: "{props.alt || ''} - author-supplied markdown alt, empty-string fallback",
+    source: 'Strapi CMS - docs markdown image alt (author-supplied)',
+    scope: 'route-specific',
+    altType: 'dynamic-cms',
+    valueKey: 'mdx-img-docs',
+  },
+  {
+    routes: ['/features/[slug]'],
+    file: 'src/components/mdx/components/index.tsx',
+    line: 376,
+    image:
+      '{src} - Strapi /uploads path prefixed with NEXT_PUBLIC_STRAPI_API_URL',
+    copy: "{props.alt || ''} - author-supplied markdown alt, empty-string fallback",
+    source: 'Strapi CMS - features markdown image alt (author-supplied)',
+    scope: 'route-specific',
+    altType: 'dynamic-cms',
+    valueKey: 'mdx-img-features',
+  },
   {
     routes: ALL,
     file: 'src/components/mdx/components/index.tsx',
@@ -164,9 +211,12 @@ const altRows: AltEntry[] = [
     image:
       '{src} - Strapi /uploads path prefixed with NEXT_PUBLIC_STRAPI_API_URL',
     copy: "{props.alt || ''} - author-supplied markdown alt, empty-string fallback",
-    source: 'Strapi CMS - markdown image alt (author-supplied)',
+    source:
+      'Strapi CMS - any other markdown rendered through this handler, including ' +
+      'the page-container banner, which is why this row is global',
     scope: 'global (any Strapi markdown, incl. page-container banner)',
     altType: 'dynamic-cms',
+    valueKey: 'mdx-img-other',
   },
 
   {
@@ -385,58 +435,10 @@ const altRows: AltEntry[] = [
   },
 ];
 
-// Live CMS snapshot: the actual alternativeText values the news carousel served
-// from the STAGING Strapi on 2026-08-24, harvested from the rendered / HTML.
-// These are the only CMS-authored alt strings reviewable as copy; every other
-// CMS-driven site renders client-side and returned nothing in the SSR HTML.
-const SNAP =
-  'live value from STAGING Strapi CMS (news.image.alternativeText), ' +
-  'snapshot 2026-08-24 - edit in the CMS, not in code';
-const STRAPI = 'https://data-staging.niaid.nih.gov/strapi/uploads/';
-const NEWS_LIVE: [string, string][] = [
-  ['Samples in the NIAID Data Ecosystem', 'samples_16x9_eedba0a207.png'],
-  [
-    'Image of BEI Resources in the NIAID Data Ecosystem',
-    'bei_resources_16x9_d6e6ad8784.png',
-  ],
-  [
-    'Image of NODE datasets in the NIAID Data Ecosystem',
-    'node_16x9_c47eefea38.png',
-  ],
-  [
-    'Screenshot of EMPIAR datasets in the Discovery Portal',
-    'empiar_16x9_2ff32f2165.png',
-  ],
-  [
-    'Screenshot of bookmarked resources in the NIAID Data Ecosystem',
-    'user_accounts_16x9_686a9c56cd.png',
-  ],
-  [
-    'Image of NIAID Data Ecosystem Repository Matcher',
-    'repository_matchmaker_16x9_43c49753b0.png',
-  ],
-  [
-    'ProteomeXchange datasets in the NIAID Data Ecosystem',
-    'Proteome_Xchange_16x9_446a305e3a.png',
-  ],
-  [
-    'Blueprint Series Webinar Registration Image',
-    'gofair_webinar_16x9_7e11e599a7.png',
-  ],
-];
-
-for (const [copy, file] of NEWS_LIVE) {
-  altRows.push({
-    routes: HOME,
-    file: 'src/views/home/components/NewsCarousel.tsx',
-    line: 173,
-    image: STRAPI + file,
-    copy,
-    source: SNAP,
-    scope: 'route-specific',
-    altType: 'dynamic-cms (live value, snapshot)',
-  });
-}
+// The news carousel's real alt strings come from Strapi and are attached at run
+// time by registerFetchedValues() below, keyed on NewsCarousel.tsx:173. The one
+// string that lives in code is the fallback, which really does ship: it was
+// serving 2 of the 10 live carousel cards when this was written.
 altRows.push({
   routes: HOME,
   file: 'src/views/home/components/NewsCarousel.tsx',
@@ -444,10 +446,13 @@ altRows.push({
   image: '/assets/news-thumbnail.png',
   copy: 'News Thumbnail Image',
   source:
-    'hardcoded fallback at NewsCarousel.tsx:138-142 - OBSERVED LIVE on 2 of 10 ' +
-    'carousel cards on 2026-08-24, i.e. this generic fallback really does ship',
+    'hardcoded fallback at NewsCarousel.tsx:138-142, used when a news record ' +
+    'has no image at all',
   scope: 'route-specific',
-  altType: 'dynamic-cms (live value, snapshot)',
+  altType: 'literal (fallback)',
+  // Distinct key so this row keeps its own literal instead of inheriting the
+  // CMS values registered against NewsCarousel.tsx:173.
+  valueKey: 'news-carousel-fallback',
 });
 
 // License variants: the alt text is a by-product of the license `type` string,
@@ -501,6 +506,20 @@ interface AriaEntry {
   copy: string;
   source: string;
   scope: string;
+  /** See AltEntry.valueKey. */
+  valueKey?: string;
+  /**
+   * Callers this site's accessible name comes from, as `file:line` pairs that
+   * must exist elsewhere in this inventory.
+   *
+   * A shared component has different real values on different routes — a Table
+   * is 'Repository matcher table' on /repository-matcher but one of the four
+   * result-table labels on /search. Naming the callers lets the writer resolve
+   * the value per route instead of repeating every caller's literal everywhere.
+   * Resolution is transitive, so a caller that is itself a pass-through is
+   * followed through to the literal.
+   */
+  derivesFrom?: { file: string; line: number }[];
 }
 
 const L = 'aria-label';
@@ -514,6 +533,90 @@ const DOCS = 'src/views/docs/components';
 const SRL = 'src/views/search/components/results-list/components';
 const VIZ = 'src/views/diseases/disease/visualizations';
 const OBT = 'src/views/ontology-browser/components';
+
+/** Shorthand for a derivesFrom list: from(['path/to/caller.tsx', 42], ...). */
+const from = (...pairs: [string, number][]) =>
+  pairs.map(([file, line]) => ({ file, line }));
+
+const UNUSED_COMPONENT =
+  'this component has no importer anywhere in src/, so the label never renders';
+
+const TREE_ACTIONS = `${ADV}/SortableWithCombine/components/TreeItem/components/TreeItemActions.tsx`;
+const CARD_HEADER =
+  'src/views/search/components/summary/components/visualization-card/card-header.tsx';
+const PAGE_SEARCH_INPUT =
+  'src/components/page-container/components/search/components/input.tsx';
+const DOCS_SEARCH_BAR = `${DOCS}/search-bar/SearchBar.tsx`;
+
+/** The four result tables that hand `ResultsTable` its ariaLabel. */
+const RESULT_TABLE_SITES = from(
+  [`${SRL}/dataset-results-table/index.tsx`, 415],
+  [`${SRL}/computational-tool-results-table/index.tsx`, 353],
+  [`${SRL}/sample-results-table/index.tsx`, 524],
+  [`${SRL}/data-collection-results-table/index.tsx`, 342],
+);
+
+/**
+ * Everywhere a `Table` is handed an ariaLabel. `results-table` is itself a
+ * pass-through, so /search resolves through it to the four result-table labels.
+ */
+const TABLE_CALLER_SITES = from(
+  [`${SRL}/results-table/index.tsx`, 86],
+  [`${RS}/files-table/index.tsx`, 24],
+  [`${RS}/samples/components/SampleTable/index.tsx`, 39],
+  ['src/pages/repository-matcher.tsx', 419],
+  ['src/pages/index.tsx', 265],
+  ['src/views/saved/components/saved-table-section.tsx', 193],
+);
+
+const DROPDOWN_CALLER_SITES = from(
+  [`${ADV}/Search/components/SearchInput/components/TextInput.tsx`, 59],
+  [`${ADV}/Search/components/SearchInput/components/InputSubmitButton.tsx`, 47],
+  [
+    `${ADV}/SortableWithCombine/components/TreeItem/components/UnionButton.tsx`,
+    26,
+  ],
+);
+
+const SEARCH_BAR_CALLER_SITES = from(
+  [PAGE_SEARCH_INPUT, 24],
+  [DOCS_SEARCH_BAR, 280],
+);
+
+const KC_SLUG_PAGE = 'src/pages/knowledge-center/[[...slug]].tsx';
+
+const PAGINATION = 'src/components/table/components/pagination.tsx';
+/** The four page-nav buttons that supply pagination.tsx's shared IconButton. */
+const PAGE_NAV_BUTTON_SITES = from(
+  [PAGINATION, 158],
+  [PAGINATION, 164],
+  [PAGINATION, 189],
+  [PAGINATION, 195],
+);
+
+const FEATURES_TOC = 'src/views/features/components/TableOfContents.tsx';
+const DISEASES_TOC = 'src/views/diseases/toc/index.tsx';
+/** One caller per table-of-contents route, so each route resolves to one name. */
+const TOC_SIDEBAR_SITES = from(
+  [FEATURES_TOC, 44],
+  [DISEASES_TOC, 80],
+  ['src/pages/sources.tsx', 152],
+  ['src/pages/program-collections.tsx', 108],
+);
+const TOC_SEARCH_SITES = from(
+  [FEATURES_TOC, 74],
+  [DISEASES_TOC, 110],
+  ['src/views/sources/components/main.tsx', 113],
+  ['src/pages/program-collections.tsx', 149],
+);
+
+const BOOKMARK_CALLER_SITES = from(
+  ['src/views/saved/table-config.tsx', 93],
+  ['src/views/search/components/search-results-header/index.tsx', 108],
+);
+
+const RESULTS_LIST = 'src/views/search/components/results-list/index.tsx';
+const SEARCH_PAGINATION_SITES = from([RESULTS_LIST, 473], [RESULTS_LIST, 566]);
 
 const SB_KC_CALLERS =
   "caller-supplied: 'Search for resources' (page-container input.tsx:18 " +
@@ -587,16 +690,31 @@ const ariaRows: AriaEntry[] = [
     source: HARD,
     scope: 'global (page container)',
   },
+  // Same split as the MDX img handler: markdown whose "image" is a .webm/.mp4
+  // renders a <video> and the markdown alt is re-routed onto its aria-label.
   {
-    routes: ALL,
+    routes: KC,
     file: 'src/components/mdx/components/index.tsx',
     line: 363,
     element: "Box as='video'",
     attribute: L,
     copy: '{alt || undefined}',
     source:
-      'Strapi CMS - markdown image alt re-routed onto the video element (mdx/components/index.tsx:354)',
-    scope: 'global (any Strapi markdown, incl. page-container banner)',
+      'Strapi CMS - docs markdown alt re-routed onto the video element (mdx/components/index.tsx:354)',
+    scope: 'route-specific',
+    valueKey: 'mdx-video-docs',
+  },
+  {
+    routes: ['/features/[slug]'],
+    file: 'src/components/mdx/components/index.tsx',
+    line: 363,
+    element: "Box as='video'",
+    attribute: L,
+    copy: '{alt || undefined}',
+    source:
+      'Strapi CMS - features markdown alt re-routed onto the video element (mdx/components/index.tsx:354)',
+    scope: 'route-specific',
+    valueKey: 'mdx-video-features',
   },
 
   // ---- page-container search bar
@@ -632,6 +750,7 @@ const ariaRows: AriaEntry[] = [
     copy: '{inputProps.ariaLabel}',
     source: SB_KC_CALLERS,
     scope: 'shared',
+    derivesFrom: SEARCH_BAR_CALLER_SITES,
   },
   {
     routes: SBKC,
@@ -642,6 +761,7 @@ const ariaRows: AriaEntry[] = [
     copy: '{inputProps.ariaLabel}',
     source: SB_KC_CALLERS,
     scope: 'shared',
+    derivesFrom: SEARCH_BAR_CALLER_SITES,
   },
   {
     routes: SBKC,
@@ -652,6 +772,7 @@ const ariaRows: AriaEntry[] = [
     copy: '{ariaLabel}',
     source: SB_KC_CALLERS,
     scope: 'shared',
+    derivesFrom: SEARCH_BAR_CALLER_SITES,
   },
   {
     routes: SBKC,
@@ -734,6 +855,7 @@ const ariaRows: AriaEntry[] = [
     copy: "{props['aria-label']}",
     source: "caller-supplied: 'remove item' (TreeItemActions.tsx:84)",
     scope: 'route-specific',
+    derivesFrom: from([TREE_ACTIONS, 84]),
   },
   {
     routes: AS,
@@ -745,6 +867,11 @@ const ariaRows: AriaEntry[] = [
     source:
       "caller-supplied: 'drag item' / 'collapse items' (TreeItemActions.tsx:45,54,69)",
     scope: 'route-specific',
+    derivesFrom: from(
+      [TREE_ACTIONS, 45],
+      [TREE_ACTIONS, 54],
+      [TREE_ACTIONS, 69],
+    ),
   },
   {
     routes: AS,
@@ -846,6 +973,10 @@ const ariaRows: AriaEntry[] = [
     copy: '{ariaLabel}',
     source: 'caller-supplied from TextInput.tsx:59',
     scope: 'route-specific',
+    derivesFrom: from([
+      `${ADV}/Search/components/SearchInput/components/TextInput.tsx`,
+      59,
+    ]),
   },
   {
     routes: AS,
@@ -856,6 +987,7 @@ const ariaRows: AriaEntry[] = [
     copy: '{ariaLabel}',
     source: DROPDOWN_CALLERS,
     scope: 'shared',
+    derivesFrom: DROPDOWN_CALLER_SITES,
   },
   {
     routes: AS,
@@ -866,6 +998,7 @@ const ariaRows: AriaEntry[] = [
     copy: '{ariaLabel}',
     source: DROPDOWN_CALLERS,
     scope: 'shared',
+    derivesFrom: DROPDOWN_CALLER_SITES,
   },
 
   // ---- resource-sections (/resources)
@@ -972,6 +1105,7 @@ const ariaRows: AriaEntry[] = [
     source:
       "caller-supplied: saved/table-config.tsx:93 ('Remove saved query' / 'Save query'), search-results-header/index.tsx:108 ('Remove search from saved searches' / 'Save this search')",
     scope: 'shared',
+    derivesFrom: BOOKMARK_CALLER_SITES,
   },
 
   // ---- table
@@ -984,6 +1118,7 @@ const ariaRows: AriaEntry[] = [
     copy: '{ariaLabel}',
     source: TABLE_CALLERS,
     scope: 'shared',
+    derivesFrom: TABLE_CALLER_SITES,
   },
   {
     routes: TABLE,
@@ -994,6 +1129,7 @@ const ariaRows: AriaEntry[] = [
     copy: '{ariaLabel}',
     source: 'caller-supplied - see concrete call-site literals',
     scope: 'shared',
+    derivesFrom: TABLE_CALLER_SITES,
   },
   {
     routes: TABLE,
@@ -1004,6 +1140,7 @@ const ariaRows: AriaEntry[] = [
     copy: '{ariaLabel}',
     source: 'caller-supplied - see concrete call-site literals',
     scope: 'shared',
+    derivesFrom: TABLE_CALLER_SITES,
   },
   {
     routes: TABLE,
@@ -1029,11 +1166,14 @@ const ariaRows: AriaEntry[] = [
     routes: TABLE,
     file: 'src/components/table/components/pagination.tsx',
     line: 107,
-    element: 'nav',
+    // Not a caller-supplied <nav>: this is the local PaginationButton
+    // sub-component, and its ariaLabel is supplied at 158/164/189/195 below.
+    element: 'IconButton (PaginationButton)',
     attribute: L,
     copy: '{ariaLabel}',
-    source: 'caller-supplied',
+    source: 'supplied by the four page-nav buttons in this same file',
     scope: 'shared',
+    derivesFrom: PAGE_NAV_BUTTON_SITES,
   },
   {
     routes: TABLE,
@@ -1149,6 +1289,7 @@ const ariaRows: AriaEntry[] = [
     source:
       "caller-supplied: 'Navigation for list of featured pages.' / 'Navigation for list of disease pages.' / 'Navigation for program collections list.' / 'Navigation for data sources.'",
     scope: 'shared',
+    derivesFrom: TOC_SIDEBAR_SITES,
   },
   {
     routes: TOC,
@@ -1160,6 +1301,7 @@ const ariaRows: AriaEntry[] = [
     source:
       "caller-supplied: 'Search for a featured page' / 'Search for a disease' / 'Search for a program collection' / 'Search for a source'",
     scope: 'shared',
+    derivesFrom: TOC_SEARCH_SITES,
   },
 
   // ---- search input
@@ -1198,14 +1340,16 @@ const ariaRows: AriaEntry[] = [
 
   // ---- select / popovers
   {
-    routes: SELECT,
+    routes: NONE,
     file: 'src/components/select/components/Select.tsx',
     line: 116,
-    element: 'Select',
+    element: 'SelectIcon (inside SelectWithInput)',
     attribute: L,
     copy: '{ariaLabel}',
-    source: 'caller-supplied by each popover/toolbar consumer',
-    scope: 'shared',
+    // SelectWithInput, which contains this line, has no importer in src/ - only
+    // its sibling SelectWithButton is used (by advanced-search RadioSelect).
+    source: UNUSED_COMPONENT,
+    scope: 'unused component',
   },
   {
     routes: SAOP,
@@ -1326,6 +1470,10 @@ const ariaRows: AriaEntry[] = [
     source:
       "caller-supplied from src/views/search/components/results-list/components/card/index.tsx:214,360 (both pass ariaLabel='')",
     scope: 'shared',
+    derivesFrom: from(
+      [`${SRL}/card/index.tsx`, 214],
+      [`${SRL}/card/index.tsx`, 360],
+    ),
   },
 
   // ---- visualizations
@@ -1566,6 +1714,7 @@ const ariaRows: AriaEntry[] = [
     copy: '{ariaLabel}',
     source: KC_CALLER,
     scope: 'route-specific',
+    derivesFrom: from([KC_SLUG_PAGE, 140]),
   },
   {
     routes: KC,
@@ -1576,6 +1725,7 @@ const ariaRows: AriaEntry[] = [
     copy: '{ariaLabel}',
     source: KC_CALLER,
     scope: 'route-specific',
+    derivesFrom: from([KC_SLUG_PAGE, 140]),
   },
   {
     routes: KC,
@@ -1639,6 +1789,7 @@ const ariaRows: AriaEntry[] = [
     source:
       "caller-supplied: 'Paginate through resources.' (results-list/index.tsx:473,566)",
     scope: 'route-specific',
+    derivesFrom: SEARCH_PAGINATION_SITES,
   },
   {
     routes: SEARCH,
@@ -1740,6 +1891,7 @@ const ariaRows: AriaEntry[] = [
     source:
       "caller-supplied: 'Expand chart to modal view' / 'Remove chart from display.' (card-header.tsx:76,84)",
     scope: 'route-specific',
+    derivesFrom: from([CARD_HEADER, 76], [CARD_HEADER, 84]),
   },
   {
     routes: SEARCH,
@@ -1791,6 +1943,7 @@ const ariaRows: AriaEntry[] = [
     source:
       "caller-supplied: 'Dataset search results' / 'Computational tool search results' / 'Sample search results' / 'Data collection search results'",
     scope: 'route-specific',
+    derivesFrom: RESULT_TABLE_SITES,
   },
   {
     routes: SEARCH,
@@ -2050,6 +2203,754 @@ const ariaRows: AriaEntry[] = [
   },
 ];
 
+// --------------------------------------------------------- resolved values
+/**
+ * A real string that one of the inventory entries above actually renders.
+ *
+ * Entries whose copy is an expression (`{icon.alternativeText}`, `{ariaLabel}`)
+ * get their resolved values registered here, keyed on `file:line`. At write time
+ * an entry with resolved values emits one row per value instead of one row
+ * showing the expression, so the sheet is reviewable as copy.
+ */
+interface Resolved {
+  copy: string;
+  /** Overrides the entry's image path when the value brings its own. */
+  image?: string;
+  /** Replaces the entry's source column — says where THIS value comes from. */
+  source?: string;
+  /** ISO date, set for anything fetched at run time. */
+  retrieved?: string;
+  /** True for per-record values that cannot be enumerated, only sampled. */
+  isExample?: boolean;
+  /** True for the "+N more" row appended when a site exceeds CAP. */
+  isSummary?: boolean;
+}
+
+/** At most this many real values are listed per site; the rest are summarised. */
+const CAP = 10;
+
+const resolved = new Map<string, Resolved[]>();
+
+const registerKey = (key: string, values: Resolved[]) => {
+  if (!values.length) return;
+  // Strict: registering the same key twice used to silently concatenate, which
+  // let a stale set of values sit alongside the corrected one.
+  if (resolved.has(key)) {
+    throw new Error(
+      `values are already registered for ${key} - merge them at the call site ` +
+        'rather than registering twice',
+    );
+  }
+  resolved.set(key, values);
+};
+
+const register = (file: string, line: number, values: Resolved[]) =>
+  registerKey(`${file}:${line}`, values);
+
+const TODAY = new Date().toISOString().slice(0, 10);
+
+// ------------------------------------------------------------------ fetching
+const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL;
+const NDE_API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+const getJson = async (url: string) => {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${url}`);
+  return res.json();
+};
+
+interface StrapiImage {
+  path: string;
+  alt: string | null;
+  url: string;
+}
+
+/** Walk a Strapi payload collecting every media object, with its field path. */
+const walkImages = (
+  node: any,
+  at = '',
+  out: StrapiImage[] = [],
+): StrapiImage[] => {
+  if (Array.isArray(node)) {
+    node.forEach((v, i) => walkImages(v, `${at}[${i}]`, out));
+  } else if (node && typeof node === 'object') {
+    if ('alternativeText' in node && 'url' in node) {
+      out.push({ path: at, alt: node.alternativeText ?? null, url: node.url });
+    }
+    for (const [k, v] of Object.entries(node)) {
+      walkImages(v, at ? `${at}.${k}` : k, out);
+    }
+  }
+  return out;
+};
+
+/** Pull `![alt](src)` out of a markdown body field. */
+const walkMarkdownImages = (records: any[], field: string) => {
+  const out: { alt: string; src: string }[] = [];
+  for (const rec of records) {
+    const body = rec?.[field];
+    if (typeof body !== 'string') continue;
+    for (const m of body.matchAll(/!\[([^\]]*)\]\(([^)\s]+)/g)) {
+      out.push({ alt: m[1], src: m[2] });
+    }
+  }
+  return out;
+};
+
+const isVideo = (src: string) => /\.(webm|mp4)(\?|$)/i.test(src);
+
+const cms = (field: string, extra = '') =>
+  `Strapi CMS - ${field}${
+    extra ? ` (${extra})` : ''
+  }; edit in the CMS, not in code`;
+
+const NO_ALT = '(EMPTY - Strapi alternativeText is null for this image)';
+
+/**
+ * Fetch every real alt string from Strapi and the NDE API, and register it
+ * against the inventory entry that renders it.
+ */
+const registerFetchedValues = async () => {
+  if (!STRAPI_URL || !NDE_API_URL) {
+    throw new Error(
+      'NEXT_PUBLIC_STRAPI_API_URL and NEXT_PUBLIC_API_URL must be set - run ' +
+        'this via `yarn generate-a11y-audit`, which loads .env.production',
+    );
+  }
+  const page = 'pagination[pageSize]=100';
+  const toValue = (img: StrapiImage, field: string, extra = ''): Resolved => ({
+    copy: img.alt ?? NO_ALT,
+    image: `${STRAPI_URL}${img.url}`,
+    source: cms(field, extra),
+    retrieved: TODAY,
+  });
+
+  // --- news carousel -> NewsCarousel.tsx:173
+  const news = await getJson(
+    `${STRAPI_URL}/api/news-reports?populate=*&${page}`,
+  );
+  register(
+    'src/views/home/components/NewsCarousel.tsx',
+    173,
+    walkImages(news.data)
+      .filter(i => /\.image\[/.test(i.path))
+      .map(i => toValue(i, 'news-reports image.alternativeText')),
+  );
+
+  // --- diseases: the same hero `image` field renders on two different sites
+  const diseases = await getJson(
+    `${STRAPI_URL}/api/diseases?populate=*&${page}`,
+  );
+  const diseaseImages = walkImages(diseases.data);
+  const hero = diseaseImages
+    .filter(i => /^\[\d+\]\.image$/.test(i.path))
+    .map(i => toValue(i, 'diseases image.alternativeText'));
+  register('src/views/diseases/disease/layouts/intro.tsx', 99, hero);
+  register('src/views/diseases/toc/index.tsx', 170, hero);
+  register(
+    'src/views/diseases/disease/components/external-links.tsx',
+    28,
+    diseaseImages
+      .filter(i => /externalLinks\[\d+\]\.image$/.test(i.path))
+      .map(i => toValue(i, 'diseases externalLinks[].image.alternativeText')),
+  );
+
+  // --- features thumbnail -> the shared table-of-contents card
+  const features = await getJson(
+    `${STRAPI_URL}/api/features?populate=*&${page}`,
+  );
+  register(
+    'src/components/table-of-contents/components/card.tsx',
+    89,
+    walkImages(features.data)
+      .filter(i => /\.thumbnail$/.test(i.path))
+      .map(i => toValue(i, 'features thumbnail.alternativeText')),
+  );
+
+  // --- integration page. `populate=*` returns no media for this content type,
+  // so mirror the nested populate the app itself uses (integration Main.tsx).
+  const integrationPopulate = [
+    'overview.image',
+    'tabs.panels.cards.icon',
+    'tabs.panels.cards.tabItems.icon',
+    'textBlocks',
+  ]
+    .map((p, i) => `populate[${i}]=${p}`)
+    .join('&');
+  const integration = await getJson(
+    `${STRAPI_URL}/api/integration-page?${integrationPopulate}`,
+  );
+  const integrationImages = walkImages(integration.data);
+  register(
+    'src/views/integration/components/Blocks.tsx',
+    83,
+    integrationImages
+      .filter(i => /^overview\[\d+\]\.image$/.test(i.path))
+      .map(i =>
+        toValue(i, 'integration-page overview[].image.alternativeText'),
+      ),
+  );
+  register(
+    'src/views/integration/components/Card.tsx',
+    106,
+    integrationImages
+      .filter(i => /^tabs\..*icon$/.test(i.path))
+      .map(i =>
+        toValue(
+          i,
+          'integration-page tabs.panels[].cards[].icon.alternativeText',
+        ),
+      ),
+  );
+
+  // --- markdown-embedded images and videos, both rendered by the MDX img/video
+  // handler. Attribute each to the route family whose body copy contains it.
+  const docs = await getJson(`${STRAPI_URL}/api/docs?populate=*&${page}`);
+  const docsMd = walkMarkdownImages(docs.data, 'description');
+  const featuresMd = walkMarkdownImages(features.data, 'content');
+  const mdValue = (
+    m: { alt: string; src: string },
+    where: string,
+  ): Resolved => ({
+    copy: m.alt,
+    image: m.src,
+    source: cms(`${where} markdown image alt`, 'author-supplied'),
+    retrieved: TODAY,
+  });
+  registerKey(
+    'mdx-img-docs',
+    docsMd.filter(m => !isVideo(m.src)).map(m => mdValue(m, 'docs')),
+  );
+  registerKey(
+    'mdx-img-features',
+    featuresMd.filter(m => !isVideo(m.src)).map(m => mdValue(m, 'features')),
+  );
+  // Markdown whose "image" is a video becomes aria-label on a <video> instead.
+  registerKey(
+    'mdx-video-docs',
+    docsMd.filter(m => isVideo(m.src)).map(m => mdValue(m, 'docs')),
+  );
+  registerKey(
+    'mdx-video-features',
+    featuresMd.filter(m => isVideo(m.src)).map(m => mdValue(m, 'features')),
+  );
+
+  // --- the MDX catch-all: any markdown other than docs/features goes through
+  // the same handler, and in practice that means the page-container banner.
+  // Check whether the live notices actually contain any markdown images.
+  const notices = await getJson(`${STRAPI_URL}/api/notices?populate=*`);
+  const noticeRecords: any[] = Array.isArray(notices.data)
+    ? notices.data
+    : [notices.data].filter(Boolean);
+  const noticeImages = noticeRecords.flatMap(rec =>
+    Object.values(rec ?? {}).flatMap(v =>
+      typeof v === 'string'
+        ? [...v.matchAll(/!\[([^\]]*)\]\(([^)\s]+)/g)].map(m => ({
+            alt: m[1],
+            src: m[2],
+          }))
+        : [],
+    ),
+  );
+  const activeNotices = noticeRecords.filter(r => r?.isActive).length;
+  registerKey(
+    'mdx-img-other',
+    noticeImages.length
+      ? noticeImages.map(m => mdValue(m, 'banner notice'))
+      : [
+          {
+            copy:
+              `(NO IMAGES - no markdown images are authored in the banner ` +
+              `notices; ${noticeRecords.length} notice(s), ${activeNotices} active)`,
+            source:
+              'Strapi CMS - /api/notices, the only other content routed through ' +
+              'this handler; it currently contains no markdown images',
+            retrieved: TODAY,
+          },
+        ],
+  );
+
+  // --- source names, for the two source-logo templates
+  const facets = await getJson(
+    `${NDE_API_URL}/query?q=__all__&size=0&facet_size=200` +
+      `&facets=includedInDataCatalog.name`,
+  );
+  const sourceNames: string[] = (
+    facets?.facets?.['includedInDataCatalog.name']?.terms ?? []
+  ).map((t: any) => t.term);
+  const slug = (name: string) =>
+    `/assets/resources/${name
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z-]/g, '')}.png`;
+  register(
+    'src/components/source-logo/index.tsx',
+    84,
+    sourceNames.map(n => ({
+      copy: `Click to open the source (${n}) in a new tab.`,
+      image: slug(n),
+      source:
+        'template at source-logo/index.tsx:84 + source.name from the NDE API',
+      retrieved: TODAY,
+    })),
+  );
+  register(
+    'src/components/source-logo/index.tsx',
+    96,
+    sourceNames.map(n => ({
+      copy: `Logo for ${n}`,
+      image: slug(n),
+      source:
+        'template at source-logo/index.tsx:96 + source.name from the NDE API',
+      retrieved: TODAY,
+    })),
+  );
+
+  // --- one real resource, to make the per-record templates concrete
+  const sample = await getJson(
+    `${NDE_API_URL}/query?q=_exists_:doi&size=1&fields=name,doi`,
+  );
+  const hit = sample?.hits?.[0] ?? {};
+  const exampleName: string = hit.name ?? 'NCBI GEO';
+  const exampleDoi: string = Array.isArray(hit.doi) ? hit.doi[0] : hit.doi;
+  const perRecord = (copy: string, note: string): Resolved => ({
+    copy,
+    source: `${note} - one real sampled value; this string is per-record`,
+    retrieved: TODAY,
+    isExample: true,
+  });
+  register(`${SRL}/card/index.tsx`, 619, [
+    perRecord(
+      `Go to details about resource ${exampleName}`,
+      'template in JSX + resource name from the NDE API',
+    ),
+  ]);
+  register(`${RS}/section/index.tsx`, 59, [
+    perRecord(
+      `show more details about ${exampleName}`,
+      'template in JSX + resource name from the NDE API',
+    ),
+  ]);
+  register(`${RS}/based-on/index.tsx`, 173, [
+    perRecord(exampleName, 'section title from NDE API resource data'),
+  ]);
+  if (exampleDoi) {
+    register(`${RS}/sidebar/components/external/components/altmetric.tsx`, 24, [
+      perRecord(
+        `altmetric badge for doi ${exampleDoi}`,
+        'template in JSX + doi from the NDE API',
+      ),
+    ]);
+  }
+  console.log(
+    `resolved ${resolved.size} sites from Strapi + the NDE API ` +
+      `(${sourceNames.length} source names)`,
+  );
+};
+
+// --------------------------------------------- statically resolvable values
+/**
+ * Values that are already in the repo, just behind a conditional or a prop.
+ * Conditionals resolve to every branch; prop pass-throughs to their callers.
+ */
+const registerStaticValues = () => {
+  const both = (file: string, line: number, values: string[], src: string) =>
+    register(
+      file,
+      line,
+      values.map(copy => ({ copy, source: src })),
+    );
+  const CONDITIONAL = 'both branches of a conditional hardcoded in JSX';
+  const CALLERS = 'literal passed by each caller';
+  const REFD = 'text of the referenced element';
+
+  // The filter names in src/views/search/components/filters/config.ts. Several
+  // aria-labels interpolate one of these, which makes them fully enumerable.
+  const FILTER_NAMES = [
+    'Date',
+    'Sources',
+    'Program Collection',
+    'Health Condition',
+    'Pathogen Species',
+    'Host Species',
+    'Funding',
+    'Conditions of Access',
+    'Variable Measured',
+    'Measurement Technique',
+  ];
+
+  // Shared components whose aria-label is entirely caller-supplied are NOT
+  // resolved here: every caller is already its own row in this inventory, so
+  // repeating the literals at the definition site would triple the sheet
+  // without adding information. Their `source` column names the callers.
+
+  // --- global chrome
+  both(
+    `${NAV}/nav-layout.tsx`,
+    63,
+    ['Open navigation menu', 'Close navigation menu'],
+    CONDITIONAL,
+  );
+  both(
+    `${NAV}/nav-dropdown-item.tsx`,
+    129,
+    ['Search', 'About', 'Resources'].flatMap(l => [
+      `Open ${l} dropdown`,
+      `Close ${l} dropdown`,
+    ]),
+    'template in JSX + the dropdown labels in configs/site.config.json navigation.primary',
+  );
+
+  // --- inputs whose default lives in code
+  both(
+    'src/components/page-container/components/search/components/input.tsx',
+    24,
+    ['Search for resources'],
+    'default prop value at input.tsx:18',
+  );
+  both(
+    `${SRL}/pagination/index.tsx`,
+    120,
+    ['Select page'],
+    'hardcoded fallback when the caller passes no ariaLabel',
+  );
+
+  // --- pass-throughs whose callers are NOT separate rows, so resolve here
+  both(
+    'src/components/copy-button/index.tsx',
+    51,
+    [
+      'Copy',
+      'Metadata copied!',
+      'Copy Resource ID',
+      'Resource ID Copied!',
+      'Copy NCTID',
+      'NCTID Copied!',
+      'Copy DOI',
+    ],
+    `${CALLERS} as buttonText/copiedText`,
+  );
+  both(
+    'src/pages/settings.tsx',
+    185,
+    [
+      'Email Updates',
+      'Feedback and Testing',
+      'Beta features',
+      'AI-assisted search',
+    ],
+    'the settings section config in the same file',
+  );
+  both(
+    `${OBT}/ontology-search-list/toggle.tsx`,
+    22,
+    ['Expand list of selected search terms'],
+    'default value of the label prop at toggle.tsx:9',
+  );
+  both(
+    'src/views/saved/components/saved-table-section.tsx',
+    181,
+    ['Search saved queries', 'Search saved resources'],
+    `${CALLERS} (src/pages/saved.tsx:116,144)`,
+  );
+  both(
+    'src/views/saved/components/saved-table-section.tsx',
+    193,
+    ['Saved queries table', 'Saved resources table'],
+    `${CALLERS} (src/pages/saved.tsx:117,145)`,
+  );
+  both(
+    `${SRL}/toolbar/components/select-input.tsx`,
+    32,
+    ['Sort by:', 'Rows per page:'],
+    `${CALLERS} (toolbar/index.tsx:85,99)`,
+  );
+  both(
+    `${RS}/samples/components/SampleTable/index.tsx`,
+    39,
+    ['Samples'],
+    'the sample section config in the same view',
+  );
+
+  // --- interpolated from the filter config, so fully enumerable
+  both(
+    'src/views/search/components/filters/components/filters-chart-toggle.tsx',
+    26,
+    FILTER_NAMES.flatMap(n => [
+      `Add ${n} visualisation chart`,
+      `Remove ${n} visualisation chart`,
+    ]),
+    'template in JSX + the filter names in filters/config.ts',
+  );
+  both(
+    'src/views/search/components/filters/components/list.tsx',
+    290,
+    [
+      'Search filters',
+      ...FILTER_NAMES.map(n => `Search ${n.toLowerCase()} filters`),
+    ],
+    'filters.tsx:351 template + customize-filters-popover.tsx:42, over filters/config.ts',
+  );
+  for (const line of [126, 135]) {
+    both(
+      'src/components/select-and-order-popover/components/PopoverListItem.tsx',
+      line,
+      FILTER_NAMES.map(n => `Move ${n} ${line === 126 ? 'up' : 'down'}`),
+      'template in JSX + item.title, which is the filter name (customize-filters-popover.tsx:25)',
+    );
+  }
+
+  // --- conditionals
+  both(
+    `${DOCS}/sidebar/DocumentItem.tsx`,
+    66,
+    ['Loading'],
+    `${CONDITIONAL} (undefined once loaded)`,
+  );
+  both(
+    `${DOCS}/sidebar/DocumentItem.tsx`,
+    90,
+    ['Expand sections', 'Collapse sections'],
+    CONDITIONAL,
+  );
+  both(
+    `${DOCS}/sidebar/SidebarDesktop.tsx`,
+    96,
+    ['Loading'],
+    `${CONDITIONAL} (undefined once loaded)`,
+  );
+  both(
+    `${DOCS}/sidebar/TocItem.tsx`,
+    92,
+    ['Expand subsections', 'Collapse subsections'],
+    CONDITIONAL,
+  );
+  both(
+    'src/views/saved/table-config.tsx',
+    93,
+    ['Save query', 'Remove saved query'],
+    CONDITIONAL,
+  );
+  both(
+    'src/views/search/components/search-results-header/index.tsx',
+    108,
+    ['Save this search', 'Remove search from saved searches'],
+    CONDITIONAL,
+  );
+  both(
+    'src/views/search/components/summary/index.tsx',
+    123,
+    ['Expand', 'Collapse'],
+    CONDITIONAL,
+  );
+  both(
+    'src/views/search/components/summary/components/visualization-card/card-header.tsx',
+    49,
+    ['Expand chart to modal view', 'Remove chart from display.'],
+    CALLERS,
+  );
+  both(
+    'src/views/search/components/summary/components/visualization-card/chart-picker.tsx',
+    15,
+    ['Chart type'],
+    `${CONDITIONAL}; the other branch is \`Chart type for <label>\``,
+  );
+  both(
+    'src/components/visualizations/bar/index.tsx',
+    227,
+    ['Bar chart'],
+    `${CONDITIONAL}; the other branches use the caller's title/label`,
+  );
+
+  // --- search tabs
+  both(
+    'src/views/search/components/layout/tabs.tsx',
+    53,
+    [
+      'Resource Catalogs',
+      'Datasets',
+      'Disease Overviews',
+      'Tools',
+      'Samples',
+      'Data Collections',
+    ],
+    'the tab labels in src/views/search/config/tabs.ts',
+  );
+
+  // --- icon glyph titles, surfaced through the icon wrapper
+  const glyphTitles = [
+    'Icon for BAM type files.',
+    'Empty, no data available.',
+    'Icon for FASTA type files.',
+  ];
+  const GLYPH_DEFAULT = 'hardcoded default, overridable via the title prop';
+  both(
+    'src/components/icon/components/glyph.tsx',
+    26,
+    [glyphTitles[0]],
+    GLYPH_DEFAULT,
+  );
+  both(
+    'src/components/icon/components/glyph.tsx',
+    39,
+    [glyphTitles[1]],
+    GLYPH_DEFAULT,
+  );
+  both(
+    'src/components/icon/components/glyph.tsx',
+    51,
+    [glyphTitles[2]],
+    GLYPH_DEFAULT,
+  );
+  // The icon wrapper's aria-label is the caller's `title` prop, not the glyph
+  // default. These are the titles actually passed anywhere in the app.
+  const iconTitles = [
+    'bam file type',
+    'fasta file type',
+    'Empty, no data available.',
+  ];
+  const ICON_TITLE_CALLERS =
+    'title prop passed by src/components/table/helpers.tsx:36,47 and ' +
+    'src/components/empty/index.tsx:50';
+  both('src/components/icon/index.tsx', 92, iconTitles, ICON_TITLE_CALLERS);
+  both('src/components/icon/index.tsx', 104, iconTitles, ICON_TITLE_CALLERS);
+  both(
+    'src/components/icon/index.tsx',
+    101,
+    iconTitles,
+    `${REFD} - the <span id={id}>{title}</span> at icon/index.tsx:84, i.e. the ` +
+      'same title prop',
+  );
+
+  // --- aria-labelledby: the real accessible name is the referenced element's text
+  both(
+    'src/components/empty/index.tsx',
+    42,
+    ['Empty, no data available.'],
+    REFD,
+  );
+  both(
+    `${ADV}/Search/components/FieldSelect/index.tsx`,
+    255,
+    ['Select field'],
+    REFD,
+  );
+  both(
+    `${ADV}/SortableWithCombine/components/TreeItem/components/EditableContent/SearchLabel.tsx`,
+    46,
+    ['Select field'],
+    REFD,
+  );
+  both(`${ADV}/EditableQueryText/index.tsx`, 281, ['Edit query input'], REFD);
+  both(
+    `${SRL}/toolbar/components/view-mode-radio.tsx`,
+    34,
+    ['View mode:'],
+    REFD,
+  );
+  both(
+    'src/views/home/components/LandingPageCards/Card.tsx',
+    22,
+    ['Diseases and Conditions', 'NIAID-Funded Programs'],
+    `${REFD} (the card headings in data.tsx)`,
+  );
+
+  // --- dead code: no importer, so nothing is ever rendered. State that rather
+  // than leaving the expression in the cell.
+  const NEVER = '(NEVER RENDERS - component has no importer in src/)';
+  both(
+    'src/components/visualizations/pie/index.tsx',
+    543,
+    [NEVER],
+    UNUSED_COMPONENT,
+  );
+  both(
+    'src/components/visualizations/pie/index.tsx',
+    546,
+    [NEVER],
+    UNUSED_COMPONENT,
+  );
+  both(
+    'src/components/select/components/Select.tsx',
+    116,
+    [NEVER],
+    UNUSED_COMPONENT,
+  );
+
+  // --- genuinely per-record. These show the shape of the sentence with a real
+  // term substituted; the number/term itself varies per record, so they are
+  // marked as examples rather than presented as the value.
+  const example = (copy: string, src: string): Resolved => ({
+    copy,
+    source: `${src} - illustrative: the interpolated part varies per record`,
+    isExample: true,
+  });
+  register(`${OBT}/tree/components/tree-node.tsx`, 257, [
+    example(
+      'Show all children of Homininae',
+      'template in JSX + node.label from the ontology API',
+    ),
+  ]);
+  register(`${OBT}/tree/components/tree-node.tsx`, 333, [
+    example(
+      'Remove Homininae from search list',
+      'template in JSX + node.label from the ontology API',
+    ),
+    example(
+      'Search portal for resources related to Homininae',
+      'template in JSX + node.label from the ontology API',
+    ),
+  ]);
+  register(`${OBT}/ontology-search-list/index.tsx`, 186, [
+    example(
+      'remove Homininae from search',
+      'template in JSX + the selected search term',
+    ),
+  ]);
+  register('src/components/carousel/components/CarouselControls.tsx', 60, [
+    example(
+      'Carousel progress: 40% complete',
+      'template in JSX, value tracks scroll position',
+    ),
+  ]);
+  register('src/components/carousel/components/CarouselControls.tsx', 83, [
+    example(
+      'carousel indicator 2 of 5 (current)',
+      'template in JSX, value tracks scroll position',
+    ),
+  ]);
+  for (const [file, line, id] of [
+    [`${VIZ}/bar-chart.tsx`, 219, 'coa-stacked-title'],
+    [`${VIZ}/stacked-bar-chart.tsx`, 159, 'coa-stacked-title'],
+    [`${VIZ}/donut-chart.tsx`, 223, 'donut-chart-title'],
+  ] as [string, number, string][]) {
+    register(file, line, [
+      example(
+        'Pathogen Species',
+        `${REFD} (<p id='${id}'>{title}</p>), the title being supplied per chart`,
+      ),
+    ]);
+  }
+  register(`${VIZ}/treemap-chart.tsx`, 176, [
+    example(
+      'Pathogen Species',
+      `${REFD}, via the generated id at treemap-chart.tsx:112`,
+    ),
+  ]);
+  register(`${VIZ}/treemap-chart.tsx`, 234, [
+    example(
+      'Plasmodium falciparum, 1,204 items',
+      'template in JSX + term/count from the NDE API',
+    ),
+  ]);
+  register(`${VIZ}/stacked-bar-chart.tsx`, 275, [
+    example(
+      'Plasmodium falciparum: 1,204 results',
+      'template in JSX + label/count from the NDE API',
+    ),
+  ]);
+};
+
 // ------------------------------------------------------------------- writing
 // RFC 4180: quote every field so the 250+ char alt strings (which contain
 // commas) survive a round trip through Excel and Google Sheets.
@@ -2060,6 +2961,110 @@ const basename = (p: string) =>
   !p || p.startsWith('{') || p.startsWith('$')
     ? ''
     : p.replace(/\/$/, '').split('/').pop() ?? '';
+
+/**
+ * Turn one inventory entry into the list of value-rows it should emit.
+ *
+ * With no resolved values the entry emits itself unchanged. With resolved values
+ * it emits one row per real value, capped at CAP and followed by a summary row —
+ * so a site with 47 CMS strings is legible without pretending it has 10.
+ */
+/** Cap a value list and append a summary row when anything was left out. */
+const capped = (values: Resolved[]): (Resolved | null)[] => {
+  if (!values.length) return [null];
+  const shown: (Resolved | null)[] = values.slice(0, CAP);
+  if (values.length > CAP) {
+    shown.push({
+      copy:
+        `(+${values.length - CAP} more values not listed - ` +
+        `${values.length} total at this site)`,
+      source: 'summary row',
+      retrieved: values[0].retrieved,
+      isSummary: true,
+    });
+  }
+  return shown;
+};
+
+const keyOf = (e: { file: string; line: number; valueKey?: string }) =>
+  e.valueKey ?? `${e.file}:${e.line}`;
+
+const rowsFor = (entry: { file: string; line: number; valueKey?: string }) =>
+  capped(resolved.get(keyOf(entry)) ?? []);
+
+/** Every aria entry, indexed by `file:line`, for resolving derivesFrom. */
+const ariaByKey = new Map<string, AriaEntry[]>();
+for (const entry of ariaRows) {
+  const k = `${entry.file}:${entry.line}`;
+  ariaByKey.set(k, (ariaByKey.get(k) ?? []).concat(entry));
+}
+
+/**
+ * The real values a pass-through site shows on one specific route, followed
+ * transitively through its callers. Throws if a named caller is not in the
+ * inventory, so a stale reference fails loudly instead of emitting a blank.
+ */
+const derivedFor = (
+  entry: AriaEntry,
+  route: string,
+  seen: Set<string> = new Set(),
+): Resolved[] => {
+  const out: Resolved[] = [];
+  for (const target of entry.derivesFrom ?? []) {
+    const key = `${target.file}:${target.line}`;
+    if (seen.has(key)) continue;
+    const callers = ariaByKey.get(key);
+    if (!callers) {
+      throw new Error(
+        `derivesFrom target is not in the inventory: ${key} ` +
+          `(referenced by ${entry.file}:${entry.line})`,
+      );
+    }
+    const next = new Set(seen).add(key);
+    for (const caller of callers) {
+      if (!caller.routes.includes(route)) continue;
+      const own = resolved.get(keyOf(caller));
+      if (own?.length) {
+        out.push(...own.map(v => ({ ...v, source: `passed by ${key}` })));
+      } else if (caller.derivesFrom?.length) {
+        out.push(...derivedFor(caller, route, next));
+      } else {
+        out.push({ copy: caller.copy, source: `passed by ${key}` });
+      }
+    }
+  }
+  return out;
+};
+
+const dedupe = (values: Resolved[]) => {
+  const seen = new Set<string>();
+  return values.filter(v => !seen.has(v.copy) && seen.add(v.copy));
+};
+
+/** Registered values first, then anything derived from callers for this route. */
+const ariaValuesFor = (entry: AriaEntry, route: string): Resolved[] => {
+  const registered = resolved.get(keyOf(entry)) ?? [];
+  const derived = entry.derivesFrom?.length
+    ? dedupe(derivedFor(entry, route))
+    : [];
+  if (!registered.length && entry.derivesFrom?.length && !derived.length) {
+    // A pass-through with no caller on this route has no accessible name here.
+    return [
+      {
+        copy: '(NO VALUE - no caller supplies a label on this route)',
+        source: `no caller of ${entry.file}:${entry.line} renders on ${route}`,
+      },
+    ];
+  }
+  return dedupe(registered.concat(derived));
+};
+
+const suffix = (v: Resolved | null, base: string) => {
+  if (!v) return base;
+  if (v.isSummary) return `${base} (summary)`;
+  if (v.isExample) return `${base} (sampled example)`;
+  return v.retrieved ? `${base} (resolved, live)` : `${base} (resolved)`;
+};
 
 const writeAltCsv = async () => {
   const file = path.join(OUT_DIR, 'alt-text-audit.csv');
@@ -2073,22 +3078,31 @@ const writeAltCsv = async () => {
     'scope',
     'line',
     'alt type',
+    'retrieved',
   ]);
   let count = 0;
   for (const r of altRows) {
-    for (const route of r.routes) {
-      out += csvLine([
-        route,
-        r.file,
-        r.image,
-        basename(r.image),
-        r.copy,
-        r.source,
-        r.scope,
-        r.line,
-        r.altType,
-      ]);
-      count++;
+    for (const v of rowsFor(r)) {
+      // Only fall back to the entry's `image` for unresolved rows: it is a
+      // template, so a resolved value that names no image of its own (a summary
+      // row, or a statement about a path that renders nothing) must show blank
+      // rather than leak `${NEXT_PUBLIC_STRAPI_API_URL}${image.url}`.
+      const image = v ? v.image ?? '' : r.image;
+      for (const route of r.routes) {
+        out += csvLine([
+          route,
+          r.file,
+          image,
+          basename(image),
+          v ? v.copy : r.copy,
+          v?.source ?? r.source,
+          r.scope,
+          r.line,
+          suffix(v, r.altType),
+          v?.retrieved ?? '',
+        ]);
+        count++;
+      }
     }
   }
   await fs.writeFile(file, out);
@@ -2106,25 +3120,58 @@ const writeAriaCsv = async () => {
     'label copy',
     'label source',
     'scope',
+    'value kind',
+    'retrieved',
   ]);
   let count = 0;
+  // Route-outer, because a pass-through's real value depends on the route.
   for (const r of ariaRows) {
     for (const route of r.routes) {
-      out += csvLine([
-        route,
-        r.file,
-        r.line,
-        r.element,
-        r.attribute,
-        r.copy,
-        r.source,
-        r.scope,
-      ]);
-      count++;
+      for (const v of capped(ariaValuesFor(r, route))) {
+        out += csvLine([
+          route,
+          r.file,
+          r.line,
+          r.element,
+          r.attribute,
+          v ? v.copy : r.copy,
+          v?.source ?? r.source,
+          r.scope,
+          // An unresolved row is only an "expression" if its copy actually is
+          // one; most are plain hardcoded strings.
+          suffix(v, v ? 'value' : /\{/.test(r.copy) ? 'expression' : 'literal'),
+          v?.retrieved ?? '',
+        ]);
+        count++;
+      }
     }
   }
   await fs.writeFile(file, out);
   console.log(`${file}: ${count} rows`);
+};
+
+/**
+ * Two entries sharing a resolution key both inherit the same values, which
+ * silently doubles a site's rows. Anything intentionally sharing a `file:line`
+ * must disambiguate with `valueKey`.
+ */
+const assertNoSharedKeys = () => {
+  const seen = new Map<string, number>();
+  for (const e of [...altRows, ...ariaRows]) {
+    const k = keyOf(e);
+    seen.set(k, (seen.get(k) ?? 0) + 1);
+  }
+  const clashes = [...seen.entries()].filter(
+    ([k, n]) => n > 1 && resolved.has(k),
+  );
+  if (clashes.length) {
+    throw new Error(
+      'entries share a resolution key that has registered values; give them ' +
+        `distinct valueKeys: ${clashes
+          .map(([k, n]) => `${k} (x${n})`)
+          .join(', ')}`,
+    );
+  }
 };
 
 // Main execution
@@ -2132,6 +3179,9 @@ const main = async () => {
   try {
     console.log('Generating accessibility audit spreadsheets...');
     await fs.mkdir(OUT_DIR, { recursive: true });
+    registerStaticValues();
+    await registerFetchedValues();
+    assertNoSharedKeys();
     await writeAltCsv();
     await writeAriaCsv();
 
