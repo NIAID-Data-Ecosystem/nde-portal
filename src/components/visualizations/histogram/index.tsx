@@ -118,12 +118,12 @@ export const DateHistogram = (props: DateHistogramProps) => {
           id: 'date',
           terms,
           data: terms,
-          isLoading: false,
+          loading: false,
           isUpdating: false,
           error: null,
         },
       },
-      isLoading: false,
+      loading: false,
       isUpdating: false,
       error: null,
     };
@@ -188,13 +188,13 @@ export const DateHistogram = (props: DateHistogramProps) => {
           id: 'date',
           terms,
           data: terms,
-          isLoading: sharedDatasetAgg.isLoading,
+          loading: sharedDatasetAgg.isLoading,
           isUpdating:
             sharedDatasetAgg.isFetching && !sharedDatasetAgg.isLoading,
           error: sharedDatasetAgg.error ?? null,
         },
       },
-      isLoading: sharedDatasetAgg.isLoading,
+      loading: sharedDatasetAgg.isLoading,
       isUpdating: sharedDatasetAgg.isFetching && !sharedDatasetAgg.isLoading,
       error: sharedDatasetAgg.error ?? null,
     };
@@ -202,7 +202,7 @@ export const DateHistogram = (props: DateHistogramProps) => {
 
   return (
     <DateFilter
-      colorScheme='secondary'
+      colorPalette='secondary'
       queryParams={histogramQueryParams}
       selectedDates={selected || []}
       handleSelectedFilter={values => handleSelectedFilters(values, property)}

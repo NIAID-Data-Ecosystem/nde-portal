@@ -107,7 +107,7 @@ describe('useAuth hooks', () => {
       const auth = useAuth();
       return (
         <div>
-          <span>loading:{String(auth.isLoading)}</span>
+          <span>loading:{String(auth.loading)}</span>
           <span>authenticated:{String(auth.isAuthenticated)}</span>
           <span>name:{auth.user?.name ?? 'none'}</span>
         </div>
@@ -274,13 +274,13 @@ describe('useAuth hooks', () => {
     mockLoginState.mockReturnValue({
       user: { username: 'dev', oauth_provider: 'GitHub', name: 'Dev User' },
       isAuthenticated: true,
-      isLoading: false,
+      loading: false,
       error: null,
     });
     mockLogoutState.mockReturnValue({
       user: null,
       isAuthenticated: false,
-      isLoading: false,
+      loading: false,
       error: null,
     });
 
@@ -332,7 +332,7 @@ describe('useAuth hooks', () => {
     mockLoginState.mockReturnValue({
       user: { username: 'dev', oauth_provider: 'GitHub', name: 'Dev User' },
       isAuthenticated: true,
-      isLoading: false,
+      loading: false,
       error: null,
     });
 

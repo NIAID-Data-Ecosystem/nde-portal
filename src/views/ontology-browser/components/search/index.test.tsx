@@ -1,11 +1,14 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { useRouter } from 'next/router';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
 import { ChakraProvider } from '@chakra-ui/react';
-import { OntologyBrowserSearch } from './index';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { useRouter } from 'next/router';
+import React from 'react';
+import { system } from 'src/theme';
+
 import { searchOntologyAPI } from '../../utils/api-helpers';
+import { OntologyBrowserSearch } from './index';
 
 jest.mock('../../utils/api-helpers', () => {
   return {
@@ -63,7 +66,7 @@ describe('OntologyBrowserSearch', () => {
   // Wrap the component with the QueryClientProvider and ChakraProvider
   const wrapper = ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>
-      <ChakraProvider>{children}</ChakraProvider>
+      <ChakraProvider value={system}>{children}</ChakraProvider>
     </QueryClientProvider>
   );
   const renderComponent = (props = {}) => {

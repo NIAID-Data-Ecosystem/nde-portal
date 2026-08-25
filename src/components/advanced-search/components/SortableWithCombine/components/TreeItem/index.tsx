@@ -1,5 +1,5 @@
 import React, { forwardRef, HTMLAttributes, useMemo, useState } from 'react';
-import { Box, Flex, ListItem, ListItemProps } from '@chakra-ui/react';
+import { Box, Flex, ListItemProps, List } from '@chakra-ui/react';
 import { FlattenedItem } from '../../types';
 import { getStyles } from './styles';
 import { StyledWrapper, Wrapper } from './components/TreeItemWrapper';
@@ -94,7 +94,7 @@ export const TreeItem = React.memo(
     );
 
     return (
-      <ListItem ref={wrapperRef} {...styles} {...rest}>
+      <List.Item ref={wrapperRef} {...styles} {...rest}>
         <Flex
           ref={ref}
           style={style}
@@ -120,9 +120,9 @@ export const TreeItem = React.memo(
                 <Box p={1} py={2} maxW='100px'>
                   <UnionButton
                     id={id}
-                    colorScheme={
+                    colorPalette={
                       value.union
-                        ? getUnionTheme(value.union).colorScheme
+                        ? getUnionTheme(value.union).colorPalette
                         : 'primary'
                     }
                     selectedOption={value.union}
@@ -139,7 +139,7 @@ export const TreeItem = React.memo(
                 borderColor='gray.200'
                 borderLeftColor={
                   !ghost && value.union
-                    ? `${getUnionTheme(value.union).colorScheme}.300`
+                    ? `${getUnionTheme(value.union).colorPalette}.300`
                     : 'gray.200'
                 }
               >
@@ -210,7 +210,7 @@ export const TreeItem = React.memo(
             </Box>
           </Wrapper>
         </Flex>
-      </ListItem>
+      </List.Item>
     );
   }),
 );

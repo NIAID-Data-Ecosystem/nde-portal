@@ -15,7 +15,7 @@ const toggleButtonProps = {
   variant: 'link' as const,
   size: 'xs' as const,
   fontSize: 'sm' as const,
-  colorScheme: 'primary' as const,
+  colorPalette: 'primary' as const,
   fontWeight: 'medium' as const,
 };
 
@@ -27,29 +27,30 @@ const toggleButtonProps = {
 export const ExpandableText = ({
   text,
   noOfLines = 4,
-  isLoading,
+  loading,
   ...props
 }: TextProps & {
   text: string;
   noOfLines?: number;
-  isLoading?: boolean;
+  loading?: boolean;
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
   const textRef = useRef<HTMLParagraphElement>(null);
+  // Use React.useId instead (available in React 18+)
   const contentId = useId();
 
   // Detect whether the clamped text overflows so the toggle is only shown when
   // there is hidden content to reveal.
   useLayoutEffect(() => {
-    if (isLoading) {
+    if (loading) {
       return;
     }
     const el = textRef.current;
     if (el) {
       setIsTruncated(el.scrollHeight > el.clientHeight);
     }
-  }, [isLoading, text, noOfLines]);
+  }, [loading, text, noOfLines]);
 
   if (!text) {
     return null;
@@ -60,7 +61,7 @@ export const ExpandableText = ({
       <Text
         id={contentId}
         ref={textRef}
-        noOfLines={expanded ? undefined : noOfLines}
+        lineClamp={expanded ? undefined : noOfLines}
         fontSize='sm'
         {...props}
       >
@@ -97,6 +98,7 @@ export const ExpandableList = ({
   gap?: FlexProps['gap'];
 }) => {
   const [expanded, setExpanded] = useState(false);
+  // Use React.useId instead (available in React 18+)
   const contentId = useId();
 
   const items = useMemo(() => React.Children.toArray(children), [children]);

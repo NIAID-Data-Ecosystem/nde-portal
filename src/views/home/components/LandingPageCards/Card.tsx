@@ -45,7 +45,7 @@ export const Card: React.FC<CardProps> = React.memo(({ card, index }) => (
       alignItems='flex-start'
       justifyContent='flex-start'
     >
-      <VStack align='flex-start' spacing={2} w='100%'>
+      <VStack align='flex-start' gap={2} w='100%'>
         <Heading
           as='h3'
           fontSize='xl'

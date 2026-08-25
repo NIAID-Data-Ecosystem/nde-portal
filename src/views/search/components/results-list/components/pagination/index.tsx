@@ -1,19 +1,21 @@
-import React, { useEffect, useState } from 'react';
 import {
   Flex,
   Icon,
-  Select,
-  VisuallyHidden,
+  NativeSelect,
   useMediaQuery,
+  VisuallyHidden,
 } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
 import {
-  FaAngleRight,
   FaAngleLeft,
-  FaAnglesRight,
+  FaAngleRight,
   FaAnglesLeft,
+  FaAnglesRight,
 } from 'react-icons/fa6';
+
 import { PaginationButton, PaginationButtonGroup } from './components/buttons';
 
+// [chakra-to-do]: Potentially replace with chakra built-in pagination component. See https://chakra-ui.com/docs/components/pagination
 /*
  [COMPONENT INFO]: Pagination
  Handles pagination for search results. Updates pages count based on the total results and the currently selected page.
@@ -25,7 +27,7 @@ interface PaginationProps {
   //  aria-label for nav element.
   ariaLabel: string;
   // Status of data loading.
-  isLoading: boolean;
+  loading: boolean;
   // API page index
   selectedPage: number;
   // Number of items to display in a page
@@ -43,7 +45,7 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
   ({
     id,
     ariaLabel,
-    isLoading,
+    loading,
     selectedPage,
     selectedPerPage,
     total,
@@ -65,12 +67,12 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
         // If the number of pages exceed the number of allotted pages by the api we return the max allotted by the api.
         const pages = total_pages > max ? max : total_pages;
 
-        if (!isLoading && pages !== prev) {
+        if (!loading && pages !== prev) {
           return pages;
         }
         return prev;
       });
-    }, [total, isLoading, selectedPerPage]);
+    }, [total, loading, selectedPerPage]);
 
     // Function to generate options with two before and after the selected value
     const generateOptions = (selectedVal: number) => {
@@ -80,9 +82,9 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
     };
 
     const options = generateOptions(selectedPage);
-    const [isLargerThanMd] = useMediaQuery('(min-width: 48em)', {
+    const [isLargerThanMd] = useMediaQuery(['(min-width: 48em)'], {
       ssr: true,
-      fallback: false,
+      fallback: [false],
     });
     return (
       <Flex
@@ -100,40 +102,46 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
         </VisuallyHidden>
         <Flex w={['100%', 'unset']} justifyContent='center'>
           <PaginationButton
-            isDisabled={selectedPage - 1 === 0}
+            disabled={selectedPage - 1 === 0}
             onClick={() => handleSelectedPage(1)}
             display={{ base: 'none', sm: 'flex' }}
           >
             <VisuallyHidden>First Page</VisuallyHidden>
-            <Icon as={FaAnglesLeft} />
+            <Icon asChild>
+              <FaAnglesLeft />
+            </Icon>
           </PaginationButton>
           <PaginationButton
-            isDisabled={selectedPage - 1 === 0}
+            disabled={selectedPage - 1 === 0}
             onClick={() => handleSelectedPage(selectedPage - 1)}
           >
             <VisuallyHidden>Previous page</VisuallyHidden>
-            <Icon as={FaAngleLeft} />
+            <Icon asChild>
+              <FaAngleLeft />
+            </Icon>
           </PaginationButton>
 
           {/* Mobile */}
-          <Select
-            aria-label={ariaLabel || 'Select page'}
-            borderColor='gray.200'
-            cursor='pointer'
-            display={{ base: 'block', md: 'none' }}
-            onChange={e => handleSelectedPage(+e.target.value)}
-            p={1}
-            size='md'
-            value={selectedPage}
-          >
-            {options.map((option, idx) => {
-              return (
-                <option key={idx} value={option}>
-                  {option}
-                </option>
-              );
-            })}
-          </Select>
+          <NativeSelect.Root size='md'>
+            <NativeSelect.Field
+              aria-label={ariaLabel || 'Select page'}
+              borderColor='gray.200'
+              cursor='pointer'
+              display={{ base: 'block', md: 'none' }}
+              onChange={e => handleSelectedPage(+e.target.value)}
+              p={1}
+              value={selectedPage}
+            >
+              {options.map((option, idx) => {
+                return (
+                  <option key={idx} value={option}>
+                    {option}
+                  </option>
+                );
+              })}
+            </NativeSelect.Field>
+            <NativeSelect.Indicator />
+          </NativeSelect.Root>
           {isLargerThanMd && (
             <Flex display={{ base: 'none', md: 'flex' }}>
               <PaginationButtonGroup>
@@ -167,19 +175,23 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
             </Flex>
           )}
           <PaginationButton
-            isDisabled={selectedPage === totalPages}
+            disabled={selectedPage === totalPages}
             onClick={() => handleSelectedPage(selectedPage + 1)}
           >
             <VisuallyHidden>Next Page</VisuallyHidden>
-            <Icon as={FaAngleRight} />
+            <Icon asChild>
+              <FaAngleRight />
+            </Icon>
           </PaginationButton>
           <PaginationButton
-            isDisabled={selectedPage === totalPages}
+            disabled={selectedPage === totalPages}
             onClick={() => handleSelectedPage(totalPages)}
             display={{ base: 'none', sm: 'flex' }}
           >
             <VisuallyHidden>Last Page</VisuallyHidden>
-            <Icon as={FaAnglesRight} />
+            <Icon asChild>
+              <FaAnglesRight />
+            </Icon>
           </PaginationButton>
         </Flex>
       </Flex>

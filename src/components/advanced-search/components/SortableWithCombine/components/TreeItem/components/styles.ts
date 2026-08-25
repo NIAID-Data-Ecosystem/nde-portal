@@ -34,7 +34,7 @@ export const getItemStyles = ({
     position: 'relative',
     bg: '#fff',
     borderLeftColor: parentItem.value.union
-      ? `${getUnionTheme(parentItem.value.union).colorScheme}.300`
+      ? `${getUnionTheme(parentItem.value.union).colorPalette}.300`
       : 'transparent',
   };
 

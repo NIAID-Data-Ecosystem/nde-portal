@@ -1,18 +1,19 @@
-import { Flex, FlexProps, TooltipProps } from '@chakra-ui/react';
+import { Flex, FlexProps } from '@chakra-ui/react';
 import { InfoLabel } from 'src/components/info-label';
+import type { TooltipProps } from 'src/components/tooltip';
 
 export const OntologyTreeHeaderItem = ({
   label,
-  tooltipLabel,
+  tooltipContent,
 }: {
   label: string;
-  tooltipLabel?: TooltipProps['label'];
+  tooltipContent?: TooltipProps['content'];
 }) => {
   return (
     <Flex maxW={130}>
       <InfoLabel
         title={label}
-        tooltipText={tooltipLabel}
+        tooltipText={tooltipContent}
         textProps={{ lineHeight: 'shorter' }}
       />
     </Flex>

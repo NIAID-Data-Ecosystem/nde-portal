@@ -3,7 +3,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Box, Heading, Text, Flex, Divider } from '@chakra-ui/react';
+import { Box, Heading, Text, Flex, Separator } from '@chakra-ui/react';
 import { useAuth } from 'src/hooks/useAuth';
 import { withAuth } from 'src/components/auth/withAuth';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
@@ -102,7 +102,7 @@ const SavedPage = () => {
         )}
         <SavedDataErrorBanner />
       </Flex>
-      <Divider />
+      <Separator />
       <SavedTableSection
         title='Saved Queries'
         description='A saved collection of frequently used queries.'

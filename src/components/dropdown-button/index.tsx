@@ -9,9 +9,8 @@ import {
   Icon,
   IconButton,
   IconButtonProps,
-  ListItem,
   ListItemProps,
-  UnorderedList,
+  List,
 } from '@chakra-ui/react';
 import { UnionTypes } from 'src/components/advanced-search/types';
 
@@ -29,13 +28,14 @@ export interface DropdownButtonProps extends ButtonGroupProps {
   }[];
   iconButtonProps?: IconButtonProps;
   placeholder?: string;
+  disabled?: ButtonProps['disabled'];
 }
 
 export const DropdownButton: React.FC<DropdownButtonProps> = ({
   ariaLabel,
   size,
-  colorScheme = 'primary',
-  isDisabled,
+  colorPalette = 'primary',
+  disabled,
   type,
   selectedOption,
   setSelectedOption,
@@ -48,11 +48,10 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
   return (
     <Box onMouseLeave={() => setOptionsOpen(false)} height={height}>
       <ButtonGroup
-        isAttached
+        attached
         variant='solid'
         size={size}
-        colorScheme={colorScheme}
-        isDisabled={isDisabled}
+        colorPalette={colorPalette}
         height={height}
         {...props}
       >
@@ -61,6 +60,7 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
           type={type}
           height={height}
           _focus={{ boxShadow: 'none' }}
+          disabled={disabled}
         >
           {selectedOption || placeholder}
         </Button>
@@ -69,16 +69,19 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
             height={height}
             aria-label={ariaLabel}
             alignItems='center'
-            icon={<Icon as={FaAngleDown} />}
             onClick={() => setOptionsOpen(!optionsOpen)}
             onMouseEnter={() => setOptionsOpen(true)}
-            bg={`${colorScheme}.400`}
+            bg={`${colorPalette}.400`}
             _hover={{
-              bg: `${colorScheme}.600`,
+              bg: `${colorPalette}.600`,
             }}
             _focus={{ boxShadow: 'none' }}
             {...props.iconButtonProps}
-          />
+          >
+            <Icon asChild>
+              <FaAngleDown />
+            </Icon>
+          </IconButton>
         )}
       </ButtonGroup>
       {/* Menu of options */}
@@ -95,29 +98,29 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
             bg='white'
             w='100%'
           >
-            <UnorderedList ml={0}>
+            <List.Root as='ul' ml={0}>
               {options.map(option => {
                 return (
-                  <ListItem
+                  <List.Item
                     key={option.value}
                     px={4}
                     py={1}
                     mt={0.5}
-                    bg={`${colorScheme}.500`}
+                    bg={`${colorPalette}.500`}
                     cursor='pointer'
                     color='white'
                     whiteSpace='nowrap'
                     userSelect='none'
-                    _hover={{ bg: `${colorScheme}.400` }}
+                    _hover={{ bg: `${colorPalette}.400` }}
                     fontWeight='medium'
                     onClick={() => setSelectedOption(option.value)}
                     {...option.props}
                   >
                     {option.name}
-                  </ListItem>
+                  </List.Item>
                 );
               })}
-            </UnorderedList>
+            </List.Root>
           </Box>
         </Box>
       )}

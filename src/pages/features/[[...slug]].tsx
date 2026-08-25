@@ -87,7 +87,7 @@ const FeaturedPage: NextPage<{
                 {/* Banner img */}
                 {(isLoading || data?.banner) && (
                   <Skeleton
-                    isLoaded={!isLoading}
+                    loading={!!isLoading}
                     backgroundImage={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${data?.banner?.url}`}
                     backgroundSize='cover'
                     display={{ base: 'none', sm: 'flex' }}
@@ -118,7 +118,7 @@ const FeaturedPage: NextPage<{
                     mb={32}
                     flex={1}
                   >
-                    <Main isLoading={isLoading} data={data} />
+                    <Main loading={isLoading} data={data} />
                   </PageContent>
                 </Flex>
               </Flex>

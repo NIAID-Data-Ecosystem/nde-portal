@@ -1,16 +1,7 @@
+import { Button, ButtonProps, Icon, Popover, Stack } from '@chakra-ui/react';
 import React from 'react';
 import { FaCaretDown } from 'react-icons/fa6';
-import {
-  Button,
-  ButtonProps,
-  Icon,
-  Popover,
-  PopoverTrigger,
-  PopoverArrow,
-  PopoverContent,
-  PopoverBody,
-  Stack,
-} from '@chakra-ui/react';
+
 import { TransformedNavigationDropdown } from '../types';
 import { NavDropdownItem } from './nav-dropdown-item';
 import { SHARED_DESKTOP_ACTION_STYLES } from './styles';
@@ -33,49 +24,56 @@ export const NavDropdownTrigger = ({
   children: React.ReactNode;
 }) => {
   return (
-    <Popover
-      trigger='click'
-      placement='bottom-start'
+    <Popover.Root
       autoFocus
-      closeOnEsc
-      isLazy
+      closeOnEscape
+      lazyMount
+      positioning={{
+        placement: 'bottom-start',
+      }}
     >
-      {({ isOpen }) => (
-        <>
-          <PopoverTrigger>
-            <Button
-              __css={SHARED_DESKTOP_ACTION_STYLES}
-              _hover={{ bg: 'whiteAlpha.300', color: 'white' }}
-              {...buttonProps}
-            >
-              {icon && <Icon as={icon} mr={2} />}
-              {label}
-              <Icon as={FaCaretDown} ml={1} w={4} h={4} />
-            </Button>
-          </PopoverTrigger>
+      <Popover.Context>
+        {({ open: isOpen }) => (
+          <>
+            <Popover.Trigger asChild>
+              <Button
+                css={SHARED_DESKTOP_ACTION_STYLES}
+                _hover={{ bg: 'whiteAlpha.300', color: 'white' }}
+                {...buttonProps}
+              >
+                {icon && <Icon as={icon} mr={2} />}
+                {label}
+                <Icon ml={1} w={4} h={4} asChild>
+                  <FaCaretDown />
+                </Icon>
+              </Button>
+            </Popover.Trigger>
 
-          {isOpen && children}
-        </>
-      )}
-    </Popover>
+            {isOpen && children}
+          </>
+        )}
+      </Popover.Context>
+    </Popover.Root>
   );
 };
 
 export const NavDropdown = ({ children }: { children: React.ReactNode }) => {
   return (
-    <PopoverContent
-      border={0}
-      boxShadow='xl'
-      bg='white'
-      py={2}
-      rounded='xl'
-      minW='sm'
-    >
-      <PopoverArrow />
-      <PopoverBody>
-        <Stack>{children}</Stack>
-      </PopoverBody>
-    </PopoverContent>
+    <Popover.Positioner>
+      <Popover.Content
+        border={0}
+        boxShadow='xl'
+        bg='white'
+        py={2}
+        rounded='xl'
+        minW='sm'
+      >
+        <Popover.Arrow />
+        <Popover.Body>
+          <Stack>{children}</Stack>
+        </Popover.Body>
+      </Popover.Content>
+    </Popover.Positioner>
   );
 };
 

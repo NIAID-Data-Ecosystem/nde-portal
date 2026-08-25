@@ -17,12 +17,12 @@ export const ListToggle = ({
   return (
     <>
       {!isOpen && (
-        <Tooltip label={label}>
+        <Tooltip content={label}>
           <Button
             aria-label={label}
             onClick={toggleOpen}
             size='sm'
-            colorScheme='gray'
+            colorPalette='gray'
             bg='white'
             variant='ghost'
             height={{ base: 'auto', lg: '100%' }}
@@ -31,13 +31,17 @@ export const ListToggle = ({
               Toggle Search List
             </Text>
             <Box>
-              <Icon as={FaMagnifyingGlass} />
+              <Icon asChild>
+                <FaMagnifyingGlass />
+              </Icon>
               <Icon
                 display={{ base: 'none', lg: 'block' }}
-                as={FaAnglesLeft}
                 fill='gray.600'
                 mt={4}
-              />
+                asChild
+              >
+                <FaAnglesLeft />
+              </Icon>
             </Box>
           </Button>
         </Tooltip>

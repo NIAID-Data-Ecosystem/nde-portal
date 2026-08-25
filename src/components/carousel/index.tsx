@@ -10,9 +10,9 @@ import { Item } from './components/Item';
 
 export const Carousel = ({
   children,
-  colorScheme = 'primary',
+  colorPalette = 'primary',
   gap = 32,
-  isLoading = false,
+  loading = false,
 }: CarouselProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const controlsRef = useRef<HTMLDivElement>(null);
@@ -70,12 +70,12 @@ export const Carousel = ({
     maxActiveItem,
     constraint,
     totalDots,
-    colorScheme,
+    colorPalette,
     gap,
     childrenLength: children.length,
     showProgressBar,
     progressPercentage,
-    isLoading,
+    loading,
     ...navigation,
   };
 

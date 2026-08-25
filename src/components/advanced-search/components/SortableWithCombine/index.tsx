@@ -43,8 +43,8 @@ import {
 } from './utils';
 import type { FlattenedItem, SensorContext, TreeItem } from './types';
 import { CSS } from '@dnd-kit/utilities';
-import { Box, UnorderedList } from '@chakra-ui/react';
-import { theme } from 'src/theme';
+import { Box, List } from '@chakra-ui/react';
+import { system } from 'src/theme';
 import { SortableTreeItem } from './components/SortableTreeItem';
 import { sortableTreeKeyboardCoordinates } from './keyboardCoordinates';
 
@@ -268,7 +268,7 @@ export function SortableWithCombine({
           onDragEnd={handleDragEnd}
           onDragCancel={handleDragCancel}
         >
-          <UnorderedList ml={0}>
+          <List.Root as='ul' ml={0}>
             <SortableContext
               items={sortedIds}
               strategy={verticalListSortingStrategy}
@@ -307,7 +307,7 @@ export function SortableWithCombine({
                     <DragOverlay
                       dropAnimation={dropAnimationConfig}
                       modifiers={indicator ? [adjustTranslate] : undefined}
-                      zIndex={theme.zIndices['popover']}
+                      zIndex={system.token('zIndex.popover')}
                     >
                       {activeId && activeItem ? (
                         <SortableTreeItem
@@ -327,7 +327,7 @@ export function SortableWithCombine({
                   )
                 : null}
             </SortableContext>
-          </UnorderedList>
+          </List.Root>
         </DndContext>
       </Box>
     </Box>

@@ -1,7 +1,8 @@
+import { Flex, Icon } from '@chakra-ui/react';
 import React from 'react';
-import { Icon, Flex } from '@chakra-ui/react';
 import { FaAngleRight, FaGithub, FaRegEnvelope } from 'react-icons/fa6';
 import { Link, LinkProps } from 'src/components/link';
+
 import { FooterRoute } from '../types';
 
 export const StyledLink = ({ ...props }: LinkProps) => {
@@ -35,13 +36,15 @@ export const FooterLink: React.FC<FooterLinkProps> = ({
       </StyledLink>
       {!isExternal && (
         <Icon
-          as={FaAngleRight}
           boxSize={3}
           ml={2}
           color='accent.400'
           transform='translate(-5px)'
           transition='all .3s ease'
-        />
+          asChild
+        >
+          <FaAngleRight />
+        </Icon>
       )}
     </>
   );
@@ -70,10 +73,14 @@ export const FooterSocialLinks = ({ routes }: { routes: FooterRoute[] }) => {
               mb={{ base: 3, md: 0 }}
             >
               {type?.toLowerCase().includes('email') && (
-                <Icon as={FaRegEnvelope} boxSize={4} mx={2} />
+                <Icon boxSize={4} mx={2} asChild>
+                  <FaRegEnvelope />
+                </Icon>
               )}
               {type?.toLowerCase().includes('github') && (
-                <Icon as={FaGithub} boxSize={4} mx={2} />
+                <Icon boxSize={4} mx={2} asChild>
+                  <FaGithub />
+                </Icon>
               )}
               <StyledLink
                 href={href}

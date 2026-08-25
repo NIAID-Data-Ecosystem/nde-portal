@@ -32,7 +32,7 @@ const baseProps = {
   selected: {},
   onChange: jest.fn(),
   onClearAll: jest.fn(),
-  isLoading: false,
+  loading: false,
 };
 
 describe('Filters (desktop)', () => {

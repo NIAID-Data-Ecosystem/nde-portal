@@ -15,7 +15,7 @@ export const AccessibleForFree = ({
   if ((isAccessibleForFree === true || isAccessibleForFree === false) && type) {
     return (
       <BadgeWithTooltip
-        colorScheme={isAccessibleForFree ? 'green' : 'gray'}
+        colorPalette={isAccessibleForFree ? 'green' : 'gray'}
         value={isAccessibleForFree ? 'No Cost Access' : 'Paid  Access'}
         tooltipLabel={
           isAccessibleForFree

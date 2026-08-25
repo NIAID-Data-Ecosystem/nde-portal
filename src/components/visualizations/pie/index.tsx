@@ -15,7 +15,7 @@ import { arc as d3Arc } from 'd3-shape';
 import { schemeObservable10 } from 'd3-scale-chromatic';
 import { ChartDatum } from 'src/views/search/components/summary/types';
 import { isMoreSlice } from 'src/views/search/components/summary/helpers';
-import { theme } from 'src/theme';
+import { system } from 'src/theme';
 import { getMaxLabelWidthPx } from './helpers';
 import {
   TooltipWithBounds,
@@ -532,7 +532,9 @@ function PieSliceLabel<ChartDatum>({
       showAnchorLine={false}
       horizontalAnchor={horizontalAnchor}
       containerStyle={{
-        color: isMore ? theme.colors.link.color : theme.colors.heading,
+        color: isMore
+          ? system.token('colors.link.color')
+          : system.token('colors.text.heading'),
         fontSize: '10px',
         fontWeight: 'bold',
         maxWidth: `${maxWidthPx}px`,

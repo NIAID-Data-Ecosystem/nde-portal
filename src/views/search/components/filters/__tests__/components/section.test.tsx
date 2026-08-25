@@ -1,6 +1,7 @@
-import React from 'react';
 import { Accordion } from '@chakra-ui/react';
 import { fireEvent, render, screen } from '@testing-library/react';
+import React from 'react';
+
 import { FiltersSection } from '../../components/section';
 
 jest.mock('src/components/tooltip', () => ({
@@ -19,11 +20,11 @@ describe('filters/components/section', () => {
 
   it('renders and expands panel content', () => {
     render(
-      <Accordion allowMultiple>
-        <FiltersSection name='Topic' description='topic description'>
+      <Accordion.Root multiple>
+        <FiltersSection id='topic' name='Topic' description='topic description'>
           <div>section-content</div>
         </FiltersSection>
-      </Accordion>,
+      </Accordion.Root>,
     );
 
     fireEvent.click(screen.getByRole('button', { name: /topic/i }));
@@ -33,8 +34,9 @@ describe('filters/components/section', () => {
   it('shows chart toggle in visual-summary mode and invokes callback', () => {
     const onToggleViz = jest.fn();
     render(
-      <Accordion allowMultiple>
+      <Accordion.Root multiple>
         <FiltersSection
+          id='topic'
           name='Topic'
           description='topic description'
           filterId='topic'
@@ -43,7 +45,7 @@ describe('filters/components/section', () => {
         >
           <div>section-content</div>
         </FiltersSection>
-      </Accordion>,
+      </Accordion.Root>,
     );
 
     fireEvent.click(

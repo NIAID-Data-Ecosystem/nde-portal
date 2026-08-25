@@ -1,8 +1,5 @@
-import React, { useMemo } from 'react';
-import NextLink from 'next/link';
-import { UrlObject } from 'url';
 import { Text as ChakraText, VisuallyHidden } from '@chakra-ui/react';
-import { useSpring, animated } from '@react-spring/web';
+import { animated, useSpring } from '@react-spring/web';
 import { Annotation, Connector, HtmlLabel } from '@visx/annotation';
 import { localPoint } from '@visx/event';
 import { Group } from '@visx/group';
@@ -13,19 +10,22 @@ import {
   useTooltip,
   useTooltipInPortal,
 } from '@visx/tooltip';
-import { AccessTypes, FacetTerm } from 'src/utils/api/types';
+import NextLink from 'next/link';
+import React, { useMemo } from 'react';
 import {
   customTooltipStyles,
   TooltipSubtitle,
   TooltipTitle,
   TooltipWrapper,
 } from 'src/components/visualizations/tooltip/index';
+import { AccessTypes, FacetTerm } from 'src/utils/api/types';
+import { UrlObject } from 'url';
 
 export interface FacetTermsWithDetails
   extends Pick<FacetTerm, 'term' | 'count'> {
   label: AccessTypes | string;
   description: string;
-  colorScheme: string;
+  colorPalette: string;
   fill: string;
 }
 
@@ -204,7 +204,7 @@ export const StackedBarChart = ({
                         as='span'
                         color='inherit'
                         fontWeight='semibold'
-                        noOfLines={1}
+                        lineClamp={1}
                       >
                         {bar.data.label}
                       </ChakraText>

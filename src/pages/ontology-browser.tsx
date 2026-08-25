@@ -43,11 +43,11 @@ const OntologyBrowserPage: NextPage = () => {
             w='100%'
             h='100%'
             flex={1}
-            spacing={4}
+            gap={4}
             p={4}
             alignItems='flex-start'
           >
-            <VStack alignItems='flex-start' spacing={2}>
+            <VStack alignItems='flex-start' gap={2}>
               <Heading as='h1' fontSize='4xl' textAlign='left'>
                 Ontology Browser
               </Heading>

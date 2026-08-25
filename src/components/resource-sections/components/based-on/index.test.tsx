@@ -1,12 +1,15 @@
-import React from 'react';
+import '@testing-library/jest-dom';
+
+import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ChakraProvider } from '@chakra-ui/react';
-import '@testing-library/jest-dom';
+import React from 'react';
+import { system } from 'src/theme';
+
 import { BasedOnActionProcess, BasedOnTable } from '.';
 
 const renderWithChakra = (ui: React.ReactElement) =>
-  render(<ChakraProvider>{ui}</ChakraProvider>);
+  render(<ChakraProvider value={system}>{ui}</ChakraProvider>);
 
 describe('BasedOnActionProcess', () => {
   it('renders a fallback message when there is no description and no steps', () => {
@@ -153,7 +156,7 @@ describe('BasedOnTable', () => {
     renderWithChakra(
       <BasedOnTable
         id='is-based-on'
-        isLoading={false}
+        loading={false}
         caption='Table showing resources that this resource is based on.'
         title='Based on'
         items={items}

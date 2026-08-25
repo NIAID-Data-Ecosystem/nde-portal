@@ -1,14 +1,4 @@
-import {
-  Box,
-  Flex,
-  Stack,
-  Table,
-  Tbody,
-  Tr,
-  Td,
-  Text,
-  HStack,
-} from '@chakra-ui/react';
+import { Box, Flex, HStack, Stack, Table, Text } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { ExampleOfWork } from 'src/utils/api/types';
@@ -48,10 +38,10 @@ export const ExampleOfWorkDisplay = ({
             Encoding format
           </Text>
           <HStack
-            spacing={1}
+            gap={1}
             wrap='wrap'
-            divider={
-              <Text color='gray.400' mx={1}>
+            separator={
+              <Text color='gray.400' mx={1} borderWidth={0}>
                 |
               </Text>
             }
@@ -93,25 +83,25 @@ export const ExampleOfWorkDisplay = ({
             py={0}
             px={0.5}
           >
-            <Table
+            <Table.Root
               size='sm'
               fontSize='xs'
-              sx={{ tr: { td: { px: 1.5, py: 1 } } }}
+              css={{ '& tr': { '& td': { px: 1.5, py: 1 } } }}
             >
-              <Tbody>
+              <Table.Body>
                 {properties.map((property, index) => (
-                  <Tr key={index} lineHeight='short' fontSize='xs'>
-                    <Td
+                  <Table.Row key={index} lineHeight='short' fontSize='xs'>
+                    <Table.Cell
                       fontSize='inherit'
                       fontWeight='medium'
-                      borderRight='1px!important'
-                      borderRightColor='primary.100!important'
+                      borderRight='1px solid'
+                      borderRightColor='primary.100'
                     >
                       {property.name ||
                         property.propertyID ||
                         'Unknown property'}
-                    </Td>
-                    <Td fontSize='inherit' lineHeight='inherit'>
+                    </Table.Cell>
+                    <Table.Cell fontSize='inherit' lineHeight='inherit'>
                       {property.value?.startsWith('http') ||
                       property.value?.startsWith('www.') ? (
                         <Link href={property.value} isExternal>
@@ -120,11 +110,11 @@ export const ExampleOfWorkDisplay = ({
                       ) : (
                         <>{property.value || 'Unknown value'}</>
                       )}
-                    </Td>
-                  </Tr>
+                    </Table.Cell>
+                  </Table.Row>
                 ))}
-              </Tbody>
-            </Table>
+              </Table.Body>
+            </Table.Root>
           </ScrollContainer>
         </Box>
       )}

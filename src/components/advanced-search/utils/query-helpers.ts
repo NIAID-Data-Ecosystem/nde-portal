@@ -15,7 +15,7 @@ export const getUnionTheme = (term: UnionTypes) => {
     return {
       background: 'primary.500',
       bg: 'primary.500',
-      colorScheme: 'primary',
+      colorPalette: 'primary',
       _hover: { bg: 'primary.600' },
     };
   }
@@ -23,7 +23,7 @@ export const getUnionTheme = (term: UnionTypes) => {
     return {
       background: 'secondary.500',
       bg: 'secondary.500',
-      colorScheme: 'secondary',
+      colorPalette: 'secondary',
       _hover: { bg: 'secondary.600' },
     };
   }
@@ -31,7 +31,7 @@ export const getUnionTheme = (term: UnionTypes) => {
     return {
       background: 'red.500',
       bg: 'red.500',
-      colorScheme: 'red',
+      colorPalette: 'red',
       _hover: { bg: 'red.600' },
     };
   }

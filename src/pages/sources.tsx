@@ -58,7 +58,7 @@ const Sources: NextPage<SourcesProps> = ({ data }) => {
   // Fetch metadata stats from API.
   const {
     data: metadata,
-    isFetching: isLoading,
+    isFetching: loading,
     error: metadataError,
   } = useQuery({
     queryKey: ['metadata'],
@@ -150,7 +150,7 @@ const Sources: NextPage<SourcesProps> = ({ data }) => {
         {!metadataError && (
           <>
             <Sidebar aria-label='Navigation for data sources.'>
-              {!isLoading &&
+              {!loading &&
                 metadata?.sources.map(source => {
                   return (
                     <SidebarItem
@@ -161,7 +161,7 @@ const Sources: NextPage<SourcesProps> = ({ data }) => {
                           {/* Add tag to show source is funded by NIAID */}
                           {source.isNiaidFunded && (
                             <BadgeWithTooltip
-                              colorScheme='blue'
+                              colorPalette='blue'
                               variant='subtle'
                               mx={2}
                             >
@@ -192,7 +192,7 @@ const Sources: NextPage<SourcesProps> = ({ data }) => {
             >
               <Main
                 data={metadata?.sources}
-                isLoading={isLoading}
+                loading={loading}
                 metadata={metadata?.meta}
               />
             </PageContent>

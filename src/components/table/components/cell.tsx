@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   BoxProps,
@@ -8,7 +7,9 @@ import {
   Text,
   TextProps,
 } from '@chakra-ui/react';
+import React from 'react';
 import Tooltip from 'src/components/tooltip';
+
 import { TableSortToggle } from './sort-toggle';
 
 // Label component - displays text in a specific style.
@@ -80,7 +81,7 @@ export const EmptyCell = React.memo(({ label }: { label?: string }) => {
 });
 
 interface ThProps extends CellProps {
-  colorScheme?: ButtonProps['colorScheme'];
+  colorPalette?: ButtonProps['colorPalette'];
   isSelected?: boolean;
   isSortable?: boolean;
   /** Optional descriptive text. */
@@ -95,7 +96,7 @@ interface ThProps extends CellProps {
 export const Th = React.memo(
   ({
     children,
-    colorScheme,
+    colorPalette,
     isSelected,
     label,
     isSortable,
@@ -107,14 +108,12 @@ export const Th = React.memo(
     const py = isSortable ? 1 : 2;
     return (
       <Flex
-        as='th'
         role='columnheader'
         scope='col'
-        label={label}
         alignItems='center'
         bg={bg}
         borderBottom='1px solid'
-        borderBottomColor={`${colorScheme}.200`}
+        borderBottomColor={`${colorPalette}.200`}
         flex={1}
         fontSize='xs'
         fontWeight='bold'
@@ -126,28 +125,31 @@ export const Th = React.memo(
         py={py}
         whiteSpace='pre-wrap'
         {...props}
+        asChild
       >
-        {label && (
-          <Flex alignItems='center' gap={1}>
-            <Tooltip label={tooltip} hasArrow>
-              <Box as='span' display='inline-flex' color='gray.600'>
-                <Label>{label}</Label>
-              </Box>
-            </Tooltip>
-          </Flex>
-        )}
-        {isSortable && tableSortToggleProps && (
-          <Box
-            my={1}
-            fontSize='xs'
-            lineHeight='short'
-            whiteSpace='pre-wrap'
-            wordBreak='break-word'
-            fontWeight='normal'
-          >
-            <TableSortToggle {...tableSortToggleProps} />
-          </Box>
-        )}
+        <th>
+          {label && (
+            <Flex alignItems='center' gap={1}>
+              <Tooltip content={tooltip} showArrow>
+                <Box as='span' display='inline-flex' color='gray.600'>
+                  <Label>{label}</Label>
+                </Box>
+              </Tooltip>
+            </Flex>
+          )}
+          {isSortable && tableSortToggleProps && (
+            <Box
+              my={1}
+              fontSize='xs'
+              lineHeight='short'
+              whiteSpace='pre-wrap'
+              wordBreak='break-word'
+              fontWeight='normal'
+            >
+              <TableSortToggle {...tableSortToggleProps} />
+            </Box>
+          )}
+        </th>
       </Flex>
     );
   },

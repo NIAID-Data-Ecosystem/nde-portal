@@ -1,0 +1,6 @@
+{
+  // Recommended for this workspace. VS Code prompts to install these on first
+  // open. Without them the settings in ./settings.json are inert: nothing
+  // formats on save and no ESLint diagnostics or auto-fixes appear.
+  "recommendations": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
+}

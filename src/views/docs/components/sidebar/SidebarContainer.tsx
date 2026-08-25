@@ -1,8 +1,8 @@
 import {
   Box,
+  BoxProps,
   Button,
   Flex,
-  FlexProps,
   Icon,
   Text,
   useDisclosure,
@@ -10,7 +10,7 @@ import {
 import { FaAnglesLeft, FaAnglesRight } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
 
-interface SidebarContainerProps extends FlexProps {
+interface SidebarContainerProps extends BoxProps {
   children: React.ReactNode;
 }
 
@@ -19,15 +19,15 @@ export const SidebarContainer = ({
   bg,
   ...props
 }: SidebarContainerProps) => {
-  const { isOpen, onOpen, onClose } = useDisclosure({ defaultIsOpen: true });
+  const { open, onOpen, onClose } = useDisclosure({ defaultOpen: true });
 
   return (
     <>
-      {!isOpen && (
+      {!open && (
         <Button
           aria-label='Expand documentation navigation menu'
           onClick={onOpen}
-          colorScheme='gray'
+          colorPalette='gray'
           bg={bg || 'white'}
           variant='ghost'
           borderRight='1px solid'
@@ -37,7 +37,9 @@ export const SidebarContainer = ({
           display='flex'
           alignItems='flex-start'
         >
-          <Icon as={FaAnglesRight} position='sticky' top={4} />
+          <Icon position='sticky' top={4} asChild>
+            <FaAnglesRight />
+          </Icon>
         </Button>
       )}
       <Box
@@ -45,8 +47,8 @@ export const SidebarContainer = ({
         bg={bg || 'white'}
         borderRight='1px solid'
         borderColor='gray.100'
-        w={isOpen ? '350px' : '0px'}
-        transform={isOpen ? 'translateX(0)' : 'translateX(-100%)'}
+        w={open ? '350px' : '0px'}
+        transform={open ? 'translateX(0)' : 'translateX(-100%)'}
         maxW='400px'
         transitionDuration='fast'
         transitionProperty='width, transform'
@@ -57,19 +59,21 @@ export const SidebarContainer = ({
           <Flex
             h='100%'
             flexDirection='column'
-            overflow={isOpen ? 'visible' : 'hidden'}
+            overflow={open ? 'visible' : 'hidden'}
           >
             <Button
               aria-label='Collapse documentation navigation menu'
               onClick={onClose}
-              colorScheme='gray'
+              colorPalette='gray'
               variant='ghost'
               borderRadius='none'
               display='flex'
               alignItems='center'
               gap={2}
             >
-              <Icon as={FaAnglesLeft} />
+              <Icon asChild>
+                <FaAnglesLeft />
+              </Icon>
               <Text fontSize='sm' fontWeight='semibold'>
                 Hide Menu
               </Text>

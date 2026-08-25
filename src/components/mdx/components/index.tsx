@@ -1,23 +1,22 @@
-import React, { useState } from 'react';
-import { FaAngleDown } from 'react-icons/fa6';
 import {
   Box,
   chakra,
-  Collapse,
+  Collapsible,
   Flex,
   Heading,
-  Image,
-  Text,
-  UnorderedList,
-  OrderedList,
-  ListItem,
-  ImageProps,
-  Icon,
   HStack,
+  Icon,
+  Image,
+  ImageProps,
+  List,
+  Text,
 } from '@chakra-ui/react';
-import { Link } from 'src/components/link';
+import React, { useState } from 'react';
+import { FaAngleDown } from 'react-icons/fa6';
 import { HeadingWithLink } from 'src/components/heading-with-link/components/HeadingWithLink';
+import { Link } from 'src/components/link';
 import { transformString2Hash } from 'src/views/docs/utils/markdown';
+
 import { normalizeResponsiveProps } from '../helpers';
 
 const Details = (props: any) => {
@@ -39,7 +38,6 @@ const Details = (props: any) => {
   return (
     <Box border='1px solid' borderColor='gray.100' my={0.5}>
       <Flex
-        as='button'
         w='100%'
         borderLeft='4px solid'
         p={4}
@@ -53,40 +51,45 @@ const Details = (props: any) => {
           bg: 'secondary.50',
         }}
         aria-expanded={isOpen}
-        onClick={() => setIsOpen(!isOpen)}
         {...props}
+        asChild
       >
-        <Heading as='h2' fontSize='xl' flex={1} textAlign='left'>
-          {summaryContent}
-        </Heading>
-        <Icon
-          as={FaAngleDown}
-          boxSize={4}
-          color={isOpen ? 'secondary.600' : 'secondary.500'}
-          transition='transform 250ms ease'
-          transform={!isOpen ? `rotate(-90deg)` : `rotate(0deg)`}
-          {...props}
-        />
+        <button onClick={() => setIsOpen(!isOpen)}>
+          <Heading as='h2' fontSize='xl' flex={1} textAlign='left'>
+            {summaryContent}
+          </Heading>
+          <Icon
+            boxSize={4}
+            color={isOpen ? 'secondary.600' : 'secondary.500'}
+            transition='transform 250ms ease'
+            transform={!isOpen ? `rotate(-90deg)` : `rotate(0deg)`}
+            {...props}
+            asChild
+          >
+            <FaAngleDown />
+          </Icon>
+        </button>
       </Flex>
-
-      <Collapse in={isOpen} animateOpacity>
-        <Box
-          px={6}
-          py={4}
-          pb={6}
-          bg='whiteAlpha.800'
-          sx={{
-            h3: {
-              fontSize: 'lg',
-              mt: 6,
-              mb: 4,
-            },
-          }}
-        >
-          {/* display content after summary */}
-          {children.slice(summaryIndex + 1)}
-        </Box>
-      </Collapse>
+      <Collapsible.Root open={isOpen}>
+        <Collapsible.Content>
+          <Box
+            px={6}
+            py={4}
+            pb={6}
+            bg='whiteAlpha.800'
+            css={{
+              '& h3': {
+                fontSize: 'lg',
+                mt: 6,
+                mb: 4,
+              },
+            }}
+          >
+            {/* display content after summary */}
+            {children.slice(summaryIndex + 1)}
+          </Box>
+        </Collapsible.Content>
+      </Collapsible.Root>
     </Box>
   );
 };
@@ -115,8 +118,8 @@ export const MDXComponents = {
         href={href}
         isExternal={isExternal}
         {...parsedProps}
-        sx={{
-          '.child-string, .child-node, .child-node p': {
+        css={{
+          '& .child-string, .child-node, .child-node p': {
             borderBottom: '0.0625rem solid',
             _hover: { borderBottomColor: 'transparent' },
           },
@@ -176,10 +179,11 @@ export const MDXComponents = {
         py={2}
         m={{ base: 0, md: 2 }}
         bg={theme.bg}
-        sx={{
-          p: {
+        css={{
+          '& p': {
             my: 4,
           },
+
           'p:first-of-type':
             childrenEl.length > 1
               ? {
@@ -227,10 +231,10 @@ export const MDXComponents = {
         <HStack
           alignItems='flex-start'
           flexDirection={{ base: 'column', xl: 'row' }}
-          sx={{
-            img: { maxWidth: { base: '100%', md: '400px' } },
+          css={{
+            '& img': { maxWidth: { base: '100%', md: '400px' } },
           }}
-          spacing={6}
+          gap={6}
           {...props}
         >
           {props.children.map((child: any, idx: number) => (
@@ -246,10 +250,10 @@ export const MDXComponents = {
         <HStack
           alignItems='flex-start'
           flexDirection={{ base: 'column', xl: 'row-reverse' }}
-          sx={{
-            img: { maxWidth: { base: '100%', md: '400px' } },
+          css={{
+            '& img': { maxWidth: { base: '100%', md: '400px' } },
           }}
-          spacing={6}
+          gap={6}
           {...props}
         >
           {props.children.map((child: any, idx: number) => (
@@ -354,19 +358,16 @@ export const MDXComponents = {
       const { src: _src, alt, ...videoProps } = props;
       return (
         <Box
-          as='video'
-          loop
-          muted
-          playsInline
-          controls
-          preload='metadata'
           aria-label={alt || undefined}
           {...(props?.className?.includes('border') ? borderStyles : {})}
           {...videoProps}
+          asChild
         >
-          {src.includes('.webm') && <source src={src} type='video/webm' />}
-          {src.includes('.mp4') && <source src={src} type='video/mp4' />}
-          Your browser does not support the video tag.
+          <video loop muted playsInline controls preload='metadata'>
+            {src.includes('.webm') && <source src={src} type='video/webm' />}
+            {src.includes('.mp4') && <source src={src} type='video/mp4' />}Your
+            browser does not support the video tag.
+          </video>
         </Box>
       );
     }
@@ -383,7 +384,7 @@ export const MDXComponents = {
   li: (props: any) => {
     const { ordered, ...rest } = props;
     return (
-      <ListItem
+      <List.Item
         listStyleType='inherit'
         lineHeight='tall'
         pb={4}
@@ -391,7 +392,7 @@ export const MDXComponents = {
         {...rest}
       >
         {props.children}
-      </ListItem>
+      </List.Item>
     );
   },
   ol: (props: any) => {
@@ -400,9 +401,9 @@ export const MDXComponents = {
       return (MDXComponents.ul as any)(rest);
     }
     return (
-      <OrderedList ml={12} my={2} {...rest}>
+      <List.Root as='ol' ml={12} my={2} {...rest}>
         {props.children}
-      </OrderedList>
+      </List.Root>
     );
   },
   p: (props: any) => {
@@ -417,7 +418,13 @@ export const MDXComponents = {
       );
     if (containsImgEl) {
       return (
-        <Text as='span' mt={2} size='sm' lineHeight='tall' color='text.body'>
+        <Text
+          as='span'
+          mt={2}
+          fontSize='sm'
+          lineHeight='tall'
+          color='text.body'
+        >
           {props.children}
         </Text>
       );
@@ -434,10 +441,10 @@ export const MDXComponents = {
         <HStack
           alignItems='flex-start'
           flexDirection={{ base: 'column', xl: 'row' }}
-          sx={{
-            img: { maxWidth: { base: '100%', md: '400px' } },
+          css={{
+            '& img': { maxWidth: { base: '100%', md: '400px' } },
           }}
-          spacing={6}
+          gap={6}
           {...props}
         >
           {props.children.map((child: any, idx: number) => (
@@ -453,10 +460,10 @@ export const MDXComponents = {
         <HStack
           alignItems='flex-start'
           flexDirection={{ base: 'column', xl: 'row-reverse' }}
-          sx={{
-            img: { maxWidth: { base: '100%', md: '400px' } },
+          css={{
+            '& img': { maxWidth: { base: '100%', md: '400px' } },
           }}
-          spacing={6}
+          gap={6}
           {...props}
         >
           {props.children.map((child: any, idx: number) => (
@@ -467,16 +474,20 @@ export const MDXComponents = {
     }
     return <Box {...props} />;
   },
-  strong: (props: any) => <Box as='strong' fontWeight='semibold' {...props} />,
+  strong: (props: any) => (
+    <Box fontWeight='semibold' {...props} asChild>
+      <strong />
+    </Box>
+  ),
   ul: (props: any) => {
     const { ordered, ...rest } = props;
     if (ordered) {
       return (MDXComponents.ol as any)(rest);
     }
     return (
-      <UnorderedList my={4} ml={12} {...rest}>
+      <List.Root as='ul' my={4} ml={12} {...rest}>
         {props.children}
-      </UnorderedList>
+      </List.Root>
     );
   },
 };

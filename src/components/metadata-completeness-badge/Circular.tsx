@@ -1,6 +1,3 @@
-import React, { useMemo } from 'react';
-import { uniqueId } from 'lodash';
-import { animated, useTransition, to } from '@react-spring/web';
 import {
   Box,
   Flex,
@@ -10,13 +7,17 @@ import {
   LinkProps,
   Text,
 } from '@chakra-ui/react';
+import { animated, to, useTransition } from '@react-spring/web';
 import { Group } from '@visx/group';
 import Pie, { PieArcDatum, ProvidedProps } from '@visx/shape/lib/shapes/Pie';
-import Tooltip from 'src/components/tooltip';
-import { TooltipContent } from './TooltipContent';
-import { FormattedResource } from 'src/utils/api/types';
-import { getMetadataListByType, getTooltipDetails } from './helpers';
+import { uniqueId } from 'lodash';
+import React, { useMemo } from 'react';
 import { FaInfo } from 'react-icons/fa6';
+import Tooltip from 'src/components/tooltip';
+import { FormattedResource } from 'src/utils/api/types';
+
+import { getMetadataListByType, getTooltipDetails } from './helpers';
+import { TooltipContent } from './TooltipContent';
 
 const colors = {
   required: {
@@ -166,9 +167,7 @@ export const CompletenessBadgeCircle = ({
     >
       <Box position='relative' cursor='default'>
         <Tooltip
-          maxWidth='unset'
-          maxW='90vw'
-          label={
+          content={
             <TooltipContent
               type={type}
               data={[
@@ -287,7 +286,7 @@ export const CompletenessBadgeCircle = ({
           </span>
         </Tooltip>
       </Box>
-      <Tooltip label='See metadata compatibility documentation.'>
+      <Tooltip content='See metadata compatibility documentation.'>
         <Link
           href='/knowledge-center/metadata-compatibility-score'
           mt={2}
@@ -300,13 +299,15 @@ export const CompletenessBadgeCircle = ({
         >
           Metadata Compatibility{' '}
           <Icon
-            as={FaInfo}
             boxSize={3.5}
             border='1px solid'
             borderRadius='full'
             p={0.5}
             color='gray.800!important'
-          />
+            asChild
+          >
+            <FaInfo />
+          </Icon>
         </Link>
       </Tooltip>
     </Flex>

@@ -13,7 +13,6 @@ import {
   Image,
   Text,
   Card,
-  CardBody,
   Badge,
 } from '@chakra-ui/react';
 import { Carousel } from 'src/components/carousel';
@@ -146,7 +145,7 @@ export const NewsCarousel = ({
               ? `/features/${carouselCard.slug}`
               : `/updates/#${carouselCard.slug}`;
           return (
-            <Card key={carouselCard.id + idx} overflow='hidden' flex={1}>
+            <Card.Root key={carouselCard.id + idx} overflow='hidden' flex={1}>
               <Flex
                 w='100%'
                 p={0}
@@ -175,7 +174,6 @@ export const NewsCarousel = ({
                   )}
                 </Flex>
               </Flex>
-
               <Box p={4}>
                 <Heading
                   p={0}
@@ -187,7 +185,7 @@ export const NewsCarousel = ({
                   {carouselCard.name}
                   {carouselCard.eventDate && (
                     <Badge
-                      colorScheme='primary'
+                      colorPalette='primary'
                       variant='solid'
                       bg='status.info'
                       size='xs'
@@ -199,7 +197,7 @@ export const NewsCarousel = ({
                   )}
                   {carouselCard.type === 'feature' && (
                     <Badge
-                      colorScheme='accent'
+                      colorPalette='accent'
                       variant='solid'
                       size='xs'
                       fontSize='12px'
@@ -209,7 +207,7 @@ export const NewsCarousel = ({
                     </Badge>
                   )}
                 </Heading>
-                <CardBody p={0}>
+                <Card.Body p={0}>
                   {
                     <Text as='span' mt={2} fontSize='sm' lineHeight='short'>
                       {formatDate(
@@ -230,9 +228,9 @@ export const NewsCarousel = ({
                       </NextLink>
                     </Text>
                   }
-                </CardBody>
+                </Card.Body>
               </Box>
-            </Card>
+            </Card.Root>
           );
         })}
       </Carousel>
@@ -244,8 +242,11 @@ export const NewsCarousel = ({
           prefetch={false}
           passHref
         >
-          <Button as='span' size='sm' rightIcon={<Icon as={FaAngleRight} />}>
+          <Button as='span' size='sm'>
             All updates
+            <Icon asChild>
+              <FaAngleRight />
+            </Icon>
           </Button>
         </NextLink>
       </Flex>

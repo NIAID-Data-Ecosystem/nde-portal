@@ -1,9 +1,10 @@
-import { OverviewSectionWrapper } from '../overview-section-wrapper';
-import { FormattedResource } from 'src/utils/api/types';
+import { Box, SimpleGrid, VStack } from '@chakra-ui/react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { TagWithUrl } from 'src/components/tag-with-url';
+import { FormattedResource } from 'src/utils/api/types';
+
 import { ResourceCatalogCollection } from '../collection-information';
-import { Box, SimpleGrid, VStack } from '@chakra-ui/react';
+import { OverviewSectionWrapper } from '../overview-section-wrapper';
 
 // Note: `about` and `exampleOfWork.about` are displayed under the umbrella term "Content Types" since they both generally describe the type of content associated with the resource. `genre` is displayed separately as "Research Domain" since it typically describes the broader domain or field of research that the resource is associated with, which is a different aspect than the specific content types described by `about` and `exampleOfWork.about`.
 
@@ -12,13 +13,13 @@ export const AboutResource = ({
   collectionSize,
   exampleOfWork,
   genre,
-  isLoading,
+  loading,
 }: {
   about?: FormattedResource['about'];
   collectionSize?: FormattedResource['collectionSize'];
   exampleOfWork?: FormattedResource['exampleOfWork'];
   genre?: FormattedResource['genre'];
-  isLoading: boolean;
+  loading: boolean;
 }) => {
   // If none of the relevant fields are present, don't render the section at all
   if (!about && !collectionSize && !exampleOfWork?.about && !genre) {
@@ -54,17 +55,16 @@ export const AboutResource = ({
   return (
     <SimpleGrid
       minChildWidth={{ base: 'unset', sm: '280px', xl: '300px' }}
-      spacingX={14}
-      spacingY={10}
+      rowGap={14}
+      columnGap={10}
       mt={4}
-      rowGap={0}
       w='100%'
     >
       {/* Col 1: Genre & Content Types */}
       <VStack>
         {genre && (
           <OverviewSectionWrapper
-            isLoading={isLoading}
+            loading={loading}
             label='Research Domain'
             scrollContainerProps={{
               border: 'none',
@@ -89,7 +89,7 @@ export const AboutResource = ({
         {/* `about` and `exampleOfWork.about` are displayed under the umbrella term "Content Types" */}
         {contentTypes.length > 0 && (
           <OverviewSectionWrapper
-            isLoading={isLoading}
+            loading={loading}
             label='Content Types'
             scrollContainerProps={{
               border: 'none',
@@ -117,7 +117,7 @@ export const AboutResource = ({
       {/* Col 2: Size of collection */}
       {collectionSize && (
         <OverviewSectionWrapper
-          isLoading={isLoading}
+          loading={loading}
           label='Collection Size Details'
           maxWidth={{ base: 'unset', xl: '500px' }}
           scrollContainerProps={{

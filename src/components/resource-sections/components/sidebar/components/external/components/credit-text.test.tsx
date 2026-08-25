@@ -1,8 +1,11 @@
-import React from 'react';
+import '@testing-library/jest-dom';
+
+import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ChakraProvider } from '@chakra-ui/react';
-import '@testing-library/jest-dom';
+import React from 'react';
+import { system } from 'src/theme';
+
 import { CreditText } from './credit-text';
 
 jest.mock('src/components/source-logo/helpers', () => ({
@@ -10,7 +13,7 @@ jest.mock('src/components/source-logo/helpers', () => ({
 }));
 
 const renderWithChakra = (ui: React.ReactElement) =>
-  render(<ChakraProvider>{ui}</ChakraProvider>);
+  render(<ChakraProvider value={system}>{ui}</ChakraProvider>);
 
 // The "Show more" toggle only appears when the clamped container overflows.
 // jsdom reports 0 for both measurements, so stub them for the overflow cases.

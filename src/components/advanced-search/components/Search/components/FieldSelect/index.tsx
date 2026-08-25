@@ -4,11 +4,11 @@ import {
   Flex,
   Icon,
   Text,
-  Tooltip,
   useDisclosure,
   VisuallyHidden,
 } from '@chakra-ui/react';
-import { theme } from 'src/theme';
+import Tooltip from '../../../../../tooltip';
+import { system } from 'src/theme';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 import Select, { components, OptionProps, ControlProps } from 'react-select';
@@ -48,7 +48,7 @@ export const filterFields = (field: SchemaDefinition) => {
 };
 
 const Option = (props: OptionProps<any>) => {
-  const { isOpen: showDescription, onClose, onOpen } = useDisclosure();
+  const { open: showDescription, onClose, onOpen } = useDisclosure();
   const { data } = props;
   const { label, type, count, property } = data;
 
@@ -111,9 +111,13 @@ const Option = (props: OptionProps<any>) => {
           }
         >
           <Tooltip
-            hasArrow
-            label={tooltipLabel.charAt(0).toUpperCase() + tooltipLabel.slice(1)}
-            placement='top-start'
+            showArrow
+            content={
+              tooltipLabel.charAt(0).toUpperCase() + tooltipLabel.slice(1)
+            }
+            positioning={{
+              placement: 'top-start',
+            }}
           >
             {/* icon displaying the type of field. */}
             <Box
@@ -150,7 +154,7 @@ const Option = (props: OptionProps<any>) => {
                 color={props.isSelected ? 'inherit' : 'gray.800'}
                 transition='0.2s linear'
                 maxW={350}
-                noOfLines={!showDescription ? 1 : undefined}
+                lineClamp={!showDescription ? 1 : undefined}
               >
                 {description.charAt(0).toUpperCase() +
                   description.toLowerCase().slice(1)}
@@ -167,20 +171,36 @@ const Option = (props: OptionProps<any>) => {
 const Control = (props: ControlProps<any>) => {
   return (
     <components.Control {...props}>
-      <Icon as={FaMagnifyingGlass} ml={2} color='gray.300' />
+      <Icon ml={2} color='gray.300' asChild>
+        <FaMagnifyingGlass />
+      </Icon>
       {props.children}
     </components.Control>
   );
 };
 
 interface FieldSelectProps {
-  isDisabled?: boolean;
+  disabled?: boolean;
   selectedField?: QueryValue['field'];
   setSelectedField: (field: QueryValue['field']) => void;
   defaultMenuIsOpen?: boolean;
   fields: SchemaDefinition[];
   size?: 'sm' | 'md' | 'lg';
 }
+
+/*
+react-select builds plain CSS-in-JS objects, so it needs literal colours rather
+than the `var()` a token reference resolves to. Read once here instead of on
+every render. Shared with ../SearchInput/components/EnumInput.
+*/
+export const selectColors = {
+  border: system.token('colors.gray.200'),
+  focusBorder: system.token('colors.primary.500'),
+  focusRing: system.token('colors.primary.600'),
+  optionHoverBg: system.token('colors.primary.100'),
+  optionSelectedBg: system.token('colors.primary.500'),
+  optionText: system.token('colors.text.body'),
+};
 
 export const customStyles: any = {
   sm: {
@@ -211,7 +231,7 @@ export const customStyles: any = {
 
 export const FieldSelect: React.FC<FieldSelectProps> = ({
   size = 'md',
-  isDisabled = false,
+  disabled = false,
   selectedField,
   setSelectedField,
   defaultMenuIsOpen = false,
@@ -264,7 +284,7 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
                   )[0]
                 : fields[0]
             }
-            isDisabled={isDisabled}
+            isDisabled={disabled}
             defaultMenuIsOpen={defaultMenuIsOpen}
             // is clearable when not the default "all fields" selection.
             isClearable={selectedField !== ''}
@@ -303,18 +323,18 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
               control: base => {
                 return {
                   ...base,
-                  borderColor: theme.colors.gray[200],
+                  borderColor: selectColors.border,
                   boxShadow: 'none',
                   ':hover': {
-                    borderColor: theme.colors.gray[200],
+                    borderColor: selectColors.border,
                   },
                   ':focus': {
-                    borderColor: theme.colors.primary[500],
-                    boxShadow: `0 0 0 1px ${theme.colors.primary[600]}`,
+                    borderColor: selectColors.focusBorder,
+                    boxShadow: `0 0 0 1px ${selectColors.focusRing}`,
                   },
                   ':focus-within': {
-                    borderColor: theme.colors.primary[500],
-                    boxShadow: `0 0 0 1px ${theme.colors.primary[600]}`,
+                    borderColor: selectColors.focusBorder,
+                    boxShadow: `0 0 0 1px ${selectColors.focusRing}`,
                   },
                   ...customStyles[size]?.control,
                 };
@@ -324,17 +344,17 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
                 return {
                   ...base,
                   backgroundColor: isSelected
-                    ? theme.colors.primary[500]
+                    ? selectColors.optionSelectedBg
                     : isFocused
-                    ? theme.colors.primary[100]
+                    ? selectColors.optionHoverBg
                     : 'transparent',
-                  color: isSelected ? 'white' : theme.colors.text.body,
+                  color: isSelected ? 'white' : selectColors.optionText,
                   borderBottom: '1px solid',
-                  borderBottomColor: theme.colors.primary[100],
+                  borderBottomColor: selectColors.optionHoverBg,
                   ':hover': {
                     background: isSelected
-                      ? theme.colors.primary[500]
-                      : theme.colors.primary[100],
+                      ? selectColors.optionSelectedBg
+                      : selectColors.optionHoverBg,
                   },
 
                   ...customStyles[size]?.option,

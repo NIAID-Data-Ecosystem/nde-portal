@@ -1,9 +1,9 @@
 import {
   Heading,
-  ListItem,
   ListItemProps,
   Text,
   useDisclosure,
+  List,
 } from '@chakra-ui/react';
 
 interface OptionProps extends ListItemProps {
@@ -18,9 +18,9 @@ export const OptionItem: React.FC<OptionProps> = ({
   onClick,
   ...props
 }) => {
-  const { isOpen: showDescription, onClose, onOpen } = useDisclosure();
+  const { open: showDescription, onClose, onOpen } = useDisclosure();
   return (
-    <ListItem
+    <List.Item
       px={3}
       py={2}
       cursor='pointer'
@@ -47,11 +47,11 @@ export const OptionItem: React.FC<OptionProps> = ({
           opacity={showDescription ? 1 : 0}
           transition='0.2s linear'
           maxW={350}
-          noOfLines={2} //truncate after 2 lines
+          lineClamp={2} //truncate after 2 lines
         >
           {description.charAt(0).toUpperCase() + description.slice(1)}
         </Text>
       )}
-    </ListItem>
+    </List.Item>
   );
 };

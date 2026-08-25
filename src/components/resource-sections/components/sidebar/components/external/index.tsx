@@ -2,12 +2,12 @@ import React from 'react';
 import { FormattedResource } from 'src/utils/api/types';
 import {
   Box,
-  Divider,
   Heading,
   HeadingProps,
   Skeleton,
   SkeletonProps,
   Stack,
+  Separator,
 } from '@chakra-ui/react';
 import { DataAccess } from './components/data-access';
 import { DataUsage } from './components/usage';
@@ -25,7 +25,7 @@ interface ExternalProps extends Omit<WrapperProps, 'children'> {
 
 export const ExternalAccess = ({
   data,
-  isLoading,
+  loading,
   hasDivider = true,
   ...props
 }: ExternalProps) => {
@@ -33,7 +33,7 @@ export const ExternalAccess = ({
     <>
       {/* Source + data access info. */}
       <Wrapper
-        isLoading={isLoading}
+        loading={loading}
         label='Resource Access'
         hasDivider={hasDivider}
         {...props}
@@ -63,7 +63,7 @@ export const ExternalAccess = ({
           </Stack>
         )}
         <DataAccess
-          isLoading={isLoading}
+          loading={loading}
           includedInDataCatalog={data?.includedInDataCatalog}
           url={data?.url}
           recordType={data?.['@type']}
@@ -76,9 +76,9 @@ export const ExternalAccess = ({
 
 export const UsageInfo = ({
   data,
-  isLoading,
+  loading,
 }: {
-  isLoading: boolean;
+  loading: boolean;
   data?: FormattedResource;
 }) => {
   return (
@@ -87,18 +87,18 @@ export const UsageInfo = ({
         {/* License, usage agreement */}
         {(data?.creditText || data?.usageInfo || data?.license) && (
           <Wrapper
-            isLoading={isLoading}
+            loading={loading}
             label='Usage and Licensing'
             bg='secondary.50'
           >
             <>
               <DataUsage
-                isLoading={isLoading}
+                loading={loading}
                 type={data?.['@type']}
                 usageInfo={data?.usageInfo}
               />
               <License
-                isLoading={isLoading}
+                loading={loading}
                 type={data?.['@type']}
                 license={data?.license}
               />
@@ -115,9 +115,9 @@ export const UsageInfo = ({
         )}
         {/* Reference documents and code repositories */}
         {(data?.mainEntityOfPage || data?.codeRepository) && (
-          <Wrapper isLoading={isLoading} label=''>
+          <Wrapper loading={loading} label=''>
             <AssociatedDocumentation
-              isLoading={isLoading}
+              loading={loading}
               type={data?.['@type']}
               mainEntityOfPage={data?.mainEntityOfPage}
               codeRepository={data?.codeRepository}
@@ -131,7 +131,7 @@ export const UsageInfo = ({
 
 interface WrapperProps extends SkeletonProps {
   label?: string;
-  isLoading: boolean;
+  loading: boolean;
   children: React.ReactNode;
   headingProps?: HeadingProps;
   hasDivider?: boolean;
@@ -139,14 +139,14 @@ interface WrapperProps extends SkeletonProps {
 
 export const Wrapper = ({
   label,
-  isLoading,
+  loading,
   children,
   headingProps,
   hasDivider = true,
   ...props
 }: WrapperProps) => (
-  <Skeleton isLoaded={!isLoading} fontSize='xs' flex={1} {...props}>
-    {hasDivider && <Divider borderColor='page.placeholder' />}
+  <Skeleton loading={!!loading} fontSize='xs' flex={1} {...props}>
+    {hasDivider && <Separator borderColor='page.placeholder' />}
     {label && (
       <Heading
         as='h2'
@@ -164,7 +164,7 @@ export const Wrapper = ({
     <Stack
       p={{ base: 4, md: 6 }}
       pt={{ base: 2, md: label ? 0 : 6 }}
-      spacing={{ base: 2, md: 4 }}
+      gap={{ base: 2, md: 4 }}
       lineHeight='short'
     >
       {children}

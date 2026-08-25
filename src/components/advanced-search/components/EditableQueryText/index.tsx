@@ -1,20 +1,16 @@
 import {
   ButtonGroup,
   Editable,
-  EditablePreview,
-  EditableTextarea,
   Flex,
   Icon,
   IconButton,
   Spinner,
   Text,
-  Textarea,
-  Tooltip,
-  useEditableControls,
-  VisuallyHidden,
+  useEditableContext,
 } from '@chakra-ui/react';
-import { theme } from 'src/theme';
-import { MouseEventHandler, useEffect, useState } from 'react';
+import Tooltip from '../../../tooltip';
+import { system } from 'src/theme';
+import { useEffect, useState } from 'react';
 import { FaCheck, FaRegPenToSquare, FaXmark } from 'react-icons/fa6';
 import { useQuery } from '@tanstack/react-query';
 import { getQueryStatusError } from 'src/components/error/utils';
@@ -35,7 +31,93 @@ import {
   validateQueryString,
 } from './utils';
 import { QueryStringError } from 'src/components/error/types';
-import { keyframes } from '@emotion/react';
+
+interface EditableQueryControlsProps {
+  /** Shakes the submit button once after a failed validation attempt. */
+  shouldShakeSubmit: boolean;
+  /**
+   * Validates the current query string and, when it is valid, writes it back to
+   * the query builder. Returns whether the edit may be committed — `false`
+   * leaves the user in the textarea with their query intact.
+   */
+  onSubmit: () => boolean;
+}
+
+/**
+ * Edit / cancel / submit controls for the editable query string.
+ *
+ * Declared at module scope rather than inside `EditableQueryText` so React
+ * keeps the same component type between renders — an inline definition is a new
+ * type on every render, which remounts these buttons and drops focus.
+ */
+const EditableQueryControls = ({
+  shouldShakeSubmit,
+  onSubmit,
+}: EditableQueryControlsProps) => {
+  const { editing } = useEditableContext();
+
+  if (!editing) {
+    return (
+      <Flex justifyContent='end'>
+        <Tooltip content='Click to edit'>
+          <Editable.EditTrigger asChild>
+            <IconButton
+              aria-label='Edit'
+              size='sm'
+              variant='solid'
+              colorPalette='gray'
+              color='text.body'
+            >
+              <Icon boxSize={4} asChild>
+                <FaRegPenToSquare />
+              </Icon>
+            </IconButton>
+          </Editable.EditTrigger>
+        </Tooltip>
+      </Flex>
+    );
+  }
+
+  return (
+    <ButtonGroup justifyContent='end' size='sm' w='full' gap={2} mt={2}>
+      <Editable.CancelTrigger asChild>
+        <IconButton
+          aria-label='Cancel'
+          variant='solid'
+          colorPalette='gray'
+          color='text.body'
+        >
+          <Icon boxSize={6} asChild>
+            <FaXmark />
+          </Icon>
+        </IconButton>
+      </Editable.CancelTrigger>
+      {/* Must be a real SubmitTrigger, not a plain button with an onClick: zag
+      excludes only the submit and cancel triggers from its interact-outside
+      watcher, so any other button would register as a click outside the input
+      and cancel the edit before the handler could run.
+
+      `onClick` belongs on the trigger rather than the IconButton — zag merges
+      the consumer's handler ahead of its own and bails on a default-prevented
+      event, which is what lets validation veto the commit. */}
+      <Editable.SubmitTrigger
+        asChild
+        onClick={event => {
+          if (!onSubmit()) event.preventDefault();
+        }}
+      >
+        <IconButton
+          aria-label='Accept Edit.'
+          animation={shouldShakeSubmit ? 'shake 0.2s ease-in-out' : undefined}
+        >
+          <Icon asChild>
+            <FaCheck />
+          </Icon>
+        </IconButton>
+      </Editable.SubmitTrigger>
+    </ButtonGroup>
+  );
+};
 
 interface EditableQueryTextProps {
   queryObj: TreeItem[];
@@ -55,12 +137,12 @@ export const EditableQueryText = ({
     ? convertObject2QueryString(queryObj)
     : '';
 
-  // Value of the editable text area.
+  // Value of the editable text area. Editable.Root is fully controlled off this
+  // state via `value` / `onValueChange`.
   const [value, setValue] = useState(() => defaultValue);
 
   // Animation for button when error.
   const [animateError, setAnimateError] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // expected count for query.
   const [debouncedQueryString] = useDebounceValue(value, 1000);
@@ -136,11 +218,13 @@ export const EditableQueryText = ({
     }
   }, [data, setErrors]);
 
+  // Reset the shake once it has played, rather than queueing a fresh timeout on
+  // every render.
   useEffect(() => {
-    setTimeout(() => {
-      setAnimateError(false);
-    }, 1000);
-  });
+    if (!animateError) return;
+    const timeout = setTimeout(() => setAnimateError(false), 1000);
+    return () => clearTimeout(timeout);
+  }, [animateError]);
 
   useEffect(() => {
     setValue(queryObj.length ? convertObject2QueryString(queryObj) : '');
@@ -154,189 +238,138 @@ export const EditableQueryText = ({
   // Errors of only type "error".
   const hasErrors = errors.filter(err => err.type === 'error').length > 0;
 
-  /* Controls for editable text area. */
-  function EditableControls() {
-    const {
-      isEditing,
-      getSubmitButtonProps,
-      getCancelButtonProps,
-      getEditButtonProps,
-    } = useEditableControls();
+  /** @returns whether the edit may be committed. */
+  const handleSubmit = () => {
+    const validation = handleValidation(value);
 
-    const shakeAnimation = `${shake} 0.2s ease-in-out 0s 1`;
+    if (!validation.isValid) {
+      const errors = [...validation.errors];
 
-    const handleSubmit:
-      | MouseEventHandler<HTMLButtonElement>
-      | undefined = e => {
-      const validation = handleValidation(value);
-      setIsSubmitting(true);
-      if (!validation.isValid) {
-        const errors = [...validation.errors];
+      setErrors(prev => {
+        return removeDuplicateErrors([...prev, ...errors]);
+      });
+      setAnimateError(true);
 
-        setErrors(prev => {
-          return removeDuplicateErrors([...prev, ...errors]);
-        });
-        setAnimateError(true);
+      return false;
+    }
 
-        return;
-      } else if (error) {
-        const errorMessage = getQueryStatusError(
-          error as unknown as { status: string },
-        );
-        if (errorMessage) {
-          setErrors(prev => removeDuplicateErrors([...prev, errorMessage]));
-        }
-        setIsSubmitting(false);
-      } else {
-        refetch();
-        const queryObject = convertQueryString2Object(
-          removeUnnecessaryParentheses(validation.querystring),
-        );
-        updateQueryObj(queryObject);
-        const submitProps = getSubmitButtonProps && getSubmitButtonProps();
-        submitProps.onClick && submitProps.onClick(e);
+    if (error) {
+      const errorMessage = getQueryStatusError(
+        error as unknown as { status: string },
+      );
+      if (errorMessage) {
+        setErrors(prev => removeDuplicateErrors([...prev, errorMessage]));
       }
-    };
+      return false;
+    }
 
-    return isEditing ? (
-      <ButtonGroup justifyContent='end' size='sm' w='full' spacing={2} mt={2}>
-        <IconButton
-          aria-label='Cancel'
-          variant='solid'
-          colorScheme='gray'
-          color='text.body'
-          icon={<Icon as={FaXmark} boxSize={6} />}
-          {...getCancelButtonProps()}
-        />
-        <IconButton
-          aria-label='Accept Edit.'
-          animation={animateError ? shakeAnimation : undefined}
-          icon={<Icon as={FaCheck} />}
-          {...getSubmitButtonProps()}
-          onClick={handleSubmit}
-        />
-      </ButtonGroup>
-    ) : (
-      <Flex justifyContent='end'>
-        <Tooltip label='Click to edit'>
-          <IconButton
-            aria-label='Edit'
-            size='sm'
-            variant='solid'
-            colorScheme='gray'
-            color='text.body'
-            icon={<Icon as={FaRegPenToSquare} boxSize={4} />}
-            {...getEditButtonProps()}
-          />
-        </Tooltip>
-      </Flex>
+    refetch();
+    const queryObject = convertQueryString2Object(
+      removeUnnecessaryParentheses(validation.querystring),
     );
-  }
+    updateQueryObj(queryObject);
+    return true;
+  };
 
   return (
-    <>
-      <Editable
-        submitOnBlur={false}
-        border='2px solid'
-        borderColor='gray.100'
-        borderRadius='semi'
-        value={value}
-        placeholder='Click to write query string.'
-        onCancel={() => {
-          setValue(defaultValue);
-        }}
-        onChange={nextValue => {
-          setValue(nextValue);
-          const validation = handleValidation(nextValue);
-          if (validation.errors.length < errors.length) {
-            setErrors(() => {
-              const newErrs = errors.filter(
-                error =>
-                  validation.errors.findIndex(
-                    item => item.title === error.title,
-                  ) > -1,
-              );
-              return removeDuplicateErrors(newErrs);
-            });
-          }
-        }}
-      >
-        <Tooltip label='Click to edit'>
-          <EditablePreview
-            w='100%'
-            py={2}
-            px={4}
-            color={value ? 'text.body' : 'gray.800'}
-            fontSize='sm'
-            fontStyle='italic'
-            _hover={{
-              background: 'gray.100',
-            }}
-          />
-        </Tooltip>
-        <VisuallyHidden>
-          <label id='editable-label'>Edit query input</label>
-        </VisuallyHidden>
-        <Textarea
-          aria-labelledby='editable-label'
+    <Editable.Root
+      display='block'
+      border='2px solid'
+      borderColor='gray.100'
+      borderRadius='semi'
+      value={value}
+      placeholder='Click to write query string.'
+      invalid={hasErrors}
+      // `translations.edit` labels the focusable preview, which would otherwise
+      // announce as just "edit". The button labels below win over these.
+      translations={{
+        edit: 'Edit query string',
+        submit: 'Submit query string',
+        cancel: 'Cancel edit',
+        input: 'Edit query input',
+      }}
+      onValueRevert={() => {
+        setValue(defaultValue);
+      }}
+      onValueChange={({ value: nextValue }) => {
+        setValue(nextValue);
+        const validation = handleValidation(nextValue);
+        if (validation.errors.length < errors.length) {
+          setErrors(() => {
+            const newErrs = errors.filter(
+              error =>
+                validation.errors.findIndex(
+                  item => item.title === error.title,
+                ) > -1,
+            );
+            return removeDuplicateErrors(newErrs);
+          });
+        }
+      }}
+      // The submit button is the only way to commit, so validation always runs
+      // before the query object is rewritten.
+      submitMode='none'
+    >
+      <Tooltip content='Click to edit'>
+        <Editable.Preview
+          w='100%'
           py={2}
           px={4}
+          color={value ? 'text.body' : 'gray.800'}
           fontSize='sm'
-          as={EditableTextarea}
-          isInvalid={hasErrors}
-          _focus={{
-            boxShadow: hasErrors
-              ? `0 0 0 1px ${theme.colors.status.error}`
-              : '0 0 0 1px #3182ce',
-            borderColor: hasErrors ? theme.colors.status.error : '#3182ce',
+          fontStyle='italic'
+          _hover={{
+            background: 'gray.100',
           }}
         />
-        <Flex p={2} justifyContent='space-between' alignItems='center'>
-          <Flex>
-            {value && (
-              <Text
-                fontSize='sm'
-                fontWeight='light'
-                fontStyle='italic'
-                whiteSpace='nowrap'
-                color='text.body'
-              >
-                Expected output:{' '}
-                {isLoading ? (
-                  <Spinner
-                    color='primary.500'
-                    emptyColor='gray.200'
-                    thickness='2px'
-                    size='sm'
-                    mx={2}
-                  />
-                ) : (
-                  <span>
-                    {data?.total ? formatNumber(data.total) : 0} result
-                    {data?.total === 1 ? '' : 's'}
-                  </span>
-                )}
-              </Text>
-            )}
-          </Flex>
-          <EditableControls />
+      </Tooltip>
+      <Editable.Textarea
+        aria-label='Edit query input'
+        py={2}
+        px={4}
+        fontSize='sm'
+        _focus={{
+          boxShadow: hasErrors
+            ? `0 0 0 1px ${system.token('colors.status.error')}`
+            : '0 0 0 1px #3182ce',
+          borderColor: hasErrors
+            ? system.token('colors.status.error')
+            : '#3182ce',
+        }}
+      />
+      <Flex p={2} justifyContent='space-between' alignItems='center'>
+        <Flex>
+          {value && (
+            <Text
+              fontSize='sm'
+              fontWeight='light'
+              fontStyle='italic'
+              whiteSpace='nowrap'
+              color='text.body'
+            >
+              Expected output:{' '}
+              {isLoading ? (
+                <Spinner
+                  color='primary.500'
+                  css={{ '--spinner-track-color': 'colors.gray.200' }}
+                  borderWidth='2px'
+                  size='sm'
+                  mx={2}
+                />
+              ) : (
+                <span>
+                  {data?.total ? formatNumber(data.total) : 0} result
+                  {data?.total === 1 ? '' : 's'}
+                </span>
+              )}
+            </Text>
+          )}
         </Flex>
-      </Editable>
-    </>
+        <EditableQueryControls
+          shouldShakeSubmit={animateError}
+          onSubmit={handleSubmit}
+        />
+      </Flex>
+    </Editable.Root>
   );
 };
-
-const shake = keyframes`
-0% {
-  transform: translateX(0rem);
-}
-25% {
-  transform: translateX(0.25rem);
-}
-75% {
-  transform: translateX(-0.25rem);
-}
-100% {
-  transform: translateX(0rem);
-}
-`;

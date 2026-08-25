@@ -1,24 +1,26 @@
-import React from 'react';
+import { ChakraProvider, List } from '@chakra-ui/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
+  cleanup,
+  fireEvent,
   render,
   screen,
-  fireEvent,
   waitFor,
   within,
-  cleanup,
 } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ChakraProvider, UnorderedList } from '@chakra-ui/react';
+import React from 'react';
+import { system } from 'src/theme';
+import { useLocalStorage } from 'usehooks-ts';
+
 import {
   fetchChildrenFromBioThingsAPI,
   fetchPortalCounts,
 } from '../../../utils/api-helpers';
-import { mockBiothingsChildrenApiResponse } from '../__mocks__/mockBiothingsChildrenApiResponse';
-import { mockPortalCountsResponse } from '../__mocks__/mockPortalCountsResponse';
-import { mockBiothingsLineageFromBioThingsAPIResponse } from '../__mocks__/mockBiothingsLineageFromBioThingsAPIResponse';
-import { Tree, TreeProps } from '..';
-import { useLocalStorage } from 'usehooks-ts';
 import { transformSettingsToLocalStorageConfig } from '../../settings/helpers';
+import { Tree, TreeProps } from '..';
+import { mockBiothingsChildrenApiResponse } from '../__mocks__/mockBiothingsChildrenApiResponse';
+import { mockBiothingsLineageFromBioThingsAPIResponse } from '../__mocks__/mockBiothingsLineageFromBioThingsAPIResponse';
+import { mockPortalCountsResponse } from '../__mocks__/mockPortalCountsResponse';
 import { TreeNode } from './tree-node';
 
 let viewSettingsMock = transformSettingsToLocalStorageConfig({
@@ -90,7 +92,7 @@ describe('TreeNode', () => {
 
   const wrapper = ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>
-      <ChakraProvider>{children}</ChakraProvider>
+      <ChakraProvider value={system}>{children}</ChakraProvider>
     </QueryClientProvider>
   );
 
@@ -286,9 +288,9 @@ describe('TreeNode', () => {
     };
     (fetchChildrenFromBioThingsAPI as jest.Mock).mockResolvedValue([]);
     const { container } = render(
-      <UnorderedList>
+      <List.Root as='ul'>
         <TreeNode {...props} />
-      </UnorderedList>,
+      </List.Root>,
       { wrapper },
     );
     const ulElement = container.querySelector('ul');

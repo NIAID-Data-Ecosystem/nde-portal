@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useToast } from '@chakra-ui/react';
+import { toaster } from 'src/components/toaster';
 import { useUserData } from 'src/hooks/useUserData';
 
 /**
@@ -13,22 +13,21 @@ import { useUserData } from 'src/hooks/useUserData';
  * Renders nothing.
  */
 export const SavedDataErrorToast = () => {
-  const toast = useToast();
   const { error, clearError } = useUserData();
 
   useEffect(() => {
     if (!error) return;
-    if (!toast.isActive(error)) {
-      toast({
-        id: error,
+    if (error) {
+      toaster.create({
         title: error,
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
+        type: 'error',
+        description:
+          'An error occurred while saving your data. Please try again.',
+        closable: true,
       });
     }
     clearError();
-  }, [error, toast, clearError]);
+  }, [error, clearError]);
 
   return null;
 };

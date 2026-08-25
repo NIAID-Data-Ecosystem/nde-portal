@@ -4,9 +4,8 @@ import {
   Flex,
   Icon,
   IconButton,
-  ListItem,
   SkeletonText,
-  UnorderedList,
+  List,
 } from '@chakra-ui/react';
 import { FaAngleDown, FaAngleRight } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
@@ -19,14 +18,14 @@ import { MAX_HEADING_DEPTH } from '../../constants';
 export const DocumentItem = ({
   item,
   selectedSlug,
-  colorScheme,
-  isLoading,
+  colorPalette,
+  loading,
   activePageSlug,
 }: DocumentItemProps) => {
   const isSelected = selectedSlug === item.slug;
-  const bg = isSelected ? `${colorScheme}.100` : 'transparent';
+  const bg = isSelected ? `${colorPalette}.100` : 'transparent';
   const color = isSelected
-    ? `${colorScheme}.600!important`
+    ? `${colorPalette}.600!important`
     : 'text.body!important';
 
   // Extract section and subsection names from description
@@ -45,7 +44,7 @@ export const DocumentItem = ({
   }, [isSelected, activePageSlug]);
 
   return (
-    <ListItem w='100%' display='flex' flexDirection='column'>
+    <List.Item w='100%' display='flex' flexDirection='column'>
       <Flex w='100%' alignItems='center'>
         <NextLink
           style={{ display: 'flex', flex: 1 }}
@@ -63,17 +62,14 @@ export const DocumentItem = ({
             bg={bg}
             // While loading the item name is hidden by the skeleton, so give the
             // link an accessible name to satisfy link-name.
-            aria-label={isLoading ? 'Loading' : undefined}
+            aria-label={loading ? 'Loading' : undefined}
             _hover={{
               bg: isSelected ? bg : 'blackAlpha.50',
               borderRadius: 'base',
               transition: 'fast',
             }}
           >
-            <SkeletonText
-              isLoaded={!isLoading}
-              width={isLoading ? '75%' : '100%'}
-            >
+            <SkeletonText loading={loading} width={loading ? '75%' : '100%'}>
               {item.name}
             </SkeletonText>
           </Link>
@@ -85,26 +81,21 @@ export const DocumentItem = ({
           alignItems='center'
           mr={2}
         >
-          {hasToc && !isLoading && (
+          {hasToc && !loading && (
             <IconButton
               aria-label={isExpanded ? 'Collapse sections' : 'Expand sections'}
-              icon={
-                <Icon
-                  as={isExpanded ? FaAngleDown : FaAngleRight}
-                  boxSize={4}
-                />
-              }
               size='sm'
               variant='ghost'
               onClick={() => setIsExpanded(!isExpanded)}
-            />
+            >
+              <Icon as={isExpanded ? FaAngleDown : FaAngleRight} boxSize={4} />
+            </IconButton>
           )}
         </Box>
       </Flex>
-
       {/* Table of contents (TOC) items (sections and subsections): only render depth 2 items, their children will be nested */}
       {hasToc && isExpanded && (
-        <UnorderedList ml={0} mt={1}>
+        <List.Root as='ul' ml={0} mt={1}>
           {tocItems
             .filter(tocItem => tocItem.depth === 2)
             .map((tocItem, idx) => (
@@ -118,8 +109,8 @@ export const DocumentItem = ({
                 activePageSlug={activePageSlug}
               />
             ))}
-        </UnorderedList>
+        </List.Root>
       )}
-    </ListItem>
+    </List.Item>
   );
 };

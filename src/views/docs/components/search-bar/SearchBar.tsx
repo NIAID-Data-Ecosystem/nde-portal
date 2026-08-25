@@ -1,11 +1,3 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { useRouter } from 'next/router';
 import {
   Box,
   Button,
@@ -13,38 +5,44 @@ import {
   HStack,
   Icon,
   IconButton,
-  ListItem,
+  List,
   Text,
-  Tooltip,
-  UnorderedList,
 } from '@chakra-ui/react';
+import { debounce, uniq } from 'lodash';
+import { useRouter } from 'next/router';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { FaClockRotateLeft, FaMagnifyingGlass } from 'react-icons/fa6';
 import {
   DropdownInput,
   useDropdownContext,
 } from 'src/components/input-with-dropdown';
 import { DropdownContent } from 'src/components/input-with-dropdown/components/DropdownContent';
 import { SearchHistoryItem } from 'src/components/search-bar/components/search-history-item';
-import { debounce, uniq } from 'lodash';
-import { FaMagnifyingGlass, FaClockRotateLeft } from 'react-icons/fa6';
-import { SearchResultItem } from './SearchResultItem';
-import { useDocumentationSearch } from '../../hooks/useDocumentationSearch';
-import type { SearchBarProps, SearchResult } from '../../types';
+import Tooltip from 'src/components/tooltip';
+
 import {
   DEFAULT_SIZE,
-  SEARCH_DEBOUNCE_MS,
   MAX_SEARCH_HISTORY_ITEMS,
+  SEARCH_DEBOUNCE_MS,
 } from '../../constants';
+import { useDocumentationSearch } from '../../hooks/useDocumentationSearch';
+import type { SearchBarProps, SearchResult } from '../../types';
+import { SearchResultItem } from './SearchResultItem';
 
 export const SearchBar = ({
   ariaLabel,
   placeholder,
-  colorScheme = 'primary',
+  colorPalette = 'primary',
   size = DEFAULT_SIZE,
   searchHistory,
   setSearchHistory,
-  currentCursorMax,
   setCurrentCursorMax,
-  currentInputValue,
   setCurrentInputValue,
 }: SearchBarProps) => {
   const router = useRouter();
@@ -263,12 +261,12 @@ export const SearchBar = ({
         id='docs-search-bar'
         ariaLabel={ariaLabel}
         placeholder={placeholder}
-        colorScheme={colorScheme}
+        colorPalette={colorPalette}
         size={size}
         type='text'
         onChange={updateSearchTerm}
         onSubmit={handleSubmit}
-        getInputValue={(idx: number): string => {
+        getInputValue={() => {
           // Return empty string to prevent keyboard navigation from changing the input
           return '';
         }}
@@ -276,7 +274,7 @@ export const SearchBar = ({
         renderSubmitButton={() => (
           <HStack height='100%'>
             <Button
-              colorScheme={colorScheme}
+              colorPalette={colorPalette}
               aria-label={ariaLabel}
               size={size}
               type='submit'
@@ -285,28 +283,28 @@ export const SearchBar = ({
               Search Knowledge Center
             </Button>
             <Flex borderLeft='1px solid' borderLeftColor='gray.200' pl={1}>
-              <Tooltip label='View search history.'>
+              <Tooltip content='View search history.'>
                 <IconButton
                   variant='ghost'
                   size={size}
                   aria-label='View search history.'
-                  icon={
-                    <Flex px={2}>
-                      <Icon as={FaClockRotateLeft} />
-                    </Flex>
-                  }
                   onClick={toggleHistory}
-                />
+                >
+                  <Flex px={2}>
+                    <Icon asChild>
+                      <FaClockRotateLeft />
+                    </Icon>
+                  </Flex>
+                </IconButton>
               </Tooltip>
             </Flex>
           </HStack>
         )}
       />
-
       {isOpen && showHistory && (
         <DropdownContent>
-          <UnorderedList ml={0}>
-            <ListItem
+          <List.Root as='ul' ml={0}>
+            <List.Item
               px={2}
               mx={2}
               my={1}
@@ -325,32 +323,28 @@ export const SearchBar = ({
                   ? 'Previous searches'
                   : 'No previous searches.'}
               </Text>
-            </ListItem>
+            </List.Item>
             {historyList.map((str, index) => (
               <SearchHistoryItem
                 key={`history-${str}-${index}`}
                 index={index}
-                colorScheme={colorScheme}
+                colorPalette={colorPalette}
                 searchTerm=''
                 value={str}
                 onClick={handleHistoryClick}
               />
             ))}
-          </UnorderedList>
+          </List.Root>
         </DropdownContent>
       )}
-
       {isOpen && !showHistory && (
         <DropdownContent>
           <Box py={6}>
             {!searchTerm && (
               <Flex flexDirection='column' alignItems='center' margin='0 auto'>
-                <Icon
-                  as={FaMagnifyingGlass}
-                  boxSize={5}
-                  color='primary.400'
-                  mb={4}
-                />
+                <Icon boxSize={5} color='primary.400' mb={4} asChild>
+                  <FaMagnifyingGlass />
+                </Icon>
                 <Text fontWeight='medium' color='gray.600'>
                   Start typing to search…
                 </Text>
@@ -362,18 +356,18 @@ export const SearchBar = ({
               </Text>
             )}
 
-            <UnorderedList ml={0} w='100%'>
+            <List.Root as='ul' ml={0} w='100%'>
               {results?.map((result, index) => (
                 <SearchResultItem
                   key={`result-${result.id}-${index}`}
                   index={index}
                   result={result}
                   searchTerm={searchTerm}
-                  colorScheme={colorScheme}
+                  colorPalette={colorPalette}
                   onClick={() => handleResultClick(result.slug)}
                 />
               ))}
-            </UnorderedList>
+            </List.Root>
           </Box>
         </DropdownContent>
       )}

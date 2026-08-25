@@ -1,23 +1,24 @@
 import { Flex, VStack } from '@chakra-ui/react';
+import { PageContent } from 'src/components/page-container';
+
 import { DiseasePageProps, TopicQueryProps } from '../types';
 import { ConditionsOfAccess } from './components/conditions-of-access';
 import { DataTypes } from './components/data-types';
 import { ExternalLinksSection } from './components/external-links';
 import { PropertyTreemapLists } from './components/property-treemap-lists';
 import { Sources } from './components/sources';
-import { IntroSection } from './layouts/intro';
-import { SectionWrapper } from './layouts/section';
-import { CardWrapper } from './layouts/card';
-import { PageContent } from 'src/components/page-container';
 import DISEASE_PAGE_COPY from './disease-page.json';
+import { CardWrapper } from './layouts/card';
+import { IntroSection } from './layouts/intro';
 import {
   fillTemplatePlaceholders,
   MarkdownContent,
 } from './layouts/markdown-content';
+import { SectionWrapper } from './layouts/section';
 
 export interface DiseaseContentProps {
   data?: DiseasePageProps;
-  isLoading?: boolean;
+  loading?: boolean;
   totalCount: number;
   query?: TopicQueryProps['query'];
   topic: TopicQueryProps['topic'];
@@ -25,7 +26,7 @@ export interface DiseaseContentProps {
 export const DiseaseContent: React.FC<DiseaseContentProps> = ({
   data,
   query,
-  isLoading,
+  loading,
   topic,
   totalCount,
 }) => {
@@ -49,7 +50,7 @@ export const DiseaseContent: React.FC<DiseaseContentProps> = ({
           topicEmphasizedDescription={data?.topicEmphasizedDescription}
           links={data?.contacts}
           image={data?.image}
-          isLoading={isLoading}
+          loading={loading}
         />
         <SectionWrapper
           id='about-datasets'
@@ -89,7 +90,7 @@ export const DiseaseContent: React.FC<DiseaseContentProps> = ({
               flexWrap='wrap'
               mt={6}
               w='100%'
-              spacing={{ base: 4, lg: 14, xl: 28 }}
+              gap={{ base: 4, lg: 14, xl: 28 }}
               justifyContent='space-between'
             >
               <VStack
@@ -97,7 +98,7 @@ export const DiseaseContent: React.FC<DiseaseContentProps> = ({
                 flexDirection='column'
                 justifyContent='space-between'
                 maxWidth={{ base: 'unset', lg: 700, xl: 1000 }}
-                spacing={4}
+                gap={4}
                 w='50%'
               >
                 {/* Chart: Resource types */}

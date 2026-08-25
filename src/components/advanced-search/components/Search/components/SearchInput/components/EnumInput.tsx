@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import Select from 'react-select';
 import { Flex } from '@chakra-ui/react';
 import { AdvancedSearchInputProps } from '../types';
-import { customStyles } from '../../FieldSelect';
-import { theme } from 'src/theme';
+import { customStyles, selectColors } from '../../FieldSelect';
+import { system } from 'src/theme';
 
 interface EnumInputProps extends AdvancedSearchInputProps {
   options?: {
@@ -13,7 +13,7 @@ interface EnumInputProps extends AdvancedSearchInputProps {
 }
 
 export const EnumInput: React.FC<EnumInputProps> = ({
-  isDisabled,
+  disabled,
   options = [],
   inputValue,
   size,
@@ -38,96 +38,95 @@ export const EnumInput: React.FC<EnumInputProps> = ({
   }, [handleChange, selectedOption]);
 
   return (
-    <Flex
-      as='form'
-      w='100%'
-      alignItems='center'
-      onSubmit={e => {
-        e.preventDefault();
-        handleSubmit({
-          term: selectedOption?.label || '',
-          querystring: selectedOption?.value || '',
-        });
-        setSelectedOption(defaultOption);
-      }}
-    >
-      <Select
-        defaultValue={defaultOption}
-        isDisabled={isDisabled}
-        isSearchable={true}
-        name='Field options'
-        value={selectedOption}
-        options={options}
-        onChange={(option: any) => {
-          setSelectedOption(option);
+    <Flex w='100%' alignItems='center' asChild>
+      <form
+        onSubmit={e => {
+          e.preventDefault();
+          handleSubmit({
+            term: selectedOption?.label || '',
+            querystring: selectedOption?.value || '',
+          });
+          setSelectedOption(defaultOption);
         }}
-        styles={{
-          valueContainer: base => ({
-            ...base,
-            ...customStyles[size]?.valueContainer,
-          }),
-          input: base => ({
-            ...base,
-            ...customStyles[size]?.input,
-          }),
-          indicatorSeparator: base => ({
-            ...base,
-            ...customStyles[size]?.indicatorSeparator,
-          }),
-          indicatorsContainer: base => ({
-            ...base,
-            ...customStyles[size]?.indicatorsContainer,
-          }),
-          container: base => ({ ...base, flex: 1 }),
-          control: base => ({
-            ...base,
-            ...customStyles[size]?.control,
-            borderColor: theme.colors.gray[200],
-            boxShadow: 'none',
-            ':hover': {
-              borderColor: theme.colors.gray[200],
-            },
-            ':focus': {
-              borderColor: theme.colors.primary[500],
-              boxShadow: `0 0 0 1px ${theme.colors.primary[600]}`,
-            },
-            ':focus-within': {
-              borderColor: theme.colors.primary[500],
-              boxShadow: `0 0 0 1px ${theme.colors.primary[600]}`,
-            },
-          }),
-          option: (base, { isFocused, isSelected }) => ({
-            ...base,
-            ...customStyles[size]?.option,
-            cursor: 'pointer',
-            backgroundColor: isSelected
-              ? theme.colors.primary[500]
-              : isFocused
-              ? theme.colors.primary[100]
-              : 'transparent',
-            color: isSelected ? 'white' : theme.colors.text.body,
-            ':hover': {
-              background: isSelected
-                ? theme.colors.primary[500]
-                : theme.colors.primary[100],
-            },
-          }),
-          singleValue: base => ({
-            ...base,
-            ...customStyles[size]?.singleValue,
+      >
+        <Select
+          defaultValue={defaultOption}
+          isDisabled={disabled}
+          isSearchable={true}
+          name='Field options'
+          value={selectedOption}
+          options={options}
+          onChange={(option: any) => {
+            setSelectedOption(option);
+          }}
+          styles={{
+            valueContainer: base => ({
+              ...base,
+              ...customStyles[size]?.valueContainer,
+            }),
+            input: base => ({
+              ...base,
+              ...customStyles[size]?.input,
+            }),
+            indicatorSeparator: base => ({
+              ...base,
+              ...customStyles[size]?.indicatorSeparator,
+            }),
+            indicatorsContainer: base => ({
+              ...base,
+              ...customStyles[size]?.indicatorsContainer,
+            }),
+            container: base => ({ ...base, flex: 1 }),
+            control: base => ({
+              ...base,
+              ...customStyles[size]?.control,
+              borderColor: selectColors.border,
+              boxShadow: 'none',
+              ':hover': {
+                borderColor: selectColors.border,
+              },
+              ':focus': {
+                borderColor: selectColors.focusBorder,
+                boxShadow: `0 0 0 1px ${selectColors.focusRing}`,
+              },
+              ':focus-within': {
+                borderColor: selectColors.focusBorder,
+                boxShadow: `0 0 0 1px ${selectColors.focusRing}`,
+              },
+            }),
+            option: (base, { isFocused, isSelected }) => ({
+              ...base,
+              ...customStyles[size]?.option,
+              cursor: 'pointer',
+              backgroundColor: isSelected
+                ? selectColors.optionSelectedBg
+                : isFocused
+                ? selectColors.optionHoverBg
+                : 'transparent',
+              color: isSelected ? 'white' : selectColors.optionText,
+              ':hover': {
+                background: isSelected
+                  ? selectColors.optionSelectedBg
+                  : selectColors.optionHoverBg,
+              },
+            }),
+            singleValue: base => ({
+              ...base,
+              ...customStyles[size]?.singleValue,
 
-            fontWeight: theme.fontWeights['medium' as any],
-          }),
-        }}
-      />
-      <Flex mx={2}>
-        {renderSubmitButton &&
-          renderSubmitButton({
-            type: 'submit',
-            w: '100%',
-            isDisabled: false,
-          })}
-      </Flex>
+              fontWeight: system.token('fontWeights.medium'),
+            }),
+          }}
+        />
+        <Flex mx={2}>
+          {renderSubmitButton &&
+            renderSubmitButton({
+              type: 'submit',
+              w: '100%',
+              disabled: false,
+            })}
+        </Flex>
+      </form>
     </Flex>
   );
 };

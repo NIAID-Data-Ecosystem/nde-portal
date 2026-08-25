@@ -33,7 +33,7 @@ export const HasDownload = ({
     }
   };
 
-  const getColorScheme = () => {
+  const getColorPalette = () => {
     if (
       hasDownloadLower === 'all content' ||
       hasDownloadLower === 'partial content' ||
@@ -50,7 +50,7 @@ export const HasDownload = ({
 
   return (
     <BadgeWithTooltip
-      colorScheme={getColorScheme()}
+      colorPalette={getColorPalette()}
       tooltipLabel={getTooltipLabel()}
       {...props}
     >

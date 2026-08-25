@@ -1,38 +1,31 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
-  Text,
-} from '@chakra-ui/react';
-import { useFilterQueries } from '../hooks/useFilterQueries';
-import {
-  queryFilterObject2String,
-  sanitizeExistsFilterValues,
-} from '../utils/query-string';
-import { SelectedFilterType } from '../types';
+import { Accordion, Box, Text } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { FiltersSection } from './section';
-import { FiltersList } from './list';
-import { FiltersContainer } from './container';
-import { DateFilter } from './date-filter';
-import { updateRoute } from '../../../utils/update-route';
-import { useSearchQueryFromURL } from '../../../hooks/useSearchQueryFromURL';
-import { usePaginationContext } from '../../../context/pagination-context';
-import { FILTER_CONFIGS, getFacetPropertiesForCategory } from '../config';
+import React, { useCallback, useMemo, useState } from 'react';
 import { APPLY_DEFAULT_DATE_PARAM } from 'src/views/search/config/defaultQuery';
 import { useSearchResultsFetchedContext } from 'src/views/search/context/search-results-fetched-context';
 import { useBioSampleAggregation } from 'src/views/search/hooks/useBioSampleAggregation';
 import { useComputationalToolAggregation } from 'src/views/search/hooks/useComputationalToolAggregation';
-import { useSharedDatasetAggregation } from 'src/views/search/hooks/useSharedDatasetAggregation';
 import { useDataCollectionAggregation } from 'src/views/search/hooks/useDataCollectionAggregation';
+import { useSharedDatasetAggregation } from 'src/views/search/hooks/useSharedDatasetAggregation';
+
+import { usePaginationContext } from '../../../context/pagination-context';
+import { useSearchQueryFromURL } from '../../../hooks/useSearchQueryFromURL';
+import { updateRoute } from '../../../utils/update-route';
+import { FILTER_CONFIGS, getFacetPropertiesForCategory } from '../config';
+import { useFilterQueries } from '../hooks/useFilterQueries';
+import { SelectedFilterType } from '../types';
+import {
+  queryFilterObject2String,
+  sanitizeExistsFilterValues,
+} from '../utils/query-string';
+import { FiltersContainer } from './container';
+import { DateFilter } from './date-filter';
+import { FiltersList } from './list';
+import { FiltersSection } from './section';
 
 interface FiltersProps {
-  colorScheme?: string;
-  isDisabled?: boolean;
+  colorPalette?: string;
+  disabled?: boolean;
   selectedFilters: SelectedFilterType;
   removeAllFilters: () => void;
   onToggleViz?: (filterId: string) => void;
@@ -41,8 +34,8 @@ interface FiltersProps {
 
 export const Filters = React.memo(
   ({
-    colorScheme = 'primary',
-    isDisabled,
+    colorPalette = 'primary',
+    disabled,
     selectedFilters,
     removeAllFilters,
     onToggleViz,
@@ -174,7 +167,7 @@ export const Filters = React.memo(
 
     const categoryAccordionDefaultIndex = useMemo(() => {
       if (groupedCategories.length === 0) {
-        return [] as number[];
+        return [] as string[];
       }
 
       const categoriesWithActiveFilters = new Set(
@@ -184,16 +177,16 @@ export const Filters = React.memo(
               const values = selectedFilters?.[filterConfig.property];
               return Array.isArray(values) && values.length > 0;
             });
-            return hasSelection ? index : -1;
+            return hasSelection ? `item-${index}` : '';
           })
-          .filter(index => index !== -1),
+          .filter(idx => idx !== ''),
       );
 
       if (categoriesWithActiveFilters.size === 0) {
-        return [0];
+        return ['item-0'];
       }
 
-      return Array.from(categoriesWithActiveFilters).sort((a, b) => a - b);
+      return Array.from(categoriesWithActiveFilters).sort();
     }, [groupedCategories, selectedFilters]);
 
     const handleUpdate = useCallback(
@@ -248,7 +241,9 @@ export const Filters = React.memo(
         return filtersInCategory
           .map((config, index) => {
             const values = selectedFilters?.[config.property];
-            return Array.isArray(values) && values.length > 0 ? index : -1;
+            return Array.isArray(values) && values.length > 0
+              ? `item-${index}`
+              : -1;
           })
           .filter(index => index !== -1);
       },
@@ -264,19 +259,23 @@ export const Filters = React.memo(
         title='Search Filters'
         error={error}
         filtersList={FILTER_CONFIGS}
-        isDisabled={isDisabled}
+        disabled={disabled}
         onVisibleFiltersChange={setUserSelectedFilters}
         removeAllFilters={() => {
           resetPagination();
           removeAllFilters();
         }}
       >
-        <Accordion allowMultiple defaultIndex={categoryAccordionDefaultIndex}>
-          {groupedCategories.map(([category, filtersInCategory]) => {
+        <Accordion.Root multiple defaultValue={categoryAccordionDefaultIndex}>
+          {groupedCategories.map(([category, filtersInCategory], idx) => {
             return (
-              <AccordionItem key={category} border='none'>
+              <Accordion.Item
+                key={category}
+                border='none'
+                value={`item-${idx}`}
+              >
                 <h2>
-                  <AccordionButton
+                  <Accordion.ItemTrigger
                     px={4}
                     py={{ base: 3, md: 2 }}
                     bg='gray.50'
@@ -294,80 +293,84 @@ export const Filters = React.memo(
                       </Text>
                     </Box>
 
-                    <AccordionIcon />
-                  </AccordionButton>
+                    <Accordion.ItemIndicator />
+                  </Accordion.ItemTrigger>
                 </h2>
-                <AccordionPanel px={2} py={1} bg='blackAlpha.50'>
-                  <Accordion
-                    allowMultiple
-                    defaultIndex={getFilterIndicesForOpenState(
-                      filtersInCategory,
-                    )}
-                  >
-                    {filtersInCategory.map(filterConfig => {
-                      const { id, name, property, description } = filterConfig;
-                      const selected = selectedFilters?.[property]?.map(
-                        filter => {
-                          if (typeof filter === 'object') {
-                            return Object.keys(filter)[0];
-                          }
-                          return filter;
-                        },
-                      );
+                <Accordion.ItemContent px={2} py={1} bg='blackAlpha.50'>
+                  <Accordion.ItemBody>
+                    <Accordion.Root
+                      multiple
+                      defaultValue={getFilterIndicesForOpenState(
+                        filtersInCategory,
+                      )}
+                    >
+                      {filtersInCategory.map((filterConfig, idx) => {
+                        const { id, name, property, description } =
+                          filterConfig;
+                        const selected = selectedFilters?.[property]?.map(
+                          filter => {
+                            if (typeof filter === 'object') {
+                              return Object.keys(filter)[0];
+                            }
+                            return filter;
+                          },
+                        );
 
-                      return (
-                        <FiltersSection
-                          key={name}
-                          name={name}
-                          description={description}
-                          filterId={filterConfig.chart ? id : undefined}
-                          isVizActive={
-                            filterConfig.chart && isVizActive
-                              ? isVizActive(id)
-                              : false
-                          }
-                          onToggleViz={onToggleViz}
-                        >
-                          {id === 'date' ? (
-                            <DateFilter
-                              colorScheme={colorScheme}
-                              handleSelectedFilter={values =>
-                                handleSelectedFilters(values, property)
-                              }
-                              resetFilter={() =>
-                                handleSelectedFilters([], property)
-                              }
-                              selectedDates={selected || []}
-                              updatedAggregateQueryData={filtersAggQuery}
-                              queryParams={filtersAggParams}
-                              showHistogram={false}
-                              showDateControls={showDateControls}
-                              enabled={isFiltersFetchEnabled}
-                            />
-                          ) : (
-                            <FiltersList
-                              config={filterConfig}
-                              colorScheme={colorScheme}
-                              searchPlaceholder={`Search ${name.toLowerCase()} filters`}
-                              terms={results?.[id]?.terms || []}
-                              selectedFilters={selected || []}
-                              handleSelectedFilters={values =>
-                                handleSelectedFilters(values, property)
-                              }
-                              isLoading={results?.[id]?.isLoading ?? true}
-                              // Per-filter state only
-                              isUpdating={results?.[id]?.isUpdating}
-                            />
-                          )}
-                        </FiltersSection>
-                      );
-                    })}
-                  </Accordion>
-                </AccordionPanel>
-              </AccordionItem>
+                        return (
+                          <FiltersSection
+                            id={`item-${idx}`}
+                            key={name}
+                            name={name}
+                            description={description}
+                            filterId={filterConfig.chart ? id : undefined}
+                            isVizActive={
+                              filterConfig.chart && isVizActive
+                                ? isVizActive(id)
+                                : false
+                            }
+                            onToggleViz={onToggleViz}
+                          >
+                            {id === 'date' ? (
+                              <DateFilter
+                                colorPalette={colorPalette}
+                                handleSelectedFilter={values =>
+                                  handleSelectedFilters(values, property)
+                                }
+                                resetFilter={() =>
+                                  handleSelectedFilters([], property)
+                                }
+                                selectedDates={selected || []}
+                                updatedAggregateQueryData={filtersAggQuery}
+                                queryParams={filtersAggParams}
+                                showHistogram={false}
+                                showDateControls={showDateControls}
+                                enabled={isFiltersFetchEnabled}
+                              />
+                            ) : (
+                              <FiltersList
+                                config={filterConfig}
+                                colorPalette={colorPalette}
+                                searchPlaceholder={`Search ${name.toLowerCase()} filters`}
+                                terms={results?.[id]?.terms || []}
+                                selectedFilters={selected || []}
+                                handleSelectedFilters={values =>
+                                  handleSelectedFilters(values, property)
+                                }
+                                loading={results?.[id]?.loading ?? true}
+                                // Per-filter state only
+                                isUpdating={results?.[id]?.isUpdating}
+                              />
+                            )}
+                          </FiltersSection>
+                        );
+                      })}
+                    </Accordion.Root>
+                  </Accordion.ItemBody>
+                </Accordion.ItemContent>
+              </Accordion.Item>
             );
           })}
-        </Accordion>
+        </Accordion.Root>
       </FiltersContainer>
     );
   },

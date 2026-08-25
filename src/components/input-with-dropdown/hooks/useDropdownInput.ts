@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
 import { InputProps, ListItemProps } from '@chakra-ui/react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { callAllHandlers } from 'src/utils/functions';
+
 import { ContextProps } from '../index';
 
 interface DropdownInputProps extends Omit<InputProps, 'onKeyDown'> {
@@ -21,13 +22,13 @@ export const useDropdownInput = ({
   cursorMax,
   inputValue: initialInputValue,
   isOpen: initialIsOpen,
-  colorScheme,
+  colorPalette,
 }: {
   cursor: ContextProps['cursor'];
   cursorMax: ContextProps['cursorMax'];
   inputValue: ContextProps['inputValue'];
   isOpen: ContextProps['isOpen'];
-  colorScheme?: ContextProps['colorScheme'];
+  colorPalette?: ContextProps['colorPalette'];
 }) => {
   const [inputValue, setInputValue] = useState(initialInputValue);
   const [cursor, setCursor] = useState(initialCursor);
@@ -78,9 +79,15 @@ export const useDropdownInput = ({
     onKeyDown,
     ...props
   }: DropdownInputProps) => ({
-    colorScheme: props.isInvalid ? 'red' : colorScheme,
-    borderColor: props.isInvalid ? 'status.error' : 'gray.200',
-    _focus: { borderColor: props.isInvalid ? 'status.error' : 'inherit' },
+    colorPalette,
+    borderColor: 'gray.200',
+    _focus: { borderColor: 'inherit' },
+    // Invalid state is owned by the enclosing <Field.Root invalid>, which puts
+    // data-invalid on the control, so style off that rather than a prop.
+    _invalid: {
+      borderColor: 'status.error',
+      _focus: { borderColor: 'status.error' },
+    },
     bg: 'white',
     type: 'search',
     value: inputValue,
@@ -104,7 +111,7 @@ export const useDropdownInput = ({
   }: DropdownListItemProps) => {
     return {
       id: `li-${index}`,
-      bg: isSelected ? `${colorScheme}.100` : `${colorScheme}.50`,
+      bg: isSelected ? `${colorPalette}.100` : `${colorPalette}.50`,
       color: isSelected ? 'text.heading' : 'text.body',
       onClick: callAllHandlers(
         (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
@@ -156,7 +163,6 @@ export const useDropdownInput = ({
     setInputValue,
     setIsOpen,
     getInputProps,
-    // getListProps,
     getListItemProps,
   };
 };

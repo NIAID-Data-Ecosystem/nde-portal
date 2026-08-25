@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { Box, Flex, Tag, TagLabel, Text } from '@chakra-ui/react';
+import { Box, Flex, Tag, Text } from '@chakra-ui/react';
 import {
   getFieldDetails,
   getSearchOptionsForField,
@@ -83,20 +83,19 @@ export const TreeItemContent = React.memo((props: TreeItemContentProps) => {
         )}
 
         {/* Formatted term for display */}
-        <Text fontSize='sm' fontWeight='medium' noOfLines={2}>
+        <Text fontSize='sm' fontWeight='medium' lineClamp={2}>
           {childCount ? term : getDisplayTerm()}
         </Text>
       </Box>
-
       {field && (
-        <Tag
-          colorScheme={union ? getUnionTheme(union).colorScheme : 'gray'}
+        <Tag.Root
+          colorPalette={union ? getUnionTheme(union).colorPalette : 'gray'}
           variant='subtle'
           size='sm'
           mr={2}
         >
-          <TagLabel>{fieldDetails ? fieldDetails.name : field}</TagLabel>
-        </Tag>
+          <Tag.Label>{fieldDetails ? fieldDetails.name : field}</Tag.Label>
+        </Tag.Root>
       )}
     </Flex>
   );

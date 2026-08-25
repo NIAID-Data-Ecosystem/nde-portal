@@ -9,7 +9,7 @@ import { QueryStringError } from 'src/components/error/types';
  * @interface SearchInputProps
  *
  * @defaultInputValue {any} - default value of input field.
- * @colorScheme {InputProps['colorScheme']} - color scheme for input field.
+ * @colorPalette {InputProps['colorPalette']} - color scheme for input field.
  * @hideSuggestions {boolean} - hide suggestions list/disable api requests.
  * @size {InputProps['size']} - size of input field.
  * @errors {QueryStringError[]} - array of errors.
@@ -22,7 +22,7 @@ import { QueryStringError } from 'src/components/error/types';
 
 export interface SearchInputProps {
   defaultInputValue: string | number | { startDate?: string; endDate?: string };
-  colorScheme?: InputProps['colorScheme'];
+  colorPalette?: InputProps['colorPalette'];
   size: 'sm' | 'md' | 'lg';
   hideSuggestions?: boolean;
   resetForm: boolean;
@@ -40,8 +40,8 @@ export interface SearchInputProps {
  *
  * @interface AdvancedSearchInputProps
  *
- * @isDisabled {boolean} - disable input field.
- * @colorScheme {InputProps['colorScheme']} - color scheme for input field.
+ * @disabled {boolean} - disable input field.
+ * @colorPalette {InputProps['colorPalette']} - color scheme for input field.
  * @size {InputProps['size']} - size of input field.
  * @inputValue {any} - value of input field.
  * @errors {QueryStringError[]} - array of errors.
@@ -53,8 +53,8 @@ export interface SearchInputProps {
  */
 
 export interface AdvancedSearchInputProps {
-  colorScheme?: SearchInputProps['colorScheme'];
-  isDisabled?: boolean;
+  colorPalette?: SearchInputProps['colorPalette'];
+  disabled?: boolean;
   size: SearchInputProps['size'];
   inputValue: SearchInputProps['defaultInputValue'];
   errors: SearchInputProps['errors'];

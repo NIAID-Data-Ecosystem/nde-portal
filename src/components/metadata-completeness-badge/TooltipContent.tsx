@@ -1,15 +1,15 @@
-import React from 'react';
 import {
   Box,
-  Divider,
   Flex,
   Grid,
   GridItem,
   Icon,
+  Separator,
   Stack,
   Text,
 } from '@chakra-ui/react';
-import { FaRegCircleUp, FaCircleCheck } from 'react-icons/fa6';
+import React from 'react';
+import { FaCircleCheck, FaRegCircleUp } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 
 interface Stat {
@@ -59,7 +59,7 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
   }, 0);
 
   return (
-    <Flex flexDirection='column' p={1} minW={200}>
+    <Flex flexDirection='column' p={1} minW={200} maxWidth='90vw'>
       <Text fontWeight='semibold' fontSize='sm'>
         Metadata Compatibility
       </Text>
@@ -72,14 +72,13 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
           {current_total_score} / {max_total_score}
         </Text>
       </Flex>
-      <Divider></Divider>
-
+      <Separator></Separator>
       {/* Rows of included and augmented fields */}
       <Stack direction='row' flexWrap='wrap'>
         {data.map(item => (
           <Box key={item.label} my={1} minWidth='200px' flex={1}>
             <Score {...item} />
-            <Stack spacing={0}>
+            <Stack gap={0}>
               {item.fields
                 .sort((a, b) => a.label.localeCompare(b.label))
                 .map((field, idx) => {
@@ -113,18 +112,14 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
                         borderLeftColor='gray.100'
                       >
                         {item.included.includes(field.property) && (
-                          <Icon
-                            as={FaCircleCheck}
-                            color='green.500'
-                            boxSize={4}
-                          />
+                          <Icon color='green.500' boxSize={4} asChild>
+                            <FaCircleCheck />
+                          </Icon>
                         )}
                         {item.augmented.includes(field.property) && (
-                          <Icon
-                            as={FaRegCircleUp}
-                            color='green.500'
-                            boxSize={4}
-                          />
+                          <Icon color='green.500' boxSize={4} asChild>
+                            <FaRegCircleUp />
+                          </Icon>
                         )}
                       </GridItem>
                     </Grid>
@@ -135,7 +130,9 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
         ))}
       </Stack>
       <Text fontStyle='italic' textAlign='end' mt={1}>
-        <Icon as={FaRegCircleUp} color='green.500' boxSize={4} mr={1} />
+        <Icon color='green.500' boxSize={4} mr={1} asChild>
+          <FaRegCircleUp />
+        </Icon>
         Indicates a field has been augmented and does not count towards the
         score.
       </Text>

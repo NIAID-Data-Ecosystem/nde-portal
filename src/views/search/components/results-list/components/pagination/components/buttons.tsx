@@ -1,12 +1,12 @@
-import React from 'react';
 import {
   Button,
-  ButtonProps,
   ButtonGroup,
   ButtonGroupProps,
+  ButtonProps,
   Flex,
   VisuallyHidden,
 } from '@chakra-ui/react';
+import React from 'react';
 
 /**
  * Button group for pages. Handles display depending on number of pages.
@@ -79,6 +79,7 @@ export const PaginationButtonGroup: React.FC<PaginationButtonGroupProps> = ({
  */
 export interface PaginationButtonProps extends ButtonProps {
   title?: string; // Descriptionfor accessibility.
+  isActive?: boolean; // Whether this button is the active page.
 }
 
 export const PaginationButton: React.FC<PaginationButtonProps> = ({
@@ -91,11 +92,11 @@ export const PaginationButton: React.FC<PaginationButtonProps> = ({
     <>
       {/* Desktop is a select dropdown */}
       <Button
-        colorScheme='primary'
+        colorPalette='primary'
         px={2}
         m={1}
         variant={isActive ? 'solid' : 'outline'}
-        isActive={isActive}
+        data-active
         title={
           title || typeof children == 'string'
             ? `Go to page ${children}`

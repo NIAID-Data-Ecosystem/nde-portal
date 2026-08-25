@@ -1,4 +1,5 @@
 import { ListItemProps } from '@chakra-ui/react';
+
 import { TreeItemComponentProps } from '.';
 
 export const getStyles = ({
@@ -9,8 +10,8 @@ export const getStyles = ({
 }: Partial<TreeItemComponentProps>) => {
   let styles = {
     pointerEvents: disableInteraction ? 'none' : 'inherit',
-    sx: {
-      ['.tree-item']: {
+    css: {
+      '& .tree-item': {
         position: 'relative',
         display: 'flex',
         alignItems: 'center',
@@ -46,16 +47,16 @@ export const getStyles = ({
         zIndex: 10000,
         py: 1,
         height: 0,
-        sx: {
-          ['.wrapper']: {
+        css: {
+          '& .wrapper': {
             bg: 'transparent',
             border: 'none',
             padding: 0,
           },
-          ['.item']: {
+          '& .item': {
             bg: '#AED5FC',
           },
-          ['.tree-item']: {
+          '& .tree-item': {
             position: 'relative',
             padding: 0,
             height: '8px',
@@ -86,8 +87,8 @@ export const getStyles = ({
     return {
       ...styles,
       opacity: !indicator ? 0.5 : 1,
-      sx: {
-        ['.tree-item']: {
+      css: {
+        '& .tree-item': {
           '> *': {
             bg: 'transparent',
           },

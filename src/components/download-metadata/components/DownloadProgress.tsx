@@ -1,15 +1,16 @@
-import React from 'react';
 import {
   Button,
-  Collapse,
+  Collapsible,
   Flex,
   FlexProps,
   Icon,
   Progress,
   Text,
 } from '@chakra-ui/react';
-import { FaCircleExclamation, FaXmark } from 'react-icons/fa6';
 import dynamic from 'next/dynamic';
+import React from 'react';
+import { FaCircleExclamation, FaXmark } from 'react-icons/fa6';
+
 import { DownloadArgs } from '../helpers';
 
 const Disclaimer = dynamic(() =>
@@ -41,26 +42,33 @@ export const DownloadMetadataProgress: React.FC<DownloadMetadataProgressProps> =
       return (
         <Flex alignItems='flex-end' flexDirection='column' mb={2}>
           {/* Error */}
-          <Collapse in={!!error}>
-            <Text fontSize='xs' fontStyle='italic' color='status.error'>
-              <Icon as={FaCircleExclamation} color='status.error' mr={1}></Icon>
-              Something went wrong with the metadata download. Please try again.
-            </Text>
-          </Collapse>
-
+          <Collapsible.Root open={!!error}>
+            <Collapsible.Content>
+              <Text fontSize='xs' fontStyle='italic' color='status.error'>
+                <Icon color='status.error' mr={1} asChild>
+                  <FaCircleExclamation />
+                </Icon>
+                Something went wrong with the metadata download. Please try
+                again.
+              </Text>
+            </Collapsible.Content>
+          </Collapsible.Root>
           {isFetching && <Disclaimer isFetching={isFetching} />}
           <Flex maxW='300px'>
             {downloadFormat || percentComplete ? (
               <Flex flexDirection='column'>
                 <Flex w='200px' alignItems='center'>
-                  <Progress
+                  <Progress.Root
                     w='100%'
-                    hasStripe
+                    striped
                     value={percentComplete}
-                    colorScheme='primary'
-                    isIndeterminate={percentComplete === 0}
-                    isAnimated
-                  />
+                    colorPalette='primary'
+                    animated
+                  >
+                    <Progress.Track>
+                      <Progress.Range />
+                    </Progress.Track>
+                  </Progress.Root>
                   <Text
                     fontSize='xs'
                     color='page.placeholder'
@@ -72,14 +80,14 @@ export const DownloadMetadataProgress: React.FC<DownloadMetadataProgressProps> =
                   </Text>
                 </Flex>
                 <Button
-                  rightIcon={<FaXmark />}
-                  colorScheme='gray'
+                  colorPalette='gray'
                   onClick={cancelQuery}
                   variant='outline'
                   size='xs'
                   fontWeight='normal'
                 >
                   cancel
+                  <FaXmark />
                 </Button>
               </Flex>
             ) : (

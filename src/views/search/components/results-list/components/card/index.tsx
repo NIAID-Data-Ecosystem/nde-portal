@@ -1,50 +1,48 @@
-import React, { useMemo } from 'react';
 import {
   Button,
   Card,
-  CardHeader,
-  CardBody,
   Flex,
-  Icon,
-  Text,
-  Tooltip,
-  Stack,
   Highlight,
   HStack,
+  Icon,
+  Skeleton,
+  Stack,
+  Text,
 } from '@chakra-ui/react';
 import { useInView } from '@react-spring/web';
-import NextLink from 'next/link';
-import { FaCircleArrowRight, FaAngleRight, FaRegClock } from 'react-icons/fa6';
-import { FormattedResource } from 'src/utils/api/types';
-import { TypeBanner } from 'src/components/resource-sections/components';
-import MetadataAccordion from './metadata-accordion';
-import OperatingSystems from './operating-systems';
-import { SearchableItems } from 'src/components/searchable-items';
-import { DisplayHTMLContent } from 'src/components/html-content';
-import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
-import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
-import { ToggleContainer } from 'src/components/toggle-container';
-import { formatAuthorsList2String } from 'src/utils/helpers/authors';
-import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
-import { Skeleton } from 'src/components/skeleton';
-import { filterWords, getContentTypeItems } from './helpers';
-import { CONTENT_TYPE_TOOLTIP } from 'src/views/search/config/content-type';
-import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import NextLink from 'next/link';
+import React, { useMemo } from 'react';
+import { FaAngleRight, FaCircleArrowRight, FaRegClock } from 'react-icons/fa6';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
+import { BookmarkButton } from 'src/components/bookmark-buttons/button';
+import { DisplayHTMLContent } from 'src/components/html-content';
 import { InfoLabel } from 'src/components/info-label';
-import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
+import { TypeBanner } from 'src/components/resource-sections/components';
+import { SearchableItems } from 'src/components/searchable-items';
+import { SourceLogo } from 'src/components/source-logo';
 import {
   formatSourcesWithLogos,
   getAccessResourceURL,
 } from 'src/components/source-logo/helpers';
-import { SourceLogo } from 'src/components/source-logo';
-import { BookmarkButton } from 'src/components/bookmark-buttons/button';
-import { useUserData } from 'src/hooks/useUserData';
-import { ENABLE_AUTH } from 'src/utils/feature-flags';
+import { ToggleContainer } from 'src/components/toggle-container';
+import Tooltip from 'src/components/tooltip';
 import { useAuth } from 'src/hooks/useAuth';
+import { useUserData } from 'src/hooks/useUserData';
+import { FormattedResource } from 'src/utils/api/types';
+import { ENABLE_AUTH } from 'src/utils/feature-flags';
+import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+import { formatAuthorsList2String } from 'src/utils/helpers/authors';
+import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
+import { CONTENT_TYPE_TOOLTIP } from 'src/views/search/config/content-type';
 
+import { filterWords, getContentTypeItems } from './helpers';
+import MetadataAccordion from './metadata-accordion';
+import OperatingSystems from './operating-systems';
 interface SearchResultCardProps {
-  isLoading?: boolean;
+  loading?: boolean;
   data?: FormattedResource | null;
   referrerPath?: string;
   querystring: string;
@@ -53,7 +51,7 @@ interface SearchResultCardProps {
 const metadataFields = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
 const SearchResultCard: React.FC<SearchResultCardProps> = ({
-  isLoading,
+  loading,
   data,
   referrerPath,
   querystring,
@@ -84,7 +82,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   const [cardRef, inView] = useInView({ once: true });
 
   const sources =
-    isLoading || !includedInDataCatalog
+    loading || !includedInDataCatalog
       ? []
       : formatSourcesWithLogos(includedInDataCatalog) || [];
 
@@ -104,7 +102,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 
   return (
     // {/* Banner with resource type + date of publication */}
-    <Card
+    <Card.Root
       ref={cardRef}
       variant='niaid'
       boxShadow='none'
@@ -119,17 +117,16 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         flexDirection={['column', 'row']}
         isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
       />
-
       {/* Card header where name of resource is a link to resource page */}
-      <CardHeader
+      <Card.Header
         bg='transparent'
         position='relative'
         px={paddingCard}
         pt={4}
         color='link.color'
         _hover={{
-          p: { textDecoration: 'none' },
-          svg: {
+          '& p': { textDecoration: 'none' },
+          '& svg': {
             transform: 'translate(0px)',
             opacity: 0.9,
             transition: '0.2s ease-in-out',
@@ -137,13 +134,13 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         }}
         _visited={{
           color: 'link.color',
-          svg: { color: 'link.color' },
+          '& svg': { color: 'link.color' },
         }}
         w='100%'
       >
         <Skeleton
-          isLoaded={!isLoading}
-          minHeight={isLoading ? '81px' : 'unset'}
+          loading={loading}
+          minHeight={loading ? '81px' : 'unset'}
           flex={1}
         >
           <NextLink
@@ -162,7 +159,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
             }}
           >
             <DisplayHTMLContent
-              noOfLines={3}
+              lineClamp={3}
               content={name || alternateName || 'N/A'}
               fontWeight='semibold'
               color='inherit'
@@ -180,21 +177,23 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               highlightProps={highlightProps}
             />
             <Icon
-              as={FaAngleRight}
               boxSize={4}
               ml={4}
               opacity={0.6}
               transform='translate(-5px)'
               transition='0.2s ease-in-out'
-            />
+              asChild
+            >
+              <FaAngleRight />
+            </Icon>
           </NextLink>
         </Skeleton>
-      </CardHeader>
+      </Card.Header>
       <Skeleton
-        isLoaded={!isLoading}
+        loading={loading}
         p='0px!important'
         minHeight={
-          isLoading
+          loading
             ? { base: '580px', sm: '400px', md: '330px', lg: '300px' }
             : 'unset'
         }
@@ -253,10 +252,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               </Flex>
             )}
 
-            <CardBody
+            <Card.Body
               p={0}
-              sx={{
-                '>*': {
+              css={{
+                '& >*': {
                   my: 0,
                 },
               }}
@@ -273,15 +272,13 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   justify='space-between'
                 >
                   <Tooltip
-                    label='Corresponds to the most recent of date modified, date published and date created.'
-                    hasArrow
-                    bg='#fff'
-                    sx={{
-                      color: 'text.body',
-                    }}
+                    content='Corresponds to the most recent of date modified, date published and date created.'
+                    showArrow
                   >
                     <Flex whiteSpace='nowrap' alignItems='center'>
-                      <Icon as={FaRegClock} mr={2} />
+                      <Icon mr={2} asChild>
+                        <FaRegClock />
+                      </Icon>
                       <Text fontSize='xs'>{date}</Text>
                     </Flex>
                   </Tooltip>
@@ -314,7 +311,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 px={paddingCard}
                 py={[0, 1]}
                 flexDirection={{ base: 'column', md: 'row' }}
-                spacing={[1, 3, 4]}
+                gap={[1, 3, 4]}
               >
                 {data && (
                   <CompletenessBadgeCircle
@@ -615,21 +612,21 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           as='span'
                           flex={1}
                           size={{ base: 'md', sm: 'sm' }}
-                          rightIcon={<FaCircleArrowRight />}
                           aria-label={`Go to details about resource ${name}`}
                         >
                           View resource
+                          <FaCircleArrowRight />
                         </Button>
                       </Flex>
                     </NextLink>
                   )}
                 </HStack>
               </Stack>
-            </CardBody>
+            </Card.Body>
           </>
         )}
       </Skeleton>
-    </Card>
+    </Card.Root>
   );
 };
 

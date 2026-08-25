@@ -1,21 +1,20 @@
-import React from 'react';
 import {
   Box,
   Flex,
   Heading,
   HeadingProps,
-  ListItem,
-  ListProps,
+  List,
   SimpleGrid,
   Stack,
   TextProps,
-  UnorderedList,
 } from '@chakra-ui/react';
-import { Logo } from 'src/components/logos';
 import SITE_CONFIG from 'configs/site.config.json';
-import { FooterLink, FooterSocialLinks } from './components/link';
+import React from 'react';
+import { Logo } from 'src/components/logos';
 import { useMetadata } from 'src/hooks/api/useMetadata';
+
 import { SiteConfig } from '../page-container/types';
+import { FooterLink, FooterSocialLinks } from './components/link';
 import { FooterRoute } from './types';
 
 export interface ListHeaderProps extends TextProps {}
@@ -43,7 +42,7 @@ export const Footer = () => {
   interface NestedList {
     label: string;
     routes?: FooterRoute[];
-    listProps?: ListProps;
+    listProps?: List.RootProps;
     headingProps?: HeadingProps;
   }
 
@@ -64,7 +63,7 @@ export const Footer = () => {
         >
           {label}
         </LinksHeading>
-        <UnorderedList ml={0} {...listProps}>
+        <List.Root as='ul' ml={0} {...listProps}>
           {routes &&
             routes.map(route => {
               if (route.routes) {
@@ -81,20 +80,20 @@ export const Footer = () => {
                 );
               }
               return (
-                <ListItem key={route.label}>
+                <List.Item key={route.label}>
                   {route.href && (
                     <FooterLink
                       href={route.href}
                       isExternal={route.isExternal ?? false}
-                      variant='ghost'
+                      variant='hover'
                     >
                       {route.label}
                     </FooterLink>
                   )}
-                </ListItem>
+                </List.Item>
               );
             })}
-        </UnorderedList>
+        </List.Root>
       </>
     );
   };
@@ -138,17 +137,17 @@ export const Footer = () => {
                   {section.label && (
                     <LinksHeading mt={8}>{section.label}</LinksHeading>
                   )}
-                  <UnorderedList ml={0} my={4}>
+                  <List.Root as='ul' ml={0} my={4}>
                     {section.routes &&
                       section.routes.map(({ href, label, isExternal }) => {
                         return (
-                          <ListItem
+                          <List.Item
                             key={label}
                             alignItems='flex-start'
                             mt={1}
                             mb={3}
                             _hover={{
-                              svg: {
+                              '& svg': {
                                 opacity: '100%',
                                 transform: 'translateX(0)',
                                 transition: 'all .3s ease',
@@ -158,14 +157,14 @@ export const Footer = () => {
                             <FooterLink
                               href={href}
                               isExternal={isExternal ?? false}
-                              variant='ghost'
+                              variant='hover'
                             >
                               {label}
                             </FooterLink>
-                          </ListItem>
+                          </List.Item>
                         );
                       })}
-                  </UnorderedList>
+                  </List.Root>
                 </Box>
               );
             })}

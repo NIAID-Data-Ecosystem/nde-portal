@@ -8,7 +8,7 @@ interface ChartWrapperProps {
   title?: string;
   description?: string | React.ReactNode;
   skeletonProps?: SkeletonProps;
-  isLoading: boolean;
+  loading: boolean;
   error: Error | null;
 }
 export const ChartWrapper = ({
@@ -16,7 +16,7 @@ export const ChartWrapper = ({
   title,
   description,
   skeletonProps,
-  isLoading,
+  loading,
   error,
 }: ChartWrapperProps) => {
   return (
@@ -29,13 +29,12 @@ export const ChartWrapper = ({
         ) : (
           description
         ))}
-
       {/* Skeleton loader */}
       <Skeleton
         role='status'
         width='100%'
         height='100%'
-        isLoaded={!isLoading}
+        loading={!!loading}
         py={4}
         {...skeletonProps}
       >

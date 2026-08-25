@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { GetStaticProps, NextPage } from 'next';
 import { Flex, HStack, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
+import { GetStaticProps, NextPage } from 'next';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Error } from 'src/components/error';
 import { Link } from 'src/components/link';
 import {
@@ -11,10 +11,10 @@ import {
 } from 'src/components/page-container';
 import {
   StyledCard,
-  StyleCardSubLabel,
   StyledCardButton,
   StyledCardDescription,
   StyledCardStack,
+  StyledCardSubLabel,
 } from 'src/components/table-of-contents/components/card';
 import { SectionHeader } from 'src/components/table-of-contents/layouts/section-header';
 import { SectionSearch } from 'src/components/table-of-contents/layouts/section-search';
@@ -207,11 +207,11 @@ const ProgramCollections: NextPage<{
                           {/* Parent Organization */}
                           {parentOrganizations.length > 0 && (
                             <HStack>
-                              <StyleCardSubLabel key={index}>
+                              <StyledCardSubLabel key={index}>
                                 {`Parent Organization(s): ${parentOrganizations.join(
                                   ', ',
                                 )}`}
-                              </StyleCardSubLabel>
+                              </StyledCardSubLabel>
                             </HStack>
                           )}
 

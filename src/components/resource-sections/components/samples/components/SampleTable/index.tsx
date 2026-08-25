@@ -34,7 +34,6 @@ export const SampleTable = ({
           )}
         </Heading>
       )}
-
       <Table
         ariaLabel={label}
         caption={caption}

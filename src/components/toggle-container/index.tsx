@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
   Button,
-  Icon,
-  Flex,
-  SystemProps,
-  useDisclosure,
   ButtonProps,
+  Flex,
+  Icon,
+  SystemStyleObject,
+  useDisclosure,
 } from '@chakra-ui/react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FaAngleDown } from 'react-icons/fa6';
 
 // Expandable container.
@@ -15,8 +15,7 @@ export interface ToggleContainerProps extends ButtonProps {
   // can be a number describing the minimum num of lines or a minmax tuple.
   noOfLines?: [number, number] | number;
   ariaLabel: string;
-  alignIcon?: SystemProps['alignItems'];
-  variant?: 'border';
+  alignIcon?: SystemStyleObject['alignItems'];
 }
 
 export const ToggleContainer: React.FC<ToggleContainerProps> = ({
@@ -26,10 +25,11 @@ export const ToggleContainer: React.FC<ToggleContainerProps> = ({
   noOfLines,
   minHeight,
   ariaLabel,
-  variant,
   ...props
 }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure({ defaultIsOpen });
+  const { open, onOpen, onClose } = useDisclosure({
+    defaultOpen: defaultIsOpen,
+  });
 
   // Set minimum number of lines shown when container is not expanded
   const minNoOfLines = Array.isArray(noOfLines)
@@ -64,19 +64,18 @@ export const ToggleContainer: React.FC<ToggleContainerProps> = ({
 
   useEffect(() => {
     handleOverflow();
-  }, [isOpen, handleOverflow]);
+  }, [open, handleOverflow]);
 
   // Possible to toggle drawer when drawer is close with oversized inner content or is open.
-  const isExpandable = (isOverflowing && !isOpen) || isOpen;
+  const isExpandable = (isOverflowing && !open) || open;
   return (
     <Button
-      variant={variant}
-      bg={isOpen ? 'blackAlpha.50' : 'white'}
-      onClick={() => (isOpen ? onClose() : onOpen())}
+      bg={open ? 'blackAlpha.50' : 'white'}
+      onClick={() => (open ? onClose() : onOpen())}
       flexWrap={['wrap', 'nowrap']}
       aria-label={ariaLabel}
       alignItems={alignIcon}
-      isDisabled={!isExpandable}
+      disabled={!isExpandable}
       px={[2, 4, 8, 10]}
       py={[2, 4, 6]}
       transition='all 0.2s ease-in-out'
@@ -86,9 +85,9 @@ export const ToggleContainer: React.FC<ToggleContainerProps> = ({
       height='unset'
       textAlign='unset'
       borderRadius='none'
-      borderTop={variant === 'border' ? '1px solid' : undefined}
-      borderBottom={variant === 'border' ? '1px solid' : undefined}
-      borderColor={variant === 'border' ? 'gray.200' : 'transparent'}
+      borderTop={undefined}
+      borderBottom={undefined}
+      borderColor={'transparent'}
       _hover={{
         bg: 'blackAlpha.50',
         transition: 'all 0.2s ease-in-out',
@@ -107,12 +106,12 @@ export const ToggleContainer: React.FC<ToggleContainerProps> = ({
       <Flex
         ref={containerRef}
         overflow={'hidden'}
-        height={isOpen ? undefined : minHeight}
-        noOfLines={isOpen ? maxNoOfLines : minNoOfLines}
+        height={open ? undefined : minHeight}
+        lineClamp={open ? maxNoOfLines : minNoOfLines}
       >
         {children}
       </Flex>
-      {(isOpen || (!isOpen && isOverflowing)) && (
+      {(open || (!open && isOverflowing)) && (
         <Flex
           className='icon'
           flexDirection='column'
@@ -127,11 +126,13 @@ export const ToggleContainer: React.FC<ToggleContainerProps> = ({
             w={3}
             h={3}
             color='gray.700'
-            as={FaAngleDown}
-            transform={isOpen ? 'rotate(-180deg)' : undefined}
+            transform={open ? 'rotate(-180deg)' : undefined}
             transformOrigin='center'
             transition='transform 0.2s'
-          />
+            asChild
+          >
+            <FaAngleDown />
+          </Icon>
         </Flex>
       )}
     </Button>

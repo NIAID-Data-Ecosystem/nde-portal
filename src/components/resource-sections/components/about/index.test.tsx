@@ -1,15 +1,18 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { ChakraProvider } from '@chakra-ui/react';
 import '@testing-library/jest-dom';
+
+import { ChakraProvider } from '@chakra-ui/react';
+import { render, screen } from '@testing-library/react';
+import React from 'react';
+import { system } from 'src/theme';
+
 import { AboutResource } from '.';
 
 const renderWithChakra = (ui: React.ReactElement) =>
-  render(<ChakraProvider>{ui}</ChakraProvider>);
+  render(<ChakraProvider value={system}>{ui}</ChakraProvider>);
 
 describe('AboutResource', () => {
   it('renders nothing when none of the relevant fields are provided', () => {
-    renderWithChakra(<AboutResource isLoading={false} />);
+    renderWithChakra(<AboutResource loading={false} />);
 
     expect(screen.queryByText('Research Domain')).not.toBeInTheDocument();
     expect(screen.queryByText('Content Types')).not.toBeInTheDocument();
@@ -20,7 +23,7 @@ describe('AboutResource', () => {
 
   describe('Research Domain', () => {
     it('renders genre as a tag linking to search', () => {
-      renderWithChakra(<AboutResource genre='IID' isLoading={false} />);
+      renderWithChakra(<AboutResource genre='IID' loading={false} />);
 
       expect(screen.getByText('Research Domain')).toBeInTheDocument();
       // next/link is stubbed in jest.setup.js so only the pathname survives.
@@ -34,7 +37,7 @@ describe('AboutResource', () => {
       renderWithChakra(
         <AboutResource
           about={[{ displayName: 'Genomic', name: 'genomic' } as any]}
-          isLoading={false}
+          loading={false}
         />,
       );
 
@@ -52,7 +55,7 @@ describe('AboutResource', () => {
               { displayName: 'Clinical', name: 'clinical' },
             ] as any
           }
-          isLoading={false}
+          loading={false}
         />,
       );
 
@@ -66,7 +69,7 @@ describe('AboutResource', () => {
       renderWithChakra(
         <AboutResource
           about={{ displayName: 'Genomic', name: 'genomic' } as any}
-          isLoading={false}
+          loading={false}
         />,
       );
 
@@ -80,7 +83,7 @@ describe('AboutResource', () => {
           exampleOfWork={
             { about: { displayName: 'Proteomic', name: 'proteomic' } } as any
           }
-          isLoading={false}
+          loading={false}
         />,
       );
 
@@ -96,7 +99,7 @@ describe('AboutResource', () => {
           exampleOfWork={
             { about: [{ displayName: 'Proteomic', name: 'proteomic' }] } as any
           }
-          isLoading={false}
+          loading={false}
         />,
       );
 
@@ -111,7 +114,7 @@ describe('AboutResource', () => {
           exampleOfWork={
             { about: { displayName: 'Genomic', name: 'genomic' } } as any
           }
-          isLoading={false}
+          loading={false}
         />,
       );
 
@@ -130,7 +133,7 @@ describe('AboutResource', () => {
               { displayName: 'Genomic', name: 'genomic-b' },
             ] as any
           }
-          isLoading={false}
+          loading={false}
         />,
       );
 
@@ -146,7 +149,7 @@ describe('AboutResource', () => {
               { displayName: 'Genomic', url: 'https://example.com/b' },
             ] as any
           }
-          isLoading={false}
+          loading={false}
         />,
       );
 
@@ -168,7 +171,7 @@ describe('AboutResource', () => {
               },
             ] as any
           }
-          isLoading={false}
+          loading={false}
         />,
       );
 
@@ -189,7 +192,7 @@ describe('AboutResource', () => {
               { about: { displayName: 'Beta' } },
             ] as any
           }
-          isLoading={false}
+          loading={false}
         />,
       );
 
@@ -207,7 +210,7 @@ describe('AboutResource', () => {
               { url: 'https://example.com/b' },
             ] as any
           }
-          isLoading={false}
+          loading={false}
         />,
       );
 
@@ -216,10 +219,7 @@ describe('AboutResource', () => {
 
     it('falls back to name when displayName is missing', () => {
       renderWithChakra(
-        <AboutResource
-          about={[{ name: 'genomic' } as any]}
-          isLoading={false}
-        />,
+        <AboutResource about={[{ name: 'genomic' } as any]} loading={false} />,
       );
 
       expect(screen.getByText('genomic')).toBeInTheDocument();
@@ -229,7 +229,7 @@ describe('AboutResource', () => {
       renderWithChakra(
         <AboutResource
           about={[{ url: 'https://example.com/unknown' } as any]}
-          isLoading={false}
+          loading={false}
         />,
       );
 
@@ -249,7 +249,7 @@ describe('AboutResource', () => {
               { displayName: 'Unlinked', name: 'unlinked' },
             ] as any
           }
-          isLoading={false}
+          loading={false}
         />,
       );
 
@@ -271,7 +271,7 @@ describe('AboutResource', () => {
           collectionSize={
             [{ value: 1200, unitText: 'datasets' }, { minValue: 5 }] as any
           }
-          isLoading={false}
+          loading={false}
         />,
       );
 
@@ -281,7 +281,7 @@ describe('AboutResource', () => {
     });
 
     it('does not render the collection size block when collectionSize is absent', () => {
-      renderWithChakra(<AboutResource genre='IID' isLoading={false} />);
+      renderWithChakra(<AboutResource genre='IID' loading={false} />);
 
       expect(
         screen.queryByText('Collection Size Details'),

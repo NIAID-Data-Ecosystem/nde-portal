@@ -10,8 +10,8 @@ interface SearchWithPredictiveTextProps {
   field?: string; //default field to search through,
   term?: string; //default term to search with,
   size?: InputProps['size'];
-  isLoading?: boolean;
-  colorScheme?: InputProps['colorScheme'];
+  loading?: boolean;
+  colorPalette?: InputProps['colorPalette'];
   handleSubmit: (
     inputValue: string,
     field: string,
@@ -34,7 +34,7 @@ export const SearchWithPredictiveText: React.FC<
     <PredictiveSearch
       {...props}
       {...usePredictiveSearchProps}
-      isLoading={props.isLoading || usePredictiveSearchProps.isLoading}
+      loading={props.loading || usePredictiveSearchProps.loading}
     />
   );
 };

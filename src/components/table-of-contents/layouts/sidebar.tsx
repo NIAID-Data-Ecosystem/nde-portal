@@ -4,9 +4,8 @@ import {
   FlexProps,
   Heading,
   HeadingProps,
-  ListItem,
   Text,
-  UnorderedList,
+  List,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import type { UrlObject } from 'url';
@@ -28,9 +27,9 @@ export const Sidebar: React.FC<FlexProps & { ['aria-label']: string }> = ({
       maxW='450px'
       {...props}
     >
-      <UnorderedList top={0} ml={0}>
+      <List.Root as='ul' top={0} ml={0}>
         {children}
-      </UnorderedList>
+      </List.Root>
     </Flex>
   );
 };
@@ -41,23 +40,24 @@ export const SidebarItem: React.FC<{
   href: UrlObject | string;
 }> = ({ href, label, subLabel }) => {
   return (
-    <ListItem
+    <List.Item
       _hover={{ bg: 'gray.50' }}
       cursor='pointer'
       borderTop='1px solid'
       borderRight='1px solid'
       borderColor='gray.100'
     >
-      <Box as={NextLink} href={href} display='block' px={[2, 4, 6]} py={4}>
-        {typeof label === 'string' ? <Label>{label}</Label> : label}
-
-        {subLabel && (
-          <Text fontSize='sm' lineHeight='short'>
-            {subLabel}
-          </Text>
-        )}
+      <Box display='block' px={[2, 4, 6]} py={4} asChild>
+        <NextLink href={href}>
+          {typeof label === 'string' ? <Label>{label}</Label> : label}
+          {subLabel && (
+            <Text fontSize='sm' lineHeight='short'>
+              {subLabel}
+            </Text>
+          )}
+        </NextLink>
       </Box>
-    </ListItem>
+    </List.Item>
   );
 };
 

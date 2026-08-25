@@ -2,18 +2,13 @@ import React, { useEffect, useState, useRef } from 'react';
 import {
   Button,
   Drawer,
-  DrawerBody,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
   Flex,
   Text,
   useDisclosure,
   useBreakpointValue,
   Icon,
   Box,
+  Portal,
 } from '@chakra-ui/react';
 import { FaFilter } from 'react-icons/fa6';
 import { FilterConfig } from '../types';
@@ -22,7 +17,7 @@ import { CustomizeFiltersPopover } from './customize-filters-popover';
 
 export interface FiltersContainerProps {
   title?: string;
-  isDisabled?: boolean;
+  disabled?: boolean;
   removeAllFilters: () => void;
   error: Error | null;
   filtersList: FilterConfig[];
@@ -36,24 +31,26 @@ const DrawerContentMemo: React.FC<{
   innerHeight: number;
   title: string;
 }> = React.memo(({ content, onClose, innerHeight, title }) => (
-  <DrawerContent height={`${innerHeight}px`}>
-    <DrawerHeader borderBottomWidth='1px' py={3} px={4}>
-      <Flex align='center' gap={2}>
-        <Text fontSize='md' fontWeight='semibold' flex={1}>
-          {title}
-        </Text>
-      </Flex>
-    </DrawerHeader>
-    <DrawerCloseButton top={3} />
-    <ScrollContainer>
-      <DrawerBody px={2}>{content}</DrawerBody>
-    </ScrollContainer>
-    <DrawerFooter borderTopWidth='1px' py={3}>
-      <Button onClick={onClose} colorScheme='secondary' size='md' w='full'>
-        Done
-      </Button>
-    </DrawerFooter>
-  </DrawerContent>
+  <Drawer.Positioner>
+    <Drawer.Content height={`${innerHeight}px`}>
+      <Drawer.Header borderBottomWidth='1px' py={3} px={4}>
+        <Flex align='center' gap={2}>
+          <Text fontSize='md' fontWeight='semibold' flex={1}>
+            {title}
+          </Text>
+        </Flex>
+      </Drawer.Header>
+      <Drawer.CloseTrigger top={3} />
+      <ScrollContainer>
+        <Drawer.Body px={2}>{content}</Drawer.Body>
+      </ScrollContainer>
+      <Drawer.Footer borderTopWidth='1px' py={3}>
+        <Button onClick={onClose} colorPalette='secondary' size='md' w='full'>
+          Done
+        </Button>
+      </Drawer.Footer>
+    </Drawer.Content>
+  </Drawer.Positioner>
 ));
 
 export const FiltersContainer: React.FC<FiltersContainerProps> = ({
@@ -61,12 +58,12 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   error,
   children,
   filtersList,
-  isDisabled = false,
+  disabled = false,
   removeAllFilters,
   onVisibleFiltersChange,
 }) => {
   const btnRef = useRef<HTMLButtonElement>(null);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { open, onOpen, onClose } = useDisclosure();
   const screenSize = useBreakpointValue(
     {
       base: 'mobile',
@@ -116,11 +113,11 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
             </Heading>
           )} */}
           <Button
-            colorScheme='secondary'
-            variant='link'
+            colorPalette='secondary'
+            variant='plain'
             size='xs'
             onClick={removeAllFilters}
-            isDisabled={isDisabled}
+            disabled={disabled}
             _disabled={{ opacity: 1, color: 'gray.700' }}
           >
             Clear All
@@ -170,28 +167,35 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
           alignItems='center'
           justifyContent='center'
         >
-          <Icon as={FaFilter} boxSize={5} ml={1} mr={2} />
+          <Icon boxSize={5} ml={1} mr={2} asChild>
+            <FaFilter />
+          </Icon>
         </Flex>
         <Text color='white' fontWeight='normal' fontSize='lg'>
           {title || 'Filters'}
         </Text>
       </Button>
-      <Drawer
-        autoFocus={false}
-        isOpen={isOpen}
-        placement='left'
-        onClose={onClose}
-        finalFocusRef={btnRef}
+      <Drawer.Root
+        open={open}
+        placement='start'
+        finalFocusEl={() => btnRef.current}
         size={screenSize === 'mobile' ? 'full' : 'md'}
+        onOpenChange={e => {
+          if (!e.open) {
+            onClose();
+          }
+        }}
       >
-        <DrawerOverlay />
-        <DrawerContentMemo
-          content={content}
-          onClose={onClose}
-          innerHeight={innerHeight}
-          title={title || 'Filters'}
-        />
-      </Drawer>
+        <Portal>
+          <Drawer.Backdrop />
+          <DrawerContentMemo
+            content={content}
+            onClose={onClose}
+            innerHeight={innerHeight}
+            title={title || 'Filters'}
+          />
+        </Portal>
+      </Drawer.Root>
     </>
   ) : (
     <Box width='100%'>{content}</Box>

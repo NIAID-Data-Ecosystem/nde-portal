@@ -6,17 +6,17 @@ import { Link } from 'src/components/link';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
 interface DataUsageProps {
-  isLoading: boolean;
+  loading: boolean;
   usageInfo?: FormattedResource['usageInfo'];
   type?: FormattedResource['@type'];
 }
 
 export const DataUsage: React.FC<DataUsageProps> = ({
-  isLoading,
+  loading,
   type,
   usageInfo,
 }) => {
-  if (!isLoading && !usageInfo) {
+  if (!loading && !usageInfo) {
     return <></>;
   }
   const usageAgreement = Array.isArray(usageInfo) ? usageInfo : [usageInfo];

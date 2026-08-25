@@ -1,7 +1,3 @@
-import React from 'react';
-import { FaChevronRight } from 'react-icons/fa6';
-import NextLink from 'next/link';
-import type { UrlObject } from 'url';
 import {
   Box,
   Button,
@@ -16,11 +12,15 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
+import NextLink from 'next/link';
+import React from 'react';
+import { FaChevronRight } from 'react-icons/fa6';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { MDXComponents as DefaultMDXComponents } from 'src/components/mdx/components';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
+import type { UrlObject } from 'url';
 
 /**
  * StyledCard component
@@ -29,7 +29,7 @@ import { MDXComponents as DefaultMDXComponents } from 'src/components/mdx/compon
  */
 
 interface StyledCardProps extends StackProps {
-  isLoading?: boolean;
+  loading?: boolean;
   title?: string;
   subtitle?: string;
   tags?: React.ReactNode;
@@ -39,7 +39,7 @@ interface StyledCardProps extends StackProps {
 
 export const StyledCard: React.FC<StyledCardProps> = ({
   id,
-  isLoading,
+  loading,
   title,
   subtitle,
   children,
@@ -48,7 +48,7 @@ export const StyledCard: React.FC<StyledCardProps> = ({
   renderCTA,
 }) => {
   return (
-    <StyledCardWrapper id={id} isLoading={isLoading}>
+    <StyledCardWrapper id={id} loading={loading}>
       <VStack alignItems='flex-start' lineHeight='short'>
         <Stack flexDirection='row' alignItems='unset' flexWrap='wrap-reverse'>
           <Stack
@@ -60,14 +60,14 @@ export const StyledCard: React.FC<StyledCardProps> = ({
             {/* Main Heading */}
             <Box>
               <HStack>
-                {title && <StyleCardLabel>{title}</StyleCardLabel>}
+                {title && <StyledCardLabel>{title}</StyledCardLabel>}
 
                 {/* Tags */}
                 {tags}
               </HStack>
 
               {/* Sub Heading */}
-              {subtitle && <StyleCardSubLabel>{subtitle}</StyleCardSubLabel>}
+              {subtitle && <StyledCardSubLabel>{subtitle}</StyledCardSubLabel>}
             </Box>
             {/* Main content */}
             {children}
@@ -118,21 +118,21 @@ export const StyledCardStack: React.FC<StackProps> = ({
   ...props
 }) => {
   return (
-    <VStack spacing={4} alignItems='flex-start' {...props}>
+    <VStack gap={4} alignItems='flex-start' {...props}>
       {children}
     </VStack>
   );
 };
 
 export const StyledCardWrapper: React.FC<
-  StackProps & { isLoading?: boolean }
-> = ({ children, id, isLoading, ...props }) => {
+  StackProps & { loading?: boolean }
+> = ({ children, id, loading, ...props }) => {
   return (
     <Skeleton
       as='section'
       id={id}
-      isLoaded={!isLoading}
-      minHeight={isLoading ? '200px' : 'unset'}
+      loading={!!loading}
+      minHeight={loading ? '200px' : 'unset'}
       w='100%'
       boxShadow='low'
       borderRadius='semi'
@@ -147,7 +147,7 @@ export const StyledCardWrapper: React.FC<
   );
 };
 
-export const StyleCardLabel: React.FC<{ children: string }> = ({
+export const StyledCardLabel: React.FC<{ children: string }> = ({
   children,
 }) => {
   return (
@@ -157,7 +157,7 @@ export const StyleCardLabel: React.FC<{ children: string }> = ({
   );
 };
 
-export const StyleCardSubLabel: React.FC<{ children: string }> = ({
+export const StyledCardSubLabel: React.FC<{ children: string }> = ({
   children,
 }) => {
   return (
@@ -194,37 +194,24 @@ export const StyledCardButton: React.FC<StyledCardButtonProps> = ({
   ...props
 }) => {
   return (
-    <Box as={NextLink} href={href} passHref legacyBehavior>
-      <Button
-        as='a'
-        size='sm'
-        rightIcon={
-          <Icon
-            as={FaChevronRight}
-            boxSize={3}
-            ml={1}
-            transition='all .3s ease'
-            transform='translateX(-5px)'
-          />
-        }
-        wordBreak='break-word'
-        whiteSpace='normal'
-        textAlign='center'
-        height='unset'
-        width={{ base: '100%', md: 'unset' }}
-        colorScheme='primary'
-        sx={{
-          '&:hover': {
-            svg: {
-              transform: 'translateX(0)',
-              transition: 'all .3s ease',
-            },
-          },
-        }}
-        {...props}
-      >
-        {children}
-      </Button>
-    </Box>
+    <Button
+      size='sm'
+      wordBreak='break-word'
+      whiteSpace='normal'
+      textAlign='center'
+      height='unset'
+      width={{ base: '100%', md: 'unset' }}
+      colorPalette='primary'
+      asChild
+      _hover={{
+        '& svg': {
+          transform: 'translateX(0)',
+          transition: 'all .3s ease',
+        },
+      }}
+      {...props}
+    >
+      <NextLink href={href}>{children}</NextLink>
+    </Button>
   );
 };

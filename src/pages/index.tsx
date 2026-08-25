@@ -1,52 +1,52 @@
-import React, { useMemo } from 'react';
-import type { NextPage } from 'next';
 import {
   Box,
   Button,
   ButtonGroup,
+  Card,
   Flex,
+  Heading,
   Icon,
   Image,
-  Text,
-  Heading,
-  Divider,
-  VStack,
+  Separator,
   Stack,
-  Card,
-  CardBody,
+  Text,
+  VStack,
 } from '@chakra-ui/react';
+import HOMEPAGE_COPY from 'configs/homepage.json';
+import HOME_QUERIES from 'configs/queries/home-queries.json';
+import type { NextPage } from 'next';
+import NextLink from 'next/link';
+import React, { useMemo } from 'react';
+import { FaGithub, FaMagnifyingGlass, FaRegEnvelope } from 'react-icons/fa6';
 import {
   getPageSeoConfig,
   PageContainer,
   PageContent,
   Search,
 } from 'src/components/page-container';
-import HOMEPAGE_COPY from 'configs/homepage.json';
-import HOME_QUERIES from 'configs/queries/home-queries.json';
-import NextLink from 'next/link';
-import { FaMagnifyingGlass, FaRegEnvelope, FaGithub } from 'react-icons/fa6';
 import { useRepoData } from 'src/hooks/api/useRepoData';
-import { LandingPageCards } from 'src/views/home/components/LandingPageCards/';
-import {
-  NewsCarousel,
-  fetchNews,
-} from 'src/views/home/components/NewsCarousel';
-import { NewsOrEventsObject, fetchEvents } from './updates';
-import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
-import { HeroBanner } from 'src/views/home/components/HeroBanner';
-import {
-  fetchAllFeaturedPages,
-  transformFeaturedContentForCarousel,
-} from 'src/views/features/helpers';
 import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
-import { useReadLocalStorage } from 'usehooks-ts';
 import {
   formatConditionsOfAccess,
   transformConditionsOfAccessLabel,
 } from 'src/utils/formatting/formatConditionsOfAccess';
+import {
+  fetchAllFeaturedPages,
+  transformFeaturedContentForCarousel,
+} from 'src/views/features/helpers';
+import { HeroBanner } from 'src/views/home/components/HeroBanner';
+import { LandingPageCards } from 'src/views/home/components/LandingPageCards/';
+import {
+  fetchNews,
+  NewsCarousel,
+} from 'src/views/home/components/NewsCarousel';
+import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { formatDomainName } from 'src/views/home/components/TableWithSearch/helpers';
 import { buildItemUrl } from 'src/views/repository-matcher/utils';
+import { useReadLocalStorage } from 'usehooks-ts';
+
+import { fetchEvents, NewsOrEventsObject } from './updates';
 
 const Home: NextPage<{
   data: {
@@ -111,18 +111,18 @@ const Home: NextPage<{
         title={HOMEPAGE_COPY.sections.hero.heading}
         subtitle={HOMEPAGE_COPY.sections.hero.subtitle}
       >
-        <Card
+        <Card.Root
           w='100%'
           overflow='visible'
           bg='rgba(255, 255, 255, 0.70)'
           maxWidth='1100px'
         >
-          <CardBody overflow='visible'>
+          <Card.Body overflow='visible'>
             <Stack
               flexDirection='column'
               w='100%'
               alignItems='flex-start'
-              spacing={{ base: 4, sm: 3 }}
+              gap={{ base: 4, sm: 3 }}
               zIndex={2}
             >
               <Flex w='100%' flexDirection='column' maxWidth='1000px'>
@@ -146,32 +146,35 @@ const Home: NextPage<{
                     return (
                       <Button
                         key={query.title}
-                        as={NextLink}
-                        href={{
-                          pathname: `/search`,
-                          query: {
-                            q: query.searchTerms.join(' OR '),
-                            ...(SHOW_AI_ASSISTED_SEARCH && enableAISearch
-                              ? {
-                                  use_ai_search: 'true',
-                                }
-                              : {}),
-                          },
-                        }}
-                        leftIcon={<FaMagnifyingGlass />}
                         size='sm'
-                        colorScheme='niaid'
+                        colorPalette='niaid'
                         fontWeight='semibold'
+                        asChild
                       >
-                        {query.title}
+                        <NextLink
+                          href={{
+                            pathname: `/search`,
+                            query: {
+                              q: query.searchTerms.join(' OR '),
+                              ...(SHOW_AI_ASSISTED_SEARCH && enableAISearch
+                                ? {
+                                    use_ai_search: 'true',
+                                  }
+                                : {}),
+                            },
+                          }}
+                        >
+                          <FaMagnifyingGlass />
+                          {query.title}
+                        </NextLink>
                       </Button>
                     );
                   })}
                 </Stack>
               </Box>
             </Stack>
-          </CardBody>
-        </Card>
+          </Card.Body>
+        </Card.Root>
       </HeroBanner>
       <>
         {/**** Repositories Table section *****/}
@@ -214,7 +217,7 @@ const Home: NextPage<{
                   <VStack
                     w='100%'
                     alignItems='flex-start'
-                    spacing={4}
+                    gap={4}
                     justifyContent='center'
                     px={{ base: 0, xl: 8 }}
                   >
@@ -229,14 +232,15 @@ const Home: NextPage<{
                       more...
                     </Text>
                     <Button
-                      as={NextLink}
-                      href='/knowledge-center/getting-started-with-niaid-data-ecosystem-discovery-portal'
                       size={{ base: 'md', sm: 'sm' }}
                       width={{ base: '100%', sm: 'auto' }}
+                      asChild
                     >
-                      <Text isTruncated color='inherit'>
-                        Read more about getting started
-                      </Text>
+                      <NextLink href='/knowledge-center/getting-started-with-niaid-data-ecosystem-discovery-portal'>
+                        <Text truncate color='inherit'>
+                          Read more about getting started
+                        </Text>
+                      </NextLink>
                     </Button>
                   </VStack>
                 </Flex>
@@ -259,13 +263,13 @@ const Home: NextPage<{
                   NIAID Data Ecosystem
                 </Text>
                 <Flex justifyContent='flex-end' fontSize='sm' />
-                <Divider my={4} />
+                <Separator my={4} />
 
                 <TableWithSearch
                   ariaLabel='List of repositories and resource catalogs'
                   caption='List of repositories and resource catalogs'
                   data={tableData}
-                  isLoading={repositoriesIsLoading || resourceCatalogsIsLoading}
+                  loading={repositoriesIsLoading || resourceCatalogsIsLoading}
                   columns={[
                     {
                       title: 'name',
@@ -307,7 +311,7 @@ const Home: NextPage<{
                 />
 
                 <ButtonGroup
-                  spacing={[0, 2]}
+                  gap={[0, 2]}
                   flexWrap={['wrap', 'nowrap']}
                   w='100%'
                   display='flex'
@@ -340,8 +344,8 @@ const Home: NextPage<{
                               variant={index % 2 ? 'solid' : 'outline'}
                               my={[1, 2, 0]}
                               maxWidth={['unset', '250px']}
-                              leftIcon={<Icon as={icon} />}
                             >
+                              <Icon as={icon} />
                               {route.title}
                             </Button>
                           </NextLink>

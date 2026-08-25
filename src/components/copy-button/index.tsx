@@ -19,17 +19,17 @@ export const CopyButton = ({
   copiedText = 'Copied!',
   buttonProps,
 }: CopyButtonProps) => {
-  const { onCopy, hasCopied } = useClipboard(textToCopy);
+  const { copy, copied } = useClipboard({ value: textToCopy });
 
   return (
     <Button
       variant='solid'
-      leftIcon={<FaCopy />}
-      colorScheme='primary'
-      onClick={onCopy}
+      colorPalette='primary'
+      onClick={copy}
       {...buttonProps}
     >
-      {hasCopied ? copiedText : buttonText}
+      <FaCopy />
+      {copied ? copiedText : buttonText}
     </Button>
   );
 };
@@ -40,21 +40,23 @@ export const CopyIconButton = ({
   copiedText = 'Copied!',
   buttonProps,
 }: CopyButtonProps) => {
-  const { onCopy, hasCopied } = useClipboard(textToCopy);
+  const { copy, copied } = useClipboard({ value: textToCopy });
 
   return (
-    <Tooltip label={hasCopied ? copiedText : buttonText} closeOnClick={false}>
+    <Tooltip content={copied ? copiedText : buttonText} closeOnClick={false}>
       <Button
         variant='ghost'
-        colorScheme='gray'
-        onClick={onCopy}
-        aria-label={hasCopied ? copiedText : buttonText}
+        colorPalette='gray'
+        onClick={copy}
+        aria-label={copied ? copiedText : buttonText}
         gap={1}
         size='sm'
         {...buttonProps}
       >
-        <Icon as={FaRegCopy} />
-        {hasCopied ? copiedText : ''}
+        <Icon asChild>
+          <FaRegCopy />
+        </Icon>
+        {copied ? copiedText : ''}
       </Button>
     </Tooltip>
   );

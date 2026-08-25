@@ -1,13 +1,13 @@
+import { BoxProps, Flex } from '@chakra-ui/react';
 import React from 'react';
-import { BoxProps } from '@chakra-ui/react';
-import Tooltip from 'src/components/tooltip';
 import { TagWithUrl } from 'src/components/tag-with-url';
+import Tooltip from 'src/components/tooltip';
 
 interface MetadataWithTagProps extends BoxProps {
   label?: string;
   value: string;
   url?: string | null;
-  colorScheme?: string;
+  colorPalette?: string;
   tooltipLabel?: string;
 }
 
@@ -15,13 +15,13 @@ export const MetadataWithTag = ({
   label,
   url,
   value,
-  colorScheme = 'gray',
+  colorPalette = 'gray',
   tooltipLabel,
 }: MetadataWithTagProps) => {
   return (
-    <Tooltip label={tooltipLabel} fontSize='12px'>
+    <Tooltip content={<Flex fontSize='12px'>{tooltipLabel}</Flex>}>
       <TagWithUrl
-        colorScheme={colorScheme}
+        colorPalette={colorPalette}
         fontSize='13px'
         href={url}
         isExternal

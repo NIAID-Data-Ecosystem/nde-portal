@@ -137,7 +137,7 @@ export const Sources = ({
             />
           }
           error={error}
-          isLoading={isLoading}
+          loading={isLoading}
           skeletonProps={{
             minHeight: '200px',
             width: '100%',
@@ -150,7 +150,7 @@ export const Sources = ({
               data={data}
               title={DISEASE_PAGE_COPY['charts']['sources']['title']}
               description={DISEASE_PAGE_COPY['charts']['sources']['title']}
-              isLoading={isLoading}
+              loading={isLoading}
               defaultDimensions={{
                 width: 300,
                 height: 200,

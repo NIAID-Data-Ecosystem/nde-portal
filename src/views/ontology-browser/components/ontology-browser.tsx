@@ -1,40 +1,39 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Box,
   Flex,
   HStack,
   Spinner,
-  StackDivider,
+  Stack,
+  StackSeparator,
 } from '@chakra-ui/react';
-import { useQuery, useQueries } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
-import {
-  fetchLineageFromBioThingsAPI,
-  fetchPortalCounts,
-} from '../utils/api-helpers';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
+
 import {
   OntologyLineageItemWithCounts,
   OntologyLineageRequestParams,
 } from '../types';
+import {
+  fetchLineageFromBioThingsAPI,
+  fetchPortalCounts,
+} from '../utils/api-helpers';
+import { mergePreviousLineageWithChildrenData } from '../utils/ontology-helpers';
+import { getTooltipContentByCountType } from './ontology-browser-count-tag';
 import { OntologyBrowserHeader } from './ontology-browser-header';
 import {
   DEFAULT_ONTOLOGY_BROWSER_SETTINGS,
   OntologyBrowserSettings,
 } from './settings';
+import { transformSettingsToLocalStorageConfig } from './settings/helpers';
 import { Tree } from './tree';
 import { OntologyTreeBreadcrumbs } from './tree/components/breadcrumbs';
-import { transformSettingsToLocalStorageConfig } from './settings/helpers';
-import { mergePreviousLineageWithChildrenData } from '../utils/ontology-helpers';
 import {
   OntologyTreeHeaderItem,
   OntologyTreeHeaders,
 } from './tree/components/tree-headers';
-import { getTooltipLabelByCountType } from './ontology-browser-count-tag';
 
 export const OntologyBrowser = ({
   searchList,
@@ -132,7 +131,7 @@ export const OntologyBrowser = ({
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });
-  const isLoading = biothingsIsLoading || visibleQuery.isLoading;
+  const loading = biothingsIsLoading || visibleQuery.isLoading;
   const error = biothingsError || visibleQuery.error;
 
   // --- 4. Merge results into lineage ---
@@ -155,14 +154,14 @@ export const OntologyBrowser = ({
   // --- 5. Handle condensed/expanded view ---
   useEffect(() => {
     const lineage = ontologyLineageData?.lineage || [];
-    if (!isLoading && lineage) {
+    if (!loading && lineage) {
       const condensedStartIndex =
         viewSettings?.isCondensed && lineage.length > MAX_VISIBLE_NODES
           ? lineage.length - 3
           : 0;
       setShowFromIndex(condensedStartIndex);
     }
-  }, [isLoading, ontologyLineageData, viewSettings?.isCondensed]);
+  }, [loading, ontologyLineageData, viewSettings?.isCondensed]);
 
   const updateLineageWithChildren = useCallback(
     (children: OntologyLineageItemWithCounts[]) => {
@@ -178,16 +177,16 @@ export const OntologyBrowser = ({
 
   if (error) {
     return (
-      <Alert status='error' role='alert'>
-        <AlertIcon />
+      <Alert.Root status='error' role='alert'>
+        <Alert.Indicator />
         <Box>
-          <AlertTitle>{error.message}</AlertTitle>
-          <AlertDescription>
+          <Alert.Title>{error.message}</Alert.Title>
+          <Alert.Description>
             There was a network issue communicating with the server. Please try
             again in a few moments.{' '}
-          </AlertDescription>
+          </Alert.Description>
         </Box>
-      </Alert>
+      </Alert.Root>
     );
   }
 
@@ -222,7 +221,7 @@ export const OntologyBrowser = ({
           borderColor='page.placeholder'
           overflow='hidden'
         >
-          {isLoading || !router.isReady ? (
+          {loading || !router.isReady ? (
             <Spinner size='md' color='primary.500' m={4} />
           ) : (
             lineage && (
@@ -237,19 +236,15 @@ export const OntologyBrowser = ({
 
                 <OntologyTreeHeaders>
                   <OntologyTreeHeaderItem label='Term name' />
-                  <HStack
-                    justifyContent='flex-end'
-                    flex={1}
-                    divider={<StackDivider borderColor='gray.100' />}
-                    spacing={3}
-                  >
+                  <HStack justifyContent='flex-end' flex={1} gap={3}>
                     <OntologyTreeHeaderItem
                       label='Exact Matches'
-                      tooltipLabel={getTooltipLabelByCountType('termCount')}
+                      tooltipContent={getTooltipContentByCountType('termCount')}
                     />
+                    <StackSeparator borderColor='gray.100' />
                     <OntologyTreeHeaderItem
                       label='Matches including sub-terms'
-                      tooltipLabel={getTooltipLabelByCountType(
+                      tooltipContent={getTooltipContentByCountType(
                         'termAndChildrenCount',
                       )}
                     />

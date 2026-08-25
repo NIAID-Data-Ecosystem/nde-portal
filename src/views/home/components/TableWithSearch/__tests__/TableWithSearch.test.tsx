@@ -74,7 +74,7 @@ describe('TableWithSearch Component', () => {
   const defaultProps = {
     ariaLabel,
     caption: 'List of repositories and resource catalogs',
-    isLoading: false,
+    loading: false,
   };
 
   it('renders without crashing', () => {

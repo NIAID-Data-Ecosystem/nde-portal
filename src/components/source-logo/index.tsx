@@ -22,7 +22,7 @@ const Wrapper = ({ children, ...props }: SourceLogoWrapperProps) => {
       flexDirection='row'
       flexWrap='wrap'
       my={0}
-      spacing={[2, 4]}
+      gap={[2, 4]}
       py={[2, 0]}
       {...props}
     >
@@ -60,23 +60,6 @@ const Component = ({
             <Image
               objectFit='contain'
               objectPosition='left'
-              fallback={
-                <Flex minHeight='40px' color='text.heading' alignItems='center'>
-                  <Text
-                    borderBottom='none!important'
-                    color='inherit!important'
-                    fontSize='xl'
-                    fontWeight='bold'
-                    lineHeight='shorter'
-                    _hover={{
-                      borderBottom: 'none!important',
-                    }}
-                    _visited={{ color: 'inherit!important' }}
-                  >
-                    {source.name}
-                  </Text>
-                </Flex>
-              }
               w='100%'
               h='40px'
               mr={4}

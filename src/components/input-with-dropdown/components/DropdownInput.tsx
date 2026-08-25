@@ -1,22 +1,20 @@
-import React, { useRef, useCallback, useEffect } from 'react';
 import {
   ButtonProps,
   CloseButton,
   Flex,
   Icon,
-  Input,
   InputGroup,
-  InputLeftElement,
   InputProps,
-  InputRightElement,
   Spinner,
   Textarea,
+  useFieldContext,
   VisuallyHidden,
 } from '@chakra-ui/react';
-import { theme } from 'src/theme';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
-import { useDropdownContext } from '..';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
+
+import { useDropdownContext } from '..';
 
 /*
 [Component Information]: [DropdownInput] is a regular input field with a list of suggestions based on the user typing.
@@ -25,13 +23,12 @@ import { ReactElement } from 'react-markdown/lib/react-markdown';
 export interface DropdownInputProps {
   id: string;
   ariaLabel: string; // input label for accessibility
-  colorScheme?: InputProps['colorScheme'];
+  colorPalette?: InputProps['colorPalette'];
   size?: InputProps['size'];
   type: InputProps['type'];
   placeholder?: string;
-  isDisabled?: boolean;
-  isInvalid?: boolean;
-  isLoading?: boolean;
+  disabled?: boolean;
+  loading?: boolean;
   getInputValue: (arg: number) => string;
   renderSubmitButton?: (props: ButtonProps) => ReactElement;
   onChange?: (value: string) => void;
@@ -43,11 +40,10 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   id,
   ariaLabel,
   placeholder,
-  isLoading,
+  loading,
   size = 'sm',
   type,
-  isDisabled,
-  isInvalid,
+  disabled,
   renderSubmitButton,
   getInputValue,
   onChange,
@@ -56,8 +52,13 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Invalid state comes from the enclosing <Field.Root invalid> when there is
+  // one; undefined otherwise.
+  const field = useFieldContext();
+  const invalid = field?.invalid;
+
   const {
-    colorScheme,
+    colorPalette,
     cursor,
     inputValue,
     setInputValue,
@@ -138,6 +139,46 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
     return () => observer.disconnect();
   }, [autoResize]);
 
+  // Render the start element (spinner or search icon) based on loading state
+  const startElement = loading ? (
+    <Spinner
+      color={`${colorPalette}.500`}
+      css={{ '--spinner-track-color': 'colors.gray.200' }}
+      size='sm'
+    />
+  ) : (
+    <Icon color='gray.300'>
+      <FaMagnifyingGlass />
+    </Icon>
+  );
+  // Render the end element (close button and/or submit button) if either is provided
+  const endElement = (renderSubmitButton || onClose) && (
+    <>
+      {onClose && inputValue.length > 0 && (
+        <CloseButton
+          onClick={() => {
+            onClose();
+            setInputValue('');
+            resetHeight(); // reset height when input is cleared
+          }}
+          mr={2}
+          size='md'
+          colorPalette='primary'
+          aria-label='Clear search input'
+          my={1}
+        />
+      )}
+      {renderSubmitButton &&
+        renderSubmitButton({
+          type: 'submit',
+          w: '100%',
+          h: '100%',
+          // set padding top and bottom for safari, do not remove.
+          py: 0,
+        })}
+    </>
+  );
+
   return (
     <Flex as='form' flex={1} onSubmit={handleSubmit}>
       {/* Label for accessibility */}
@@ -145,35 +186,16 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
         <label htmlFor={id}>{ariaLabel}</label>
       </VisuallyHidden>
 
-      {/* Search input */}
-      {/* Loading spinner/Search icon */}
       <InputGroup
-        size={size}
         zIndex='dropdown'
         alignItems='flex-start'
         border='1px solid'
-        borderColor='gray.200'
+        borderColor={invalid ? 'status.error' : 'gray.200'}
         borderRadius='md'
         bg='white'
+        startElement={startElement}
+        endElement={endElement}
       >
-        <InputLeftElement
-          pointerEvents='none'
-          my={1}
-          // eslint-disable-next-line react/no-children-prop
-          children={
-            isLoading ? (
-              <Spinner
-                color={`${colorScheme}.500`}
-                emptyColor='gray.200'
-                label='loading'
-                size='sm'
-              />
-            ) : (
-              <Icon as={FaMagnifyingGlass} color='gray.300' />
-            )
-          }
-        />
-
         <Textarea
           ref={textareaRef}
           variant='unstyled'
@@ -194,8 +216,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
             flex: 1,
             size,
             mr: renderSubmitButton ? { base: 24, sm: rightElWidth } : 4,
-            isDisabled,
-            isInvalid,
+            disabled,
             onKeyDown: (
               e: React.KeyboardEvent<HTMLTextAreaElement>,
               index: number,
@@ -218,41 +239,6 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
           pl='2.5rem'
           py={3}
         />
-
-        {/* Optional submit button. */}
-        {(renderSubmitButton || onClose) && (
-          <InputRightElement
-            ref={inputRightRef}
-            p={1}
-            w='unset'
-            h='100%'
-            zIndex={theme.zIndices['dropdown']}
-            alignItems='flex-start'
-          >
-            {onClose && inputValue.length > 0 && (
-              <CloseButton
-                onClick={() => {
-                  onClose();
-                  setInputValue('');
-                  resetHeight(); // reset height when input is cleared
-                }}
-                mr={2}
-                size='md'
-                colorScheme='primary'
-                aria-label='Clear search input'
-                my={1}
-              />
-            )}
-            {renderSubmitButton &&
-              renderSubmitButton({
-                type: 'submit',
-                w: '100%',
-                h: '100%',
-                // set padding top and bottom for safari, do not remove.
-                py: 0,
-              })}
-          </InputRightElement>
-        )}
       </InputGroup>
     </Flex>
   );

@@ -23,7 +23,7 @@ export const CreativeWorkStatus = ({
 
   return (
     <BadgeWithTooltip
-      colorScheme='red'
+      colorPalette='red'
       value='Retired'
       tooltipLabel='The resource is no longer available.'
       {...props}

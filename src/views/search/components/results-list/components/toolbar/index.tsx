@@ -1,17 +1,17 @@
-import React from 'react';
+import { Flex, Stack } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
+import React from 'react';
 import { DownloadMetadata } from 'src/components/download-metadata';
 import { Params } from 'src/utils/api';
-import { usePaginationContext } from 'src/views/search/context/pagination-context';
-import { updateRoute } from 'src/views/search/utils/update-route';
-import { TabType } from 'src/views/search/types';
-import { SelectWithLabel } from './components/select-input';
 import {
   PAGE_SIZE_OPTIONS,
   SORT_OPTIONS,
 } from 'src/views/search/config/defaultQuery';
-import { Flex, Stack } from '@chakra-ui/react';
-import { MetadataScoreToggle } from './components/metadata-score-toggle';
+import { usePaginationContext } from 'src/views/search/context/pagination-context';
+import { TabType } from 'src/views/search/types';
+import { updateRoute } from 'src/views/search/utils/update-route';
+
+import { SelectWithLabel } from './components/select-input';
 
 /*
 [COMPONENT INFO]:
@@ -45,20 +45,6 @@ export const SearchResultsToolbar = ({
 
   return (
     <>
-      {/* Apply metadata score (optional) */}
-      {process.env.NEXT_PUBLIC_APP_ENV !== 'production' && (
-        <MetadataScoreToggle
-          isChecked={params.use_metadata_score === 'true'}
-          isDisabled={params.sort !== '_score'}
-          handleToggle={() => {
-            const newUseMetadataScore =
-              params.use_metadata_score === 'true' ? 'false' : 'true';
-            const update = { use_metadata_score: newUseMetadataScore, from: 1 };
-            setPagination(id, update);
-            updateRoute(router, update);
-          }}
-        />
-      )}
       {/* View mode (optional), on its own row above the other controls */}
       {viewModeControl && (
         <Flex w='100%' pb={2}>
@@ -79,7 +65,7 @@ export const SearchResultsToolbar = ({
         <Stack
           flexDirection={{ base: 'column', sm: 'row' }}
           flexWrap='wrap'
-          spacing={[1, 4]}
+          gap={[1, 4]}
         >
           {/* Sort menu */}
           <SelectWithLabel

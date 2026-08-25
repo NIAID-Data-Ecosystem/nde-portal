@@ -1,15 +1,15 @@
 import { Heading, HStack, Skeleton, Text, VStack } from '@chakra-ui/react';
-import { FormattedResource } from 'src/utils/api/types';
-import { DisplayHTMLString } from 'src/components/html-content';
-import { CopyIconButton } from 'src/components/copy-button';
-import { useUserData } from 'src/hooks/useUserData';
-import { ENABLE_AUTH } from 'src/utils/feature-flags';
-import { useAuth } from 'src/hooks/useAuth';
 import { CreativeWorkStatus } from 'src/components/badges';
 import { BookmarkButton } from 'src/components/bookmark-buttons/button';
+import { CopyIconButton } from 'src/components/copy-button';
+import { DisplayHTMLString } from 'src/components/html-content';
+import { useAuth } from 'src/hooks/useAuth';
+import { useUserData } from 'src/hooks/useUserData';
+import { FormattedResource } from 'src/utils/api/types';
+import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
 interface HeaderProps {
-  isLoading: boolean;
+  loading: boolean;
   name?: FormattedResource['name'];
   alternateName?: FormattedResource['alternateName'];
   id?: FormattedResource['id'];
@@ -20,7 +20,7 @@ interface HeaderProps {
 }
 
 const Header = ({
-  isLoading,
+  loading,
   name,
   alternateName,
   id,
@@ -45,7 +45,7 @@ const Header = ({
   return (
     <>
       <Skeleton
-        isLoaded={!isLoading}
+        loading={!!loading}
         w='100%'
         overflow='unset'
         position={['unset', 'unset', 'sticky']}
@@ -161,13 +161,13 @@ const IdWithCopyButton = ({
       fontSize='sm'
       gap={1}
     >
-      <HStack flexWrap='wrap' spacing={1} alignItems='baseline'>
+      <HStack flexWrap='wrap' gap={1} alignItems='baseline'>
         {label && (
           <Text fontWeight='semibold' whiteSpace='nowrap'>
             {label} |
           </Text>
         )}
-        <HStack spacing={1} alignItems='baseline'>
+        <HStack gap={1} alignItems='baseline'>
           <Text wordBreak='break-all'>{id}</Text>
           <CopyIconButton
             textToCopy={id}

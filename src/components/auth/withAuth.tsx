@@ -42,18 +42,18 @@ export function withAuth<P extends object>(
 
   function AuthenticatedComponent(props: P) {
     const router = useRouter();
-    const { isAuthenticated, isLoading } = useAuth();
+    const { isAuthenticated, loading } = useAuth();
 
     useEffect(() => {
-      if (!isLoading && !isAuthenticated && redirectTo) {
+      if (!loading && !isAuthenticated && redirectTo) {
         // Store current path to redirect back after login
         sessionStorage.setItem('auth_return_to', router.asPath);
         router.replace(redirectTo);
       }
-    }, [isLoading, isAuthenticated, redirectTo, router]);
+    }, [loading, isAuthenticated, redirectTo, router]);
 
     // Show loading state
-    if (isLoading) {
+    if (loading) {
       if (LoadingComponent) {
         return <LoadingComponent />;
       }

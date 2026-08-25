@@ -56,7 +56,12 @@ notes.txt
 # serve
 serve.json
 
-.vscode/
+# editor — share the ESLint/Prettier workspace config, ignore per-user files
+# (git cannot re-include files under an excluded *directory*, so exclude the
+# contents with `.vscode/*` rather than the dir itself, then negate.)
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 
 # claude
 .claude/settings.local.json

@@ -18,7 +18,7 @@ interface DropdownListItemProps extends ChakraListItemProps {
 
 export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
   ({ name, searchTerm, value, index, onMouseOver, onClick, ...props }) => {
-    const { colorScheme, cursor, getListItemProps } = useDropdownContext();
+    const { colorPalette, cursor, getListItemProps } = useDropdownContext();
 
     // If item is highlighted (mouseover or keydown), update the input string with the value of the list item.
     const isSelected = useMemo(() => cursor === index, [index, cursor]);
@@ -43,7 +43,7 @@ export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
         {name && (
           <Text
             fontSize='12px'
-            color={`${colorScheme}.800`}
+            color={`${colorPalette}.800`}
             wordBreak='break-word'
             fontWeight='light'
             textAlign='left'
@@ -66,7 +66,7 @@ export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
             styles={{
               fontWeight: 'bold',
               textDecoration: 'underline',
-              color: `${colorScheme}.600`,
+              color: `${colorPalette}.600`,
               bg: 'transparent',
             }}
           >

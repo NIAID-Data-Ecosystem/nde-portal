@@ -21,10 +21,12 @@ export const DrillStackBreadcrumb = ({
       textDecoration='underline'
       mr={1}
     >
-      <Icon as={FaArrowLeft} boxSize={3} mr={1} />
+      <Icon boxSize={3} mr={1} asChild>
+        <FaArrowLeft />
+      </Icon>
       Back
     </Button>
-    <Text noOfLines={1}>
+    <Text lineClamp={1}>
       {label} / {moreLabel}...
     </Text>
   </Flex>

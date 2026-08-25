@@ -40,14 +40,14 @@ export const getMockUser = (providerId?: string): User => ({
 export const toLoggedInState = (providerId?: string): AuthState => ({
   user: getMockUser(providerId),
   isAuthenticated: true,
-  isLoading: false,
+  loading: false,
   error: null,
 });
 
 export const toLoggedOutState = (): AuthState => ({
   user: null,
   isAuthenticated: false,
-  isLoading: false,
+  loading: false,
   error: null,
 });
 

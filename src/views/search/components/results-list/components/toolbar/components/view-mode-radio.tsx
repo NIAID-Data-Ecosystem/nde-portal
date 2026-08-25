@@ -1,5 +1,5 @@
+import { Flex, RadioGroup, Stack, Text } from '@chakra-ui/react';
 import React from 'react';
-import { Flex, Radio, RadioGroup, Stack, Text } from '@chakra-ui/react';
 import { VIEW_MODE_OPTIONS } from 'src/views/search/config/view-mode';
 import { SearchViewMode, TabType } from 'src/views/search/types';
 
@@ -28,21 +28,21 @@ export const ViewModeRadio = ({ id, value, onChange }: ViewModeRadioProps) => {
       >
         View mode:
       </Text>
-      <RadioGroup
+      <RadioGroup.Root
         size='sm'
         name={`view-mode-${id}`}
         aria-labelledby={labelId}
         value={value}
-        onChange={next => onChange(next as SearchViewMode)}
+        onValueChange={({ value }) => onChange(value as SearchViewMode)}
       >
-        <Stack direction='row' spacing={4} fontSize='sm'>
+        <Stack direction='row' gap={4} fontSize='sm'>
           {VIEW_MODE_OPTIONS.map(option => (
-            <Radio key={option.value} value={option.value}>
+            <RadioGroup.Item key={option.value} value={option.value}>
               {option.label}
-            </Radio>
+            </RadioGroup.Item>
           ))}
         </Stack>
-      </RadioGroup>
+      </RadioGroup.Root>
     </Flex>
   );
 };

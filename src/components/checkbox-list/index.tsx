@@ -1,20 +1,13 @@
 import {
   Button,
-  CheckboxGroup,
-  Checkbox,
-  Flex,
-  Stack,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverCloseButton,
-  PopoverHeader,
-  PopoverBody,
-  PopoverArrow,
-  Text,
-  FlexProps,
-  PopoverProps,
   ButtonProps,
+  Checkbox,
+  CheckboxGroup,
+  Flex,
+  FlexProps,
+  Popover,
+  Stack,
+  Text,
 } from '@chakra-ui/react';
 import React from 'react';
 import { FaCaretDown } from 'react-icons/fa6';
@@ -33,7 +26,7 @@ export interface CheckboxListProps<T extends Option> extends FlexProps {
   label: string | React.ReactNode;
   options: T[];
   selectedOptions: T[];
-  size?: PopoverProps['size'];
+  size?: Popover.RootProps['size'];
   showSelectAll?: boolean;
 }
 
@@ -56,114 +49,122 @@ export const CheckboxList = <T extends Option>({
       alignItems='center'
       {...rest}
     >
-      <Popover>
-        <PopoverTrigger>
+      <Popover.Root>
+        <Popover.Trigger asChild>
           <Button
-            colorScheme='gray'
+            colorPalette='gray'
             flex={1}
             fontWeight='medium'
             fontSize='inherit'
             lineHeight='shorter'
             size={size}
             px={4}
-            rightIcon={<FaCaretDown />}
             variant='outline'
             justifyContent='space-between'
             {...buttonProps}
           >
             {buttonProps?.children || label}
+            <FaCaretDown />
           </Button>
-        </PopoverTrigger>
-        <PopoverContent>
-          <PopoverArrow />
-          <PopoverCloseButton />
-          <PopoverHeader>
-            <Text fontWeight='semibold' lineHeight='normal' my={1}>
-              {label}
-            </Text>
-            {description && (
-              <Text
-                color='gray.700'
-                fontSize='sm'
-                fontStyle='italic'
-                fontWeight='normal'
-                lineHeight='short'
-                mt={1.5}
-              >
-                {description}
+        </Popover.Trigger>
+        <Popover.Positioner>
+          <Popover.Content>
+            <Popover.Arrow />
+            <Popover.CloseTrigger />
+            <Popover.Title>
+              <Text fontWeight='semibold' lineHeight='normal' my={1}>
+                {label}
               </Text>
-            )}
-          </PopoverHeader>
-          <PopoverBody>
-            {showSelectAll && (
-              <Flex justifyContent='flex-end'>
-                <Button
-                  size='xs'
-                  variant='link'
-                  onClick={() => {
-                    if (selectedOptions.length === options.length) {
-                      handleChange([]);
-                    } else {
-                      handleChange(options);
-                    }
-                  }}
+              {description && (
+                <Text
+                  color='gray.700'
+                  fontSize='sm'
+                  fontStyle='italic'
+                  fontWeight='normal'
+                  lineHeight='short'
+                  mt={1.5}
                 >
-                  {selectedOptions.length === options.length
-                    ? 'Clear all'
-                    : 'Select all'}
-                </Button>
-              </Flex>
-            )}
-            <ScrollContainer maxHeight='300px'>
-              <CheckboxGroup
-                colorScheme='blue'
-                value={selectedOptions.map(item => item.value)}
-              >
-                <Stack spacing={1} direction='column'>
-                  {options.map(option => (
-                    <Checkbox
-                      key={option.value}
-                      value={option.value}
-                      onChange={() => {
-                        const newFilterItem = option;
-                        // Check if filter is already selected
-                        const index = selectedOptions.findIndex(
-                          f =>
-                            f.property === newFilterItem.property &&
-                            f.value === newFilterItem.value,
-                        );
-                        if (index === -1) {
-                          // Add new filter
-                          return handleChange([
-                            ...selectedOptions,
-                            newFilterItem,
-                          ]);
-                        } else {
-                          // Remove filter if it's already selected
-                          return handleChange(
-                            selectedOptions.filter((_, i) => i !== index),
+                  {description}
+                </Text>
+              )}
+            </Popover.Title>
+            <Popover.Body>
+              {showSelectAll && (
+                <Flex justifyContent='flex-end'>
+                  <Button
+                    size='xs'
+                    variant='plain'
+                    onClick={() => {
+                      if (selectedOptions.length === options.length) {
+                        handleChange([]);
+                      } else {
+                        handleChange(options);
+                      }
+                    }}
+                  >
+                    {selectedOptions.length === options.length
+                      ? 'Clear all'
+                      : 'Select all'}
+                  </Button>
+                </Flex>
+              )}
+              <ScrollContainer maxHeight='300px'>
+                <CheckboxGroup
+                  colorPalette='blue'
+                  value={selectedOptions.map(item => item.value)}
+                >
+                  <Stack gap={1} direction='column'>
+                    {options.map(option => (
+                      <Checkbox.Root
+                        key={option.value}
+                        value={option.value}
+                        onCheckedChange={() => {
+                          const newFilterItem = option;
+                          // Check if filter is already selected
+                          const index = selectedOptions.findIndex(
+                            f =>
+                              f.property === newFilterItem.property &&
+                              f.value === newFilterItem.value,
                           );
-                        }
-                      }}
-                      px={1}
-                      lineHeight='tall'
-                      alignItems='flex-start'
-                      _hover={{ bg: 'niaid.50' }}
-                      sx={{
-                        '>.chakra-checkbox__control': {
-                          mt: 1, // to keep checkbox in line with top of text for options with multiple lines
-                        },
-                      }}
-                    >
-                      <Text fontSize='sm'>{option.name}</Text>
-                    </Checkbox>
-                  ))}
-                </Stack>
-              </CheckboxGroup>
-            </ScrollContainer>
-          </PopoverBody>
-        </PopoverContent>
-      </Popover>
+                          if (index === -1) {
+                            // Add new filter
+                            return handleChange([
+                              ...selectedOptions,
+                              newFilterItem,
+                            ]);
+                          } else {
+                            // Remove filter if it's already selected
+                            return handleChange(
+                              selectedOptions.filter((_, i) => i !== index),
+                            );
+                          }
+                        }}
+                        px={1}
+                        lineHeight='tall'
+                        alignItems='flex-start'
+                        _hover={{ bg: 'niaid.50' }}
+                        css={{
+                          '& >.chakra-checkbox__control': {
+                            mt: 1, // to keep checkbox in line with top of text for options with multiple lines
+                          },
+                        }}
+                      >
+                        <Checkbox.HiddenInput />
+                        <Checkbox.Control>
+                          <Checkbox.Indicator />
+                        </Checkbox.Control>
+                        <Checkbox.Label>
+                          <Text fontSize='sm'>{option.name}</Text>
+                        </Checkbox.Label>
+                      </Checkbox.Root>
+                    ))}
+                  </Stack>
+                </CheckboxGroup>
+              </ScrollContainer>
+            </Popover.Body>
+          </Popover.Content>
+        </Popover.Positioner>
+      </Popover.Root>
     </Flex>
   );
 };

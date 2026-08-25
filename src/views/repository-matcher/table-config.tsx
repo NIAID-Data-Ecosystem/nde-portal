@@ -1,27 +1,28 @@
+import { Circle, HStack, Tag, Text, VStack } from '@chakra-ui/react';
 import React from 'react';
-import { Circle, HStack, Tag, TagLabel, Text, VStack } from '@chakra-ui/react';
-import { AccessTypes, DefinedTerm } from 'src/utils/api/types';
-import {
-  formatConditionsOfAccess,
-  getColorScheme,
-  transformConditionsOfAccessLabel,
-} from 'src/utils/formatting/formatConditionsOfAccess';
 import {
   getMetadataDescription,
   getMetadataName,
 } from 'src/components/metadata';
+import { AccessTypes, DefinedTerm } from 'src/utils/api/types';
 import {
-  TagCellList,
+  formatConditionsOfAccess,
+  getColorPalette,
+  transformConditionsOfAccessLabel,
+} from 'src/utils/formatting/formatConditionsOfAccess';
+
+import {
   TagCell,
+  TagCellList,
   TextCell,
   TextCellWithLink,
 } from './components/TableCells';
-import { itemTypes } from './utils';
 import {
   NameValue,
   RepositoryMatcherColumn,
   RepositoryMatcherItem,
 } from './types';
+import { itemTypes } from './utils';
 
 const tagCellStyles = {
   bg: 'page.alt',
@@ -43,15 +44,15 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     getSearchValue: (value: NameValue) => value.label,
     component: ({
       value,
-      isLoading,
+      loading,
     }: {
       value: NameValue;
-      isLoading?: boolean;
+      loading?: boolean;
     }) => (
       <TextCellWithLink
         label={value?.label || ''}
         url={value?.url}
-        isLoading={isLoading}
+        loading={loading}
         isExternal={false}
       />
     ),
@@ -72,16 +73,16 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       item.description || '',
     component: ({
       value,
-      isLoading,
+      loading,
     }: {
       value: RepositoryMatcherItem['description'];
-      isLoading?: boolean;
+      loading?: boolean;
     }) => {
       return (
         <TextCell
           value={value || ''}
-          isLoading={isLoading}
-          noOfLines={8}
+          loading={loading}
+          lineClamp={8}
           expandable
         />
       );
@@ -95,11 +96,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   //   transform: (item): RepositoryMatcherItem['abstract'] => item.abstract || '',
   //   component: ({
   //     value,
-  //     isLoading,
+  //     loading,
   //   }: {
   //     value: RepositoryMatcherItem['abstract'];
-  //     isLoading?: boolean;
-  //   }) => <TextCell value={value || ''} isLoading={isLoading} noOfLines={3} />,
+  //     loading?: boolean;
+  //   }) => <TextCell value={value || ''} loading={loading} lineClamp={3} />,
   // },
   {
     id: 'researchDomain',
@@ -114,19 +115,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       if (!item.genre) return [];
       return Array.isArray(item.genre) ? item.genre : [item.genre];
     },
-    component: ({
-      value,
-      isLoading,
-    }: {
-      value: string[];
-      isLoading?: boolean;
-    }) => {
-      const items = isLoading
-        ? Array.from({ length: 3 }, () => '')
-        : value ?? [];
+    component: ({ value, loading }: { value: string[]; loading?: boolean }) => {
+      const items = loading ? Array.from({ length: 3 }, () => '') : value ?? [];
 
-      if (!isLoading && items.length === 0) {
-        return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
+      if (!loading && items.length === 0) {
+        return <TextCell value={''} loading={loading} lineClamp={1} />;
       }
       return (
         <HStack flexWrap='wrap'>
@@ -134,8 +127,8 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
             <TagCell
               key={i}
               value={v}
-              noOfLines={1}
-              isLoading={isLoading}
+              lineClamp={1}
+              loading={loading}
               {...tagCellStyles}
             />
           ))}
@@ -176,11 +169,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       transformConditionsOfAccessLabel(
         formatConditionsOfAccess(item.conditionsOfAccess),
       ) || '',
-    component: ({ value }: { value: string; isLoading?: boolean }) => {
-      const colorScheme = getColorScheme(value as AccessTypes);
+    component: ({ value }: { value: string; loading?: boolean }) => {
+      const colorPalette = getColorPalette(value as AccessTypes);
       return (
-        <Tag
-          colorScheme={colorScheme}
+        <Tag.Root
+          colorPalette={colorPalette}
           variant='subtle'
           borderColor='transparent'
           borderRadius='full'
@@ -188,9 +181,9 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
           gap={2}
           boxShadow='none'
         >
-          <Circle size='8px' bg={`${colorScheme}.500`} />
-          <TagLabel>{value || '-'}</TagLabel>
-        </Tag>
+          <Circle size='8px' bg={`${colorPalette}.500`} />
+          <Tag.Label>{value || '-'}</Tag.Label>
+        </Tag.Root>
       );
     },
     filter: {
@@ -241,13 +234,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     },
     component: ({
       value,
-      isLoading,
+      loading,
     }: {
       value: DefinedTerm[];
-      isLoading?: boolean;
-    }) => (
-      <TagCellList value={value} isLoading={isLoading} {...tagCellStyles} />
-    ),
+      loading?: boolean;
+    }) => <TagCellList value={value} loading={loading} {...tagCellStyles} />,
     filter: {
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
@@ -276,13 +267,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     },
     component: ({
       value,
-      isLoading,
+      loading,
     }: {
       value: DefinedTerm[];
-      isLoading?: boolean;
-    }) => (
-      <TagCellList value={value} isLoading={isLoading} {...tagCellStyles} />
-    ),
+      loading?: boolean;
+    }) => <TagCellList value={value} loading={loading} {...tagCellStyles} />,
     filter: {
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
@@ -307,7 +296,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   //     value,
   //   }: {
   //     value: CreativeWorkStatusDatasetType | null;
-  //     isLoading?: boolean;
+  //     loading?: boolean;
   //   }) => {
   //     const isNotAccepting = [
   //       'retired',
@@ -354,7 +343,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   //     value,
   //   }: {
   //     value: RepositoryMatcherItem['collectionSize'];
-  //     isLoading?: boolean;
+  //     loading?: boolean;
   //   }) => {
   //     return (
   //       <VStack>
@@ -363,7 +352,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   //             key={i}
   //             value={v.minValue ? `${v.minValue} ${v.unitText || ''}` : ''}
   //             textAlign='end'
-  //             noOfLines={undefined}
+  //             lineClamp={undefined}
   //           >
   //             <Text as='span' fontWeight='semibold' fontSize='inherit'>
   //               {v.minValue?.toLocaleString() || '-'}
@@ -394,13 +383,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     },
     component: ({
       value,
-      isLoading,
+      loading,
     }: {
       value: DefinedTerm[];
-      isLoading?: boolean;
-    }) => (
-      <TagCellList value={value} isLoading={isLoading} {...tagCellStyles} />
-    ),
+      loading?: boolean;
+    }) => <TagCellList value={value} loading={loading} {...tagCellStyles} />,
     filter: {
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
@@ -429,13 +416,11 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     },
     component: ({
       value,
-      isLoading,
+      loading,
     }: {
       value: DefinedTerm[];
-      isLoading?: boolean;
-    }) => (
-      <TagCellList value={value} isLoading={isLoading} {...tagCellStyles} />
-    ),
+      loading?: boolean;
+    }) => <TagCellList value={value} loading={loading} {...tagCellStyles} />,
     filter: {
       getFilterValues: (value: DefinedTerm[]) =>
         value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
@@ -464,17 +449,15 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     },
     component: ({
       value,
-      isLoading,
+      loading,
     }: {
       value: DefinedTerm[];
-      isLoading?: boolean;
+      loading?: boolean;
     }) => {
-      if (!isLoading && (!value || !value.some(v => v.name))) {
-        return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
+      if (!loading && (!value || !value.some(v => v.name))) {
+        return <TextCell value={''} loading={loading} lineClamp={1} />;
       }
-      return (
-        <TagCellList value={value} isLoading={isLoading} {...tagCellStyles} />
-      );
+      return <TagCellList value={value} loading={loading} {...tagCellStyles} />;
     },
     filter: {
       getFilterValues: (value: DefinedTerm[]) =>
@@ -497,12 +480,12 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   //   },
   //   component: ({
   //     value,
-  //     isLoading,
+  //     loading,
   //   }: {
   //     value: string;
-  //     isLoading?: boolean;
+  //     loading?: boolean;
   //   }) => {
-  //     return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
+  //     return <TextCell value={value} loading={loading} lineClamp={1} />;
   //   },
   // },
   {
@@ -523,17 +506,17 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     },
     component: ({
       value,
-      isLoading,
+      loading,
     }: {
       value?: RepositoryMatcherItem['temporalCoverage'];
-      isLoading?: boolean;
+      loading?: boolean;
     }) => {
-      if (isLoading) {
-        return <TextCell value={''} isLoading={true} noOfLines={1} />;
+      if (loading) {
+        return <TextCell value={''} loading={true} lineClamp={1} />;
       }
       // Format temporal coverage as "startDate - endDate" or just "startDate" if endDate is missing or just endDate if startDate is missing. If multiple temporal coverages are present, separate them with commas.
       if (!value || value.length === 0) {
-        return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
+        return <TextCell value={''} loading={loading} lineClamp={1} />;
       }
       const formatted = value.map(tc => {
         if (!tc.startDate && !tc.endDate && tc.name) {
@@ -581,24 +564,18 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     fields: ['license'],
     columns: { isSortable: true, isDefault: true },
     transform: item => item.license || '',
-    component: ({
-      value,
-      isLoading,
-    }: {
-      value: string;
-      isLoading?: boolean;
-    }) => {
+    component: ({ value, loading }: { value: string; loading?: boolean }) => {
       if (value && (value.startsWith('http') || value.startsWith('www'))) {
         return (
           <TextCellWithLink
             label={value}
             url={value}
-            isLoading={isLoading}
+            loading={loading}
             isExternal
           />
         );
       }
-      return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
+      return <TextCell value={value} loading={loading} lineClamp={1} />;
     },
     info: {
       description: getMetadataDescription('license') || '',
@@ -616,16 +593,10 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     },
     transform: (item): string[] => itemTypes(item),
     getSortValue: (value: string[]) => (value[0] || '').toLowerCase(),
-    component: ({
-      value,
-      isLoading,
-    }: {
-      value: string[];
-      isLoading?: boolean;
-    }) => (
+    component: ({ value, loading }: { value: string[]; loading?: boolean }) => (
       <TextCell
         value={value && value.length ? value.join(', ') : ''}
-        isLoading={isLoading}
+        loading={loading}
         fontWeight='semibold'
       />
     ),
@@ -688,10 +659,10 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   //   },
   //   component: ({
   //     value,
-  //     isLoading,
+  //     loading,
   //   }: {
   //     value: Repository['usageInfo'] | FormattedResource['usageInfo'];
-  //     isLoading?: boolean;
+  //     loading?: boolean;
   //   }) => {
   //     if (typeof value === 'string') {
   //       if (value.startsWith('http') || value.startsWith('www')) {
@@ -699,18 +670,18 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   //           <TextCellWithLink
   //             label={value}
   //             url={value}
-  //             isLoading={isLoading}
+  //             loading={loading}
   //             isExternal
   //           />
   //         );
   //       }
-  //       return <TextCell value={value} isLoading={isLoading} noOfLines={1} />;
+  //       return <TextCell value={value} loading={loading} lineClamp={1} />;
   //     }
 
   //     const usageDetails = Array.isArray(value) ? value : value ? [value] : [];
 
-  //     if (!isLoading && usageDetails.length === 0) {
-  //       return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
+  //     if (!loading && usageDetails.length === 0) {
+  //       return <TextCell value={''} loading={loading} lineClamp={1} />;
   //     } else if (usageDetails.length > 0) {
   //       return (
   //         <VStack alignItems='flex-start'>
@@ -720,18 +691,18 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   //                 <TextCellWithLink
   //                   label={u.name || u.url}
   //                   url={u.url}
-  //                   isLoading={isLoading}
+  //                   loading={loading}
   //                   isExternal
   //                 />
   //               ) : (
-  //                 <TextCell value={u.name || ''} isLoading={isLoading} />
+  //                 <TextCell value={u.name || ''} loading={loading} />
   //               )}
   //               <br />
   //               {u?.description && (
   //                 <TextCell
   //                   value={u.description}
-  //                   isLoading={isLoading}
-  //                   noOfLines={3}
+  //                   loading={loading}
+  //                   lineClamp={3}
   //                 />
   //               )}
   //             </Box>
@@ -739,7 +710,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   //         </VStack>
   //       );
   //     }
-  //     return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
+  //     return <TextCell value={''} loading={loading} lineClamp={1} />;
   //   },
   // },
 ];

@@ -1,14 +1,12 @@
 import React from 'react';
 import {
   Flex,
-  ListItem,
   SimpleGrid,
   Skeleton,
   Stack,
   Stat,
-  StatLabel,
   Text,
-  UnorderedList,
+  List,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { FormattedResource } from 'src/utils/api/types';
@@ -16,7 +14,7 @@ import { FaFileExport, FaFileImport } from 'react-icons/fa6';
 import InputOutput from './components/input-output';
 
 interface SoftwareInformation {
-  isLoading: boolean;
+  loading: boolean;
   keys?: (keyof FormattedResource)[];
   applicationCategory?: FormattedResource['applicationCategory'];
   discussionUrl?: FormattedResource['discussionUrl'];
@@ -33,7 +31,7 @@ interface SoftwareInformation {
 }
 
 const SoftwareInformation: React.FC<SoftwareInformation> = ({
-  isLoading,
+  loading,
   keys,
   ...props
 }) => {
@@ -71,10 +69,10 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
   // Number of fields that have a value in this section. Used for layout.
   const properties = keys?.filter(key => props[key] !== null) || [];
   return (
-    <Skeleton isLoaded={!isLoading}>
+    <Skeleton loading={!!loading}>
       <Stack alignItems='flex-start'>
         <SimpleGrid
-          spacing={6}
+          gap={6}
           w='100%'
           gridTemplateColumns={{
             base: 'repeat(1, minmax(0, 1fr))',
@@ -85,91 +83,91 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
         >
           {/* Language the code is written in */}
           {programmingLanguage && (
-            <Stat>
-              <StatLabel>Programming Language</StatLabel>
+            <Stat.Root>
+              <Stat.Label>Programming Language</Stat.Label>
               <dd>
                 <StatText>{programmingLanguage.join(', ')}</StatText>
               </dd>
-            </Stat>
+            </Stat.Root>
           )}
 
           {applicationCategory && (
-            <Stat>
-              <StatLabel>Software Category</StatLabel>
+            <Stat.Root>
+              <Stat.Label>Software Category</Stat.Label>
               <dd>
                 <StatText>{applicationCategory.join(', ')}</StatText>
               </dd>
-            </Stat>
+            </Stat.Root>
           )}
 
           {/* Software Version */}
           {softwareVersion && (
-            <Stat>
-              <StatLabel>Software Version</StatLabel>
+            <Stat.Root>
+              <Stat.Label>Software Version</Stat.Label>
               <dd>
                 <StatText>{softwareVersion.join(', ')}</StatText>
               </dd>
-            </Stat>
+            </Stat.Root>
           )}
 
           {/* Processor requirements to run software */}
           {processorRequirements && (
-            <Stat>
-              <StatLabel>Processor Requirements</StatLabel>
+            <Stat.Root>
+              <Stat.Label>Processor Requirements</Stat.Label>
               <dd>
                 <StatText>{processorRequirements.join(', ')}</StatText>
               </dd>
-            </Stat>
+            </Stat.Root>
           )}
 
           {/* Help / code examples or contact.*/}
           {softwareHelp && softwareHelp.filter(h => h.url).length > 0 && (
-            <Stat>
-              <StatLabel>Software Help</StatLabel>
+            <Stat.Root>
+              <Stat.Label>Software Help</Stat.Label>
               <dd>
-                <UnorderedList ml={0}>
+                <List.Root as='ul' ml={0}>
                   {softwareHelp.map(help => {
                     if (!help.url) {
                       return <></>;
                     }
                     return (
-                      <ListItem key={help.url}>
+                      <List.Item key={help.url}>
                         <Link href={help.url} isExternal>
                           <StatText>{help?.name || help.url}</StatText>
                         </Link>
-                      </ListItem>
+                      </List.Item>
                     );
                   })}
-                </UnorderedList>
+                </List.Root>
               </dd>
-            </Stat>
+            </Stat.Root>
           )}
 
           {/* Software discussion, seems to be mostly github issues */}
           {discussionUrl && (
-            <Stat>
-              <StatLabel>Discussion and Issues</StatLabel>
+            <Stat.Root>
+              <Stat.Label>Discussion and Issues</Stat.Label>
               <dd>
-                <UnorderedList ml={0}>
+                <List.Root as='ul' ml={0}>
                   {discussionUrl.map(url => {
                     return (
-                      <ListItem key={url}>
+                      <List.Item key={url}>
                         <Link href={url} isExternal>
                           <StatText>{url}</StatText>
                         </Link>
-                      </ListItem>
+                      </List.Item>
                     );
                   })}
-                </UnorderedList>
+                </List.Root>
               </dd>
-            </Stat>
+            </Stat.Root>
           )}
 
           {/* Software input such as file or parameter. */}
           <Stack direction={['column', 'row']}>
             {input && (
-              <Stat>
-                <StatLabel>Tool inputs</StatLabel>
+              <Stat.Root>
+                <Stat.Label>Tool inputs</Stat.Label>
                 <Flex maxH='400px' overflowY='auto' w='100%' pr={4}>
                   <dd>
                     {input.map((data, i) => {
@@ -183,12 +181,12 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
                     })}
                   </dd>
                 </Flex>
-              </Stat>
+              </Stat.Root>
             )}
             {/* Software output of a tool. */}
             {output && (
-              <Stat>
-                <StatLabel>Tool outputs</StatLabel>
+              <Stat.Root>
+                <Stat.Label>Tool outputs</Stat.Label>
                 <Flex maxH='400px' overflowY='auto' w='100%' pr={4}>
                   <dd>
                     {output.map((data, i) => {
@@ -202,7 +200,7 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
                     })}
                   </dd>
                 </Flex>
-              </Stat>
+              </Stat.Root>
             )}
           </Stack>
         </SimpleGrid>

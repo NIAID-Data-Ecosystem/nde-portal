@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Flex, Icon, SlideFade, Text } from '@chakra-ui/react';
+import { Button, Flex, Icon, Text, Presence } from '@chakra-ui/react';
 import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 import { useLocalStorage } from 'usehooks-ts';
 import { FaTriangleExclamation } from 'react-icons/fa6';
@@ -42,7 +42,9 @@ export const Disclaimer = () => {
             _focus={{ boxShadow: 'none' }}
           >
             <Flex mx={1}>
-              <Icon as={FaTriangleExclamation} color='inherit' />
+              <Icon color='inherit' asChild>
+                <FaTriangleExclamation />
+              </Icon>
             </Flex>
             {isMinimized && (
               <Text fontSize='sm' color='inherit'>
@@ -50,10 +52,13 @@ export const Disclaimer = () => {
               </Text>
             )}
           </Button>
-          <SlideFade
-            in={!isMinimized && !!selectedSearchType?.additionalInfo}
-            offsetX={20}
-            offsetY={0}
+          <Presence
+            present={!isMinimized && !!selectedSearchType?.additionalInfo}
+            animationName={{
+              _open: 'slide-from-bottom, fade-in',
+              _closed: 'slide-to-bottom, fade-out',
+            }}
+            animationDuration='moderate'
           >
             <Flex
               display={isMinimized ? 'none' : 'flex'}
@@ -77,7 +82,7 @@ export const Disclaimer = () => {
                 Got it
               </Button>
             </Flex>
-          </SlideFade>
+          </Presence>
         </Flex>
       ) : (
         <></>

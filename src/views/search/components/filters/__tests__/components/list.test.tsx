@@ -34,7 +34,7 @@ jest.mock('src/components/search-input', () => ({
 
 describe('filters/components/list', () => {
   const baseProps = {
-    colorScheme: 'primary',
+    colorPalette: 'primary',
     terms: [
       { term: 'a', label: 'Alpha', count: 1 },
       { term: '-_exists_', label: 'No', count: 2 },
@@ -44,7 +44,7 @@ describe('filters/components/list', () => {
     searchPlaceholder: 'Search',
     selectedFilters: ['a'],
     handleSelectedFilters: jest.fn(),
-    isLoading: false,
+    loading: false,
     config: {
       id: 'x',
       name: 'Test Filter',

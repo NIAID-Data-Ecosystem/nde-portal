@@ -4,14 +4,7 @@ import {
   ButtonProps,
   Icon,
   Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
   PopoverContentProps,
-  PopoverHeader,
-  PopoverProps,
-  PopoverTrigger,
   Text,
 } from '@chakra-ui/react';
 import { FaSliders } from 'react-icons/fa6';
@@ -92,7 +85,7 @@ export interface SelectAndSortPopoverProps {
   triggerProps?: Omit<ButtonProps, 'children'>;
 
   /** Forwarded to Chakra's `Popover`. */
-  popoverProps?: Omit<PopoverProps, 'children'>;
+  popoverProps?: Omit<Popover.RootProps, 'children'>;
 
   /** Forwarded to Chakra's `PopoverContent` (sizing, etc.). */
   popoverContentProps?: PopoverContentProps;
@@ -195,15 +188,23 @@ export const SelectAndSortPopover = ({
   const allSelected = selectedCount === totalCount;
 
   return (
-    <Popover placement='bottom-end' isLazy {...popoverProps}>
-      <PopoverTrigger>
+    <Popover.Root
+      lazyMount
+      {...popoverProps}
+      positioning={{
+        placement: 'bottom-end',
+      }}
+    >
+      <Popover.Trigger asChild>
         <Button
-          colorScheme='primary'
+          colorPalette='primary'
           variant='outline'
           size='sm'
-          leftIcon={<Icon as={FaSliders} boxSize={3.5} />}
           {...triggerProps}
         >
+          <Icon boxSize={3.5} asChild>
+            <FaSliders />
+          </Icon>
           <Text
             as='span'
             color='inherit'
@@ -213,54 +214,53 @@ export const SelectAndSortPopover = ({
           </Text>
           {showCount ? ` (${selectedCount}/${totalCount})` : ''}
         </Button>
-      </PopoverTrigger>
+      </Popover.Trigger>
+      <Popover.Positioner>
+        <Popover.Content minW='280px' maxW='320px' {...popoverContentProps}>
+          <Popover.Arrow />
+          <Popover.CloseTrigger />
+          <Popover.Title fontWeight='semibold'>
+            <Text>{copy.header}</Text>
+            <Text fontSize='sm' fontWeight='normal'>
+              {copy.description}
+            </Text>
+            {showSelectAll && (
+              <PopoverSelectAll
+                allSelected={allSelected}
+                totalCount={totalCount}
+                onToggle={toggleAll}
+                selectAllLabel={copy.selectAll}
+                clearAllLabel={copy.clearAll}
+              />
+            )}
+          </Popover.Title>
+          <Popover.Body p={0} py={1}>
+            {showSearch && (
+              <PopoverSearchInput
+                value={searchTerm}
+                onChange={setSearchTerm}
+                placeholder={copy.searchPlaceholder}
+              />
+            )}
 
-      <PopoverContent minW='280px' maxW='320px' {...popoverContentProps}>
-        <PopoverArrow />
-        <PopoverCloseButton />
-
-        <PopoverHeader fontWeight='semibold'>
-          <Text>{copy.header}</Text>
-          <Text fontSize='sm' fontWeight='normal'>
-            {copy.description}
-          </Text>
-          {showSelectAll && (
-            <PopoverSelectAll
-              allSelected={allSelected}
-              totalCount={totalCount}
-              onToggle={toggleAll}
-              selectAllLabel={copy.selectAll}
-              clearAllLabel={copy.clearAll}
+            <PopoverSelectableList
+              items={filteredItems}
+              groups={useGrouping ? filteredGroups : undefined}
+              selectedIds={selectedIds}
+              requiredIds={requiredIds as string[]}
+              enableOrdering={enableOrdering}
+              isSearching={isSearching}
+              orderedIds={order}
+              onCheck={toggle}
+              onMoveUp={moveUp}
+              onMoveDown={moveDown}
+              onDragEnd={handleDragEnd}
+              emptyMessage={copy.noItemsFound}
+              maxHeight={maxListHeight}
             />
-          )}
-        </PopoverHeader>
-
-        <PopoverBody p={0} py={1}>
-          {showSearch && (
-            <PopoverSearchInput
-              value={searchTerm}
-              onChange={setSearchTerm}
-              placeholder={copy.searchPlaceholder}
-            />
-          )}
-
-          <PopoverSelectableList
-            items={filteredItems}
-            groups={useGrouping ? filteredGroups : undefined}
-            selectedIds={selectedIds}
-            requiredIds={requiredIds as string[]}
-            enableOrdering={enableOrdering}
-            isSearching={isSearching}
-            orderedIds={order}
-            onCheck={toggle}
-            onMoveUp={moveUp}
-            onMoveDown={moveDown}
-            onDragEnd={handleDragEnd}
-            emptyMessage={copy.noItemsFound}
-            maxHeight={maxListHeight}
-          />
-        </PopoverBody>
-      </PopoverContent>
-    </Popover>
+          </Popover.Body>
+        </Popover.Content>
+      </Popover.Positioner>
+    </Popover.Root>
   );
 };

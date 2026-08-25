@@ -1,3 +1,12 @@
+import {
+  Box,
+  ColorPalette,
+  Flex,
+  HTMLChakraProps,
+  Skeleton,
+  Table as ChakraTable,
+  VisuallyHidden,
+} from '@chakra-ui/react';
 import React, {
   useCallback,
   useEffect,
@@ -6,22 +15,16 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {
-  Box,
-  Flex,
-  Table as ChakraTable,
-  VisuallyHidden,
-  HTMLChakraProps,
-  TableContainerProps,
-  Skeleton,
-} from '@chakra-ui/react';
-import { VariableSizeList, ListChildComponentProps } from 'react-window';
-import { TableContainer } from 'src/components/table/components/table-container';
-import { TableWrapper } from 'src/components/table/components/wrapper';
-import { TablePagination } from 'src/components/table/components/pagination';
-import { useTableSort } from 'src/components/table/hooks/useTableSort';
-import { Row } from 'src/components/table/components/row';
+import { ListChildComponentProps, VariableSizeList } from 'react-window';
 import { Cell, Th } from 'src/components/table/components/cell';
+import { TablePagination } from 'src/components/table/components/pagination';
+import { Row } from 'src/components/table/components/row';
+import {
+  TableContainer,
+  TableContainerProps,
+} from 'src/components/table/components/table-container';
+import { TableWrapper } from 'src/components/table/components/wrapper';
+import { useTableSort } from 'src/components/table/hooks/useTableSort';
 
 export interface Column {
   title: string;
@@ -36,7 +39,7 @@ export interface Column {
   renderCell?: (props: {
     column: Column;
     data: any;
-    isLoading?: boolean;
+    loading?: boolean;
   }) => React.ReactNode;
 }
 
@@ -48,10 +51,10 @@ export interface TableProps<TData extends Record<string, string | number>> {
   getCells: (props: {
     column: Column;
     data: TData;
-    isLoading?: boolean;
+    loading?: boolean;
   }) => React.ReactNode;
-  colorScheme?: string;
-  isLoading?: boolean;
+  colorPalette?: ColorPalette;
+  loading?: boolean;
   numRows?: number[];
   hasPagination?: boolean;
   tableBodyProps?: HTMLChakraProps<'tbody'>;
@@ -109,7 +112,6 @@ export interface TableProps<TData extends Record<string, string | number>> {
 // [NUM_ROWS]: num of rows per page
 const NUM_ROWS = [5, 10, 50, 100];
 
-const CELL_SX = { '>div': { my: 0 } };
 const ESTIMATED_ROW_HEIGHT = 120;
 
 interface MemoRowCellsProps {
@@ -118,12 +120,12 @@ interface MemoRowCellsProps {
   getCells: (props: {
     column: Column;
     data: any;
-    isLoading?: boolean;
+    loading?: boolean;
   }) => React.ReactNode;
-  isLoading?: boolean;
+  loading?: boolean;
   cellAs?: any;
   stickyFirstColumn?: boolean;
-  colorScheme?: string;
+  colorPalette?: ColorPalette;
 }
 
 // Cells are isolated in their own memo'd component so that re-rendering a
@@ -134,10 +136,10 @@ const MemoRowCells = React.memo(
     row,
     columns,
     getCells,
-    isLoading,
+    loading,
     cellAs = 'td',
     stickyFirstColumn,
-    colorScheme = 'gray',
+    colorPalette = 'gray',
   }: MemoRowCellsProps) => (
     <>
       {columns.map((column, idx) => {
@@ -149,7 +151,7 @@ const MemoRowCells = React.memo(
                 zIndex: 1,
                 bg: 'inherit',
                 borderRight: '1px solid',
-                borderColor: `${colorScheme}.200`,
+                borderColor: `${colorPalette}.200`,
               }
             : null;
         return (
@@ -158,11 +160,11 @@ const MemoRowCells = React.memo(
             as={cellAs}
             role='cell'
             alignItems='center'
-            sx={CELL_SX}
+            css={{ '& > div': { my: 0 } }}
             {...column.props}
             {...stickyProps}
           >
-            {getCells({ column, data: row, isLoading })}
+            {getCells({ column, data: row, loading })}
           </Cell>
         );
       })}
@@ -176,11 +178,11 @@ interface VirtualizedRowItemProps {
   index: number;
   columns: Column[];
   getCells: MemoRowCellsProps['getCells'];
-  isLoading?: boolean;
+  loading?: boolean;
   rowProps?: any;
   onResize: (index: number, height: number) => void;
   stickyFirstColumn?: boolean;
-  colorScheme?: string;
+  colorPalette?: ColorPalette;
 }
 
 // One virtualized row. Measures its own natural height after layout and
@@ -191,11 +193,11 @@ const VirtualizedRowItem = React.memo(
     index,
     columns,
     getCells,
-    isLoading,
+    loading,
     rowProps,
     onResize,
     stickyFirstColumn,
-    colorScheme,
+    colorPalette,
   }: VirtualizedRowItemProps) => {
     const ref = useRef<HTMLDivElement>(null);
     useLayoutEffect(() => {
@@ -222,10 +224,10 @@ const VirtualizedRowItem = React.memo(
             row={row}
             columns={columns}
             getCells={getCells}
-            isLoading={isLoading}
+            loading={loading}
             cellAs='div'
             stickyFirstColumn={stickyFirstColumn}
-            colorScheme={colorScheme}
+            colorPalette={colorPalette}
           />
         </Row>
       </div>
@@ -254,12 +256,12 @@ interface VirtualizedBodyProps {
   columns: Column[];
   getCells: MemoRowCellsProps['getCells'];
   getTableRowProps?: (row: any, idx: number) => any;
-  isLoading?: boolean;
+  loading?: boolean;
   height: number;
   tableBodyProps?: HTMLChakraProps<'tbody'>;
   listRef?: React.MutableRefObject<VariableSizeList | null>;
   stickyFirstColumn?: boolean;
-  colorScheme?: string;
+  colorPalette?: ColorPalette;
 }
 
 // Virtualized body: only the rows in view (plus overscan) are mounted.
@@ -270,12 +272,12 @@ const VirtualizedBody: React.FC<VirtualizedBodyProps> = ({
   columns,
   getCells,
   getTableRowProps,
-  isLoading,
+  loading,
   height,
   tableBodyProps,
   listRef: externalListRef,
   stickyFirstColumn,
-  colorScheme,
+  colorPalette,
 }) => {
   const internalListRef = useRef<VariableSizeList | null>(null);
   const setListRef = useCallback(
@@ -340,11 +342,11 @@ const VirtualizedBody: React.FC<VirtualizedBodyProps> = ({
                 index={index}
                 columns={columns}
                 getCells={getCells}
-                isLoading={isLoading}
+                loading={loading}
                 rowProps={rowProps}
                 onResize={handleResize}
                 stickyFirstColumn={stickyFirstColumn}
-                colorScheme={colorScheme}
+                colorPalette={colorPalette}
               />
             </div>
           );
@@ -357,12 +359,12 @@ const VirtualizedBody: React.FC<VirtualizedBodyProps> = ({
 export const Table: React.FC<TableProps<any>> = ({
   ariaLabel,
   caption,
-  colorScheme = 'gray',
+  colorPalette = 'gray',
   columns,
   data,
   getCells,
   hasPagination,
-  isLoading,
+  loading,
   numRows = NUM_ROWS,
   tableHeadProps,
   tableBodyProps,
@@ -524,7 +526,7 @@ export const Table: React.FC<TableProps<any>> = ({
     [hasPagination, displayData, from, size],
   );
 
-  const showEmptyState = !isLoading && rows.length === 0 && emptyState != null;
+  const showEmptyState = !loading && rows.length === 0 && emptyState != null;
 
   // When stickyHeader is enabled, position:sticky is applied to the thead
   // element itself rather than individual th cells.
@@ -603,7 +605,7 @@ export const Table: React.FC<TableProps<any>> = ({
                 zIndex: stickyHeader ? 3 : 2,
                 bg: isSelected ? 'page.alt' : 'white',
                 borderRight: '1px solid',
-                borderColor: `${colorScheme}.200`,
+                borderColor: `${colorPalette}.200`,
               }
             : null;
         return (
@@ -613,7 +615,7 @@ export const Table: React.FC<TableProps<any>> = ({
             label={column.title}
             tooltip={column.tooltip}
             isSelected={isSelected}
-            borderBottomColor={`${colorScheme}.200`}
+            borderBottomColor={`${colorPalette}.200`}
             isSortable={column.isSortable}
             tableSortToggleProps={{
               isSelected,
@@ -636,48 +638,52 @@ export const Table: React.FC<TableProps<any>> = ({
 
   /// Inner table markup
   const tableMarkup = (
-    <ChakraTable
+    <ChakraTable.Root
       role='table'
       aria-label={ariaLabel}
       aria-describedby='table-caption'
       aria-rowcount={rows.length}
     >
       {/* Note: keep for accessibility */}
-      <VisuallyHidden id='table-caption' as='caption'>
-        {caption}
+      <VisuallyHidden id='table-caption' asChild>
+        <caption>{caption}</caption>
       </VisuallyHidden>
-      <Box as='thead' {...stickyHeadProps} {...tableHeadProps}>
-        {renderHeaderRow('tr', 'th')}
+      <Box {...stickyHeadProps} {...tableHeadProps} asChild>
+        <thead>{renderHeaderRow('tr', 'th')}</thead>
       </Box>
-      <Box as='tbody' {...tableBodyProps}>
-        {showEmptyState ? (
-          <Box as='tr' role='row'>
-            <Box as='td' role='cell' colSpan={columns.length}>
-              {emptyState}
+      <Box {...tableBodyProps} asChild>
+        <tbody>
+          {showEmptyState ? (
+            <Box role='row' asChild>
+              <tr>
+                <Box role='cell' asChild>
+                  <td>{emptyState}</td>
+                </Box>
+              </tr>
             </Box>
-          </Box>
-        ) : (
-          rows.map((row: any, idx: number) => (
-            <Row
-              as='tr'
-              key={`table-tr-${row.key}`}
-              flexDirection='row'
-              borderColor='gray.100'
-              {...(getTableRowProps && getTableRowProps(row, idx))}
-            >
-              <MemoRowCells
-                row={row}
-                columns={columns}
-                getCells={getCells}
-                isLoading={isLoading}
-                stickyFirstColumn={stickyFirstColumn}
-                colorScheme={colorScheme}
-              />
-            </Row>
-          ))
-        )}
+          ) : (
+            rows.map((row: any, idx: number) => (
+              <Row
+                as='tr'
+                key={`table-tr-${row.key}`}
+                flexDirection='row'
+                borderColor='gray.100'
+                {...(getTableRowProps && getTableRowProps(row, idx))}
+              >
+                <MemoRowCells
+                  row={row}
+                  columns={columns}
+                  getCells={getCells}
+                  loading={loading}
+                  stickyFirstColumn={stickyFirstColumn}
+                  colorPalette={colorPalette}
+                />
+              </Row>
+            ))
+          )}
+        </tbody>
       </Box>
-    </ChakraTable>
+    </ChakraTable.Root>
   );
 
   const {
@@ -691,7 +697,7 @@ export const Table: React.FC<TableProps<any>> = ({
     // SSR / pre-mount placeholder. Same outer box so the page doesn't jump
     // when the virtualized list takes over.
     return (
-      <TableWrapper colorScheme={colorScheme} overflow='visible'>
+      <TableWrapper colorPalette={colorPalette} overflow='visible'>
         <div
           role='table'
           aria-label={ariaLabel}
@@ -706,7 +712,7 @@ export const Table: React.FC<TableProps<any>> = ({
 
   if (virtualized) {
     return (
-      <TableWrapper colorScheme={colorScheme} overflow='visible'>
+      <TableWrapper colorPalette={colorPalette} overflow='visible'>
         {/*
           Single horizontal scroll container. The outer div owns horizontal
           scroll for the entire table; header and virtualized body live
@@ -770,12 +776,12 @@ export const Table: React.FC<TableProps<any>> = ({
                 columns={columns}
                 getCells={getCells}
                 getTableRowProps={getTableRowProps}
-                isLoading={isLoading}
+                loading={loading}
                 height={virtualListHeight}
                 tableBodyProps={tableBodyProps}
                 listRef={virtualListRef}
                 stickyFirstColumn={stickyFirstColumn}
-                colorScheme={colorScheme}
+                colorPalette={colorPalette}
               />
             )}
           </div>
@@ -789,8 +795,8 @@ export const Table: React.FC<TableProps<any>> = ({
             from={from}
             setFrom={setFrom}
             pageSizeOptions={numRows}
-            colorScheme='gray'
-            __css={{ '>div': { py: 1 } }}
+            colorPalette='gray'
+            css={{ '>div': { py: 1 } }}
           />
         )}
       </TableWrapper>
@@ -799,11 +805,11 @@ export const Table: React.FC<TableProps<any>> = ({
 
   return (
     <Skeleton
-      isLoaded={!isLoading}
+      loading={!!loading}
       overflow='auto'
-      minH={isLoading ? '500px' : 'unset'}
+      minH={loading ? '500px' : 'unset'}
     >
-      <TableWrapper colorScheme={colorScheme}>
+      <TableWrapper colorPalette={colorPalette}>
         {/* Top scrollbar */}
         {/* Rendered only when showTopScrollbar is requested AND the table
             content is actually wider than the container. When there is no
@@ -864,8 +870,8 @@ export const Table: React.FC<TableProps<any>> = ({
             from={from}
             setFrom={setFrom}
             pageSizeOptions={numRows}
-            colorScheme='gray'
-            __css={{ '>div': { py: 1 } }}
+            colorPalette='gray'
+            css={{ '>div': { py: 1 } }}
           />
         )}
       </TableWrapper>

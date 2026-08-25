@@ -226,9 +226,9 @@ const Search: NextPage<{
               >
                 {/* Filters sidebar */}
                 <Filters
-                  colorScheme='secondary'
+                  colorPalette='secondary'
                   selectedFilters={selectedFilters}
-                  isDisabled={appliedFilters.length === 0}
+                  disabled={appliedFilters.length === 0}
                   removeAllFilters={removeAllFilters}
                   onToggleViz={toggleViz}
                   isVizActive={isVizActive}
@@ -242,7 +242,7 @@ const Search: NextPage<{
                   borderBottom='1px solid'
                   borderRight='1px solid'
                   borderColor='gray.100'
-                  spacing={2}
+                  gap={2}
                 >
                   <SavedDataErrorToast />
                   <Flex flex={1} flexDirection='column' width='100%'>

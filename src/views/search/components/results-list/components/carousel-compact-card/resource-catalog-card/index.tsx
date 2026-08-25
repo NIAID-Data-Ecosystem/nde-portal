@@ -1,31 +1,32 @@
+import { Button, Flex, Skeleton, Text } from '@chakra-ui/react';
 import React, { useMemo, useState } from 'react';
-import { Flex, Tooltip, Text, Button } from '@chakra-ui/react';
-import { FormattedResource } from 'src/utils/api/types';
-import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 import { ConditionsOfAccess, CreativeWorkStatus } from 'src/components/badges';
 import { HasAPI } from 'src/components/badges/components/HasAPI';
 import { MetadataLabel } from 'src/components/metadata';
+import { hasSourceOrganization } from 'src/components/resource-sections/components/type-banner';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { SearchableItems } from 'src/components/searchable-items';
-import { Skeleton } from 'src/components/skeleton';
-import { CompactCard } from '../compact-card';
-import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
-import { hasSourceOrganization } from 'src/components/resource-sections/components/type-banner';
+import { FormattedResource } from 'src/utils/api/types';
 import {
   SHOW_PROGRAM_RESOURCE_UI,
   SHOW_RETIRED_RESOURCE_CATALOG_UI,
 } from 'src/utils/feature-flags';
+import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
+
+import Tooltip from '../../../../../../../components/tooltip';
+import { CompactCard } from '../compact-card';
 
 interface ResourceCatalogCardProps {
   data?: FormattedResource | null;
   referrerPath?: string;
-  isLoading?: boolean;
+  loading?: boolean;
 }
 
 export const ResourceCatalogCard = ({
   data,
   referrerPath,
-  isLoading = false,
+  loading = false,
 }: ResourceCatalogCardProps) => {
   const [showAllTypes, setShowAllTypes] = useState(false);
 
@@ -94,27 +95,25 @@ export const ResourceCatalogCard = ({
     : undefined;
 
   return (
-    <CompactCard.Base isLoading={isLoading} bg={cardBg}>
+    <CompactCard.Base loading={loading} bg={cardBg}>
       <CompactCard.Banner
         label={formatAPIResourceTypeForDisplay(type || 'ResourceCatalog')}
         type={type || 'ResourceCatalog'}
         isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
-        isLoading={isLoading}
+        loading={loading}
         creativeWorkStatus={creativeWorkStatus}
         isProgramResource={isProgramResource}
       />
-
-      <CompactCard.Header isLoading={isLoading}>
+      <CompactCard.Header loading={loading}>
         {(name || alternateName) && (
           <CompactCard.Title linkProps={linkProps}>
             {name || alternateName || ''}
           </CompactCard.Title>
         )}
       </CompactCard.Header>
-
       <CompactCard.Body>
         {/* Date and badges */}
-        <Skeleton isLoaded={!isLoading} minHeight='30px'>
+        <Skeleton loading={loading} minHeight='30px'>
           {date && (
             <Flex
               bg={cardBg}
@@ -125,12 +124,8 @@ export const ResourceCatalogCard = ({
               px={0}
             >
               <Tooltip
-                label='Corresponds to the most recent of date modified, date published and date created.'
-                hasArrow
-                bg='#fff'
-                sx={{
-                  color: 'text.body',
-                }}
+                content='Corresponds to the most recent of date modified, date published and date created.'
+                showArrow
               >
                 <Text fontSize='13px'>{date}</Text>
               </Tooltip>
@@ -153,7 +148,7 @@ export const ResourceCatalogCard = ({
                     mx={0.5}
                     size='sm'
                     {...(isRetired && {
-                      colorScheme: 'gray',
+                      colorPalette: 'gray',
                       color: 'gray.900',
                     })}
                   />
@@ -164,7 +159,7 @@ export const ResourceCatalogCard = ({
                       mx={0.5}
                       size='sm'
                       {...(isRetired && {
-                        colorScheme: 'gray',
+                        colorPalette: 'gray',
                         color: 'gray.900',
                       })}
                     />
@@ -182,7 +177,7 @@ export const ResourceCatalogCard = ({
         </Skeleton>
 
         {/* Content types */}
-        <Skeleton isLoaded={!isLoading} px={-1}>
+        <Skeleton loading={loading} px={-1}>
           {aboutItems.length > 0 && (
             <Flex bg={cardBg} direction='column'>
               <MetadataLabel label='Content Types' />
@@ -190,7 +185,7 @@ export const ResourceCatalogCard = ({
                 <SearchableItems
                   items={aboutItems}
                   itemLimit={2}
-                  colorScheme={isRetired ? 'gray' : 'primary'}
+                  colorPalette={isRetired ? 'gray' : 'primary'}
                   tagColor={isRetired ? 'gray.900' : undefined}
                   linkColor={isRetired ? 'gray.900' : undefined}
                   isExpanded={showAllTypes}
@@ -207,16 +202,16 @@ export const ResourceCatalogCard = ({
         </Skeleton>
 
         {/* Description */}
-        <Skeleton isLoaded={!isLoading} flex='1' mt={2} mb={1}>
+        <Skeleton loading={loading} flex='1' mt={2} mb={1}>
           {description && (
             <>
               {shouldShowDescription ? (
-                <Text fontSize='xs' lineHeight='short' noOfLines={3}>
+                <Text fontSize='xs' lineHeight='short' lineClamp={3}>
                   {description.trim()}
                 </Text>
               ) : (
                 <Button
-                  variant='link'
+                  variant='plain'
                   size='xs'
                   onClick={handleShowDescription}
                   alignSelf='flex-start'

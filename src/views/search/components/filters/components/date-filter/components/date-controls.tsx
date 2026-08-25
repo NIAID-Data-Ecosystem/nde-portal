@@ -5,7 +5,7 @@ import { formatNumber } from 'src/utils/helpers';
 import { FilterItem } from '../../../types';
 
 interface DateControlsProps {
-  colorScheme: string;
+  colorPalette: string;
   selectedDates: string[];
   resourcesWithNoDate: FilterItem[];
   onDateSelect: (dates: string[]) => void;
@@ -13,7 +13,7 @@ interface DateControlsProps {
 }
 
 export const DateControls: React.FC<DateControlsProps> = ({
-  colorScheme,
+  colorPalette,
   selectedDates,
   resourcesWithNoDate,
   onDateSelect,
@@ -53,23 +53,28 @@ export const DateControls: React.FC<DateControlsProps> = ({
   return (
     <Flex bg='secondary.50' flexDirection='column' px={4} py={2}>
       <DatePicker
-        colorScheme={colorScheme}
+        colorPalette={colorPalette}
         selectedDates={selectedDates}
         handleSelectedFilter={onDateSelect}
         resetFilter={onResetFilter}
       />
-
       {/* Checkbox to toggle items with/without dates. Default behavior shows all resources. */}
-      <Checkbox
+      <Checkbox.Root
         mt={4}
-        isChecked={isNoDateCheckboxChecked}
-        onChange={handleToggleNoDateResources}
-        isDisabled={!resourcesWithNoDate.length}
+        onCheckedChange={handleToggleNoDateResources}
+        disabled={!resourcesWithNoDate.length}
+        checked={isNoDateCheckboxChecked}
       >
-        <Text fontSize='sm' fontWeight='medium' lineHeight='shorter'>
-          Include {noDateCount} resources with no date information.
-        </Text>
-      </Checkbox>
+        <Checkbox.HiddenInput />
+        <Checkbox.Control>
+          <Checkbox.Indicator />
+        </Checkbox.Control>
+        <Checkbox.Label>
+          <Text fontSize='sm' fontWeight='medium' lineHeight='shorter'>
+            Include {noDateCount} resources with no date information.
+          </Text>
+        </Checkbox.Label>
+      </Checkbox.Root>
     </Flex>
   );
 };

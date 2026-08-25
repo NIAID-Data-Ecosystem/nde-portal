@@ -1,16 +1,17 @@
-import { useMemo } from 'react';
 import { Box, Flex, FlexProps, Stack } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { useMemo } from 'react';
 import { Footer } from 'src/components/footer';
 import { Navigation } from 'src/components/navigation-bar';
-import { Breadcrumbs } from './breadcrumbs';
+import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
+
+import { useBreadcrumbs } from '../hooks/useBreadcrumbs';
 import { Banner } from './banner';
+import { Breadcrumbs } from './breadcrumbs';
 import { LoginErrorBanner } from './login-error-banner';
 import { Search } from './search';
 import { SeoMetaFields, SeoMetaFieldsProps } from './seo-meta-fields';
-import { useBreadcrumbs } from '../hooks/useBreadcrumbs';
-import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
 
 export interface NoticeProps {
   id: number | string;
@@ -71,7 +72,6 @@ export const PageContainer: React.FC<PageContainerProps> = ({
     <>
       {/* Meta fields for SEO */}
       <SeoMetaFields {...meta} />
-
       <Flex
         as='main'
         w='100%'
@@ -82,8 +82,13 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         <Navigation />
 
         {/*Page content has margin-top to compensate for fixed nav bar. */}
-        <Box id='pagebody' position='relative' {...props}>
-          <Stack spacing='1px' bg='gray.100'>
+        <Flex
+          id='pagebody'
+          position='relative'
+          flexDirection='column'
+          {...props}
+        >
+          <Stack gap='1px' bg='gray.100'>
             {/* <!-- Banner for failed OAuth login attempts --> */}
             <LoginErrorBanner />
             {/* <!-- Banner for dev and staging instance --> */}
@@ -131,7 +136,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
 
           {children}
           <Footer />
-        </Box>
+        </Flex>
       </Flex>
     </>
   );

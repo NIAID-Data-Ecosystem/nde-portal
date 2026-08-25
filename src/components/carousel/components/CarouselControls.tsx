@@ -8,7 +8,7 @@ export const CarouselControls = ({
   maxActiveItem,
   constraint,
   totalDots,
-  colorScheme,
+  colorPalette,
   gap,
   handleDecrementClick,
   handleIncrementClick,
@@ -17,7 +17,7 @@ export const CarouselControls = ({
   childrenLength,
   showProgressBar,
   progressPercentage,
-  isLoading = false,
+  loading = false,
 }: CarouselControlsProps) => {
   const shouldShowControls = childrenLength > constraint;
 
@@ -27,7 +27,7 @@ export const CarouselControls = ({
 
   return (
     <Skeleton
-      isLoaded={!isLoading}
+      loading={!!loading}
       width='100%'
       height='32px'
       display='flex'
@@ -38,17 +38,18 @@ export const CarouselControls = ({
         aria-label='previous carousel item'
         onClick={handleDecrementClick}
         onFocus={handleFocus}
-        isDisabled={activeItem <= 0}
+        disabled={activeItem <= 0}
         mr={showProgressBar ? 0 : `${gap / 3}px`}
-        color={`${colorScheme}.800`}
+        color={`${colorPalette}.800`}
         variant='ghost'
         minW={0}
         size='sm'
         flexShrink={0}
       >
-        <Icon as={FaAngleLeft} boxSize={4} />
+        <Icon boxSize={4} asChild>
+          <FaAngleLeft />
+        </Icon>
       </Button>
-
       {showProgressBar ? (
         <Box
           flex={1}
@@ -61,13 +62,17 @@ export const CarouselControls = ({
             progressPercentage,
           )}% complete`}
         >
-          <Progress
+          <Progress.Root
             value={progressPercentage}
-            colorScheme={colorScheme}
+            colorPalette={colorPalette}
             size='sm'
             borderRadius='full'
-            bg={`${colorScheme}.100`}
-          />
+            bg={`${colorPalette}.100`}
+          >
+            <Progress.Track>
+              <Progress.Range />
+            </Progress.Track>
+          </Progress.Root>
         </Box>
       ) : (
         <Flex>
@@ -89,20 +94,20 @@ export const CarouselControls = ({
                 mx={1}
                 borderRadius='50%'
                 borderWidth='1px'
-                borderColor={`${colorScheme}.500`}
-                bg={shouldHighlight ? `${colorScheme}.500` : '#ffffff'}
+                borderColor={`${colorPalette}.500`}
+                bg={shouldHighlight ? `${colorPalette}.500` : '#ffffff'}
                 cursor='pointer'
                 tabIndex={0}
                 role='button'
                 _hover={{
                   bg: shouldHighlight
-                    ? `${colorScheme}.600`
-                    : `${colorScheme}.200`,
-                  borderColor: `${colorScheme}.600`,
+                    ? `${colorPalette}.600`
+                    : `${colorPalette}.200`,
+                  borderColor: `${colorPalette}.600`,
                 }}
                 _focus={{
                   outline: '2px solid',
-                  outlineColor: `${colorScheme}.500`,
+                  outlineColor: `${colorPalette}.500`,
                   outlineOffset: '2px',
                 }}
                 onClick={() => handleDotClick(i)}
@@ -117,20 +122,21 @@ export const CarouselControls = ({
           })}
         </Flex>
       )}
-
       <Button
         aria-label='next carousel item'
         onClick={handleIncrementClick}
         onFocus={handleFocus}
-        isDisabled={activeItem >= maxActiveItem}
+        disabled={activeItem >= maxActiveItem}
         ml={showProgressBar ? 0 : `${gap / 3}px`}
-        color={`${colorScheme}.800`}
+        color={`${colorPalette}.800`}
         variant='ghost'
         minW={0}
         size='sm'
         flexShrink={0}
       >
-        <Icon as={FaAngleRight} boxSize={4} />
+        <Icon boxSize={4} asChild>
+          <FaAngleRight />
+        </Icon>
       </Button>
     </Skeleton>
   );

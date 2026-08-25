@@ -1,20 +1,10 @@
+import { Box, Flex, Heading, Image, Tabs, Text } from '@chakra-ui/react';
 import React from 'react';
-import {
-  Box,
-  Flex,
-  Heading,
-  Image,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  Text,
-} from '@chakra-ui/react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
+
 import type { Card } from '../types';
 import { customMDX } from './Blocks';
 
@@ -26,7 +16,6 @@ interface StepCardProps extends Card {
 export const StepCard = ({
   content,
   title,
-  icon,
   isRequired,
   tabItems,
   step,
@@ -69,29 +58,30 @@ export const StepCard = ({
         </Text>
       </Flex>
       {tabItems.length > 0 ? (
-        <Tabs colorScheme='primary'>
-          <TabList px={4}>
+        <Tabs.Root colorPalette='primary'>
+          <Tabs.List px={4}>
             {tabItems.map(({ id, name }) => (
-              <Tab
+              <Tabs.Trigger
                 key={id}
+                value={id.toString()}
                 lineHeight='tall'
                 fontSize='inherit'
                 color='blackAlpha.500'
                 _selected={{
                   borderBottomColor: 'primary.400',
                   color: 'primary.500',
-                  ['.tag']: {
+                  '& .tag': {
                     opacity: 1,
                   },
                 }}
               >
                 {name}
-              </Tab>
+              </Tabs.Trigger>
             ))}
-          </TabList>
-          <TabPanels>
+          </Tabs.List>
+          <Tabs.ContentGroup>
             {tabItems.map(({ id, content, icon }) => (
-              <TabPanel key={id} bg='page.alt'>
+              <Tabs.Content key={id} value={id.toString()} bg='page.alt'>
                 <Flex
                   p={2}
                   alignItems={['flex-start', 'center']}
@@ -110,10 +100,10 @@ export const StepCard = ({
                     {content}
                   </Text>
                 </Flex>
-              </TabPanel>
+              </Tabs.Content>
             ))}
-          </TabPanels>
-        </Tabs>
+          </Tabs.ContentGroup>
+        </Tabs.Root>
       ) : (
         <></>
       )}

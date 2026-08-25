@@ -14,7 +14,7 @@ export const HasAPI = ({ hasAPI, type, ...props }: HasDownloadProps) => {
 
   return (
     <BadgeWithTooltip
-      colorScheme={hasAPI ? 'green' : 'gray'}
+      colorPalette={hasAPI ? 'green' : 'gray'}
       tooltipLabel={
         hasAPI
           ? 'The resource supports programmatic access to data.'

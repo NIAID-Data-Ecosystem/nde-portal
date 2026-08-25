@@ -1,19 +1,16 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Checkbox,
-  Divider,
   Flex,
   Heading,
+  Separator,
   Stack,
   Tag,
-  TagCloseButton,
-  TagLabel,
   Text,
   VStack,
 } from '@chakra-ui/react';
-
 import { NextPage } from 'next';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { SearchInput } from 'src/components/search-input';
 import {
@@ -22,10 +19,11 @@ import {
 } from 'src/components/select-and-order-popover';
 import { Table } from 'src/components/table';
 import {
-  CustomizeColumnsPopover,
   CUSTOM_COLUMN_ORDER_STORAGE_KEY,
   CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
+  CustomizeColumnsPopover,
 } from 'src/views/repository-matcher/components/CustomizeColumnsPopover';
+import { DataDictionary } from 'src/views/repository-matcher/components/DataDictionary';
 import { Filters } from 'src/views/repository-matcher/components/Filters';
 import { useRepositoryMatcherData } from 'src/views/repository-matcher/hooks/useRepositoryMatcherData';
 import {
@@ -34,7 +32,6 @@ import {
 } from 'src/views/repository-matcher/hooks/useRepositoryMatcherFilters';
 import { useSearchedData } from 'src/views/repository-matcher/hooks/useSearchedData';
 import { REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
-import { DataDictionary } from 'src/views/repository-matcher/components/DataDictionary';
 
 const TABLE_CONTAINER_PROPS = {
   overflowX: 'auto' as const,
@@ -64,7 +61,7 @@ const RepositoryMatcher: NextPage = () => {
     [],
   );
 
-  const { data, isLoading } = useRepositoryMatcherData([
+  const { data, loading } = useRepositoryMatcherData([
     ...fields,
     'creativeWorkStatus',
   ]);
@@ -226,11 +223,11 @@ const RepositoryMatcher: NextPage = () => {
     ({
       column,
       data: row,
-      isLoading: rowLoading,
+      loading: rowLoading,
     }: {
       column: { property: string };
       data: any;
-      isLoading?: boolean;
+      loading?: boolean;
     }) => {
       const col = REPOSITORY_MATCHER_COLUMNS.find(
         c => c.id === column.property,
@@ -238,7 +235,7 @@ const RepositoryMatcher: NextPage = () => {
       if (!col) return null;
       return col.component({
         value: row?.[col.id],
-        isLoading: rowLoading,
+        loading: rowLoading,
         data: row,
       });
     },
@@ -267,7 +264,7 @@ const RepositoryMatcher: NextPage = () => {
   }, [data]);
 
   const LOADING_ROWS = useMemo(() => Array(10).fill({}), []);
-  const tableData = isLoading ? LOADING_ROWS : sortedData;
+  const tableData = loading ? LOADING_ROWS : sortedData;
 
   const [stickyFirstColumn, setStickyFirstColumn] = useState(false);
 
@@ -282,7 +279,7 @@ const RepositoryMatcher: NextPage = () => {
           by research domain, repository type, and other criteria.
         </Text>
       </Flex>
-      <Divider />
+      <Separator />
       <Flex
         direction={{ base: 'column', md: 'row' }}
         align='flex-start'
@@ -301,7 +298,7 @@ const RepositoryMatcher: NextPage = () => {
             selected={selectedFilters}
             onChange={handleFilterChange}
             onClearAll={() => setSelectedFilters({})}
-            isLoading={isLoading}
+            loading={loading}
           />
         </Box>
         <Box
@@ -314,7 +311,7 @@ const RepositoryMatcher: NextPage = () => {
         >
           <Stack
             direction='row'
-            spacing={2}
+            gap={2}
             mb={2}
             flexWrap='wrap'
             alignItems='center'
@@ -330,7 +327,7 @@ const RepositoryMatcher: NextPage = () => {
               alignItems='flex-end'
               onClose={() => setSearchTerm('')}
               width='100%'
-              colorScheme='primary'
+              colorPalette='primary'
             />
           </Stack>
           <Box display={{ base: 'block', md: 'none' }} mb={3}>
@@ -339,7 +336,7 @@ const RepositoryMatcher: NextPage = () => {
               selected={selectedFilters}
               onChange={handleFilterChange}
               onClearAll={() => setSelectedFilters({})}
-              isLoading={isLoading}
+              loading={loading}
             />
           </Box>
           {/* <!-- Filter Tags--> */}
@@ -355,40 +352,40 @@ const RepositoryMatcher: NextPage = () => {
           )}
           <Stack
             direction='row'
-            spacing={2}
+            gap={2}
             flex={1}
             flexWrap='wrap'
             minW={{ base: 0, md: '300px' }}
             my={4}
           >
             {filterTags.length > 0 && (
-              <Tag
+              <Tag.Root
                 key='clear'
                 size='lg'
                 variant='outline'
                 borderRadius='full'
-                colorScheme='primary'
+                colorPalette='primary'
                 borderColor='primary.100'
               >
-                <TagLabel>Clear all</TagLabel>
-                <TagCloseButton onClick={() => setSelectedFilters({})} />
-              </Tag>
+                <Tag.Label>Clear all</Tag.Label>
+                <Tag.CloseTrigger onClick={() => setSelectedFilters({})} />
+              </Tag.Root>
             )}
             {filterTags.map(filter => {
               const { property, value } = filter;
               return (
-                <Tag
+                <Tag.Root
                   key={property + '-' + value}
                   size='lg'
                   variant='subtle'
                   borderRadius='full'
-                  colorScheme='primary'
+                  colorPalette='primary'
                 >
-                  <TagLabel fontWeight='medium'>{value}</TagLabel>
-                  <TagCloseButton
+                  <Tag.Label fontWeight='medium'>{value}</Tag.Label>
+                  <Tag.CloseTrigger
                     onClick={() => removeSingleFilter(property, value)}
                   />
-                </Tag>
+                </Tag.Root>
               );
             })}
           </Stack>
@@ -402,13 +399,19 @@ const RepositoryMatcher: NextPage = () => {
               {sortedData?.length ?? 0} results
             </Text>
             <VStack alignItems='flex-end'>
-              <Checkbox
-                isChecked={stickyFirstColumn}
-                onChange={e => setStickyFirstColumn(e.target.checked)}
-                colorScheme='primary'
+              <Checkbox.Root
+                onCheckedChange={e => setStickyFirstColumn(!!e.checked)}
+                colorPalette='primary'
+                checked={stickyFirstColumn}
               >
-                <Text fontSize='xs'>Pin first column</Text>
-              </Checkbox>
+                <Checkbox.HiddenInput />
+                <Checkbox.Control>
+                  <Checkbox.Indicator />
+                </Checkbox.Control>
+                <Checkbox.Label>
+                  <Text fontSize='xs'>Pin first column</Text>
+                </Checkbox.Label>
+              </Checkbox.Root>
               <CustomizeColumnsPopover
                 onVisibleColumnsChange={handleVisibleColumnsChange}
                 onColumnOrderChange={handleColumnOrderChange}
@@ -420,7 +423,7 @@ const RepositoryMatcher: NextPage = () => {
             caption='Repositories and resource catalogs available for data deposit'
             columns={tableColumns}
             data={tableData as any}
-            isLoading={isLoading}
+            loading={loading}
             hasPagination={false}
             stickyHeader
             stickyFirstColumn={stickyFirstColumn}

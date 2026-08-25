@@ -70,20 +70,23 @@ const VirtualizedList = React.memo(
       <Box
         pr={2}
         pb={2}
-        sx={{
-          '>.virtualized-list::-webkit-scrollbar': {
+        css={{
+          '& >.virtualized-list::-webkit-scrollbar': {
             width: '8px',
             height: '7px',
           },
-          '>.virtualized-list::-webkit-scrollbar-track': {
+
+          '& >.virtualized-list::-webkit-scrollbar-track': {
             background: 'blackAlpha.100',
             borderRadius: '8px',
           },
-          '>.virtualized-list::-webkit-scrollbar-thumb': {
+
+          '& >.virtualized-list::-webkit-scrollbar-thumb': {
             background: 'gray.300',
             borderRadius: '8px',
           },
-          '&:hover>.virtualized-list::-webkit-scrollbar-thumb': {
+
+          '& &:hover>.virtualized-list::-webkit-scrollbar-thumb': {
             background: 'page.placeholder',
           },
         }}
@@ -204,22 +207,22 @@ export const groupTerms = (
 
 // Define the props interface for the FiltersList component
 interface FiltersListProps {
-  colorScheme: string;
+  colorPalette: string;
   terms: FilterTermType[];
   searchPlaceholder: string;
   selectedFilters: string[];
   handleSelectedFilters: (arg: string[]) => void;
-  isLoading: boolean;
+  loading: boolean;
   isUpdating?: boolean;
   config: FilterConfig;
 }
 
 export const FiltersList: React.FC<FiltersListProps> = React.memo(
   ({
-    colorScheme,
+    colorPalette,
     config,
     handleSelectedFilters,
-    isLoading,
+    loading,
     isUpdating,
     searchPlaceholder,
     selectedFilters,
@@ -281,7 +284,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
       <>
         {/* Search through filter terms */}
         <Box p={2} pt={4}>
-          {!isLoading && !isUpdating && !terms?.length ? (
+          {!loading && !isUpdating && !terms?.length ? (
             <Text fontStyle='italic' color='gray.800' mt={1} textAlign='center'>
               No results with {config.name.toLocaleLowerCase()} information.
             </Text>
@@ -293,19 +296,22 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
               size='sm'
               value={searchTerm}
               handleChange={handleSearchChange}
-              colorScheme={colorScheme}
+              colorPalette={colorPalette}
               onClose={() => setSearchTerm('')}
             />
           )}
         </Box>
         {/* List of filters available narrowed based on search and expansion toggle */}
-        <CheckboxGroup value={selectedFilters} onChange={handleSelectedFilters}>
+        <CheckboxGroup
+          value={selectedFilters}
+          onValueChange={handleSelectedFilters}
+        >
           <VirtualizedList items={searchedTerms}>
             {props => (
               <Checkbox
-                isLoading={isLoading}
+                loading={loading}
                 isUpdating={isUpdating}
-                colorScheme={colorScheme}
+                colorPalette={colorPalette}
                 filterName={config.name}
                 {...props}
               />

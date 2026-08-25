@@ -1,7 +1,7 @@
-import { FormattedResource } from 'src/utils/api/types';
 import { BadgeWithTooltip, BadgeWithTooltipProps } from 'src/components/badges';
+import { FormattedResource } from 'src/utils/api/types';
 import {
-  getColorScheme,
+  getColorPalette,
   getConditionsOfAccessTooltip,
   transformConditionsOfAccessLabel,
 } from 'src/utils/formatting/formatConditionsOfAccess';
@@ -23,7 +23,7 @@ export const ConditionsOfAccess = ({
 
   return (
     <BadgeWithTooltip
-      colorScheme={getColorScheme(conditionsOfAccess)}
+      colorPalette={getColorPalette(conditionsOfAccess)}
       value={transformConditionsOfAccessLabel(conditionsOfAccess)}
       tooltipLabel={getConditionsOfAccessTooltip(conditionsOfAccess)}
       {...props}

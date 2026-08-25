@@ -1,24 +1,25 @@
-import { useMemo, useState } from 'react';
-import NextLink from 'next/link';
-import { useRouter } from 'next/router';
-import { UrlObject } from 'url';
 import { Text as ChakraText, VisuallyHidden } from '@chakra-ui/react';
-import { HtmlLabel, Annotation } from '@visx/annotation';
+import { Annotation, HtmlLabel } from '@visx/annotation';
 import { Group } from '@visx/group';
-import { Treemap, hierarchy, stratify, treemapBinary } from '@visx/hierarchy';
+import { hierarchy, stratify, Treemap, treemapBinary } from '@visx/hierarchy';
 import { useParentSize } from '@visx/responsive';
 import {
   TooltipWithBounds,
   useTooltip,
   useTooltipInPortal,
 } from '@visx/tooltip';
-import { FacetTerm } from 'src/utils/api/types';
+import NextLink from 'next/link';
+import { useRouter } from 'next/router';
+import { useMemo, useState } from 'react';
 import {
   customTooltipStyles,
   TooltipSubtitle,
   TooltipTitle,
   TooltipWrapper,
 } from 'src/components/visualizations/tooltip/index';
+import { FacetTerm } from 'src/utils/api/types';
+import { UrlObject } from 'url';
+
 import { FacetProps } from '../../types';
 
 interface TreemapChartProps {
@@ -224,7 +225,7 @@ export const TreemapChart = ({
                           <rect
                             width={nodeWidth}
                             height={nodeHeight}
-                            fill={facet.colorScheme?.[300]}
+                            fill={facet.colorPalette?.[300]}
                             fillOpacity={isHovered ? 0.8 : 1}
                             stroke='#fff'
                             strokeWidth={strokeWidth}
@@ -278,7 +279,7 @@ export const TreemapChart = ({
                                 as='span'
                                 color='inherit'
                                 fontWeight='semibold'
-                                noOfLines={2}
+                                lineClamp={2}
                                 textDecoration={
                                   isHovered || isFocused ? 'underline' : 'none'
                                 }
@@ -306,7 +307,7 @@ export const TreemapChart = ({
                       y={focusedNode.y0 + margin.top - 2}
                       width={focusedNode.x1 - focusedNode.x0 + 4}
                       height={focusedNode.y1 - focusedNode.y0 + 4}
-                      stroke={facet.colorScheme?.[600]}
+                      stroke={facet.colorPalette?.[600]}
                       strokeWidth={2}
                       fill='none'
                       pointerEvents='none'
@@ -327,7 +328,7 @@ export const TreemapChart = ({
             top={tooltipTop}
             style={{
               ...customTooltipStyles,
-              borderTopColor: `${facet.colorScheme?.[600]}`,
+              borderTopColor: `${facet.colorPalette?.[600]}`,
             }}
             aria-live='polite'
           >

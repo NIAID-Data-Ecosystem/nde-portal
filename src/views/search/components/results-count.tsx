@@ -7,14 +7,10 @@ interface ResultsCount extends TextProps {
   // Total number of results
   total: number;
   // Data loading mechanism
-  isLoading: boolean;
+  loading: boolean;
 }
 
-const ResultsCount: React.FC<ResultsCount> = ({
-  isLoading,
-  total,
-  ...props
-}) => {
+const ResultsCount: React.FC<ResultsCount> = ({ loading, total, ...props }) => {
   return (
     <Flex
       px={4}
@@ -23,13 +19,13 @@ const ResultsCount: React.FC<ResultsCount> = ({
       borderColor='gray.200'
       flexWrap={{ base: 'wrap-reverse', sm: 'wrap' }}
     >
-      {isLoading ? (
+      {loading ? (
         <Spinner
           color='primary.500'
-          emptyColor='gray.200'
+          css={{ '--spinner-track-color': 'colors.gray.200' }}
           size='md'
-          speed='0.5s'
-          thickness='1px'
+          animationDuration='0.5s'
+          borderWidth='1px'
           mr={2}
         />
       ) : (

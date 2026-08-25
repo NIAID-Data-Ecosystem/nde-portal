@@ -1,12 +1,13 @@
+import { Flex, NativeSelect, Text } from '@chakra-ui/react';
 import React from 'react';
-import { Flex, Select, SelectProps, Text } from '@chakra-ui/react';
 
-interface SelectWithLabelProps extends SelectProps {
+interface SelectWithLabelProps
+  extends Omit<NativeSelect.FieldProps, 'onChange' | 'size'> {
   id: string;
   label: string;
   handleChange: (value: string | number) => void;
   options: { name: string; value: string | number; tooltip?: string }[];
-  value: string | number;
+  size?: NativeSelect.RootProps['size'];
 }
 
 /*
@@ -23,35 +24,39 @@ export const SelectWithLabel = ({
   ...props
 }: SelectWithLabelProps) => {
   return (
-    <Flex as='label' htmlFor={id} alignItems='center' gap={2} cursor='pointer'>
-      <Text as='span' fontSize='sm' whiteSpace='nowrap' color='gray.900'>
-        {label}
-      </Text>
-      <Select
-        id={id}
-        aria-label={label}
-        size={size}
-        onChange={e => handleChange(e.target.value)}
-        value={value}
-        bg='white'
-        borderColor='gray.200'
-        borderRadius='semi'
-        cursor='pointer'
-        _hover={{ boxShadow: 'low' }}
-        {...props}
-      >
-        {options.map(option => {
-          return (
-            <option
-              key={option.value}
-              title={option?.tooltip || ''}
-              value={option.value}
-            >
-              {option.name}
-            </option>
-          );
-        })}
-      </Select>
+    <Flex alignItems='center' gap={2} cursor='pointer' asChild>
+      <label htmlFor={id}>
+        <Text as='span' fontSize='sm' whiteSpace='nowrap' color='gray.900'>
+          {label}
+        </Text>
+        <NativeSelect.Root size={size}>
+          <NativeSelect.Field
+            id={id}
+            aria-label={label}
+            onChange={e => handleChange(e.currentTarget.value)}
+            value={value}
+            bg='white'
+            borderColor='gray.200'
+            borderRadius='semi'
+            cursor='pointer'
+            _hover={{ boxShadow: 'low' }}
+            {...props}
+          >
+            {options.map(option => {
+              return (
+                <option
+                  key={option.value}
+                  title={option?.tooltip || ''}
+                  value={option.value}
+                >
+                  {option.name}
+                </option>
+              );
+            })}
+          </NativeSelect.Field>
+          <NativeSelect.Indicator />
+        </NativeSelect.Root>
+      </label>
     </Flex>
   );
 };

@@ -24,9 +24,11 @@ export const SavedDataErrorBanner = () => {
       borderColor='status.error'
       bg='status.error_lt'
     >
-      <HStack spacing={4} flex={1} justifyContent='space-between'>
-        <HStack flex={1} spacing={{ base: 2, sm: 4 }} alignItems='flex-start'>
-          <Icon as={FaCircleXmark} boxSize={6} fill='status.error' />
+      <HStack gap={4} flex={1} justifyContent='space-between'>
+        <HStack flex={1} gap={{ base: 2, sm: 4 }} alignItems='flex-start'>
+          <Icon boxSize={6} fill='status.error' asChild>
+            <FaCircleXmark />
+          </Icon>
           <Text fontSize='md' fontWeight='medium' lineHeight='short'>
             {error}
           </Text>

@@ -1,45 +1,45 @@
-import React, { useEffect } from 'react';
+import { Box, Button, Card, Flex, Link, Text } from '@chakra-ui/react';
+import { useQuery } from '@tanstack/react-query';
+import SITE_CONFIG from 'configs/site.config.json';
 import { omit } from 'lodash';
 import type { NextPage } from 'next';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import { Box, Button, Card, Flex, Link, Text } from '@chakra-ui/react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useEffect } from 'react';
+import Empty from 'src/components/empty';
+import { Error, ErrorCTA } from 'src/components/error';
+import { getQueryStatusError } from 'src/components/error/utils';
 import {
   getPageSeoConfig,
   PageContainer,
   PageContent,
 } from 'src/components/page-container';
+import { SiteConfig } from 'src/components/page-container/types';
+import Sections from 'src/components/resource-sections';
+import { Sidebar } from 'src/components/resource-sections/components/sidebar';
+import { Route, showSection } from 'src/components/resource-sections/helpers';
+import { RESOURCE_SECTIONS } from 'src/components/resource-sections/resource-sections';
 import { getResourceById } from 'src/utils/api';
 import { FormattedResource } from 'src/utils/api/types';
-import Empty from 'src/components/empty';
-import { Error, ErrorCTA } from 'src/components/error';
-import Sections from 'src/components/resource-sections';
-import { RESOURCE_SECTIONS } from 'src/components/resource-sections/resource-sections';
-import { Route, showSection } from 'src/components/resource-sections/helpers';
-import { getQueryStatusError } from 'src/components/error/utils';
-import { Sidebar } from 'src/components/resource-sections/components/sidebar';
-import { SavedDataErrorToast } from 'src/views/saved/components/saved-data-error-toast';
-import SITE_CONFIG from 'configs/site.config.json';
-import { SiteConfig } from 'src/components/page-container/types';
 import {
   SHOULD_HIDE_SAMPLES,
   SHOW_DATA_COLLECTIONS_TAB,
 } from 'src/utils/feature-flags';
+import { SavedDataErrorToast } from 'src/views/saved/components/saved-data-error-toast';
 
 const siteConfig = SITE_CONFIG as SiteConfig;
 
 // Displays empty message when no data exists.
 const EmptyState = () => {
   return (
-    <Card w='100%'>
+    <Card.Root w='100%'>
       <Empty message='No data available.' alignSelf='center' h='50vh'>
         <Text>No information about this dataset is available.</Text>
         <NextLink href={{ pathname: '/search' }}>
           <Button mt={4}>Go to search</Button>
         </NextLink>
       </Empty>
-    </Card>
+    </Card.Root>
   );
 };
 
@@ -80,7 +80,7 @@ const ResourcePage: NextPage = () => {
     },
   });
 
-  const isLoading = loadingData || !router.isReady;
+  const loading = loadingData || !router.isReady;
 
   // embed metadata
   useEffect(() => {
@@ -121,8 +121,8 @@ const ResourcePage: NextPage = () => {
     error && getQueryStatusError(error as unknown as { status: string });
 
   if (
-    (!isLoading && Boolean(!id || id.toString() === 'undefined')) ||
-    (!isLoading && !data)
+    (!loading && Boolean(!id || id.toString() === 'undefined')) ||
+    (!loading && !data)
   ) {
     // Redirect to 404 page if no id is provided or no data is found for the given id.
     router.push('/404');
@@ -131,7 +131,7 @@ const ResourcePage: NextPage = () => {
 
   // Redirect to 404 page if the data is of type DataCollection and the SHOW_DATA_COLLECTIONS_TAB feature flag is set to false.
   if (
-    !isLoading &&
+    !loading &&
     data?.['@type'] === 'DataCollection' &&
     !SHOW_DATA_COLLECTIONS_TAB
   ) {
@@ -182,7 +182,8 @@ const ResourcePage: NextPage = () => {
                             <Link
                               key={`${label}-${idx}`}
                               href={href}
-                              isExternal={isExternal}
+                              target='_blank'
+                              rel='noopener noreferrer'
                             >
                               {label}
                             </Link>
@@ -204,7 +205,7 @@ const ResourcePage: NextPage = () => {
                   </Box>
                 </Flex>
               </Error>
-            ) : !isLoading && !data ? (
+            ) : !loading && !data ? (
               // [EMPTY STATE]: No Results
               <EmptyState />
             ) : (
@@ -223,25 +224,27 @@ const ResourcePage: NextPage = () => {
                     p={{ sm: 0, md: 2 }}
                     flexDirection={['column', 'column', 'row']}
                   >
-                    <Card
+                    <Card.Root
                       className='main-content'
                       flex={3}
                       p={0}
                       width='100%'
-                      sx={{ '>*': { p: 0 } }}
+                      css={{
+                        '& >*': { p: 0 },
+                      }}
                       minW={150}
                       overflow='unset'
                     >
                       <Sections
-                        isLoading={isLoading}
+                        loading={loading}
                         data={data}
                         sections={sections}
                       />
-                    </Card>
+                    </Card.Root>
 
                     <Sidebar
                       data={data}
-                      isLoading={isLoading}
+                      loading={loading}
                       sections={sections.filter(
                         section => section.ui?.showInNavigation,
                       )}

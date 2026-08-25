@@ -1,12 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  Box,
-  Flex,
-  Icon,
-  IconButton,
-  ListItem,
-  UnorderedList,
-} from '@chakra-ui/react';
+import { Box, Flex, Icon, IconButton, List } from '@chakra-ui/react';
 import { FaAngleDown, FaAngleRight } from 'react-icons/fa6';
 import NextLink from 'next/link';
 import type { TocItemProps } from '../../types';
@@ -53,7 +46,7 @@ export const TocItem = ({
   const hasChildren = childItems.length > 0;
 
   return (
-    <ListItem w='100%' display='flex' flexDirection='column'>
+    <List.Item w='100%' display='flex' flexDirection='column'>
       <Flex w='100%' alignItems='center'>
         <NextLink
           style={{ display: 'flex', flex: 1 }}
@@ -92,25 +85,20 @@ export const TocItem = ({
               aria-label={
                 isExpanded ? 'Collapse subsections' : 'Expand subsections'
               }
-              icon={
-                <Icon
-                  as={isExpanded ? FaAngleDown : FaAngleRight}
-                  boxSize={4}
-                />
-              }
               size='sm'
               variant='ghost'
               onClick={() => setIsExpanded(!isExpanded)}
-            />
+            >
+              <Icon as={isExpanded ? FaAngleDown : FaAngleRight} boxSize={4} />
+            </IconButton>
           )}
         </Box>
       </Flex>
-
       {/* Child TOC Items (subsections) */}
       {hasChildren && isExpanded && (
-        <UnorderedList ml={0} mt={1}>
+        <List.Root as='ul' ml={0} mt={1}>
           {childItems.map((childItem, idx) => (
-            <ListItem key={idx} w='100%' display='flex' alignItems='center'>
+            <List.Item key={idx} w='100%' display='flex' alignItems='center'>
               <NextLink
                 style={{ display: 'flex', flex: 1 }}
                 href={`/knowledge-center/${pageSlug}#${childItem.hash}`}
@@ -137,10 +125,10 @@ export const TocItem = ({
                 </Box>
               </NextLink>
               <Box w='40px' />
-            </ListItem>
+            </List.Item>
           ))}
-        </UnorderedList>
+        </List.Root>
       )}
-    </ListItem>
+    </List.Item>
   );
 };

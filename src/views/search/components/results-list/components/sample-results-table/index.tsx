@@ -371,11 +371,11 @@ export const toRow = (resource: FormattedResource): Record<string, unknown> => {
 export const getCells = ({
   column,
   data,
-  isLoading,
+  loading,
 }: {
   column: Column;
   data: Record<string, unknown>;
-  isLoading?: boolean;
+  loading?: boolean;
 }) => {
   const value = data?.[column.property];
 
@@ -464,7 +464,7 @@ export const getCells = ({
       <ExpandableText
         text={(value as string) || ''}
         noOfLines={4}
-        isLoading={isLoading}
+        loading={loading}
       />
     );
   }
@@ -475,12 +475,12 @@ export const getCells = ({
   }
 
   // All other fields: delegate to the shared cell renderer
-  return renderCellData({ column, data: value as any, isLoading });
+  return renderCellData({ column, data: value as any, loading });
 };
 
 interface SampleResultsTableProps {
   results: FormattedResource[];
-  isLoading: boolean;
+  loading: boolean;
   /**
    * IDs of columns that should be visible.
    * When undefined, all columns are shown.
@@ -509,7 +509,7 @@ interface SampleResultsTableProps {
 
 export const SampleResultsTable = ({
   results,
-  isLoading,
+  loading,
   visibleColumnIds,
   columnOrder,
   currentSort,
@@ -518,7 +518,7 @@ export const SampleResultsTable = ({
   <ResultsTable
     columns={ALL_SAMPLE_COLUMNS}
     results={results}
-    isLoading={isLoading}
+    loading={loading}
     toRow={toRow}
     getCells={getCells}
     ariaLabel='Sample search results'

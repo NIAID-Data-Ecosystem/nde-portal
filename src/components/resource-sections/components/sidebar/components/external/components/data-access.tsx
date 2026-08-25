@@ -1,13 +1,6 @@
-import React from 'react';
-import {
-  Button,
-  Flex,
-  usePrefersReducedMotion,
-  Stack,
-  ButtonProps,
-} from '@chakra-ui/react';
-import { FormattedResource } from 'src/utils/api/types';
+import { Button, ButtonProps, Flex, Stack } from '@chakra-ui/react';
 import NextLink from 'next/link';
+import React from 'react';
 import { FaArrowRight } from 'react-icons/fa6';
 import { SourceLogo } from 'src/components/source-logo';
 import {
@@ -16,43 +9,48 @@ import {
   getDDECatalog,
   getSourceLogoLinkOut,
 } from 'src/components/source-logo/helpers';
+import { FormattedResource } from 'src/utils/api/types';
+import { useMediaQuery } from 'usehooks-ts';
 
 interface DataAccessProps {
-  isLoading: boolean;
+  loading: boolean;
   includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
   url?: FormattedResource['url'];
   recordType?: string | null;
   creativeWorkStatus?: FormattedResource['creativeWorkStatus'];
   children?: React.ReactNode;
-  colorScheme?: ButtonProps['colorScheme'];
+  colorPalette?: ButtonProps['colorPalette'];
 }
 
-const AccessResourceButton: React.FC<{ url: string; colorScheme: string }> = ({
-  url,
-  colorScheme,
-}) => {
+const AccessResourceButton: React.FC<{
+  url: string;
+  colorPalette: ButtonProps['colorPalette'];
+}> = ({ url, colorPalette }) => {
   // Internal routes (e.g. the retired resources page) should navigate
   // in the same tab; external source links continue to open in a new tab.
   const isInternalLink = url.startsWith('/');
 
   return (
     <NextLink href={url} target={isInternalLink ? undefined : '_blank'}>
-      <Button colorScheme={colorScheme} size='sm' rightIcon={<FaArrowRight />}>
+      <Button colorPalette={colorPalette} size='sm'>
         Access Resource
+        <FaArrowRight />
       </Button>
     </NextLink>
   );
 };
 
 export const DataAccess: React.FC<DataAccessProps> = ({
-  isLoading,
+  loading,
   includedInDataCatalog,
   url,
   recordType,
   creativeWorkStatus,
-  colorScheme = 'secondary',
+  colorPalette = 'secondary',
 }) => {
-  const prefersReducedMotion = usePrefersReducedMotion();
+  const prefersReducedMotion = useMediaQuery(
+    '(prefers-reduced-motion: reduce)',
+  );
 
   // If resource is part of a catalog, only show DDE as source
 
@@ -62,12 +60,12 @@ export const DataAccess: React.FC<DataAccessProps> = ({
       : includedInDataCatalog || [];
 
   const sources =
-    !isLoading && includedInDataCatalog
+    !loading && includedInDataCatalog
       ? formatSourcesWithLogos(catalogForLookup)
       : [];
 
   return (
-    <Stack mt={4} flexDirection='column' alignItems='flex-start' spacing={4}>
+    <Stack mt={4} flexDirection='column' alignItems='flex-start' gap={4}>
       {sources.map(source => (
         <React.Fragment key={source.name}>
           <SourceLogo.Component
@@ -85,14 +83,14 @@ export const DataAccess: React.FC<DataAccessProps> = ({
               w='100%'
               mt={2}
               justifyContent='flex-end'
-              sx={{
-                svg: {
+              css={{
+                '& svg': {
                   transform: 'translateX(-2px)',
                   transition: 'transform 0.2s ease-in-out',
                 },
               }}
               _hover={{
-                svg: prefersReducedMotion
+                '& svg': prefersReducedMotion
                   ? {}
                   : {
                       transform: 'translateX(4px)',
@@ -107,7 +105,7 @@ export const DataAccess: React.FC<DataAccessProps> = ({
                   url,
                   creativeWorkStatus,
                 })}
-                colorScheme={colorScheme}
+                colorPalette={colorPalette}
               />
             </Flex>
           )}

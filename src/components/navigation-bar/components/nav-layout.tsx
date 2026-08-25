@@ -1,12 +1,12 @@
-import React from 'react';
 import {
   Box,
   BoxProps,
   Flex,
-  IconButton,
   FlexProps,
   Icon,
+  IconButton,
 } from '@chakra-ui/react';
+import React from 'react';
 import { FaBars, FaXmark } from 'react-icons/fa6';
 import { Logo } from 'src/components/logos';
 
@@ -61,20 +61,23 @@ const Toggle: React.FC<{
     <IconButton
       display={{ base: 'flex', md: 'none' }}
       aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
-      icon={
-        isOpen ? (
-          <Icon as={FaXmark} w={5} h={5} />
-        ) : (
-          <Icon as={FaBars} w={4} h={4} />
-        )
-      }
       onClick={onToggle}
-      colorScheme='niaid'
+      colorPalette='niaid'
       color='white'
       _hover={{ bg: 'whiteAlpha.500' }}
       variant='ghost'
       size='md'
-    />
+    >
+      {isOpen ? (
+        <Icon w={5} h={5} asChild>
+          <FaXmark />
+        </Icon>
+      ) : (
+        <Icon w={4} h={4} asChild>
+          <FaBars />
+        </Icon>
+      )}
+    </IconButton>
   );
 };
 

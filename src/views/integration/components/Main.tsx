@@ -1,36 +1,32 @@
-import React, { useEffect, useState } from 'react';
 import {
   Box,
   Circle,
-  Divider,
   Flex,
   Heading,
   Icon,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
+  Separator,
+  Spinner,
   Tabs,
   Text,
 } from '@chakra-ui/react';
-import type { NextPage } from 'next';
-import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
-import LocalNavigation from 'src/components/resource-sections/components/navigation';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import type { NextPage } from 'next';
+import React, { useEffect, useState } from 'react';
+import { FaLightbulb } from 'react-icons/fa6';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-import type { ContentProps } from 'src/views/integration/types';
-import { Error } from 'src/components/error';
 import Empty from 'src/components/empty';
+import { Error } from 'src/components/error';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
+import LocalNavigation from 'src/components/resource-sections/components/navigation';
 import {
-  ParagraphSection,
   ListBlock,
+  ParagraphSection,
 } from 'src/views/integration/components/Blocks';
 import { StepCard } from 'src/views/integration/components/Card';
-import { FaLightbulb } from 'react-icons/fa6';
-import Loading from 'src/components/loading';
+import type { ContentProps } from 'src/views/integration/types';
 
 interface IntegrationProps {
   data?: { page: ContentProps };
@@ -137,33 +133,39 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
                 slug={content.tabs.slug}
                 textAlign='center'
               >
-                <Tabs colorScheme='primary'>
-                  <TabList>
+                <Tabs.Root colorPalette='primary'>
+                  <Tabs.List>
                     {content.tabs.panels?.map(({ id, title }) => (
-                      <Tab
+                      <Tabs.Trigger
                         key={id}
+                        value={id.toString()}
                         fontSize='sm'
                         color='blackAlpha.500'
                         _selected={{
                           borderBottomColor: 'primary.400',
                           color: 'primary.500',
-                          ['.tag']: {
+                          '& .tag': {
                             opacity: 1,
                           },
                         }}
                       >
                         {title}
-                      </Tab>
+                      </Tabs.Trigger>
                     ))}
-                  </TabList>
-                  <TabPanels>
+                  </Tabs.List>
+                  <Tabs.ContentGroup>
                     {content.tabs.panels?.map(({ id, cards }) => {
                       let stepIndex = 0;
                       const total_steps = cards?.filter(
                         card => card.content && card.isRequired,
                       ).length;
                       return (
-                        <TabPanel key={id} p={0} py={2}>
+                        <Tabs.Content
+                          key={id}
+                          value={id.toString()}
+                          p={0}
+                          py={2}
+                        >
                           {cards?.map(card => {
                             if (card.isRequired) {
                               stepIndex++;
@@ -180,10 +182,12 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
                                   >
                                     <Circle bg='whiteAlpha.900' p={2} m={2}>
                                       <Icon
-                                        as={FaLightbulb}
                                         color='status.warning'
                                         boxSize={4}
-                                      />
+                                        asChild
+                                      >
+                                        <FaLightbulb />
+                                      </Icon>
                                     </Circle>
                                     <Text
                                       p={2}
@@ -204,11 +208,11 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
                               </React.Fragment>
                             );
                           })}
-                        </TabPanel>
+                        </Tabs.Content>
                       );
                     })}
-                  </TabPanels>
-                </Tabs>
+                  </Tabs.ContentGroup>
+                </Tabs.Root>
               </ParagraphSection>
             ) : (
               <></>
@@ -216,12 +220,12 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
             {content?.textBlocks?.map((block, i) => {
               return (
                 <React.Fragment key={block.id}>
-                  {i === content.textBlocks!.length - 1 && <Divider />}
+                  {i === content.textBlocks!.length - 1 && <Separator />}
                   <ParagraphSection textAlign='center' {...block} />
                 </React.Fragment>
               );
             })}
-            <Divider orientation='horizontal' mt={8} mb={4} />
+            <Separator orientation='horizontal' mt={8} mb={4} />
             <Text
               fontStyle='italic'
               fontSize='xs'
@@ -235,7 +239,7 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
             </Text>
           </Flex>
         ) : isLoading || isFetching ? (
-          <Loading isLoading={isLoading} />
+          <Spinner />
         ) : (
           <Empty>No content for this page exists.</Empty>
         )}

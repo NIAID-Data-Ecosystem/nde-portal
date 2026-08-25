@@ -7,17 +7,17 @@ import {
   Text,
   VisuallyHidden,
 } from '@chakra-ui/react';
-import Tooltip from 'src/components/tooltip';
-import { FaMagnifyingGlass, FaSitemap } from 'react-icons/fa6';
 import { useRouter } from 'next/router';
+import { FaMagnifyingGlass, FaSitemap } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
+import Tooltip from 'src/components/tooltip';
 
 export const MetadataButtonGroup = ({
   children,
   ...props
 }: ButtonGroupProps) => {
   return (
-    <ButtonGroup size='xs' isAttached variant='outline' {...props}>
+    <ButtonGroup size='xs' attached variant='outline' {...props}>
       {children}
     </ButtonGroup>
   );
@@ -39,49 +39,39 @@ export const OntologyButton = ({
   }
 
   return (
-    <Tooltip label={ariaLabel || 'See ontology information.'}>
+    <Tooltip content={ariaLabel || 'See ontology information.'}>
       {label || inDefinedTermSet ? (
         <Button
-          as={Link}
-          href={value}
-          target='_blank'
           variant='outline'
-          colorScheme='gray'
-          leftIcon={<Icon as={FaSitemap} />}
+          colorPalette='gray'
           fontSize='12px'
           fontWeight='medium'
           color='gray.800'
-          sx={{
-            '.child-node': {
-              borderBottom: 'none',
-              display: 'inline-flex',
-              alignItems: 'center',
-            },
-            '.child-node p': { borderBottom: 'none' },
-          }}
-          _visited={{
-            '.child-node p, .child-node svg': {
-              borderBottom: 'none',
-              color: 'inherit',
-            },
-          }}
+          asChild
         >
-          <Text pt={0.25}>{label || inDefinedTermSet} </Text>
+          <Link href={value} target='_blank'>
+            <Icon asChild>
+              <FaSitemap />
+            </Icon>
+            <Text pt={0.25}>{label || inDefinedTermSet} </Text>
+          </Link>
         </Button>
       ) : (
         <Button
-          as='a'
-          href={value}
-          target='_blank'
           variant='outline'
-          colorScheme='gray'
+          colorPalette='gray'
           fontSize='12px'
           px={0}
+          asChild
         >
-          <VisuallyHidden>
-            {ariaLabel || 'View the ontology for this value.'}
-          </VisuallyHidden>
-          <Icon as={FaSitemap} />
+          <a href={value} target='_blank'>
+            <VisuallyHidden>
+              {ariaLabel || 'View the ontology for this value.'}
+            </VisuallyHidden>
+            <Icon asChild>
+              <FaSitemap />
+            </Icon>
+          </a>
         </Button>
       )}
     </Tooltip>
@@ -104,27 +94,32 @@ export const SearchButton = ({
   }
 
   return (
-    <Tooltip label={ariaLabel || `Search the NDE for this property value`}>
+    <Tooltip content={ariaLabel || `Search the NDE for this property value`}>
       <Button
-        as='a'
         cursor='pointer'
-        onClick={() => {
-          router.push({
-            pathname: `/search`,
-            query: {
-              q: `${property}:"${value}"`,
-            },
-          });
-        }}
-        colorScheme='gray'
+        colorPalette='gray'
         variant='outline'
         px={0}
         {...props}
+        asChild
       >
-        <VisuallyHidden>
-          {ariaLabel || `Search the NDE for this property value`}
-        </VisuallyHidden>
-        <Icon as={FaMagnifyingGlass} fontSize='12px' />
+        <a
+          onClick={() => {
+            router.push({
+              pathname: `/search`,
+              query: {
+                q: `${property}:"${value}"`,
+              },
+            });
+          }}
+        >
+          <VisuallyHidden>
+            {ariaLabel || `Search the NDE for this property value`}
+          </VisuallyHidden>
+          <Icon fontSize='12px' asChild>
+            <FaMagnifyingGlass />
+          </Icon>
+        </a>
       </Button>
     </Tooltip>
   );

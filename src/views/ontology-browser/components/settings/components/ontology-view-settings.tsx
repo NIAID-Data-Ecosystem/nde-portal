@@ -1,11 +1,12 @@
+import { Field, Switch, VStack } from '@chakra-ui/react';
 import React from 'react';
-import { FormControl, FormLabel, Switch, VStack } from '@chakra-ui/react';
 import { useLocalStorage } from 'usehooks-ts';
-import { BrowserSettings } from '../index';
+
 import {
   LocalStorageConfig,
   transformSettingsToLocalStorageConfig,
 } from '../helpers';
+import { BrowserSettings } from '../index';
 
 /**
  * OntologyViewSettings
@@ -30,9 +31,9 @@ export const OntologyViewSettings = ({
   );
 
   return (
-    <VStack lineHeight='shorter' spacing={4}>
+    <VStack lineHeight='shorter' gap={4}>
       {Object.entries(defaultSettings).map(([key, setting]) => (
-        <FormControl
+        <Field.Root
           key={key}
           display='flex'
           alignItems='center'
@@ -40,21 +41,28 @@ export const OntologyViewSettings = ({
           mt={1}
           cursor='pointer'
         >
-          <FormLabel htmlFor={`switch-${key}`} mb='0' fontSize='sm'>
+          <Field.Label htmlFor={`switch-${key}`} mb='0' fontSize='sm'>
             {setting.label}
-          </FormLabel>
-          <Switch
+          </Field.Label>
+
+          <Switch.Root
             id={`switch-${key}`}
-            colorScheme='primary'
-            isChecked={viewSettings[key as keyof LocalStorageConfig]}
-            onChange={() =>
+            colorPalette='primary'
+            checked={viewSettings[key as keyof LocalStorageConfig]}
+            onCheckedChange={() =>
               setViewSettings({
                 ...viewSettings,
                 [key]: !viewSettings[key as keyof LocalStorageConfig],
               })
             }
-          />
-        </FormControl>
+          >
+            <Switch.HiddenInput />
+            <Switch.Control>
+              <Switch.Thumb />
+            </Switch.Control>
+            <Switch.Label />
+          </Switch.Root>
+        </Field.Root>
       ))}
     </VStack>
   );

@@ -20,7 +20,7 @@ describe('ChartWrapper', () => {
       <ChartWrapper
         title='Test Title'
         description='Test Description'
-        isLoading={false}
+        loading={false}
         error={null}
       />,
     );
@@ -32,15 +32,15 @@ describe('ChartWrapper', () => {
     expect(screen.getByText('Test Description')).toBeInTheDocument();
   });
 
-  it('renders a skeleton loader when isLoading is true', () => {
-    render(<ChartWrapper isLoading={true} error={null} />);
+  it('renders a skeleton loader when loading is true', () => {
+    render(<ChartWrapper loading={true} error={null} />);
 
     expect(screen.getByRole('status')).toBeInTheDocument();
   });
 
   it('renders an error message when error is provided', () => {
     const error = new Error('Test Error');
-    render(<ChartWrapper isLoading={false} error={error} />);
+    render(<ChartWrapper loading={false} error={error} />);
 
     expect(ErrorMessage).toHaveBeenCalledWith(
       expect.objectContaining({ message: 'Test Error' }),
@@ -49,9 +49,9 @@ describe('ChartWrapper', () => {
     expect(screen.getByText('Test Error')).toBeInTheDocument();
   });
 
-  it('renders children when isLoading is false and no error exists', () => {
+  it('renders children when loading is false and no error exists', () => {
     render(
-      <ChartWrapper isLoading={false} error={null}>
+      <ChartWrapper loading={false} error={null}>
         <div>Child Content</div>
       </ChartWrapper>,
     );

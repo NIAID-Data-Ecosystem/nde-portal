@@ -115,7 +115,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       setErrors([]);
     },
     // Input is disabled when a search option that doesn't require text input is selected.
-    isDisabled:
+    disabled:
       selectedSearchType.id === '_exists_' ||
       selectedSearchType.id === '-_exists_',
     errors,

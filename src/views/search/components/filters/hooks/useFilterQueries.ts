@@ -112,7 +112,7 @@ interface UseFilterQueriesOptions {
 
 export interface UseFilterQueriesResult {
   results: FilterResults | undefined;
-  isLoading: boolean;
+  loading: boolean;
   isUpdating: boolean;
   error: Error | null;
 }
@@ -272,9 +272,8 @@ export const useFilterQueries = ({
     dataCollectionAggregation,
   ]);
 
-  const isLoading = activeQueries.some(query => query.isPending);
-  const isUpdating =
-    !isLoading && activeQueries.some(query => query.isFetching);
+  const loading = activeQueries.some(query => query.isPending);
+  const isUpdating = !loading && activeQueries.some(query => query.isFetching);
   const error = activeQueries.find(query => query.error)?.error || null;
 
   // Keep a ref to the last fully-resolved results so consumers
@@ -403,14 +402,14 @@ export const useFilterQueries = ({
         id: config.id,
         terms: finalTerms,
         data: finalTerms,
-        isLoading: configIsLoading,
+        loading: configIsLoading,
         isUpdating: configIsUpdating,
         error: activeQuery.error,
       };
       return acc;
     }, {} as FilterResults);
 
-    if (!isLoading && !isUpdating) {
+    if (!loading && !isUpdating) {
       settledResultsRef.current = next;
     }
 
@@ -422,14 +421,14 @@ export const useFilterQueries = ({
     computationalToolAggregation,
     sharedDatasetAggregation,
     dataCollectionAggregation,
-    isLoading,
+    loading,
     isUpdating,
     metadataQuery.data,
   ]);
 
   return {
     results,
-    isLoading,
+    loading,
     isUpdating,
     error,
   };

@@ -1,23 +1,24 @@
-import React, { ReactElement, useMemo } from 'react';
-import { groupBy, uniqBy } from 'lodash';
 import {
   Box,
   Circle,
-  Divider,
   Flex,
   Icon,
   InputProps,
+  Separator,
   Text,
 } from '@chakra-ui/react';
+import { groupBy, uniqBy } from 'lodash';
+import dynamic from 'next/dynamic';
+import React, { ReactElement, useMemo } from 'react';
 import { FaInfo } from 'react-icons/fa6';
-import { FormattedResource } from 'src/utils/api/types';
-import { usePredictiveSearchResponse } from '../hooks/usePredictiveSearch';
 import {
-  InputWithDropdown,
   DropdownInput,
+  InputWithDropdown,
 } from 'src/components/input-with-dropdown';
 import { DropdownListItem } from 'src/components/input-with-dropdown/components/DropdownListItem';
-import dynamic from 'next/dynamic';
+import { FormattedResource } from 'src/utils/api/types';
+
+import { usePredictiveSearchResponse } from '../hooks/usePredictiveSearch';
 
 const DropdownContent = dynamic(() =>
   import('src/components/input-with-dropdown/components/DropdownContent').then(
@@ -39,9 +40,8 @@ export interface SearchWithPredictiveTextProps
   size?: InputProps['size'];
   type?: InputProps['type'];
   hideSuggestions?: boolean;
-  isDisabled?: boolean;
-  isInvalid?: boolean;
-  colorScheme?: InputProps['colorScheme'];
+  disabled?: boolean;
+  colorPalette?: InputProps['colorPalette'];
   inputValue?: string;
   onClose?: () => void; // triggered when input 'x' is pressed.
   onClick?: (
@@ -64,16 +64,15 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
   placeholder,
   size = 'sm',
   type = 'text',
-  colorScheme = 'primary',
+  colorPalette = 'primary',
   hideSuggestions,
   handleSubmit,
   renderSubmitButton,
   onClose,
   onChange,
   onClick,
-  isDisabled,
-  isInvalid,
-  isLoading,
+  disabled,
+  loading,
   inputValue,
   ...props
 }) => {
@@ -108,18 +107,17 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
       {/* Keep dropdown agnostic from results. */}
       <InputWithDropdown
         inputValue={inputValue !== undefined ? inputValue : searchTerm}
-        colorScheme={colorScheme}
+        colorPalette={colorPalette}
         cursorMax={suggestions.length}
       >
         <DropdownInput
           id='predictive-search-input'
-          isDisabled={isDisabled}
+          disabled={disabled}
           ariaLabel={ariaLabel}
           placeholder={placeholder}
           size={size}
           type={type}
-          isLoading={isLoading}
-          isInvalid={isInvalid}
+          loading={loading}
           onChange={onChange ? onChange : updateSearchTerm}
           onSubmit={(value, idx) => {
             handleSubmit(value, searchField, results[idx]);
@@ -128,19 +126,19 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
             renderSubmitButton
               ? props => {
                   return renderSubmitButton({
-                    colorScheme,
+                    colorPalette,
                     ariaLabel,
                     size,
-                    isDisabled: isLoading || !searchTerm || false,
+                    disabled: loading || !searchTerm || false,
                     ...props,
                   });
 
                   // return (
                   //   <Button
                   //     display='flex'
-                  //     colorScheme={colorScheme}
+                  //     colorPalette={colorPalette}
                   //     aria-label={ariaLabel}
-                  //     // isDisabled={isLoading || false}
+                  //     // disabled={loading || false}
                   //     size={size}
                   //     {...props}
                   //   >
@@ -161,12 +159,12 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
         {!hideSuggestions && (
           <DropdownContent>
             {/* if no suggestions are listed, remind users that sometimes data is missing from data sources. */}
-            {!isLoading && !suggestions.length && searchField && searchTerm && (
+            {!loading && !suggestions.length && searchField && searchTerm && (
               <Flex flexDirection='column' alignItems='center'>
                 <Text fontStyle='italic' p={2} fontSize='xs'>
                   No results
                 </Text>
-                <Divider w='100%' mx={8} />
+                <Separator w='100%' mx={8} />
                 <Flex p={4}>
                   <Circle
                     size='20px'
@@ -175,7 +173,9 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
                     color='gray.600'
                     mr={1}
                   >
-                    <Icon as={FaInfo} boxSize={2} />
+                    <Icon boxSize={2} asChild>
+                      <FaInfo />
+                    </Icon>
                   </Circle>
                   <Text fontSize='xs' lineHeight='shorter'>
                     The Discovery Portal attempts to standardize metadata that

@@ -19,31 +19,31 @@ interface IntroSectionProps {
   topicEmphasizedDescription?: DiseasePageProps['topicEmphasizedDescription'];
   links?: DiseasePageProps['contacts'];
   image?: DiseasePageProps['image'];
-  isLoading?: boolean;
+  loading?: boolean;
 }
 export const IntroSection: React.FC<IntroSectionProps> = ({
   title,
   subtitle,
   topicEmphasizedDescription,
   image,
-  isLoading,
+  loading,
 }) => {
   const MDXComponents = useMDXComponents();
 
   return (
     <Stack
       flexDirection={{ base: 'column', sm: 'row' }}
-      spacing={{ base: 6, lg: 16 }}
+      gap={{ base: 6, lg: 16 }}
       flexWrap='wrap'
     >
       <VStack
-        spacing={4}
+        gap={4}
         alignItems='flex-start'
         flex={3}
         minWidth={{ base: '100%', sm: '450px' }}
       >
         {/* Title */}
-        <SectionTitle as='h1' isLoading={isLoading}>
+        <SectionTitle as='h1' loading={loading}>
           {title}
         </SectionTitle>
 
@@ -55,8 +55,8 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
         />
 
         {/* Subtitle */}
-        {(subtitle || isLoading) && (
-          <SkeletonText isLoaded={!isLoading} noOfLines={2} skeletonHeight={5}>
+        {(subtitle || loading) && (
+          <SkeletonText loading={loading} noOfLines={2} height={5}>
             <Text color='gray.700' lineHeight='short'>
               {subtitle}
             </Text>
@@ -64,11 +64,11 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
         )}
 
         {/* Description */}
-        {(topicEmphasizedDescription || isLoading) && (
+        {(topicEmphasizedDescription || loading) && (
           <SkeletonText
-            isLoaded={!isLoading}
+            loading={loading}
             noOfLines={5}
-            skeletonHeight={4}
+            height={4}
             maxWidth={{ base: 'unset', xl: 800 }}
           >
             {topicEmphasizedDescription && (
@@ -82,7 +82,6 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
           </SkeletonText>
         )}
       </VStack>
-
       {/* Image */}
       {image?.url && (
         <Box

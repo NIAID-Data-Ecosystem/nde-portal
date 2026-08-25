@@ -1,21 +1,21 @@
-import React from 'react';
 import { Box, Flex, Icon, Text } from '@chakra-ui/react';
-import { Distribution, FormattedResource } from 'src/utils/api/types';
-import { Table } from 'src/components/table';
+import React from 'react';
 import { Link } from 'src/components/link';
+import { Table } from 'src/components/table';
 import { EmptyCell } from 'src/components/table/components/cell';
 import { getFileIcon } from 'src/components/table/helpers';
+import { Distribution, FormattedResource } from 'src/utils/api/types';
 import { formatNumber } from 'src/utils/helpers';
 
 interface FilesTableProps {
-  isLoading: boolean;
+  loading: boolean;
   distribution?: FormattedResource['distribution'];
 }
 
-const FilesTable: React.FC<FilesTableProps> = ({ isLoading, distribution }) => {
+const FilesTable: React.FC<FilesTableProps> = ({ loading, distribution }) => {
   return (
     <>
-      {!isLoading && !distribution?.length ? (
+      {!loading && !distribution?.length ? (
         <Flex justifyContent='center'>
           <Text py={2}>No results found.</Text>
         </Flex>
@@ -26,7 +26,7 @@ const FilesTable: React.FC<FilesTableProps> = ({ isLoading, distribution }) => {
           data={distribution || []}
           tableContainerProps={{ overflowY: 'auto' }}
           getCells={props => <DistributionCells {...props} />}
-          isLoading={isLoading}
+          loading={loading}
           hasPagination
           columns={[
             {
@@ -115,7 +115,7 @@ export const DistributionCells = ({
         {...column.props}
       >
         {column.property === 'contentUrl' && (
-          <Link href={data?.[column.property] || ''} isExternal noOfLines={2}>
+          <Link href={data?.[column.property] || ''} isExternal lineClamp={2}>
             {data?.[column.property]}
           </Link>
         )}
@@ -124,32 +124,31 @@ export const DistributionCells = ({
           column.property === 'dateCreated' ||
           column.property === 'dateModified' ||
           column.property === 'datePublished') && (
-          <Text fontSize='xs' noOfLines={3}>
+          <Text fontSize='xs' lineClamp={3}>
             {data[column.property]}
           </Text>
         )}
         {column.property === 'encodingFormat' && (
           <Box>
-            {column.property === 'encodingFormat' && (
-              <Text size='sm' fontSize='xs' mb={1}>
-                {encodingFormats.map(format => {
-                  return (
-                    <Text key={format.name} size='sm' fontSize='xs' mb={1}>
-                      {format.name}
-                      {format?.icon && format?.icon?.icon && (
-                        <Icon
-                          as={format.icon.icon}
-                          color={format.icon.color || undefined}
-                          ml={2}
-                        />
-                      )}
-                    </Text>
-                  );
-                })}
-              </Text>
-            )}
+            {column.property === 'encodingFormat' &&
+              encodingFormats.map(format => {
+                return (
+                  <Text key={format.name} fontSize='xs' mb={1}>
+                    {format.name}
+                    {format?.icon && format?.icon?.icon && (
+                      <Icon
+                        color={format.icon.color || undefined}
+                        ml={2}
+                        asChild
+                      >
+                        <format.icon.icon />
+                      </Icon>
+                    )}
+                  </Text>
+                );
+              })}
             {data?.['contentSize'] && (
-              <Text size='sm' fontSize='xs' mb={1}>
+              <Text fontSize='xs' mb={1}>
                 <strong>size: </strong> {formatNumber(data['contentSize'])}
               </Text>
             )}

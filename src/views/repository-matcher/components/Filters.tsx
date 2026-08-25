@@ -1,31 +1,27 @@
-import React from 'react';
 import {
   Accordion,
   Box,
   Button,
   Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
   Flex,
   Heading,
   Icon,
+  Portal,
   Text,
   useBreakpointValue,
   useDisclosure,
 } from '@chakra-ui/react';
+import React from 'react';
 import { FaFilter } from 'react-icons/fa6';
+import { SelectedRepositoryMatcherFilters } from 'src/views/repository-matcher/hooks/useRepositoryMatcherFilters';
+import { FILTERABLE_REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
 import { FiltersList } from 'src/views/search/components/filters/components/list';
 import { FiltersSection } from 'src/views/search/components/filters/components/section';
 import {
   FilterConfig,
   FilterTermType,
 } from 'src/views/search/components/filters/types';
-import { FILTERABLE_REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
-import { SelectedRepositoryMatcherFilters } from 'src/views/repository-matcher/hooks/useRepositoryMatcherFilters';
+
 import { RepositoryMatcherColumn } from '../types';
 
 interface FiltersProps {
@@ -33,7 +29,7 @@ interface FiltersProps {
   selected: SelectedRepositoryMatcherFilters;
   onChange: (columnId: string, values: string[]) => void;
   onClearAll: () => void;
-  isLoading?: boolean;
+  loading?: boolean;
 }
 
 // FiltersList only reads `name` and (optionally) `groupBy` off its config; the
@@ -49,30 +45,37 @@ const toFilterConfig = (col: RepositoryMatcherColumn<any>): FilterConfig => ({
 });
 
 const FiltersAccordion: React.FC<
-  Pick<FiltersProps, 'termsByColumnId' | 'selected' | 'onChange' | 'isLoading'>
-> = ({ termsByColumnId, selected, onChange, isLoading }) => (
-  <Accordion
-    allowMultiple
-    defaultIndex={FILTERABLE_REPOSITORY_MATCHER_COLUMNS.map((_, i) => i)}
+  Pick<FiltersProps, 'termsByColumnId' | 'selected' | 'onChange' | 'loading'>
+> = ({ termsByColumnId, selected, onChange, loading }) => (
+  <Accordion.Root
+    multiple
+    defaultValue={FILTERABLE_REPOSITORY_MATCHER_COLUMNS.map(
+      ({ id }) => `item-${id}`,
+    )}
   >
     {FILTERABLE_REPOSITORY_MATCHER_COLUMNS.map(col => {
       const config = toFilterConfig(col);
       const { description, name } = config;
       return (
-        <FiltersSection key={col.id} name={name} description={description}>
+        <FiltersSection
+          key={col.id}
+          id={col.id}
+          name={name}
+          description={description}
+        >
           <FiltersList
             config={config}
-            colorScheme='primary'
+            colorPalette='primary'
             searchPlaceholder={`Search ${name.toLowerCase()} filters`}
             terms={termsByColumnId[col.id] ?? []}
             selectedFilters={selected[col.id] ?? []}
             handleSelectedFilters={values => onChange(col.id, values)}
-            isLoading={!!isLoading}
+            loading={!!loading}
           />
         </FiltersSection>
       );
     })}
-  </Accordion>
+  </Accordion.Root>
 );
 
 export const Filters: React.FC<FiltersProps> = ({
@@ -80,13 +83,13 @@ export const Filters: React.FC<FiltersProps> = ({
   selected,
   onChange,
   onClearAll,
-  isLoading,
+  loading,
 }) => {
   const isMobile = useBreakpointValue(
     { base: true, md: false },
     { fallback: 'md' },
   );
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { open, onOpen, onClose } = useDisclosure();
 
   if (isMobile) {
     return (
@@ -95,66 +98,77 @@ export const Filters: React.FC<FiltersProps> = ({
           variant='outline'
           size='sm'
           onClick={onOpen}
-          leftIcon={<Icon as={FaFilter} boxSize={3} />}
-          colorScheme='gray'
+          colorPalette='gray'
           fontWeight='medium'
         >
+          <Icon boxSize={3} asChild>
+            <FaFilter />
+          </Icon>
           Filters
         </Button>
-        <Drawer
-          isOpen={isOpen}
-          onClose={onClose}
-          placement='right'
+        <Drawer.Root
+          open={open}
+          placement='end'
           size='full'
-          autoFocus={false}
+          onOpenChange={e => {
+            if (!e.open) {
+              onClose();
+            }
+          }}
         >
-          <DrawerOverlay />
-          <DrawerContent>
-            <DrawerHeader
-              borderBottomWidth='1px'
-              borderBottomColor='gray.100'
-              py={3}
-              px={4}
-            >
-              <Flex align='center' justify='space-between'>
-                <Button
-                  variant='link'
-                  size='sm'
-                  colorScheme={
-                    Object.values(selected).length > 0 ? 'secondary' : 'gray'
-                  }
-                  fontWeight='medium'
-                  onClick={onClearAll}
+          <Portal>
+            <Drawer.Backdrop />
+            <Drawer.Positioner>
+              <Drawer.Content>
+                <Drawer.Header
+                  borderBottomWidth='1px'
+                  borderBottomColor='gray.100'
+                  py={3}
+                  px={4}
                 >
-                  Reset
-                </Button>
-                <Text fontSize='md' fontWeight='semibold'>
-                  Filters
-                </Text>
-                <Box w='3.5rem' />
-              </Flex>
-            </DrawerHeader>
-            <DrawerCloseButton top={3} />
-            <DrawerBody px={2} py={2} bg='blackAlpha.50'>
-              <FiltersAccordion
-                termsByColumnId={termsByColumnId}
-                selected={selected}
-                onChange={onChange}
-                isLoading={isLoading}
-              />
-            </DrawerBody>
-            <DrawerFooter borderTopWidth='1px' py={3}>
-              <Button
-                onClick={onClose}
-                colorScheme='secondary'
-                size='md'
-                w='full'
-              >
-                Done
-              </Button>
-            </DrawerFooter>
-          </DrawerContent>
-        </Drawer>
+                  <Flex align='center' justify='space-between'>
+                    <Button
+                      variant='plain'
+                      size='sm'
+                      colorPalette={
+                        Object.values(selected).length > 0
+                          ? 'secondary'
+                          : 'gray'
+                      }
+                      fontWeight='medium'
+                      onClick={onClearAll}
+                    >
+                      Reset
+                    </Button>
+                    <Text fontSize='md' fontWeight='semibold'>
+                      Filters
+                    </Text>
+                    <Box w='3.5rem' />
+                  </Flex>
+                </Drawer.Header>
+                <Drawer.CloseTrigger top={3} />
+                <Drawer.Body px={2} py={2} bg='blackAlpha.50'>
+                  <FiltersAccordion
+                    termsByColumnId={termsByColumnId}
+                    selected={selected}
+                    onChange={onChange}
+                    loading={loading}
+                  />
+                </Drawer.Body>
+                <Drawer.Footer borderTopWidth='1px' py={3}>
+                  <Button
+                    onClick={onClose}
+                    colorPalette='secondary'
+                    size='md'
+                    w='full'
+                  >
+                    Done
+                  </Button>
+                </Drawer.Footer>
+              </Drawer.Content>
+            </Drawer.Positioner>
+          </Portal>
+        </Drawer.Root>
       </>
     );
   }
@@ -183,7 +197,7 @@ export const Filters: React.FC<FiltersProps> = ({
           termsByColumnId={termsByColumnId}
           selected={selected}
           onChange={onChange}
-          isLoading={isLoading}
+          loading={loading}
         />
       </Box>
     </Box>

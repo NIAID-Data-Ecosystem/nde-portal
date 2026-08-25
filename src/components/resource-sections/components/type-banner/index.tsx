@@ -95,7 +95,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
     type === 'ResourceCatalog' &&
     creativeWorkStatus === 'Retired';
 
-  const colorScheme = getTypeColor(type, isRetired, isProgramResource);
+  const colorPalette = getTypeColor(type, isRetired, isProgramResource);
 
   // Most types pair a light label (lt) with a dark banner (dk), so the white
   // "NIAID" sub-label reads against dk. Retired catalogs and Data Collections
@@ -123,9 +123,9 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
       : label;
 
   return (
-    <Flex flexWrap='wrap' w='100%' bg={props.bg || colorScheme.dk} {...props}>
+    <Flex flexWrap='wrap' w='100%' bg={props.bg || colorPalette.dk} {...props}>
       <Flex
-        bg={props.bg || colorScheme.dk}
+        bg={props.bg || colorPalette.dk}
         px={{ base: 2, lg: 4 }}
         pl={pl}
         py={0}
@@ -134,13 +134,13 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
       >
         <StyledLabel
           _before={{
-            bg: colorScheme.lt,
+            bg: colorPalette.lt,
           }}
         >
-          <Tooltip label={abstractTooltipLabel || descriptionTooltipLabel}>
+          <Tooltip content={abstractTooltipLabel || descriptionTooltipLabel}>
             <Text
               fontSize='xs'
-              color={type ? 'white' : colorScheme.lt}
+              color={type ? 'white' : colorPalette.lt}
               px={2}
               fontWeight='semibold'
               whiteSpace='nowrap'
@@ -154,7 +154,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
         {isNiaidFunded && (
           <StyledLabel
             _before={{
-              bg: hasLightBanner ? colorScheme.lt : colorScheme.dk,
+              bg: hasLightBanner ? colorPalette.lt : colorPalette.dk,
             }}
           >
             <Text
@@ -169,16 +169,17 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
           </StyledLabel>
         )}
       </Flex>
-
       <Flex
-        bg={props.bg || colorScheme.dk}
+        bg={props.bg || colorPalette.dk}
         overflow='hidden'
         flex={1}
         minW='250px'
       >
         {date && (
           <Flex alignItems='center' px={{ base: 2, lg: 4 }} py={[2, 1]}>
-            <Icon as={FaRegClock} mr={2} />
+            <Icon mr={2} asChild>
+              <FaRegClock />
+            </Icon>
             <Text fontSize='xs' fontWeight='semibold' whiteSpace='nowrap'>
               {date}
             </Text>

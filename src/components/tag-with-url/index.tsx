@@ -1,18 +1,11 @@
-import React from 'react';
-import { FaSquareArrowUpRight } from 'react-icons/fa6';
-import {
-  Tag,
-  TagLabel,
-  TagLeftIcon,
-  TagProps,
-  TagRightIcon,
-  Text,
-} from '@chakra-ui/react';
+import { Tag, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
-import type { UrlObject } from 'url';
+import React from 'react';
 import { IconType } from 'react-icons';
+import { FaSquareArrowUpRight } from 'react-icons/fa6';
+import type { UrlObject } from 'url';
 
-interface TagWithUrlProps extends TagProps {
+interface TagWithUrlProps extends Tag.RootProps {
   href?: string | UrlObject | null;
   label?: string;
   isExternal?: boolean;
@@ -34,7 +27,7 @@ export const TagWithUrl = ({
   href,
   isExternal,
   leftIcon,
-  noOfLines = 1,
+  lineClamp = 1,
   ...props
 }: TagWithUrlProps) => {
   const Label = () =>
@@ -63,37 +56,40 @@ export const TagWithUrl = ({
       </Text>
     );
   return (
-    <Tag
-      as={NextLink}
-      href={href}
-      target={isExternal ? '_blank' : '_self'}
+    <Tag.Root
       size='sm'
       variant='subtle'
       alignItems='center'
       _hover={{
-        '.tag-text': {
+        '& .tag-text': {
           textDecoration: 'none',
         },
       }}
       lineHeight='shorter'
       {...props}
+      asChild
     >
-      {leftIcon && <TagLeftIcon as={leftIcon} mr={0} />}
-
-      <TagLabel fontSize='inherit' lineHeight='inherit' display='inline'>
-        <Label />
-        <Text
-          as='span'
-          className='tag-text'
-          textDecoration='underline'
-          fontSize='inherit'
-          lineHeight='inherit'
-          color='inherit'
-        >
-          {children}
-        </Text>
-      </TagLabel>
-      {isExternal && <TagRightIcon as={FaSquareArrowUpRight} ml={1} />}
-    </Tag>
+      <NextLink href={href} target={isExternal ? '_blank' : '_self'}>
+        {leftIcon && <Tag.StartElement as={leftIcon} mr={0} />}
+        <Tag.Label fontSize='inherit' lineHeight='inherit' display='inline'>
+          <Label />
+          <Text
+            as='span'
+            className='tag-text'
+            textDecoration='underline'
+            fontSize='inherit'
+            lineHeight='inherit'
+            color='inherit'
+          >
+            {children}
+          </Text>
+        </Tag.Label>
+        {isExternal && (
+          <Tag.EndElement ml={1} asChild>
+            <FaSquareArrowUpRight />
+          </Tag.EndElement>
+        )}
+      </NextLink>
+    </Tag.Root>
   );
 };

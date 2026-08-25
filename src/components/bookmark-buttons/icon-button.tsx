@@ -12,24 +12,26 @@ export const BookmarkIconButton: React.FC<
     ariaLabel || (isFavorited ? 'Remove from saved' : 'Save this resource');
 
   return (
-    <Tooltip label={label}>
+    <Tooltip content={label}>
       <IconButton
-        icon={
-          isFavorited ? (
-            <Icon as={FaBookmark} fill='link.color' />
-          ) : (
-            <Icon as={FaRegBookmark} fill='page.placeholder' />
-          )
-        }
         aria-label={label}
         onClick={onClick}
         variant='ghost'
-        isRound={true}
         borderRadius='50%'
         size='sm'
-        colorScheme='blue'
+        colorPalette='blue'
         {...props}
-      />
+      >
+        {isFavorited ? (
+          <Icon fill='link.color' asChild>
+            <FaBookmark />
+          </Icon>
+        ) : (
+          <Icon fill='page.placeholder' asChild>
+            <FaRegBookmark />
+          </Icon>
+        )}
+      </IconButton>
     </Tooltip>
   );
 };

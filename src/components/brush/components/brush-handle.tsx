@@ -89,7 +89,6 @@ export const BrushHandle = ({
         stroke={finalStrokeColor}
         style={{ cursor: 'ew-resize' }}
       />
-
       {/* Optional year label positioned next to the handle */}
       {label && (
         <text

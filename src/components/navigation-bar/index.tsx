@@ -1,14 +1,15 @@
-import React from 'react';
-import { FlexProps, Stack, useDisclosure } from '@chakra-ui/react';
+import { BoxProps, Stack, useDisclosure } from '@chakra-ui/react';
 import SITE_CONFIG from 'configs/site.config.json';
-import { DesktopAuthAction } from './components/nav-auth-action';
 import { useRouter } from 'next/router';
+import React from 'react';
+
 import { SiteConfig } from '../page-container/types';
 import { Nav } from './components/index';
+import { DesktopAuthAction } from './components/nav-auth-action';
 import { buildNavigationFromConfig, filterRoutesByEnv } from './utils';
 
-export const Navigation: React.FC<FlexProps> = props => {
-  const { isOpen, onToggle } = useDisclosure();
+export const Navigation: React.FC<BoxProps> = props => {
+  const { open, onToggle } = useDisclosure();
   const router = useRouter();
   const appEnvironment = process.env.NEXT_PUBLIC_APP_ENV || '';
 
@@ -30,12 +31,14 @@ export const Navigation: React.FC<FlexProps> = props => {
         {/* For desktop */}
         <Stack
           direction='row'
-          spacing={{ base: 0 }}
+          gap={{ base: 0 }}
           display={{ base: 'none', md: 'flex' }}
           ml={{ base: 6, lg: 10 }}
           flex={1}
           justifyContent='flex-end'
-          sx={{ '>a,>button': { px: 4, py: 2, color: 'white' } }}
+          css={{
+            '& >a,>button': { px: 4, py: 2, color: 'white' },
+          }}
         >
           {navigation.map(navItem => (
             <Nav.DesktopNavItem
@@ -48,11 +51,10 @@ export const Navigation: React.FC<FlexProps> = props => {
         </Stack>
 
         {/* For mobile / tablet */}
-        <Nav.Toggle isOpen={isOpen} onToggle={onToggle} />
+        <Nav.Toggle isOpen={open} onToggle={onToggle} />
       </Nav.Bar>
-
       {/* Popout navigation in mobile mode */}
-      {isOpen && <Nav.MobileMenu isOpen={isOpen} routes={navigation} />}
+      {open && <Nav.MobileMenu isOpen={open} routes={navigation} />}
     </Nav.Wrapper>
   );
 };

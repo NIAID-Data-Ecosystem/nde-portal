@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Flex,
-  Icon,
-  Stack,
-  Text,
-  UnorderedList,
-  ListItem,
-} from '@chakra-ui/react';
+import { Box, Flex, Icon, Stack, Text, List } from '@chakra-ui/react';
 import { FaBitbucket, FaGithub } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 import { HeadingWithTooltip } from './heading-with-tooltip';
@@ -16,7 +8,7 @@ import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 
 interface AssociatedDocumentation {
-  isLoading: boolean;
+  loading: boolean;
   type?: FormattedResource['@type'];
   mainEntityOfPage?: FormattedResource['mainEntityOfPage'];
   codeRepository?: FormattedResource['codeRepository'];
@@ -25,12 +17,12 @@ interface AssociatedDocumentation {
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
 export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
-  isLoading,
+  loading,
   codeRepository,
   mainEntityOfPage,
   type,
 }) => {
-  if (!isLoading && !(mainEntityOfPage || codeRepository || type)) {
+  if (!loading && !(mainEntityOfPage || codeRepository || type)) {
     return <></>;
   }
 
@@ -38,7 +30,7 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
     <>
       {/* mainEntityOfPage refers to a website for the resource. */}
       {mainEntityOfPage && (
-        <Stack spacing={1}>
+        <Stack gap={1}>
           <HeadingWithTooltip
             label='Associated Website'
             tooltipLabel={`${
@@ -73,7 +65,6 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
             ))}
         </Stack>
       )}
-
       {/* Links to the source code of the tool  */}
       {codeRepository && (
         <Flex
@@ -90,17 +81,23 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
               schema?.['coreRepository']?.description?.[type || 'Dataset'] ?? ''
             }`}
           />
-          <UnorderedList alignItems='center' ml={0}>
+          <List.Root as='ul' alignItems='center' ml={0}>
             {(Array.isArray(codeRepository)
               ? codeRepository
               : [codeRepository]
             ).map((repo, idx) => {
               return (
-                <ListItem key={idx} alignItems='start' display='flex' pb={2}>
+                <List.Item key={idx} alignItems='start' display='flex' pb={2}>
                   <Box mx={1} mt={1}>
-                    {repo.includes('git') && <Icon as={FaGithub} boxSize={4} />}
+                    {repo.includes('git') && (
+                      <Icon boxSize={4} asChild>
+                        <FaGithub />
+                      </Icon>
+                    )}
                     {repo.includes('bitbucket') && (
-                      <Icon as={FaBitbucket} boxSize={4} />
+                      <Icon boxSize={4} asChild>
+                        <FaBitbucket />
+                      </Icon>
                     )}
                   </Box>
                   {repo.includes('http') ? (
@@ -110,10 +107,10 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
                   ) : (
                     <Text>{repo}</Text>
                   )}
-                </ListItem>
+                </List.Item>
               );
             })}
-          </UnorderedList>
+          </List.Root>
         </Flex>
       )}
     </>

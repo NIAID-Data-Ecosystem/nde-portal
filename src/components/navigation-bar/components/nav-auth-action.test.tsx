@@ -21,16 +21,16 @@ jest.mock('./nav-desktop-dropdown', () => ({
   NavDropdownTrigger: ({
     label,
     children,
-    isDisabled,
-    isLoading,
+    disabled,
+    loading,
   }: {
     label: string;
     children: React.ReactNode;
-    isDisabled?: boolean;
-    isLoading?: boolean;
+    disabled?: boolean;
+    loading?: boolean;
   }) => (
     <div>
-      <button disabled={isDisabled} data-loading={isLoading ? '' : undefined}>
+      <button disabled={disabled} data-loading={loading ? '' : undefined}>
         {label}
       </button>
       {children}
@@ -59,7 +59,7 @@ describe('nav auth action', () => {
     mockUseAuth.mockReturnValue({
       user: null,
       isAuthenticated: false,
-      isLoading: false,
+      loading: false,
       login: jest.fn(),
       logout: jest.fn(),
     });
@@ -76,7 +76,7 @@ describe('nav auth action', () => {
     mockUseAuth.mockReturnValue({
       user: null,
       isAuthenticated: false,
-      isLoading: false,
+      loading: false,
       login,
       logout: jest.fn(),
     });
@@ -92,7 +92,7 @@ describe('nav auth action', () => {
     mockUseAuth.mockReturnValue({
       user: { name: '  ', username: 'user-name' },
       isAuthenticated: true,
-      isLoading: false,
+      loading: false,
       login: jest.fn(),
       logout,
     });
@@ -110,7 +110,7 @@ describe('nav auth action', () => {
     mockUseAuth.mockReturnValue({
       user: null,
       isAuthenticated: false,
-      isLoading: true,
+      loading: true,
       login: jest.fn(),
       logout: jest.fn(),
     });
@@ -124,7 +124,7 @@ describe('nav auth action', () => {
     mockUseAuth.mockReturnValue({
       user: { name: '', username: '' },
       isAuthenticated: true,
-      isLoading: false,
+      loading: false,
       login: jest.fn(),
       logout: jest.fn(),
     });
@@ -140,7 +140,7 @@ describe('nav auth action', () => {
     mockUseAuth.mockReturnValue({
       user: null,
       isAuthenticated: false,
-      isLoading: true,
+      loading: true,
       login,
       logout,
     });
@@ -150,7 +150,7 @@ describe('nav auth action', () => {
     mockUseAuth.mockReturnValue({
       user: null,
       isAuthenticated: false,
-      isLoading: false,
+      loading: false,
       login,
       logout,
     });
@@ -161,7 +161,7 @@ describe('nav auth action', () => {
     mockUseAuth.mockReturnValue({
       user: { name: 'Jane Doe', username: 'jane' },
       isAuthenticated: true,
-      isLoading: false,
+      loading: false,
       login,
       logout,
     });

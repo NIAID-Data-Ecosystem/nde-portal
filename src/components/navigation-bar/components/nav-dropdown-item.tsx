@@ -1,10 +1,11 @@
+import { Box, Flex, Icon, Link, Text } from '@chakra-ui/react';
 import React from 'react';
-import { Box, Flex, Link, Text, Icon } from '@chakra-ui/react';
 import {
   FaAngleDown,
   FaAngleRight,
   FaArrowUpRightFromSquare,
 } from 'react-icons/fa6';
+
 import { TransformedNavigationDropdown } from '../types';
 
 /*
@@ -24,7 +25,7 @@ import { TransformedNavigationDropdown } from '../types';
 
 //** Shared styles
 
-const ICON_COLOR = { '> *': { color: 'niaid.700' } };
+const ICON_COLOR = { '& > *': { color: 'niaid.700' } };
 
 const SHARED_DROPDOWN_ITEM_STYLES = {
   display: 'flex',
@@ -56,12 +57,14 @@ const DropdownItemContent = ({
       </Text>
       {isExternal && (
         <Icon
-          as={FaArrowUpRightFromSquare}
           w={3}
           h={3}
           color='niaid.700'
           aria-label='Opens in new tab'
-        />
+          asChild
+        >
+          <FaArrowUpRightFromSquare />
+        </Icon>
       )}
     </Flex>
     {description && (
@@ -88,7 +91,9 @@ const DropdownItemArrowIcon = (): JSX.Element => (
     justify='flex-end'
     align='center'
   >
-    <Icon sx={ICON_COLOR} w={3} h={3} as={FaAngleRight} />
+    <Icon css={ICON_COLOR} w={3} h={3} asChild>
+      <FaAngleRight />
+    </Icon>
   </Flex>
 );
 
@@ -99,15 +104,17 @@ const DropdownItemToggleIcon = ({
   isOpen?: boolean;
 }): JSX.Element => (
   <Icon
-    sx={ICON_COLOR}
-    as={FaAngleDown}
+    css={ICON_COLOR}
     transition='all .25s ease-in-out'
     transform={
       isOpen ? 'translateX(-10px) rotate(180deg)' : 'translateX(-10px)'
     }
     w={3}
     h={3}
-  />
+    asChild
+  >
+    <FaAngleDown />
+  </Icon>
 );
 
 export const NavDropdownItem = ({
@@ -123,22 +130,22 @@ export const NavDropdownItem = ({
   if (!href) {
     return (
       <Flex
-        as='button'
-        type='button'
         aria-expanded={isOpen}
         aria-label={`${isOpen ? 'Close' : 'Open'} ${label} dropdown`}
         {...SHARED_DROPDOWN_ITEM_STYLES}
         color='gray.900'
         _hover={{ bg: 'niaid.50', color: 'gray.900' }}
-        onClick={onClick}
+        asChild
       >
-        <DropdownItemContent
-          label={label}
-          icon={icon}
-          description={description}
-          isExternal={isExternal}
-        />
-        <DropdownItemToggleIcon isOpen={isOpen} />
+        <button type='button' onClick={onClick}>
+          <DropdownItemContent
+            label={label}
+            icon={icon}
+            description={description}
+            isExternal={isExternal}
+          />
+          <DropdownItemToggleIcon isOpen={isOpen} />
+        </button>
       </Flex>
     );
   }
@@ -154,8 +161,8 @@ export const NavDropdownItem = ({
       _hover={{
         bg: 'niaid.50',
         color: 'niaid.600',
-        '.label': { color: 'niaid.500' },
-        '.icon': { transform: 'translateX(0)' },
+        '& .label': { color: 'niaid.500' },
+        '& .icon': { transform: 'translateX(0)' },
       }}
       _visited={{ color: 'niaid.800' }}
       cursor='pointer'

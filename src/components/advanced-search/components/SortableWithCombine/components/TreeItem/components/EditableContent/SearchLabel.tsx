@@ -1,4 +1,4 @@
-import { Select, VisuallyHidden } from '@chakra-ui/react';
+import { NativeSelect, VisuallyHidden } from '@chakra-ui/react';
 import { useCallback, useEffect, useState } from 'react';
 import { useAdvancedSearchContext } from 'src/components/advanced-search/components/Search';
 import { SearchTypesConfigProps } from 'src/components/advanced-search/components/Search/search-types-config';
@@ -42,34 +42,35 @@ export const SearchLabel = ({
       <VisuallyHidden>
         <label id='field-select-label'>Select field</label>
       </VisuallyHidden>
-      <Select
-        aria-labelledby='field-select-label'
-        size='sm'
-        w='170px'
-        variant='outline'
-        borderRadius='semi'
-        mb={2}
-        _focus={{ borderColor: 'page.placeholder' }}
-        _hover={{ bg: 'page.alt' }}
-        value={selectedSearchType.id}
-        onChange={e => {
-          const searchType = searchOptions.find(
-            ({ id }) => id === e.target.value,
-          );
-          if (searchType) {
-            setSelectedSearchType(searchType);
-          }
-        }}
-      >
-        {/* <option value={'None'}>None</option> */}
-        {searchOptions.map(option => {
-          return (
-            <option key={option.id} value={option.id}>
-              {option.label}
-            </option>
-          );
-        })}
-      </Select>
+      <NativeSelect.Root size='sm' variant='outline'>
+        <NativeSelect.Field
+          aria-labelledby='field-select-label'
+          w='170px'
+          borderRadius='semi'
+          mb={2}
+          _focus={{ borderColor: 'page.placeholder' }}
+          _hover={{ bg: 'page.alt' }}
+          value={selectedSearchType.id}
+          onChange={e => {
+            const searchType = searchOptions.find(
+              ({ id }) => id === e.target.value,
+            );
+            if (searchType) {
+              setSelectedSearchType(searchType);
+            }
+          }}
+        >
+          {/* <option value={'None'}>None</option> */}
+          {searchOptions.map(option => {
+            return (
+              <option key={option.id} value={option.id}>
+                {option.label}
+              </option>
+            );
+          })}
+        </NativeSelect.Field>
+        <NativeSelect.Indicator />
+      </NativeSelect.Root>
     </>
   );
 };

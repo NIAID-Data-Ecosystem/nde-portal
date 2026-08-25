@@ -3,7 +3,7 @@ import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-import { Box, Divider, Flex, Heading, Text } from '@chakra-ui/react';
+import { Box, Flex, Heading, Text, Separator } from '@chakra-ui/react';
 import { Error } from 'src/components/error';
 import Empty from 'src/components/empty';
 import { MDXComponents as DefaultMDXComponents } from 'src/components/mdx/components';
@@ -82,16 +82,13 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
         </Heading>
         <Text color='gray.700'>{data.subtitle}</Text>
       </Box>
-
       <ReactMarkdown
         rehypePlugins={[rehypeRaw, remarkGfm]}
         components={MDXComponents}
       >
         {data.description}
       </ReactMarkdown>
-
-      <Divider orientation='horizontal' mt={8} mb={4} />
-
+      <Separator orientation='horizontal' mt={8} mb={4} />
       <Text fontStyle='italic' fontSize='xs' color='gray.800' textAlign='end'>
         Last updated on{' '}
         <Text as='span' fontWeight='semibold'>

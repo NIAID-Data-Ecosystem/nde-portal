@@ -1,25 +1,18 @@
-import { useEffect, useState } from 'react';
+import { Box, Field, Flex, List, Text } from '@chakra-ui/react';
 import { uniqueId } from 'lodash';
-import {
-  Box,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  ListItem,
-  Text,
-  UnorderedList,
-} from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
+import { QueryStringError } from 'src/components/error/types';
+
 import { TreeItem } from '../SortableWithCombine';
 import { useAdvancedSearchContext } from './components/AdvancedSearchFormContext';
 import { Disclaimer } from './components/Disclaimer';
-import { SearchInput } from './components/SearchInput';
-import { SearchOptions } from './components/SearchOptions';
 import { FieldSelectWithContext } from './components/FieldSelect';
+import { SearchInput } from './components/SearchInput';
 import {
   InputSubmitButton,
   InputSubmitButtonProps,
 } from './components/SearchInput/components';
-import { QueryStringError } from 'src/components/error/types';
+import { SearchTypePicker } from './components/SearchTypePicker';
 
 interface SearchProps {
   items: TreeItem[];
@@ -61,11 +54,10 @@ export const Search = ({
         justifyContent={['flex-start', 'flex-start', 'flex-end']}
         my={[4, 2, 0]}
       >
-        <SearchOptions />
+        <SearchTypePicker />
       </Flex>
-
       <Flex w='100%' alignItems='flex-end'>
-        <FormControl isInvalid={errors.length > 0}>
+        <Field.Root invalid={errors.length > 0}>
           <Flex
             flexDirection={['column', 'column', 'row']}
             alignItems='flex-end'
@@ -84,7 +76,7 @@ export const Search = ({
             <Box zIndex={1} w='100%'>
               <SearchInput
                 size='md'
-                colorScheme='primary'
+                colorPalette='primary'
                 errors={errors}
                 setErrors={setErrors}
                 resetForm={resetForm}
@@ -122,15 +114,13 @@ export const Search = ({
                   });
                 }}
                 defaultInputValue={''}
-                renderSubmitButton={(
-                  props: Partial<InputSubmitButtonProps>,
-                ) => (
+                renderSubmitButton={props => (
                   <InputSubmitButton
                     items={items}
                     size='md'
-                    colorScheme='primary'
+                    colorPalette='primary'
                     // Button is disabled when the text input is needed but empty.
-                    isDisabled={
+                    disabled={
                       selectedSearchType.id !== '_exists_' &&
                       selectedSearchType.id !== '-_exists_'
                     }
@@ -140,19 +130,19 @@ export const Search = ({
               />
             </Box>
           </Flex>
-          <FormErrorMessage justifyContent='flex-end' color='status.error'>
-            <UnorderedList>
+          <Field.ErrorText justifyContent='flex-end' color='status.error'>
+            <List.Root as='ul'>
               {/* This is my error message */}
               {errors.map((error, index) => (
-                <ListItem key={index}>
+                <List.Item key={index}>
                   <Text color='inherit' lineHeight='shorter'>
                     <strong>{error.title}</strong>: {error.message}
                   </Text>
-                </ListItem>
+                </List.Item>
               ))}
-            </UnorderedList>
-          </FormErrorMessage>
-        </FormControl>
+            </List.Root>
+          </Field.ErrorText>
+        </Field.Root>
       </Flex>
       <Disclaimer />
     </>

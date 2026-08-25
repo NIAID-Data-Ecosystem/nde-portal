@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Button, Flex, Input, Text } from '@chakra-ui/react';
-import { useDateRangeContext } from '../hooks/useDateRangeContext';
+import React, { useEffect, useMemo, useState } from 'react';
 import { formatISOString } from 'src/utils/api/helpers';
 
+import { useDateRangeContext } from '../hooks/useDateRangeContext';
+
 interface DatePickerProps {
-  colorScheme: string;
+  colorPalette: string;
   selectedDates: string[];
   handleSelectedFilter: (arg: string[]) => void;
   resetFilter: () => void;
@@ -13,7 +14,7 @@ interface DatePickerProps {
 const EXIST_FILTERS = ['_exists_', '-_exists_'] as const;
 
 export const DatePicker = ({
-  colorScheme,
+  colorPalette,
   selectedDates,
   handleSelectedFilter,
   resetFilter,
@@ -42,7 +43,7 @@ export const DatePicker = ({
     };
   }, [allData]);
 
-  const isDisabled = !allData || !allData.length;
+  const disabled = !allData || !allData.length;
 
   // Extract actual date values (excluding _exists_ filters)
   const getActualDates = (dates: string[]) =>
@@ -71,70 +72,70 @@ export const DatePicker = ({
   // Shared date input configuration
   const dateInputProps = {
     type: 'date' as const,
-    colorScheme: colorScheme,
+    colorPalette: colorPalette,
     bg: 'white',
-    isDisabled,
+    disabled,
   };
 
   return (
-    <Flex
-      id='date-picker'
-      as='form'
-      w='100%'
-      mt={0}
-      flexDirection='column'
-      onSubmit={handleSubmit}
-    >
-      <Flex flexWrap='wrap' justifyContent='space-between' gap={2} maxW='500px'>
-        <Box flex={1}>
-          <Text fontSize='xs'>
-            <label htmlFor='start'>Start date:</label>
-          </Text>
-          <Input
-            id='start'
-            {...dateInputProps}
-            min={min}
-            max={endInputValue || max}
-            value={startInputValue}
-            onChange={e => setStartInputValue(e.target.value)}
-          />
-        </Box>
-        <Box flex={1}>
-          <Text fontSize='xs'>
-            <label htmlFor='end'>End date:</label>
-          </Text>
-          <Input
-            id='end'
-            {...dateInputProps}
-            min={startInputValue || min}
-            max={max}
-            value={endInputValue}
-            onChange={e => setEndInputValue(e.target.value)}
-          />
-        </Box>
-      </Flex>
-      <Flex alignItems='center' mt={2}>
-        <Button
-          size='sm'
-          variant='solid'
-          type='submit'
-          colorScheme={colorScheme}
-          mr={1}
-          isDisabled={isDisabled}
+    <Flex id='date-picker' w='100%' mt={0} flexDirection='column' asChild>
+      <form onSubmit={handleSubmit}>
+        <Flex
+          flexWrap='wrap'
+          justifyContent='space-between'
+          gap={2}
+          maxW='500px'
         >
-          Submit
-        </Button>
-        <Button
-          size='sm'
-          variant='outline'
-          colorScheme={colorScheme}
-          onClick={resetFilter}
-          isDisabled={isDisabled || !selectedDates.length}
-          mx={1}
-        >
-          Reset
-        </Button>
-      </Flex>
+          <Box flex={1}>
+            <Text fontSize='xs'>
+              <label htmlFor='start'>Start date:</label>
+            </Text>
+            <Input
+              id='start'
+              {...dateInputProps}
+              min={min}
+              max={endInputValue || max}
+              value={startInputValue}
+              onChange={e => setStartInputValue(e.target.value)}
+            />
+          </Box>
+          <Box flex={1}>
+            <Text fontSize='xs'>
+              <label htmlFor='end'>End date:</label>
+            </Text>
+            <Input
+              id='end'
+              {...dateInputProps}
+              min={startInputValue || min}
+              max={max}
+              value={endInputValue}
+              onChange={e => setEndInputValue(e.target.value)}
+            />
+          </Box>
+        </Flex>
+        <Flex alignItems='center' mt={2}>
+          <Button
+            size='sm'
+            variant='solid'
+            type='submit'
+            colorPalette={colorPalette}
+            mr={1}
+            disabled={disabled}
+          >
+            Submit
+          </Button>
+          <Button
+            size='sm'
+            variant='outline'
+            colorPalette={colorPalette}
+            onClick={resetFilter}
+            disabled={disabled || !selectedDates.length}
+            mx={1}
+          >
+            Reset
+          </Button>
+        </Flex>
+      </form>
     </Flex>
   );
 };

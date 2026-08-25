@@ -1,17 +1,20 @@
 import React from 'react';
-import {
-  TableContainer as NDETableContainer,
-  TableContainerProps,
-} from '@chakra-ui/react';
+import { Table, TableScrollAreaProps } from '@chakra-ui/react';
+
+/**
+ * Chakra v3 replaced `TableContainer` with `Table.ScrollArea`. Re-exported here
+ * so the prop type keeps a stable name for consumers.
+ */
+export type TableContainerProps = TableScrollAreaProps;
 
 export const TableContainer = React.forwardRef<
   HTMLDivElement,
   TableContainerProps
 >((props, ref) => {
   return (
-    <NDETableContainer
+    <Table.ScrollArea
       ref={ref}
-      sx={{
+      css={{
         '&::-webkit-scrollbar': {
           width: '10px',
           height: '10px',
@@ -24,7 +27,7 @@ export const TableContainer = React.forwardRef<
           background: 'gray.300',
           borderRadius: '13px',
         },
-        _hover: {
+        '&:hover': {
           '&::-webkit-scrollbar-thumb': {
             background: 'page.placeholder',
           },
@@ -33,7 +36,7 @@ export const TableContainer = React.forwardRef<
       {...props}
     >
       {props.children}
-    </NDETableContainer>
+    </Table.ScrollArea>
   );
 });
 

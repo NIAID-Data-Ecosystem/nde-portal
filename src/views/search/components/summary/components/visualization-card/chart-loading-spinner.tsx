@@ -13,10 +13,10 @@ export const ChartLoadingSpinner = () => (
   >
     <Spinner
       color='accent.600'
-      emptyColor='white'
+      css={{ '--spinner-track-color': 'colors.white' }}
       position='absolute'
       size='md'
-      thickness='2px'
+      borderWidth='2px'
     />
   </Flex>
 );

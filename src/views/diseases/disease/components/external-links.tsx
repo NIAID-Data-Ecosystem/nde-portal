@@ -58,10 +58,10 @@ export const ExternalLinksSection: React.FC<{
   }, [externalLinks]);
 
   return (
-    <Stack spacing={6} mt={4}>
+    <Stack gap={6} mt={4}>
       {Object.entries(externalLinksGroupedByCategory).map(
         ([category, links]) => (
-          <Stack key={category} spacing={1}>
+          <Stack key={category} gap={1}>
             {category && <SectionTitle as='h4'>{category}</SectionTitle>}
             {links.map((link, index) => (
               <ExternalLinkItem

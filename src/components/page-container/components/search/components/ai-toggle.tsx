@@ -1,30 +1,21 @@
 import {
+  Field,
   Flex,
-  FormControl,
-  FormLabel,
   HStack,
   Icon,
   Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverArrow,
-  PopoverBody,
   Switch,
-  SwitchProps,
   Tag,
-  TagLabel,
-  TagProps,
   Text,
-  TooltipProps,
+  TooltipRootProps,
   useDisclosure,
-  PopoverProps,
 } from '@chakra-ui/react';
-import { FaRegCircleQuestion } from 'react-icons/fa6';
-import { Link } from 'src/components/link';
-import { useLocalStorage } from 'usehooks-ts';
 import { useRouter } from 'next/router';
 import { useEffect, useRef } from 'react';
+import { FaRegCircleQuestion } from 'react-icons/fa6';
+import { Link } from 'src/components/link';
 import { useUserData } from 'src/hooks/useUserData';
+import { useLocalStorage } from 'usehooks-ts';
 
 const HOVER_OPEN_DELAY = 200; // ms before showing
 const HOVER_CLOSE_DELAY = 120; // ms before hiding
@@ -46,18 +37,20 @@ const DEFAULT_AI_TOOLTIP_CONTENT = (
 );
 
 interface AIToggleTooltipProps
-  extends Omit<PopoverProps, 'children' | 'content'> {
+  extends Omit<Popover.RootProps, 'children' | 'content'> {
   children: React.ReactNode;
   content?: React.ReactNode | null;
+  hasArrow?: boolean;
 }
 
 // [NOTE]: This can be replaced with Chakra's v3 Tooltip which has the interactive prop to handle clickable content within the tooltip.
 const AIToggleTooltip: React.FC<AIToggleTooltipProps> = ({
   children,
   content,
-  ...tooltipProps
+  hasArrow,
+  ...popoverProps
 }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { open, onOpen, onClose } = useDisclosure();
 
   const openTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -99,20 +92,24 @@ const AIToggleTooltip: React.FC<AIToggleTooltipProps> = ({
   };
 
   return (
-    <Popover
-      isOpen={isOpen}
-      onOpen={onOpen}
-      onClose={onClose}
-      closeOnBlur
+    <Popover.Root
+      open={open}
+      closeOnInteractOutside
       // This is a hover/focus tooltip, not a dialog: don't let Chakra move focus
       // into the popover on open or yank it back to the trigger on close. Those
       // focus moves fight the onFocus/onBlur handlers below and create an
       // open → blur → close → focus → open loop.
       autoFocus={false}
-      returnFocusOnClose={false}
-      {...tooltipProps}
+      {...popoverProps}
+      onOpenChange={e => {
+        if (e.open) {
+          onOpen();
+        } else {
+          onClose();
+        }
+      }}
     >
-      <PopoverTrigger>
+      <Popover.Trigger asChild>
         {/*
           PopoverTrigger injects aria-expanded / aria-haspopup="dialog" onto its
           child, so the child needs a role that supports those states. role=
@@ -134,41 +131,42 @@ const AIToggleTooltip: React.FC<AIToggleTooltipProps> = ({
         >
           {children}
         </Flex>
-      </PopoverTrigger>
-
-      <PopoverContent
-        ref={contentRef}
-        maxW='sm'
-        _focus={{ boxShadow: 'md' }}
-        onMouseEnter={handleOpen}
-        onMouseLeave={handleClose}
-        onBlur={handleBlur}
-      >
-        <PopoverArrow />
-        <PopoverBody>{content}</PopoverBody>
-      </PopoverContent>
-    </Popover>
+      </Popover.Trigger>
+      <Popover.Positioner>
+        <Popover.Content
+          ref={contentRef}
+          maxW='sm'
+          _focus={{ boxShadow: 'md' }}
+          onMouseEnter={handleOpen}
+          onMouseLeave={handleClose}
+          onBlur={handleBlur}
+        >
+          {hasArrow && <Popover.Arrow />}
+          <Popover.Body>{content}</Popover.Body>
+        </Popover.Content>
+      </Popover.Positioner>
+    </Popover.Root>
   );
 };
 
 interface AIToggleLabelProps {
   id: string;
   label: string;
-  colorScheme?: string;
+  colorPalette?: Tag.RootProps['colorPalette'];
   enableAiSearch: boolean;
-  tagProps?: TagProps;
+  tagProps?: Tag.RootProps;
 }
 
 export const AIToggleLabel = ({
   id,
   label,
-  colorScheme,
+  colorPalette,
   enableAiSearch,
   tagProps,
 }: AIToggleLabelProps) => {
   return (
     <Flex alignItems='center' gap={2}>
-      <FormLabel
+      <Field.Label
         htmlFor={id}
         mb='0'
         me='0'
@@ -178,37 +176,39 @@ export const AIToggleLabel = ({
         gap={1}
       >
         {label}
-        <Icon as={FaRegCircleQuestion} boxSize={4} color='page.placeholder' />
-      </FormLabel>
+        <Icon boxSize={4} color='page.placeholder' asChild>
+          <FaRegCircleQuestion />
+        </Icon>
+      </Field.Label>
       {enableAiSearch && (
-        <Tag
+        <Tag.Root
           variant='subtle'
           borderRadius='full'
-          color={`${colorScheme}.500`}
-          colorScheme={colorScheme}
+          color={`${colorPalette}.500`}
+          colorPalette={colorPalette}
           fontWeight='inherit'
           {...tagProps}
         >
-          <TagLabel>Active</TagLabel>
-        </Tag>
+          <Tag.Label>Active</Tag.Label>
+        </Tag.Root>
       )}
     </Flex>
   );
 };
 
-interface AIToggleProps extends SwitchProps {
+interface AIToggleProps extends Switch.RootProps {
   label?: string;
-  tagProps?: TagProps;
-  tooltipProps?: TooltipProps;
+  tagProps?: Tag.RootProps;
+  popoverProps?: TooltipRootProps;
   tooltipContent?: React.ReactNode;
 }
 
 export const AIToggle: React.FC<AIToggleProps> = ({
   id = 'ai-search',
   label = 'AI-assisted search',
-  colorScheme = 'primary',
+  colorPalette = 'primary',
   tagProps,
-  tooltipProps,
+  popoverProps,
   tooltipContent = DEFAULT_AI_TOOLTIP_CONTENT,
   ...rest
 }) => {
@@ -284,38 +284,45 @@ export const AIToggle: React.FC<AIToggleProps> = ({
   };
 
   return (
-    <FormControl
-      as={HStack}
+    <Field.Root
       fontSize='sm'
       fontWeight='semibold'
       width='unset'
       flex={1}
       minWidth='300px'
+      asChild
     >
-      <Switch
-        id={id}
-        colorScheme={colorScheme}
-        isChecked={enableAiSearch}
-        onChange={e => handleToggle(e.target.checked)}
-        {...rest}
-      />
-      <AIToggleTooltip
-        content={tooltipContent}
-        hasArrow
-        gutter={4}
-        pointerEvents='all'
-        closeDelay={600}
-        closeOnClick={false}
-        {...tooltipProps}
-      >
-        <AIToggleLabel
+      <HStack>
+        <Switch.Root
           id={id}
-          label={label}
-          colorScheme={colorScheme}
-          enableAiSearch={enableAiSearch}
-          tagProps={tagProps}
-        />
-      </AIToggleTooltip>
-    </FormControl>
+          checked={enableAiSearch}
+          onCheckedChange={e => handleToggle(e.checked)}
+          colorPalette={colorPalette}
+          {...rest}
+        >
+          <Switch.HiddenInput />
+          <Switch.Control>
+            <Switch.Thumb />
+          </Switch.Control>
+          <Switch.Label />
+        </Switch.Root>
+
+        <AIToggleTooltip
+          content={tooltipContent}
+          hasArrow
+          closeDelay={600}
+          closeOnClick={false}
+          {...popoverProps}
+        >
+          <AIToggleLabel
+            id={id}
+            label={label}
+            colorPalette={colorPalette}
+            enableAiSearch={enableAiSearch}
+            tagProps={tagProps}
+          />
+        </AIToggleTooltip>
+      </HStack>
+    </Field.Root>
   );
 };

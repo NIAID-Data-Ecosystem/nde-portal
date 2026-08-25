@@ -1,9 +1,9 @@
-import { Img, ImgProps } from '@chakra-ui/react';
+import { Image, ImageProps } from '@chakra-ui/react';
 
-export const NDELogo = (props: ImgProps) => {
+export const NDELogo = (props: ImageProps) => {
   return (
     <>
-      <Img
+      <Image
         id='nde-desktop'
         display={{ base: 'none', lg: 'block' }}
         width='595px'
@@ -12,7 +12,7 @@ export const NDELogo = (props: ImgProps) => {
         alt='NDE Desktop Logo'
         {...props}
       />
-      <Img
+      <Image
         id='nde-mobile-preferred'
         display={{ base: 'none', sm: 'block', lg: 'none' }}
         width='328px'
@@ -21,7 +21,7 @@ export const NDELogo = (props: ImgProps) => {
         alt='NDE Mobile Logo'
         {...props}
       />
-      <Img
+      <Image
         id='nde-mobile-vertical'
         display={{ base: 'block', sm: 'none' }}
         width='138px'

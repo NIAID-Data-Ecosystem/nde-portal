@@ -1,8 +1,7 @@
+import { Flex } from '@chakra-ui/react';
 import { useMemo, useState } from 'react';
-import { Flex, Image, Stack } from '@chakra-ui/react';
 import { PageContent } from 'src/components/page-container';
 import {
-  StyleCardLabel,
   StyledCard,
   StyledCardButton,
   StyledCardDescription,
@@ -14,11 +13,12 @@ import {
   Sidebar,
   SidebarItem,
 } from 'src/components/table-of-contents/layouts/sidebar';
+
 import { FeaturedPageProps } from '../types';
 
 export const TableOfContents = ({ data }: { data?: FeaturedPageProps[] }) => {
   // [TO DO]: Fetch all pages from the Strapi API
-  const isLoading = false;
+  const loading = false;
 
   const [searchValue, setSearchValue] = useState('');
 
@@ -90,7 +90,7 @@ export const TableOfContents = ({ data }: { data?: FeaturedPageProps[] }) => {
                 <StyledCard
                   key={page.id}
                   id={page.slug}
-                  isLoading={isLoading}
+                  loading={loading}
                   title={label}
                   thumbnail={
                     imageUrl

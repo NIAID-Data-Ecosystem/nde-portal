@@ -25,7 +25,7 @@ export const VisualizationCardHeading = ({
   label,
 }: HeadingProps & { label: string }) => {
   return (
-    <Heading as='h2' fontSize='xs' fontWeight='semibold' noOfLines={1}>
+    <Heading as='h2' fontSize='xs' fontWeight='semibold' lineClamp={1}>
       {label}
     </Heading>
   );
@@ -42,18 +42,19 @@ export const VisualizationCardIconButton = ({
   icon: React.ReactElement<IconProps>;
 }) => {
   return (
-    <Tooltip label={tooltipContent} hasArrow>
+    <Tooltip content={tooltipContent} showArrow>
       <Box>
         <IconButton
-          icon={icon}
           aria-label={ariaLabel}
           onClick={onClick}
           variant='ghost'
           cursor='pointer'
-          colorScheme='gray'
+          colorPalette='gray'
           boxSize={5}
           p={0.5}
-        />
+        >
+          {icon}
+        </IconButton>
       </Box>
     </Tooltip>
   );
@@ -69,23 +70,30 @@ export const CardHeader = ({
   return (
     <Flex mb={2} justify='space-between' align='center' lineHeight='shorter'>
       <VisualizationCardHeading label={label} />
-
       <HStack gap={2}>
         {!hasEmptyData && (
           <VisualizationCardIconButton
             ariaLabel='Expand chart to modal view'
             tooltipContent='Expand chart to modal view.'
-            icon={<Icon as={FaExpand} />}
+            icon={
+              <Icon asChild>
+                <FaExpand />
+              </Icon>
+            }
             onClick={onExpand}
-            isDisabled={!isActive}
+            disabled={!isActive}
           />
         )}
         <VisualizationCardIconButton
           ariaLabel='Remove chart from display.'
           tooltipContent='Remove chart from display.'
-          icon={<Icon as={FaXmark} />}
+          icon={
+            <Icon asChild>
+              <FaXmark />
+            </Icon>
+          }
           onClick={onRemove}
-          isDisabled={!isActive}
+          disabled={!isActive}
         />
       </HStack>
     </Flex>

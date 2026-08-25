@@ -1,52 +1,51 @@
-import React from 'react';
-import {
-  Box,
-  Flex,
-  HStack,
-  Radio,
-  RadioGroup,
-  Stack,
-  Text,
-} from '@chakra-ui/react';
+import { Box, Flex, HStack, RadioGroup, Stack, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
+import React from 'react';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 import { InfoLabel } from 'src/components/info-label';
-import { theme } from 'src/theme';
+import { getMetadataDescription } from 'src/components/metadata';
+import { palette, system } from 'src/theme';
 import { fetchSearchResults } from 'src/utils/api';
 import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
-import { ChartWrapper } from '../layouts/chart-wrapper';
-import { BrushableListChart } from '../visualizations/brushable-list-chart';
-import { TreemapChart } from '../visualizations/treemap-chart';
+
 import { getSearchResultsRoute, trackDiseasesEvent } from '../../helpers';
 import { FacetProps, TopicQueryProps } from '../../types';
+import DISEASE_PAGE_COPY from '../disease-page.json';
+import { ChartWrapper } from '../layouts/chart-wrapper';
 import {
   fillTemplatePlaceholders,
   MarkdownContent,
 } from '../layouts/markdown-content';
 import { headingStyles, SectionTitle } from '../layouts/section';
-import DISEASE_PAGE_COPY from '../disease-page.json';
-import { getMetadataDescription } from 'src/components/metadata';
+import { BrushableListChart } from '../visualizations/brushable-list-chart';
+import { TreemapChart } from '../visualizations/treemap-chart';
 
 const facets = [
   {
     label: 'Health Condition',
     value: 'healthCondition.name',
-    fill: theme.colors[getMetadataTheme('healthCondition')][300] as string,
-    colorScheme: theme.colors[getMetadataTheme('healthCondition')],
+    fill: system.token(
+      `colors.${getMetadataTheme('healthCondition')}.300`,
+    ) as string,
+    colorPalette: palette(getMetadataTheme('healthCondition')),
     tooltip: getMetadataDescription('healthCondition', 'Dataset'),
   },
   {
     label: 'Measurement Technique',
     value: 'measurementTechnique.name',
-    fill: theme.colors[getMetadataTheme('measurementTechnique')][300] as string,
-    colorScheme: theme.colors[getMetadataTheme('measurementTechnique')],
+    fill: system.token(
+      `colors.${getMetadataTheme('measurementTechnique')}.300`,
+    ) as string,
+    colorPalette: palette(getMetadataTheme('measurementTechnique')),
     tooltip: getMetadataDescription('measurementTechnique', 'Dataset'),
   },
   {
     label: 'Pathogen',
     value: 'infectiousAgent.name',
-    fill: theme.colors[getMetadataTheme('infectiousAgent')][300] as string,
-    colorScheme: theme.colors[getMetadataTheme('infectiousAgent')],
+    fill: system.token(
+      `colors.${getMetadataTheme('infectiousAgent')}.300`,
+    ) as string,
+    colorPalette: palette(getMetadataTheme('infectiousAgent')),
     tooltip: getMetadataDescription('infectiousAgent', 'Dataset'),
   },
 ] as FacetProps[];
@@ -76,7 +75,7 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
       if (!data)
         return [
           {
-            colorScheme: '',
+            colorPalette: {},
             fill: '',
             label: '',
             value: '',
@@ -109,7 +108,7 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
         alignItems='flex-start'
         flexDirection={{ base: 'column', lg: 'row' }}
         flexWrap='wrap'
-        spacing={{ base: 2, lg: 6 }}
+        gap={{ base: 2, lg: 6 }}
         width='100%'
       >
         <Box flex={2}>
@@ -140,27 +139,35 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
           <Text fontWeight='medium' lineHeight='short'>
             Select Chart Type
           </Text>
-          <RadioGroup
-            onChange={value => setListView(value === 'list')}
+          <RadioGroup.Root
+            onValueChange={({ value }) => setListView(value === 'list')}
             value={`${listView ? 'list' : 'treemap'}`}
           >
             <Stack direction='row'>
-              <Radio value='list'>List</Radio>
-              <Radio value='treemap'>Treemap</Radio>
+              <RadioGroup.Item value='list'>
+                <RadioGroup.ItemHiddenInput />
+                <RadioGroup.ItemIndicator />
+                <RadioGroup.ItemText>List</RadioGroup.ItemText>
+              </RadioGroup.Item>
+              <RadioGroup.Item value='treemap'>
+                <RadioGroup.ItemHiddenInput />
+                <RadioGroup.ItemIndicator />
+                <RadioGroup.ItemText>Treemap</RadioGroup.ItemText>
+              </RadioGroup.Item>
             </Stack>
-          </RadioGroup>
+          </RadioGroup.Root>
         </Flex>
       </Stack>
       <ChartWrapper
         error={error}
-        isLoading={isLoading}
+        loading={isLoading}
         skeletonProps={{
           minHeight: defaultDimensions.height,
           width: '100%',
         }}
       >
         {/* Property Charts */}
-        <HStack mt={4} alignItems='flex-start' spacing={6} flexWrap='wrap'>
+        <HStack mt={4} alignItems='flex-start' gap={6} flexWrap='wrap'>
           {data?.map(({ terms, ...facet }) => {
             const props = {
               facet,

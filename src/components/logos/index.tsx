@@ -1,5 +1,6 @@
-import React from 'react';
 import { Flex, Link } from '@chakra-ui/react';
+import React from 'react';
+
 import { NDELogo } from './nde-logo';
 
 export interface LogoProps {

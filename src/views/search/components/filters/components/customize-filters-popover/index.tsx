@@ -42,7 +42,7 @@ export const CustomizeFiltersPopover = ({
         searchPlaceholder: 'Search filters',
         noItemsFound: 'No filters found',
       }}
-      triggerProps={{ colorScheme: 'gray', flex: 1 }}
+      triggerProps={{ colorPalette: 'gray', flex: 1 }}
     />
   );
 };

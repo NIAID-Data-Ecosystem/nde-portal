@@ -1,14 +1,12 @@
 import {
   Box,
-  Collapse,
+  Collapsible,
   Flex,
   Heading,
   Icon,
   IconProps,
-  ListIcon,
-  ListItem,
   Text,
-  UnorderedList,
+  List,
 } from '@chakra-ui/react';
 import {
   FaCircleExclamation,
@@ -32,13 +30,23 @@ export const StatusIcon = ({
   props: IconProps;
 }) => {
   if (status === 'error') {
-    return <Icon as={FaCircleXmark} color={`status.${status}`} {...props} />;
+    return (
+      <Icon color={`status.${status}`} {...props} asChild>
+        <FaCircleXmark />
+      </Icon>
+    );
   } else if (status === 'warning') {
     return (
-      <Icon as={FaCircleExclamation} color={`status.${status}`} {...props} />
+      <Icon color={`status.${status}`} {...props} asChild>
+        <FaCircleExclamation />
+      </Icon>
     );
   } else if (status === 'info') {
-    return <Icon as={FaCircleInfo} color={`status.${status}`} {...props} />;
+    return (
+      <Icon color={`status.${status}`} {...props} asChild>
+        <FaCircleInfo />
+      </Icon>
+    );
   }
   return <></>;
 };
@@ -71,14 +79,13 @@ export const MessageBlock = ({
             {heading}
           </Heading>
         </Flex>
-        <UnorderedList py={1}>
+        <List.Root as='ul' py={1}>
           {statusItems.map((statusItem, index) => {
             return (
-              <ListItem key={index} display='flex' p={1}>
-                <ListIcon
-                  as={FaCircleXmark}
-                  color={`status.${status}`}
-                ></ListIcon>
+              <List.Item key={index} display='flex' p={1}>
+                <List.Indicator color={`status.${status}`} asChild>
+                  <FaCircleXmark />
+                </List.Indicator>
                 <Box>
                   {statusItem.title && (
                     <Heading
@@ -92,10 +99,10 @@ export const MessageBlock = ({
                   )}
                   <Text fontSize='sm'>{statusItem.message}</Text>
                 </Box>
-              </ListItem>
+              </List.Item>
             );
           })}
-        </UnorderedList>
+        </List.Root>
       </Box>
     </Flex>
   );
@@ -105,15 +112,16 @@ export const ErrorBanner = ({ errors: allErrors }: EditableQueryTextProps) => {
   const warnings = allErrors.filter(error => error.type === 'warning');
   const errors = allErrors.filter(error => error.type === 'error');
   return (
-    <Collapse in={!!allErrors.length}>
-      {errors.length > 0 && (
-        <MessageBlock status='error' statusItems={errors} />
-      )}
-
-      {/* only display warning if no errors */}
-      {!errors.length && warnings.length > 0 && (
-        <MessageBlock status='warning' statusItems={warnings} />
-      )}
-    </Collapse>
+    <Collapsible.Root open={!!allErrors.length}>
+      <Collapsible.Content>
+        {errors.length > 0 && (
+          <MessageBlock status='error' statusItems={errors} />
+        )}
+        {/* only display warning if no errors */}
+        {!errors.length && warnings.length > 0 && (
+          <MessageBlock status='warning' statusItems={warnings} />
+        )}
+      </Collapsible.Content>
+    </Collapsible.Root>
   );
 };

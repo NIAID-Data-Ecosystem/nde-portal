@@ -1,27 +1,28 @@
-import React from 'react';
 import { Flex, HStack, Text, VStack } from '@chakra-ui/react';
+import React from 'react';
+import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
 import { getMetadataName } from 'src/components/metadata';
+import { useUserData } from 'src/hooks/useUserData';
+import { findSavedQueryIndex } from 'src/hooks/useUserData/helpers';
+import { SavedDataset, SavedQuery } from 'src/hooks/useUserData/types';
+import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+
 import {
   TagCell,
   TextCell,
   TextCellWithLink,
 } from '../repository-matcher/components/TableCells';
-import { SavedColumn, SavedResourceItem, SavedRow } from './types';
 import { defaultSearchValue } from '../repository-matcher/hooks/useRepositoryMatcherData';
-import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
-import { SavedDataset, SavedQuery } from 'src/hooks/useUserData/types';
-import { useUserData } from 'src/hooks/useUserData';
-import { findSavedQueryIndex } from 'src/hooks/useUserData/helpers';
 import {
   FILTER_CONFIGS,
   queryFilterObject2String,
 } from '../search/components/filters';
+import { generateTags } from '../search/components/filters/components/tag/utils';
 import {
   APPLY_DEFAULT_DATE_FILTER_KEY,
   APPLY_DEFAULT_DATE_PARAM,
 } from '../search/config/defaultQuery';
-import { generateTags } from '../search/components/filters/components/tag/utils';
-import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+import { SavedColumn, SavedResourceItem, SavedRow } from './types';
 
 type DateCellValue = { display: string; raw: number } | null;
 
@@ -43,10 +44,10 @@ const normalizeNameSortValue = (value?: string) =>
 
 const SavedResourceNameCell = ({
   value,
-  isLoading,
+  loading,
 }: {
   value: SavedDataset & { url: string };
-  isLoading?: boolean;
+  loading?: boolean;
 }) => {
   const { savedDatasets, addSavedDataset, removeSavedDataset } = useUserData();
   const isFavorited = !!savedDatasets.find(
@@ -62,11 +63,11 @@ const SavedResourceNameCell = ({
             : addSavedDataset(value)
         }
       />
-      <VStack alignItems='flex-start' spacing={1} fontSize='xs' pt={1}>
+      <VStack alignItems='flex-start' gap={1} fontSize='xs' pt={1}>
         <TextCellWithLink
           label={value?.name || ''}
           url={value?.url}
-          isLoading={isLoading}
+          loading={loading}
           isExternal={false}
         />
         <Text color='gray.700'>ID: {value?.dataset_id || ''}</Text>
@@ -77,10 +78,10 @@ const SavedResourceNameCell = ({
 
 const SavedQueryNameCell = ({
   value,
-  isLoading,
+  loading,
 }: {
   value: SavedQuery & { url: string };
-  isLoading?: boolean;
+  loading?: boolean;
 }) => {
   const { savedQueries, addSavedQuery, removeSavedQuery } = useUserData();
   // Match on query AND filters: the same query string can be saved more than
@@ -99,7 +100,7 @@ const SavedQueryNameCell = ({
         <TextCellWithLink
           label={value?.name || ''}
           url={value?.url}
-          isLoading={isLoading}
+          loading={loading}
           isExternal={false}
         />
       </Flex>
@@ -139,20 +140,14 @@ export const SAVED_RESOURCE_COLUMNS: SavedColumn<SavedResourceItem, any>[] = [
       if (!item.type) return '';
       return formatAPIResourceTypeForDisplay(item.type) ?? '';
     },
-    component: ({
-      value,
-      isLoading,
-    }: {
-      value: string;
-      isLoading?: boolean;
-    }) => {
-      if (!isLoading && (!value || !value.length))
-        return <TextCell value='' isLoading={isLoading} noOfLines={1} />;
+    component: ({ value, loading }: { value: string; loading?: boolean }) => {
+      if (!loading && (!value || !value.length))
+        return <TextCell value='' loading={loading} lineClamp={1} />;
       return (
         <TextCell
           value={value}
-          isLoading={isLoading}
-          noOfLines={2}
+          loading={loading}
+          lineClamp={2}
           fontWeight='semibold'
         />
       );
@@ -169,17 +164,11 @@ export const SAVED_RESOURCE_COLUMNS: SavedColumn<SavedResourceItem, any>[] = [
     },
     transform: (item): string[] => item.source ?? [],
     getSortValue: (value: string[]) => (value[0] || '').toLowerCase(),
-    component: ({
-      value,
-      isLoading,
-    }: {
-      value: string[];
-      isLoading?: boolean;
-    }) => (
+    component: ({ value, loading }: { value: string[]; loading?: boolean }) => (
       <TextCell
         value={value && value.length ? value.join(', ') : ''}
-        isLoading={isLoading}
-        noOfLines={2}
+        loading={loading}
+        lineClamp={2}
       />
     ),
   },
@@ -197,16 +186,16 @@ export const SAVED_RESOURCE_COLUMNS: SavedColumn<SavedResourceItem, any>[] = [
     getSortValue: (value: DateCellValue) => value?.raw ?? 0,
     component: ({
       value,
-      isLoading,
+      loading,
     }: {
       value: DateCellValue;
-      isLoading?: boolean;
+      loading?: boolean;
     }) => {
       return (
         <TextCell
           value={value?.display ?? ''}
-          isLoading={isLoading}
-          noOfLines={1}
+          loading={loading}
+          lineClamp={1}
         />
       );
     },
@@ -225,16 +214,16 @@ export const SAVED_RESOURCE_COLUMNS: SavedColumn<SavedResourceItem, any>[] = [
     getSortValue: (value: DateCellValue) => value?.raw ?? 0,
     component: ({
       value,
-      isLoading,
+      loading,
     }: {
       value: DateCellValue;
-      isLoading?: boolean;
+      loading?: boolean;
     }) => {
       return (
         <TextCell
           value={value?.display ?? ''}
-          isLoading={isLoading}
-          noOfLines={1}
+          loading={loading}
+          lineClamp={1}
         />
       );
     },
@@ -252,14 +241,14 @@ export const SAVED_RESOURCE_COLUMNS: SavedColumn<SavedResourceItem, any>[] = [
   //   getSortValue: (value: string[]) => (value[0] || '').toLowerCase(),
   //   component: ({
   //     value,
-  //     isLoading,
+  //     loading,
   //   }: {
   //     value: string[];
-  //     isLoading?: boolean;
+  //     loading?: boolean;
   //   }) => (
   //     <TextCell
   //       value={value && value.length ? value.join(', ') : ''}
-  //       isLoading={isLoading}
+  //       loading={loading}
   //       fontWeight='semibold'
   //     />
   //   ),
@@ -315,19 +304,13 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
       return item.total;
     },
     getSortValue: (value: number) => value,
-    component: ({
-      value,
-      isLoading,
-    }: {
-      value: number;
-      isLoading?: boolean;
-    }) => {
+    component: ({ value, loading }: { value: number; loading?: boolean }) => {
       return (
         <TextCell
           fontWeight='semibold'
           value={value.toLocaleString()}
-          isLoading={isLoading}
-          noOfLines={1}
+          loading={loading}
+          lineClamp={1}
           mt={0.5}
           ml={-0.5}
         />
@@ -395,7 +378,7 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
     },
     component: ({
       value,
-      isLoading,
+      loading,
     }: {
       value: {
         tags: {
@@ -406,22 +389,21 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
           displayValue: string;
         }[];
       };
-      isLoading?: boolean;
+      loading?: boolean;
     }) => {
       const { tags } = value;
-      if (!tags || !tags.length)
-        return <TextCell value='' isLoading={isLoading} />;
+      if (!tags || !tags.length) return <TextCell value='' loading={loading} />;
       return (
-        <HStack flexWrap='wrap' spacing={1}>
+        <HStack flexWrap='wrap' gap={1}>
           {tags.map(tag => {
             const str = `${tag.name}: ${tag.displayValue}`;
             return (
               <TagCell
                 key={str}
-                colorScheme='secondary'
+                colorPalette='secondary'
                 value={str}
-                noOfLines={1}
-                isLoading={isLoading}
+                lineClamp={1}
+                loading={loading}
               />
             );
           })}
@@ -443,16 +425,16 @@ export const SAVED_QUERY_COLUMNS: SavedColumn<SavedQuery, any>[] = [
     getSortValue: (value: DateCellValue) => value?.raw ?? 0,
     component: ({
       value,
-      isLoading,
+      loading,
     }: {
       value: DateCellValue;
-      isLoading?: boolean;
+      loading?: boolean;
     }) => {
       return (
         <TextCell
           value={value?.display ?? ''}
-          isLoading={isLoading}
-          noOfLines={1}
+          loading={loading}
+          lineClamp={1}
         />
       );
     },

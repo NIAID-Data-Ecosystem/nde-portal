@@ -108,7 +108,7 @@ export const renderValue = (val: CellValue, key?: React.Key) => {
 export const renderCellData = (props: {
   column: Column;
   data: CellValue | CellValue[];
-  isLoading?: boolean;
+  loading?: boolean;
 }): React.ReactNode => {
   const cellValue = props.data;
 

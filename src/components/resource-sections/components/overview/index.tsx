@@ -1,32 +1,32 @@
-import React from 'react';
 import {
   Box,
-  Divider,
   Flex,
   SimpleGrid,
   Skeleton,
+  StackSeparator,
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { FormattedResource } from 'src/utils/api/types';
+import React from 'react';
 import {
   generateMetadataContentforCompToolCard,
   SORT_ORDER,
   SORT_ORDER_COMPTOOL,
 } from 'src/components/metadata';
 import {
+  generateMetadataContent,
+  getMetadataDescription,
   MetadataBlock,
   MetadataContent,
   MetadataList,
   MetadataListItem,
-  generateMetadataContent,
-  getMetadataDescription,
   sortMetadataArray,
 } from 'src/components/metadata';
 import { ScrollContainer } from 'src/components/scroll-container';
+import { FormattedResource } from 'src/utils/api/types';
 
 export interface OverviewProps extends Partial<FormattedResource> {
-  isLoading: boolean;
+  loading: boolean;
 }
 
 const DATASET_SORT_ORDER = [...SORT_ORDER, 'spatialCoverage'];
@@ -36,7 +36,7 @@ const Overview: React.FC<OverviewProps> = ({
   id,
   infectiousAgent,
   inLanguage,
-  isLoading,
+  loading,
   locationNames,
   measurementTechnique,
   spatialCoverage,
@@ -89,7 +89,7 @@ const Overview: React.FC<OverviewProps> = ({
               id: `${id}-spatialCoverage`,
               label: 'Spatiotemporal Coverage',
               property: 'spatialCoverage',
-              isDisabled: !(
+              disabled: !(
                 spatialCoverage ||
                 temporalCoverage ||
                 inLanguage?.name ||
@@ -109,8 +109,8 @@ const Overview: React.FC<OverviewProps> = ({
     >
       <SimpleGrid
         minChildWidth={{ base: 'unset', sm: '280px', xl: '300px' }}
-        spacingX={14}
-        spacingY={10}
+        rowGap={14}
+        columnGap={10}
         p={4}
         border='1px solid'
         borderColor='gray.100'
@@ -124,8 +124,8 @@ const Overview: React.FC<OverviewProps> = ({
                 <SpatiotemporalCoverage
                   key={`block-${props.id}`}
                   id={props.id}
-                  isDisabled={props.isDisabled}
-                  isLoading={isLoading}
+                  disabled={props.disabled}
+                  loading={loading}
                   inLanguage={inLanguage}
                   spatialCoverage={spatialCoverage}
                   temporalCoverage={temporalCoverage}
@@ -137,7 +137,7 @@ const Overview: React.FC<OverviewProps> = ({
             return (
               <Skeleton
                 key={`block-${props.id}-${props.property}`}
-                isLoaded={!isLoading}
+                loading={loading}
               >
                 <MetadataBlock
                   tooltipLabel={getMetadataDescription(
@@ -189,15 +189,15 @@ export default Overview;
 interface SpatiotemporalCoverageProps
   extends Pick<
     OverviewProps,
-    'isLoading' | 'id' | 'inLanguage' | 'spatialCoverage' | 'temporalCoverage'
+    'loading' | 'id' | 'inLanguage' | 'spatialCoverage' | 'temporalCoverage'
   > {
   type?: FormattedResource['@type'];
-  isDisabled: boolean;
+  disabled: boolean;
 }
 const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
   id,
-  isDisabled,
-  isLoading,
+  disabled,
+  loading,
   inLanguage,
   spatialCoverage,
   temporalCoverage,
@@ -216,11 +216,11 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
     .map(s => s.name);
 
   return (
-    <Skeleton key={`block-${id}-spatioTemporal`} isLoaded={!isLoading}>
+    <Skeleton key={`block-${id}-spatioTemporal`} loading={!!loading}>
       <MetadataBlock
         label='Spatiotemporal Coverage'
         property='spatialCoverage'
-        isDisabled={isDisabled}
+        disabled={disabled}
         bg='gray.900'
         tooltipLabel={
           <>
@@ -236,8 +236,9 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
           </>
         }
       >
-        <VStack alignItems='flex-start' divider={<Divider />}>
+        <VStack alignItems='flex-start'>
           {/* Geographic information of dataset */}
+          <StackSeparator />
           {spatialInformation && (
             <>
               <Text fontWeight='medium' color='gray.800'>
@@ -246,8 +247,9 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
               <MetadataContent name={spatialInformation.join(', ')} />
             </>
           )}
-
+          <StackSeparator />
           {/* Period information of dataset */}
+          <StackSeparator />
           {temporalCoverage &&
             temporalCoverage.map((coverage, idx) => {
               if (!coverage) {
@@ -291,8 +293,9 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
                 </React.Fragment>
               );
             })}
-
+          <StackSeparator />
           {/* Language of dataset */}
+          <StackSeparator />
           {inLanguage?.name && (
             <>
               <Text fontWeight='medium' color='gray.800'>

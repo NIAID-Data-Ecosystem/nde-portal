@@ -5,22 +5,24 @@ export const BookmarkButton: React.FC<
   ButtonProps & {
     isFavorited: boolean;
   }
-> = ({ children, colorScheme = 'primary', isFavorited, onClick, ...rest }) => {
+> = ({ children, colorPalette = 'primary', isFavorited, onClick, ...rest }) => {
   return (
     <Button
-      colorScheme={colorScheme}
-      leftIcon={
-        isFavorited ? (
-          <Icon as={FaBookmark} w='inherit' />
-        ) : (
-          <Icon as={FaRegBookmark} w='inherit' />
-        )
-      }
+      colorPalette={colorPalette}
       onClick={onClick}
       variant='ghost'
       size='sm'
       {...rest}
     >
+      {isFavorited ? (
+        <Icon w='inherit' asChild>
+          <FaBookmark />
+        </Icon>
+      ) : (
+        <Icon w='inherit' asChild>
+          <FaRegBookmark />
+        </Icon>
+      )}
       {children || (isFavorited ? 'Saved' : 'Save')}
     </Button>
   );

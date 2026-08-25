@@ -1,7 +1,10 @@
-import React from 'react';
-import { render, screen, within } from '@testing-library/react';
-import { ChakraProvider } from '@chakra-ui/react';
 import '@testing-library/jest-dom';
+
+import { ChakraProvider } from '@chakra-ui/react';
+import { render, screen, within } from '@testing-library/react';
+import React from 'react';
+import { system } from 'src/theme';
+
 import Sections from '.';
 import { Route } from './helpers';
 
@@ -71,8 +74,8 @@ const renderSections = (
   sections: Route[] = [],
 ) =>
   render(
-    <ChakraProvider>
-      <Sections isLoading={false} data={data as any} sections={sections} />
+    <ChakraProvider value={system}>
+      <Sections loading={false} data={data as any} sections={sections} />
     </ChakraProvider>,
   );
 

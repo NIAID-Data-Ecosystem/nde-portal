@@ -7,17 +7,13 @@ import { Link } from 'src/components/link';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
 interface LicenseProps {
-  isLoading: boolean;
+  loading: boolean;
   license?: FormattedResource['license'];
   type?: FormattedResource['@type'];
 }
 
-export const License: React.FC<LicenseProps> = ({
-  isLoading,
-  license,
-  type,
-}) => {
-  if (!isLoading && !(license && type)) {
+export const License: React.FC<LicenseProps> = ({ loading, license, type }) => {
+  if (!loading && !(license && type)) {
     return <></>;
   }
   const licenseInfo = license ? formatLicense(license) : null;

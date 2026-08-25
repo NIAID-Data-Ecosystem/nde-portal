@@ -1,6 +1,13 @@
 import { Flex, FlexProps } from '@chakra-ui/react';
 import styled from '@emotion/styled';
+import { system } from 'src/theme';
 
+/*
+ * The colour is read off the system rather than `props.theme`. Under Chakra v2
+ * the provider also installed an Emotion `ThemeProvider`, so `props.theme.colors`
+ * happened to be the Chakra theme; v3's provider does not, which would silently
+ * make that `undefined`.
+ */
 export const StyledLabel = styled(Flex)<FlexProps>`
   display: inline-flex;
   line-height: 1.5;
@@ -9,7 +16,7 @@ export const StyledLabel = styled(Flex)<FlexProps>`
   &:before {
     content: '';
     background-color: ${(props: any) =>
-      props._before.bg || props.theme.colors.status.info};
+      props._before?.bg || system.token('colors.status.info')};
     box-shadow: 0 0 0 5px #fff;
     display: block;
     height: 2.5rem;

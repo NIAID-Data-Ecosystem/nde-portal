@@ -1,10 +1,10 @@
 import {
   Box,
-  Divider,
   Flex,
+  HStack,
   Heading,
   HeadingProps,
-  HStack,
+  Separator,
   Skeleton,
   Stack,
   StackProps,
@@ -41,19 +41,13 @@ export const LegendContainer = ({
         {tableHeader}
       </LegendTableHeader>
       {orientation === 'vertical' ? (
-        <Stack
-          flexDirection='column'
-          divider={<Divider borderColor='gray.200' />}
-          spacing={1.5}
-          my={2}
-          {...props}
-        >
+        <Stack flexDirection='column' gap={1.5} my={2} {...props}>
           {children}
         </Stack>
       ) : (
         <Stack
           flexDirection={{ base: 'column', md: 'row' }}
-          spacing={{ base: 1.5, md: 8 }}
+          gap={{ base: 1.5, md: 8 }}
           my={2}
           {...props}
         >
@@ -110,26 +104,26 @@ export const LegendTableHeader: React.FC<TextProps> = ({
 export const LegendItem = ({
   children,
   count,
-  isLoading,
+  loading,
   swatchBg,
 }: {
   children?: React.ReactNode;
   count?: number;
-  isLoading?: boolean;
+  loading?: boolean;
   swatchBg?: string;
 }) => {
   return (
     <Skeleton
-      isLoaded={!isLoading}
+      loading={!!loading}
       width='100%'
-      height={isLoading ? '20px' : 'unset'}
+      height={loading ? '20px' : 'unset'}
     >
       <HStack
         alignItems='flex-start'
         fontSize='xs'
         lineHeight='short'
         justifyContent='flex-start'
-        spacing={1.5}
+        gap={1.5}
         width='100%'
       >
         {swatchBg && <Box width={4} height={4} bg={swatchBg} m={0.5} />}

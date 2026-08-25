@@ -2,23 +2,23 @@
  * User Settings Page - Protected route requiring authentication
  */
 
-import { ReactNode } from 'react';
 import {
   Box,
+  Button,
   Heading,
-  Text,
-  VStack,
   HStack,
   Link,
-  Button,
   Switch,
+  Text,
+  VStack,
 } from '@chakra-ui/react';
-import { useAuth } from 'src/hooks/useAuth';
+import { ReactNode } from 'react';
 import { withAuth } from 'src/components/auth/withAuth';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
+import { useAuth } from 'src/hooks/useAuth';
+import { useUserData } from 'src/hooks/useUserData';
 import { UserPreferencesKeys } from 'src/hooks/useUserData/types';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
-import { useUserData } from 'src/hooks/useUserData';
 
 const SETTINGS_COPY = {
   page: {
@@ -134,19 +134,19 @@ function SettingsSection({
 function SettingToggle({
   label,
   description,
-  isChecked,
+  checked,
   onChange,
   showBorder,
   alert,
-  isDisabled,
+  disabled,
 }: {
   label: string;
   description: ReactNode;
-  isChecked: boolean;
+  checked: boolean;
   onChange: (checked: boolean) => void;
   showBorder?: boolean;
   alert?: ReactNode;
-  isDisabled?: boolean;
+  disabled?: boolean;
 }) {
   return (
     <HStack
@@ -180,13 +180,19 @@ function SettingToggle({
           </Box>
         )}
       </VStack>
-      <Switch
-        colorScheme='primary'
+      <Switch.Root
+        colorPalette='primary'
         aria-label={label}
-        isChecked={isChecked}
-        isDisabled={isDisabled}
-        onChange={e => onChange(e.target.checked)}
-      />
+        checked={checked}
+        disabled={disabled}
+        onCheckedChange={e => onChange(e.checked)}
+      >
+        <Switch.HiddenInput />
+        <Switch.Control>
+          <Switch.Thumb />
+        </Switch.Control>
+        <Switch.Label />
+      </Switch.Root>
     </HStack>
   );
 }
@@ -263,11 +269,11 @@ function UserSettingsPage() {
               <SettingToggle
                 key={key}
                 {...SETTINGS_COPY.toggles[key]}
-                isChecked={getChecked(key)}
+                checked={getChecked(key)}
                 onChange={() => updateSetting(key)}
                 showBorder={index < section.toggleKeys.length - 1}
                 alert={toggleAlerts[key]}
-                isDisabled={toggleDisabled[key]}
+                disabled={toggleDisabled[key]}
               />
             ))}
           </SettingsSection>
@@ -275,7 +281,7 @@ function UserSettingsPage() {
 
         {/* Log Out Button */}
         <Button
-          colorScheme='red'
+          colorPalette='red'
           variant='ghost'
           size='sm'
           onClick={logout}

@@ -1,12 +1,12 @@
+import { Box, Highlight, Icon, List, Text } from '@chakra-ui/react';
 import React from 'react';
-import { Box, Highlight, Icon, ListItem, Text } from '@chakra-ui/react';
-import { useDropdownContext } from 'src/components/input-with-dropdown';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { useDropdownContext } from 'src/components/input-with-dropdown';
 
 export const DropdownListItem = React.memo(
   ({
     children,
-    colorScheme = 'primary',
+    colorPalette = 'primary',
     handleSubmit,
     id,
     index,
@@ -14,7 +14,7 @@ export const DropdownListItem = React.memo(
     highlight,
   }: {
     children: string;
-    colorScheme?: string;
+    colorPalette?: string;
     handleSubmit: () => void;
     id: string;
     index: number;
@@ -23,7 +23,7 @@ export const DropdownListItem = React.memo(
   }) => {
     const { cursor, getListItemProps } = useDropdownContext();
     return (
-      <ListItem
+      <List.Item
         display='flex'
         cursor='pointer'
         px={2}
@@ -37,19 +37,15 @@ export const DropdownListItem = React.memo(
           onClick: () => handleSubmit(),
         })}
       >
-        <Icon
-          as={FaMagnifyingGlass}
-          mr={2}
-          mt={1.5}
-          color='primary.400'
-          boxSize={3}
-        />
+        <Icon mr={2} mt={1.5} color='primary.400' boxSize={3} asChild>
+          <FaMagnifyingGlass />
+        </Icon>
         <Box>
           {/* Ontology label */}
           {ontology && (
             <Text
               fontSize='12px'
-              color={`${colorScheme}.800`}
+              color={`${colorPalette}.800`}
               wordBreak='break-word'
               fontWeight='light'
               textAlign='left'
@@ -59,19 +55,19 @@ export const DropdownListItem = React.memo(
           )}
 
           <Text
-            size='sm'
-            lineHeight='short'
             color='text.body'
-            wordBreak='break-word'
+            fontSize='sm'
             fontWeight='normal'
+            lineHeight='short'
             textAlign='left'
+            wordBreak='break-word'
           >
             <Highlight
               query={highlight}
               styles={{
                 fontWeight: 'bold',
                 textDecoration: 'underline',
-                color: `${colorScheme}.600`,
+                color: `${colorPalette}.600`,
                 bg: 'transparent',
               }}
             >
@@ -79,7 +75,7 @@ export const DropdownListItem = React.memo(
             </Highlight>
           </Text>
         </Box>
-      </ListItem>
+      </List.Item>
     );
   },
 );

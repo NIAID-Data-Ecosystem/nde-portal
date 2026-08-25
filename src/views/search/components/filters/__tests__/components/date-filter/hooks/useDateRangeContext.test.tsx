@@ -14,14 +14,14 @@ const ReadContext = () => {
       <div data-testid='filteredData'>{ctx.filteredData.length}</div>
       <div data-testid='dateStart'>{ctx.dates[0] || ''}</div>
       <div data-testid='dateEnd'>{ctx.dates[1] || ''}</div>
-      <div data-testid='scheme'>{ctx.colorScheme}</div>
+      <div data-testid='scheme'>{ctx.colorPalette}</div>
     </>
   );
 };
 
 describe('useDateRangeContext', () => {
   it('exposes default context shape', () => {
-    expect(defaultContext.colorScheme).toBe('primary');
+    expect(defaultContext.colorPalette).toBe('primary');
     expect(defaultContext.allData).toEqual([]);
     expect(defaultContext.filteredData).toEqual([]);
   });
@@ -35,9 +35,9 @@ describe('useDateRangeContext', () => {
           { term: '-_exists_', label: 'No', count: 1 },
           { term: '2099-01-01', label: '2099', count: 10 },
         ]}
-        isLoading={false}
+        loading={false}
         selectedDates={['2020-01-01', '2022-12-31']}
-        colorScheme='secondary'
+        colorPalette='secondary'
       >
         <ReadContext />
       </DateRange>,
@@ -58,9 +58,9 @@ describe('useDateRangeContext', () => {
     const { rerender } = render(
       <DateRange
         data={[{ term: '2021-01-01', label: '2021', count: 2 }]}
-        isLoading={false}
+        loading={false}
         selectedDates={[]}
-        colorScheme='primary'
+        colorPalette='primary'
       >
         <ReadContext />
       </DateRange>,
@@ -71,9 +71,9 @@ describe('useDateRangeContext', () => {
     rerender(
       <DateRange
         data={[{ term: '2021-01-01', label: '2021', count: 2 }]}
-        isLoading={false}
+        loading={false}
         selectedDates={['_exists_']}
-        colorScheme='primary'
+        colorPalette='primary'
       >
         <ReadContext />
       </DateRange>,

@@ -1,16 +1,18 @@
-import React from 'react';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { ChakraProvider } from '@chakra-ui/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { useRouter } from 'next/router';
+import React from 'react';
+import { system } from 'src/theme';
 import { useLocalStorage } from 'usehooks-ts';
-import { OntologyBrowser } from './ontology-browser';
+
 import {
   fetchLineageFromBioThingsAPI,
   fetchPortalCounts,
 } from '../utils/api-helpers';
-import userEvent from '@testing-library/user-event';
+import { OntologyBrowser } from './ontology-browser';
 import { DEFAULT_ONTOLOGY_BROWSER_SETTINGS } from './settings';
-import { ChakraProvider } from '@chakra-ui/react';
 import { transformSettingsToLocalStorageConfig } from './settings/helpers';
 
 jest.mock('next/router', () => ({
@@ -36,7 +38,7 @@ describe('OntologyBrowser', () => {
   });
   const wrapper = ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>
-      <ChakraProvider>{children}</ChakraProvider>
+      <ChakraProvider value={system}>{children}</ChakraProvider>
     </QueryClientProvider>
   );
   const renderComponent = (props = {}) => {

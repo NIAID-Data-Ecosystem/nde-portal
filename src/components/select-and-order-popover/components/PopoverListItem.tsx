@@ -1,14 +1,9 @@
-import React from 'react';
-import {
-  Checkbox,
-  Flex,
-  Icon,
-  IconButton,
-  Text,
-  Tooltip,
-} from '@chakra-ui/react';
-import { FaAngleDown, FaAngleUp, FaGripVertical } from 'react-icons/fa6';
+import { Checkbox, Flex, Icon, IconButton, Text } from '@chakra-ui/react';
 import { useSortable } from '@dnd-kit/sortable';
+import React from 'react';
+import { FaAngleDown, FaAngleUp, FaGripVertical } from 'react-icons/fa6';
+
+import Tooltip from '../../tooltip';
 import { PopoverItem } from '../types';
 
 interface PopoverListItemProps {
@@ -84,7 +79,14 @@ export const PopoverListItem = ({
     >
       {/* Drag handle, which is rendered only when ordering is enabled */}
       {enableOrdering && (
-        <Tooltip label={dragTooltip} placement='left' hasArrow openDelay={400}>
+        <Tooltip
+          content={dragTooltip}
+          showArrow
+          openDelay={400}
+          positioning={{
+            placement: 'left',
+          }}
+        >
           <Flex
             {...(dragDisabled ? {} : { ...attributes, ...listeners })}
             cursor={dragDisabled ? 'not-allowed' : 'grab'}
@@ -94,25 +96,31 @@ export const PopoverListItem = ({
             px={0.5}
             flexShrink={0}
           >
-            <Icon as={FaGripVertical} boxSize={3} />
+            <Icon boxSize={3} asChild>
+              <FaGripVertical />
+            </Icon>
           </Flex>
         </Tooltip>
       )}
-
       {/* Checkbox */}
-      <Checkbox
+      <Checkbox.Root
         value={item.id}
-        isChecked={isChecked}
-        isDisabled={isRequired}
-        onChange={e => onCheck(item.id, e.target.checked)}
+        disabled={isRequired}
+        onCheckedChange={e => onCheck(item.id, !!e.checked)}
         flex={1}
         minW={0}
+        checked={isChecked}
       >
-        <Text ml={1} fontSize='xs' noOfLines={1} title={item.title}>
-          {item.title}
-        </Text>
-      </Checkbox>
-
+        <Checkbox.HiddenInput />
+        <Checkbox.Control>
+          <Checkbox.Indicator />
+        </Checkbox.Control>
+        <Checkbox.Label>
+          <Text ml={1} fontSize='xs' lineClamp={1} title={item.title}>
+            {item.title}
+          </Text>
+        </Checkbox.Label>
+      </Checkbox.Root>
       {/* Up/down buttons, which is rendered only when ordering is enabled and not searching */}
       {enableOrdering && !isSearching && (
         <Flex
@@ -124,22 +132,28 @@ export const PopoverListItem = ({
         >
           <IconButton
             aria-label={`Move ${item.title} up`}
-            icon={<Icon as={FaAngleUp} />}
             size='xs'
             variant='ghost'
-            colorScheme='gray'
-            isDisabled={isRequired || isFirst}
+            colorPalette='gray'
+            disabled={isRequired || isFirst}
             onClick={() => onMoveUp?.(item.id)}
-          />
+          >
+            <Icon asChild>
+              <FaAngleUp />
+            </Icon>
+          </IconButton>
           <IconButton
             aria-label={`Move ${item.title} down`}
-            icon={<Icon as={FaAngleDown} />}
             size='xs'
             variant='ghost'
-            colorScheme='gray'
-            isDisabled={isRequired || isLast}
+            colorPalette='gray'
+            disabled={isRequired || isLast}
             onClick={() => onMoveDown?.(item.id)}
-          />
+          >
+            <Icon asChild>
+              <FaAngleDown />
+            </Icon>
+          </IconButton>
         </Flex>
       )}
     </Flex>

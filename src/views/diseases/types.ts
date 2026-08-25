@@ -1,4 +1,4 @@
-import { ThemingProps } from '@chakra-ui/react';
+import { Palette } from 'src/theme';
 import { Params } from 'src/utils/api';
 
 /**
@@ -117,6 +117,14 @@ export interface FacetProps {
   label: string;
   value: string;
   fill: string;
-  colorScheme: ThemingProps<any>['colorScheme'];
+  /**
+   * A raw colour palette object (built by `palette('blue')`), indexed at numeric
+   * steps for chart fills and strokes — *not* a Chakra `colorPalette` name.
+   *
+   * v2 typed this as `ThemingProps['colorPalette']`, which never matched what the
+   * call sites actually assign or read. Empty-data fallbacks pass `{}`, so reads
+   * at a step are `string | undefined`.
+   */
+  colorPalette: Palette;
   tooltip: string;
 }

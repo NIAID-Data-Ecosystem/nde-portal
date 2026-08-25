@@ -149,8 +149,8 @@ export const OntologyBrowserPopup = ({
     >
       <Button
         size='sm'
-        variant='link'
-        colorScheme='blue'
+        variant='plain'
+        colorPalette='blue'
         py={1}
         px={2}
         color='link.color'
@@ -160,7 +160,7 @@ export const OntologyBrowserPopup = ({
           borderRadius: 'semi',
           bg: 'blue.50',
         }}
-        isLoading={isLoading}
+        loading={isLoading}
       >
         use ontology browser?
       </Button>

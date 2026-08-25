@@ -10,7 +10,7 @@ const Histogram = dynamic(() => import('./histogram'), {
 interface HistogramSectionProps {
   data: FilterTermType[];
   hasData: boolean;
-  isLoading: boolean;
+  loading: boolean;
   isUpdating: boolean;
   onDateSelect: (dates: string[]) => void;
 }
@@ -18,16 +18,16 @@ interface HistogramSectionProps {
 export const HistogramSection: React.FC<HistogramSectionProps> = ({
   data,
   hasData,
-  isLoading,
+  loading,
   isUpdating,
   onDateSelect,
 }) => {
   const [hasLoadedOnce, setHasLoadedOnce] = React.useState(false);
   React.useEffect(() => {
-    if (!isLoading && !isUpdating) {
+    if (!loading && !isUpdating) {
       setHasLoadedOnce(true);
     }
-  }, [isLoading, isUpdating]);
+  }, [loading, isUpdating]);
 
   return (
     <Flex
@@ -44,7 +44,7 @@ export const HistogramSection: React.FC<HistogramSectionProps> = ({
         <Histogram updatedData={data || []} handleClick={onDateSelect} />
       ) : (
         hasLoadedOnce &&
-        !isLoading &&
+        !loading &&
         !isUpdating && (
           <Text fontStyle='italic' color='gray.800' mt={1}>
             No results with date information.
