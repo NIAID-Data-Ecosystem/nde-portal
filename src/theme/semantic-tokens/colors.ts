@@ -102,6 +102,34 @@ export const semanticColors = defineSemanticTokens.colors({
     default: { value: '#246CD3' },
     visited: { value: '#6F57B5' },
   },
+
+  /*
+  Body and heading text. Roles, same as `link` above, so they live here rather
+  than in ../tokens/colors.ts.
+  */
+  text: {
+    body: { value: '#404B56' },
+    heading: { value: '#2F2F2F' },
+  },
+
+  /*
+  v2 set the body colour once in `styles.global` and let every component inherit
+  it. v3 does not inherit: 32 components in `defaultConfig` set an explicit
+  colour from the `fg` family, and Chakra's `fg` default is `{colors.black}` —
+  pure black, not a grey. That left two competing text colours, #404B56 by
+  inheritance and #000 inside any built-in that sets its own.
+
+  Re-pointing `fg` at the body colour closes the gap. Only the *bare* `fg` role
+  is redefined here, which reaches exactly three unoverridden sites —
+  `card.root`, the `line` Tabs variant's `trigger._selected`, and `toast.root`
+  (`table.columnHeader` is the fourth, already handled in
+  ../slot-recipes/table.slot-recipe.ts). `fg.muted`, `fg.subtle`, `fg.error`
+  and `fg.inverted` are separate tokens and keep Chakra's values, so Tooltip,
+  Field, Accordion, List, Dialog and Drawer are untouched.
+  */
+  fg: {
+    DEFAULT: { value: '{colors.text.body}' },
+  },
 });
 
 // [chakra-todo]: might need to include this or delete. Was in v3 old theming
