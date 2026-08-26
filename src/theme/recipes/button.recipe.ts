@@ -32,6 +32,7 @@ export const buttonRecipe = defineRecipe({
     fontWeight: 'medium',
     fontFamily: 'body',
     height: 'unset',
+    colorPalette: 'primary',
   },
   variants: {
     size: {
@@ -100,6 +101,5 @@ export const buttonRecipe = defineRecipe({
   defaultVariants: {
     size: 'md',
     variant: 'solid',
-    colorPalette: 'primary',
   },
 });

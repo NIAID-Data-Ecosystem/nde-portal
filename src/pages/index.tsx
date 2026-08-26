@@ -235,11 +235,10 @@ const Home: NextPage<{
                       size={{ base: 'md', sm: 'sm' }}
                       width={{ base: '100%', sm: 'auto' }}
                       asChild
+                      truncate
                     >
                       <NextLink href='/knowledge-center/getting-started-with-niaid-data-ecosystem-discovery-portal'>
-                        <Text truncate color='inherit'>
-                          Read more about getting started
-                        </Text>
+                        Read more about getting started
                       </NextLink>
                     </Button>
                   </VStack>
