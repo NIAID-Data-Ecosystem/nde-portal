@@ -76,7 +76,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   };
 
   const startElement = (
-    <Icon color='page.placeholder' boxSize={4} asChild>
+    <Icon color='text.placeholder' boxSize={4} asChild>
       <FaMagnifyingGlass />
     </Icon>
   );

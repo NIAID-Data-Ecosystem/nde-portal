@@ -253,7 +253,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                             color='text.body'
                             headingProps={{ size: 'sm' }}
                             iconProps={{
-                              color: 'page.placeholder',
+                              color: 'text.placeholder',
                               opacity: 0.7,
                             }}
                           />
@@ -299,7 +299,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                             color='text.body'
                             headingProps={{ size: 'sm' }}
                             iconProps={{
-                              color: 'page.placeholder',
+                              color: 'text.placeholder',
                               opacity: 0.7,
                             }}
                           />
@@ -454,7 +454,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                                   <Icon
                                     as={icon}
                                     boxSize={6}
-                                    fill='page.placeholder'
+                                    fill='text.placeholder'
                                     _hover={{ fill: `${platform}.500` }}
                                   />
                                 </Link>

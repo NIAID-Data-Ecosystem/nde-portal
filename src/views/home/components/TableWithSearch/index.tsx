@@ -166,9 +166,9 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
             emptyState={emptyState}
             stickyHeader
             data={loading ? Array(10).fill({}) : filteredData}
-            tableHeadProps={{ bg: 'page.alt' }}
+            tableHeadProps={{ bg: 'bg.alt' }}
             getTableRowProps={(_, idx: number) => ({
-              bg: idx % 2 ? 'page.alt' : 'white',
+              bg: idx % 2 ? 'bg.alt' : 'white',
             })}
             tableContainerProps={{ overflowY: 'auto', maxHeight: '500px' }}
             getCells={props => <RepositoryCells {...props} loading={loading} />}

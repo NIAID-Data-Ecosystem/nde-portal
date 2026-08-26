@@ -19,7 +19,7 @@ export const inputRecipe = defineRecipe({
   base: {
     fontWeight: 'light',
     _placeholder: {
-      color: 'page.placeholder',
+      color: 'text.placeholder',
     },
   },
   variants: {

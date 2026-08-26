@@ -71,7 +71,7 @@ export const DownloadMetadataProgress: React.FC<DownloadMetadataProgressProps> =
                   </Progress.Root>
                   <Text
                     fontSize='xs'
-                    color='page.placeholder'
+                    color='text.placeholder'
                     textAlign='end'
                     fontWeight='medium'
                     ml={1}

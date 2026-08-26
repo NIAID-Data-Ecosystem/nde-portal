@@ -26,7 +26,7 @@ export const table = defineSlotRecipe({
     colorPalette: {
       niaid: {
         columnHeader: {
-          bg: 'page.alt',
+          bg: 'bg.alt',
         },
 
         row: {
@@ -216,10 +216,10 @@ export default table;
 //           '&:nth-of-type(even)': {
 //             'th, td': {
 //               borderBottomWidth: '1px',
-//               borderColor: 'page.alt',
+//               borderColor: 'bg.alt',
 //             },
 //             td: {
-//               background: 'page.alt',
+//               background: 'bg.alt',
 //             },
 //           },
 //         },

@@ -214,7 +214,7 @@ const Search: NextPage<{
       <SearchTabsProvider initialTab={initialTab}>
         <PaginationProvider>
           <SearchResultsFetchedProvider>
-            <Flex bg='page.alt'>
+            <Flex bg='bg.alt'>
               <Flex
                 id='search-page-filters-sidebar'
                 bg='#fff'

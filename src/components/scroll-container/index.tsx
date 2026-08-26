@@ -23,7 +23,7 @@ export const ScrollContainer = ({ children, ...props }: any) => {
 
         '& _hover': {
           '&::-webkit-scrollbar-thumb': {
-            background: 'page.placeholder',
+            background: 'text.placeholder',
           },
         },
       }}

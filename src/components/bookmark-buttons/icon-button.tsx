@@ -27,7 +27,7 @@ export const BookmarkIconButton: React.FC<
             <FaBookmark />
           </Icon>
         ) : (
-          <Icon fill='page.placeholder' asChild>
+          <Icon fill='text.placeholder' asChild>
             <FaRegBookmark />
           </Icon>
         )}

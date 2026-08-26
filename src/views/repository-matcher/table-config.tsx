@@ -25,7 +25,7 @@ import {
 import { itemTypes } from './utils';
 
 const tagCellStyles = {
-  bg: 'page.alt',
+  bg: 'bg.alt',
   color: 'text.body',
 };
 export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [

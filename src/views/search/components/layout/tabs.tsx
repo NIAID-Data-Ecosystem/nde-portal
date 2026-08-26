@@ -36,7 +36,7 @@ export const SearchTabs = ({
         borderTop='1px solid'
         borderTopColor='gray.100'
         borderBottom='hidden'
-        bg='page.alt'
+        bg='bg.alt'
       >
         {tabs.map(tab => (
           <Tabs.Trigger

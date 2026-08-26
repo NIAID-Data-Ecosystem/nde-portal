@@ -18,7 +18,7 @@ export const SidebarMobile = ({
         <Menu.Trigger
           bg='blackAlpha.100'
           borderRadius='semi'
-          color='page.placeholder'
+          color='text.placeholder'
           mx={2}
           my={2}
           flex={1}

@@ -104,7 +104,7 @@ export const Th = React.memo(
     tableSortToggleProps,
     ...props
   }: ThProps) => {
-    const bg = isSelected ? 'page.alt' : 'transparent';
+    const bg = isSelected ? 'bg.alt' : 'transparent';
     const py = isSortable ? 1 : 2;
     return (
       <Flex

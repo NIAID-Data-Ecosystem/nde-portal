@@ -43,7 +43,7 @@ export const SampleTable = ({
           maxHeight: '400px',
         }}
         getTableRowProps={(_, idx) => ({
-          bg: idx % 2 === 0 ? 'white' : 'page.alt',
+          bg: idx % 2 === 0 ? 'white' : 'bg.alt',
         })}
         columns={tableProps?.columns || []}
         data={tableProps?.data || []}

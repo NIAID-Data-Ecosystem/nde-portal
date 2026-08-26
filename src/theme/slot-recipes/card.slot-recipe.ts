@@ -58,7 +58,7 @@ export const cardSlotRecipe = defineSlotRecipe({
       niaid: {
         root: {},
         header: { bg: 'niaid.500', color: 'white' },
-        footer: { bg: 'page.alt' },
+        footer: { bg: 'bg.alt' },
       },
       outline: {
         root: {

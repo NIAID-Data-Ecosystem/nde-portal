@@ -29,7 +29,7 @@ export const TableContainer = React.forwardRef<
         },
         '&:hover': {
           '&::-webkit-scrollbar-thumb': {
-            background: 'page.placeholder',
+            background: 'text.placeholder',
           },
         },
       }}

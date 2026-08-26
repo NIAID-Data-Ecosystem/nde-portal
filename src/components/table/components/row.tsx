@@ -26,7 +26,7 @@ export const RowWithDrawer = React.memo(({ children, ...props }: FlexProps) => {
           <Accordion.Item border='none' value='item-0'>
             <Accordion.ItemContext>
               {({ expanded }) => (
-                <Box bg='page.alt'>
+                <Box bg='bg.alt'>
                   <h2>
                     <Accordion.ItemTrigger px={4} py={1} bg='white'>
                       <Flex alignItems='center'>
@@ -41,7 +41,7 @@ export const RowWithDrawer = React.memo(({ children, ...props }: FlexProps) => {
                       </Flex>
                     </Accordion.ItemTrigger>
                   </h2>
-                  <Accordion.ItemContent py={4} bg='page.alt'>
+                  <Accordion.ItemContent py={4} bg='bg.alt'>
                     <Accordion.ItemBody>
                       {expanded && children}
                     </Accordion.ItemBody>

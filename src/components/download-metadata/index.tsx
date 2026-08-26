@@ -192,7 +192,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
               </Progress.Root>
               <Text
                 fontSize='xs'
-                color='page.placeholder'
+                color='text.placeholder'
                 textAlign='end'
                 fontWeight='medium'
                 ml={1}
@@ -254,7 +254,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
                           borderBottom={
                             idx < options.length - 1 ? '1px solid' : 'none'
                           }
-                          borderColor='page.alt'
+                          borderColor='bg.alt'
                         >
                           <Box
                             w='100%'

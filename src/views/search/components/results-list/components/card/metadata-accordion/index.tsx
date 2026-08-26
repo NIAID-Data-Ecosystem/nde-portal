@@ -109,7 +109,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                 <h2>
                   <Accordion.ItemTrigger
                     px={paddingCard}
-                    _hover={{ bg: 'page.alt' }}
+                    _hover={{ bg: 'bg.alt' }}
                     flexDirection={{ base: 'column', md: 'row' }}
                   >
                     <Flex

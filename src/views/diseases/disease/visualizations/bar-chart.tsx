@@ -82,10 +82,10 @@ const barStyles = { minHeight: 10, padding: 25, rx: 2.5 };
 const domainStyles = {
   IID: {
     fillOpacity: 0.6,
-    stroke: system.token('colors.page.placeholder'),
+    stroke: system.token('colors.text.placeholder'),
   },
   Generalist: {
-    fill: system.token('colors.page.placeholder'),
+    fill: system.token('colors.text.placeholder'),
     fillOpacity: 0.2,
   },
 };
@@ -394,7 +394,7 @@ const IIDPattern = ({ id }: { id: string }) => {
       width={6}
       height={6}
       // stroke='black'
-      stroke={system.token('colors.page.placeholder')}
+      stroke={system.token('colors.text.placeholder')}
       strokeWidth={1}
       orientation={['diagonal']}
     />

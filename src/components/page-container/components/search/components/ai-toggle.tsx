@@ -176,7 +176,7 @@ export const AIToggleLabel = ({
         gap={1}
       >
         {label}
-        <Icon boxSize={4} color='page.placeholder' asChild>
+        <Icon boxSize={4} color='text.placeholder' asChild>
           <FaRegCircleQuestion />
         </Icon>
       </Field.Label>
