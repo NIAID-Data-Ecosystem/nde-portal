@@ -61,7 +61,7 @@ export const semanticColors = defineSemanticTokens.colors({
     // v2 Badge `solid` + colorPalette='niaid' was a literal black.
     badgeSolidBg: { value: '{colors.black}' },
     // v2 `styleInputBorder()` singled niaid out for the link colour.
-    inputFocusBorder: { value: '{colors.link.color}' },
+    inputFocusBorder: { value: '{colors.link.default}' },
   },
   accent: palette('accent'),
 
@@ -94,6 +94,14 @@ export const semanticColors = defineSemanticTokens.colors({
   cyan: buttonRoles('cyan'),
   purple: buttonRoles('purple'),
   pink: buttonRoles('pink'),
+
+  /*
+  NIAID Digital Policies link colours.
+  */
+  link: {
+    default: { value: '#246CD3' },
+    visited: { value: '#6F57B5' },
+  },
 });
 
 // [chakra-todo]: might need to include this or delete. Was in v3 old theming

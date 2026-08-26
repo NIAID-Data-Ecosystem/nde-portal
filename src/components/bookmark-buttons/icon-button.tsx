@@ -23,7 +23,7 @@ export const BookmarkIconButton: React.FC<
         {...props}
       >
         {isFavorited ? (
-          <Icon fill='link.color' asChild>
+          <Icon fill='link.default' asChild>
             <FaBookmark />
           </Icon>
         ) : (

@@ -83,7 +83,7 @@ Ported from the v2 `Link` style config.
 
 The v2 version read arbitrary style props (`props.color`, `props.borderBottom`,
 `props._hover.color`, `props._visited.color`) to compute these values. v3
-recipes only receive variant/size, so those reads become the fixed `link.color`
+recipes only receive variant/size, so those reads become the fixed `link.default`
 / `link.visited` / hairline defaults they fell back to in practice — no current
 call site passed them. `color=` still works as a plain style prop; what is gone
 is feeding a call-site colour into a *descendant* selector.
@@ -97,7 +97,7 @@ Hover uses raw `&:hover` rather than `_hover` to match the v2 recipe's bare
 //     // Chakra v3's Link base is `inline-flex`; the border-bottom scheme needs
 //     // the text to sit in normal inline flow.
 //     display: 'inline',
-//     color: 'link.color',
+//     color: 'link.default',
 //     textDecoration: 'none',
 //     svg: {
 //       color: 'currentColor',
@@ -112,7 +112,7 @@ Hover uses raw `&:hover` rather than `_hover` to match the v2 recipe's bare
 //       borderBottom: HAIRLINE,
 //     },
 //     '&:hover': {
-//       color: 'link.color',
+//       color: 'link.default',
 //       textDecoration: 'none',
 //       [CHILD]: {
 //         borderBottomColor: 'transparent',
@@ -155,7 +155,7 @@ Hover uses raw `&:hover` rather than `_hover` to match the v2 recipe's bare
 //           borderBottomColor: 'transparent',
 //           [CHILD]: {
 //             borderBottom: HAIRLINE,
-//             borderBottomColor: 'link.color',
+//             borderBottomColor: 'link.default',
 //           },
 //         },
 //         _visited: {
@@ -178,7 +178,7 @@ Hover uses raw `&:hover` rather than `_hover` to match the v2 recipe's bare
 //           borderBottomColor: 'transparent',
 //         },
 //         '&:hover': {
-//           color: 'link.color',
+//           color: 'link.default',
 //           [CHILD]: {
 //             borderBottomColor: 'transparent',
 //             color: 'inherit',

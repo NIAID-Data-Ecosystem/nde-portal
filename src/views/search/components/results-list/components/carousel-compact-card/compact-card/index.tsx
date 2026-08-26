@@ -79,7 +79,7 @@ const Header = ({ loading = false, children, ...boxProps }: HeaderProps) => {
       pt={1}
       pb={1}
       w='100%'
-      color='link.color'
+      color='link.default'
       _hover={{
         '& p': { textDecoration: 'none' },
         '& svg': {
@@ -89,8 +89,8 @@ const Header = ({ loading = false, children, ...boxProps }: HeaderProps) => {
         },
       }}
       _visited={{
-        color: 'link.color',
-        '& svg': { color: 'link.color' },
+        color: 'link.default',
+        '& svg': { color: 'link.default' },
       }}
       {...boxProps}
     >

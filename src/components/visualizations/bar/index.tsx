@@ -360,7 +360,7 @@ export const BarChart = ({
                         >
                           <Text
                             color={
-                              id === MORE_ID ? 'link.color' : 'text.heading'
+                              id === MORE_ID ? 'link.default' : 'text.heading'
                             }
                             width='100%'
                             display='block'
