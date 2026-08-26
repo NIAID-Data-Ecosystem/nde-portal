@@ -84,7 +84,7 @@ const DateFilterContent: React.FC<
 
   if (error) {
     return (
-      <Flex p={4} bg='status.error' role='alert'>
+      <Flex p={4} bg='error' role='alert'>
         <Text
           fontSize='md'
           lineHeight='base'

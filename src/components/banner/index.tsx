@@ -14,8 +14,8 @@ interface BannerProps {
 
 // [COMPONENT INFO]: Banner Element to notice user. NIAID design specs: https://designsystem.niaid.nih.gov/components/molecules
 const Banner: React.FC<BannerProps> = ({ children, status }) => {
-  let bg = 'status.info_lt';
-  let icon_bg = 'status.info';
+  let bg = 'info.subtle';
+  let icon_bg = 'info';
 
   if (
     status === 'info' ||
@@ -23,8 +23,8 @@ const Banner: React.FC<BannerProps> = ({ children, status }) => {
     status === 'warning' ||
     status === 'success'
   ) {
-    bg = `status.${status}_lt`;
-    icon_bg = `status.${status}`;
+    bg = `${status}.subtle`;
+    icon_bg = `${status}`;
   }
 
   const getIcon = (status: BannerProps['status']) => {

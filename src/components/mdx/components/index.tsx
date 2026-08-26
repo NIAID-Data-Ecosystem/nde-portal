@@ -134,8 +134,8 @@ export const MDXComponents = {
       const text = node?.children[0]?.value;
       if (!text) {
         return {
-          bg: 'status.info_lt',
-          color: 'status.info',
+          bg: 'info.subtle',
+          color: 'info',
         };
       }
 
@@ -143,23 +143,23 @@ export const MDXComponents = {
       const emojis = text.match(/\p{Emoji_Presentation}/gu);
       if (!emojis) {
         return {
-          bg: 'status.info_lt',
-          color: 'status.info',
+          bg: 'info.subtle',
+          color: 'info',
         };
       } else if (emojis[0] === '🚧') {
         return {
-          bg: 'status.warning_lt',
-          color: 'status.warning',
+          bg: 'warning.subtle',
+          color: 'warning',
         };
       } else if (emojis[0] === '🚨') {
         return {
-          bg: 'status.error_lt',
-          color: 'status.error',
+          bg: 'error.subtle',
+          color: 'error',
         };
       } else {
         return {
-          bg: 'status.info_lt',
-          color: 'status.info',
+          bg: 'info.subtle',
+          color: 'info',
         };
       }
     };

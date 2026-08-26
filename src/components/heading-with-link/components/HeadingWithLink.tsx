@@ -7,7 +7,7 @@ Heading with slug used to link to a specific section of the page.
 
 export const HeadingWithLinkStyles = {
   '& span': {
-    color: 'status.info',
+    color: 'info',
     cursor: 'pointer',
     fontWeight: 'extrabold',
     mx: 1,

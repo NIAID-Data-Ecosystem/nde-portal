@@ -130,7 +130,7 @@ export const Search = ({
               />
             </Box>
           </Flex>
-          <Field.ErrorText justifyContent='flex-end' color='status.error'>
+          <Field.ErrorText justifyContent='flex-end' color='error'>
             <List.Root as='ul'>
               {/* This is my error message */}
               {errors.map((error, index) => (

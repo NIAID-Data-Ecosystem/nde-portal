@@ -100,12 +100,7 @@ const ItemContent = ({
       <Collapsible.Root open={errors.length > 0}>
         <Collapsible.Content>
           {errors.map(error => (
-            <Text
-              key={error.id}
-              color='status.error'
-              fontSize='xs'
-              fontStyle='italic'
-            >
+            <Text key={error.id} color='error' fontSize='xs' fontStyle='italic'>
               {error.message}
             </Text>
           ))}

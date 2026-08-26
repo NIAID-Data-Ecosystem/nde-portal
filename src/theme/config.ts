@@ -23,7 +23,7 @@ const keyframes = {
 
 /*
 Nothing under ./recipes or ./slot-recipes may import from this module or from
-./index — they refer to tokens by name (`colorPalette.200`, `status.error`)
+./index — they refer to tokens by name (`colorPalette.200`, `error`)
 rather than by value. That is what keeps the cycle out: under v2, three of the
 component style configs imported the very theme object they were configuring.
 

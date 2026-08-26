@@ -5,8 +5,8 @@ import {
   Heading,
   Icon,
   IconProps,
-  Text,
   List,
+  Text,
 } from '@chakra-ui/react';
 import {
   FaCircleExclamation,
@@ -31,19 +31,19 @@ export const StatusIcon = ({
 }) => {
   if (status === 'error') {
     return (
-      <Icon color={`status.${status}`} {...props} asChild>
+      <Icon color={status} {...props} asChild>
         <FaCircleXmark />
       </Icon>
     );
   } else if (status === 'warning') {
     return (
-      <Icon color={`status.${status}`} {...props} asChild>
+      <Icon color={status} {...props} asChild>
         <FaCircleExclamation />
       </Icon>
     );
   } else if (status === 'info') {
     return (
-      <Icon color={`status.${status}`} {...props} asChild>
+      <Icon color={status} {...props} asChild>
         <FaCircleInfo />
       </Icon>
     );
@@ -67,15 +67,15 @@ export const MessageBlock = ({
 
   return (
     <Flex
-      bg={`status.${status}_lt`}
+      bg={`${status}.subtle`}
       borderLeft='5px solid'
-      borderLeftColor={`status.${status}`}
+      borderLeftColor={status}
       p={2}
       my={2}
     >
       <Box>
         <Flex mx={4} alignItems='center'>
-          <Heading as='h5' size='sm' color={`status.${status}`}>
+          <Heading as='h5' size='sm' color={status}>
             {heading}
           </Heading>
         </Flex>
@@ -83,7 +83,7 @@ export const MessageBlock = ({
           {statusItems.map((statusItem, index) => {
             return (
               <List.Item key={index} display='flex' p={1}>
-                <List.Indicator color={`status.${status}`} asChild>
+                <List.Indicator color={status} asChild>
                   <FaCircleXmark />
                 </List.Indicator>
                 <Box>

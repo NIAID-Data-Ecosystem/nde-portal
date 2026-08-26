@@ -81,7 +81,7 @@ const ResourceBanner: React.FC<ResourceBannerProps> = ({ data }) => {
       label={formatAPIResourceTypeForDisplay(type)}
       type={type}
       creativeWorkStatus={data?.creativeWorkStatus}
-      bg='status.info_lt'
+      bg='info.subtle'
       isNiaidFunded={isSourceFundedByNiaid(data.includedInDataCatalog)}
       isProgramResource={isProgramResource}
     >

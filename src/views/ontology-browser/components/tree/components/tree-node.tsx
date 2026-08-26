@@ -373,7 +373,7 @@ export const TreeNode = (props: {
           {showHiddenElementsWarning && (
             <List.Item
               className='hiddenElementsWarning'
-              bg='status.warning_lt'
+              bg='warning.subtle'
               fontSize='xs'
               px={4}
               py={2}

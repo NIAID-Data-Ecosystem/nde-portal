@@ -187,7 +187,7 @@ export const NewsCarousel = ({
                     <Badge
                       colorPalette='primary'
                       variant='solid'
-                      bg='status.info'
+                      bg='info'
                       size='xs'
                       fontSize='12px'
                       mx={1}

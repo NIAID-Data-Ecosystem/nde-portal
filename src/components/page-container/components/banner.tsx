@@ -1,25 +1,26 @@
-import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
   Flex,
-  HStack,
   Heading,
+  HStack,
   Icon,
   Separator,
 } from '@chakra-ui/react';
-import { useLocalStorage } from 'usehooks-ts';
-import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import remarkGfm from 'remark-gfm';
-import { NoticeProps } from '..';
+import React, { useEffect, useState } from 'react';
 import {
   FaCircleCheck,
   FaCircleExclamation,
   FaCircleInfo,
   FaCircleXmark,
 } from 'react-icons/fa6';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
+import { useLocalStorage } from 'usehooks-ts';
+
+import { NoticeProps } from '..';
 
 const StatusIcon = ({ status }: { status: NoticeProps['state'] }) => {
   let icon = null;
@@ -36,12 +37,7 @@ const StatusIcon = ({ status }: { status: NoticeProps['state'] }) => {
   if (!icon) return <></>;
 
   return (
-    <Icon
-      as={icon}
-      boxSize={6}
-      my={1}
-      fill={`status.${status?.toLowerCase()}`}
-    />
+    <Icon as={icon} boxSize={6} my={1} fill={`${status?.toLowerCase()}`} />
   );
 };
 
@@ -70,8 +66,8 @@ export const Banner = ({
       px={4}
       py={2}
       borderLeft='0.5rem solid'
-      borderColor={`status.${state?.toLowerCase()}`}
-      bg={`status.${state?.toLowerCase()}_lt`}
+      borderColor={`${state?.toLowerCase()}`}
+      bg={`${state?.toLowerCase()}.subtle`}
     >
       <HStack
         gap={4}
