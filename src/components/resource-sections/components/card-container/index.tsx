@@ -1,5 +1,5 @@
-import React from 'react';
 import { Box, Card, Heading } from '@chakra-ui/react';
+import React from 'react';
 
 interface CardContainerProps {
   heading: string;
@@ -26,7 +26,7 @@ export const CardContainer: React.FC<CardContainerProps> = ({
           size='sm'
           fontWeight='semibold'
           borderBottom='0.5px solid'
-          borderColor='page.placeholder'
+          borderColor='gray.200'
         >
           {heading}
         </Heading>

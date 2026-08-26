@@ -81,9 +81,7 @@ export const SectionTitle = ({
             heading
           )}
         </SkeletonText>
-        {as === 'h3' && (
-          <Separator mt={2} mb={4} borderColor='page.placeholder' />
-        )}
+        {as === 'h3' && <Separator mt={2} mb={4} borderColor='gray.600' />}
       </>
     );
   }
