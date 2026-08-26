@@ -72,11 +72,11 @@ text) or `child-node` (elements), and the selectors below target it.
 Keep these in sync with that wrapper; the class names are part of its contract
 and src/components/metadata/components/buttons.tsx overrides them from outside.
 */
-const CHILD = '.child-string, .child-node, .child-node p';
-const UNDERLINED = '.child-string, .child-node p';
-const CHILD_SVG = '.child-string, .child-node, .child-node p, svg';
+// const CHILD = '.child-string, .child-node, .child-node p';
+// const UNDERLINED = '.child-string, .child-node p';
+// const CHILD_SVG = '.child-string, .child-node, .child-node p, svg';
 
-const HAIRLINE = '0.0625rem solid';
+// const HAIRLINE = '0.0625rem solid';
 
 /*
 Ported from the v2 `Link` style config.

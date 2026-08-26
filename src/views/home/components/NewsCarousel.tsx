@@ -1,23 +1,23 @@
-import axios from 'axios';
-import { useQuery } from '@tanstack/react-query';
-import React from 'react';
-import { NewsOrEventsObject, fetchEvents } from 'src/pages/updates';
-import { formatDate } from 'src/utils/api/helpers';
-import { FaAngleRight } from 'react-icons/fa6';
 import {
+  Badge,
   Box,
   Button,
+  Card,
   Flex,
   Heading,
   Icon,
   Image,
   Text,
-  Card,
-  Badge,
 } from '@chakra-ui/react';
-import { Carousel } from 'src/components/carousel';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 import NextLink from 'next/link';
+import React from 'react';
+import { FaAngleRight } from 'react-icons/fa6';
+import { Carousel } from 'src/components/carousel';
 import { Link } from 'src/components/link';
+import { fetchEvents, NewsOrEventsObject } from 'src/pages/updates';
+import { formatDate } from 'src/utils/api/helpers';
 import {
   fetchAllFeaturedPages,
   transformFeaturedContentForCarousel,
@@ -215,17 +215,18 @@ export const NewsCarousel = ({
                       )}{' '}
                       &mdash;
                       {carouselCard.shortDescription}
-                      <NextLink href={card_url} passHref>
-                        <Link
-                          as='span'
-                          fontSize='sm'
-                          bg='transparent'
-                          lineHeight='tall'
-                          mx={1}
-                        >
-                          (<Text>view full release</Text>)
-                        </Link>
-                      </NextLink>
+                      <Link
+                        as='span'
+                        fontSize='sm'
+                        bg='transparent'
+                        lineHeight='tall'
+                        mx={1}
+                        asChild
+                      >
+                        <NextLink href={card_url} passHref>
+                          (view full release)
+                        </NextLink>
+                      </Link>
                     </Text>
                   }
                 </Card.Body>
