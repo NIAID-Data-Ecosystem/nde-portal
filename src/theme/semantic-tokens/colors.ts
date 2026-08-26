@@ -61,7 +61,7 @@ export const semanticColors = defineSemanticTokens.colors({
     // v2 Badge `solid` + colorPalette='niaid' was a literal black.
     badgeSolidBg: { value: '{colors.black}' },
     // v2 `styleInputBorder()` singled niaid out for the link colour.
-    inputFocusBorder: { value: '{colors.link.default}' },
+    inputFocusBorder: { value: '{colors.link}' },
   },
   accent: palette('accent'),
 
@@ -96,139 +96,46 @@ export const semanticColors = defineSemanticTokens.colors({
   pink: buttonRoles('pink'),
 
   /*
+  NIAID Digital Policies page background colors.
+  */
+  bg: {
+    DEFAULT: { value: '#FDFDFD' },
+    alt: { value: '#F5F6FA' },
+  },
+  /*
   NIAID Digital Policies link colours.
   */
   link: {
-    default: { value: '#246CD3' },
+    DEFAULT: { value: '#246CD3' },
     visited: { value: '#6F57B5' },
   },
 
   /*
-  Body and heading text. Roles, same as `link` above, so they live here rather
-  than in ../tokens/colors.ts.
+  NIAID Digital Policies text and heading colors. 
   */
   text: {
     body: { value: '#404B56' },
     heading: { value: '#2F2F2F' },
+    placeholder: { value: '#9AA6B5' },
   },
 
   /*
-  v2 set the body colour once in `styles.global` and let every component inherit
-  it. v3 does not inherit: 32 components in `defaultConfig` set an explicit
-  colour from the `fg` family, and Chakra's `fg` default is `{colors.black}` —
-  pure black, not a grey. That left two competing text colours, #404B56 by
-  inheritance and #000 inside any built-in that sets its own.
-
-  Re-pointing `fg` at the body colour closes the gap. Only the *bare* `fg` role
-  is redefined here, which reaches exactly three unoverridden sites —
-  `card.root`, the `line` Tabs variant's `trigger._selected`, and `toast.root`
-  (`table.columnHeader` is the fourth, already handled in
-  ../slot-recipes/table.slot-recipe.ts). `fg.muted`, `fg.subtle`, `fg.error`
-  and `fg.inverted` are separate tokens and keep Chakra's values, so Tooltip,
-  Field, Accordion, List, Dialog and Drawer are untouched.
+  NIAID Digital Policies status colours.
   */
-  fg: {
-    DEFAULT: { value: '{colors.text.body}' },
+  error: {
+    DEFAULT: { value: '#D23342' },
+    subtle: { value: '#FBF2F3' },
+  },
+  success: {
+    DEFAULT: { value: '#17805F' },
+    subtle: { value: '#F2F5F4' },
+  },
+  warning: {
+    DEFAULT: { value: '#FFC10A' },
+    subtle: { value: '#FFF9F2' },
+  },
+  info: {
+    DEFAULT: { value: '#4865E3' },
+    subtle: { value: '#F3F4FC' },
   },
 });
-
-// [chakra-todo]: might need to include this or delete. Was in v3 old theming
-// error: {
-//   light: { value: '#FBF2F3' },
-//   default: { value: '#D23342' },
-//   contrast: { value: 'white' },
-//   emphasized: { value: '{colors.error.light}' },
-//   fg: { value: '{colors.error.default}' },
-//   focusRing: { value: '{colors.red.500/50}' },
-//   muted: { value: '#f6bec4' },
-//   solid: { value: '{colors.error.default}' },
-//   subtle: { value: '{colors.error.light}' },
-// },
-// info: {
-//   light: { value: '#F3F4FC' },
-//   default: { value: '#4865E3' },
-//   contrast: { value: 'white' },
-//   emphasized: { value: '{colors.info.light}' },
-//   fg: { value: '{colors.info.default}' },
-//   focusRing: { value: '#4299E199' },
-//   muted: { value: '#8FA2F1' },
-//   solid: { value: '{colors.info.default}' },
-//   subtle: { value: '{colors.info.light}' },
-// },
-// success: {
-//   light: { value: '#F2F5F4' },
-//   default: { value: '#17805F' },
-//   contrast: { value: 'white' },
-//   emphasized: { value: '{colors.success.light}' },
-//   fg: { value: '{colors.success.default}' },
-//   focusRing: { value: '{colors.success.default}' },
-//   muted: { value: '#BBF4E3' },
-//   solid: { value: '{colors.success.default}' },
-//   subtle: { value: '{colors.success.light}' },
-// },
-// warning: {
-//   light: { value: '#FFF9F2' },
-//   default: { value: '#FFC10A' },
-//   contrast: { value: 'white' },
-//   emphasized: { value: '{colors.warning.light}' },
-//   fg: { value: '{colors.yellow.800}' },
-//   focusRing: { value: '{colors.warning.default}' },
-//   muted: { value: '#FFECAD' },
-//   solid: { value: '{colors.warning.default}' },
-//   subtle: { value: '{colors.warning.light}' },
-// },
-// bg: {
-//     DEFAULT: {
-//       value: '{colors.page.default}',
-//     },
-//     subtle: {
-//       value: '{colors.page.alt}',
-//     },
-//     error: {
-//       value: '{colors.error.light}',
-//     },
-//     warning: {
-//       value: '{colors.warning.light}',
-//     },
-//     success: {
-//       value: '{colors.success.light}',
-//     },
-//     info: {
-//       value: '{colors.info.light}',
-//     },
-//   },
-//   border: {
-//     DEFAULT: {
-//       value: '{colors.gray.200}',
-//     },
-//     error: {
-//       value: '{colors.error.default}',
-//     },
-//     warning: {
-//       value: '{colors.warning.default}',
-//     },
-//     success: {
-//       value: '{colors.success.default}',
-//     },
-//     info: {
-//       value: '{colors.info.default}',
-//     },
-//   },
-//   fg: {
-//     DEFAULT: {
-//       value: '{colors.text.body}',
-//     },
-//     error: {
-//       value: '{colors.error.default}',
-//     },
-//     warning: {
-//       value: '{colors.warning.default}',
-//     },
-//     success: {
-//       value: '{colors.success.default}',
-//     },
-//     info: {
-//       value: '{colors.info.default}',
-//     },
-//     muted: { value: '{colors.text.body/80}' },
-//   },
