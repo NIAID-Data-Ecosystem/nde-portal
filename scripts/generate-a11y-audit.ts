@@ -1,5 +1,34 @@
 import fs from 'fs/promises';
 import path from 'path';
+import {
+  ALL,
+  AS,
+  BaseEntry,
+  CAP,
+  DS,
+  HARD,
+  HOME,
+  KC,
+  NONE,
+  RES,
+  Resolved,
+  SAVED,
+  SB,
+  SBKC,
+  SEARCH,
+  TABLE,
+  TODAY,
+  TOC,
+  basename,
+  capped,
+  countSites,
+  createResolver,
+  csvLine,
+  from,
+  getJson,
+  suffix,
+  uniq,
+} from './lib/audit-csv';
 
 /**
  * Generates the alt-text and accessible-name audit spreadsheets.
@@ -30,48 +59,8 @@ import path from 'path';
 
 const OUT_DIR = 'docs/accessibility';
 
-// ---------------------------------------------------------------- route sets
-// Every route that renders PageContainer (i.e. all of them except /news, which
-// is a client-side redirect to /updates with no UI of its own).
-const ALL = [
-  '/',
-  '/404',
-  '/about',
-  '/advanced-search',
-  '/changelog',
-  '/disclaimer',
-  '/faq',
-  '/login',
-  '/updates',
-  '/ontology-browser',
-  '/program-collections',
-  '/repository-matcher',
-  '/resources',
-  '/saved',
-  '/search',
-  '/settings',
-  '/sources',
-  '/diseases',
-  '/diseases/[slug]',
-  '/features',
-  '/features/[slug]',
-  '/knowledge-center',
-  '/knowledge-center/[...slug]',
-];
-
-const uniq = (routes: string[]) => Array.from(new Set(routes)).sort();
-
-const HOME = ['/'];
-const KC = ['/knowledge-center', '/knowledge-center/[...slug]'];
-const SB = ['/404', '/about', '/resources', '/search']; // includeSearchBar
-const SBKC = uniq([...SB, ...KC]);
-const TOC = ['/diseases', '/features', '/program-collections', '/sources'];
-const TABLE = ['/', '/repository-matcher', '/resources', '/saved', '/search'];
-const DS = ['/diseases/[slug]'];
-const AS = ['/advanced-search'];
-const RES = ['/resources'];
-const SEARCH = ['/search'];
-const SAVED = ['/saved'];
+// ------------------------------------------------- audit-specific route sets
+// The shared sets (ALL, HOME, KC, SB, TABLE, ...) come from ./lib/audit-csv.
 const OB = ['/ontology-browser', '/search']; // also mounted in the /search popup
 const SEARCH_INPUT = uniq([
   ...TOC,
@@ -97,9 +86,6 @@ const SAOP = ['/repository-matcher', '/search'];
 // /resources uses BookmarkButton (bookmark-buttons/button), a different
 // component, so the icon variant is only on these two routes.
 const BOOKMARK = ['/saved', '/search'];
-const NONE = ['(none - component has no consumer)'];
-
-const HARD = 'hardcoded in JSX';
 
 const NODES_ALT =
   'A complex network of interconnected lines and nodes, resembling a molecular ' +
@@ -533,10 +519,6 @@ const DOCS = 'src/views/docs/components';
 const SRL = 'src/views/search/components/results-list/components';
 const VIZ = 'src/views/diseases/disease/visualizations';
 const OBT = 'src/views/ontology-browser/components';
-
-/** Shorthand for a derivesFrom list: from(['path/to/caller.tsx', 42], ...). */
-const from = (...pairs: [string, number][]) =>
-  pairs.map(([file, line]) => ({ file, line }));
 
 const UNUSED_COMPONENT =
   'this component has no importer anywhere in src/, so the label never renders';
@@ -2204,60 +2186,13 @@ const ariaRows: AriaEntry[] = [
 ];
 
 // --------------------------------------------------------- resolved values
-/**
- * A real string that one of the inventory entries above actually renders.
- *
- * Entries whose copy is an expression (`{icon.alternativeText}`, `{ariaLabel}`)
- * get their resolved values registered here, keyed on `file:line`. At write time
- * an entry with resolved values emits one row per value instead of one row
- * showing the expression, so the sheet is reviewable as copy.
- */
-interface Resolved {
-  copy: string;
-  /** Overrides the entry's image path when the value brings its own. */
-  image?: string;
-  /** Replaces the entry's source column — says where THIS value comes from. */
-  source?: string;
-  /** ISO date, set for anything fetched at run time. */
-  retrieved?: string;
-  /** True for per-record values that cannot be enumerated, only sampled. */
-  isExample?: boolean;
-  /** True for the "+N more" row appended when a site exceeds CAP. */
-  isSummary?: boolean;
-}
-
-/** At most this many real values are listed per site; the rest are summarised. */
-const CAP = 10;
-
-const resolved = new Map<string, Resolved[]>();
-
-const registerKey = (key: string, values: Resolved[]) => {
-  if (!values.length) return;
-  // Strict: registering the same key twice used to silently concatenate, which
-  // let a stale set of values sit alongside the corrected one.
-  if (resolved.has(key)) {
-    throw new Error(
-      `values are already registered for ${key} - merge them at the call site ` +
-        'rather than registering twice',
-    );
-  }
-  resolved.set(key, values);
-};
-
-const register = (file: string, line: number, values: Resolved[]) =>
-  registerKey(`${file}:${line}`, values);
-
-const TODAY = new Date().toISOString().slice(0, 10);
+// The resolver, the Resolved type and CAP all live in ./lib/audit-csv.
+const resolver = createResolver<AltEntry | AriaEntry>();
+const { register, registerKey, rowsFor, valuesFor } = resolver;
 
 // ------------------------------------------------------------------ fetching
 const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL;
 const NDE_API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-const getJson = async (url: string) => {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${url}`);
-  return res.json();
-};
 
 interface StrapiImage {
   path: string;
@@ -2543,7 +2478,7 @@ const registerFetchedValues = async () => {
     ]);
   }
   console.log(
-    `resolved ${resolved.size} sites from Strapi + the NDE API ` +
+    `resolved ${resolver.size()} sites from Strapi + the NDE API ` +
       `(${sourceNames.length} source names)`,
   );
 };
@@ -2952,120 +2887,6 @@ const registerStaticValues = () => {
 };
 
 // ------------------------------------------------------------------- writing
-// RFC 4180: quote every field so the 250+ char alt strings (which contain
-// commas) survive a round trip through Excel and Google Sheets.
-const csvLine = (fields: (string | number)[]) =>
-  fields.map(f => `"${String(f).replace(/"/g, '""')}"`).join(',') + '\n';
-
-const basename = (p: string) =>
-  !p || p.startsWith('{') || p.startsWith('$')
-    ? ''
-    : p.replace(/\/$/, '').split('/').pop() ?? '';
-
-/**
- * Turn one inventory entry into the list of value-rows it should emit.
- *
- * With no resolved values the entry emits itself unchanged. With resolved values
- * it emits one row per real value, capped at CAP and followed by a summary row —
- * so a site with 47 CMS strings is legible without pretending it has 10.
- */
-/** Cap a value list and append a summary row when anything was left out. */
-const capped = (values: Resolved[]): (Resolved | null)[] => {
-  if (!values.length) return [null];
-  const shown: (Resolved | null)[] = values.slice(0, CAP);
-  if (values.length > CAP) {
-    shown.push({
-      copy:
-        `(+${values.length - CAP} more values not listed - ` +
-        `${values.length} total at this site)`,
-      source: 'summary row',
-      retrieved: values[0].retrieved,
-      isSummary: true,
-    });
-  }
-  return shown;
-};
-
-const keyOf = (e: { file: string; line: number; valueKey?: string }) =>
-  e.valueKey ?? `${e.file}:${e.line}`;
-
-const rowsFor = (entry: { file: string; line: number; valueKey?: string }) =>
-  capped(resolved.get(keyOf(entry)) ?? []);
-
-/** Every aria entry, indexed by `file:line`, for resolving derivesFrom. */
-const ariaByKey = new Map<string, AriaEntry[]>();
-for (const entry of ariaRows) {
-  const k = `${entry.file}:${entry.line}`;
-  ariaByKey.set(k, (ariaByKey.get(k) ?? []).concat(entry));
-}
-
-/**
- * The real values a pass-through site shows on one specific route, followed
- * transitively through its callers. Throws if a named caller is not in the
- * inventory, so a stale reference fails loudly instead of emitting a blank.
- */
-const derivedFor = (
-  entry: AriaEntry,
-  route: string,
-  seen: Set<string> = new Set(),
-): Resolved[] => {
-  const out: Resolved[] = [];
-  for (const target of entry.derivesFrom ?? []) {
-    const key = `${target.file}:${target.line}`;
-    if (seen.has(key)) continue;
-    const callers = ariaByKey.get(key);
-    if (!callers) {
-      throw new Error(
-        `derivesFrom target is not in the inventory: ${key} ` +
-          `(referenced by ${entry.file}:${entry.line})`,
-      );
-    }
-    const next = new Set(seen).add(key);
-    for (const caller of callers) {
-      if (!caller.routes.includes(route)) continue;
-      const own = resolved.get(keyOf(caller));
-      if (own?.length) {
-        out.push(...own.map(v => ({ ...v, source: `passed by ${key}` })));
-      } else if (caller.derivesFrom?.length) {
-        out.push(...derivedFor(caller, route, next));
-      } else {
-        out.push({ copy: caller.copy, source: `passed by ${key}` });
-      }
-    }
-  }
-  return out;
-};
-
-const dedupe = (values: Resolved[]) => {
-  const seen = new Set<string>();
-  return values.filter(v => !seen.has(v.copy) && seen.add(v.copy));
-};
-
-/** Registered values first, then anything derived from callers for this route. */
-const ariaValuesFor = (entry: AriaEntry, route: string): Resolved[] => {
-  const registered = resolved.get(keyOf(entry)) ?? [];
-  const derived = entry.derivesFrom?.length
-    ? dedupe(derivedFor(entry, route))
-    : [];
-  if (!registered.length && entry.derivesFrom?.length && !derived.length) {
-    // A pass-through with no caller on this route has no accessible name here.
-    return [
-      {
-        copy: '(NO VALUE - no caller supplies a label on this route)',
-        source: `no caller of ${entry.file}:${entry.line} renders on ${route}`,
-      },
-    ];
-  }
-  return dedupe(registered.concat(derived));
-};
-
-const suffix = (v: Resolved | null, base: string) => {
-  if (!v) return base;
-  if (v.isSummary) return `${base} (summary)`;
-  if (v.isExample) return `${base} (sampled example)`;
-  return v.retrieved ? `${base} (resolved, live)` : `${base} (resolved)`;
-};
-
 const writeAltCsv = async () => {
   const file = path.join(OUT_DIR, 'alt-text-audit.csv');
   let out = csvLine([
@@ -3127,7 +2948,7 @@ const writeAriaCsv = async () => {
   // Route-outer, because a pass-through's real value depends on the route.
   for (const r of ariaRows) {
     for (const route of r.routes) {
-      for (const v of capped(ariaValuesFor(r, route))) {
+      for (const v of capped(valuesFor(r, route))) {
         out += csvLine([
           route,
           r.file,
@@ -3150,30 +2971,6 @@ const writeAriaCsv = async () => {
   console.log(`${file}: ${count} rows`);
 };
 
-/**
- * Two entries sharing a resolution key both inherit the same values, which
- * silently doubles a site's rows. Anything intentionally sharing a `file:line`
- * must disambiguate with `valueKey`.
- */
-const assertNoSharedKeys = () => {
-  const seen = new Map<string, number>();
-  for (const e of [...altRows, ...ariaRows]) {
-    const k = keyOf(e);
-    seen.set(k, (seen.get(k) ?? 0) + 1);
-  }
-  const clashes = [...seen.entries()].filter(
-    ([k, n]) => n > 1 && resolved.has(k),
-  );
-  if (clashes.length) {
-    throw new Error(
-      'entries share a resolution key that has registered values; give them ' +
-        `distinct valueKeys: ${clashes
-          .map(([k, n]) => `${k} (x${n})`)
-          .join(', ')}`,
-    );
-  }
-};
-
 // Main execution
 const main = async () => {
   try {
@@ -3181,15 +2978,14 @@ const main = async () => {
     await fs.mkdir(OUT_DIR, { recursive: true });
     registerStaticValues();
     await registerFetchedValues();
-    assertNoSharedKeys();
+    resolver.index(ariaRows);
+    resolver.assertNoSharedKeys([...altRows, ...ariaRows]);
     await writeAltCsv();
     await writeAriaCsv();
 
     // Distinct source sites, for reconciling against a grep of `src/`.
-    const sites = (rows: { file: string; line: number }[]) =>
-      new Set(rows.map(r => `${r.file}:${r.line}`)).size;
-    console.log(`distinct alt sites: ${sites(altRows)}`);
-    console.log(`distinct aria sites: ${sites(ariaRows)}`);
+    console.log(`distinct alt sites: ${countSites(altRows)}`);
+    console.log(`distinct aria sites: ${countSites(ariaRows)}`);
   } catch (err: any) {
     console.error('Failed to generate audit spreadsheets:', err.message);
     process.exit(1);
