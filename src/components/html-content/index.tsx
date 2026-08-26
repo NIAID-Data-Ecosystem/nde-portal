@@ -72,7 +72,7 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
       style={{ whiteSpace: 'pre-line' }}
       css={{
         '& a': {
-          color: 'link.default',
+          color: 'link',
           textDecoration: 'underline',
           _hover: { textDecoration: 'none' },
           wordBreak: 'break-all',

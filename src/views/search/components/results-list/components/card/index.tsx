@@ -123,7 +123,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         position='relative'
         px={paddingCard}
         pt={4}
-        color='link.default'
+        color='link'
         _hover={{
           '& p': { textDecoration: 'none' },
           '& svg': {
@@ -133,8 +133,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           },
         }}
         _visited={{
-          color: 'link.default',
-          '& svg': { color: 'link.default' },
+          color: 'link',
+          '& svg': { color: 'link' },
         }}
         w='100%'
       >

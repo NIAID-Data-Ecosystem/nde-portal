@@ -81,7 +81,7 @@ export const Sidebar = ({
                     {searchHistory.slice(0, 3).map((search, idx) => (
                       <List.Item key={idx} lineHeight='short' display='flex'>
                         <Icon
-                          color='link.default'
+                          color='link'
                           boxSize={3}
                           m={1}
                           mr={1.5}

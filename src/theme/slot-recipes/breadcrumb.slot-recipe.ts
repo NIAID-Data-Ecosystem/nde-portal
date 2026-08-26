@@ -17,7 +17,7 @@ export const breadcrumbSlotRecipe = defineSlotRecipe({
           whiteSpace: 'nowrap',
           _hover: {
             bg: 'blue.50',
-            color: 'link.default',
+            color: 'link',
             textDecoration: 'underline',
           },
           _icon: { color: 'niaid.500' },
