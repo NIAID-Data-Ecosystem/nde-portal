@@ -1,16 +1,17 @@
-import React, { useEffect } from 'react';
-import NextLink from 'next/link';
 import { Box, Card, Collapsible, Flex, Icon, List } from '@chakra-ui/react';
-import { Navigation } from 'src/components/resource-sections/components';
-import { Route } from 'src/components/resource-sections/helpers';
-import { useLocalStorage } from 'usehooks-ts';
-import { CardContainer } from 'src/components/resource-sections/components/card-container';
+import NextLink from 'next/link';
+import React, { useEffect } from 'react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
-import { ExternalAccess, UsageInfo } from './components/external';
+import { Link } from 'src/components/link';
+import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
+import { Navigation } from 'src/components/resource-sections/components';
+import { CardContainer } from 'src/components/resource-sections/components/card-container';
+import { Route } from 'src/components/resource-sections/helpers';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { ResourceData } from 'src/pages/resources';
-import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
-import { Link } from 'src/components/link';
+import { useLocalStorage } from 'usehooks-ts';
+
+import { ExternalAccess, UsageInfo } from './components/external';
 
 export const Sidebar = ({
   data,
@@ -91,16 +92,17 @@ export const Sidebar = ({
                         >
                           <FaMagnifyingGlass />
                         </Icon>
-                        <NextLink
-                          href={{
-                            pathname: '/search',
-                            query: { q: search },
-                          }}
-                        >
-                          <Link as='span' fontSize='sm'>
+                        <Link as='span' fontSize='sm'>
+                          <NextLink
+                            href={{
+                              pathname: '/search',
+                              query: { q: search },
+                            }}
+                            asChild
+                          >
                             {search}
-                          </Link>
-                        </NextLink>
+                          </NextLink>
+                        </Link>
                       </List.Item>
                     ))}
                   </List.Root>

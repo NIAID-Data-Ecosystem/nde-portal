@@ -163,27 +163,28 @@ export const ConditionsOfAccess = ({ query, topic }: TopicQueryProps) => {
                         swatchBg={fill}
                       >
                         <Box>
-                          <NextLink
-                            href={getSearchResultsRoute({
-                              query: params,
-                              facet: params.facets,
-                              term: term as string,
-                            })}
-                            onClick={() => {
-                              trackDiseasesEvent({
-                                label,
-                                category:
-                                  DISEASE_PAGE_COPY['charts'][
-                                    'conditions-of-access'
-                                  ]['title'],
-                                linkType: 'legend',
-                                value: count,
-                              });
-                            }}
-                            passHref
-                          >
-                            <Link as='p'>{label}</Link>
-                          </NextLink>
+                          <Link asChild>
+                            <NextLink
+                              href={getSearchResultsRoute({
+                                query: params,
+                                facet: params.facets,
+                                term: term as string,
+                              })}
+                              onClick={() => {
+                                trackDiseasesEvent({
+                                  label,
+                                  category:
+                                    DISEASE_PAGE_COPY['charts'][
+                                      'conditions-of-access'
+                                    ]['title'],
+                                  linkType: 'legend',
+                                  value: count,
+                                });
+                              }}
+                            >
+                              {label}
+                            </NextLink>
+                          </Link>
                           <Text lineHeight='shorter' mt={1}>
                             {description}
                           </Text>

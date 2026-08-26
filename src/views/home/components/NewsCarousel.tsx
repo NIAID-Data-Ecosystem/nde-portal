@@ -223,9 +223,7 @@ export const NewsCarousel = ({
                         mx={1}
                         asChild
                       >
-                        <NextLink href={card_url} passHref>
-                          (view full release)
-                        </NextLink>
+                        <NextLink href={card_url}>(view full release)</NextLink>
                       </Link>
                     </Text>
                   }
@@ -236,20 +234,19 @@ export const NewsCarousel = ({
         })}
       </Carousel>
       <Flex flex={1} justifyContent='center' mt={4}>
-        <NextLink
-          href={{
-            pathname: `/updates`,
-          }}
-          prefetch={false}
-          passHref
-        >
-          <Button as='span' size='sm'>
+        <Button as='span' size='sm' asChild>
+          <NextLink
+            href={{
+              pathname: `/updates`,
+            }}
+            prefetch={false}
+          >
             All updates
             <Icon asChild>
               <FaAngleRight />
             </Icon>
-          </Button>
-        </NextLink>
+          </NextLink>
+        </Button>
       </Flex>
     </Box>
   ) : (

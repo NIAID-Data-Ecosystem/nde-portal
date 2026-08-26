@@ -331,23 +331,23 @@ const Home: NextPage<{
                         : FaGithub;
                       return (
                         <Box key={route.title} w={['100%', 'unset']}>
-                          <NextLink
-                            href={route.path}
-                            passHref
-                            target={route.isExternal ? '_blank' : '_self'}
+                          <Button
+                            w='100%'
+                            minWidth='150px'
+                            size='sm'
+                            variant={index % 2 ? 'solid' : 'outline'}
+                            my={[1, 2, 0]}
+                            maxWidth={['unset', '250px']}
+                            asChild
                           >
-                            <Button
-                              w='100%'
-                              minWidth='150px'
-                              size='sm'
-                              variant={index % 2 ? 'solid' : 'outline'}
-                              my={[1, 2, 0]}
-                              maxWidth={['unset', '250px']}
+                            <NextLink
+                              href={route.path}
+                              target={route.isExternal ? '_blank' : '_self'}
                             >
                               <Icon as={icon} />
                               {route.title}
-                            </Button>
-                          </NextLink>
+                            </NextLink>
+                          </Button>
                         </Box>
                       );
                     },

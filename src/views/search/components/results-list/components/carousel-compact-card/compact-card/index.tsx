@@ -139,7 +139,6 @@ const Title = ({ children, linkProps, ...textProps }: TitleProps) => {
     <NextLink
       href={linkProps.href}
       as={linkProps.as}
-      passHref
       prefetch={false}
       style={{
         display: 'flex',

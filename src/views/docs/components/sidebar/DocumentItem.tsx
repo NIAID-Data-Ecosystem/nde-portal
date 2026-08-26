@@ -1,19 +1,20 @@
-import { useEffect, useState } from 'react';
 import {
   Box,
   Flex,
   Icon,
   IconButton,
-  SkeletonText,
   List,
+  SkeletonText,
 } from '@chakra-ui/react';
+import NextLink from 'next/link';
+import { useEffect, useState } from 'react';
 import { FaAngleDown, FaAngleRight } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
-import NextLink from 'next/link';
+
+import { MAX_HEADING_DEPTH } from '../../constants';
+import type { ContentHeading, DocumentItemProps } from '../../types';
 import { extractMarkdownHeadings } from '../../utils/markdown';
 import { TocItem } from './TocItem';
-import type { DocumentItemProps, ContentHeading } from '../../types';
-import { MAX_HEADING_DEPTH } from '../../constants';
 
 export const DocumentItem = ({
   item,
@@ -46,34 +47,30 @@ export const DocumentItem = ({
   return (
     <List.Item w='100%' display='flex' flexDirection='column'>
       <Flex w='100%' alignItems='center'>
-        <NextLink
-          style={{ display: 'flex', flex: 1 }}
-          href={item.href}
-          passHref
+        <Link
+          asChild
+          flex={1}
+          fontSize='sm'
+          px={8}
+          py={1}
+          lineHeight='tall'
+          color={color}
+          bg={bg}
+          // While loading the item name is hidden by the skeleton, so give the
+          // link an accessible name to satisfy link-name.
+          aria-label={loading ? 'Loading' : undefined}
+          _hover={{
+            bg: isSelected ? bg : 'blackAlpha.50',
+            borderRadius: 'base',
+            transition: 'fast',
+          }}
         >
-          <Link
-            as='span'
-            flex={1}
-            fontSize='sm'
-            px={8}
-            py={1}
-            lineHeight='tall'
-            color={color}
-            bg={bg}
-            // While loading the item name is hidden by the skeleton, so give the
-            // link an accessible name to satisfy link-name.
-            aria-label={loading ? 'Loading' : undefined}
-            _hover={{
-              bg: isSelected ? bg : 'blackAlpha.50',
-              borderRadius: 'base',
-              transition: 'fast',
-            }}
-          >
+          <NextLink style={{ display: 'flex', flex: 1 }} href={item.href}>
             <SkeletonText loading={loading} width={loading ? '75%' : '100%'}>
               {item.name}
             </SkeletonText>
-          </Link>
-        </NextLink>
+          </NextLink>
+        </Link>
         <Box
           w='40px'
           display='flex'

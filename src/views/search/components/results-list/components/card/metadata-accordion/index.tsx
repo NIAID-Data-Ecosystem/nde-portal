@@ -231,54 +231,46 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                                       "Show more details" link below the list using
                                       the top-level url set by createSampleContent. */}
                                     {props.property === 'sample' && url && (
-                                      <NextLink href={url}>
-                                        <Link
-                                          as='div'
-                                          lineHeight='short'
-                                          display='flex'
-                                          ml={4}
-                                        >
-                                          <Text
-                                            fontSize='xs'
-                                            lineHeight='short'
-                                          >
-                                            Show more details
-                                          </Text>
-                                        </Link>
-                                      </NextLink>
+                                      <Link
+                                        fontSize='xs'
+                                        lineHeight='short'
+                                        display='flex'
+                                        ml={4}
+                                        asChild
+                                      >
+                                        <NextLink href={url}>
+                                          Show more details
+                                        </NextLink>
+                                      </Link>
                                     )}
                                     {items.length > 3 && (
-                                      <NextLink
-                                        href={{
-                                          pathname: '/resources',
-                                          query: {
-                                            id,
-                                            referrerPath,
-                                          },
-                                          hash:
-                                            props.property === 'funding'
-                                              ? 'funding'
-                                              : 'overview',
-                                        }}
+                                      <Link
+                                        lineHeight='short'
+                                        display='flex'
+                                        ml={4}
+                                        fontSize='xs'
+                                        asChild
                                       >
-                                        <Link
-                                          as='div'
-                                          lineHeight='short'
-                                          display='flex'
-                                          ml={4}
+                                        <NextLink
+                                          href={{
+                                            pathname: '/resources',
+                                            query: {
+                                              id,
+                                              referrerPath,
+                                            },
+                                            hash:
+                                              props.property === 'funding'
+                                                ? 'funding'
+                                                : 'overview',
+                                          }}
                                         >
-                                          <Text
-                                            fontSize='xs'
-                                            lineHeight='short'
-                                          >
-                                            Show {items.length - maxItemsCount}{' '}
-                                            more item
-                                            {items.length - maxItemsCount > 1
-                                              ? 's'
-                                              : ''}
-                                          </Text>
-                                        </Link>
-                                      </NextLink>
+                                          Show {items.length - maxItemsCount}{' '}
+                                          more item
+                                          {items.length - maxItemsCount > 1
+                                            ? 's'
+                                            : ''}
+                                        </NextLink>
+                                      </Link>
                                     )}
                                   </>
                                 )}

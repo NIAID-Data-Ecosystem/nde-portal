@@ -1,7 +1,8 @@
-import React from 'react';
-import NextLink from 'next/link';
 import { Text } from '@chakra-ui/react';
+import NextLink from 'next/link';
+import React from 'react';
 import { Link } from 'src/components/link';
+
 import { ExpandableList } from './ExpandableCells';
 
 /**
@@ -33,16 +34,15 @@ export const ResourceNameCell = ({
   if (!label) return null;
 
   return id ? (
-    <NextLink
-      href={{ pathname: '/resources/', query: { id, referrerPath } }}
-      as={`/resources?id=${id}`}
-      passHref
-      prefetch={false}
-    >
-      <Link as='div' fontSize='sm'>
+    <Link asChild fontSize='sm'>
+      <NextLink
+        href={{ pathname: '/resources/', query: { id, referrerPath } }}
+        as={`/resources?id=${id}`}
+        prefetch={false}
+      >
         {label}
-      </Link>
-    </NextLink>
+      </NextLink>
+    </Link>
   ) : (
     <Text fontSize='sm'>{label}</Text>
   );

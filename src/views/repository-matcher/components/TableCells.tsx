@@ -187,11 +187,11 @@ export const TextCellWithLink = ({
   return (
     <SkeletonText loading={loading} lineClamp={2} fontSize='xs' w='100%'>
       {url ? (
-        <NextLink href={url} prefetch={false} passHref>
-          <Link as='div' isExternal={isExternal}>
+        <Link asChild isExternal={isExternal}>
+          <NextLink href={url} prefetch={false}>
             {label}
-          </Link>
-        </NextLink>
+          </NextLink>
+        </Link>
       ) : (
         <Text fontSize='inherit'>{label || '-'}</Text>
       )}

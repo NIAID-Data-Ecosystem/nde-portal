@@ -1,10 +1,11 @@
 import { Button } from '@chakra-ui/react';
+import { useQuery } from '@tanstack/react-query';
 import NextLink from 'next/link';
 import {
   SelectedFilterType,
   SelectedFilterValueType,
 } from 'src/views/search/components/filters/types';
-import { useQuery } from '@tanstack/react-query';
+
 import {
   ONTOLOGY_BROWSER_OPTIONS,
   searchOntologyAPI,
@@ -137,33 +138,34 @@ export const OntologyBrowserPopup = ({
   }
 
   return (
-    <NextLink
-      href={{
-        pathname: `/ontology-browser`,
-        query: {
-          q: querystring,
-          id: suggestions?.[0]?._id || '',
-          ontology: suggestions?.[0]?.definingOntology || '',
-        },
+    <Button
+      size='sm'
+      variant='plain'
+      colorPalette='blue'
+      py={1}
+      px={2}
+      color='link'
+      _hover={{
+        color: 'link',
+        textDecoration: 'none',
+        borderRadius: 'semi',
+        bg: 'blue.50',
       }}
+      loading={isLoading}
+      asChild
     >
-      <Button
-        size='sm'
-        variant='plain'
-        colorPalette='blue'
-        py={1}
-        px={2}
-        color='link'
-        _hover={{
-          color: 'link',
-          textDecoration: 'none',
-          borderRadius: 'semi',
-          bg: 'blue.50',
+      <NextLink
+        href={{
+          pathname: `/ontology-browser`,
+          query: {
+            q: querystring,
+            id: suggestions?.[0]?._id || '',
+            ontology: suggestions?.[0]?.definingOntology || '',
+          },
         }}
-        loading={isLoading}
       >
         use ontology browser?
-      </Button>
-    </NextLink>
+      </NextLink>
+    </Button>
   );
 };

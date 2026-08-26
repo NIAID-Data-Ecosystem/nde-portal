@@ -31,12 +31,12 @@ const AccessResourceButton: React.FC<{
   const isInternalLink = url.startsWith('/');
 
   return (
-    <NextLink href={url} target={isInternalLink ? undefined : '_blank'}>
-      <Button colorPalette={colorPalette} size='sm'>
+    <Button colorPalette={colorPalette} size='sm' asChild>
+      <NextLink href={url} target={isInternalLink ? undefined : '_blank'}>
         Access Resource
         <FaArrowRight />
-      </Button>
-    </NextLink>
+      </NextLink>
+    </Button>
   );
 };
 

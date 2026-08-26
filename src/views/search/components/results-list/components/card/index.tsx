@@ -591,34 +591,34 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     />
                   )}
                   {id && (
-                    <NextLink
-                      // referrerPath is the current path of the page - used for breadcrumbs in resources page
-                      href={{
-                        pathname: '/resources/',
-                        query: { id, referrerPath },
-                      }}
-                      as={`/resources?id=${id}`}
-                      style={{ flex: 1 }}
-                      passHref
-                      prefetch={false}
+                    <Flex
+                      flex={1}
+                      justifyContent='flex-end'
+                      flexWrap='wrap'
+                      maxW={{ base: '100%', sm: '150px' }}
                     >
-                      <Flex
+                      <Button
+                        as='span'
                         flex={1}
-                        justifyContent='flex-end'
-                        flexWrap='wrap'
-                        maxW={{ base: '100%', sm: '150px' }}
+                        size={{ base: 'md', sm: 'sm' }}
+                        aria-label={`Go to details about resource ${name}`}
+                        asChild
                       >
-                        <Button
-                          as='span'
-                          flex={1}
-                          size={{ base: 'md', sm: 'sm' }}
-                          aria-label={`Go to details about resource ${name}`}
+                        <NextLink
+                          // referrerPath is the current path of the page - used for breadcrumbs in resources page
+                          href={{
+                            pathname: '/resources/',
+                            query: { id, referrerPath },
+                          }}
+                          as={`/resources?id=${id}`}
+                          style={{ flex: 1 }}
+                          prefetch={false}
                         >
                           View resource
                           <FaCircleArrowRight />
-                        </Button>
-                      </Flex>
-                    </NextLink>
+                        </NextLink>
+                      </Button>
+                    </Flex>
                   )}
                 </HStack>
               </Stack>

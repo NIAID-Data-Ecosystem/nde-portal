@@ -35,9 +35,10 @@ const EmptyState = () => {
     <Card.Root w='100%'>
       <Empty message='No data available.' alignSelf='center' h='50vh'>
         <Text>No information about this dataset is available.</Text>
-        <NextLink href={{ pathname: '/search' }}>
-          <Button mt={4}>Go to search</Button>
-        </NextLink>
+
+        <Button mt={4} asChild>
+          <NextLink href={{ pathname: '/search' }}>Go to search</NextLink>
+        </Button>
       </Empty>
     </Card.Root>
   );
