@@ -15,6 +15,7 @@
     "generate-dataset-sitemaps": "yarn with-prod-env tsx scripts/generate-dataset-sitemaps.ts",
     "generate-a11y-audit": "yarn with-prod-env tsx scripts/generate-a11y-audit.ts",
     "generate-tooltip-audit": "yarn with-prod-env tsx scripts/generate-tooltip-audit.ts",
+    "generate-schema-terms": "tsx scripts/generate-schema-terms.ts",
     "prepare": "husky install",
     "release": "standard-version",
     "release:minor": "standard-version --release-as minor",

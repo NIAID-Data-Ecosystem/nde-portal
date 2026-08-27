@@ -75,6 +75,241 @@ const SAME_AS_ARIA = 'yes - identical aria-label on the same element';
 const NO_ARIA = 'no - element has no aria-label';
 const DIFFERS = (aria: string) => `NO - aria-label differs: "${aria}"`;
 
+// -------------------------------------------------------------- visible text
+/**
+ * What the user can already read on each hover target, keyed by `file:line`.
+ *
+ * Every one of these was read from the JSX individually. A bulk pattern match
+ * over the source is not good enough here: an early attempt classified
+ * `summary/index.tsx:37` as icon-only when its trigger is a `<Link>` reading
+ * "SUMMARY".
+ *
+ * Conventions:
+ *  - a plain string is text genuinely rendered on the trigger;
+ *  - `… (adjacent label - trigger is a <icon> icon)` where the trigger itself
+ *    has no text but annotates a label beside it;
+ *  - `(none - <icon> icon)` where there is no text at all, which means the
+ *    tooltip is carrying the element's only wording;
+ *  - `truncated: true` marks the case where the visible text is clipped and the
+ *    tooltip exists to restore it. Only the source shows that (`isTruncated`,
+ *    `noOfLines`), so it cannot be derived from the two strings.
+ */
+interface VisibleText {
+  text: string;
+  truncated?: boolean;
+}
+
+const NO_TEXT = (icon: string) => `(none - ${icon} icon)`;
+const BESIDE = (label: string, icon: string) =>
+  `${label} (adjacent label - trigger is a ${icon} icon)`;
+const CHART_MARK = (mark: string) => `(none - ${mark}, no text on the mark)`;
+
+const VISIBLE_TEXT: Record<string, VisibleText> = {
+  // --- advanced search
+  'src/components/advanced-search/components/EditableQueryText/index.tsx:221': {
+    text: NO_TEXT('pen / edit'),
+  },
+  'src/components/advanced-search/components/EditableQueryText/index.tsx:264': {
+    text: 'the query text the user has typed (EditablePreview)',
+  },
+  'src/components/advanced-search/components/Search/components/FieldSelect/index.tsx:113':
+    { text: 'the field label in the picker row' },
+  'src/components/advanced-search/components/Search/components/FieldSelect/index.tsx:99':
+    {
+      text: 'the field label, with its description clipped to one line',
+      truncated: true,
+    },
+  'src/components/advanced-search/components/Search/components/SearchOptions/components/RadioItem.tsx:11':
+    { text: 'the search-type radio label, e.g. "Exact Match"' },
+
+  // --- search bars
+  'src/components/search-bar/index.tsx:91': {
+    text: NO_TEXT('clock / history'),
+  },
+  'src/components/search-bar/index.tsx:276': {
+    text: NO_TEXT('clock / history'),
+  },
+  'src/views/docs/components/search-bar/SearchBar.tsx:288': {
+    text: NO_TEXT('clock / history'),
+  },
+
+  // --- badges
+  'src/components/metadata-compatibility-source-badge/index.tsx:16': {
+    text: 'Metadata Compatibility',
+  },
+  'src/components/metadata-compatibility-source-badge/components/badge.tsx:260':
+    {
+      text: 'Recommended | <n>% (SVG text on the badge)',
+    },
+  'src/components/metadata-compatibility-source-badge/components/badge.tsx:286':
+    {
+      text: 'Fundamental | <n>% (SVG text on the badge)',
+    },
+  'src/components/metadata-completeness-badge/Circular.tsx:290': {
+    text: 'Metadata Compatibility',
+  },
+  'src/components/metadata-completeness-badge/Circular.tsx:168': {
+    text: CHART_MARK('completeness ring segment'),
+  },
+  'src/components/badges/components/BadgeWithTooltip.tsx:20': {
+    text: 'the badge value (TagLabel)',
+  },
+
+  // --- resource sections
+  'src/components/resource-sections/components/authors/index.tsx:161': {
+    text: NO_TEXT('external window'),
+  },
+  'src/components/resource-sections/components/based-on/index.tsx:285': {
+    text: 'the ontology term name (TagWithUrl)',
+  },
+  'src/components/resource-sections/components/provenance/index.tsx:265': {
+    text: 'View collection',
+  },
+  'src/components/resource-sections/components/summary/index.tsx:37': {
+    text: 'SUMMARY',
+  },
+  'src/components/resource-sections/components/type-banner/index.tsx:140': {
+    text: 'the resource type, e.g. DATASET',
+  },
+  'src/components/metadata/components/buttons.tsx:42': {
+    text: 'the ontology term label',
+  },
+  'src/components/metadata/components/buttons.tsx:107': {
+    text: NO_TEXT('magnifying glass'),
+  },
+
+  // --- ontology browser
+  'src/views/ontology-browser/components/tree/components/breadcrumbs.tsx:76': {
+    text: NO_TEXT('breadcrumb chevron'),
+  },
+  'src/views/ontology-browser/components/ontology-browser-count-tag.tsx:46': {
+    text: 'the dataset count',
+  },
+  'src/views/ontology-browser/components/tree/components/tree-node.tsx:283': {
+    text: 'the dataset count beside the term',
+  },
+  'src/views/ontology-browser/components/ontology-search-list/toggle.tsx:20': {
+    text: 'Toggle Search List (mobile only - icon-only on desktop)',
+  },
+
+  // --- search results
+  'src/views/search/components/results-list/components/card/index.tsx:275': {
+    text: "the record's date, beside a clock icon",
+  },
+  'src/views/search/components/results-list/components/carousel-compact-card/resource-catalog-card/index.tsx:127':
+    { text: "the record's date, beside a clock icon" },
+  'src/views/search/components/results-list/components/card/metadata-accordion/index.tsx:158':
+    { text: 'the metadata property name on the accordion tab' },
+  'src/views/search/components/results-list/components/card/operating-systems/index.tsx:17':
+    { text: NO_TEXT('operating-system') },
+  'src/views/search/components/summary/components/visualization-card/card-header.tsx:45':
+    { text: NO_TEXT('chart action') },
+  'src/views/search/components/summary/components/visualization-card/card-header.tsx:77':
+    { text: NO_TEXT('expand') },
+  'src/views/search/components/summary/components/visualization-card/card-header.tsx:85':
+    { text: NO_TEXT('close') },
+
+  // --- filters
+  'src/views/search/components/filters/components/section.tsx:69': {
+    text: 'the filter name',
+  },
+  'src/views/search/components/filters/components/section.tsx:90': {
+    text: BESIDE('the filter name', 'pie chart'),
+  },
+  'src/views/search/components/filters/components/checkbox.tsx:162': {
+    text: 'the filter option label',
+  },
+
+  // --- shared controls
+  'src/components/bookmark-buttons/icon-button.tsx:15': {
+    text: NO_TEXT('bookmark'),
+  },
+  'src/components/copy-button/index.tsx:46': {
+    text: '(none - copy icon; the confirmation text appears only after clicking)',
+  },
+  'src/components/select-and-order-popover/components/PopoverListItem.tsx:87': {
+    text: BESIDE('the item name', 'drag handle'),
+  },
+  'src/components/select-and-order-popover/components/PopoverListItem.tsx:111':
+    {
+      text: 'the item name, clipped to one line',
+      truncated: true,
+    },
+  'src/components/table/components/cell.tsx:132': {
+    text: 'the column header label',
+  },
+  'src/components/info-label/index.tsx:20': {
+    text: 'the label text, followed by an ⓘ icon',
+  },
+  'src/components/select/components/OptionItem.tsx:29': {
+    text: 'the option label',
+  },
+  'src/components/dropdown-button/index.tsx:74': {
+    text: 'the button label',
+  },
+  // Not an icon: the PopoverTrigger is a Flex (cursor: help) wrapping
+  // <AIToggleLabel>, so the visible text is the toggle's own label.
+  'src/components/page-container/components/search/components/ai-toggle.tsx:130':
+    { text: 'the AI-assisted search toggle label and switch' },
+  'src/views/repository-matcher/components/TableCells.tsx:103': {
+    text: 'the cell value, clipped to one line',
+    truncated: true,
+  },
+
+  // --- metadata ⓘ icons: no text on the trigger, but always rendered directly
+  // after the property label (overview-section-wrapper/index.tsx:25-26)
+  'src/components/metadata/components/block.tsx:79': {
+    text: BESIDE('the metadata property name', 'ⓘ info'),
+  },
+  'src/components/metadata/components/tag.tsx:22': {
+    text: 'the property name and value, e.g. "Measurement Technique | RNA-seq"',
+  },
+  'src/views/diseases/disease/components/property-treemap-lists.tsx:36': {
+    text: BESIDE('the treemap section heading', 'ⓘ info'),
+  },
+
+  // --- chart marks: the hovered thing is a shape, not text
+  'src/views/search/components/filters/components/date-filter/components/histogram.tsx:233':
+    { text: CHART_MARK('histogram bar') },
+  'src/components/visualizations/bar/index.tsx:395': {
+    text: CHART_MARK('bar segment'),
+  },
+  'src/views/diseases/disease/visualizations/bar-chart.tsx:324': {
+    text: CHART_MARK('bar segment'),
+  },
+  'src/views/diseases/disease/visualizations/stacked-bar-chart.tsx:224': {
+    text: CHART_MARK('stacked bar segment'),
+  },
+  'src/views/diseases/disease/visualizations/donut-chart.tsx:274': {
+    text: CHART_MARK('donut slice'),
+  },
+  'src/views/diseases/disease/visualizations/treemap-chart.tsx:322': {
+    text: 'the term name inside the treemap tile, where the tile is big enough',
+  },
+  'src/components/metadata-compatibility-source-badge/components/badge.tsx:315':
+    {
+      text: CHART_MARK('badge segment'),
+    },
+  'src/components/visualizations/pie/index.tsx:228': {
+    text: '(never renders - component has no importer in src/)',
+  },
+};
+
+/** How the tooltip relates to what the user can already read. */
+const relationshipOf = (
+  visible: string,
+  tooltip: string,
+  truncated?: boolean,
+) => {
+  if (truncated) return 'shows the full text of a truncated label';
+  if (visible.startsWith('(none') || visible.startsWith('(never'))
+    return 'tooltip is the only text';
+  if (visible.includes('(adjacent label')) return 'annotates an adjacent label';
+  if (visible.trim() && visible.trim() === tooltip.trim())
+    return 'repeats the visible text';
+  return 'adds detail';
+};
+
 // ------------------------------------------------------------------ entries
 interface TooltipEntry extends BaseEntry {
   /** The thing a user hovers to see the text. */
@@ -950,9 +1185,20 @@ const RESOURCE_TYPES = [
   'DataCollection',
 ];
 
+/**
+ * The label the app shows for a property, read from the same config the app
+ * reads (getMetadataName in src/components/metadata/helpers.ts returns
+ * `schema[property].name`). This is what makes the visible text on a
+ * schema-driven row line up with its own description rather than a neighbour's.
+ */
+const displayName = (property: string) =>
+  (schema as any)[property]?.name || property;
+
 const schemaValues = (
   properties: string[],
   types: (string | undefined)[],
+  /** Prefix for the visible label, e.g. an ⓘ icon annotating it. */
+  visibleFor: (label: string) => string = label => label,
 ): Resolved[] => {
   const out: Resolved[] = [];
   for (const property of properties) {
@@ -961,6 +1207,7 @@ const schemaValues = (
       if (!found) continue;
       out.push({
         copy: found.text,
+        visible: visibleFor(displayName(property)),
         source:
           `configs/schema-definitions.json -> ${property}.description` +
           `.${found.typeKey}` +
@@ -981,25 +1228,37 @@ const registerSchemaValues = () => {
     69,
     schemaValues(FILTER_PROPERTIES, [undefined]),
   );
-  // Metadata blocks/tags/badges pass the record's resource type through.
-  const blockValues = schemaValues(
-    uniq([...SORT_ORDER, ...SORT_ORDER_COMPTOOL]),
-    RESOURCE_TYPES,
+  // Metadata blocks/tags/badges pass the record's resource type through. Each
+  // carries its own visible label, so the property name and its description
+  // stay on the same row.
+  const metaProps = uniq([...SORT_ORDER, ...SORT_ORDER_COMPTOOL]);
+  register(
+    'src/components/metadata/components/block.tsx',
+    79,
+    schemaValues(metaProps, RESOURCE_TYPES, n => BESIDE(n, 'ⓘ info')),
   );
-  register('src/components/metadata/components/block.tsx', 79, blockValues);
-  register('src/components/metadata/components/tag.tsx', 22, blockValues);
+  register(
+    'src/components/metadata/components/tag.tsx',
+    22,
+    schemaValues(metaProps, RESOURCE_TYPES, n => `${n} | <value>`),
+  );
   register(
     'src/components/badges/components/BadgeWithTooltip.tsx',
     20,
-    blockValues,
+    schemaValues(metaProps, RESOURCE_TYPES, n => `${n} (badge value)`),
   );
-  register('src/components/info-label/index.tsx', 20, blockValues);
+  register(
+    'src/components/info-label/index.tsx',
+    20,
+    schemaValues(metaProps, RESOURCE_TYPES, n => `${n}, followed by an ⓘ icon`),
+  );
   register(
     'src/views/diseases/disease/components/property-treemap-lists.tsx',
     36,
     schemaValues(
       ['healthCondition', 'measurementTechnique', 'infectiousAgent'],
       ['Dataset'],
+      n => BESIDE(n, 'ⓘ info'),
     ),
   );
   // The advanced-search field picker reveals the same descriptions on hover.
@@ -1256,7 +1515,9 @@ const write = async () => {
     'line',
     'UI element hovered',
     'trigger',
+    'visible text',
     'tooltip text',
+    'relationship',
     'source of the tooltip text',
     'resource type',
     'also the accessible name?',
@@ -1267,14 +1528,23 @@ const write = async () => {
   let count = 0;
   for (const r of rows) {
     for (const route of r.routes) {
+      const site = VISIBLE_TEXT[`${r.file}:${r.line}`];
       for (const v of capped(valuesFor(r, route, 'tooltip'))) {
+        // A paired value carries its own visible text (a filter's name beside
+        // that filter's description); otherwise fall back to the site default.
+        const visible = v?.visible ?? site?.text ?? '(not determined)';
+        const tooltip = v ? v.copy : r.copy;
         out += csvLine([
           route,
           r.file,
           r.line,
           r.element,
           r.trigger,
-          v ? v.copy : r.copy,
+          visible,
+          tooltip,
+          v?.isSummary
+            ? 'n/a - summary row'
+            : relationshipOf(visible, tooltip, site?.truncated),
           v?.source ?? r.source,
           v?.source?.includes('.description.')
             ? v.source.split('.description.')[1].split(' ')[0]

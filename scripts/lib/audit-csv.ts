@@ -106,6 +106,14 @@ export interface Resolved {
   isExample?: boolean;
   /** True for the "+N more" row appended when a site exceeds CAP. */
   isSummary?: boolean;
+  /**
+   * The text visible on the element at the same time as this value — used by
+   * the tooltip audit, where the visible label and the tooltip often vary
+   * together (a filter's name alongside that filter's own description). Pairing
+   * them on one Resolved keeps them aligned through capping and collapsing;
+   * holding them in separate lists would risk a cross-product.
+   */
+  visible?: string;
 }
 
 /** The fields the resolver needs; each audit extends this with its own columns. */
