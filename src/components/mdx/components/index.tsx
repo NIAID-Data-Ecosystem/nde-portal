@@ -421,15 +421,23 @@ export const MDXComponents = {
         <Text
           as='span'
           mt={2}
-          fontSize='sm'
-          lineHeight='tall'
-          color='text.body'
+          fontSize='inherit'
+          lineHeight='inherit'
+          color='inherit'
         >
           {props.children}
         </Text>
       );
     }
-    return <Text mt={2} fontSize='md' lineHeight='tall' {...props} />;
+    return (
+      <Text
+        mt={2}
+        fontSize='inherit'
+        lineHeight='inherit'
+        color='inherit'
+        {...props}
+      />
+    );
   },
   section: (props: any) => {
     const classNames = props?.className?.split(' ');

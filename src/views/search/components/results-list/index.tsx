@@ -1,6 +1,7 @@
 import { Collapsible, List, VStack } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import React, { useCallback, useMemo, useState } from 'react';
+import { Alert } from 'src/components/alert';
 import Banner from 'src/components/banner';
 import {
   resolveStoredOrderedIds,
@@ -482,11 +483,11 @@ export const SearchResults = ({
         {/* Display banner on last page if results exceed amount allotted by API */}
         <Collapsible.Root open={from === Math.floor(MAX_RESULTS / size)}>
           <Collapsible.Content>
-            <Banner status='info'>
+            <Alert status='info'>
               Only the first {MAX_RESULTS.toLocaleString()} results are
               displayed, please limit your query to get better results or use
               our API to download all results.
-            </Banner>
+            </Alert>
           </Collapsible.Content>
         </Collapsible.Root>
 

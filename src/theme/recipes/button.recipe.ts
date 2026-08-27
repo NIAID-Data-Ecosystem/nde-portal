@@ -35,6 +35,14 @@ export const buttonRecipe = defineRecipe({
     colorPalette: 'primary',
   },
   variants: {
+    status: {
+      info: { colorPalette: 'blue' },
+      warning: { colorPalette: 'orange' },
+      success: { colorPalette: 'green' },
+      error: { colorPalette: 'red' },
+      neutral: { colorPalette: 'gray' },
+    },
+
     size: {
       sm: {
         fontSize: 'sm',
@@ -80,6 +88,7 @@ export const buttonRecipe = defineRecipe({
         },
       },
       link: {
+        color: 'colorPalette.ghostFg',
         textDecoration: 'underline',
         '&:hover': {
           textDecoration: 'none',
