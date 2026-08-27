@@ -2,10 +2,10 @@ import {
   Box,
   Button,
   Flex,
-  Heading,
   HStack,
   Icon,
   Separator,
+  Text,
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import {
@@ -20,33 +20,36 @@ import remarkGfm from 'remark-gfm';
 import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import { useLocalStorage } from 'usehooks-ts';
 
-import { NoticeProps } from '..';
+/** Visual states supported by the Banner. */
+export type BannerState = 'info' | 'warning' | 'error' | 'success';
 
-const StatusIcon = ({ status }: { status: NoticeProps['state'] }) => {
-  let icon = null;
+export interface BannerProps {
+  id: number | string;
+  label: string;
+  description?: string | null;
+  state: BannerState;
+}
 
-  if (status === 'ERROR') {
-    icon = FaCircleXmark;
-  } else if (status === 'INFO') {
-    icon = FaCircleInfo;
-  } else if (status === 'SUCCESS') {
-    icon = FaCircleCheck;
-  } else if (status === 'WARNING') {
-    icon = FaCircleExclamation;
+/** The Strapi notices API returns states uppercased, e.g. `WARNING`. */
+export const toBannerState = (state: string): BannerState =>
+  state.toLowerCase() as BannerState;
+
+const getStatusIcon = (state: BannerState) => {
+  switch (state) {
+    case 'error':
+      return FaCircleXmark;
+    case 'info':
+      return FaCircleInfo;
+    case 'success':
+      return FaCircleCheck;
+    case 'warning':
+      return FaCircleExclamation;
+    default:
+      return undefined;
   }
-  if (!icon) return <></>;
-
-  return (
-    <Icon as={icon} boxSize={6} my={1} fill={`${status?.toLowerCase()}`} />
-  );
 };
 
-export const Banner = ({
-  id,
-  heading,
-  description,
-  state,
-}: Pick<NoticeProps, 'id' | 'heading' | 'description' | 'state'>) => {
+export const Banner = ({ id, label, description, state }: BannerProps) => {
   const [isOpen, setOpen] = useLocalStorage(`${id}`, true);
   const [isMounted, setIsMounted] = useState(false); // for SSR
   const MDXComponents = useMDXComponents();
@@ -66,8 +69,8 @@ export const Banner = ({
       px={4}
       py={2}
       borderLeft='0.5rem solid'
-      borderColor={`${state?.toLowerCase()}`}
-      bg={`${state?.toLowerCase()}.subtle`}
+      borderColor={state}
+      bg={`${state}.subtle`}
     >
       <HStack
         gap={4}
@@ -80,21 +83,14 @@ export const Banner = ({
           width='100%'
           gap={{ base: 2, sm: 4 }}
           alignItems='flex-start'
-          flexDirection={{ base: 'column', sm: 'row' }}
+          // flexDirection={{ base: 'column', sm: 'row' }}
         >
           {/* Status icon */}
-          <StatusIcon status={state} />
+          <Icon as={getStatusIcon(state)} boxSize={6} my={1} fill={state} />
 
-          {/* Heading */}
-          <Heading
-            as='p'
-            fontSize='md'
-            fontWeight='semibold'
-            lineHeight='short'
-            mt={1}
-          >
-            {heading}
-          </Heading>
+          <Text fontSize='md' fontWeight='semibold' lineHeight='short'>
+            {label}
+          </Text>
         </HStack>
         <Button
           onClick={toggleWarning}

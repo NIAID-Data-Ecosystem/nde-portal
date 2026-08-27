@@ -2,22 +2,26 @@ import { Box, Flex, FlexProps, Stack } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useMemo } from 'react';
+import { AlertBanner } from 'src/components/alert';
 import { Footer } from 'src/components/footer';
 import { Navigation } from 'src/components/navigation-bar';
 import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
 
 import { useBreadcrumbs } from '../hooks/useBreadcrumbs';
-import { Banner } from './banner';
+import { Banner, BannerState, toBannerState } from './banner';
 import { Breadcrumbs } from './breadcrumbs';
 import { LoginErrorBanner } from './login-error-banner';
 import { Search } from './search';
 import { SeoMetaFields, SeoMetaFieldsProps } from './seo-meta-fields';
 
+/** The Strapi notices API returns states uppercased, e.g. `WARNING`. */
+export type NoticeState = Uppercase<BannerState>;
+
 export interface NoticeProps {
   id: number | string;
-  heading: string;
+  label: string;
   description?: string | null;
-  state: 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS';
+  state: NoticeState;
   affectedRepository?: string | null;
   createdAt: string;
   updatedAt: string;
@@ -93,23 +97,23 @@ export const PageContainer: React.FC<PageContainerProps> = ({
             <LoginErrorBanner />
             {/* <!-- Banner for dev and staging instance --> */}
             {!isProd && (
-              <Banner
+              <AlertBanner
                 id='banner-environment-notice'
-                heading='This is the alpha version of the NIAID Data Ecosystem Discovery
+                title='This is the staging version of the NIAID Data Ecosystem Discovery
             Portal.'
                 description={`Currently using the: <a href="${process.env.NEXT_PUBLIC_API_URL}/metadata" target="_blank">${apiEnvironment} API</a>`}
-                state='INFO'
+                state='info'
               />
             )}
             {/* <!-- Banner for service warnings and notices --> */}
             {notices &&
               notices.map(notice => (
-                <Banner
+                <AlertBanner
                   key={notice.id}
                   id={`banner-${notice.id}-notice`}
-                  heading={notice.heading}
+                  title={notice.label}
                   description={notice.description}
-                  state={notice.state}
+                  state={toBannerState(notice.state)}
                 />
               ))}
           </Stack>

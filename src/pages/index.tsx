@@ -128,7 +128,7 @@ const Home: NextPage<{
               <Flex w='100%' flexDirection='column' maxWidth='1000px'>
                 <Flex
                   justifyContent='space-between'
-                  alignItems='baseline'
+                  alignItems='flex-end'
                   flex={1}
                   mb={1}
                   flexWrap='wrap-reverse'

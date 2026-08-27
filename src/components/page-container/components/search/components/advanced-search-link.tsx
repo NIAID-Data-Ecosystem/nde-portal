@@ -1,7 +1,6 @@
 import { Flex } from '@chakra-ui/react';
-
-import { Link, LinkProps } from 'src/components/link';
 import SITE_CONFIG from 'configs/site.config.json';
+import { Link, LinkProps } from 'src/components/link';
 import { SiteConfig } from 'src/components/page-container/types';
 
 const siteConfig = SITE_CONFIG as SiteConfig;
