@@ -156,25 +156,23 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
               renderCTA={() =>
                 sourceObj.id ? (
                   <Flex
-                    justifyContent='space-between'
+                    justifyContent={{ base: 'center', md: 'space-between' }}
                     flexWrap='wrap'
                     gap={2}
                     w='100%'
                   >
-                    <Flex flex={1}>
-                      {sourceObj.resourceCatalogUrl && (
-                        <Button
-                          as='a'
-                          width={{ base: '100%', md: 'unset' }}
-                          maxWidth='500px'
-                          size='sm'
-                          href={sourceObj.resourceCatalogUrl}
-                          variant='outline'
-                        >
-                          Learn about source
-                        </Button>
-                      )}
-                    </Flex>
+                    <Button
+                      as='a'
+                      width={{ base: '100%', md: 'unset' }}
+                      maxWidth='500px'
+                      size='sm'
+                      href={sourceObj.resourceCatalogUrl}
+                      visibility='hidden'
+                      // visibility={sourceObj.resourceCatalogUrl? "visible" : "hidden"}
+                      variant='outline'
+                    >
+                      Learn about source
+                    </Button>
                     <StyledCardButton
                       maxWidth='500px'
                       href={{

@@ -50,7 +50,12 @@ export const StyledCard: React.FC<StyledCardProps> = ({
   return (
     <StyledCardWrapper id={id} isLoading={isLoading}>
       <VStack alignItems='flex-start' lineHeight='short'>
-        <Stack flexDirection='row' alignItems='unset' flexWrap='wrap-reverse'>
+        <Stack
+          flexDirection='row'
+          alignItems='unset'
+          flexWrap='wrap-reverse'
+          w='100%'
+        >
           <Stack
             flexDirection='column'
             minWidth={{ base: '250px', sm: '350px' }}
