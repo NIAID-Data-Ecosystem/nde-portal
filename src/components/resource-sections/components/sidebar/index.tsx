@@ -92,13 +92,12 @@ export const Sidebar = ({
                         >
                           <FaMagnifyingGlass />
                         </Icon>
-                        <Link as='span' fontSize='sm'>
+                        <Link as='span' fontSize='sm' asChild>
                           <NextLink
                             href={{
                               pathname: '/search',
                               query: { q: search },
                             }}
-                            asChild
                           >
                             {search}
                           </NextLink>

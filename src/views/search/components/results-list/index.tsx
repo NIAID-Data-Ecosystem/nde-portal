@@ -2,7 +2,6 @@ import { Collapsible, List, VStack } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Alert } from 'src/components/alert';
-import Banner from 'src/components/banner';
 import {
   resolveStoredOrderedIds,
   resolveStoredVisibleIds,
