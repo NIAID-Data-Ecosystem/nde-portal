@@ -128,7 +128,7 @@ const Home: NextPage<{
               <Flex w='100%' flexDirection='column' maxWidth='1000px'>
                 <Flex
                   justifyContent='space-between'
-                  alignItems='flex-end'
+                  alignItems='center'
                   flex={1}
                   mb={1}
                   flexWrap='wrap-reverse'
@@ -140,15 +140,16 @@ const Home: NextPage<{
                 <Search.Input />
               </Flex>
               <Box>
-                <Text fontWeight='semibold'>Try these searches:</Text>
+                <Text fontWeight='semibold' mb={1}>
+                  Try these searches:
+                </Text>
                 <Stack flexDirection='row' flexWrap={'wrap'}>
                   {HOME_QUERIES.map(query => {
                     return (
                       <Button
                         key={query.title}
-                        size='sm'
+                        size='xs'
                         colorPalette='niaid'
-                        fontWeight='semibold'
                         asChild
                       >
                         <NextLink

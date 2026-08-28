@@ -119,7 +119,7 @@ export const AIToggle: React.FC<AIToggleProps> = ({
   };
 
   return (
-    <HStack gap={1} alignItems='flex-end'>
+    <HStack gap={1} alignItems='center'>
       <Switch.Root
         id={id}
         checked={enableAiSearch}
@@ -133,9 +133,14 @@ export const AIToggle: React.FC<AIToggleProps> = ({
         </Switch.Control>
         <Tooltip content={tooltipContent} showArrow interactive>
           <Switch.Label>
-            <HStack gap={1} cursor='help' alignItems='center' my={1}>
-              <Text lineHeight='shorter'>AI-assisted search</Text>
-              <Icon color='text.placeholder' asChild lineHeight='4rem'>
+            <HStack gap={1} cursor='help' alignItems='flex-start' my={1}>
+              <Text>AI-assisted search</Text>
+              <Icon
+                color='text.placeholder'
+                asChild
+                lineHeight='1em'
+                display='inline-block'
+              >
                 <FaRegCircleQuestion />
               </Icon>
             </HStack>
