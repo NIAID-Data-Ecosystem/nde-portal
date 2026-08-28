@@ -36,13 +36,15 @@ export const NavDropdownTrigger = ({
           <>
             <Popover.Trigger asChild>
               <Button
+                fontSize='inherit'
                 variant='unstyled'
                 _hover={{ bg: 'whiteAlpha.300', color: 'white' }}
+                gap={1.5}
                 {...buttonProps}
               >
-                {icon && <Icon as={icon} mr={2} />}
+                {icon && <Icon as={icon} boxSize={4} />}
                 {label}
-                <Icon ml={1} w={4} h={4} asChild>
+                <Icon w={4} h={4} asChild>
                   <FaCaretDown />
                 </Icon>
               </Button>

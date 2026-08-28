@@ -1,8 +1,9 @@
-import React from 'react';
 import { Box, Collapsible, Stack } from '@chakra-ui/react';
+import React from 'react';
+import { MobileNavItem } from 'src/components/navigation-bar/components/nav-mobile-item';
+
 import { TransformedNavigationDropdown } from '../types';
 import { MobileAuthAction } from './nav-auth-action';
-import { MobileNavItem } from 'src/components/navigation-bar/components/nav-mobile-item';
 
 export const MobileNavDropdown = ({
   isOpen,

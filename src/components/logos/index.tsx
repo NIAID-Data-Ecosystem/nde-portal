@@ -8,6 +8,7 @@ export interface LogoProps {
   isLazy?: boolean;
 }
 
+const LOGO_HEIGHTS = { base: '55px', sm: '28px', md: '40px' };
 export const Logo = ({ href, isLazy }: LogoProps) => {
   /*
     There are two logos in our nav bar with two separate links.
@@ -23,7 +24,7 @@ export const Logo = ({ href, isLazy }: LogoProps) => {
     >
       <Flex
         flexDirection={{ base: 'column', sm: 'row' }}
-        height={{ base: '55px', sm: '28px', lg: '40px' }}
+        height={LOGO_HEIGHTS}
         flex={1}
       >
         <Link
@@ -32,6 +33,7 @@ export const Logo = ({ href, isLazy }: LogoProps) => {
           href={href?.endsWith('/') ? href : `${href}/`}
           variant='unstyled'
           rel='preload'
+          height='100%'
         >
           <NDELogo loading={isLazy ? 'lazy' : 'eager'} />
         </Link>

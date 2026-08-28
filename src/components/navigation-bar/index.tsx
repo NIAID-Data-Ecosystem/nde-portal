@@ -33,12 +33,13 @@ export const Navigation: React.FC<BoxProps> = props => {
           direction='row'
           gap={{ base: 0 }}
           display={{ base: 'none', md: 'flex' }}
-          ml={{ base: 6, lg: 10 }}
+          ml={{ base: 1, lg: 10 }}
           flex={1}
           justifyContent='flex-end'
           css={{
             '& >a,>button': { px: 4, py: 2, color: 'white' },
           }}
+          fontSize='md'
         >
           {navigation.map(navItem => (
             <Nav.DesktopNavItem

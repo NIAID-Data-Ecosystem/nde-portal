@@ -29,6 +29,9 @@ export const linkRecipe = defineRecipe({
         _hover: {
           textDecoration: 'none',
         },
+        _visited: {
+          color: 'inherit',
+        },
       },
       // underline: underline visible. on hover, underline fades out.
       underline: {
@@ -39,19 +42,35 @@ export const linkRecipe = defineRecipe({
           textDecorationColor: 'transparent',
         },
       },
-      hover: {
-        color: 'link',
-        textUnderlineOffset: '4px',
-        _hover: {
-          textDecorationColor: 'currentColor/80',
-        },
-      },
-      // plain: no underline. on hover, underline with partial opacity.
+
+      // plain: no underline. on hover: underline with partial opacity.
       plain: {
         color: 'currentColor',
         textUnderlineOffset: '4px',
         _hover: {
+          textDecorationColor: 'currentColor/90',
+        },
+      },
+
+      // nav: navigation link style
+      nav: {
+        color: '{colors.white}',
+        textDecoration: 'none',
+        '&[data-active]': {
+          textDecorationLine: 'underline',
+          textDecorationThickness: '2px',
+          textUnderlineOffset: '8px',
+        },
+        _hover: {
           textDecorationColor: 'currentColor/80',
+          bg: 'whiteAlpha.300',
+          color: '{colors.white}',
+        },
+        _visited: {
+          color: '{colors.white}',
+          _hover: {
+            color: '{colors.white}',
+          },
         },
       },
     },

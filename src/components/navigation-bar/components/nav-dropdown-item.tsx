@@ -71,6 +71,7 @@ const DropdownItemContent = ({
         fontSize='sm'
         color='text.body'
         lineHeight='short'
+        pt={1}
         pr={1}
         textAlign='left'
       >

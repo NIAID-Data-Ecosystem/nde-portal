@@ -1,4 +1,4 @@
-import { Box, Link } from '@chakra-ui/react';
+import { Link } from '@chakra-ui/react';
 import React from 'react';
 
 // A component for rendering a single navigation link, which can be either internal or external. It has styling for active and hover states.
@@ -15,15 +15,15 @@ export const NavTopLevelLink = ({
 }) => {
   return (
     <Link
+      fontSize='inherit'
       href={href ?? '#'}
       target={isExternal ? '_blank' : '_self'}
       rel={isExternal ? 'noopener noreferrer' : undefined}
-      variant='unstyled'
-      _hover={{ bg: 'whiteAlpha.300', color: 'white' }}
-      _visited={{ color: 'white', _hover: { color: 'white' } }}
+      variant='nav'
+      data-active={isActive ? '' : undefined}
+      aria-current={isActive ? 'page' : undefined}
     >
       {label}
-      {isActive && <Box bg='white' width='100%' height={0.5} />}
     </Link>
   );
 };

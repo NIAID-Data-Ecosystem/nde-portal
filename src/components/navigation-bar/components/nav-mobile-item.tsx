@@ -1,5 +1,6 @@
-import React from 'react';
 import { Collapsible, Stack, useDisclosure } from '@chakra-ui/react';
+import React from 'react';
+
 import { TransformedNavigationDropdown } from '../types';
 import { NavDropdownItem } from './nav-dropdown-item';
 
