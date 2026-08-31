@@ -7,13 +7,12 @@ import {
   FlexProps,
   Icon,
   InputProps,
-  Popover,
-  Stack,
+  Menu,
+  MenuRootProps,
   Text,
 } from '@chakra-ui/react';
 import React from 'react';
 import { FaChevronDown } from 'react-icons/fa6';
-import { ScrollContainer } from 'src/components/scroll-container';
 
 interface Option {
   name: string;
@@ -30,6 +29,7 @@ export interface CheckboxListProps<T extends Option> extends FlexProps {
   selectedOptions: T[];
   size?: InputProps['size'];
   showSelectAll?: boolean;
+  colorPalette?: ButtonProps['colorPalette'];
 }
 
 export const CheckboxList = <T extends Option>({
@@ -41,6 +41,7 @@ export const CheckboxList = <T extends Option>({
   size = 'md',
   buttonProps,
   showSelectAll,
+  colorPalette = 'gray',
   ...rest
 }: CheckboxListProps<T>) => {
   return (
@@ -51,10 +52,12 @@ export const CheckboxList = <T extends Option>({
       alignItems='center'
       {...rest}
     >
-      <Popover.Root>
-        <Popover.Trigger asChild>
+      {/* Every item here is a checkbox, so toggling one must not dismiss the
+          menu — the machine closes on select by default. */}
+      <Menu.Root closeOnSelect={false}>
+        <Menu.Trigger asChild>
           <Button
-            colorPalette='gray'
+            colorPalette={colorPalette}
             size={size}
             variant='outline'
             justifyContent='space-between'
@@ -65,34 +68,33 @@ export const CheckboxList = <T extends Option>({
               <FaChevronDown />
             </Icon>
           </Button>
-        </Popover.Trigger>
-        <Popover.Positioner>
-          <Popover.Content>
-            <Popover.Arrow />
-            <Popover.CloseTrigger />
-            <Popover.Title>
-              <Text fontWeight='semibold' lineHeight='normal' my={1}>
+        </Menu.Trigger>
+        <Menu.Positioner>
+          <Menu.Content>
+            <Menu.Arrow />
+            <Menu.ItemGroup>
+              <Menu.ItemGroupLabel maxWidth='300px'>
                 {label}
-              </Text>
-              {description && (
-                <Text
-                  color='gray.700'
-                  fontSize='sm'
-                  fontStyle='italic'
-                  fontWeight='normal'
-                  lineHeight='short'
-                  mt={1.5}
-                >
-                  {description}
-                </Text>
-              )}
-            </Popover.Title>
-            <Popover.Body>
+                {description && (
+                  <Text
+                    color='fg.muted'
+                    fontSize='sm'
+                    fontStyle='italic'
+                    fontWeight='normal'
+                    lineHeight='short'
+                    mt={1.5}
+                  >
+                    {description}
+                  </Text>
+                )}
+              </Menu.ItemGroupLabel>
+              <Menu.Separator />
+
               {showSelectAll && (
                 <Flex justifyContent='flex-end'>
                   <Button
                     size='xs'
-                    variant='plain'
+                    variant='link'
                     onClick={() => {
                       if (selectedOptions.length === options.length) {
                         handleChange([]);
@@ -100,6 +102,7 @@ export const CheckboxList = <T extends Option>({
                         handleChange(options);
                       }
                     }}
+                    colorPalette={colorPalette}
                   >
                     {selectedOptions.length === options.length
                       ? 'Clear all'
@@ -107,63 +110,55 @@ export const CheckboxList = <T extends Option>({
                   </Button>
                 </Flex>
               )}
-              <ScrollContainer maxHeight='300px'>
-                <CheckboxGroup
-                  colorPalette='blue'
-                  value={selectedOptions.map(item => item.value)}
-                >
-                  <Stack gap={1} direction='column'>
-                    {options.map(option => (
-                      <Checkbox.Root
-                        key={option.value}
-                        value={option.value}
-                        onCheckedChange={() => {
-                          const newFilterItem = option;
-                          // Check if filter is already selected
-                          const index = selectedOptions.findIndex(
-                            f =>
-                              f.property === newFilterItem.property &&
-                              f.value === newFilterItem.value,
+              <CheckboxGroup
+                colorPalette={colorPalette}
+                value={selectedOptions.map(item => item.value)}
+              >
+                {options.map(option => (
+                  <Menu.Item
+                    asChild
+                    key={option.value}
+                    value={option.value}
+                    _highlighted={{ bg: 'colorPalette.100' }}
+                  >
+                    <Checkbox.Root
+                      size='md'
+                      value={option.value}
+                      onCheckedChange={() => {
+                        const newFilterItem = option;
+                        // Check if filter is already selected
+                        const index = selectedOptions.findIndex(
+                          f =>
+                            f.property === newFilterItem.property &&
+                            f.value === newFilterItem.value,
+                        );
+                        if (index === -1) {
+                          // Add new filter
+                          return handleChange([
+                            ...selectedOptions,
+                            newFilterItem,
+                          ]);
+                        } else {
+                          // Remove filter if it's already selected
+                          return handleChange(
+                            selectedOptions.filter((_, i) => i !== index),
                           );
-                          if (index === -1) {
-                            // Add new filter
-                            return handleChange([
-                              ...selectedOptions,
-                              newFilterItem,
-                            ]);
-                          } else {
-                            // Remove filter if it's already selected
-                            return handleChange(
-                              selectedOptions.filter((_, i) => i !== index),
-                            );
-                          }
-                        }}
-                        px={1}
-                        lineHeight='tall'
-                        alignItems='flex-start'
-                        _hover={{ bg: 'niaid.50' }}
-                        css={{
-                          '& >.chakra-checkbox__control': {
-                            mt: 1, // to keep checkbox in line with top of text for options with multiple lines
-                          },
-                        }}
-                      >
-                        <Checkbox.HiddenInput />
-                        <Checkbox.Control>
-                          <Checkbox.Indicator />
-                        </Checkbox.Control>
-                        <Checkbox.Label>
-                          <Text fontSize='sm'>{option.name}</Text>
-                        </Checkbox.Label>
-                      </Checkbox.Root>
-                    ))}
-                  </Stack>
-                </CheckboxGroup>
-              </ScrollContainer>
-            </Popover.Body>
-          </Popover.Content>
-        </Popover.Positioner>
-      </Popover.Root>
+                        }
+                      }}
+                    >
+                      <Checkbox.HiddenInput />
+                      <Checkbox.Control>
+                        <Checkbox.Indicator />
+                      </Checkbox.Control>
+                      <Checkbox.Label>{option.name}</Checkbox.Label>
+                    </Checkbox.Root>
+                  </Menu.Item>
+                ))}
+              </CheckboxGroup>
+            </Menu.ItemGroup>
+          </Menu.Content>
+        </Menu.Positioner>
+      </Menu.Root>
     </Flex>
   );
 };

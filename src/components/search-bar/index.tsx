@@ -203,10 +203,6 @@ const SearchBar = ({
         colorPalette: 'primary',
         variant: 'ghost',
         size,
-        _icon: {
-          width: '2',
-          height: '2',
-        },
         selectedOptions:
           queryFilters?.filter(item => item.property === '@type') || [],
         handleChange: setQueryFilters,
@@ -214,10 +210,6 @@ const SearchBar = ({
         buttonProps: {
           ...(optionMenuProps.buttonProps || {}),
           colorPalette: 'primary',
-          _icon: {
-            width: '2',
-            height: '2',
-          },
         },
       }
     : undefined;
