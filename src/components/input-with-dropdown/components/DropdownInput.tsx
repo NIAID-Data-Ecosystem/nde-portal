@@ -144,6 +144,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
         borderRadius='md'
         css={{ '--input-height': getInputHeight(size) }}
         px={1}
+        zIndex='popover'
       >
         <Flex alignItems='center' height='100%'>
           {startElement}
