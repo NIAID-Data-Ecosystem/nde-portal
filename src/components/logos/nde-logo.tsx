@@ -9,7 +9,7 @@ export const NDELogo = (props: ImageProps) => {
     lg: '/assets/logos/niaid-nde-desktop.svg',
   };
 
-  const src = useBreakpointValue(imageSrc, { ssr: false });
+  const src = useBreakpointValue(imageSrc, { fallback: 'lg' });
 
   return (
     <Image

@@ -1,8 +1,8 @@
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import {
   Search as SearchWithDropdown,
   SearchBarWithDropdownProps,
 } from 'src/components/search-bar';
-import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import {
   SHOW_DATA_COLLECTIONS_TAB,
   SHOW_SAMPLES_TAB,
@@ -22,14 +22,10 @@ export const Input: React.FC<Partial<SearchBarWithDropdownProps>> = ({
     <SearchWithDropdown.Input
       placeholder={placeholder}
       ariaLabel={ariaLabel}
-      size='md'
+      size='sm'
       showOptionsMenu
       showSearchHistory
       optionMenuProps={{
-        buttonProps: {
-          borderRadius: 'full',
-          colorPalette: 'primary',
-        },
         label: 'Type',
         description: SCHEMA_DEFINITIONS['type'].abstract['Dataset'],
         showSelectAll: true,

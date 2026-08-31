@@ -2,8 +2,9 @@ import {
   ButtonProps,
   CloseButton,
   Flex,
+  Group,
+  HStack,
   Icon,
-  InputGroup,
   InputProps,
   Spinner,
   Textarea,
@@ -19,6 +20,27 @@ import { useDropdownContext } from '..';
 /*
 [Component Information]: [DropdownInput] is a regular input field with a list of suggestions based on the user typing.
 */
+
+/*
+`--input-height` is declared by the `input` recipe's size variants only; the
+`textarea` recipe never sets it. Since InputGroup derives the start/end element
+padding from it (`ps: calc(var(--input-height) - startOffset)`), it has to be
+declared on the group so the Textarea inherits it. Same approach Chakra's own
+combobox/tags-input recipes take.
+*/
+const INPUT_HEIGHTS: Record<string, string> = {
+  '2xs': 'sizes.7',
+  xs: 'sizes.8',
+  sm: 'sizes.9',
+  md: 'sizes.10',
+  lg: 'sizes.11',
+  xl: 'sizes.12',
+  '2xl': 'sizes.16',
+};
+
+// `size` is a ConditionalValue, so responsive objects fall back to the default.
+const getInputHeight = (size: DropdownInputProps['size']) =>
+  (typeof size === 'string' ? INPUT_HEIGHTS[size] : undefined) ?? 'sizes.9';
 
 export interface DropdownInputProps {
   id: string;
@@ -147,7 +169,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
       size='sm'
     />
   ) : (
-    <Icon color='gray.300'>
+    <Icon color='gray.300' pl={1}>
       <FaMagnifyingGlass />
     </Icon>
   );
@@ -161,11 +183,8 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
             setInputValue('');
             resetHeight(); // reset height when input is cleared
           }}
-          mr={2}
-          size='md'
-          colorPalette='primary'
+          size='sm'
           aria-label='Clear search input'
-          my={1}
         />
       )}
       {renderSubmitButton &&
@@ -185,29 +204,29 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
       <VisuallyHidden>
         <label htmlFor={id}>{ariaLabel}</label>
       </VisuallyHidden>
-
-      <InputGroup
-        zIndex='dropdown'
-        alignItems='flex-start'
+      <Group
+        w='100%'
+        gap={1}
+        bg='white'
+        alignItems='flex-end'
         border='1px solid'
         borderColor={invalid ? 'error' : 'gray.200'}
         borderRadius='md'
-        bg='white'
-        startElement={startElement}
-        endElement={endElement}
+        css={{ '--input-height': getInputHeight(size) }}
+        px={1}
       >
+        <Flex alignItems='center' height={'var(--input-height)'}>
+          {startElement}
+        </Flex>
         <Textarea
-          ref={textareaRef}
-          variant='unstyled'
-          resize='none'
-          overflow='hidden'
-          _placeholder={{
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-          }}
-          // optional, make growth feel smoother
-          onInput={autoResize}
+          resize='vertical'
+          autoresize
+          placeholder={placeholder || 'Search'}
+          maxLength={2048}
+          rows={1}
+          border='none'
+          outline='none'
+          boxShadow='none'
           {...getInputProps({
             id,
             placeholder: placeholder || 'Search',
@@ -233,13 +252,11 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
               onChange ? onChange(e.currentTarget.value) : void 0;
             },
           })}
-          rows={1}
-          maxLength={2048}
-          minH='3rem'
-          pl='2.5rem'
-          py={3}
         />
-      </InputGroup>
+        <HStack height={'var(--input-height)'} my={0.5}>
+          {endElement}
+        </HStack>
+      </Group>
     </Flex>
   );
 };

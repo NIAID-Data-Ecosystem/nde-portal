@@ -4,7 +4,6 @@ import React, { useCallback, useState } from 'react';
 import { Link } from 'src/components/link';
 import { SearchInput, SearchInputProps } from 'src/components/search-input';
 import { Table } from 'src/components/table';
-import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-string';
 import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
 
 import { Filters } from './filters/';

@@ -53,16 +53,23 @@ const SearchInput = ({
       }}
       renderSubmitButton={() => {
         return (
-          <Flex height='100%' alignItems='flex-start' gap={{ base: 0, md: 2 }}>
+          <Flex
+            height='100%'
+            alignItems='flex-start'
+            gap={{ base: 0, md: 1.5 }}
+          >
             {showOptionsMenu && optionMenuProps && (
               <Flex display={{ base: 'none', md: 'flex' }}>
-                <CheckboxList {...optionMenuProps}></CheckboxList>
+                <CheckboxList
+                  size={inputProps.size}
+                  {...optionMenuProps}
+                ></CheckboxList>
               </Flex>
             )}
             <Button
               colorPalette={inputProps.colorPalette}
               aria-label={inputProps.ariaLabel}
-              size='sm'
+              size={inputProps.size}
               type='submit'
               display={{ base: 'flex', sm: 'none' }}
               minW='2.25rem'
@@ -80,32 +87,25 @@ const SearchInput = ({
               aria-label={inputProps.ariaLabel}
               size={inputProps.size}
               type='submit'
-              display={{ base: 'none', sm: 'flex' }}
+              // display={{ base: 'none', sm: 'flex' }}
             >
               Search
             </Button>
             {showSearchHistory && (
-              <Flex
-                display={{ base: 'none', md: 'flex' }}
-                borderLeft='1px solid'
-                borderLeftColor='gray.200'
-                pl={1}
-              >
-                <Tooltip content='View search history.'>
-                  <IconButton
-                    variant='ghost'
-                    size={inputProps.size}
-                    aria-label='View search history.'
-                    onClick={() => setIsOpen(!isOpen)}
-                  >
-                    <Flex px={2}>
-                      <Icon asChild>
-                        <FaClockRotateLeft />
-                      </Icon>
-                    </Flex>
-                  </IconButton>
-                </Tooltip>
-              </Flex>
+              <Tooltip content='View search history.'>
+                <IconButton
+                  variant='outline'
+                  size={inputProps.size}
+                  aria-label='View search history.'
+                  onClick={() => setIsOpen(!isOpen)}
+                >
+                  <Flex px={2}>
+                    <Icon asChild>
+                      <FaClockRotateLeft />
+                    </Icon>
+                  </Flex>
+                </IconButton>
+              </Tooltip>
             )}
           </Flex>
         );
@@ -203,10 +203,25 @@ const SearchBar = ({
 
   const resolvedOptionMenuProps = optionMenuProps
     ? {
+        colorPalette: 'primary',
+        variant: 'ghost',
+        size: 'sm',
+        _icon: {
+          width: '2',
+          height: '2',
+        },
         selectedOptions:
           queryFilters?.filter(item => item.property === '@type') || [],
         handleChange: setQueryFilters,
         ...optionMenuProps,
+        buttonProps: {
+          ...(optionMenuProps.buttonProps || {}),
+          colorPalette: 'primary',
+          _icon: {
+            width: '2',
+            height: '2',
+          },
+        },
       }
     : undefined;
 
@@ -216,9 +231,6 @@ const SearchBar = ({
         buttonProps: {
           ...(resolvedOptionMenuProps.buttonProps || {}),
           size: 'sm' as const,
-          variant: 'ghost' as const,
-          bg: 'white',
-          borderRadius: 'sm',
           minW: 'unset',
           px: 3,
         },
@@ -261,9 +273,9 @@ const SearchBar = ({
           alignItems='center'
           gap={1}
         >
-          {showOptionsMenu && mobileOptionMenuProps && (
+          {/* {showOptionsMenu && mobileOptionMenuProps && (
             <CheckboxList {...mobileOptionMenuProps}></CheckboxList>
-          )}
+          )} */}
           {showOptionsMenu && showSearchHistory && (
             <Flex
               display={{ base: 'block', md: 'none' }}

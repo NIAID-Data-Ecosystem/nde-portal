@@ -5,12 +5,14 @@ import {
   CheckboxGroup,
   Flex,
   FlexProps,
+  Icon,
+  InputProps,
   Popover,
   Stack,
   Text,
 } from '@chakra-ui/react';
 import React from 'react';
-import { FaCaretDown } from 'react-icons/fa6';
+import { FaChevronDown } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
 
 interface Option {
@@ -26,7 +28,7 @@ export interface CheckboxListProps<T extends Option> extends FlexProps {
   label: string | React.ReactNode;
   options: T[];
   selectedOptions: T[];
-  size?: Popover.RootProps['size'];
+  size?: InputProps['size'];
   showSelectAll?: boolean;
 }
 
@@ -53,18 +55,15 @@ export const CheckboxList = <T extends Option>({
         <Popover.Trigger asChild>
           <Button
             colorPalette='gray'
-            flex={1}
-            fontWeight='medium'
-            fontSize='inherit'
-            lineHeight='shorter'
             size={size}
-            px={4}
             variant='outline'
             justifyContent='space-between'
             {...buttonProps}
           >
             {buttonProps?.children || label}
-            <FaCaretDown />
+            <Icon>
+              <FaChevronDown />
+            </Icon>
           </Button>
         </Popover.Trigger>
         <Popover.Positioner>
