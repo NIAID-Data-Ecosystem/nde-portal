@@ -3,6 +3,7 @@ import {
   ButtonProps,
   Checkbox,
   CheckboxGroup,
+  CheckboxRootProps,
   Flex,
   FlexProps,
   Icon,
@@ -13,6 +14,36 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import { FaChevronDown } from 'react-icons/fa6';
+import {
+  DEFAULT_INPUT_SIZE,
+  INPUT_HEIGHTS,
+} from 'src/theme/recipes/input.recipe';
+
+/*
+Callers size the whole menu with a single input size so it lines up with the
+search bar beside it, but the `checkbox` recipe's scale stops at `lg`. Map into
+it here rather than widening the recipe: the checkbox is a menu item, not an
+input, so it has no `2xs`/`xl`/`2xl` height to match.
+*/
+const CHECKBOX_SIZES: Record<
+  keyof typeof INPUT_HEIGHTS,
+  'xs' | 'sm' | 'md' | 'lg'
+> = {
+  '2xs': 'xs',
+  xs: 'xs',
+  sm: 'sm',
+  md: 'md',
+  lg: 'lg',
+  xl: 'lg',
+  '2xl': 'lg',
+};
+
+const isInputSize = (size: unknown): size is keyof typeof INPUT_HEIGHTS =>
+  typeof size === 'string' && size in INPUT_HEIGHTS;
+
+// `size` is a ConditionalValue, so responsive objects fall back to the default.
+const getCheckboxSize = (size: InputProps['size']): CheckboxRootProps['size'] =>
+  CHECKBOX_SIZES[isInputSize(size) ? size : DEFAULT_INPUT_SIZE];
 
 interface Option {
   name: string;
@@ -33,6 +64,7 @@ export interface CheckboxMenuProps<T extends Option> extends FlexProps {
 }
 
 export const CheckboxMenu = <T extends Option>({
+  id,
   label,
   options,
   description,
@@ -44,6 +76,14 @@ export const CheckboxMenu = <T extends Option>({
   colorPalette = 'gray',
   ...rest
 }: CheckboxMenuProps<T>) => {
+  /*
+  `gray.50` is #FDFDFD — all but white, so a highlight on the default palette
+  reads as no highlight at all. Every other palette's `50` is a visible tint, so
+  only gray steps down to `100`.
+  */
+  const highlightBg =
+    colorPalette === 'gray' ? 'colorPalette.100' : 'colorPalette.50';
+
   return (
     <Flex
       flex={{ base: 1, sm: 'unset' }}
@@ -54,7 +94,7 @@ export const CheckboxMenu = <T extends Option>({
     >
       {/* Every item here is a checkbox, so toggling one must not dismiss the
           menu — the machine closes on select by default. */}
-      <Menu.Root closeOnSelect={false}>
+      <Menu.Root closeOnSelect={false} ids={{ content: id }}>
         <Menu.Trigger asChild>
           <Button
             colorPalette={colorPalette}
@@ -72,8 +112,10 @@ export const CheckboxMenu = <T extends Option>({
         <Menu.Positioner>
           <ScrollArea.Root
             overflow='visible'
-            ids={{ viewport: 'label' }}
+            ids={{ viewport: id }}
+            maxHeight='500px'
             maxWidth='300px'
+            variant='always'
           >
             <ScrollArea.Viewport asChild>
               <Menu.Content>
@@ -97,9 +139,13 @@ export const CheckboxMenu = <T extends Option>({
                   <Menu.Separator />
 
                   {showSelectAll && (
-                    <Flex justifyContent='flex-end'>
+                    <Menu.Item
+                      justifyContent='flex-end'
+                      value='select-all-toggle'
+                      _highlighted={{ bg: 'transparent' }}
+                    >
                       <Button
-                        size='xs'
+                        size='2xs'
                         variant='link'
                         onClick={() => {
                           if (selectedOptions.length === options.length) {
@@ -114,7 +160,7 @@ export const CheckboxMenu = <T extends Option>({
                           ? 'Clear all'
                           : 'Select all'}
                       </Button>
-                    </Flex>
+                    </Menu.Item>
                   )}
                   <CheckboxGroup
                     colorPalette={colorPalette}
@@ -125,10 +171,10 @@ export const CheckboxMenu = <T extends Option>({
                         asChild
                         key={option.value}
                         value={option.value}
-                        _highlighted={{ bg: 'colorPalette.100' }}
+                        _highlighted={{ bg: highlightBg }}
                       >
                         <Checkbox.Root
-                          size='md'
+                          size={getCheckboxSize(size)}
                           value={option.value}
                           onCheckedChange={() => {
                             const newFilterItem = option;
@@ -162,7 +208,7 @@ export const CheckboxMenu = <T extends Option>({
                     ))}
                   </CheckboxGroup>
                 </Menu.ItemGroup>
-                <ScrollArea.Scrollbar bg='transparent'>
+                <ScrollArea.Scrollbar>
                   <ScrollArea.Thumb />
                 </ScrollArea.Scrollbar>
               </Menu.Content>
