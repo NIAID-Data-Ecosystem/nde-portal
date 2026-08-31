@@ -95,7 +95,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
           >
             {/* <!-- Search Bar --> */}
             <SearchInput
-              size='md'
+              size='sm'
               placeholder='Search table'
               ariaLabel='Search table'
               value={searchTerm}

@@ -54,27 +54,6 @@ export const SearchInput: React.FC<SearchInputProps> = ({
 }) => {
   const [showInput, setShowInput] = useState(false);
 
-  const sizeConfig: {
-    [key in SizeOptions]: { width: string; height: string };
-  } = {
-    xs: {
-      width: '4rem',
-      height: '1.25rem',
-    },
-    sm: {
-      width: '5.5rem',
-      height: '1.75rem',
-    },
-    md: {
-      width: '5.5rem',
-      height: '2.5rem',
-    },
-    lg: {
-      width: '6.5rem',
-      height: '3rem',
-    },
-  };
-
   const startElement = (
     <Icon color='text.placeholder' boxSize={4} asChild>
       <FaMagnifyingGlass />
@@ -82,18 +61,18 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   );
 
   const endElement = (onClose || handleSubmit) && (
-    <Flex p={1} height={sizeConfig[size].height}>
+    <Flex py={1} alignItems='center' gap={1} height='100%'>
       {onClose && props.value && (
-        <CloseButton onClick={onClose} size={size} colorPalette='primary' />
+        <CloseButton onClick={onClose} colorPalette='primary' height='100%' />
       )}
       {handleSubmit && (
         <Button
-          size={size}
           colorPalette={colorPalette}
           loading={loading}
           aria-label='search'
           type='submit'
           display='flex'
+          height='100%'
           // set padding top and bottom for safari, do not remove.
           py={0}
         >
@@ -107,7 +86,6 @@ export const SearchInput: React.FC<SearchInputProps> = ({
     <Flex
       as='form'
       alignItems='center'
-      position='relative'
       onSubmit={e => {
         e.preventDefault();
         handleSubmit && handleSubmit(e);
@@ -125,17 +103,16 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         ]}
         startElement={startElement}
         endElement={endElement}
+        colorPalette={colorPalette}
       >
         <Input
           id={ariaLabel}
           type='text'
-          variant='shadow'
+          variant='outline'
           size={size}
           onChange={e => handleChange(e)}
           colorPalette={colorPalette}
-          pr={handleSubmit ? sizeConfig[size].width : 0}
           bg={bg}
-          height={sizeConfig[size].height}
           {...props}
         />
       </InputGroup>
