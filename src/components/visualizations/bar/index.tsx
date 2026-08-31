@@ -359,9 +359,7 @@ export const BarChart = ({
                           }}
                         >
                           <Text
-                            color={
-                              id === MORE_ID ? 'link.color' : 'text.heading'
-                            }
+                            color={id === MORE_ID ? 'link' : 'text.heading'}
                             width='100%'
                             display='block'
                             overflow='hidden'

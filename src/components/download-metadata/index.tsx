@@ -167,8 +167,8 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
       {/* Error */}
       <Collapsible.Root open={!!error}>
         <Collapsible.Content>
-          <Text fontSize='xs' fontStyle='italic' color='status.error'>
-            <Icon color='status.error' mr={1} asChild>
+          <Text fontSize='xs' fontStyle='italic' color='error'>
+            <Icon color='error' mr={1} asChild>
               <FaCircleExclamation />
             </Icon>
             Something went wrong with the metadata download. Please try again.
@@ -192,7 +192,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
               </Progress.Root>
               <Text
                 fontSize='xs'
-                color='page.placeholder'
+                color='text.placeholder'
                 textAlign='end'
                 fontWeight='medium'
                 ml={1}
@@ -254,7 +254,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
                           borderBottom={
                             idx < options.length - 1 ? '1px solid' : 'none'
                           }
-                          borderColor='page.alt'
+                          borderColor='bg.alt'
                         >
                           <Box
                             w='100%'

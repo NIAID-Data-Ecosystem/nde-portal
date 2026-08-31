@@ -12,7 +12,7 @@ export const EmptyState = () => {
         m={4}
         border='1px solid'
         borderRadius='semi'
-        borderColor='page.placeholder'
+        borderColor='gray.600'
         bg='niaid.50'
       >
         <Text fontWeight='medium'>Suggestions:</Text>

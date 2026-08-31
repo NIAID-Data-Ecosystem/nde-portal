@@ -128,7 +128,7 @@ const Home: NextPage<{
               <Flex w='100%' flexDirection='column' maxWidth='1000px'>
                 <Flex
                   justifyContent='space-between'
-                  alignItems='baseline'
+                  alignItems='center'
                   flex={1}
                   mb={1}
                   flexWrap='wrap-reverse'
@@ -137,18 +137,19 @@ const Home: NextPage<{
                   {SHOW_AI_ASSISTED_SEARCH && <Search.AIToggle />}
                   <Search.AdvancedSearchLink />
                 </Flex>
-                <Search.Input />
+                <Search.Input size='sm' />
               </Flex>
               <Box>
-                <Text fontWeight='semibold'>Try these searches:</Text>
+                <Text fontWeight='semibold' mb={1}>
+                  Try these searches:
+                </Text>
                 <Stack flexDirection='row' flexWrap={'wrap'}>
                   {HOME_QUERIES.map(query => {
                     return (
                       <Button
                         key={query.title}
-                        size='sm'
+                        size='xs'
                         colorPalette='niaid'
-                        fontWeight='semibold'
                         asChild
                       >
                         <NextLink
@@ -235,11 +236,10 @@ const Home: NextPage<{
                       size={{ base: 'md', sm: 'sm' }}
                       width={{ base: '100%', sm: 'auto' }}
                       asChild
+                      truncate
                     >
                       <NextLink href='/knowledge-center/getting-started-with-niaid-data-ecosystem-discovery-portal'>
-                        <Text truncate color='inherit'>
-                          Read more about getting started
-                        </Text>
+                        Read more about getting started
                       </NextLink>
                     </Button>
                   </VStack>
@@ -332,23 +332,23 @@ const Home: NextPage<{
                         : FaGithub;
                       return (
                         <Box key={route.title} w={['100%', 'unset']}>
-                          <NextLink
-                            href={route.path}
-                            passHref
-                            target={route.isExternal ? '_blank' : '_self'}
+                          <Button
+                            w='100%'
+                            minWidth='150px'
+                            size='sm'
+                            variant={index % 2 ? 'solid' : 'outline'}
+                            my={[1, 2, 0]}
+                            maxWidth={['unset', '250px']}
+                            asChild
                           >
-                            <Button
-                              w='100%'
-                              minWidth='150px'
-                              size='sm'
-                              variant={index % 2 ? 'solid' : 'outline'}
-                              my={[1, 2, 0]}
-                              maxWidth={['unset', '250px']}
+                            <NextLink
+                              href={route.path}
+                              target={route.isExternal ? '_blank' : '_self'}
                             >
                               <Icon as={icon} />
                               {route.title}
-                            </Button>
-                          </NextLink>
+                            </NextLink>
+                          </Button>
                         </Box>
                       );
                     },

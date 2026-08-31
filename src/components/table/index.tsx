@@ -603,7 +603,7 @@ export const Table: React.FC<TableProps<any>> = ({
                 position: 'sticky' as const,
                 left: 0,
                 zIndex: stickyHeader ? 3 : 2,
-                bg: isSelected ? 'page.alt' : 'white',
+                bg: isSelected ? 'bg.alt' : 'white',
                 borderRight: '1px solid',
                 borderColor: `${colorPalette}.200`,
               }

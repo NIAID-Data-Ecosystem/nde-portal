@@ -1,23 +1,34 @@
-import { Box, Flex, FlexProps, Stack } from '@chakra-ui/react';
+import type { AlertRootProps } from '@chakra-ui/react';
+import { Flex, FlexProps, Stack } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useMemo } from 'react';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
+import { Alert } from 'src/components/alert';
+import { toAlertStatus } from 'src/components/alert/utils';
 import { Footer } from 'src/components/footer';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import { Navigation } from 'src/components/navigation-bar';
 import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
 
 import { useBreadcrumbs } from '../hooks/useBreadcrumbs';
-import { Banner } from './banner';
 import { Breadcrumbs } from './breadcrumbs';
 import { LoginErrorBanner } from './login-error-banner';
 import { Search } from './search';
 import { SeoMetaFields, SeoMetaFieldsProps } from './seo-meta-fields';
 
+/** The Strapi notices API returns states uppercased, e.g. `WARNING`. */
+export type NoticeState = Uppercase<
+  NonNullable<AlertRootProps['status']> & string
+>;
+
 export interface NoticeProps {
   id: number | string;
   heading: string;
   description?: string | null;
-  state: 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS';
+  state: NoticeState;
   affectedRepository?: string | null;
   createdAt: string;
   updatedAt: string;
@@ -38,6 +49,8 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   includeSearchBar = false,
   ...props
 }) => {
+  const MDXComponents = useMDXComponents();
+
   const breadcrumbs = useBreadcrumbs(breadcrumbsTitle);
   // Fetch Notices from STRAPI API.
   const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
@@ -93,24 +106,38 @@ export const PageContainer: React.FC<PageContainerProps> = ({
             <LoginErrorBanner />
             {/* <!-- Banner for dev and staging instance --> */}
             {!isProd && (
-              <Banner
+              <Alert
                 id='banner-environment-notice'
-                heading='This is the alpha version of the NIAID Data Ecosystem Discovery
+                title='This is the staging version of the NIAID Data Ecosystem Discovery
             Portal.'
-                description={`Currently using the: <a href="${process.env.NEXT_PUBLIC_API_URL}/metadata" target="_blank">${apiEnvironment} API</a>`}
-                state='INFO'
-              />
+                status='info'
+              >
+                <ReactMarkdown
+                  rehypePlugins={[rehypeRaw, remarkGfm]}
+                  components={MDXComponents}
+                >
+                  {`Currently using the: <a href="${process.env.NEXT_PUBLIC_API_URL}/metadata" target="_blank">${apiEnvironment} API</a>`}
+                </ReactMarkdown>
+              </Alert>
             )}
             {/* <!-- Banner for service warnings and notices --> */}
             {notices &&
               notices.map(notice => (
-                <Banner
+                <Alert
                   key={notice.id}
                   id={`banner-${notice.id}-notice`}
-                  heading={notice.heading}
-                  description={notice.description}
-                  state={notice.state}
-                />
+                  title={notice.heading}
+                  status={toAlertStatus(notice.state)}
+                >
+                  {notice?.description && (
+                    <ReactMarkdown
+                      rehypePlugins={[rehypeRaw, remarkGfm]}
+                      components={MDXComponents}
+                    >
+                      {notice.description}
+                    </ReactMarkdown>
+                  )}
+                </Alert>
               ))}
           </Stack>
 

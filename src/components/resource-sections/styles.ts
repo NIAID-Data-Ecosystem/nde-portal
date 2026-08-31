@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 export const StyledSectionHead = styled(Box)<BoxProps>(props => ({}));
 
 StyledSectionHead.defaultProps = {
-  bg: 'page.alt',
+  bg: 'bg.alt',
   px: 4,
   py: 2,
 };

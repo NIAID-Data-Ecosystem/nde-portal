@@ -84,10 +84,10 @@ export const tableSlotRecipe = defineSlotRecipe({
           // '&:nth-of-type(even)': {
           //   'th, td': {
           //     borderBottomWidth: '1px',
-          //     borderColor: 'page.alt',
+          //     borderColor: 'bg.alt',
           //   },
           //   td: {
-          //     background: 'page.alt',
+          //     background: 'bg.alt',
           //   },
           // },
         },

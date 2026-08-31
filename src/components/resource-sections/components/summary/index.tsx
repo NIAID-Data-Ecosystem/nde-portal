@@ -22,7 +22,7 @@ export const Summary = ({
       // mx={2}
       px={4}
       py={3}
-      bg='status.info_lt'
+      bg='info.subtle'
       borderRadius='semi'
     >
       <Tooltip content='This summary is based on the description field using ChatGPT4.'>
@@ -65,7 +65,7 @@ export const Summary = ({
           size='sm'
           mr={1.5}
           colorPalette='niaid'
-          bg='status.info'
+          bg='info'
         >
           <Tag.StartElement asChild>
             <FaWandMagicSparkles />

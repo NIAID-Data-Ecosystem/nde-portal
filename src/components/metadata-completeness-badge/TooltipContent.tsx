@@ -89,7 +89,7 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
                       gap={1}
                       border='1px solid'
                       borderColor='gray.100'
-                      bg={idx % 2 ? 'page.alt' : 'white'}
+                      bg={idx % 2 ? 'bg.alt' : 'white'}
                     >
                       <GridItem
                         px={1}

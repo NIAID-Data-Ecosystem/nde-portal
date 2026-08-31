@@ -91,7 +91,7 @@ export const HeroBannerContainer = ({
     <Flex
       id='hero-banner'
       position='relative'
-      bgGradient='linear(to-r,#ddf4fd 50%, #c1e0eb)' // small gradient to lighten up scene
+      bg='linear-gradient(to right, #ddf4fd 50%, #c1e0eb)' // small gradient to lighten up scene
       minHeight={{
         base: '320px',
         sm: '360px',
@@ -100,7 +100,6 @@ export const HeroBannerContainer = ({
       width='100%'
       justifyContent={{ base: 'flex-start', '2xl': 'center' }}
       px={{ base: 2, sm: 6, lg: 10, xl: '5vw' }}
-      zIndex='dropdown'
       {...rest}
     >
       {children}

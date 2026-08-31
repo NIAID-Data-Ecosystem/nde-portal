@@ -285,12 +285,18 @@ const Provenance: React.FC<Provenance> = ({
                         </Button>
                       </Tooltip>
                       {organization?.url && (
-                        <NextLink href={organization.url} target='_blank'>
-                          <Button as='span' variant='outline' size='sm' mt={2}>
+                        <Button
+                          as='span'
+                          variant='outline'
+                          size='sm'
+                          mt={2}
+                          asChild
+                        >
+                          <NextLink href={organization.url} target='_blank'>
                             View program site
                             <FaArrowRight />
-                          </Button>
-                        </NextLink>
+                          </NextLink>
+                        </Button>
                       )}
                     </Stack>
                   </Block>

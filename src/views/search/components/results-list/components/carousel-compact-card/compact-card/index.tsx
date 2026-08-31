@@ -79,7 +79,7 @@ const Header = ({ loading = false, children, ...boxProps }: HeaderProps) => {
       pt={1}
       pb={1}
       w='100%'
-      color='link.color'
+      color='link'
       _hover={{
         '& p': { textDecoration: 'none' },
         '& svg': {
@@ -89,8 +89,8 @@ const Header = ({ loading = false, children, ...boxProps }: HeaderProps) => {
         },
       }}
       _visited={{
-        color: 'link.color',
-        '& svg': { color: 'link.color' },
+        color: 'link',
+        '& svg': { color: 'link' },
       }}
       {...boxProps}
     >
@@ -139,7 +139,6 @@ const Title = ({ children, linkProps, ...textProps }: TitleProps) => {
     <NextLink
       href={linkProps.href}
       as={linkProps.as}
-      passHref
       prefetch={false}
       style={{
         display: 'flex',

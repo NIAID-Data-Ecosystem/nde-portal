@@ -218,7 +218,7 @@ export const OntologyBrowser = ({
           bg='white'
           border='1px solid'
           borderRadius='semi'
-          borderColor='page.placeholder'
+          borderColor='gray.600'
           overflow='hidden'
         >
           {loading || !router.isReady ? (

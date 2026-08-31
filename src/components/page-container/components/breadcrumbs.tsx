@@ -22,7 +22,7 @@ export const BreadcrumbItem = ({
       py={1}
       px={2}
       _hover={{
-        color: isCurrentPage ? 'gray.800' : 'link.color',
+        color: isCurrentPage ? 'gray.800' : 'link',
         textDecoration: 'none',
         borderRadius: 'semi',
         bg: isCurrentPage ? 'transparent' : 'blue.50',

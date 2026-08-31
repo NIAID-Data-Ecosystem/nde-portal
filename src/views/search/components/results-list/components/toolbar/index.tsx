@@ -53,7 +53,7 @@ export const SearchResultsToolbar = ({
       )}
       <Flex
         borderBottom={{ base: '1px solid' }}
-        borderColor={{ base: 'page.alt' }}
+        borderColor={{ base: 'bg.alt' }}
         flexDirection={{ base: 'column-reverse', md: 'row' }}
         alignItems={{ base: 'unset', md: 'center' }}
         justifyContent={'space-between'}

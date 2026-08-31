@@ -1,14 +1,14 @@
-import React, { useCallback, useState } from 'react';
-import NextLink from 'next/link';
 import { Box, Flex, SkeletonText, Stack, Tag, Text } from '@chakra-ui/react';
+import NextLink from 'next/link';
+import React, { useCallback, useState } from 'react';
 import { Link } from 'src/components/link';
-import { Table } from 'src/components/table';
 import { SearchInput, SearchInputProps } from 'src/components/search-input';
-import { formatDomainName, formatTypeName } from './helpers';
-import { Filters } from './filters/';
-import useFilteredData from './hooks/useFilteredData';
-import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-string';
+import { Table } from 'src/components/table';
 import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
+
+import { Filters } from './filters/';
+import { formatDomainName, formatTypeName } from './helpers';
+import useFilteredData from './hooks/useFilteredData';
 
 export interface TableData {
   _id: string;
@@ -95,7 +95,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
           >
             {/* <!-- Search Bar --> */}
             <SearchInput
-              size='md'
+              size='sm'
               placeholder='Search table'
               ariaLabel='Search table'
               value={searchTerm}
@@ -165,9 +165,9 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
             emptyState={emptyState}
             stickyHeader
             data={loading ? Array(10).fill({}) : filteredData}
-            tableHeadProps={{ bg: 'page.alt' }}
+            tableHeadProps={{ bg: 'bg.alt' }}
             getTableRowProps={(_, idx: number) => ({
-              bg: idx % 2 ? 'page.alt' : 'white',
+              bg: idx % 2 ? 'bg.alt' : 'white',
             })}
             tableContainerProps={{ overflowY: 'auto', maxHeight: '500px' }}
             getCells={props => <RepositoryCells {...props} loading={loading} />}
@@ -212,9 +212,11 @@ export const RepositoryCells = ({
           fontSize='sm'
         >
           {data?.url ? (
-            <NextLink href={data.url} prefetch={false} passHref>
-              <Link as='div'>{data[column.property]}</Link>
-            </NextLink>
+            <Link asChild>
+              <NextLink href={data.url} prefetch={false}>
+                {data[column.property]}
+              </NextLink>
+            </Link>
           ) : (
             <Text>{data[column.property]}</Text>
           )}

@@ -387,7 +387,7 @@ export const BasedOnActionProcess = ({
     <Stack
       gap={0.5}
       w='100%'
-      bg='status.info_lt'
+      bg='info.subtle'
       borderRadius='sm'
       fontSize='sm'
       lineHeight='short'

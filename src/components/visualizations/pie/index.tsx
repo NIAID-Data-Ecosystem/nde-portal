@@ -533,7 +533,7 @@ function PieSliceLabel<ChartDatum>({
       horizontalAnchor={horizontalAnchor}
       containerStyle={{
         color: isMore
-          ? system.token('colors.link.color')
+          ? system.token('colors.link')
           : system.token('colors.text.heading'),
         fontSize: '10px',
         fontWeight: 'bold',

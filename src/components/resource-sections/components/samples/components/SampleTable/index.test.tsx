@@ -82,7 +82,7 @@ describe('SampleTable', () => {
       expect.objectContaining({ bg: 'white' }),
     );
     expect(props.getTableRowProps(null, 1)).toEqual(
-      expect.objectContaining({ bg: 'page.alt' }),
+      expect.objectContaining({ bg: 'bg.alt' }),
     );
     expect(props.getTableRowProps(null, 2)).toEqual(
       expect.objectContaining({ bg: 'white' }),

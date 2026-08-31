@@ -1,7 +1,7 @@
-import React from 'react';
-import NextLink from 'next/link';
 import { Box, Flex } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
+import NextLink from 'next/link';
+import React from 'react';
 import { Link } from 'src/components/link';
 import { fetchSearchResults } from 'src/utils/api';
 import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
@@ -13,13 +13,14 @@ import {
   getSearchResultsRoute,
   trackDiseasesEvent,
 } from 'src/views/diseases/helpers';
+
+import { getFillColor } from '../../chart-utils';
 import { TopicQueryProps } from '../../types';
+import DISEASE_PAGE_COPY from '../disease-page.json';
 import { ChartWrapper } from '../layouts/chart-wrapper';
+import { MarkdownContent } from '../layouts/markdown-content';
 import { DonutChart } from '../visualizations/donut-chart';
 import { LegendContainer, LegendItem } from './legend';
-import { MarkdownContent } from '../layouts/markdown-content';
-import DISEASE_PAGE_COPY from '../disease-page.json';
-import { getFillColor } from '../../chart-utils';
 
 export const DataTypes = ({ query, topic }: TopicQueryProps) => {
   // Fetch data types for query.
@@ -154,29 +155,28 @@ export const DataTypes = ({ query, topic }: TopicQueryProps) => {
                       loading={isLoading || isPlaceholderData}
                       swatchBg={getFillColor(term)}
                     >
-                      <NextLink
-                        onClick={() => {
-                          trackDiseasesEvent({
-                            label,
-                            category:
-                              DISEASE_PAGE_COPY['charts']['types']['title'],
-                            linkType: 'legend',
-                            value: count,
-                          });
-                        }}
-                        href={getSearchResultsRoute({
-                          query: params,
-                          facet: params.facets,
-                          term: term as string,
-                        })}
-                        passHref
-                      >
-                        <Link as='p'>
+                      <Link asChild>
+                        <NextLink
+                          onClick={() => {
+                            trackDiseasesEvent({
+                              label,
+                              category:
+                                DISEASE_PAGE_COPY['charts']['types']['title'],
+                              linkType: 'legend',
+                              value: count,
+                            });
+                          }}
+                          href={getSearchResultsRoute({
+                            query: params,
+                            facet: params.facets,
+                            term: term as string,
+                          })}
+                        >
                           {formatAPIResourceTypeForDisplay(
                             term as APIResourceType,
                           )}
-                        </Link>
-                      </NextLink>
+                        </NextLink>
+                      </Link>
                     </LegendItem>
                   );
                 })}
@@ -185,22 +185,23 @@ export const DataTypes = ({ query, topic }: TopicQueryProps) => {
                 count={data?.total}
                 loading={isLoading || isPlaceholderData}
               >
-                <NextLink
-                  onClick={() => {
-                    trackDiseasesEvent({
-                      label: 'Total',
-                      category: DISEASE_PAGE_COPY['charts']['types']['title'],
-                      linkType: 'legend',
-                      value: data?.total,
-                    });
-                  }}
-                  href={getSearchResultsRoute({
-                    query: params,
-                  })}
-                  passHref
-                >
-                  <Link as='p'>Total</Link>
-                </NextLink>
+                <Link asChild>
+                  <NextLink
+                    onClick={() => {
+                      trackDiseasesEvent({
+                        label: 'Total',
+                        category: DISEASE_PAGE_COPY['charts']['types']['title'],
+                        linkType: 'legend',
+                        value: data?.total,
+                      });
+                    }}
+                    href={getSearchResultsRoute({
+                      query: params,
+                    })}
+                  >
+                    Total
+                  </NextLink>
+                </Link>
               </LegendItem>
             </LegendContainer>
           </Box>

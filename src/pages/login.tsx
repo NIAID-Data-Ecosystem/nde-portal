@@ -210,7 +210,7 @@ function LoginPage() {
           width={{ base: '100%', lg: '46%' }}
           px={{ base: 4, md: 8, lg: 10 }}
           py={{ base: 8, lg: 14 }}
-          bg='page.alt'
+          bg='bg.alt'
           alignItems='center'
           fontSize='md'
         >

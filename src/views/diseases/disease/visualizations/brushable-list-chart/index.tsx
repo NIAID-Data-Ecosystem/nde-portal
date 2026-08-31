@@ -83,6 +83,7 @@ export const BrushableListChart = ({
               borderBottom='1px solid'
               borderBottomColor='#ededed'
               lineHeight='short'
+              asChild
             >
               {/* Term: Links to search results */}
               <NextLink
@@ -90,7 +91,6 @@ export const BrushableListChart = ({
                   handleGATracking({ label: item.term, count: item.count })
                 }
                 href={getSearchRoute(item.term)}
-                passHref
               >
                 {item.term}
               </NextLink>

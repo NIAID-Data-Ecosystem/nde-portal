@@ -1,9 +1,9 @@
 import {
   Box,
   Flex,
-  HStack,
   Heading,
   HeadingProps,
+  HStack,
   Separator,
   Skeleton,
   Stack,
@@ -78,7 +78,7 @@ export const LegendTableHeader: React.FC<TextProps> = ({
   return (
     <Text
       borderBottom='1px solid'
-      borderColor='page.placeholder'
+      borderColor='gray.600'
       fontSize='12px'
       fontWeight='semibold'
       lineHeight='shorter'

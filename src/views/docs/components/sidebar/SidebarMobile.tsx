@@ -1,8 +1,9 @@
 import { Flex, Icon, Menu, Text } from '@chakra-ui/react';
-import { FaArrowsUpDown } from 'react-icons/fa6';
 import NextLink from 'next/link';
-import type { SidebarMobileProps } from '../../types';
+import { FaArrowsUpDown } from 'react-icons/fa6';
+
 import { DEFAULT_COLOR_SCHEME } from '../../constants';
+import type { SidebarMobileProps } from '../../types';
 
 export const SidebarMobile = ({
   loading,
@@ -17,7 +18,7 @@ export const SidebarMobile = ({
         <Menu.Trigger
           bg='blackAlpha.100'
           borderRadius='semi'
-          color='page.placeholder'
+          color='text.placeholder'
           mx={2}
           my={2}
           flex={1}
@@ -47,18 +48,17 @@ export const SidebarMobile = ({
                   // a bare <a> as a direct child of role="menu", which fails axe's
                   // `aria-required-children` (a menu may only contain menuitems).
                   <Menu.Item
+                    key={item.id}
                     pl={6}
                     color={
                       isSelected ? `${colorPalette}.600!important` : 'inherit'
                     }
                     bg={isSelected ? `${colorPalette}.100` : 'transparent'}
                     value={item.name}
+                    asChild
+                    fontSize='sm'
                   >
-                    <NextLink key={item.id} href={item.href}>
-                      <Text fontSize='sm' color='inherit'>
-                        {item.name}
-                      </Text>
-                    </NextLink>
+                    <NextLink href={item.href}>{item.name}</NextLink>
                   </Menu.Item>
                 );
               })}

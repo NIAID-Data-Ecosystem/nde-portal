@@ -17,7 +17,7 @@ import { queryFilterObject2String } from 'src/views/search/components/filters/ut
 import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
 import { useLocalStorage, useReadLocalStorage } from 'usehooks-ts';
 
-import { CheckboxList, CheckboxListProps } from '../checkbox-list';
+import { CheckboxMenu, CheckboxMenuProps } from '../checkbox-list';
 import {
   DropdownInput,
   DropdownInputProps,
@@ -36,7 +36,7 @@ const DropdownContent = dynamic(() =>
 interface SearchInputProps extends DropdownInputProps {
   showSearchHistory?: boolean;
   showOptionsMenu?: boolean;
-  optionMenuProps?: CheckboxListProps<OptionProps>;
+  optionMenuProps?: CheckboxMenuProps<OptionProps>;
 }
 const SearchInput = ({
   showSearchHistory,
@@ -53,22 +53,26 @@ const SearchInput = ({
       }}
       renderSubmitButton={() => {
         return (
-          <Flex height='100%' alignItems='flex-start' gap={{ base: 0, md: 2 }}>
+          <Flex
+            height='100%'
+            alignItems='flex-start'
+            gap={{ base: 0, md: 1.5 }}
+          >
             {showOptionsMenu && optionMenuProps && (
               <Flex display={{ base: 'none', md: 'flex' }}>
-                <CheckboxList {...optionMenuProps}></CheckboxList>
+                <CheckboxMenu
+                  id='search-options'
+                  size={inputProps.size}
+                  {...optionMenuProps}
+                ></CheckboxMenu>
               </Flex>
             )}
             <Button
               colorPalette={inputProps.colorPalette}
               aria-label={inputProps.ariaLabel}
-              size='sm'
+              size={inputProps.size}
               type='submit'
               display={{ base: 'flex', sm: 'none' }}
-              minW='2.25rem'
-              px={2}
-              my={1}
-              mr={2}
               alignSelf='flex-start'
             >
               <Icon asChild>
@@ -85,27 +89,21 @@ const SearchInput = ({
               Search
             </Button>
             {showSearchHistory && (
-              <Flex
-                display={{ base: 'none', md: 'flex' }}
-                borderLeft='1px solid'
-                borderLeftColor='gray.200'
-                pl={1}
-              >
-                <Tooltip content='View search history.'>
-                  <IconButton
-                    variant='ghost'
-                    size={inputProps.size}
-                    aria-label='View search history.'
-                    onClick={() => setIsOpen(!isOpen)}
-                  >
-                    <Flex px={2}>
-                      <Icon asChild>
-                        <FaClockRotateLeft />
-                      </Icon>
-                    </Flex>
-                  </IconButton>
-                </Tooltip>
-              </Flex>
+              <Tooltip content='View search history.'>
+                <IconButton
+                  variant='outline'
+                  size={inputProps.size}
+                  aria-label='View search history.'
+                  onClick={() => setIsOpen(!isOpen)}
+                  display={{ base: 'none', md: 'flex' }}
+                >
+                  <Flex px={2}>
+                    <Icon asChild>
+                      <FaClockRotateLeft />
+                    </Icon>
+                  </Flex>
+                </IconButton>
+              </Tooltip>
             )}
           </Flex>
         );
@@ -203,24 +201,29 @@ const SearchBar = ({
 
   const resolvedOptionMenuProps = optionMenuProps
     ? {
+        colorPalette: 'primary',
+        variant: 'ghost',
+        size,
         selectedOptions:
           queryFilters?.filter(item => item.property === '@type') || [],
         handleChange: setQueryFilters,
         ...optionMenuProps,
+        buttonProps: {
+          ...(optionMenuProps.buttonProps || {}),
+          colorPalette: 'primary',
+        },
       }
     : undefined;
 
   const mobileOptionMenuProps = resolvedOptionMenuProps
     ? {
         ...resolvedOptionMenuProps,
+        width: '100%',
         buttonProps: {
           ...(resolvedOptionMenuProps.buttonProps || {}),
-          size: 'sm' as const,
-          variant: 'ghost' as const,
-          bg: 'white',
-          borderRadius: 'sm',
+          size,
           minW: 'unset',
-          px: 3,
+          flex: 1,
         },
       }
     : undefined;
@@ -262,31 +265,23 @@ const SearchBar = ({
           gap={1}
         >
           {showOptionsMenu && mobileOptionMenuProps && (
-            <CheckboxList {...mobileOptionMenuProps}></CheckboxList>
-          )}
-          {showOptionsMenu && showSearchHistory && (
-            <Flex
-              display={{ base: 'block', md: 'none' }}
-              h='1.5rem'
-              borderLeft='1px solid'
-              borderLeftColor='gray.100'
-              mx={1}
-            />
+            <CheckboxMenu
+              id='search-options-mobile'
+              {...mobileOptionMenuProps}
+            ></CheckboxMenu>
           )}
           {showSearchHistory && (
             <Tooltip content='View search history.'>
               <IconButton
-                variant='ghost'
-                size='sm'
+                variant='outline'
+                size={size}
                 bg='white'
                 aria-label='View search history.'
                 onClick={() => setIsOpen(!isOpen)}
               >
-                <Flex px={2}>
-                  <Icon asChild>
-                    <FaClockRotateLeft />
-                  </Icon>
-                </Flex>
+                <Icon asChild>
+                  <FaClockRotateLeft />
+                </Icon>
               </IconButton>
             </Tooltip>
           )}
@@ -355,16 +350,16 @@ export interface SearchBarWithDropdownProps {
   size?: InputProps['size'];
   showSearchHistory?: boolean;
   showOptionsMenu?: boolean;
-  // Start with all properties from CheckboxListProps<OptionProps>,
+  // Start with all properties from CheckboxMenuProps<OptionProps>,
   // except 'handleChange' and 'selectedOptions'
   optionMenuProps?: Omit<
-    CheckboxListProps<OptionProps>,
+    CheckboxMenuProps<OptionProps>,
     'handleChange' | 'selectedOptions'
   > & {
     // Optionally reintroduce 'handleChange' and 'selectedOptions' as  optional properties
     // since we create default values in <SearchBar/>, and we want to allow the user to override them.
-    handleChange?: CheckboxListProps<OptionProps>['handleChange'];
-    selectedOptions?: CheckboxListProps<OptionProps>['selectedOptions'];
+    handleChange?: CheckboxMenuProps<OptionProps>['handleChange'];
+    selectedOptions?: CheckboxMenuProps<OptionProps>['selectedOptions'];
   };
 }
 

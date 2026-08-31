@@ -85,8 +85,8 @@ export const useDropdownInput = ({
     // Invalid state is owned by the enclosing <Field.Root invalid>, which puts
     // data-invalid on the control, so style off that rather than a prop.
     _invalid: {
-      borderColor: 'status.error',
-      _focus: { borderColor: 'status.error' },
+      borderColor: 'error',
+      _focus: { borderColor: 'error' },
     },
     bg: 'white',
     type: 'search',

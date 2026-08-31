@@ -52,11 +52,11 @@ export const getTypeColor = (
   }
 
   const typeLower = type?.toLowerCase();
-  let lt = 'status.info';
+  let lt = 'info';
   let dk = 'niaid.500';
 
   if (typeLower === 'dataset') {
-    lt = 'status.info';
+    lt = 'info';
     dk = 'niaid.500';
   } else if (typeLower === 'resourcecatalog') {
     lt = 'primary.500';

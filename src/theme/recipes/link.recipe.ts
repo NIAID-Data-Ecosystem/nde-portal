@@ -5,7 +5,7 @@ import { defineRecipe } from '@chakra-ui/react';
 export const linkRecipe = defineRecipe({
   base: {
     display: 'inline',
-    color: 'link.default',
+    color: 'link',
     fontSize: 'inherit',
     fontWeight: 'inherit',
     lineHeight: 'inherit',
@@ -29,29 +29,48 @@ export const linkRecipe = defineRecipe({
         _hover: {
           textDecoration: 'none',
         },
+        _visited: {
+          color: 'inherit',
+        },
       },
       // underline: underline visible. on hover, underline fades out.
       underline: {
-        color: 'link.default',
+        color: 'link',
         textDecorationColor: 'currentColor',
         textUnderlineOffset: '4px',
         _hover: {
           textDecorationColor: 'transparent',
         },
       },
-      hover: {
-        color: 'link.default',
-        textUnderlineOffset: '4px',
-        _hover: {
-          textDecorationColor: 'currentColor/80',
-        },
-      },
-      // plain: no underline. on hover, underline with partial opacity.
+
+      // plain: no underline. on hover: underline with partial opacity.
       plain: {
         color: 'currentColor',
         textUnderlineOffset: '4px',
         _hover: {
+          textDecorationColor: 'currentColor/90',
+        },
+      },
+
+      // nav: navigation link style
+      nav: {
+        color: '{colors.white}',
+        textDecoration: 'none',
+        '&[data-active]': {
+          textDecorationLine: 'underline',
+          textDecorationThickness: '2px',
+          textUnderlineOffset: '8px',
+        },
+        _hover: {
           textDecorationColor: 'currentColor/80',
+          bg: 'whiteAlpha.300',
+          color: '{colors.white}',
+        },
+        _visited: {
+          color: '{colors.white}',
+          _hover: {
+            color: '{colors.white}',
+          },
         },
       },
     },
@@ -72,18 +91,18 @@ text) or `child-node` (elements), and the selectors below target it.
 Keep these in sync with that wrapper; the class names are part of its contract
 and src/components/metadata/components/buttons.tsx overrides them from outside.
 */
-const CHILD = '.child-string, .child-node, .child-node p';
-const UNDERLINED = '.child-string, .child-node p';
-const CHILD_SVG = '.child-string, .child-node, .child-node p, svg';
+// const CHILD = '.child-string, .child-node, .child-node p';
+// const UNDERLINED = '.child-string, .child-node p';
+// const CHILD_SVG = '.child-string, .child-node, .child-node p, svg';
 
-const HAIRLINE = '0.0625rem solid';
+// const HAIRLINE = '0.0625rem solid';
 
 /*
 Ported from the v2 `Link` style config.
 
 The v2 version read arbitrary style props (`props.color`, `props.borderBottom`,
 `props._hover.color`, `props._visited.color`) to compute these values. v3
-recipes only receive variant/size, so those reads become the fixed `link.color`
+recipes only receive variant/size, so those reads become the fixed `link`
 / `link.visited` / hairline defaults they fell back to in practice — no current
 call site passed them. `color=` still works as a plain style prop; what is gone
 is feeding a call-site colour into a *descendant* selector.
@@ -97,7 +116,7 @@ Hover uses raw `&:hover` rather than `_hover` to match the v2 recipe's bare
 //     // Chakra v3's Link base is `inline-flex`; the border-bottom scheme needs
 //     // the text to sit in normal inline flow.
 //     display: 'inline',
-//     color: 'link.color',
+//     color: 'link',
 //     textDecoration: 'none',
 //     svg: {
 //       color: 'currentColor',
@@ -112,7 +131,7 @@ Hover uses raw `&:hover` rather than `_hover` to match the v2 recipe's bare
 //       borderBottom: HAIRLINE,
 //     },
 //     '&:hover': {
-//       color: 'link.color',
+//       color: 'link',
 //       textDecoration: 'none',
 //       [CHILD]: {
 //         borderBottomColor: 'transparent',
@@ -155,7 +174,7 @@ Hover uses raw `&:hover` rather than `_hover` to match the v2 recipe's bare
 //           borderBottomColor: 'transparent',
 //           [CHILD]: {
 //             borderBottom: HAIRLINE,
-//             borderBottomColor: 'link.color',
+//             borderBottomColor: 'link',
 //           },
 //         },
 //         _visited: {
@@ -178,7 +197,7 @@ Hover uses raw `&:hover` rather than `_hover` to match the v2 recipe's bare
 //           borderBottomColor: 'transparent',
 //         },
 //         '&:hover': {
-//           color: 'link.color',
+//           color: 'link',
 //           [CHILD]: {
 //             borderBottomColor: 'transparent',
 //             color: 'inherit',

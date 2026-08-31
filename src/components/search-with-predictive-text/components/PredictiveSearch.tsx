@@ -196,7 +196,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
                       justifyContent={['center', 'flex-end']}
                       bg={
                         type.toLowerCase() === 'dataset'
-                          ? 'status.info_lt'
+                          ? 'info.subtle'
                           : 'blackAlpha.50'
                       }
                       mx={2}

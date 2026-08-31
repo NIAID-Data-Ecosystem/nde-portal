@@ -85,7 +85,7 @@ export const Footer = () => {
                     <FooterLink
                       href={route.href}
                       isExternal={route.isExternal ?? false}
-                      variant='hover'
+                      variant='plain'
                     >
                       {route.label}
                     </FooterLink>
@@ -157,7 +157,7 @@ export const Footer = () => {
                             <FooterLink
                               href={href}
                               isExternal={isExternal ?? false}
-                              variant='hover'
+                              variant='plain'
                             >
                               {label}
                             </FooterLink>

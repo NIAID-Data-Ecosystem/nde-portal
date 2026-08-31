@@ -24,7 +24,7 @@ const Wrapper: React.FC<BoxProps> = ({ children, ...props }) => {
       as='nav'
       w='100%'
       minW={300}
-      zIndex='modal'
+      zIndex='popover'
       aria-label='Main navigation'
       {...props}
     >
@@ -39,8 +39,7 @@ const Bar: React.FC<FlexProps> = ({ children }) => {
       bg='niaid.500'
       color='white'
       minH='60px'
-      pl={6}
-      pr={4}
+      px={4}
       borderBottom={1}
       borderStyle='solid'
       borderColor='gray.200'

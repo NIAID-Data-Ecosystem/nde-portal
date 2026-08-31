@@ -19,7 +19,7 @@ export const RowWithDrawer = React.memo(
         role='row'
         borderBottom='0.15px solid'
         borderColor='gray.200'
-        bg='page.alt'
+        bg='bg.alt'
         flex={1}
       >
         <Flex as='td' py={0} flexDirection='column' flex={1}>

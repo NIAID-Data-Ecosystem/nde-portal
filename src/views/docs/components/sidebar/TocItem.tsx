@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
 import { Box, Flex, Icon, IconButton, List } from '@chakra-ui/react';
-import { FaAngleDown, FaAngleRight } from 'react-icons/fa6';
 import NextLink from 'next/link';
+import { useEffect, useState } from 'react';
+import { FaAngleDown, FaAngleRight } from 'react-icons/fa6';
+
 import type { TocItemProps } from '../../types';
 
 export const TocItem = ({
@@ -48,31 +49,30 @@ export const TocItem = ({
   return (
     <List.Item w='100%' display='flex' flexDirection='column'>
       <Flex w='100%' alignItems='center'>
-        <NextLink
-          style={{ display: 'flex', flex: 1 }}
-          href={`/knowledge-center/${pageSlug}#${tocItem.hash}`}
-          passHref
+        <Box
+          asChild
+          flex={1}
+          fontSize='sm'
+          pl={8 + indent}
+          pr={2}
+          py={1}
+          lineHeight='tall'
+          color='text.body'
+          bg='transparent'
+          cursor='pointer'
+          _hover={{
+            bg: 'blackAlpha.50',
+            borderRadius: 'base',
+            transition: 'fast',
+          }}
         >
-          <Box
-            as='span'
-            flex={1}
-            fontSize='sm'
-            pl={8 + indent}
-            pr={2}
-            py={1}
-            lineHeight='tall'
-            color='text.body'
-            bg='transparent'
-            cursor='pointer'
-            _hover={{
-              bg: 'blackAlpha.50',
-              borderRadius: 'base',
-              transition: 'fast',
-            }}
+          <NextLink
+            style={{ display: 'flex', flex: 1 }}
+            href={`/knowledge-center/${pageSlug}#${tocItem.hash}`}
           >
             {tocItem.title}
-          </Box>
-        </NextLink>
+          </NextLink>
+        </Box>
         <Box
           w='40px'
           display='flex'
@@ -99,31 +99,30 @@ export const TocItem = ({
         <List.Root as='ul' ml={0} mt={1}>
           {childItems.map((childItem, idx) => (
             <List.Item key={idx} w='100%' display='flex' alignItems='center'>
-              <NextLink
-                style={{ display: 'flex', flex: 1 }}
-                href={`/knowledge-center/${pageSlug}#${childItem.hash}`}
-                passHref
+              <Box
+                asChild
+                flex={1}
+                fontSize='sm'
+                pl={8 + indent + 4}
+                pr={2}
+                py={1}
+                lineHeight='tall'
+                color='text.body'
+                bg='transparent'
+                cursor='pointer'
+                _hover={{
+                  bg: 'blackAlpha.50',
+                  borderRadius: 'base',
+                  transition: 'fast',
+                }}
               >
-                <Box
-                  as='span'
-                  flex={1}
-                  fontSize='sm'
-                  pl={8 + indent + 4}
-                  pr={2}
-                  py={1}
-                  lineHeight='tall'
-                  color='text.body'
-                  bg='transparent'
-                  cursor='pointer'
-                  _hover={{
-                    bg: 'blackAlpha.50',
-                    borderRadius: 'base',
-                    transition: 'fast',
-                  }}
+                <NextLink
+                  style={{ display: 'flex', flex: 1 }}
+                  href={`/knowledge-center/${pageSlug}#${childItem.hash}`}
                 >
                   {childItem.title}
-                </Box>
-              </NextLink>
+                </NextLink>
+              </Box>
               <Box w='40px' />
             </List.Item>
           ))}

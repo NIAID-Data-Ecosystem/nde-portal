@@ -17,7 +17,7 @@ export const DrillStackBreadcrumb = ({
       size='xs'
       variant='ghost'
       onClick={onBack}
-      color='link.color'
+      color='link'
       textDecoration='underline'
       mr={1}
     >

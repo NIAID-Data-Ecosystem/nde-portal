@@ -27,17 +27,17 @@ export const Disclaimer = () => {
       mt={1}
     >
       {isMounted ? (
-        <Flex bg='status.warning_lt' alignItems='center'>
+        <Flex bg='warning.subtle' alignItems='center'>
           <Button
             size='sm'
             variant='ghost'
             onClick={() => setIsMinimized(!isMinimized)}
             px={2}
             position='unset'
-            bg={isMinimized ? 'status.warning' : 'status.warning_lt'}
-            borderColor='status.warning'
+            bg={isMinimized ? 'warning' : 'warning.subtle'}
+            borderColor='warning'
             color='text.heading'
-            _hover={{ bg: 'status.warning_lt' }}
+            _hover={{ bg: 'warning.subtle' }}
             _active={{ boxShadow: 'none' }}
             _focus={{ boxShadow: 'none' }}
           >
@@ -76,8 +76,8 @@ export const Disclaimer = () => {
                 px={2}
                 mx={1}
                 position='unset'
-                _hover={{ bg: 'status.warning' }}
-                _active={{ bg: 'status.warning', boxShadow: 'none' }}
+                _hover={{ bg: 'warning' }}
+                _active={{ bg: 'warning', boxShadow: 'none' }}
               >
                 Got it
               </Button>

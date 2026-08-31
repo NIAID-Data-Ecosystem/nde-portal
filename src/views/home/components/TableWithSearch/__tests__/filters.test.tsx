@@ -1,7 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { CheckboxMenu } from 'src/components/checkbox-list';
+
 import { Filters } from '../filters/';
-import { CheckboxList } from 'src/components/checkbox-list';
 
 describe('Landing Table Filters Component', () => {
   const mockData = [
@@ -51,7 +52,7 @@ describe('Landing Table Filters Component', () => {
     expect(screen.findByRole('button', { name: /access/i })).toBeInTheDocument;
   });
 
-  it('passes correct props to CheckboxList components', async () => {
+  it('passes correct props to CheckboxMenu components', async () => {
     render(
       <Filters
         data={mockData}
@@ -72,7 +73,7 @@ describe('Landing Table Filters Component', () => {
   });
 });
 
-describe('Landing Table CheckboxList Component', () => {
+describe('Landing Table CheckboxMenu Component', () => {
   const mockOptions = [
     { name: 'Resource Catalog', value: 'ResourceCatalog', count: 10 },
     { name: 'Dataset Repository', value: 'Repository', count: 5 },
@@ -89,7 +90,8 @@ describe('Landing Table CheckboxList Component', () => {
 
   it('renders options correctly', () => {
     render(
-      <CheckboxList
+      <CheckboxMenu
+        id='type'
         label='Type'
         options={mockOptions}
         handleChange={mockHandleChange}
@@ -103,7 +105,8 @@ describe('Landing Table CheckboxList Component', () => {
 
   it('calls handleChange on option click', () => {
     render(
-      <CheckboxList
+      <CheckboxMenu
+        id='type'
         label='Type'
         options={mockOptions}
         handleChange={mockHandleChange}

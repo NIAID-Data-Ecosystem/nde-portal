@@ -5943,7 +5943,7 @@ async function gotoPopulated(page: Page) {
   ).toBeVisible();
 }
 
-// --- Search bar "Type" options menu (CheckboxList popover) --------------------
+// --- Search bar "Type" options menu (CheckboxMenu popover) --------------------
 
 test.describe('a11y: Search — type options menu', () => {
   test('passes axe with the search-bar type popover open', async ({
@@ -6055,7 +6055,7 @@ test.describe('a11y: Search — show metadata accordion', () => {
 // keeping the focus on the carousel.
 
 // The Retired catalog record. Kept separate from the non-retired set because the
-// Retired card renders on a gray `page.alt` background, which is where the
+// Retired card renders on a gray `bg.alt` background, which is where the
 // contrast regression lives — see the "resource catalog (retired)" describe.
 const RETIRED_RESOURCE_CATALOG_HIT = {
   '@type': 'ResourceCatalog',

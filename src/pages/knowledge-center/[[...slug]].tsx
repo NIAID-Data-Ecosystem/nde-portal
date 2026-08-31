@@ -253,36 +253,35 @@ const Docs: NextPage<{
                                 loading={isLoading}
                                 width={isLoading ? '75%' : '100%'}
                               >
-                                <NextLink
-                                  style={{
-                                    display: 'flex',
-                                    width: '100%',
+                                <Link
+                                  w='100%'
+                                  fontSize='sm'
+                                  color='text.body!important'
+                                  bg='transparent'
+                                  lineHeight='tall'
+                                  _selected={{
+                                    color: 'niaid.600!important',
+                                    bg: 'niaid.100',
                                   }}
-                                  href={item.href}
-                                  passHref
+                                  _hover={{
+                                    [`&[aria-selected=false]`]: {
+                                      bg: 'blackAlpha.50',
+                                      borderRadius: 'base',
+                                      transition: 'fast',
+                                    },
+                                  }}
+                                  asChild
                                 >
-                                  <Link
-                                    as='span'
-                                    w='100%'
-                                    fontSize='sm'
-                                    color='text.body!important'
-                                    bg='transparent'
-                                    lineHeight='tall'
-                                    _selected={{
-                                      color: 'niaid.600!important',
-                                      bg: 'niaid.100',
+                                  <NextLink
+                                    style={{
+                                      display: 'flex',
+                                      width: '100%',
                                     }}
-                                    _hover={{
-                                      [`&[aria-selected=false]`]: {
-                                        bg: 'blackAlpha.50',
-                                        borderRadius: 'base',
-                                        transition: 'fast',
-                                      },
-                                    }}
+                                    href={item.href}
                                   >
                                     {item.name}
-                                  </Link>
-                                </NextLink>
+                                  </NextLink>
+                                </Link>
                               </SkeletonText>
                             </List.Item>
                           ))}

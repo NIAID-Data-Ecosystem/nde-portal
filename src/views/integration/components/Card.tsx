@@ -81,7 +81,7 @@ export const StepCard = ({
           </Tabs.List>
           <Tabs.ContentGroup>
             {tabItems.map(({ id, content, icon }) => (
-              <Tabs.Content key={id} value={id.toString()} bg='page.alt'>
+              <Tabs.Content key={id} value={id.toString()} bg='bg.alt'>
                 <Flex
                   p={2}
                   alignItems={['flex-start', 'center']}

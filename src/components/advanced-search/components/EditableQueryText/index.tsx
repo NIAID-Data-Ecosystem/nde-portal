@@ -330,11 +330,9 @@ export const EditableQueryText = ({
         fontSize='sm'
         _focus={{
           boxShadow: hasErrors
-            ? `0 0 0 1px ${system.token('colors.status.error')}`
+            ? `0 0 0 1px ${system.token('colors.error')}`
             : '0 0 0 1px #3182ce',
-          borderColor: hasErrors
-            ? system.token('colors.status.error')
-            : '#3182ce',
+          borderColor: hasErrors ? system.token('colors.error') : '#3182ce',
         }}
       />
       <Flex p={2} justifyContent='space-between' alignItems='center'>

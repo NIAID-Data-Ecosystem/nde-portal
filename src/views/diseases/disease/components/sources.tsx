@@ -173,7 +173,7 @@ export const Sources = ({
               }}
             />
           ) : (
-            <Text color='page.placeholder' fontStyle='italic' mt={4}>
+            <Text color='text.placeholder' fontStyle='italic' mt={4}>
               No data available.
             </Text>
           )}

@@ -35,8 +35,12 @@ The v2 Button `colorMap` shape shared by primary and secondary:
   ghost   -> text .700, hover background .50
 */
 const buttonRoles = (name: string) => ({
-  outlineFg: { value: `{colors.${name}.500}` },
-  outlineBorder: { value: `{colors.${name}.500}` },
+  /* v3's `outline` variant takes its text colour from `fg`, which is `.700` for
+     every palette here and in Chakra's own light-mode defaults. Held as its own
+     role because gray needs a darker value (below) and a static recipe cannot
+     branch on `colorPalette`. */
+  outlineFg: { value: `{colors.${name}.600}` },
+  outlineBorder: { value: `{colors.${name}.400}` },
   outlineHoverBg: { value: `{colors.${name}.600}` },
   ghostFg: { value: `{colors.${name}.700}` },
   ghostHoverBg: { value: `{colors.${name}.50}` },
@@ -61,13 +65,14 @@ export const semanticColors = defineSemanticTokens.colors({
     // v2 Badge `solid` + colorPalette='niaid' was a literal black.
     badgeSolidBg: { value: '{colors.black}' },
     // v2 `styleInputBorder()` singled niaid out for the link colour.
-    inputFocusBorder: { value: '{colors.link.color}' },
+    inputFocusBorder: { value: '{colors.link}' },
   },
   accent: palette('accent'),
 
   /*
   gray is the one palette whose v2 Button `outline` entry broke the shared
-  pattern: text .900 (not .500), border .200 (not .500), hover .800 (not .600).
+  pattern: text .900 (not .700), border .200 (not .500), hover .800 (not .600).
+  Still true in v3 — gray.700 (#6D6D6D) is too light to read as a button label.
   It also needs re-declaring so `colorPalette='gray'` lands on the NIAID greys
   rather than Chakra's, since every default semantic token (bg.subtle,
   fg.muted, border) references {colors.gray.*}.
@@ -87,112 +92,59 @@ export const semanticColors = defineSemanticTokens.colors({
   */
   red: buttonRoles('red'),
   orange: buttonRoles('orange'),
-  yellow: buttonRoles('yellow'),
+  yellow: {
+    ...buttonRoles('yellow'),
+    // Chakra's own light-mode `yellow.fg` is `.800`, not `.700`.
+    outlineFg: { value: '{colors.yellow.800}' },
+  },
   green: buttonRoles('green'),
   teal: buttonRoles('teal'),
   blue: buttonRoles('blue'),
   cyan: buttonRoles('cyan'),
   purple: buttonRoles('purple'),
   pink: buttonRoles('pink'),
-});
 
-// [chakra-todo]: might need to include this or delete. Was in v3 old theming
-// error: {
-//   light: { value: '#FBF2F3' },
-//   default: { value: '#D23342' },
-//   contrast: { value: 'white' },
-//   emphasized: { value: '{colors.error.light}' },
-//   fg: { value: '{colors.error.default}' },
-//   focusRing: { value: '{colors.red.500/50}' },
-//   muted: { value: '#f6bec4' },
-//   solid: { value: '{colors.error.default}' },
-//   subtle: { value: '{colors.error.light}' },
-// },
-// info: {
-//   light: { value: '#F3F4FC' },
-//   default: { value: '#4865E3' },
-//   contrast: { value: 'white' },
-//   emphasized: { value: '{colors.info.light}' },
-//   fg: { value: '{colors.info.default}' },
-//   focusRing: { value: '#4299E199' },
-//   muted: { value: '#8FA2F1' },
-//   solid: { value: '{colors.info.default}' },
-//   subtle: { value: '{colors.info.light}' },
-// },
-// success: {
-//   light: { value: '#F2F5F4' },
-//   default: { value: '#17805F' },
-//   contrast: { value: 'white' },
-//   emphasized: { value: '{colors.success.light}' },
-//   fg: { value: '{colors.success.default}' },
-//   focusRing: { value: '{colors.success.default}' },
-//   muted: { value: '#BBF4E3' },
-//   solid: { value: '{colors.success.default}' },
-//   subtle: { value: '{colors.success.light}' },
-// },
-// warning: {
-//   light: { value: '#FFF9F2' },
-//   default: { value: '#FFC10A' },
-//   contrast: { value: 'white' },
-//   emphasized: { value: '{colors.warning.light}' },
-//   fg: { value: '{colors.yellow.800}' },
-//   focusRing: { value: '{colors.warning.default}' },
-//   muted: { value: '#FFECAD' },
-//   solid: { value: '{colors.warning.default}' },
-//   subtle: { value: '{colors.warning.light}' },
-// },
-// bg: {
-//     DEFAULT: {
-//       value: '{colors.page.default}',
-//     },
-//     subtle: {
-//       value: '{colors.page.alt}',
-//     },
-//     error: {
-//       value: '{colors.error.light}',
-//     },
-//     warning: {
-//       value: '{colors.warning.light}',
-//     },
-//     success: {
-//       value: '{colors.success.light}',
-//     },
-//     info: {
-//       value: '{colors.info.light}',
-//     },
-//   },
-//   border: {
-//     DEFAULT: {
-//       value: '{colors.gray.200}',
-//     },
-//     error: {
-//       value: '{colors.error.default}',
-//     },
-//     warning: {
-//       value: '{colors.warning.default}',
-//     },
-//     success: {
-//       value: '{colors.success.default}',
-//     },
-//     info: {
-//       value: '{colors.info.default}',
-//     },
-//   },
-//   fg: {
-//     DEFAULT: {
-//       value: '{colors.text.body}',
-//     },
-//     error: {
-//       value: '{colors.error.default}',
-//     },
-//     warning: {
-//       value: '{colors.warning.default}',
-//     },
-//     success: {
-//       value: '{colors.success.default}',
-//     },
-//     info: {
-//       value: '{colors.info.default}',
-//     },
-//     muted: { value: '{colors.text.body/80}' },
-//   },
+  /*
+  NIAID Digital Policies page background colors.
+  */
+  bg: {
+    DEFAULT: { value: '#FDFDFD' },
+    alt: { value: '#F5F6FA' },
+  },
+  /*
+  NIAID Digital Policies link colours.
+  */
+  link: {
+    DEFAULT: { value: '#246CD3' },
+    visited: { value: '#6F57B5' },
+  },
+
+  /*
+  NIAID Digital Policies text and heading colors. 
+  */
+  text: {
+    body: { value: '#404B56' },
+    heading: { value: '#2F2F2F' },
+    placeholder: { value: '#9AA6B5' },
+  },
+
+  /*
+  NIAID Digital Policies status colours.
+  */
+  error: {
+    DEFAULT: { value: '#D23342' },
+    subtle: { value: '#FBF2F3' },
+  },
+  success: {
+    DEFAULT: { value: '#17805F' },
+    subtle: { value: '#F2F5F4' },
+  },
+  warning: {
+    DEFAULT: { value: '#FFC10A' },
+    subtle: { value: '#FFF9F2' },
+  },
+  info: {
+    DEFAULT: { value: '#4865E3' },
+    subtle: { value: '#F3F4FC' },
+  },
+});

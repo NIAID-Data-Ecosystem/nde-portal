@@ -35,6 +35,7 @@ const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
     ref,
   ) => {
     if (disabled) return <>{children}</>;
+    const borderColor = contentProps?.borderColor ?? 'gray.200';
 
     return (
       <ChakraTooltip.Root {...props}>
@@ -43,19 +44,18 @@ const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
           <ChakraTooltip.Positioner>
             <ChakraTooltip.Content
               ref={ref}
-              bg='white'
+              css={{ '--tooltip-bg': 'colors.white' }}
               color='text.body'
               fontSize='13px'
               fontWeight='normal'
               lineHeight='short'
               border='1px solid'
-              borderColor='gray.200'
+              borderColor={borderColor}
               {...contentProps}
             >
               {showArrow && (
                 <ChakraTooltip.Arrow>
-                  {/* v2 passed `arrowShadowColor`; v3 styles the tip directly. */}
-                  <ChakraTooltip.ArrowTip borderColor='gray.200' />
+                  <ChakraTooltip.ArrowTip borderColor={borderColor} />
                 </ChakraTooltip.Arrow>
               )}
               {content}

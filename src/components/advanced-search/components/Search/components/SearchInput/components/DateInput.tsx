@@ -25,7 +25,7 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
         }}
       >
         <Box flex={1} mr={2}>
-          <Text fontWeight='medium' color='page.placeholder'>
+          <Text fontWeight='medium' color='text.placeholder'>
             <label htmlFor='date-start'>From:</label>
           </Text>
           <Input
@@ -47,7 +47,7 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
           />
         </Box>
         <Box flex={1} mr={2}>
-          <Text fontWeight='medium' color='page.placeholder'>
+          <Text fontWeight='medium' color='text.placeholder'>
             <label htmlFor='date-end'>To:</label>
           </Text>
           <Input

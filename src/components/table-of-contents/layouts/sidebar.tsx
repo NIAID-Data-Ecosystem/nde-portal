@@ -19,7 +19,7 @@ export const Sidebar: React.FC<FlexProps & { ['aria-label']: string }> = ({
     <Flex
       as='nav'
       aria-label={ariaLabel}
-      bg='page.alt'
+      bg='bg.alt'
       flex={1}
       flexDirection='column'
       display={{ base: 'none', md: 'flex' }}

@@ -74,34 +74,4 @@ export const colors = defineTokens.colors({
     900: { value: '#414141' },
     950: { value: '#1A1A1A' },
   },
-
-  // [chakra-todo]: decide whether to keep these or remove them.
-  // page: {
-  //   bg: { value: '#FDFDFD' },
-  //   alt: { value: '#F5F6FA' },
-  //   placeholder: { value: '#9AA6B5' },
-  // },
-  // text: {
-  //   body: { value: '#404B56' },
-  //   heading: { value: '#2F2F2F' },
-  // },
-  // navigation: {
-  //   bg: { value: '#262626' },
-  //   hover: { value: '#1B1B1B' },
-  // },
-  // link: {
-  //   color: { value: '#246CD3' },
-  //   visited: { value: '#6F57B5' },
-  // },
-  // status: {
-  //   success: { value: '#17805F' },
-  //   success_lt: { value: '#F2F5F4' },
-  //   alert: { value: '#F8FF55' },
-  //   warning: { value: '#FFC10A' },
-  //   warning_lt: { value: '#FFF9F2' },
-  //   error: { value: '#D23342' },
-  //   error_lt: { value: '#FBF2F3' },
-  //   info: { value: '#4865E3' },
-  //   info_lt: { value: '#F3F4FC' },
-  // },
 });

@@ -292,7 +292,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                   alignItems='center'
                   flex={1}
                 >
-                  <Icon mx={2} color='status.info' asChild>
+                  <Icon mx={2} color='info' asChild>
                     <FaClockRotateLeft />
                   </Icon>
                   Search History
@@ -320,7 +320,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                               textDecoration: 'underline',
                             },
                           }}
-                          bg='status.info'
+                          bg='info'
                           borderRadius='semi'
                           my={0.5}
                         >
@@ -336,7 +336,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                             px={2}
                           >
                             <Flex
-                              bg='status.info'
+                              bg='info'
                               m={2}
                               py={1}
                               px={2}

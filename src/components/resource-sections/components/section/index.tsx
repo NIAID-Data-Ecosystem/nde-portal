@@ -58,15 +58,15 @@ const Section: React.FC<SectionProps> = ({
                     <h2>
                       <Accordion.ItemTrigger
                         aria-label={`show more details about ${name}`}
-                        bg={bg || expanded ? 'page.alt' : 'white'}
+                        bg={bg || expanded ? 'bg.alt' : 'white'}
                         color={color}
                         borderY='0.5px solid'
                         borderColor='gray.100'
                         borderLeft='3px solid'
                         borderLeftColor='accent.400'
-                        _hover={{ bg: props?._hover?.bg || 'page.alt' }}
+                        _hover={{ bg: props?._hover?.bg || 'bg.alt' }}
                         _expanded={{
-                          borderColor: 'page.alt',
+                          borderColor: 'bg.alt',
                         }}
                       >
                         {name && (

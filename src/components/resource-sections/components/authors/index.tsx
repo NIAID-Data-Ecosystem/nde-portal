@@ -80,7 +80,7 @@ const ResourceAuthors = ({
         <Accordion.ItemContext>
           {({ expanded }) => (
             <>
-              <Accordion.ItemTrigger px={[4, 6]} _hover={{ bg: 'page.alt' }}>
+              <Accordion.ItemTrigger px={[4, 6]} _hover={{ bg: 'bg.alt' }}>
                 <Flex
                   w='100%'
                   direction={['column', 'column', 'row']}
@@ -107,7 +107,7 @@ const ResourceAuthors = ({
                   </Flex>
                 </Flex>
               </Accordion.ItemTrigger>
-              <Accordion.ItemContent px={[1, 4, 6]} py={4} bg='page.alt'>
+              <Accordion.ItemContent px={[1, 4, 6]} py={4} bg='bg.alt'>
                 <Accordion.ItemBody>
                   {/* If the author list has an author with affiliation, we display the authors as a vertical list.
                 Otherwise, display that authors as a paragraph */}

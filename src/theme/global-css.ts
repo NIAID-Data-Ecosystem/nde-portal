@@ -12,15 +12,16 @@ survive alongside `listStyleType`.
 export const globalCss = defineGlobalStyles({
   '*': {
     listStyleType: 'none',
-    lineHeight: 'base',
+    lineHeight: '1.5',
   },
   // sets default color palette for components if not specified
   // https://chakra-ui.com/guides/theming-change-default-color-palette
-  html: { colorPalette: 'primary' },
+  html: {
+    colorPalette: 'none',
+  },
   body: {
     fontFamily: 'body',
     color: 'text.body',
-    fontSize: '16px',
   },
   // [chakra-todo] unsure if needed, but keeping for now to match v2's `styles.global`
   // strong: {

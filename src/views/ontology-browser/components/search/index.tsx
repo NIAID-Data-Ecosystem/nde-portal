@@ -11,7 +11,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useState } from 'react';
-import { CheckboxList } from 'src/components/checkbox-list';
+import { CheckboxMenu } from 'src/components/checkbox-list';
 import {
   DropdownInput,
   InputWithDropdown,
@@ -253,7 +253,8 @@ export const OntologyBrowserSearch = ({
         </Flex>
 
         {/* <!-- Select Ontology --> */}
-        <CheckboxList
+        <CheckboxMenu
+          id='explore-ontology'
           flex={1}
           fontSize='sm'
           width={{ base: '100%', md: 'unset' }}

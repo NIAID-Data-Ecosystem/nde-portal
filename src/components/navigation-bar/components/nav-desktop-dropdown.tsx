@@ -4,7 +4,6 @@ import { FaCaretDown } from 'react-icons/fa6';
 
 import { TransformedNavigationDropdown } from '../types';
 import { NavDropdownItem } from './nav-dropdown-item';
-import { SHARED_DESKTOP_ACTION_STYLES } from './styles';
 
 /*
 This file contains the components for the desktop dropdown menu in the navigation bar. It includes:
@@ -37,13 +36,15 @@ export const NavDropdownTrigger = ({
           <>
             <Popover.Trigger asChild>
               <Button
-                css={SHARED_DESKTOP_ACTION_STYLES}
+                fontSize='inherit'
+                variant='unstyled'
                 _hover={{ bg: 'whiteAlpha.300', color: 'white' }}
+                gap={1.5}
                 {...buttonProps}
               >
-                {icon && <Icon as={icon} mr={2} />}
+                {icon && <Icon as={icon} boxSize={4} />}
                 {label}
-                <Icon ml={1} w={4} h={4} asChild>
+                <Icon w={4} h={4} asChild>
                   <FaCaretDown />
                 </Icon>
               </Button>
@@ -64,7 +65,6 @@ export const NavDropdown = ({ children }: { children: React.ReactNode }) => {
         border={0}
         boxShadow='xl'
         bg='white'
-        py={2}
         rounded='xl'
         minW='sm'
       >

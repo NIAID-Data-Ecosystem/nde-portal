@@ -91,7 +91,7 @@ export const OntologyBrowserSettings: React.FC<OntologyPopoverProps> = ({
               </Text>
               {description && (
                 <Text
-                  color='page.placeholder'
+                  color='text.placeholder'
                   fontSize='sm'
                   fontStyle='italic'
                   fontWeight='normal'

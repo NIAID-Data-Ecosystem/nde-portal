@@ -123,7 +123,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
     <Flex colorPalette={colorPalette} css={styles.pagination} {...props}>
       <Flex
         p={4}
-        bg='page.alt'
+        bg='bg.alt'
         w='100%'
         justifyContent='space-between'
         flexDirection={['column', 'row']}

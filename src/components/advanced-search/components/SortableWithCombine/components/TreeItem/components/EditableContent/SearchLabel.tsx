@@ -48,8 +48,8 @@ export const SearchLabel = ({
           w='170px'
           borderRadius='semi'
           mb={2}
-          _focus={{ borderColor: 'page.placeholder' }}
-          _hover={{ bg: 'page.alt' }}
+          _focus={{ borderColor: 'text.placeholder' }}
+          _hover={{ bg: 'bg.alt' }}
           value={selectedSearchType.id}
           onChange={e => {
             const searchType = searchOptions.find(
