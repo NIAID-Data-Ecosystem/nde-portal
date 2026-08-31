@@ -137,7 +137,7 @@ const Home: NextPage<{
                   {SHOW_AI_ASSISTED_SEARCH && <Search.AIToggle />}
                   <Search.AdvancedSearchLink />
                 </Flex>
-                <Search.Input />
+                <Search.Input size='sm' />
               </Flex>
               <Box>
                 <Text fontWeight='semibold' mb={1}>

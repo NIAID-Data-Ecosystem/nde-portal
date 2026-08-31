@@ -202,7 +202,7 @@ const SearchBar = ({
     ? {
         colorPalette: 'primary',
         variant: 'ghost',
-        size: 'sm',
+        size,
         _icon: {
           width: '2',
           height: '2',
@@ -228,7 +228,7 @@ const SearchBar = ({
         width: '100%',
         buttonProps: {
           ...(resolvedOptionMenuProps.buttonProps || {}),
-          size: 'sm' as const,
+          size,
           minW: 'unset',
           flex: 1,
         },
@@ -278,7 +278,7 @@ const SearchBar = ({
             <Tooltip content='View search history.'>
               <IconButton
                 variant='outline'
-                size='sm'
+                size={size}
                 bg='white'
                 aria-label='View search history.'
                 onClick={() => setIsOpen(!isOpen)}

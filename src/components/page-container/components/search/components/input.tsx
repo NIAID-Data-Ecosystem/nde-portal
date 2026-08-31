@@ -16,19 +16,21 @@ import {
 export const Input: React.FC<Partial<SearchBarWithDropdownProps>> = ({
   placeholder = 'Search for resources',
   ariaLabel = 'Search for resources',
+  size = 'sm',
   ...rest
 }) => {
   return (
     <SearchWithDropdown.Input
       placeholder={placeholder}
       ariaLabel={ariaLabel}
-      size='sm'
+      size={size}
       showOptionsMenu
       showSearchHistory
       optionMenuProps={{
         label: 'Type',
         description: SCHEMA_DEFINITIONS['type'].abstract['Dataset'],
         showSelectAll: true,
+        size,
         options: [
           {
             name: 'Computational Tool Repository',

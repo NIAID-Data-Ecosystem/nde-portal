@@ -5,6 +5,7 @@ import {
   Group,
   HStack,
   Icon,
+  IconProps,
   InputProps,
   Spinner,
   SpinnerProps,
@@ -99,7 +100,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
       size={size as SpinnerProps['size']}
     />
   ) : (
-    <Icon color='gray.300' pl={1}>
+    <Icon color='gray.300' pl={1} size={size as IconProps['size']}>
       <FaMagnifyingGlass />
     </Icon>
   );
@@ -137,20 +138,19 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
         w='100%'
         gap={1}
         bg='white'
-        alignItems='flex-end'
+        alignItems='center'
         border='1px solid'
         borderColor={invalid ? 'error' : 'gray.200'}
         borderRadius='md'
         css={{ '--input-height': getInputHeight(size) }}
         px={1}
       >
-        <Flex alignItems='center' height={'var(--input-height)'}>
+        <Flex alignItems='center' height='100%'>
           {startElement}
         </Flex>
         <Textarea
           resize='none'
           autoresize
-          placeholder={placeholder || 'Search'}
           maxLength={2048}
           rows={1}
           border='none'
@@ -197,7 +197,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
             },
           })}
         />
-        <HStack height={'var(--input-height)'} my={0.5}>
+        <HStack height={'var(--input-height)'} my={0.5} alignSelf='flex-end'>
           {endElement}
         </HStack>
       </Group>
