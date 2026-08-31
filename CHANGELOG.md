@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.5.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v6.4.0...v6.5.0) (2026-08-31)
+
+
+### 🚀 Features
+
+* **sources:** sources page reorganization ([#533](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/533)) ([0a07310](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/0a0731090f21a1063db54732df5e22eb1880dd50))
+
 ## [6.4.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v6.3.0...v6.4.0) (2026-08-21)
 
 
