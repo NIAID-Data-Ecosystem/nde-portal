@@ -339,7 +339,7 @@ test.describe('a11y: Home — error', () => {
 // card markup — "more of the same") and the applied-filter tags (plain Chakra
 // Tag/close buttons covered by the resting button-name scan).
 
-// --- Filter popover (CheckboxList) -------------------------------------------
+// --- Filter popover (CheckboxMenu) -------------------------------------------
 
 test.describe('a11y: Home — filter popover', () => {
   test('passes axe with a table filter popover open', async ({

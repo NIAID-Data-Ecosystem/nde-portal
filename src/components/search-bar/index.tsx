@@ -17,7 +17,7 @@ import { queryFilterObject2String } from 'src/views/search/components/filters/ut
 import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
 import { useLocalStorage, useReadLocalStorage } from 'usehooks-ts';
 
-import { CheckboxList, CheckboxListProps } from '../checkbox-list';
+import { CheckboxMenu, CheckboxMenuProps } from '../checkbox-list';
 import {
   DropdownInput,
   DropdownInputProps,
@@ -36,7 +36,7 @@ const DropdownContent = dynamic(() =>
 interface SearchInputProps extends DropdownInputProps {
   showSearchHistory?: boolean;
   showOptionsMenu?: boolean;
-  optionMenuProps?: CheckboxListProps<OptionProps>;
+  optionMenuProps?: CheckboxMenuProps<OptionProps>;
 }
 const SearchInput = ({
   showSearchHistory,
@@ -60,10 +60,11 @@ const SearchInput = ({
           >
             {showOptionsMenu && optionMenuProps && (
               <Flex display={{ base: 'none', md: 'flex' }}>
-                <CheckboxList
+                <CheckboxMenu
+                  id='search-options'
                   size={inputProps.size}
                   {...optionMenuProps}
-                ></CheckboxList>
+                ></CheckboxMenu>
               </Flex>
             )}
             <Button
@@ -264,7 +265,10 @@ const SearchBar = ({
           gap={1}
         >
           {showOptionsMenu && mobileOptionMenuProps && (
-            <CheckboxList {...mobileOptionMenuProps}></CheckboxList>
+            <CheckboxMenu
+              id='search-options-mobile'
+              {...mobileOptionMenuProps}
+            ></CheckboxMenu>
           )}
           {showSearchHistory && (
             <Tooltip content='View search history.'>
@@ -346,16 +350,16 @@ export interface SearchBarWithDropdownProps {
   size?: InputProps['size'];
   showSearchHistory?: boolean;
   showOptionsMenu?: boolean;
-  // Start with all properties from CheckboxListProps<OptionProps>,
+  // Start with all properties from CheckboxMenuProps<OptionProps>,
   // except 'handleChange' and 'selectedOptions'
   optionMenuProps?: Omit<
-    CheckboxListProps<OptionProps>,
+    CheckboxMenuProps<OptionProps>,
     'handleChange' | 'selectedOptions'
   > & {
     // Optionally reintroduce 'handleChange' and 'selectedOptions' as  optional properties
     // since we create default values in <SearchBar/>, and we want to allow the user to override them.
-    handleChange?: CheckboxListProps<OptionProps>['handleChange'];
-    selectedOptions?: CheckboxListProps<OptionProps>['selectedOptions'];
+    handleChange?: CheckboxMenuProps<OptionProps>['handleChange'];
+    selectedOptions?: CheckboxMenuProps<OptionProps>['selectedOptions'];
   };
 }
 

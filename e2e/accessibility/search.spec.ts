@@ -5943,7 +5943,7 @@ async function gotoPopulated(page: Page) {
   ).toBeVisible();
 }
 
-// --- Search bar "Type" options menu (CheckboxList popover) --------------------
+// --- Search bar "Type" options menu (CheckboxMenu popover) --------------------
 
 test.describe('a11y: Search — type options menu', () => {
   test('passes axe with the search-bar type popover open', async ({

@@ -1,7 +1,9 @@
-import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { CheckboxList, CheckboxListProps } from './index';
+
+import { fireEvent, render, screen } from '@testing-library/react';
+import React from 'react';
+
+import { CheckboxMenu, CheckboxMenuProps } from './index';
 
 interface TestOption {
   name: string;
@@ -15,9 +17,10 @@ const options: TestOption[] = [
 ];
 
 const renderComponent = (
-  props: Partial<CheckboxListProps<TestOption>> = {},
+  props: Partial<CheckboxMenuProps<TestOption>> = {},
 ) => {
-  const defaultProps: CheckboxListProps<TestOption> = {
+  const defaultProps: CheckboxMenuProps<TestOption> = {
+    id: 'test-label',
     label: 'Test Label',
     options,
     handleChange: jest.fn(),
@@ -25,10 +28,10 @@ const renderComponent = (
     ...props,
   };
 
-  return render(<CheckboxList {...defaultProps} />);
+  return render(<CheckboxMenu {...defaultProps} />);
 };
 
-describe('CheckboxList', () => {
+describe('CheckboxMenu', () => {
   test('renders the label', () => {
     renderComponent();
     const button = screen.getByRole('button', { name: 'Test Label' });
