@@ -104,7 +104,9 @@ export const CheckboxMenu = <T extends Option>({
             {...buttonProps}
           >
             {buttonProps?.children || label}
-            <FaChevronDown />
+            <Icon px={0.5}>
+              <FaChevronDown />
+            </Icon>
           </Button>
         </Menu.Trigger>
         <Menu.Positioner>
