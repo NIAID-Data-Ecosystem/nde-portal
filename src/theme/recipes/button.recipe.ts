@@ -31,6 +31,16 @@ export const buttonRecipe = defineRecipe({
     },
     variant: {
       solid: {},
+      /*
+      Text only — the rest of v3's `outline` variant (border width/colour, hover
+      background) is inherited from Chakra's recipe. `outlineFg` resolves to
+      `.700`, i.e. what `colorPalette.fg` already gave, for every palette but
+      gray, which needs `.900`. The indirection exists because a static recipe
+      cannot branch on `colorPalette`. See ../semantic-tokens/colors.ts.
+      */
+      outline: {
+        color: 'colorPalette.outlineFg',
+      },
       // outline: {
       //   borderColor: 'colorPalette.outlineBorder',
       //   color: 'colorPalette.outlineFg',

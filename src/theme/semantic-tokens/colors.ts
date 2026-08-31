@@ -35,7 +35,11 @@ The v2 Button `colorMap` shape shared by primary and secondary:
   ghost   -> text .700, hover background .50
 */
 const buttonRoles = (name: string) => ({
-  outlineFg: { value: `{colors.${name}.500}` },
+  /* v3's `outline` variant takes its text colour from `fg`, which is `.700` for
+     every palette here and in Chakra's own light-mode defaults. Held as its own
+     role because gray needs a darker value (below) and a static recipe cannot
+     branch on `colorPalette`. */
+  outlineFg: { value: `{colors.${name}.700}` },
   outlineBorder: { value: `{colors.${name}.500}` },
   outlineHoverBg: { value: `{colors.${name}.600}` },
   ghostFg: { value: `{colors.${name}.700}` },
@@ -67,7 +71,8 @@ export const semanticColors = defineSemanticTokens.colors({
 
   /*
   gray is the one palette whose v2 Button `outline` entry broke the shared
-  pattern: text .900 (not .500), border .200 (not .500), hover .800 (not .600).
+  pattern: text .900 (not .700), border .200 (not .500), hover .800 (not .600).
+  Still true in v3 — gray.700 (#6D6D6D) is too light to read as a button label.
   It also needs re-declaring so `colorPalette='gray'` lands on the NIAID greys
   rather than Chakra's, since every default semantic token (bg.subtle,
   fg.muted, border) references {colors.gray.*}.
@@ -87,7 +92,11 @@ export const semanticColors = defineSemanticTokens.colors({
   */
   red: buttonRoles('red'),
   orange: buttonRoles('orange'),
-  yellow: buttonRoles('yellow'),
+  yellow: {
+    ...buttonRoles('yellow'),
+    // Chakra's own light-mode `yellow.fg` is `.800`, not `.700`.
+    outlineFg: { value: '{colors.yellow.800}' },
+  },
   green: buttonRoles('green'),
   teal: buttonRoles('teal'),
   blue: buttonRoles('blue'),

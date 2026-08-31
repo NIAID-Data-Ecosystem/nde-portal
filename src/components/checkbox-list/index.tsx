@@ -70,7 +70,7 @@ export const CheckboxMenu = <T extends Option>({
   description,
   handleChange,
   selectedOptions,
-  size = 'md',
+  size = 'sm',
   buttonProps,
   showSelectAll,
   colorPalette = 'gray',
@@ -104,9 +104,7 @@ export const CheckboxMenu = <T extends Option>({
             {...buttonProps}
           >
             {buttonProps?.children || label}
-            <Icon>
-              <FaChevronDown />
-            </Icon>
+            <FaChevronDown />
           </Button>
         </Menu.Trigger>
         <Menu.Positioner>
@@ -125,7 +123,6 @@ export const CheckboxMenu = <T extends Option>({
                     {label}
                     {description && (
                       <Text
-                        color='fg.muted'
                         fontSize='sm'
                         fontStyle='italic'
                         fontWeight='normal'
@@ -165,6 +162,7 @@ export const CheckboxMenu = <T extends Option>({
                   <CheckboxGroup
                     colorPalette={colorPalette}
                     value={selectedOptions.map(item => item.value)}
+                    gap={0.5}
                   >
                     {options.map(option => (
                       <Menu.Item
