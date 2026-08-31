@@ -7,11 +7,12 @@ import {
   Icon,
   InputProps,
   Spinner,
+  SpinnerProps,
   Textarea,
   useFieldContext,
   VisuallyHidden,
 } from '@chakra-ui/react';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React from 'react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
 
@@ -72,8 +73,6 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   onClose,
   onSubmit,
 }) => {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
   // Invalid state comes from the enclosing <Field.Root invalid> when there is
   // one; undefined otherwise.
   const field = useFieldContext();
@@ -88,85 +87,18 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
     setIsOpen,
   } = useDropdownContext();
 
-  const inputRightRef = useRef<HTMLDivElement>(null);
-  const [rightElWidth, setRightElWidth] = React.useState(0);
-
-  useEffect(() => {
-    const inputRightEl = inputRightRef.current;
-    if (!inputRightEl) return;
-
-    if (typeof ResizeObserver === 'undefined') {
-      setRightElWidth(inputRightEl.clientWidth);
-      return;
-    }
-
-    const observer = new ResizeObserver(() => {
-      setRightElWidth(inputRightEl!.clientWidth);
-    });
-
-    observer.observe(inputRightEl);
-    return () => observer.disconnect();
-  }, []);
-
-  // Auto-resize logic: reset to 3rem, then expand to scrollHeight
-  const autoResize = useCallback(() => {
-    const el = textareaRef.current;
-    if (!el) return;
-
-    // reset height to shrink if text is deleted
-    el.style.height = 'auto';
-
-    // compute line height
-    const lineHeight = parseFloat(
-      window.getComputedStyle(el).lineHeight || '20',
-    );
-    const maxHeight = lineHeight * 4; // cap at 4 rows
-
-    // adjust height up to max
-    el.style.height = `${Math.min(el.scrollHeight, maxHeight)}px`;
-
-    // show scroll if exceeding max
-    el.style.overflowY = el.scrollHeight > maxHeight ? 'auto' : 'hidden';
-  }, []);
-
-  // reset height to base size (used when clearing input)
-  const resetHeight = useCallback(() => {
-    const el = textareaRef.current;
-    if (el) el.style.height = '3rem';
-  }, []);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsOpen(false);
     onSubmit(inputValue, cursor);
   };
 
-  // Ensure correct height on initial render and whenever value changes externally
-  useEffect(() => {
-    const textareaEl = textareaRef.current;
-    if (!textareaEl) return;
-
-    if (typeof ResizeObserver === 'undefined') {
-      autoResize();
-      return;
-    }
-
-    const observer = new ResizeObserver(() => {
-      autoResize();
-    });
-
-    observer.observe(textareaEl);
-    autoResize();
-
-    return () => observer.disconnect();
-  }, [autoResize]);
-
   // Render the start element (spinner or search icon) based on loading state
   const startElement = loading ? (
     <Spinner
       color={`${colorPalette}.500`}
       css={{ '--spinner-track-color': 'colors.gray.200' }}
-      size='sm'
+      size={size as SpinnerProps['size']}
     />
   ) : (
     <Icon color='gray.300' pl={1}>
@@ -181,9 +113,8 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
           onClick={() => {
             onClose();
             setInputValue('');
-            resetHeight(); // reset height when input is cleared
           }}
-          size='sm'
+          size={size}
           aria-label='Clear search input'
         />
       )}
@@ -219,7 +150,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
           {startElement}
         </Flex>
         <Textarea
-          resize='vertical'
+          resize='none'
           autoresize
           placeholder={placeholder || 'Search'}
           maxLength={2048}
@@ -227,6 +158,22 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
           border='none'
           outline='none'
           boxShadow='none'
+          /*
+          `autoresize` grows the field to its scrollHeight, and a textarea's
+          placeholder counts towards scrollHeight. Left to wrap, a placeholder
+          that is too long for a narrow (mobile) field measures as two rows and
+          renders the input taller there than on desktop, so clip it to one
+          line instead.
+          */
+          _placeholder={{
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+          }}
+          // Cap growth at 4 rows; `autoresize` respects max-height and switches
+          // to a scrollbar past it. Includes the field's 1rem of vertical
+          // padding, since the textarea is border-box.
+          maxH='calc(4lh + 1rem)'
           {...getInputProps({
             id,
             placeholder: placeholder || 'Search',
@@ -234,7 +181,6 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
             type,
             flex: 1,
             size,
-            mr: renderSubmitButton ? { base: 24, sm: rightElWidth } : 4,
             disabled,
             onKeyDown: (
               e: React.KeyboardEvent<HTMLTextAreaElement>,

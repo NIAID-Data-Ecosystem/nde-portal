@@ -72,10 +72,6 @@ const SearchInput = ({
               size={inputProps.size}
               type='submit'
               display={{ base: 'flex', sm: 'none' }}
-              minW='2.25rem'
-              px={2}
-              my={1}
-              mr={2}
               alignSelf='flex-start'
             >
               <Icon asChild>
@@ -87,7 +83,7 @@ const SearchInput = ({
               aria-label={inputProps.ariaLabel}
               size={inputProps.size}
               type='submit'
-              // display={{ base: 'none', sm: 'flex' }}
+              display={{ base: 'none', sm: 'flex' }}
             >
               Search
             </Button>
@@ -98,6 +94,7 @@ const SearchInput = ({
                   size={inputProps.size}
                   aria-label='View search history.'
                   onClick={() => setIsOpen(!isOpen)}
+                  display={{ base: 'none', md: 'flex' }}
                 >
                   <Flex px={2}>
                     <Icon asChild>
@@ -228,11 +225,12 @@ const SearchBar = ({
   const mobileOptionMenuProps = resolvedOptionMenuProps
     ? {
         ...resolvedOptionMenuProps,
+        width: '100%',
         buttonProps: {
           ...(resolvedOptionMenuProps.buttonProps || {}),
           size: 'sm' as const,
           minW: 'unset',
-          px: 3,
+          flex: 1,
         },
       }
     : undefined;
@@ -273,32 +271,21 @@ const SearchBar = ({
           alignItems='center'
           gap={1}
         >
-          {/* {showOptionsMenu && mobileOptionMenuProps && (
+          {showOptionsMenu && mobileOptionMenuProps && (
             <CheckboxList {...mobileOptionMenuProps}></CheckboxList>
-          )} */}
-          {showOptionsMenu && showSearchHistory && (
-            <Flex
-              display={{ base: 'block', md: 'none' }}
-              h='1.5rem'
-              borderLeft='1px solid'
-              borderLeftColor='gray.100'
-              mx={1}
-            />
           )}
           {showSearchHistory && (
             <Tooltip content='View search history.'>
               <IconButton
-                variant='ghost'
+                variant='outline'
                 size='sm'
                 bg='white'
                 aria-label='View search history.'
                 onClick={() => setIsOpen(!isOpen)}
               >
-                <Flex px={2}>
-                  <Icon asChild>
-                    <FaClockRotateLeft />
-                  </Icon>
-                </Flex>
+                <Icon asChild>
+                  <FaClockRotateLeft />
+                </Icon>
               </IconButton>
             </Tooltip>
           )}
