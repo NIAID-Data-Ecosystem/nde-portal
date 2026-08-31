@@ -49,18 +49,18 @@ export const StyledCard: React.FC<StyledCardProps> = ({
 }) => {
   return (
     <StyledCardWrapper id={id} isLoading={isLoading}>
-      <VStack alignItems='flex-start' lineHeight='short' mt={2}>
+      <VStack alignItems='flex-start' lineHeight='short'>
         <Stack
-          spacing={{ base: 4, lg: 6, xl: 10 }}
           flexDirection='row'
           alignItems='unset'
           flexWrap='wrap-reverse'
+          w='100%'
         >
           <Stack
             flexDirection='column'
-            alignItems='unset'
             minWidth={{ base: '250px', sm: '350px' }}
             flex={1}
+            gap={1.5}
           >
             {/* Main Heading */}
             <Box>
@@ -123,7 +123,7 @@ export const StyledCardStack: React.FC<StackProps> = ({
   ...props
 }) => {
   return (
-    <VStack spacing={6} mt={4} alignItems='flex-start' {...props}>
+    <VStack spacing={4} alignItems='flex-start' {...props}>
       {children}
     </VStack>
   );
@@ -142,8 +142,8 @@ export const StyledCardWrapper: React.FC<
       boxShadow='low'
       borderRadius='semi'
       borderColor='gray.200'
+      p={[4, 6]}
       py={4}
-      px={[4, 6, 8]}
       fontSize='sm'
       {...props}
     >
@@ -156,7 +156,7 @@ export const StyleCardLabel: React.FC<{ children: string }> = ({
   children,
 }) => {
   return (
-    <Text fontWeight='bold' color='text.heading' fontSize='xl'>
+    <Text fontWeight='semibold' color='text.heading' fontSize='lg'>
       {children}
     </Text>
   );
@@ -166,7 +166,7 @@ export const StyleCardSubLabel: React.FC<{ children: string }> = ({
   children,
 }) => {
   return (
-    <Text fontWeight='mediunm' fontSize='sm' lineHeight='short' opacity='0.8'>
+    <Text fontWeight='normal' fontSize='sm' lineHeight='short' opacity='0.8'>
       {children}
     </Text>
   );
@@ -226,7 +226,6 @@ export const StyledCardButton: React.FC<StyledCardButtonProps> = ({
             },
           },
         }}
-        mt={2}
         {...props}
       >
         {children}

@@ -184,12 +184,13 @@ test.describe('a11y: Sources — populated', () => {
     // Wait for a fixture source name (rendered as a card title and a sidebar
     // heading) that only appears once the mocked query resolves, so we scan the
     // populated DOM and not the loading or SSR-seed state.
-    await expect(page.getByText(FIXTURE_SOURCE_NAME).first()).toBeVisible();
+    const fixtureSourceCard = page.locator('section', {
+      hasText: FIXTURE_SOURCE_NAME,
+    });
+    await expect(fixtureSourceCard).toBeVisible();
     // Also wait for the per-source CTA, which only renders with resolved data.
     await expect(
-      page.getByRole('link', {
-        name: new RegExp(`Search for ${FIXTURE_SOURCE_NAME} resources`, 'i'),
-      }),
+      fixtureSourceCard.getByRole('link', { name: /see search results/i }),
     ).toBeVisible();
     // The CTA is a Chakra solid button (primary.500, #0B8484 — 4.52:1 on white,
     // clearing AA only just) inside a <Skeleton> card that fades its contents
@@ -268,7 +269,7 @@ test.describe('a11y: Sources — schema property table', () => {
     await page
       .getByRole('button', {
         name: new RegExp(
-          `Visualization of ${FIXTURE_SOURCE_NAME} properties`,
+          `Mapping of ${FIXTURE_SOURCE_NAME} Properties to NIAID Data Ecosystem Properties`,
           'i',
         ),
       })
