@@ -15,6 +15,10 @@ import {
 import React from 'react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
+import {
+  DEFAULT_INPUT_SIZE,
+  INPUT_HEIGHTS,
+} from 'src/theme/recipes/input.recipe';
 
 import { useDropdownContext } from '..';
 
@@ -27,21 +31,15 @@ import { useDropdownContext } from '..';
 `textarea` recipe never sets it. Since InputGroup derives the start/end element
 padding from it (`ps: calc(var(--input-height) - startOffset)`), it has to be
 declared on the group so the Textarea inherits it. Same approach Chakra's own
-combobox/tags-input recipes take.
+combobox/tags-input recipes take. The scale itself lives with the recipe that
+publishes the var, so there is only one place to change an input's height.
 */
-const INPUT_HEIGHTS: Record<string, string> = {
-  '2xs': 'sizes.7',
-  xs: 'sizes.8',
-  sm: 'sizes.9',
-  md: 'sizes.10',
-  lg: 'sizes.11',
-  xl: 'sizes.12',
-  '2xl': 'sizes.16',
-};
+const isInputSize = (size: unknown): size is keyof typeof INPUT_HEIGHTS =>
+  typeof size === 'string' && size in INPUT_HEIGHTS;
 
 // `size` is a ConditionalValue, so responsive objects fall back to the default.
 const getInputHeight = (size: DropdownInputProps['size']) =>
-  (typeof size === 'string' ? INPUT_HEIGHTS[size] : undefined) ?? 'sizes.9';
+  INPUT_HEIGHTS[isInputSize(size) ? size : DEFAULT_INPUT_SIZE];
 
 export interface DropdownInputProps {
   id: string;
@@ -64,7 +62,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   ariaLabel,
   placeholder,
   loading,
-  size = 'sm',
+  size = DEFAULT_INPUT_SIZE,
   type,
   disabled,
   renderSubmitButton,
