@@ -16,6 +16,7 @@
     "generate-a11y-audit": "yarn with-prod-env tsx scripts/generate-a11y-audit.ts",
     "generate-tooltip-audit": "yarn with-prod-env tsx scripts/generate-tooltip-audit.ts",
     "generate-schema-terms": "tsx scripts/generate-schema-terms.ts",
+    "generate-ui-pill-audit": "yarn with-prod-env tsx scripts/generate-ui-pill-audit.ts",
     "prepare": "husky install",
     "release": "standard-version",
     "release:minor": "standard-version --release-as minor",
