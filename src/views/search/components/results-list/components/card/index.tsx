@@ -408,13 +408,15 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       )}
                       name={
                         <InfoLabel
-                          title='Topic Categories'
-                          tooltipText={
-                            metadataFields['topicCategory'].description?.[
-                              data['@type']
-                            ]
-                          }
-                        />
+                          tooltipProps={{
+                            content:
+                              metadataFields['topicCategory'].description?.[
+                                data['@type']
+                              ],
+                          }}
+                        >
+                          Topic Categories
+                        </InfoLabel>
                       }
                     />
                   </Flex>
@@ -444,9 +446,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     searchParams={{ tab: 'dc' }}
                     name={
                       <InfoLabel
-                        title='Content Type'
-                        tooltipText={CONTENT_TYPE_TOOLTIP}
-                      />
+                        tooltipProps={{ content: CONTENT_TYPE_TOOLTIP }}
+                      >
+                        Content Type
+                      </InfoLabel>
                     }
                   />
                 </Flex>
@@ -478,13 +481,14 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       }))}
                       name={
                         <InfoLabel
-                          title='Application Categories'
-                          tooltipText={
-                            metadataFields['applicationCategory'].description?.[
-                              data['@type']
-                            ]
-                          }
-                        />
+                          tooltipProps={{
+                            content:
+                              metadataFields['applicationCategory']
+                                .description?.[data['@type']],
+                          }}
+                        >
+                          Application Categories
+                        </InfoLabel>
                       }
                     />
                   </Flex>
@@ -516,13 +520,14 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       }))}
                       name={
                         <InfoLabel
-                          title='Programming Languages'
-                          tooltipText={
-                            metadataFields['programmingLanguage'].description?.[
-                              data['@type']
-                            ]
-                          }
-                        />
+                          tooltipProps={{
+                            content:
+                              metadataFields['programmingLanguage']
+                                .description?.[data['@type']],
+                          }}
+                        >
+                          Programming Languages
+                        </InfoLabel>
                       }
                     />
                   </Flex>

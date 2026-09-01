@@ -12,10 +12,11 @@ export const OntologyTreeHeaderItem = ({
   return (
     <Flex maxW={130}>
       <InfoLabel
-        title={label}
-        tooltipText={tooltipContent}
-        textProps={{ lineHeight: 'shorter' }}
-      />
+        tooltipProps={{ content: tooltipContent }}
+        lineHeight='shorter'
+      >
+        {label}
+      </InfoLabel>
     </Flex>
   );
 };

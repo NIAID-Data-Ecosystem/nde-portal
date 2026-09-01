@@ -86,27 +86,31 @@ const SummaryGrid = (props: SummaryGridProps) => {
                         px={1}
                       >
                         <InfoLabel
-                          title='Visual Summary'
-                          tooltipText={
-                            <Flex direction='column' gap={2}>
-                              <Text>
-                                A visual summary of your search results.
-                                Interact with the charts and/or the filters list
-                                on the left to filter your results.
-                              </Text>
-                              <Text>
-                                The visual summary charts are based on the{' '}
-                                <Text as='span' fontWeight='bold'>
-                                  top 100 facet values
-                                </Text>{' '}
-                                (e.g., sources, pathogen species) in your search
-                                and may not reflect the full distribution of
-                                your search results.
-                              </Text>
-                            </Flex>
-                          }
-                          textProps={{ fontSize: 'sm', fontWeight: 'semibold' }}
-                        />
+                          tooltipProps={{
+                            content: (
+                              <Flex direction='column' gap={2}>
+                                <Text>
+                                  A visual summary of your search results.
+                                  Interact with the charts and/or the filters
+                                  list on the left to filter your results.
+                                </Text>
+                                <Text>
+                                  The visual summary charts are based on the{' '}
+                                  <Text as='span' fontWeight='bold'>
+                                    top 100 facet values
+                                  </Text>{' '}
+                                  (e.g., sources, pathogen species) in your
+                                  search and may not reflect the full
+                                  distribution of your search results.
+                                </Text>
+                              </Flex>
+                            ),
+                          }}
+                          fontSize='sm'
+                          fontWeight='semibold'
+                        >
+                          Visual Summary
+                        </InfoLabel>
                         <FiltersDisclaimer />
                       </Flex>
                       <Icon

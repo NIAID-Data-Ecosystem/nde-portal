@@ -202,10 +202,13 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
                 maxWidth={{ base: 'unset', lg: '500px' }}
               >
                 <InfoLabel
-                  title={facet.label}
-                  tooltipText={facet.tooltip}
-                  textProps={textProps}
-                />
+                  tooltipProps={{
+                    content: facet.tooltip,
+                  }}
+                  {...textProps}
+                >
+                  {facet.label}
+                </InfoLabel>
 
                 {listView ? (
                   <BrushableListChart {...props} />
