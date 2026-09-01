@@ -1,4 +1,4 @@
-import { Box, Button, HStack, Tag } from '@chakra-ui/react';
+import { Box, Button, HStack, Tag, TagRootProps } from '@chakra-ui/react';
 import { isEqual } from 'lodash';
 import React, { useMemo } from 'react';
 import {
@@ -36,10 +36,22 @@ export interface TagInfo {
  * Users can remove individual tags or clear all filters at once.
  */
 
-const tagStyles = {
-  colorPalette: 'secondary' as const,
-  size: 'sm' as const,
-  variant: 'solid' as const,
+const FilterTag: React.FC<
+  TagRootProps & {
+    label: string;
+    onRemove?: () => void;
+  }
+> = ({ label, onRemove, ...props }) => {
+  return (
+    <Tag.Root colorPalette='secondary' size='lg' variant='solid' {...props}>
+      <Tag.Label>{label}</Tag.Label>
+      {onRemove && (
+        <Tag.EndElement>
+          <Tag.CloseTrigger aria-label='close' onClick={onRemove} />
+        </Tag.EndElement>
+      )}
+    </Tag.Root>
+  );
 };
 export const FilterTags: React.FC<FilterTagsProps> = React.memo(
   ({ filtersConfig, selectedFilters, handleRouteUpdate, removeAllFilters }) => {
@@ -112,35 +124,24 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
         <HStack flexWrap='wrap' gap={1.5} py={1}>
           {/* Clear all filters button */}
           <Button
-            size='xs'
+            size='2xs'
             onClick={() => {
               resetPagination();
               removeAllFilters();
             }}
             colorPalette='secondary'
             variant='outline'
-            lineHeight='unset'
-            fontWeight='medium'
           >
             Clear All
           </Button>
 
           {/* Render each tag with close button */}
           {tags.map(({ key, name, value, displayValue, filterKey }) => (
-            <Tag.Root key={key} {...tagStyles}>
-              <Tag.Label>{`${name}: ${displayValue}`}</Tag.Label>
-              <Tag.EndElement>
-                {/*
-                  v2's TagCloseButton defaulted to aria-label='close'; v3's
-                  CloseTrigger renders an unlabelled button, so the name has to
-                  be supplied explicitly or the control is anonymous to AT.
-                */}
-                <Tag.CloseTrigger
-                  aria-label='close'
-                  onClick={() => removeSelectedFilter(filterKey, value)}
-                />
-              </Tag.EndElement>
-            </Tag.Root>
+            <FilterTag
+              key={key}
+              label={`${name}: ${displayValue}`}
+              onRemove={() => removeSelectedFilter(filterKey, value)}
+            />
           ))}
         </HStack>
       </Box>
