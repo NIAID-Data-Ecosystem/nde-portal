@@ -16,17 +16,18 @@ export const buttonRecipe = defineRecipe({
       error: { colorPalette: 'red' },
       neutral: { colorPalette: 'gray' },
     },
-
-    size: {
-      sm: {
-        // fontSize: 'sm',
-        // px: 3,
-        // py: 1.5,
-      },
-      md: {
-        // fontSize: 'md',
-        // px: 8,
-        // py: 4,
+    /*
+    Modifier axis, independent of `variant`. Composes with any variant/status:
+    `<Button variant='ghost' underline>`. NOT named `type` — recipe variant keys
+    are stripped from the DOM by splitVariantProps, so a `type` variant would
+    swallow the native `<button type>` attribute.
+    */
+    underline: {
+      true: {
+        textDecoration: 'underline',
+        _hover: {
+          textDecoration: 'none',
+        },
       },
     },
     variant: {
@@ -42,43 +43,7 @@ export const buttonRecipe = defineRecipe({
         color: 'colorPalette.outlineFg',
         borderColor: 'colorPalette.outlineBorder',
       },
-      // outline: {
-      //   borderColor: 'colorPalette.outlineBorder',
-      //   color: 'colorPalette.outlineFg',
-      //   bg: 'white',
-      //   '&:hover, &:active': {
-      //     borderColor: 'colorPalette.outlineHoverBg',
-      //     bg: 'colorPalette.outlineHoverBg',
-      //     color: 'white',
-      //     '&:disabled': {
-      //       bg: 'white',
-      //       color: 'colorPalette.outlineFg',
-      //       borderColor: 'colorPalette.outlineBorder',
-      //     },
-      //   },
-      //   _visited: {
-      //     color: 'colorPalette.outlineFg',
-      //     '&:hover': {
-      //       color: 'white',
-      //     },
-      //   },
-      // },
-      // ghost: {
-      //   color: 'colorPalette.ghostFg',
-      //   '&:hover': {
-      //     bg: 'colorPalette.ghostHoverBg',
-      //   },
-      //   _visited: {
-      //     color: 'colorPalette.ghostFg',
-      //   },
-      // },
-      link: {
-        color: 'colorPalette.ghostFg',
-        textDecoration: 'underline',
-        '&:hover': {
-          textDecoration: 'none',
-        },
-      },
+
       unstyled: {
         height: 'unset',
         borderRadius: 'none',
@@ -93,7 +58,6 @@ export const buttonRecipe = defineRecipe({
   },
 
   defaultVariants: {
-    size: 'md',
     variant: 'solid',
   },
 });

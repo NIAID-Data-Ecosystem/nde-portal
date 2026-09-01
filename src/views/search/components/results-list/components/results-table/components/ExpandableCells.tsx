@@ -1,3 +1,4 @@
+import { Button, Flex, FlexProps, Text, TextProps } from '@chakra-ui/react';
 import React, {
   useId,
   useLayoutEffect,
@@ -5,14 +6,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Button, Flex, FlexProps, Text, TextProps } from '@chakra-ui/react';
 
 /**
  * Per-cell "Show more / Show less" expansion for the search results tables
  * with aria-expanded / aria-controls for accessibility.
  */
 const toggleButtonProps = {
-  variant: 'link' as const,
+  variant: 'ghost' as const,
+  underline: true,
   size: 'xs' as const,
   fontSize: 'sm' as const,
   colorPalette: 'primary' as const,

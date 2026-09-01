@@ -35,7 +35,13 @@ export const Alert = ({ id, title, status, children }: AlertRootProps) => {
           )}
         </ChakraAlert.Content>
       </HStack>
-      <Button onClick={toggleWarning} status={status} size='2xs' variant='link'>
+      <Button
+        onClick={toggleWarning}
+        status={status}
+        size='2xs'
+        variant='ghost'
+        underline
+      >
         {isMounted && isOpen ? 'Read Less' : 'Read More'}
       </Button>
     </ChakraAlert.Root>
