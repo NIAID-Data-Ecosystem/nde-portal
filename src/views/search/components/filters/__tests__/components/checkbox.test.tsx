@@ -1,5 +1,7 @@
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from 'src/__tests__/utils/render';
+
 import { Checkbox } from '../../components/checkbox';
 
 const sendGTMEvent = jest.fn();
@@ -76,7 +78,7 @@ describe('filters/components/checkbox', () => {
     expect(screen.getByText('Unspecified')).toBeInTheDocument();
   });
 
-  it('tracks GTM event for exists terms only', () => {
+  it('tracks GTM event for exists terms only', async () => {
     const { rerender } = render(
       <Checkbox
         term='_exists_'
@@ -87,7 +89,7 @@ describe('filters/components/checkbox', () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole('checkbox'));
+    await userEvent.click(screen.getByRole('checkbox'));
     expect(sendGTMEvent).toHaveBeenCalledTimes(1);
 
     rerender(
@@ -99,7 +101,7 @@ describe('filters/components/checkbox', () => {
         filterName='Date'
       />,
     );
-    fireEvent.click(screen.getByRole('checkbox'));
+    await userEvent.click(screen.getByRole('checkbox'));
     expect(sendGTMEvent).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,18 +1,20 @@
-import React, { useEffect, useState, useRef } from 'react';
 import {
+  Box,
   Button,
+  CloseButton,
   Drawer,
   Flex,
-  Text,
-  useDisclosure,
-  useBreakpointValue,
   Icon,
-  Box,
   Portal,
+  Text,
+  useBreakpointValue,
+  useDisclosure,
 } from '@chakra-ui/react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FaFilter } from 'react-icons/fa6';
-import { FilterConfig } from '../types';
 import { ScrollContainer } from 'src/components/scroll-container';
+
+import { FilterConfig } from '../types';
 import { CustomizeFiltersPopover } from './customize-filters-popover';
 
 export interface FiltersContainerProps {
@@ -40,7 +42,9 @@ const DrawerContentMemo: React.FC<{
           </Text>
         </Flex>
       </Drawer.Header>
-      <Drawer.CloseTrigger top={3} />
+      <Drawer.CloseTrigger asChild top={3}>
+        <CloseButton size='sm' />
+      </Drawer.CloseTrigger>
       <ScrollContainer>
         <Drawer.Body px={2}>{content}</Drawer.Body>
       </ScrollContainer>

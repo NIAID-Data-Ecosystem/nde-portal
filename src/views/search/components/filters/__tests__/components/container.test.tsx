@@ -1,5 +1,6 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from 'src/__tests__/utils/render';
+
 import { FiltersContainer } from '../../components/container';
 
 jest.mock('@chakra-ui/react', () => {
@@ -48,10 +49,12 @@ describe('filters/components/container', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders mobile drawer trigger and opens content', () => {
+  it('renders mobile drawer trigger and opens content', async () => {
     useBreakpointValue.mockReturnValue('mobile');
     render(<FiltersContainer {...props} />);
     fireEvent.click(screen.getByRole('button', { name: /search filters/i }));
-    expect(screen.getByText('Done')).toBeInTheDocument();
+    // v3's Drawer mounts its portalled content through zag's presence machine,
+    // so the footer is not in the DOM synchronously after the click.
+    expect(await screen.findByText('Done')).toBeInTheDocument();
   });
 });

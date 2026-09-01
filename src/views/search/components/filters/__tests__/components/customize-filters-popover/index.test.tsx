@@ -1,4 +1,6 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { fireEvent, render, screen, waitFor } from 'src/__tests__/utils/render';
+
 import { CustomizeFiltersPopover } from '../../../components/customize-filters-popover';
 
 describe('customize-filters-popover', () => {
@@ -52,10 +54,12 @@ describe('customize-filters-popover', () => {
       />,
     );
 
-    fireEvent.click(
+    await userEvent.click(
       screen.getByRole('button', { name: /customize search filters/i }),
     );
-    fireEvent.change(screen.getByPlaceholderText(/search filters/i), {
+    // The panel is portalled and lazily mounted, so it only appears after the
+    // popover machine transitions.
+    fireEvent.change(await screen.findByPlaceholderText(/search filters/i), {
       target: { value: 'host' },
     });
     expect(screen.getByText('Host Species')).toBeInTheDocument();

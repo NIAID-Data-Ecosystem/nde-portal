@@ -1,5 +1,6 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from 'src/__tests__/utils/render';
+
 import { FiltersList, groupTerms, sortTerms } from '../../components/list';
 
 jest.mock('react-window', () => {

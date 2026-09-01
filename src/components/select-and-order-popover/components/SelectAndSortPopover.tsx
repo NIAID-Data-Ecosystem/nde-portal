@@ -1,19 +1,22 @@
-import React, { useEffect, useMemo } from 'react';
 import {
   Button,
   ButtonProps,
+  CloseButton,
   Icon,
   Popover,
   PopoverContentProps,
+  Portal,
   Text,
 } from '@chakra-ui/react';
+import React, { useEffect, useMemo } from 'react';
 import { FaSliders } from 'react-icons/fa6';
-import { useSelectableList } from '../hooks/useSelectableList';
+
 import { usePopoverSearch } from '../hooks/usePopoverSearch';
-import { PopoverSearchInput } from './PopoverSearchInput';
-import { PopoverSelectAll } from './PopoverSelectAll';
-import { PopoverSelectableList } from './PopoverSelectableList';
+import { useSelectableList } from '../hooks/useSelectableList';
 import type { PopoverItem } from '../types';
+import { PopoverSearchInput } from './PopoverSearchInput';
+import { PopoverSelectableList } from './PopoverSelectableList';
+import { PopoverSelectAll } from './PopoverSelectAll';
 
 export interface SelectAndSortPopoverCopy {
   /** Trigger button label. Default: 'Customize'. */
@@ -196,10 +199,21 @@ export const SelectAndSortPopover = ({
       }}
     >
       <Popover.Trigger asChild>
+        {/*
+          The visible label is hidden below `sm`, which would otherwise leave an
+          icon-only button with no accessible name on mobile. The count is
+          folded in so the label still conveys everything the visible content
+          does. Declared before triggerProps so a caller can override it.
+        */}
         <Button
           colorPalette='primary'
           variant='outline'
           size='sm'
+          aria-label={
+            showCount
+              ? `${copy.button} (${selectedCount}/${totalCount})`
+              : copy.button
+          }
           {...triggerProps}
         >
           <Icon boxSize={3.5} asChild>
@@ -215,52 +229,65 @@ export const SelectAndSortPopover = ({
           {showCount ? ` (${selectedCount}/${totalCount})` : ''}
         </Button>
       </Popover.Trigger>
-      <Popover.Positioner>
-        <Popover.Content minW='280px' maxW='320px' {...popoverContentProps}>
-          <Popover.Arrow />
-          <Popover.CloseTrigger />
-          <Popover.Title fontWeight='semibold'>
-            <Text>{copy.header}</Text>
-            <Text fontSize='sm' fontWeight='normal'>
-              {copy.description}
-            </Text>
-            {showSelectAll && (
-              <PopoverSelectAll
-                allSelected={allSelected}
-                totalCount={totalCount}
-                onToggle={toggleAll}
-                selectAllLabel={copy.selectAll}
-                clearAllLabel={copy.clearAll}
-              />
-            )}
-          </Popover.Title>
-          <Popover.Body p={0} py={1}>
-            {showSearch && (
-              <PopoverSearchInput
-                value={searchTerm}
-                onChange={setSearchTerm}
-                placeholder={copy.searchPlaceholder}
-              />
-            )}
+      {/*
+        Portalled so the panel escapes any `overflow: hidden` ancestor (e.g. the
+        search filters accordion), which otherwise clips and offsets it.
+      */}
+      <Portal>
+        <Popover.Positioner>
+          <Popover.Content minW='280px' maxW='320px' {...popoverContentProps}>
+            <Popover.Arrow />
+            <Popover.CloseTrigger asChild>
+              <CloseButton size='xs' />
+            </Popover.CloseTrigger>
+            <Popover.Title fontWeight='semibold'>
+              <Text>{copy.header}</Text>
+              <Text fontSize='sm' fontWeight='normal'>
+                {copy.description}
+              </Text>
+              {showSelectAll && (
+                <PopoverSelectAll
+                  allSelected={allSelected}
+                  totalCount={totalCount}
+                  onToggle={toggleAll}
+                  selectAllLabel={copy.selectAll}
+                  clearAllLabel={copy.clearAll}
+                />
+              )}
+            </Popover.Title>
+            {/*
+              v3's popover recipe caps Content at `--available-height` but
+              leaves it `overflow: visible`, so an unconstrained Body spills
+              its last rows outside the panel. Make the Body the scroll box.
+            */}
+            <Popover.Body p={0} py={1} minH={0} overflowY='auto'>
+              {showSearch && (
+                <PopoverSearchInput
+                  value={searchTerm}
+                  onChange={setSearchTerm}
+                  placeholder={copy.searchPlaceholder}
+                />
+              )}
 
-            <PopoverSelectableList
-              items={filteredItems}
-              groups={useGrouping ? filteredGroups : undefined}
-              selectedIds={selectedIds}
-              requiredIds={requiredIds as string[]}
-              enableOrdering={enableOrdering}
-              isSearching={isSearching}
-              orderedIds={order}
-              onCheck={toggle}
-              onMoveUp={moveUp}
-              onMoveDown={moveDown}
-              onDragEnd={handleDragEnd}
-              emptyMessage={copy.noItemsFound}
-              maxHeight={maxListHeight}
-            />
-          </Popover.Body>
-        </Popover.Content>
-      </Popover.Positioner>
+              <PopoverSelectableList
+                items={filteredItems}
+                groups={useGrouping ? filteredGroups : undefined}
+                selectedIds={selectedIds}
+                requiredIds={requiredIds as string[]}
+                enableOrdering={enableOrdering}
+                isSearching={isSearching}
+                orderedIds={order}
+                onCheck={toggle}
+                onMoveUp={moveUp}
+                onMoveDown={moveDown}
+                onDragEnd={handleDragEnd}
+                emptyMessage={copy.noItemsFound}
+                maxHeight={maxListHeight}
+              />
+            </Popover.Body>
+          </Popover.Content>
+        </Popover.Positioner>
+      </Portal>
     </Popover.Root>
   );
 };

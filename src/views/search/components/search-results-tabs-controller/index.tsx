@@ -83,8 +83,7 @@ export const SearchResultsController = ({
   initialData,
 }: SearchResultsControllerProps) => {
   const router = useRouter();
-  const { selectedIndex, setSelectedIndex, selectedTab, setSelectedTab } =
-    useSearchTabsContext();
+  const { selectedTab, setSelectedTab } = useSearchTabsContext();
   const { getPagination, setPagination } = usePaginationContext();
   const queryClient = useQueryClient();
 
@@ -92,23 +91,28 @@ export const SearchResultsController = ({
   // override the user choice if there are no results for that tab.
   const userSelectedTabRef = useRef<string | null>(null);
 
-  const handleTabChange = (tabIndex: number) => {
-    setSelectedIndex(tabIndex);
-    const selectedTab = tabs[tabIndex];
+  // v3 Tabs are value-based: the id string is the source of truth, not the
+  // index. Indexing into `tabs` here would also be wrong because the rendered
+  // list is filtered by feature flags, so its indices need not line up.
+  const handleTabChange = (tabId: string) => {
+    const nextTab = tabs.find(t => t.id === tabId);
+    if (!nextTab) return;
+
+    setSelectedTab(nextTab.id);
 
     // Record the user choice so the auto-tab respects it.
-    userSelectedTabRef.current = selectedTab.id;
+    userSelectedTabRef.current = nextTab.id;
 
-    const paginationState = getPagination(selectedTab.id);
+    const paginationState = getPagination(nextTab.id);
 
-    setPagination(selectedTab.id, paginationState);
+    setPagination(nextTab.id, paginationState);
 
     return router.replace(
       {
         query: {
           ...router.query,
           ...paginationState,
-          tab: selectedTab.id,
+          tab: nextTab.id,
         },
       },
       undefined,
@@ -239,7 +243,7 @@ export const SearchResultsController = ({
     // If the user has selected a tab, only leave it when that tab
     // has no associated results anymore.
     if (userSelectedTabRef.current !== null) {
-      const currentTab = tabs[selectedIndex];
+      const currentTab = selectedTab;
       const currentTabHasResults = currentTab?.types.some(({ type }) =>
         facetCountsWithBioSample.some(f => f.type === type && f.count > 0),
       );
@@ -262,12 +266,9 @@ export const SearchResultsController = ({
       selectedTypes,
     );
 
-    // Find the index for the tab
-    const calculatedIndex = tabs.findIndex(t => t.id === calculatedTabId);
-
     // Only update if different from current
-    if (calculatedIndex !== -1 && calculatedIndex !== selectedIndex) {
-      setSelectedIndex(calculatedIndex);
+    if (calculatedTabId && calculatedTabId !== selectedTab.id) {
+      setSelectedTab(calculatedTabId);
 
       // Update URL if needed
       if (router.query.tab !== calculatedTabId) {
@@ -290,8 +291,8 @@ export const SearchResultsController = ({
     router.isReady,
     router.query.q,
     router,
-    selectedIndex,
-    setSelectedIndex,
+    selectedTab,
+    setSelectedTab,
   ]);
 
   const hasResourceCatalogRecords = useMemo(() => {
@@ -433,8 +434,8 @@ export const SearchResultsController = ({
   return (
     <>
       <SearchTabs
-        value={`${selectedIndex}`}
-        onValueChange={e => handleTabChange(+e.value)}
+        value={selectedTab.id}
+        onValueChange={e => handleTabChange(e.value)}
         colorPalette={colorPalette}
         tabs={tabsWithFacetCounts}
         renderTabPanels={() =>

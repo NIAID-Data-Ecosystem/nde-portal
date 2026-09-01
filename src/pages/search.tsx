@@ -1,41 +1,41 @@
+import { Box, Flex, VStack } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
+import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
-import { SearchTabsProvider } from 'src/views/search/context/search-tabs-context';
-import { useSearchQueryFromURL } from 'src/views/search/hooks/useSearchQueryFromURL';
-import { Box, Flex, VStack } from '@chakra-ui/react';
-import { Filters, FILTER_CONFIGS } from 'src/views/search/components/filters';
+import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
+import { OntologyBrowserPopup } from 'src/views/ontology-browser/components/popup';
+import { SavedDataErrorToast } from 'src/views/saved/components/saved-data-error-toast';
+import { FILTER_CONFIGS, Filters } from 'src/views/search/components/filters';
+import { FilterTags } from 'src/views/search/components/filters/components/tag';
 import {
   SelectedFilterType,
   SelectedFilterValueType,
 } from 'src/views/search/components/filters/types';
+import {
+  queryFilterObject2String,
+  queryFilterString2Object,
+  sanitizeExistsFilterValues,
+} from 'src/views/search/components/filters/utils/query-string';
+import { SearchResultsHeader } from 'src/views/search/components/search-results-header';
+import { SearchResultsController } from 'src/views/search/components/search-results-tabs-controller';
+import SummaryGrid from 'src/views/search/components/summary';
+import { useActiveVizIds } from 'src/views/search/components/summary/hooks/useActiveVizIds';
 import {
   APPLY_DEFAULT_DATE_PARAM,
   defaultQuery,
   defaultSelectedFilters,
   shouldApplyDefaultDate,
 } from 'src/views/search/config/defaultQuery';
-import { SearchResultsHeader } from 'src/views/search/components/search-results-header';
-import { SavedDataErrorToast } from 'src/views/saved/components/saved-data-error-toast';
-import { PaginationProvider } from 'src/views/search/context/pagination-context';
-import { SearchResultsController } from 'src/views/search/components/search-results-tabs-controller';
-import { fetchSearchResults } from 'src/utils/api';
-import { TabType } from 'src/views/search/types';
 import { tabs } from 'src/views/search/config/tabs';
-import { OntologyBrowserPopup } from 'src/views/ontology-browser/components/popup';
-import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
-import SummaryGrid from 'src/views/search/components/summary';
-import { updateRoute } from 'src/views/search/utils/update-route';
-import { useActiveVizIds } from 'src/views/search/components/summary/hooks/useActiveVizIds';
-import {
-  queryFilterString2Object,
-  queryFilterObject2String,
-  sanitizeExistsFilterValues,
-} from 'src/views/search/components/filters/utils/query-string';
-import { FilterTags } from 'src/views/search/components/filters/components/tag';
+import { PaginationProvider } from 'src/views/search/context/pagination-context';
 import { SearchResultsFetchedProvider } from 'src/views/search/context/search-results-fetched-context';
+import { SearchTabsProvider } from 'src/views/search/context/search-tabs-context';
+import { useSearchQueryFromURL } from 'src/views/search/hooks/useSearchQueryFromURL';
+import { TabType } from 'src/views/search/types';
+import { updateRoute } from 'src/views/search/utils/update-route';
 
 const DEFAULT_ACTIVE_VIZ_IDS = [
   'date',

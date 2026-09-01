@@ -82,7 +82,7 @@ const TabLabels = ({
   const textStyles = {
     color: 'inherit',
     fontSize: 'sm',
-    noOfLines: 1,
+    lineClamp: 1,
   };
 
   if (datasetType && resourceCatalogType && diseaseType) {

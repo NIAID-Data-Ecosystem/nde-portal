@@ -35,10 +35,17 @@ export const ViewModeRadio = ({ id, value, onChange }: ViewModeRadioProps) => {
         value={value}
         onValueChange={({ value }) => onChange(value as SearchViewMode)}
       >
+        {/*
+          v3 requires the Item's inner parts explicitly: ItemHiddenInput is the
+          real input the state machine listens to (without it the group is
+          inert) and ItemControl draws the radio itself.
+        */}
         <Stack direction='row' gap={4} fontSize='sm'>
           {VIEW_MODE_OPTIONS.map(option => (
             <RadioGroup.Item key={option.value} value={option.value}>
-              {option.label}
+              <RadioGroup.ItemHiddenInput />
+              <RadioGroup.ItemControl />
+              <RadioGroup.ItemText>{option.label}</RadioGroup.ItemText>
             </RadioGroup.Item>
           ))}
         </Stack>

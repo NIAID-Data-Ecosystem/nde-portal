@@ -1,14 +1,21 @@
-import React, { useEffect, useMemo } from 'react';
-import { Button, Icon, Popover, Text } from '@chakra-ui/react';
-import { FaSliders } from 'react-icons/fa6';
 import {
-  useSelectableList,
-  usePopoverSearch,
-  PopoverSearchInput,
-  PopoverSelectAll,
-  PopoverSelectableList,
-} from 'src/components/select-and-order-popover';
+  Button,
+  CloseButton,
+  Icon,
+  Popover,
+  Portal,
+  Text,
+} from '@chakra-ui/react';
+import React, { useEffect, useMemo } from 'react';
+import { FaSliders } from 'react-icons/fa6';
 import type { PopoverItem } from 'src/components/select-and-order-popover';
+import {
+  PopoverSearchInput,
+  PopoverSelectableList,
+  PopoverSelectAll,
+  usePopoverSearch,
+  useSelectableList,
+} from 'src/components/select-and-order-popover';
 
 export interface ColumnConfig {
   id: string;
@@ -152,47 +159,60 @@ export const CustomizeColumnsPopover = ({
           {copy.button} ({selectedCount}/{totalCount})
         </Button>
       </Popover.Trigger>
-      <Popover.Positioner>
-        <Popover.Content minW='280px' maxW='320px'>
-          <Popover.Arrow />
-          <Popover.CloseTrigger />
-          <Popover.Title fontWeight='semibold'>
-            <Text>{copy.header}</Text>
-            <Text fontSize='sm' fontWeight='normal'>
-              {copy.description}
-            </Text>
-            <PopoverSelectAll
-              allSelected={allSelected}
-              totalCount={totalCount}
-              onToggle={toggleAll}
-              selectAllLabel={copy.selectAll}
-              clearAllLabel={copy.clearAll}
-            />
-          </Popover.Title>
-          <Popover.Body p={0} py={1}>
-            <PopoverSearchInput
-              value={searchTerm}
-              onChange={setSearchTerm}
-              placeholder={copy.searchPlaceholder}
-            />
+      {/*
+        Portalled so the panel escapes the accordion's `overflow: hidden`,
+        which otherwise clips it to a few rows and offsets it from the trigger.
+      */}
+      <Portal>
+        <Popover.Positioner>
+          <Popover.Content minW='280px' maxW='320px'>
+            <Popover.Arrow />
+            <Popover.CloseTrigger asChild>
+              <CloseButton size='xs' />
+            </Popover.CloseTrigger>
+            <Popover.Title fontWeight='semibold'>
+              <Text>{copy.header}</Text>
+              <Text fontSize='sm' fontWeight='normal'>
+                {copy.description}
+              </Text>
+              <PopoverSelectAll
+                allSelected={allSelected}
+                totalCount={totalCount}
+                onToggle={toggleAll}
+                selectAllLabel={copy.selectAll}
+                clearAllLabel={copy.clearAll}
+              />
+            </Popover.Title>
+            {/*
+              v3's popover recipe caps Content at `--available-height` but
+              leaves it `overflow: visible`, so an unconstrained Body spills
+              its last rows outside the panel. Make the Body the scroll box.
+            */}
+            <Popover.Body p={0} py={1} minH={0} overflowY='auto'>
+              <PopoverSearchInput
+                value={searchTerm}
+                onChange={setSearchTerm}
+                placeholder={copy.searchPlaceholder}
+              />
 
-            <PopoverSelectableList
-              items={filteredItems}
-              selectedIds={selectedIds}
-              requiredIds={requiredIds as string[]}
-              enableOrdering
-              isSearching={isSearching}
-              orderedIds={order}
-              onCheck={toggle}
-              onMoveUp={moveUp}
-              onMoveDown={moveDown}
-              onDragEnd={handleDragEnd}
-              emptyMessage={copy.noColumnsFound}
-              maxHeight='20rem'
-            />
-          </Popover.Body>
-        </Popover.Content>
-      </Popover.Positioner>
+              <PopoverSelectableList
+                items={filteredItems}
+                selectedIds={selectedIds}
+                requiredIds={requiredIds as string[]}
+                enableOrdering
+                isSearching={isSearching}
+                orderedIds={order}
+                onCheck={toggle}
+                onMoveUp={moveUp}
+                onMoveDown={moveDown}
+                onDragEnd={handleDragEnd}
+                emptyMessage={copy.noColumnsFound}
+                maxHeight='20rem'
+              />
+            </Popover.Body>
+          </Popover.Content>
+        </Popover.Positioner>
+      </Portal>
     </Popover.Root>
   );
 };

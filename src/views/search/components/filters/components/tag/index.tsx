@@ -130,7 +130,13 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
             <Tag.Root key={key} {...tagStyles}>
               <Tag.Label>{`${name}: ${displayValue}`}</Tag.Label>
               <Tag.EndElement>
+                {/*
+                  v2's TagCloseButton defaulted to aria-label='close'; v3's
+                  CloseTrigger renders an unlabelled button, so the name has to
+                  be supplied explicitly or the control is anonymous to AT.
+                */}
                 <Tag.CloseTrigger
+                  aria-label='close'
                   onClick={() => removeSelectedFilter(filterKey, value)}
                 />
               </Tag.EndElement>
