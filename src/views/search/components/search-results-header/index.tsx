@@ -88,6 +88,7 @@ export const SearchResultsHeader = ({
       <Stack
         // Use row layout for "All Results" and column layout for other queries
         flexDirection={querystring === '__all__' ? 'row' : 'column'}
+        alignItems='center'
         gap={1}
       >
         <SearchResultsHeading as='h1' fontSize='inherit' whiteSpace='nowrap'>
@@ -96,7 +97,7 @@ export const SearchResultsHeader = ({
             : 'Showing results for: '}
         </SearchResultsHeading>
         {/* Query string */}
-        <HStack gap={1} width='100%' alignItems='flex-start'>
+        <HStack gap={1} width='100%' alignItems='center'>
           {querystring !== '__all__' && (
             <Text color='text.heading' fontSize='inherit' fontWeight='medium'>
               {querystring.replaceAll('\\', '')}

@@ -174,7 +174,12 @@ const Search: NextPage<{
     }
 
     hasInitialized.current = true;
-  }, [router.isReady]);
+  }, [
+    handleRouteUpdate,
+    router.isReady,
+    router.query.applyDefaultDate,
+    selectedFilters,
+  ]);
 
   // Validate and cap date filter at current year if it exceeds (runtime validation)
   useEffect(() => {
