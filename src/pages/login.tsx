@@ -27,7 +27,7 @@ import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
 const ListItemContent = ({ children }: { children: React.ReactNode }) => (
   <HStack alignItems='center' gap={4} lineHeight='short'>
-    <Icon boxSize={4} aria-hidden='true' color='niaid.500' asChild>
+    <Icon boxSize={4} aria-hidden='true' color='niaid.500'>
       <FaCheck />
     </Icon>
 
@@ -38,7 +38,7 @@ const ListItemContent = ({ children }: { children: React.ReactNode }) => (
 const ProviderIcon = ({ providerId }: { providerId: string }) => {
   if (providerId.toLowerCase() === 'orcid') {
     return (
-      <Icon color='#A6CE39' boxSize={5} aria-hidden='true' asChild>
+      <Icon color='#A6CE39' boxSize={5} aria-hidden='true'>
         <FaOrcid />
       </Icon>
     );
@@ -46,7 +46,7 @@ const ProviderIcon = ({ providerId }: { providerId: string }) => {
 
   if (providerId.toLowerCase() === 'github') {
     return (
-      <Icon color='#24292e ' boxSize={5} aria-hidden='true' asChild>
+      <Icon color='#24292e ' boxSize={5} aria-hidden='true'>
         <FaGithub />
       </Icon>
     );
@@ -54,7 +54,7 @@ const ProviderIcon = ({ providerId }: { providerId: string }) => {
 
   if (providerId.toLowerCase() === 'google') {
     return (
-      <Icon color='#4285F4' boxSize={5} aria-hidden='true' asChild>
+      <Icon color='#4285F4' boxSize={5} aria-hidden='true'>
         <FaGoogle />
       </Icon>
     );
@@ -62,7 +62,7 @@ const ProviderIcon = ({ providerId }: { providerId: string }) => {
 
   if (providerId.toLowerCase() === 'microsoft') {
     return (
-      <Icon color='#00A4EF' boxSize={5} aria-hidden='true' asChild>
+      <Icon color='#00A4EF' boxSize={5} aria-hidden='true'>
         <FaMicrosoft />
       </Icon>
     );

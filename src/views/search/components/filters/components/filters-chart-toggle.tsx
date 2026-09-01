@@ -5,11 +5,11 @@ export const FiltersDisclaimer = () => {
   return (
     <Text fontSize='sm' lineHeight='short' textAlign='start'>
       Click the icon{' '}
-      <Icon color='gray.500' mx={1} asChild>
+      <Icon color='gray.500' mx={1}>
         <FaChartPie />
       </Icon>
       next to a filter to show or hide the display of its chart. A filled icon
-      <Icon color='secondary.500' mx={1} asChild>
+      <Icon color='secondary.500' mx={1}>
         <FaChartPie />
       </Icon>
       indicates the chart is visible.

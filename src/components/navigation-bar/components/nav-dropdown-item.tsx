@@ -61,7 +61,7 @@ const DropdownItemContent = ({
         {label}
       </Text>
       {isExternal && (
-        <Icon w={3} h={3} color='inherit' aria-label='Opens in new tab' asChild>
+        <Icon w={3} h={3} color='inherit' aria-label='Opens in new tab'>
           <FaArrowUpRightFromSquare />
         </Icon>
       )}
@@ -91,7 +91,7 @@ const DropdownItemArrowIcon = (): JSX.Element => (
     justify='flex-end'
     align='center'
   >
-    <Icon css={ICON_COLOR} w={3} h={3} asChild>
+    <Icon css={ICON_COLOR} w={3} h={3}>
       <FaAngleRight />
     </Icon>
   </Flex>
@@ -111,7 +111,6 @@ const DropdownItemToggleIcon = ({
     }
     w={3}
     h={3}
-    asChild
   >
     <FaAngleDown />
   </Icon>

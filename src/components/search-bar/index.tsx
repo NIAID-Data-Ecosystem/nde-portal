@@ -75,7 +75,7 @@ const SearchInput = ({
               display={{ base: 'flex', sm: 'none' }}
               alignSelf='flex-start'
             >
-              <Icon asChild>
+              <Icon>
                 <FaMagnifyingGlass />
               </Icon>
             </Button>
@@ -98,7 +98,7 @@ const SearchInput = ({
                   display={{ base: 'none', md: 'flex' }}
                 >
                   <Flex px={2}>
-                    <Icon asChild>
+                    <Icon>
                       <FaClockRotateLeft />
                     </Icon>
                   </Flex>
@@ -279,7 +279,7 @@ const SearchBar = ({
                 aria-label='View search history.'
                 onClick={() => setIsOpen(!isOpen)}
               >
-                <Icon asChild>
+                <Icon>
                   <FaClockRotateLeft />
                 </Icon>
               </IconButton>

@@ -107,7 +107,7 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
             display={{ base: 'none', sm: 'flex' }}
           >
             <VisuallyHidden>First Page</VisuallyHidden>
-            <Icon asChild>
+            <Icon>
               <FaAnglesLeft />
             </Icon>
           </PaginationButton>
@@ -116,7 +116,7 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
             onClick={() => handleSelectedPage(selectedPage - 1)}
           >
             <VisuallyHidden>Previous page</VisuallyHidden>
-            <Icon asChild>
+            <Icon>
               <FaAngleLeft />
             </Icon>
           </PaginationButton>
@@ -179,7 +179,7 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
             onClick={() => handleSelectedPage(selectedPage + 1)}
           >
             <VisuallyHidden>Next Page</VisuallyHidden>
-            <Icon asChild>
+            <Icon>
               <FaAngleRight />
             </Icon>
           </PaginationButton>
@@ -189,7 +189,7 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
             display={{ base: 'none', sm: 'flex' }}
           >
             <VisuallyHidden>Last Page</VisuallyHidden>
-            <Icon asChild>
+            <Icon>
               <FaAnglesRight />
             </Icon>
           </PaginationButton>

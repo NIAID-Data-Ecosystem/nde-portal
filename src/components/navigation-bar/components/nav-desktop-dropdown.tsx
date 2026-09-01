@@ -44,7 +44,7 @@ export const NavDropdownTrigger = ({
               >
                 {icon && <Icon as={icon} boxSize={4} />}
                 {label}
-                <Icon w={4} h={4} asChild>
+                <Icon w={4} h={4}>
                   <FaCaretDown />
                 </Icon>
               </Button>

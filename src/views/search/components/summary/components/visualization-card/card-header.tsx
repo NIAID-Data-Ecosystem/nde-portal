@@ -76,7 +76,7 @@ export const CardHeader = ({
             ariaLabel='Expand chart to modal view'
             tooltipContent='Expand chart to modal view.'
             icon={
-              <Icon asChild>
+              <Icon>
                 <FaExpand />
               </Icon>
             }
@@ -88,7 +88,7 @@ export const CardHeader = ({
           ariaLabel='Remove chart from display.'
           tooltipContent='Remove chart from display.'
           icon={
-            <Icon asChild>
+            <Icon>
               <FaXmark />
             </Icon>
           }

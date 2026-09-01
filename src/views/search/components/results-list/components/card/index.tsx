@@ -182,7 +182,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               opacity={0.6}
               transform='translate(-5px)'
               transition='0.2s ease-in-out'
-              asChild
             >
               <FaAngleRight />
             </Icon>
@@ -276,7 +275,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     showArrow
                   >
                     <Flex whiteSpace='nowrap' alignItems='center'>
-                      <Icon mr={2} asChild>
+                      <Icon mr={2}>
                         <FaRegClock />
                       </Icon>
                       <Text fontSize='xs'>{date}</Text>

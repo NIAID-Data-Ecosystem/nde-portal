@@ -68,7 +68,7 @@ const EditableQueryControls = ({
               colorPalette='gray'
               color='text.body'
             >
-              <Icon boxSize={4} asChild>
+              <Icon boxSize={4}>
                 <FaRegPenToSquare />
               </Icon>
             </IconButton>
@@ -87,7 +87,7 @@ const EditableQueryControls = ({
           colorPalette='gray'
           color='text.body'
         >
-          <Icon boxSize={6} asChild>
+          <Icon boxSize={6}>
             <FaXmark />
           </Icon>
         </IconButton>
@@ -110,7 +110,7 @@ const EditableQueryControls = ({
           aria-label='Accept Edit.'
           animation={shouldShakeSubmit ? 'shake 0.2s ease-in-out' : undefined}
         >
-          <Icon asChild>
+          <Icon>
             <FaCheck />
           </Icon>
         </IconButton>

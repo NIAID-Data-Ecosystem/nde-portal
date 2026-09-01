@@ -96,7 +96,7 @@ export const PopoverListItem = ({
             px={0.5}
             flexShrink={0}
           >
-            <Icon boxSize={3} asChild>
+            <Icon boxSize={3}>
               <FaGripVertical />
             </Icon>
           </Flex>
@@ -138,7 +138,7 @@ export const PopoverListItem = ({
             disabled={isRequired || isFirst}
             onClick={() => onMoveUp?.(item.id)}
           >
-            <Icon asChild>
+            <Icon>
               <FaAngleUp />
             </Icon>
           </IconButton>
@@ -150,7 +150,7 @@ export const PopoverListItem = ({
             disabled={isRequired || isLast}
             onClick={() => onMoveDown?.(item.id)}
           >
-            <Icon asChild>
+            <Icon>
               <FaAngleDown />
             </Icon>
           </IconButton>

@@ -50,7 +50,7 @@ export const OntologyButton = ({
           asChild
         >
           <Link href={value} target='_blank'>
-            <Icon asChild>
+            <Icon>
               <FaSitemap />
             </Icon>
             <Text pt={0.25}>{label || inDefinedTermSet} </Text>
@@ -68,7 +68,7 @@ export const OntologyButton = ({
             <VisuallyHidden>
               {ariaLabel || 'View the ontology for this value.'}
             </VisuallyHidden>
-            <Icon asChild>
+            <Icon>
               <FaSitemap />
             </Icon>
           </a>
@@ -116,7 +116,7 @@ export const SearchButton = ({
           <VisuallyHidden>
             {ariaLabel || `Search the NDE for this property value`}
           </VisuallyHidden>
-          <Icon fontSize='12px' asChild>
+          <Icon fontSize='12px'>
             <FaMagnifyingGlass />
           </Icon>
         </a>

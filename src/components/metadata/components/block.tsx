@@ -97,7 +97,7 @@ export const MetadataTooltip = ({
           borderColor={disabled ? 'gray.500' : 'gray.600'}
           color={disabled ? 'gray.500' : 'gray.600'}
         >
-          <Icon boxSize='0.75rem' p={0.5} asChild>
+          <Icon boxSize='0.75rem' p={0.5}>
             <FaInfo />
           </Icon>
         </Button>

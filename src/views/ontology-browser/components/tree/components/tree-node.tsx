@@ -296,7 +296,7 @@ export const TreeNode = (props: {
                 } OR infectiousAgent.identifier:${node.taxonId})`}
                 fontSize='xs'
               >
-                <Icon mr={1.5} boxSize={3} asChild>
+                <Icon mr={1.5} boxSize={3}>
                   <FaMagnifyingGlass />
                 </Icon>
                 <Text

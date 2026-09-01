@@ -132,11 +132,11 @@ export const SidebarDesktop = ({
                       mr={2}
                     >
                       {expanded ? (
-                        <Icon boxSize={4} asChild>
+                        <Icon boxSize={4}>
                           <FaAngleDown />
                         </Icon>
                       ) : (
-                        <Icon boxSize={4} asChild>
+                        <Icon boxSize={4}>
                           <FaAngleRight />
                         </Icon>
                       )}

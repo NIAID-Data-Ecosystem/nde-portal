@@ -153,7 +153,7 @@ export const CustomizeColumnsPopover = ({
     >
       <Popover.Trigger asChild>
         <Button colorPalette='primary' variant='outline' size='sm'>
-          <Icon boxSize={3.5} asChild>
+          <Icon boxSize={3.5}>
             <FaSliders />
           </Icon>
           {copy.button} ({selectedCount}/{totalCount})

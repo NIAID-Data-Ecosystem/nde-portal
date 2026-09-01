@@ -46,7 +46,6 @@ export const Summary = ({
             borderRadius='full'
             p={0.5}
             color='gray.800!important'
-            asChild
           >
             <FaInfo />
           </Icon>

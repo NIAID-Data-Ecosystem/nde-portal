@@ -129,7 +129,6 @@ export const ToggleContainer: React.FC<ToggleContainerProps> = ({
             transform={open ? 'rotate(-180deg)' : undefined}
             transformOrigin='center'
             transition='transform 0.2s'
-            asChild
           >
             <FaAngleDown />
           </Icon>

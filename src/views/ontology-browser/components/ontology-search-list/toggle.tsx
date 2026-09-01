@@ -31,14 +31,13 @@ export const ListToggle = ({
               Toggle Search List
             </Text>
             <Box>
-              <Icon asChild>
+              <Icon>
                 <FaMagnifyingGlass />
               </Icon>
               <Icon
                 display={{ base: 'none', lg: 'block' }}
                 fill='gray.600'
                 mt={4}
-                asChild
               >
                 <FaAnglesLeft />
               </Icon>

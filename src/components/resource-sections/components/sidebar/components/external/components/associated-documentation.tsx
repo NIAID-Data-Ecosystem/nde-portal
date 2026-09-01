@@ -90,12 +90,12 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
                 <List.Item key={idx} alignItems='start' display='flex' pb={2}>
                   <Box mx={1} mt={1}>
                     {repo.includes('git') && (
-                      <Icon boxSize={4} asChild>
+                      <Icon boxSize={4}>
                         <FaGithub />
                       </Icon>
                     )}
                     {repo.includes('bitbucket') && (
-                      <Icon boxSize={4} asChild>
+                      <Icon boxSize={4}>
                         <FaBitbucket />
                       </Icon>
                     )}

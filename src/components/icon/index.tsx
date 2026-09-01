@@ -70,7 +70,6 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
           p='0.2rem'
           aria-label='information'
           {...props}
-          asChild
         >
           <FaInfo />
         </Icon>
@@ -92,7 +91,6 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
             // title={title}
             aria-label={title}
             {...props}
-            asChild
           >
             <FaIcon />
           </Icon>

@@ -247,11 +247,11 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             mt={2}
           >
             {showRawQuery ? (
-              <Icon asChild>
+              <Icon>
                 <FaEyeSlash />
               </Icon>
             ) : (
-              <Icon asChild>
+              <Icon>
                 <FaEye />
               </Icon>
             )}
@@ -292,7 +292,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                   alignItems='center'
                   flex={1}
                 >
-                  <Icon mx={2} color='info' asChild>
+                  <Icon mx={2} color='info'>
                     <FaClockRotateLeft />
                   </Icon>
                   Search History

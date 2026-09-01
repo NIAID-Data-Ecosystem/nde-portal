@@ -88,7 +88,6 @@ export const Sidebar = ({
                           mr={1.5}
                           mt={1.5}
                           lineHeight='short'
-                          asChild
                         >
                           <FaMagnifyingGlass />
                         </Icon>

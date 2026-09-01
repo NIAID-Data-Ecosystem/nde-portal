@@ -216,7 +216,6 @@ export const CompatibilityBadge = ({
                 y={y + BIN_SIZE / 2}
                 style={{ transform: 'translate(-5px, -5px)' }}
                 boxSize={10}
-                asChild
               >
                 <FaRegCircleUp />
               </Icon>
@@ -348,7 +347,7 @@ export const CompatibilityBadge = ({
                 {tooltipData.count ? (
                   <>
                     <Text lineHeight='shorter'>
-                      <Icon color='green.500' boxSize={3} mr={0.5} asChild>
+                      <Icon color='green.500' boxSize={3} mr={0.5}>
                         <FaCircleCheck />
                       </Icon>
                       <strong>{tooltipData.label} </strong>
@@ -356,7 +355,7 @@ export const CompatibilityBadge = ({
                     </Text>
                     {tooltipData.augmented ? (
                       <Text mt={1} lineHeight='shorter'>
-                        <Icon color='green.500' boxSize={3} mr={0.5} asChild>
+                        <Icon color='green.500' boxSize={3} mr={0.5}>
                           <FaRegCircleUp />
                         </Icon>
                         <strong>{tooltipData.label} </strong>
@@ -370,7 +369,7 @@ export const CompatibilityBadge = ({
                   <Text lineHeight='short'>
                     {tooltipData.augmented ? (
                       <Text as='span' mt={1}>
-                        <Icon color='green.500' boxSize={3} mr={0.5} asChild>
+                        <Icon color='green.500' boxSize={3} mr={0.5}>
                           <FaRegCircleUp />
                         </Icon>
                         <strong>{tooltipData.label} </strong> metadata was not

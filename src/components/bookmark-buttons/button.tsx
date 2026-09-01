@@ -15,11 +15,11 @@ export const BookmarkButton: React.FC<
       {...rest}
     >
       {isFavorited ? (
-        <Icon w='inherit' asChild>
+        <Icon w='inherit'>
           <FaBookmark />
         </Icon>
       ) : (
-        <Icon w='inherit' asChild>
+        <Icon w='inherit'>
           <FaRegBookmark />
         </Icon>
       )}

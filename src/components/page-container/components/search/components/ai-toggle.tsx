@@ -137,7 +137,6 @@ export const AIToggle: React.FC<AIToggleProps> = ({
               <Text>AI-assisted search</Text>
               <Icon
                 color='text.placeholder'
-                asChild
                 lineHeight='1em'
                 display='inline-block'
               >

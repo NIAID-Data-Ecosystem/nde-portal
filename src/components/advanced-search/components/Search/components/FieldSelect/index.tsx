@@ -171,7 +171,7 @@ const Option = (props: OptionProps<any>) => {
 const Control = (props: ControlProps<any>) => {
   return (
     <components.Control {...props}>
-      <Icon ml={2} color='gray.300' asChild>
+      <Icon ml={2} color='gray.300'>
         <FaMagnifyingGlass />
       </Icon>
       {props.children}

@@ -168,7 +168,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
       <Collapsible.Root open={!!error}>
         <Collapsible.Content>
           <Text fontSize='xs' fontStyle='italic' color='error'>
-            <Icon color='error' mr={1} asChild>
+            <Icon color='error' mr={1}>
               <FaCircleExclamation />
             </Icon>
             Something went wrong with the metadata download. Please try again.

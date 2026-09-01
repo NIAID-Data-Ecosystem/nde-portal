@@ -173,7 +173,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
                     color='gray.600'
                     mr={1}
                   >
-                    <Icon boxSize={2} asChild>
+                    <Icon boxSize={2}>
                       <FaInfo />
                     </Icon>
                   </Circle>

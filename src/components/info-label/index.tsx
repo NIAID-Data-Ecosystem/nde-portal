@@ -35,7 +35,6 @@ export const InfoLabel: React.FC<InfoLabelProps> = ({
             p={0.5}
             mx={1}
             color='gray.800!important'
-            asChild
           >
             <FaInfo />
           </Icon>

@@ -49,7 +49,7 @@ export const MetadataContent = ({
                 <Text wordBreak='break-word' w='100%'>
                   {name}
                 </Text>
-                <Icon boxSize={2.5} ml={1} color='gray.800' asChild>
+                <Icon boxSize={2.5} ml={1} color='gray.800'>
                   <FaSquareArrowUpRight />
                 </Icon>
               </Link>

@@ -64,7 +64,6 @@ const Details = (props: any) => {
             transition='transform 250ms ease'
             transform={!isOpen ? `rotate(-90deg)` : `rotate(0deg)`}
             {...props}
-            asChild
           >
             <FaAngleDown />
           </Icon>

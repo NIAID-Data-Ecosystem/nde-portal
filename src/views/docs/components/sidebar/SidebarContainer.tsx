@@ -37,7 +37,7 @@ export const SidebarContainer = ({
           display='flex'
           alignItems='flex-start'
         >
-          <Icon position='sticky' top={4} asChild>
+          <Icon position='sticky' top={4}>
             <FaAnglesRight />
           </Icon>
         </Button>
@@ -71,7 +71,7 @@ export const SidebarContainer = ({
               alignItems='center'
               gap={2}
             >
-              <Icon asChild>
+              <Icon>
                 <FaAnglesLeft />
               </Icon>
               <Text fontSize='sm' fontWeight='semibold'>

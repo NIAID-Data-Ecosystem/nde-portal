@@ -74,7 +74,7 @@ export const OntologyBrowserSettings: React.FC<OntologyPopoverProps> = ({
             justifyContent='space-between'
             {...buttonProps}
           >
-            <Icon color='inherit' asChild>
+            <Icon color='inherit'>
               <FaGear />
             </Icon>
             {buttonProps?.children || label}

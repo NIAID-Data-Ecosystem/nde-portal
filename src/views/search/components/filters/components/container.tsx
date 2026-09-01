@@ -171,7 +171,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
           alignItems='center'
           justifyContent='center'
         >
-          <Icon boxSize={5} ml={1} mr={2} asChild>
+          <Icon boxSize={5} ml={1} mr={2}>
             <FaFilter />
           </Icon>
         </Flex>
