@@ -41,16 +41,9 @@ export const FiltersChartToggle = ({
       variant='ghost'
       size='xs'
       onClick={onClick}
-      color={isActive ? 'secondary.500' : 'gray.500'}
+      my={1}
       colorPalette={isActive ? 'secondary' : 'gray'}
-      _hover={{
-        backgroundColor: isActive ? 'secondary.50' : 'gray.50',
-      }}
-      css={{
-        '& >svg': {
-          color: isActive ? 'secondary.400' : 'gray.400',
-        },
-      }}
+      color='colorPalette.500'
     >
       <FaChartPie />
     </IconButton>

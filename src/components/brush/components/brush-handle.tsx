@@ -1,6 +1,6 @@
-import React from 'react';
-import { Group } from '@visx/group';
 import { BrushHandleRenderProps } from '@visx/brush/lib/BrushHandle';
+import { Group } from '@visx/group';
+import React from 'react';
 
 interface BrushHandleProps extends BrushHandleRenderProps {
   isFocused: boolean;
@@ -99,7 +99,11 @@ export const BrushHandle = ({
           fill={finalLabelColor}
           fontSize={labelFontSize}
           fontWeight={labelFontWeight}
-          style={{ userSelect: 'none', pointerEvents: 'none' }}
+          style={{
+            userSelect: 'none',
+            pointerEvents: 'none',
+            fontSize: labelFontSize,
+          }}
         >
           {label}
         </text>

@@ -4,19 +4,19 @@ import {
   DateFilter,
   prepareInitialParams,
 } from 'src/views/search/components/filters/components/date-filter';
+import { UseFilterQueriesResult } from 'src/views/search/components/filters/hooks/useFilterQueries';
+import { SelectedFilterType } from 'src/views/search/components/filters/types';
 import {
   queryFilterObject2String,
   queryFilterString2Object,
 } from 'src/views/search/components/filters/utils/query-string';
-import { UseFilterQueriesResult } from 'src/views/search/components/filters/hooks/useFilterQueries';
 import { ChartDatum } from 'src/views/search/components/summary/types';
-import { useSearchQueryFromURL } from 'src/views/search/hooks/useSearchQueryFromURL';
-import { updateRoute } from 'src/views/search/utils/update-route';
-import { usePaginationContext } from 'src/views/search/context/pagination-context';
 import { APPLY_DEFAULT_DATE_PARAM } from 'src/views/search/config/defaultQuery';
+import { usePaginationContext } from 'src/views/search/context/pagination-context';
 import { useSearchResultsFetchedContext } from 'src/views/search/context/search-results-fetched-context';
-import { SelectedFilterType } from 'src/views/search/components/filters/types';
+import { useSearchQueryFromURL } from 'src/views/search/hooks/useSearchQueryFromURL';
 import { useSharedDatasetAggregation } from 'src/views/search/hooks/useSharedDatasetAggregation';
+import { updateRoute } from 'src/views/search/utils/update-route';
 
 export interface DateHistogramProps {
   /** Array of data values used to generate the chart. */

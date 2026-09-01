@@ -1,20 +1,21 @@
-import React, {
-  useMemo,
-  useRef,
-  useCallback,
-  useState,
-  useEffect,
-} from 'react';
 import { Box } from '@chakra-ui/react';
-import { Group } from '@visx/group';
-import { scaleBand } from '@visx/scale';
 import { AxisBottom } from '@visx/axis';
 import { Brush } from '@visx/brush';
-import { Bounds } from '@visx/brush/lib/types';
 import BaseBrush from '@visx/brush/lib/BaseBrush';
+import { Bounds } from '@visx/brush/lib/types';
+import { Group } from '@visx/group';
+import { scaleBand } from '@visx/scale';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { BrushHandle } from 'src/components/brush/components/brush-handle';
 import { useBrushKeyboardNavigation } from 'src/components/brush/hooks/useBrushKeyboardNavigation';
 import { system } from 'src/theme';
+
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
 
 interface DateBrushProps {
@@ -492,7 +493,6 @@ export const DateBrush = ({
   ) {
     return null;
   }
-
   return (
     <div
       ref={chartRef}
@@ -557,9 +557,10 @@ export const DateBrush = ({
                     labelColor={system.token('colors.secondary.500')}
                     labelOptions={{
                       padding: 6,
-                      fontSize: 13,
                       fontWeight: 600,
                       verticalAdjustment: (BRUSH_HEIGHT - 15) / 8,
+                      fontSize: 13,
+                      style: { fontSize: 13 },
                     }}
                   />
                 );
@@ -577,6 +578,7 @@ export const DateBrush = ({
               tickLabelProps={() => ({
                 fill: system.token('colors.gray.600'),
                 fontSize: 13,
+                style: { fontSize: 13 },
                 textAnchor: 'middle',
               })}
             />

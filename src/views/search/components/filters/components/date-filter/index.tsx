@@ -1,22 +1,22 @@
-import React, { useMemo } from 'react';
-import { omit } from 'lodash';
 import { Box, Flex, Text } from '@chakra-ui/react';
-import { DateRange } from './hooks/useDateRangeContext';
-import { FILTER_CONFIGS } from '../../config';
-import {
-  queryFilterObject2String,
-  queryFilterString2Object,
-} from '../../utils/query-string';
-import { HistogramSection } from './components/histogram-section';
-import { DateControls } from './components/date-controls';
-import { useDateFilterData } from './hooks/useDateFilterData';
+import { omit } from 'lodash';
+import React, { useMemo } from 'react';
+import { SearchQueryParams } from 'src/views/search/types';
 
+import { FILTER_CONFIGS } from '../../config';
 import {
   useFilterQueries,
   UseFilterQueriesResult,
 } from '../../hooks/useFilterQueries';
 import { FilterResults } from '../../types';
-import { SearchQueryParams } from 'src/views/search/types';
+import {
+  queryFilterObject2String,
+  queryFilterString2Object,
+} from '../../utils/query-string';
+import { DateControls } from './components/date-controls';
+import { HistogramSection } from './components/histogram-section';
+import { useDateFilterData } from './hooks/useDateFilterData';
+import { DateRange } from './hooks/useDateRangeContext';
 
 interface DateFilterProps {
   colorPalette: string;

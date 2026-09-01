@@ -11,6 +11,7 @@ also catch MDX prose and every non-Chakra paragraph.
 export const textRecipe = defineRecipe({
   base: {
     color: 'text.body',
+    fontWeight: 'normal',
   },
   defaultVariants: {
     variant: 'text.body',

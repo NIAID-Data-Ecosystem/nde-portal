@@ -10,7 +10,6 @@ import {
   IconProps,
 } from '@chakra-ui/react';
 import { FaExpand, FaXmark } from 'react-icons/fa6';
-
 import Tooltip from 'src/components/tooltip';
 
 interface CardHeaderProps {
@@ -43,19 +42,16 @@ export const VisualizationCardIconButton = ({
 }) => {
   return (
     <Tooltip content={tooltipContent} showArrow>
-      <Box>
-        <IconButton
-          aria-label={ariaLabel}
-          onClick={onClick}
-          variant='ghost'
-          cursor='pointer'
-          colorPalette='gray'
-          boxSize={5}
-          p={0.5}
-        >
-          {icon}
-        </IconButton>
-      </Box>
+      <IconButton
+        aria-label={ariaLabel}
+        onClick={onClick}
+        variant='ghost'
+        cursor='pointer'
+        colorPalette='gray'
+        size='xs'
+      >
+        {icon}
+      </IconButton>
     </Tooltip>
   );
 };

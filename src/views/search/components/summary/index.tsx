@@ -1,4 +1,11 @@
-import { Accordion, Flex, Icon, SimpleGrid, Text } from '@chakra-ui/react';
+import {
+  Accordion,
+  Flex,
+  Icon,
+  SimpleGrid,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
 import { FaMinus, FaPlus } from 'react-icons/fa6';
 import { InfoLabel } from 'src/components/info-label';
@@ -79,11 +86,11 @@ const SummaryGrid = (props: SummaryGridProps) => {
                       px={0}
                       _hover={{ bg: 'transparent' }}
                     >
-                      <Flex
-                        flexDirection='column'
+                      <VStack
                         width='100%'
                         alignItems='flex-start'
                         px={1}
+                        gap={1}
                       >
                         <InfoLabel
                           tooltipProps={{
@@ -112,7 +119,7 @@ const SummaryGrid = (props: SummaryGridProps) => {
                           Visual Summary
                         </InfoLabel>
                         <FiltersDisclaimer />
-                      </Flex>
+                      </VStack>
                       <Icon
                         as={expanded ? FaMinus : FaPlus}
                         fontSize='xs'
