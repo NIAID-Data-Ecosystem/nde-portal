@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/router';
-import { formatSlug, getLabelFromRoute } from '../helpers';
 import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/router';
+import { useEffect, useMemo, useState } from 'react';
+
+import { formatSlug, getLabelFromRoute } from '../helpers';
 
 export interface BreadcrumbSegment {
   name: string;
