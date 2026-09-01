@@ -1,4 +1,5 @@
 import { Breadcrumb } from '@chakra-ui/react';
+import React from 'react';
 import { FaHouse } from 'react-icons/fa6';
 
 import { BreadcrumbSegment } from '../hooks/useBreadcrumbs';
@@ -22,17 +23,17 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ segments }) => {
         </Breadcrumb.Item>
         {segments.map(({ name, route, isCurrentPage }, idx) => {
           return (
-            <>
+            <React.Fragment key={name + idx}>
               <Breadcrumb.Separator />
 
-              <Breadcrumb.Item key={name + idx}>
+              <Breadcrumb.Item>
                 {isCurrentPage ? (
                   <Breadcrumb.CurrentLink>{name}</Breadcrumb.CurrentLink>
                 ) : (
                   <Breadcrumb.Link href={route}>{name}</Breadcrumb.Link>
                 )}
               </Breadcrumb.Item>
-            </>
+            </React.Fragment>
           );
         })}
       </Breadcrumb.List>
