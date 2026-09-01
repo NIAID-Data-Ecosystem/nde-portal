@@ -405,17 +405,22 @@ export const BasedOnActionProcess = ({
         <AccordionItem border='none'>
           {({ isExpanded }) => (
             <>
-              <Flex flexDirection='column' rowGap={0.5} lineHeight='short'>
+              <Flex
+                flexDirection='row'
+                justifyContent='space-between'
+                lineHeight='short'
+                flexWrap='wrap'
+                gap={2}
+              >
                 {/* Name of action */}
                 <Text fontWeight='semibold'>
                   {name || 'Generation process'}
                 </Text>
-                {disambiguatingDescription && (
+                {/* {disambiguatingDescription && (
                   <Text fontWeight='medium' fontSize='xs'>
                     {disambiguatingDescription}
                   </Text>
-                )}
-                {description && <Text fontSize='xs'>{description}</Text>}
+                )} */}
                 {steps.length > 0 && (
                   <AccordionButton
                     w='auto'
@@ -429,7 +434,7 @@ export const BasedOnActionProcess = ({
                     textDecoration='underline'
                     _hover={{ textDecoration: 'none' }}
                   >
-                    {isExpanded ? 'Hide "How To"' : 'Show "How To"'}
+                    {isExpanded ? 'Hide' : 'Show'}
                     <Icon as={isExpanded ? FaMinus : FaPlus} fontSize='2xs' />
                   </AccordionButton>
                 )}
@@ -438,6 +443,8 @@ export const BasedOnActionProcess = ({
                 <AccordionPanel px={0} pt={1} pb={1}>
                   <VStack alignItems='start' spacing={1} fontSize='xs'>
                     <VStack alignItems='start' spacing={1.5}>
+                      {description && <Text fontSize='xs'>{description}</Text>}
+
                       {steps.map((step, index) => (
                         <Text key={index}>{step}</Text>
                       ))}
