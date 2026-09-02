@@ -3,10 +3,19 @@ import { formatResourceTypeForAPI } from 'src/utils/formatting/formatResourceTyp
 import { SHOW_FILTER_ANY_NO_EXCLUSIVITY } from 'src/utils/feature-flags';
 import { APPLY_DEFAULT_DATE_FILTER_KEY } from 'src/views/search/config/defaultQuery';
 import { MERGED_FILTER_FIELDS } from 'src/views/search/config/content-type';
+import {
+  RANGE_FILTER_PROPERTIES,
+  RANGE_WILDCARD,
+} from 'src/views/search/config/collection-size';
 
 // Regex to split filter values by quoted/bare OR and TO separators.
 // Matches: " OR ", OR, " TO ", TO (used in both date ranges and multi-value filters)
 const VALUE_SPLIT_PATTERN = /(?:" OR ")| OR |(?:" TO ")| TO /;
+
+// Matches an unquoted numeric range such as `[1000 TO 50000]` or `[* TO 500]`.
+// The absence of a quote is what distinguishes it from the date range form,
+// `["2000-01-01" TO "2025-12-31"]`, whose wrapper is stripped separately.
+const UNQUOTED_RANGE_PATTERN = /^\[[^"]*\]$/;
 
 // Matches the first clause of a merged multi-field filter, such as `a:(x)`
 // in `((a:(x)) OR (b:(x)))`. The non-greedy match stops at the first `) OR (`.
@@ -72,6 +81,13 @@ export const queryFilterObject2String = (
           valueString = stringValues[0];
         } else if (stringValues.length > 1) {
           valueString = `["${stringValues.join('" TO "')}"]`;
+        }
+      } else if (RANGE_FILTER_PROPERTIES.has(filterName)) {
+        // Numeric range. Endpoints are unquoted so the API treats them as
+        // numbers; a missing endpoint becomes `*` (unbounded on that side).
+        if (stringValues.length > 0) {
+          const [min, max = RANGE_WILDCARD] = stringValues;
+          valueString = `[${min} TO ${max}]`;
         }
       } else if (stringValues.length > 0) {
         valueString = `("${stringValues.join('" OR "')}")`;
@@ -169,11 +185,17 @@ export const queryFilterString2Object = (
  */
 const parseFilterValues = (valueString: string): SelectedFilterValueType[] => {
   // Strip first-occurrence-only wrappers to preserve nested structures
-  const cleaned = valueString
+  let cleaned = valueString
     .replace('("', '')
     .replace('")', '')
     .replace('["', '')
     .replace('"]', '');
+
+  // Unquoted numeric range, e.g. `[1000 TO 50000]`. The quoted date range is
+  // already unwrapped by the `["` / `"]` strips above, so it never reaches here.
+  if (UNQUOTED_RANGE_PATTERN.test(cleaned)) {
+    cleaned = cleaned.slice(1, -1);
+  }
 
   return cleaned
     .split(VALUE_SPLIT_PATTERN)

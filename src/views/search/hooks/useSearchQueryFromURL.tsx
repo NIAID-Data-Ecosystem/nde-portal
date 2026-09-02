@@ -7,7 +7,7 @@ import {
   shouldApplyDefaultDate,
 } from '../config/defaultQuery';
 import { encodeString } from 'src/utils/querystring-helpers';
-import { FILTER_CONFIGS } from '../components/filters/config';
+import { getDefaultFilterState } from '../components/filters/config';
 import { queryFilterString2Object } from '../components/filters/utils/query-string';
 
 const parseNumberQueryParam = (
@@ -21,12 +21,7 @@ const parseNumberQueryParam = (
 export const useSearchQueryFromURL = (): DefaultSearchQueryParams => {
   const router = useRouter();
 
-  const defaultFilters = useMemo(() => {
-    return FILTER_CONFIGS.reduce(
-      (acc, { property }) => ({ ...acc, [property]: [] }),
-      {},
-    );
-  }, []);
+  const defaultFilters = useMemo(() => getDefaultFilterState(), []);
 
   const filters = useMemo(() => {
     const raw = queryFilterString2Object(router.query.filters) ?? {};

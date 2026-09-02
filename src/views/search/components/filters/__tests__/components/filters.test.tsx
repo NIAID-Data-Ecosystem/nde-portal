@@ -59,6 +59,15 @@ jest.mock('src/views/search/hooks/useDataCollectionAggregation', () => ({
   useDataCollectionAggregation: () => ({ data: undefined }),
 }));
 
+// The Collection Size filter probes for its min/max bounds with its own
+// useQuery, so it needs the same treatment as the aggregation hooks above.
+jest.mock(
+  '../../components/collection-size-filter/hooks/useCollectionSizeBounds',
+  () => ({
+    useCollectionSizeBounds: () => ({ data: undefined, isLoading: false }),
+  }),
+);
+
 jest.mock('../../components/container', () => ({
   FiltersContainer: ({
     children,

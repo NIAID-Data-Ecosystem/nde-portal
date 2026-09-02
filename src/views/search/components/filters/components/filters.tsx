@@ -13,22 +13,49 @@ import {
   queryFilterObject2String,
   sanitizeExistsFilterValues,
 } from '../utils/query-string';
-import { SelectedFilterType } from '../types';
+import { FilterConfig, SelectedFilterType } from '../types';
 import { useRouter } from 'next/router';
 import { FiltersSection } from './section';
 import { FiltersList } from './list';
 import { FiltersContainer } from './container';
 import { DateFilter } from './date-filter';
+import { CollectionSizeFilter } from './collection-size-filter';
 import { updateRoute } from '../../../utils/update-route';
 import { useSearchQueryFromURL } from '../../../hooks/useSearchQueryFromURL';
 import { usePaginationContext } from '../../../context/pagination-context';
-import { FILTER_CONFIGS, getFacetPropertiesForCategory } from '../config';
+import {
+  FILTER_CONFIGS,
+  getFacetPropertiesForCategory,
+  getFilterStateProperties,
+} from '../config';
+import { COLLECTION_SIZE_FILTER_ID } from 'src/views/search/config/collection-size';
 import { APPLY_DEFAULT_DATE_PARAM } from 'src/views/search/config/defaultQuery';
 import { useSearchResultsFetchedContext } from 'src/views/search/context/search-results-fetched-context';
 import { useBioSampleAggregation } from 'src/views/search/hooks/useBioSampleAggregation';
 import { useComputationalToolAggregation } from 'src/views/search/hooks/useComputationalToolAggregation';
 import { useSharedDatasetAggregation } from 'src/views/search/hooks/useSharedDatasetAggregation';
 import { useDataCollectionAggregation } from 'src/views/search/hooks/useDataCollectionAggregation';
+
+/** Applied endpoints of a filter's range key, as plain strings. */
+const selectedRangeValues = (
+  selectedFilters: SelectedFilterType,
+  config: FilterConfig,
+): string[] => {
+  if (!config.rangeProperty) return [];
+  return (selectedFilters[config.rangeProperty] || []).filter(
+    (value): value is string => typeof value === 'string',
+  );
+};
+
+/** True when any of the filter's state keys currently holds a value. */
+const hasActiveSelection = (
+  selectedFilters: SelectedFilterType,
+  config: FilterConfig,
+): boolean =>
+  getFilterStateProperties(config).some(property => {
+    const values = selectedFilters?.[property];
+    return Array.isArray(values) && values.length > 0;
+  });
 
 interface FiltersProps {
   colorScheme?: string;
@@ -180,10 +207,9 @@ export const Filters = React.memo(
       const categoriesWithActiveFilters = new Set(
         groupedCategories
           .map(([_, filters], index) => {
-            const hasSelection = filters.some(filterConfig => {
-              const values = selectedFilters?.[filterConfig.property];
-              return Array.isArray(values) && values.length > 0;
-            });
+            const hasSelection = filters.some(filterConfig =>
+              hasActiveSelection(selectedFilters, filterConfig),
+            );
             return hasSelection ? index : -1;
           })
           .filter(index => index !== -1),
@@ -202,6 +228,22 @@ export const Filters = React.memo(
         return updateRoute(router, update);
       },
       [resetPagination, router],
+    );
+
+    // Applies several filter keys in one route update. Used by filters that
+    // own more than one key (see `FilterConfig.rangeProperty`), where writing
+    // each key separately would push two routes and lose the first.
+    const handleApplyFilters = useCallback(
+      (patch: SelectedFilterType) => {
+        handleUpdate({
+          from: 1,
+          filters: queryFilterObject2String({
+            ...selectedFilters,
+            ...patch,
+          }),
+        });
+      },
+      [selectedFilters, handleUpdate],
     );
 
     const handleSelectedFilters = useCallback(
@@ -246,10 +288,9 @@ export const Filters = React.memo(
     const getFilterIndicesForOpenState = useCallback(
       (filtersInCategory: typeof visibleFiltersList) => {
         return filtersInCategory
-          .map((config, index) => {
-            const values = selectedFilters?.[config.property];
-            return Array.isArray(values) && values.length > 0 ? index : -1;
-          })
+          .map((config, index) =>
+            hasActiveSelection(selectedFilters, config) ? index : -1,
+          )
           .filter(index => index !== -1);
       },
       [selectedFilters],
@@ -328,7 +369,21 @@ export const Filters = React.memo(
                           }
                           onToggleViz={onToggleViz}
                         >
-                          {id === 'date' ? (
+                          {id === COLLECTION_SIZE_FILTER_ID ? (
+                            <CollectionSizeFilter
+                              colorScheme={colorScheme}
+                              terms={results?.[id]?.terms || []}
+                              selectedUnits={selected || []}
+                              selectedRange={selectedRangeValues(
+                                selectedFilters,
+                                filterConfig,
+                              )}
+                              isLoading={results?.[id]?.isLoading ?? true}
+                              queryParams={filtersAggParams}
+                              enabled={isFiltersFetchEnabled}
+                              onApply={handleApplyFilters}
+                            />
+                          ) : id === 'date' ? (
                             <DateFilter
                               colorScheme={colorScheme}
                               handleSelectedFilter={values =>

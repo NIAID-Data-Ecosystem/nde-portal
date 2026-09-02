@@ -6,7 +6,11 @@ import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { SearchTabsProvider } from 'src/views/search/context/search-tabs-context';
 import { useSearchQueryFromURL } from 'src/views/search/hooks/useSearchQueryFromURL';
 import { Box, Flex, VStack } from '@chakra-ui/react';
-import { Filters, FILTER_CONFIGS } from 'src/views/search/components/filters';
+import {
+  Filters,
+  FILTER_CONFIGS,
+  getDefaultFilterState,
+} from 'src/views/search/components/filters';
 import {
   SelectedFilterType,
   SelectedFilterValueType,
@@ -44,10 +48,7 @@ const DEFAULT_ACTIVE_VIZ_IDS = [
 ];
 
 // Default filters list.
-const defaultFilters = FILTER_CONFIGS.reduce(
-  (r, { property }) => ({ ...r, [property]: [] }),
-  {},
-);
+const defaultFilters = getDefaultFilterState();
 //  This page renders the search results from the search bar.
 const Search: NextPage<{
   initialData: FetchSearchResultsResponse;

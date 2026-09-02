@@ -3,6 +3,7 @@ import { getMetadataDescription } from 'src/components/metadata';
 import {
   SHOW_SAMPLES_TAB,
   SHOW_DATA_COLLECTIONS_TAB,
+  SHOW_COLLECTION_SIZE_FILTER,
 } from 'src/utils/feature-flags';
 import {
   formatConditionsOfAccess,
@@ -14,6 +15,13 @@ import {
   getFacetProperties,
 } from 'src/views/search/config/content-type';
 import { formatTermLabel } from 'src/utils/formatting/formatTermLabel';
+import {
+  COLLECTION_SIZE_FILTER_ID,
+  COLLECTION_SIZE_TOOLTIP,
+  COLLECTION_SIZE_UNIT_FIELD,
+  COLLECTION_SIZE_VALUE_FIELD,
+  formatUnitLabel,
+} from 'src/views/search/config/collection-size';
 
 /**
  * Default chart configuration for bar and pie visualizations
@@ -130,6 +138,30 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     }),
     category: 'Shared / Dataset',
     tabIds: ['d', 'ct'],
+  },
+  {
+    // Collection Size spans two API fields: the unit (a facet) and the
+    // numeric range applied to `collectionSize.minValue`. Only the unit is
+    // aggregated; `rangeProperty` is filter-only.
+    id: COLLECTION_SIZE_FILTER_ID,
+    name: 'Collection Size',
+    property: COLLECTION_SIZE_UNIT_FIELD,
+    rangeProperty: COLLECTION_SIZE_VALUE_FIELD,
+    queryType: 'facet',
+    // The unit is only meaningful alongside a collection size, so "No
+    // collection size" is not a useful option for this filter.
+    showMissing: false,
+    description: COLLECTION_SIZE_TOOLTIP,
+    // Units are indexed as authored, so the filter tag is capitalized to match
+    // the dropdown's label for the same term.
+    transformData: (item: { count: number; term: string; label?: string }) => ({
+      ...item,
+      label: formatUnitLabel(item.label || item.term),
+    }),
+    // No `chart`: a 143-term uncontrolled vocabulary in which the top 9 terms
+    // cover >99.8% of records does not make a readable pie or bar chart.
+    category: 'Shared / Dataset',
+    tabIds: ['d', 'dc'],
   },
   {
     id: 'variableMeasured.name.raw',
@@ -333,6 +365,10 @@ export const FILTER_CONFIGS: FilterConfig[] = [
   if (!SHOW_DATA_COLLECTIONS_TAB && config.id === CONTENT_TYPE_ABOUT_FIELD) {
     return false;
   }
+  // Collection Size is gated separately from the Data Collections tab.
+  if (!SHOW_COLLECTION_SIZE_FILTER && config.id === COLLECTION_SIZE_FILTER_ID) {
+    return false;
+  }
   return true;
 }) as FilterConfig[];
 
@@ -380,6 +416,32 @@ export const FACET_PROPERTIES_BY_CATEGORY = FILTER_CONFIGS.reduce(
 export const getFacetPropertiesForCategory = (
   category: FilterCategory,
 ): string => FACET_PROPERTIES_BY_CATEGORY[category] ?? '';
+
+/**
+ * Every key a filter owns in the selected-filters object.
+ *
+ * Most filters own a single key (`property`). A filter that also declares a
+ * `rangeProperty` owns two, so anywhere filter state is enumerated — seeding
+ * the empty defaults, clearing all filters, deciding which sections open with
+ * an active selection — must go through this rather than reading `property`
+ * directly, or the range key is silently skipped.
+ */
+export const getFilterStateProperties = (config: FilterConfig): string[] =>
+  config.rangeProperty
+    ? [config.property, config.rangeProperty]
+    : [config.property];
+
+/**
+ * Empty-array defaults for every filter state key. Used to seed the filters
+ * object and to reset it when clearing all filters.
+ */
+export const getDefaultFilterState = (): Record<string, []> =>
+  FILTER_CONFIGS.reduce((acc, config) => {
+    getFilterStateProperties(config).forEach(property => {
+      acc[property] = [];
+    });
+    return acc;
+  }, {} as Record<string, []>);
 
 /**
  * Get a filter config by id

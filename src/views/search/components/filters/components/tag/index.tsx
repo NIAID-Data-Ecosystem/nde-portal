@@ -22,6 +22,11 @@ import { SearchResultsHeading } from '../../../search-results-header';
 import { usePaginationContext } from 'src/views/search/context/pagination-context';
 
 import { queryFilterObject2String } from '../../utils/query-string';
+import { getFilterStateProperties } from '../../config';
+import {
+  GROUPED_VALUE_FILTER_PROPERTIES,
+  RANGE_FILTER_PROPERTIES,
+} from 'src/views/search/config/collection-size';
 
 interface FilterTagsProps {
   filtersConfig: FilterConfig[];
@@ -52,9 +57,15 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
   ({ filtersConfig, selectedFilters, handleRouteUpdate, removeAllFilters }) => {
     const { resetPagination } = usePaginationContext();
 
-    // Convert filter config list to map for quick access
+    // Convert filter config list to map for quick access. A filter's range
+    // key maps to the same config so its tag is named after the filter
+    // ("Collection Size") rather than the raw API field.
     const configMap = useMemo(() => {
-      return Object.fromEntries(filtersConfig.map(cfg => [cfg.property, cfg]));
+      return Object.fromEntries(
+        filtersConfig.flatMap(cfg =>
+          getFilterStateProperties(cfg).map(property => [property, cfg]),
+        ),
+      );
     }, [filtersConfig]);
 
     // Generate list of tags to render from selected filters
@@ -70,8 +81,18 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
     ) => {
       let updatedFilters: SelectedFilterType;
 
-      // If filterValue is an array of 2 dates, clear all
+      // A range tag stands for both of its endpoints, and a grouped-value tag
+      // for every spelling of one selection, so their × clears the whole key.
+      // Removing a single value would leave a half-open range, or a leftover
+      // spelling that keeps filtering.
       if (
+        RANGE_FILTER_PROPERTIES.has(filterKey) ||
+        GROUPED_VALUE_FILTER_PROPERTIES.has(filterKey)
+      ) {
+        updatedFilters = { ...selectedFilters, [filterKey]: [] };
+      }
+      // If filterValue is an array of 2 dates, clear all
+      else if (
         filterKey === 'date' &&
         Array.isArray(filterValue) &&
         filterValue.length === 2 &&

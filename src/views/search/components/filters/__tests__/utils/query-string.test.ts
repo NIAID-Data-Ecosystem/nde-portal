@@ -8,6 +8,9 @@ import {
   normalizeFilterValues,
   getSelectedFilterDisplay,
 } from '../../utils/query-string';
+import { COLLECTION_SIZE_VALUE_FIELD } from 'src/views/search/config/collection-size';
+
+const RANGE_FIELD = COLLECTION_SIZE_VALUE_FIELD;
 
 describe('filters/utils/query-string', () => {
   it('builds query strings for standard values, date ranges, @type, and exists objects', () => {
@@ -153,6 +156,65 @@ describe('filters/utils/query-string', () => {
       expect(queryFilterString2Object(`(${ABOUT}:("Genome"))`)).toEqual({
         [ABOUT]: ['Genome'],
       });
+    });
+  });
+
+  describe('numeric range filters', () => {
+    // Endpoints are unquoted so the API reads them as numbers rather than
+    // as keyword terms.
+    it('serializes both endpoints as an unquoted range', () => {
+      expect(
+        queryFilterObject2String({ [RANGE_FIELD]: ['1000', '50000'] }),
+      ).toBe(`(${RANGE_FIELD}:[1000 TO 50000])`);
+    });
+
+    it('leaves the upper end unbounded when only a minimum is given', () => {
+      expect(queryFilterObject2String({ [RANGE_FIELD]: ['1000'] })).toBe(
+        `(${RANGE_FIELD}:[1000 TO *])`,
+      );
+    });
+
+    it('keeps a wildcard endpoint as given', () => {
+      expect(queryFilterObject2String({ [RANGE_FIELD]: ['*', '500'] })).toBe(
+        `(${RANGE_FIELD}:[* TO 500])`,
+      );
+    });
+
+    it('returns null for an empty range', () => {
+      expect(queryFilterObject2String({ [RANGE_FIELD]: [] })).toBeNull();
+    });
+
+    it('round-trips a range back into its endpoints', () => {
+      const filters = { [RANGE_FIELD]: ['1000', '50000'] };
+      const built = queryFilterObject2String(filters);
+
+      expect(queryFilterString2Object(built!)).toEqual(filters);
+    });
+
+    it('round-trips a range alongside its unit and other filters', () => {
+      const filters = {
+        'collectionSize.unitText': ['Genomes'],
+        [RANGE_FIELD]: ['1000', '50000'],
+        topic: ['alpha'],
+      };
+      const built = queryFilterObject2String(filters);
+
+      expect(built).toBe(
+        '(collectionSize.unitText:("Genomes")) AND ' +
+          `(${RANGE_FIELD}:[1000 TO 50000]) AND ` +
+          '(topic:("alpha"))',
+      );
+      expect(queryFilterString2Object(built!)).toEqual(filters);
+    });
+
+    // The bracket-stripping added for numeric ranges must not touch the
+    // date range, whose endpoints are quoted.
+    it('leaves the quoted date range untouched', () => {
+      const filters = { date: ['2020-01-01', '2021-12-31'] };
+      const built = queryFilterObject2String(filters);
+
+      expect(built).toBe('(date:["2020-01-01" TO "2021-12-31"])');
+      expect(queryFilterString2Object(built!)).toEqual(filters);
     });
   });
 });

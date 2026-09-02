@@ -13,6 +13,10 @@ export const SHOW_SAMPLES_TAB = true;
 // Hide the data collections tab on the search results page in production builds until approved. To enable tab in production, set this flag to `true`.
 export const SHOW_DATA_COLLECTIONS_TAB = !isProd;
 
+// Show the Collection Size filter in the search filters panel in non-production
+// environments until approved. To enable in production, set this flag to `true`.
+export const SHOW_COLLECTION_SIZE_FILTER = !isProd;
+
 // Show AI-assisted search toggle and related components (e.g. banner) in non-production environments for testing/review. To enable in production, set this flag to `true`.
 export const SHOW_AI_ASSISTED_SEARCH = true;
 

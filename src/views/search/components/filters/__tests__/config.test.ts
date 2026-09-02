@@ -13,8 +13,10 @@ import {
   ALL_FACET_PROPERTIES,
   FACET_PROPERTIES_BY_CATEGORY,
   FILTER_CONFIGS,
+  getDefaultFilterState,
   getFacetPropertiesForCategory,
   getFilterById,
+  getFilterStateProperties,
 } from '../config';
 
 describe('filters/config', () => {
@@ -94,6 +96,69 @@ describe('filters/config', () => {
           'ClinicalStudy',
         );
       });
+    });
+  });
+
+  describe('Collection Size', () => {
+    const collectionSize = () => getFilterById('collectionSize');
+
+    it('lives in Shared / Dataset and hides the missing-value option', () => {
+      expect(collectionSize()?.name).toBe('Collection Size');
+      expect(collectionSize()?.category).toBe('Shared / Dataset');
+      expect(collectionSize()?.showMissing).toBe(false);
+    });
+
+    // Only the unit is a facetable keyword; the numeric field is filter-only,
+    // so faceting it would return terms rather than anything usable.
+    it('aggregates the unit field only', () => {
+      expect(collectionSize()?.property).toBe('collectionSize.unitText');
+      expect(
+        getFacetPropertiesForCategory('Shared / Dataset').split(','),
+      ).toContain('collectionSize.unitText');
+      expect(ALL_FACET_PROPERTIES.split(',')).not.toContain(
+        'collectionSize.minValue',
+      );
+    });
+
+    it('declares the numeric field as its range key', () => {
+      expect(collectionSize()?.rangeProperty).toBe('collectionSize.minValue');
+    });
+
+    // A 143-term uncontrolled vocabulary whose top 9 terms cover >99.8% of
+    // records makes no readable pie or bar chart.
+    it('has no visualization chart', () => {
+      expect(collectionSize()?.chart).toBeUndefined();
+    });
+  });
+
+  describe('getFilterStateProperties', () => {
+    it('returns the single property for an ordinary filter', () => {
+      const config = getFilterById('conditionsOfAccess')!;
+      expect(getFilterStateProperties(config)).toEqual(['conditionsOfAccess']);
+    });
+
+    it('returns both keys for a filter with a range', () => {
+      expect(
+        getFilterStateProperties(getFilterById('collectionSize')!),
+      ).toEqual(['collectionSize.unitText', 'collectionSize.minValue']);
+    });
+  });
+
+  describe('getDefaultFilterState', () => {
+    const defaults = getDefaultFilterState();
+
+    it('seeds an empty array for every filter state key', () => {
+      FILTER_CONFIGS.forEach(config => {
+        getFilterStateProperties(config).forEach(property => {
+          expect(defaults[property]).toEqual([]);
+        });
+      });
+    });
+
+    // Clearing all filters resets this object, so a missed key would survive
+    // "Clear All".
+    it("includes a filter's range key", () => {
+      expect(defaults['collectionSize.minValue']).toEqual([]);
     });
   });
 

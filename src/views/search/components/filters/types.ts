@@ -85,6 +85,16 @@ export interface FilterConfig {
   category: FilterCategory;
   /** Optional: The property to use for filtering, if different from property (e.g., 'sourceOrganization.name') */
   filterProperty?: string;
+  /**
+   * Optional: An additional API field this filter writes into the selected
+   * filters object, serialized as an unquoted numeric range `[min TO max]`
+   * (see RANGE_FILTER_PROPERTIES).
+   *
+   * A filter that declares one owns two keys in `SelectedFilterType`, so use
+   * `getFilterStateProperties` rather than `property` wherever a filter's
+   * state keys are enumerated.
+   */
+  rangeProperty?: string;
   /** Tooltip description */
   description: string;
   /** Query type determines how the API query is built */
