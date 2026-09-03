@@ -1,4 +1,11 @@
-import { Button, ButtonProps, Icon, Popover, Stack } from '@chakra-ui/react';
+import {
+  Button,
+  ButtonProps,
+  Icon,
+  Popover,
+  Portal,
+  Stack,
+} from '@chakra-ui/react';
 import React from 'react';
 import { FaCaretDown } from 'react-icons/fa6';
 
@@ -30,6 +37,7 @@ export const NavDropdownTrigger = ({
       positioning={{
         placement: 'bottom-start',
       }}
+      portalled
     >
       <Popover.Context>
         {({ open: isOpen }) => (
@@ -60,20 +68,22 @@ export const NavDropdownTrigger = ({
 
 export const NavDropdown = ({ children }: { children: React.ReactNode }) => {
   return (
-    <Popover.Positioner>
-      <Popover.Content
-        border={0}
-        boxShadow='xl'
-        bg='white'
-        rounded='xl'
-        minW='sm'
-      >
-        <Popover.Arrow />
-        <Popover.Body>
-          <Stack>{children}</Stack>
-        </Popover.Body>
-      </Popover.Content>
-    </Popover.Positioner>
+    <Portal>
+      <Popover.Positioner>
+        <Popover.Content
+          border={0}
+          boxShadow='xl'
+          bg='white'
+          rounded='xl'
+          minW='sm'
+        >
+          <Popover.Arrow />
+          <Popover.Body>
+            <Stack>{children}</Stack>
+          </Popover.Body>
+        </Popover.Content>
+      </Popover.Positioner>
+    </Portal>
   );
 };
 
