@@ -87,7 +87,7 @@ const DateFilterContent: React.FC<
       <Flex p={4} bg='error' role='alert'>
         <Text
           fontSize='md'
-          lineHeight='base'
+          lineHeight='taller'
           fontWeight='semibold'
           color='white'
         >
