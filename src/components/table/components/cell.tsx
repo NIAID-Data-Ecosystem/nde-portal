@@ -116,7 +116,6 @@ export const Th = React.memo(
         borderBottomColor={`${colorPalette}.200`}
         flex={1}
         fontSize='xs'
-        fontWeight='bold'
         justifyContent='flex-start'
         lineHeight='moderate'
         minW='280px'
@@ -131,8 +130,10 @@ export const Th = React.memo(
           {label && (
             <Flex alignItems='center' gap={1}>
               <Tooltip content={tooltip}>
-                <Box as='span' display='inline-flex' color='gray.600'>
-                  <Label>{label}</Label>
+                <Box as='span' display='inline-flex'>
+                  <Label color='gray.600' fontWeight='bold'>
+                    {label}
+                  </Label>
                 </Box>
               </Tooltip>
             </Flex>
