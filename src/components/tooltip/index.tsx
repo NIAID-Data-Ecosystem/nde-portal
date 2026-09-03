@@ -52,7 +52,7 @@ const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
               color='text.body'
               fontSize='13px'
               fontWeight='normal'
-              lineHeight='short'
+              lineHeight='moderate'
               border='1px solid'
               borderColor={borderColor}
               {...contentProps}

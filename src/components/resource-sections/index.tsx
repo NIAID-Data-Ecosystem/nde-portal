@@ -94,7 +94,7 @@ const Sections = ({
         <Stack flexDirection='column' w='100%' px={4} my={4}>
           {/* Show description */}
           <Stack flexDirection='column' w='100%' gap={0.5} px={[0, 0, 4]}>
-            <Text fontWeight='semibold' lineHeight='short' fontSize='sm'>
+            <Text fontWeight='semibold' lineHeight='moderate' fontSize='sm'>
               Description
             </Text>
             <DescriptionSection

@@ -80,14 +80,14 @@ export const Sidebar = ({
                 <ScrollContainer maxH={250}>
                   <List.Root as='ul' ml={0} gap={2} my={2}>
                     {searchHistory.slice(0, 3).map((search, idx) => (
-                      <List.Item key={idx} lineHeight='short' display='flex'>
+                      <List.Item key={idx} lineHeight='moderate' display='flex'>
                         <Icon
                           color='link'
                           boxSize={3}
                           m={1}
                           mr={1.5}
                           mt={1.5}
-                          lineHeight='short'
+                          lineHeight='moderate'
                         >
                           <FaMagnifyingGlass />
                         </Icon>

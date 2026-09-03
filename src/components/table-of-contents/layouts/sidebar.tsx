@@ -51,7 +51,7 @@ export const SidebarItem: React.FC<{
         <NextLink href={href}>
           {typeof label === 'string' ? <Label>{label}</Label> : label}
           {subLabel && (
-            <Text fontSize='sm' lineHeight='short'>
+            <Text fontSize='sm' lineHeight='moderate'>
               {subLabel}
             </Text>
           )}
@@ -63,7 +63,7 @@ export const SidebarItem: React.FC<{
 
 export const Label: React.FC<HeadingProps> = ({ children, ...props }) => {
   return (
-    <Heading size='h6' lineHeight='short' mb={1} {...props}>
+    <Heading size='h6' lineHeight='moderate' mb={1} {...props}>
       {children}
     </Heading>
   );

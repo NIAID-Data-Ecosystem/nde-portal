@@ -25,7 +25,7 @@ export const DataDictionary: React.FC<DataDictionaryProps> = ({
         <Heading as='h2' fontSize='lg'>
           Table Dictionary
         </Heading>
-        <Text lineHeight='short'>
+        <Text lineHeight='moderate'>
           Definitions of fields and values used in the Repository Matcher
         </Text>
       </VStack>

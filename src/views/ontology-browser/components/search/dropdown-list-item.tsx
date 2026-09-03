@@ -58,7 +58,7 @@ export const DropdownListItem = React.memo(
             color='text.body'
             fontSize='sm'
             fontWeight='normal'
-            lineHeight='short'
+            lineHeight='moderate'
             textAlign='left'
             wordBreak='break-word'
           >

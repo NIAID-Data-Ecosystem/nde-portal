@@ -274,7 +274,7 @@ const RepositoryMatcher: NextPage = () => {
         <Heading as='h1' size='lg'>
           Repository Matcher
         </Heading>
-        <Text fontSize='md' lineHeight='short'>
+        <Text fontSize='md' lineHeight='moderate'>
           Find a suitable repository that accepts research data deposits. Filter
           by research domain, repository type, and other criteria.
         </Text>

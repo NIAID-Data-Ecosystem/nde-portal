@@ -128,7 +128,7 @@ export const CheckboxMenu = <T extends Option>({
                         fontSize='sm'
                         fontStyle='italic'
                         fontWeight='normal'
-                        lineHeight='short'
+                        lineHeight='moderate'
                         mt={1.5}
                       >
                         {description}

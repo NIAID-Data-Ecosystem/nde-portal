@@ -26,7 +26,7 @@ import { useAuth } from 'src/hooks/useAuth';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
 const ListItemContent = ({ children }: { children: React.ReactNode }) => (
-  <HStack alignItems='center' gap={4} lineHeight='short'>
+  <HStack alignItems='center' gap={4} lineHeight='moderate'>
     <Icon boxSize={4} aria-hidden='true' color='niaid.500'>
       <FaCheck />
     </Icon>

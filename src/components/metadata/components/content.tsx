@@ -30,7 +30,7 @@ export const MetadataContent = ({
       flexWrap='wrap'
       w='100%'
     >
-      <Box flex={1} fontSize='xs' lineHeight='short' minW='130px' mx={0.5}>
+      <Box flex={1} fontSize='xs' lineHeight='moderate' minW='130px' mx={0.5}>
         {scientificName && <Text fontWeight='semibold'>{scientificName}</Text>}
         <Flex>
           {img && (

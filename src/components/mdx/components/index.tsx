@@ -271,7 +271,7 @@ export const MDXComponents = {
         as='figcaption'
         fontSize='xs'
         opacity={0.8}
-        lineHeight='short'
+        lineHeight='moderate'
         fontStyle='italic'
         mt={1}
         {...props}

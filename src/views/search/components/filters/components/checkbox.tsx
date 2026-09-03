@@ -170,7 +170,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
                 wordBreak='break-word'
                 color='text.heading'
                 fontSize='xs'
-                lineHeight='short'
+                lineHeight='moderate'
                 mr={0.5}
                 display='flex'
                 flexDirection='column'
@@ -184,7 +184,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
                     wordBreak='break-word'
                     color='text.heading'
                     fontSize='xs'
-                    lineHeight='short'
+                    lineHeight='moderate'
                     fontWeight='normal'
                     mr={0.5}
                   >

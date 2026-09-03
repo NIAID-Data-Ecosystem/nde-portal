@@ -49,7 +49,7 @@ export const StyledCard: React.FC<StyledCardProps> = ({
 }) => {
   return (
     <StyledCardWrapper id={id} loading={loading}>
-      <VStack alignItems='flex-start' lineHeight='short'>
+      <VStack alignItems='flex-start' lineHeight='moderate'>
         <Stack flexDirection='row' alignItems='unset' flexWrap='wrap-reverse'>
           <Stack
             flexDirection='column'
@@ -161,7 +161,7 @@ export const StyledCardSubLabel: React.FC<{ children: string }> = ({
   children,
 }) => {
   return (
-    <Text fontWeight='normal' fontSize='sm' lineHeight='short' opacity='0.8'>
+    <Text fontWeight='normal' fontSize='sm' lineHeight='moderate' opacity='0.8'>
       {children}
     </Text>
   );

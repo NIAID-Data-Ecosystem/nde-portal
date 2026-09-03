@@ -54,7 +54,7 @@ export const LoginErrorBanner = () => {
           <Icon boxSize={6} fill='error'>
             <FaCircleXmark />
           </Icon>
-          <Text fontSize='md' fontWeight='medium' lineHeight='short'>
+          <Text fontSize='md' fontWeight='medium' lineHeight='moderate'>
             {message}
           </Text>
         </HStack>

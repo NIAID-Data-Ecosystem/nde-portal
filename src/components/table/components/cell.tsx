@@ -19,7 +19,7 @@ export const Label = React.memo(({ children, ...props }: TextProps) => {
       fontSize='xs'
       color='gray.800'
       textTransform='uppercase'
-      lineHeight='short'
+      lineHeight='moderate'
       textAlign='start'
       {...props}
     >
@@ -35,7 +35,7 @@ export const Content = React.memo(({ children, ...props }: BoxProps) => {
       className='content'
       my={2}
       fontSize='xs'
-      lineHeight='short'
+      lineHeight='moderate'
       whiteSpace='pre-wrap'
       wordBreak='break-word'
       fontWeight='normal'
@@ -63,7 +63,7 @@ export const Cell = React.memo(({ label, children, ...props }: CellProps) => {
       py={1}
       minW='280px'
       fontSize='xs'
-      lineHeight='short'
+      lineHeight='moderate'
       {...props}
     >
       {label && <Label>{label}</Label>}
@@ -118,7 +118,7 @@ export const Th = React.memo(
         fontSize='xs'
         fontWeight='bold'
         justifyContent='flex-start'
-        lineHeight='short'
+        lineHeight='moderate'
         minW='280px'
         overflow='hidden'
         px={4}
@@ -141,7 +141,7 @@ export const Th = React.memo(
             <Box
               my={1}
               fontSize='xs'
-              lineHeight='short'
+              lineHeight='moderate'
               whiteSpace='pre-wrap'
               wordBreak='break-word'
               fontWeight='normal'

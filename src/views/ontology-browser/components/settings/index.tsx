@@ -95,7 +95,7 @@ export const OntologyBrowserSettings: React.FC<OntologyPopoverProps> = ({
                   fontSize='sm'
                   fontStyle='italic'
                   fontWeight='normal'
-                  lineHeight='short'
+                  lineHeight='moderate'
                   mt={1.5}
                 >
                   {description}

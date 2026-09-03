@@ -79,7 +79,7 @@ const SavedPage = () => {
         <Heading as='h1' size='lg'>
           {SAVED_PAGE_COPY.heading}
         </Heading>
-        <Text fontSize='md' lineHeight='short'>
+        <Text fontSize='md' lineHeight='moderate'>
           {SAVED_PAGE_COPY.description}
         </Text>
         {isDevMode && (
@@ -95,7 +95,7 @@ const SavedPage = () => {
             <Text fontSize='sm' color='orange.800' fontWeight='semibold'>
               {SAVED_PAGE_COPY.devModeWarning.title}
             </Text>
-            <Text fontSize='sm' color='orange.800' lineHeight='short'>
+            <Text fontSize='sm' color='orange.800' lineHeight='moderate'>
               {SAVED_PAGE_COPY.devModeWarning.description}
             </Text>
           </Box>

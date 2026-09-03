@@ -36,7 +36,7 @@ export const TooltipWrapper = ({
       gap={2}
       alignItems='flex-start'
       fontSize='sm'
-      lineHeight='short'
+      lineHeight='moderate'
       {...props}
     >
       <VStack alignItems='flex-start' gap={0.5}>

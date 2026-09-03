@@ -20,10 +20,10 @@ export const ExampleOfWorkDisplay = ({
     ? [encodingFormat]
     : [];
   return (
-    <Stack mt={4} lineHeight='short' gap={4} fontSize='xs'>
+    <Stack mt={4} lineHeight='moderate' gap={4} fontSize='xs'>
       {schemaVersion && (
         <Box>
-          <Text fontWeight='semibold' lineHeight='short' mb={0.5}>
+          <Text fontWeight='semibold' lineHeight='moderate' mb={0.5}>
             Schema version
           </Text>
           <Link href={schemaVersion} isExternal>
@@ -34,7 +34,7 @@ export const ExampleOfWorkDisplay = ({
 
       {encodingFormats.length > 0 && (
         <Box>
-          <Text fontWeight='semibold' lineHeight='short' mb={0.5}>
+          <Text fontWeight='semibold' lineHeight='moderate' mb={0.5}>
             Encoding format
           </Text>
           <HStack
@@ -63,7 +63,7 @@ export const ExampleOfWorkDisplay = ({
 
       {properties.length > 0 && (
         <Box>
-          <Text fontWeight='semibold' lineHeight='short' mb={0.5}>
+          <Text fontWeight='semibold' lineHeight='moderate' mb={0.5}>
             Schema properties
           </Text>
 
@@ -90,7 +90,7 @@ export const ExampleOfWorkDisplay = ({
             >
               <Table.Body>
                 {properties.map((property, index) => (
-                  <Table.Row key={index} lineHeight='short' fontSize='xs'>
+                  <Table.Row key={index} lineHeight='moderate' fontSize='xs'>
                     <Table.Cell
                       fontSize='inherit'
                       fontWeight='medium'

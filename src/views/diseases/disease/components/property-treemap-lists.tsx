@@ -136,7 +136,7 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
           flexDirection='column'
           px={{ base: 0, md: 4 }}
         >
-          <Text fontWeight='medium' lineHeight='short'>
+          <Text fontWeight='medium' lineHeight='moderate'>
             Select Chart Type
           </Text>
           <RadioGroup.Root

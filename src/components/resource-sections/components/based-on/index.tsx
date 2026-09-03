@@ -331,7 +331,7 @@ export const BasedOnTable = ({
                           px={3}
                           my={2}
                           fontSize='xs'
-                          lineHeight='short'
+                          lineHeight='moderate'
                           whiteSpace='pre-wrap'
                           wordBreak='break-word'
                           fontWeight='normal'
@@ -389,7 +389,7 @@ export const BasedOnActionProcess = ({
       bg='info.subtle'
       borderRadius='sm'
       fontSize='sm'
-      lineHeight='short'
+      lineHeight='moderate'
       p={[2, 4]}
     >
       {/* "How to" steps are collapsed by default to keep the card compact. */}
@@ -398,7 +398,7 @@ export const BasedOnActionProcess = ({
           <Accordion.ItemContext>
             {({ expanded }) => (
               <>
-                <Flex flexDirection='column' rowGap={0.5} lineHeight='short'>
+                <Flex flexDirection='column' rowGap={0.5} lineHeight='moderate'>
                   {/* Name of action */}
                   <Text fontWeight='semibold'>
                     {name || 'Generation process'}

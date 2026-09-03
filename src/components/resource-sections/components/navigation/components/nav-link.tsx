@@ -18,7 +18,7 @@ export const NavLink: React.FC<NavLinkProps> = ({
     <Link
       variant='plain'
       display='flex'
-      lineHeight='short'
+      lineHeight='moderate'
       pl={3}
       py={0.5}
       borderBottom='none!important'

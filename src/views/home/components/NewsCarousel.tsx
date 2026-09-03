@@ -179,7 +179,7 @@ export const NewsCarousel = ({
                   p={0}
                   fontSize='lg'
                   fontWeight='semibold'
-                  lineHeight='short'
+                  lineHeight='moderate'
                   size='h5'
                 >
                   {carouselCard.name}
@@ -209,7 +209,7 @@ export const NewsCarousel = ({
                 </Heading>
                 <Card.Body p={0}>
                   {
-                    <Text as='span' mt={2} fontSize='sm' lineHeight='short'>
+                    <Text as='span' mt={2} fontSize='sm' lineHeight='moderate'>
                       {formatDate(
                         carouselCard.publishedAt || carouselCard.updatedAt,
                       )}{' '}

@@ -366,7 +366,7 @@ export const CompatibilityBadge = ({
                     )}
                   </>
                 ) : (
-                  <Text lineHeight='short'>
+                  <Text lineHeight='moderate'>
                     {tooltipData.augmented ? (
                       <Text as='span' mt={1}>
                         <Icon color='green.500' boxSize={3} mr={0.5}>

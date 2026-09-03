@@ -47,7 +47,7 @@ export const SearchHistoryItem = React.memo(
         </Icon>
         <Text
           fontSize='sm'
-          lineHeight='short'
+          lineHeight='moderate'
           color='text.body'
           wordBreak='break-word'
           fontWeight='normal'

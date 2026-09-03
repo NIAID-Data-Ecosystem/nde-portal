@@ -15,7 +15,7 @@ export const Summary = ({
 
   return (
     <Flex
-      lineHeight='short'
+      lineHeight='moderate'
       display='flex'
       alignItems='baseline'
       flexWrap='wrap'
@@ -52,7 +52,7 @@ export const Summary = ({
         </Link>
       </Tooltip>
       <Text
-        lineHeight='short'
+        lineHeight='moderate'
         pt={1}
         mx={1}
         fontSize='lg'

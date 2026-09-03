@@ -255,7 +255,7 @@ const Home: NextPage<{
                 <Heading as='h2' fontSize='2xl' fontWeight='semibold' mb={4}>
                   Explore All Included Resources
                 </Heading>
-                <Text lineHeight='short'>
+                <Text lineHeight='moderate'>
                   The following <strong>Resource Catalogs</strong> (collections
                   of scientific information or research outputs) and{' '}
                   <strong>Dataset Repositories</strong> (collections of data of

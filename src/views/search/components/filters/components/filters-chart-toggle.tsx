@@ -5,7 +5,7 @@ export const FiltersDisclaimer = () => {
   return (
     <Text
       fontSize='sm'
-      lineHeight='short'
+      lineHeight='moderate'
       textAlign='start'
       _icon={{ verticalAlign: 'baseline', mx: 1.5 }}
     >

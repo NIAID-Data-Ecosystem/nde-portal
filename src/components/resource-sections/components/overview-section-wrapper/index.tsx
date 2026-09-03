@@ -21,7 +21,7 @@ export const OverviewSectionWrapper = ({
 }: OverviewSectionWrapper) => {
   return (
     <Skeleton loading={!!loading} width='100%' {...props}>
-      <Flex alignItems='baseline' lineHeight='short' mb={1} minH={'22px'}>
+      <Flex alignItems='baseline' lineHeight='moderate' mb={1} minH={'22px'}>
         <MetadataLabel label={label} />
         {tooltipLabel && <MetadataTooltip tooltipLabel={tooltipLabel} />}
       </Flex>

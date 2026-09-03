@@ -59,7 +59,12 @@ const Header = ({
         pb={2}
       >
         <HStack alignItems='flex-start' justifyContent='space-between' w='100%'>
-          <Heading as='h1' fontSize='xl' fontWeight='bold' lineHeight='short'>
+          <Heading
+            as='h1'
+            fontSize='xl'
+            fontWeight='bold'
+            lineHeight='moderate'
+          >
             <DisplayHTMLString>{name || alternateName}</DisplayHTMLString>
             {!!name && alternateName && (
               <Heading

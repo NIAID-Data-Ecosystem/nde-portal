@@ -54,13 +54,13 @@ const SectionCard = (attributes: SectionCardProps) => {
               color='gray.700'
               my={0}
               mt={1}
-              lineHeight='short'
+              lineHeight='moderate'
             >
               {attributes.subtitle}
             </Heading>
           )}
           {attributes.description && (
-            <Card.Body p={0} lineHeight='short'>
+            <Card.Body p={0} lineHeight='moderate'>
               {/* useful for client-side fetch mdx handling */}
               <ReactMarkdown components={MDXComponents}>
                 {attributes.description}

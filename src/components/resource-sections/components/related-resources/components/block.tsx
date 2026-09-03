@@ -93,7 +93,7 @@ export const RelatedResourceBlock = ({
       {(label || type || additionalType) && (
         <RelatedResourceBlockItem label='' w='100%'>
           {(additionalType || label || type) && (
-            <Text w='100%' lineHeight='short' fontWeight='medium'>
+            <Text w='100%' lineHeight='moderate' fontWeight='medium'>
               {/* Label: name or identifier or url*/}
               {label && (
                 <>

@@ -110,7 +110,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
             <Heading
               size='sm'
               fontWeight='medium'
-              lineHeight='short'
+              lineHeight='moderate'
               color='text.heading'
             >
               {title}

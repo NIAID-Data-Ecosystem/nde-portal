@@ -86,14 +86,14 @@ const Component = ({
       <Flex bg='#fff'>
         {url ? (
           <Link href={url} isExternal lineHeight='shorter'>
-            <Text fontSize='12px' lineHeight='short'>
+            <Text fontSize='12px' lineHeight='moderate'>
               {type === 'ResourceCatalog'
                 ? `Provided by ${source.name}`
                 : `Indexed in ${source.name}`}
             </Text>
           </Link>
         ) : (
-          <Text fontSize='12px' lineHeight='short'>
+          <Text fontSize='12px' lineHeight='moderate'>
             {type === 'ResourceCatalog'
               ? `Provided by ${source.name}`
               : `Indexed in ${source.name}`}

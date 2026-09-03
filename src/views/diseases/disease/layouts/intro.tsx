@@ -57,7 +57,7 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
         {/* Subtitle */}
         {(subtitle || loading) && (
           <SkeletonText loading={loading} noOfLines={2} height={5}>
-            <Text color='gray.700' lineHeight='short'>
+            <Text color='gray.700' lineHeight='moderate'>
               {subtitle}
             </Text>
           </SkeletonText>
@@ -109,7 +109,7 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
                     as='figcaption'
                     fontSize='xs'
                     opacity={0.8}
-                    lineHeight='short'
+                    lineHeight='moderate'
                     fontStyle='italic'
                     mt={1}
                     {...props}

@@ -102,7 +102,7 @@ const Provenance: React.FC<Provenance> = ({
       <Text
         as='dd'
         fontSize='xs'
-        lineHeight='short'
+        lineHeight='moderate'
         whiteSpace='pre-wrap'
         wordBreak='break-word'
         fontWeight='normal'

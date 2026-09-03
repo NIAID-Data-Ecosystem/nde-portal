@@ -218,7 +218,7 @@ export const OntologySearchList = ({
               </Box>
 
               {/* Query summary */}
-              {/* <Text mt={4} px={6} lineHeight='short' fontSize='sm'>
+              {/* <Text mt={4} px={6} lineHeight='moderate' fontSize='sm'>
                 Search for resources associated with: <br />
                 {searchList.map((item, idx) => {
                   return (

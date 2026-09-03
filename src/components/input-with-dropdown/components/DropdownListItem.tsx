@@ -55,7 +55,7 @@ export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
         <Heading
           as='h4'
           size='sm'
-          lineHeight='short'
+          lineHeight='moderate'
           color='text.body'
           wordBreak='break-word'
           fontWeight='normal'

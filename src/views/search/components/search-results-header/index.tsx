@@ -69,7 +69,7 @@ export const SearchResultsHeader = ({
     <VStack alignItems='flex-start' gap={1} fontSize='sm' flex={1}>
       {showAIBanner && (
         <AIBanner>
-          <Text lineHeight='short'>
+          <Text lineHeight='moderate'>
             AI-assisted search is active. Results are limited to the top 1,000
             most relevant matches. Applying any filter or changing tabs triggers
             a new search, so result counts may change.{' '}

@@ -29,7 +29,12 @@ const ResultsCount: React.FC<ResultsCount> = ({ loading, total, ...props }) => {
           mr={2}
         />
       ) : (
-        <Text fontSize='xl' fontWeight='semibold' lineHeight='short' {...props}>
+        <Text
+          fontSize='xl'
+          fontWeight='semibold'
+          lineHeight='moderate'
+          {...props}
+        >
           {total.toLocaleString()}
           {total > 0 && (
             <Text as='span' fontSize='md' fontWeight='inherit' ml={1}>

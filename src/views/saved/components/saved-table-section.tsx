@@ -165,7 +165,7 @@ export function SavedTableSection<TItem>({
               {data.length} {data.length === 1 ? unit.singular : unit.plural}
             </Text>
           </Text>
-          <Text lineHeight='short' width='400px'>
+          <Text lineHeight='moderate' width='400px'>
             {description}
           </Text>
         </VStack>

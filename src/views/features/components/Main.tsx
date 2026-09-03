@@ -57,7 +57,7 @@ const Main = ({ data, loading }: MainContentProps) => {
               </Heading>
             </SkeletonText>
             <SkeletonText loading={loading} mb={4} noOfLines={1} height={6}>
-              <Text color='gray.700' lineHeight='short'>
+              <Text color='gray.700' lineHeight='moderate'>
                 {data?.subtitle || ''}
               </Text>
             </SkeletonText>

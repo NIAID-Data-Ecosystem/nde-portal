@@ -166,7 +166,7 @@ export const Wrapper = ({
       p={{ base: 4, md: 6 }}
       pt={{ base: 2, md: label ? 0 : 6 }}
       gap={{ base: 2, md: 4 }}
-      lineHeight='short'
+      lineHeight='moderate'
     >
       {children}
     </Stack>

@@ -233,7 +233,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                                     {props.property === 'sample' && url && (
                                       <Link
                                         fontSize='xs'
-                                        lineHeight='short'
+                                        lineHeight='moderate'
                                         display='flex'
                                         ml={4}
                                         asChild
@@ -245,7 +245,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                                     )}
                                     {items.length > 3 && (
                                       <Link
-                                        lineHeight='short'
+                                        lineHeight='moderate'
                                         display='flex'
                                         ml={4}
                                         fontSize='xs'

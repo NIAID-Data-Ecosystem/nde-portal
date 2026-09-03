@@ -18,7 +18,7 @@ export const OntologyBrowserHeader = ({
     <VStack
       alignItems='flex-start'
       fontSize='sm'
-      lineHeight='short'
+      lineHeight='moderate'
       gap={1}
       flex={1}
     >

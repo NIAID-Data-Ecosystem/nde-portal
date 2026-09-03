@@ -26,7 +26,13 @@ export const MetadataListItem = ({
   property: string;
 }) => {
   return (
-    <List.Item mb={3} display='flex' fontSize='xs' lineHeight='short' w='100%'>
+    <List.Item
+      mb={3}
+      display='flex'
+      fontSize='xs'
+      lineHeight='moderate'
+      w='100%'
+    >
       <List.Indicator
         m={2}
         mx={1}

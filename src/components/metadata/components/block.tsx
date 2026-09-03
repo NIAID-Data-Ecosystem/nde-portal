@@ -40,7 +40,7 @@ export const MetadataBlock = ({
         borderRadius='semi'
       />
 
-      <Box fontSize='xs' mx={1} lineHeight='short'>
+      <Box fontSize='xs' mx={1} lineHeight='moderate'>
         {disabled ? <></> : children}
       </Box>
     </Box>

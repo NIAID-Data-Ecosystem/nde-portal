@@ -135,7 +135,7 @@ export const SectionDescription: React.FC<TextProps> = ({
   ...props
 }) => {
   return (
-    <Text lineHeight='short' mb={2} {...props}>
+    <Text lineHeight='moderate' mb={2} {...props}>
       {children}
     </Text>
   );

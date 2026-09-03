@@ -76,7 +76,7 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
             <Flex alignItems='center'>
               <Text
                 fontSize='xs'
-                lineHeight='short'
+                lineHeight='moderate'
                 fontWeight='semibold'
                 color='text.body'
               >
@@ -96,7 +96,7 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
           </SkeletonText>
           <SkeletonText loading={loading} noOfLines={1} height={5}>
             {metadata?.date && (
-              <Text fontSize='xs' lineHeight='short' fontWeight='semibold'>
+              <Text fontSize='xs' lineHeight='moderate' fontWeight='semibold'>
                 Data last harvested:
                 <Text as='span' fontWeight='normal'>
                   {' '}
@@ -220,7 +220,7 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
                 {/* Description, with the link to the source's website
                 inlined at the end of the text. */}
                 {sourceObj?.description && (
-                  <Box fontSize='sm' lineHeight='short' color='text.body'>
+                  <Box fontSize='sm' lineHeight='moderate' color='text.body'>
                     <StyledCardDescription>
                       {sourceObj.url
                         ? `${sourceObj.description.trimEnd()} [Visit ${
@@ -259,7 +259,7 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
                         fontWeight='semibold'
                         color='gray.800'
                         textAlign='left'
-                        lineHeight='short'
+                        lineHeight='moderate'
                       >
                         Mapping of {sourceObj.name} Properties to NIAID Data
                         Ecosystem Properties

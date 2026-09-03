@@ -16,7 +16,7 @@ export const EmptyState = () => {
         bg='niaid.50'
       >
         <Text fontWeight='medium'>Suggestions:</Text>
-        <List.Root as='ul' listStyleType='disc' gap={1} lineHeight='short'>
+        <List.Root as='ul' listStyleType='disc' gap={1} lineHeight='moderate'>
           <List.Item listStyleType='inherit'>
             Try using more general keywords.
           </List.Item>

@@ -56,7 +56,7 @@ const OntologyBrowserPage: NextPage = () => {
                 color='gray.800'
                 fontSize='sm'
                 fontWeight='medium'
-                lineHeight='short'
+                lineHeight='moderate'
                 textAlign='left'
               >
                 Find datasets, tools, and more by exploring related{' '}
