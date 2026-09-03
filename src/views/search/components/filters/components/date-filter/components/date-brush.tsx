@@ -560,7 +560,6 @@ export const DateBrush = ({
                       fontWeight: 600,
                       verticalAdjustment: (BRUSH_HEIGHT - 15) / 8,
                       fontSize: 13,
-                      style: { fontSize: 13 },
                     }}
                   />
                 );
