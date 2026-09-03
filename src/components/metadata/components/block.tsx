@@ -53,14 +53,11 @@ export const MetadataLabel = ({
 }: Pick<MetadataBlockProps, 'label'>) => {
   return (
     <Text
-      mx={1}
-      fontSize='13px'
+      fontSize='xs'
       fontWeight='medium'
-      letterSpacing='wide'
       textTransform='uppercase'
       color='inherit'
       whiteSpace={['unset', 'nowrap']}
-      lineHeight='inherit'
       {...props}
     >
       {label}

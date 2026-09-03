@@ -72,7 +72,7 @@ export const AboutResource = ({
             }}
           >
             <TagWithUrl
-              colorScheme='primary'
+              colorPalette='primary'
               href={{
                 pathname: '/search',
                 query: {
@@ -102,7 +102,7 @@ export const AboutResource = ({
                 // Resolved names are not unique on their own: distinct terms
                 // can share one, and unnamed terms all fall back to 'N/A'.
                 key={`${item.name}-${idx}`}
-                colorScheme='primary'
+                colorPalette='primary'
                 m={0.5}
                 leftIcon={FaMagnifyingGlass}
                 href={item.url || undefined}
