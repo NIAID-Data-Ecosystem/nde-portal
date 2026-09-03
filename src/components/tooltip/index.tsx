@@ -29,7 +29,7 @@ const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
     {
       content,
       children,
-      showArrow,
+      showArrow = true,
       disabled,
       portalled = true,
       portalRef,

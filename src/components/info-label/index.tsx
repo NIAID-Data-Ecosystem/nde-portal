@@ -34,7 +34,7 @@ export const InfoLabel: React.FC<InfoLabelProps> = ({
 }) => {
   const content = tooltipProps?.content ?? '';
   return (
-    <Tooltip showArrow {...tooltipProps} content={content}>
+    <Tooltip {...tooltipProps} content={content}>
       <Text
         fontSize='xs'
         color='gray.800'

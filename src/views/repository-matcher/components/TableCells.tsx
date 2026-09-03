@@ -98,7 +98,7 @@ export const TagCell = ({
     return <Skeleton loading width='80px' height='20px' />;
   }
   return (
-    <Tooltip content={label} disabled={!value || !isTruncated} showArrow>
+    <Tooltip content={label} disabled={!value || !isTruncated}>
       <Box>
         <Tag.Root
           variant='subtle'

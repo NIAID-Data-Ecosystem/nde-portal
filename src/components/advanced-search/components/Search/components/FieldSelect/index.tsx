@@ -1,4 +1,3 @@
-import React, { useMemo, useState } from 'react';
 import {
   Box,
   Flex,
@@ -7,28 +6,30 @@ import {
   useDisclosure,
   VisuallyHidden,
 } from '@chakra-ui/react';
-import Tooltip from '../../../../../tooltip';
-import { system } from 'src/theme';
+import ADVANCED_SEARCH from 'configs/advanced-search-fields.json';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
-import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
-import Select, { components, OptionProps, ControlProps } from 'react-select';
+import Fuse from 'fuse.js';
+import React, { useMemo, useState } from 'react';
 import {
   FaFont,
   FaHashtag,
+  FaListUl,
+  FaMagnifyingGlass,
   FaRegCalendarDays,
   FaRegCircleCheck,
-  FaMagnifyingGlass,
-  FaListUl,
 } from 'react-icons/fa6';
-import { formatNumber } from 'src/utils/helpers';
-import Fuse from 'fuse.js';
-import { QueryValue } from 'src/components/advanced-search/types';
+import Select, { components, ControlProps, OptionProps } from 'react-select';
 import { SchemaDefinition } from 'scripts/generate-schema-definitions/types';
-import ADVANCED_SEARCH from 'configs/advanced-search-fields.json';
+import { QueryValue } from 'src/components/advanced-search/types';
+import { system } from 'src/theme';
 import {
-  SHOULD_HIDE_SAMPLE_FIELDS,
   HIDDEN_SAMPLE_FIELDS,
+  SHOULD_HIDE_SAMPLE_FIELDS,
 } from 'src/utils/feature-flags';
+import { formatNumber } from 'src/utils/helpers';
+
+import Tooltip from '../../../../../tooltip';
+import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 
 /****
  * Overlapping or unnecessary fields.
@@ -111,7 +112,6 @@ const Option = (props: OptionProps<any>) => {
           }
         >
           <Tooltip
-            showArrow
             content={
               tooltipLabel.charAt(0).toUpperCase() + tooltipLabel.slice(1)
             }

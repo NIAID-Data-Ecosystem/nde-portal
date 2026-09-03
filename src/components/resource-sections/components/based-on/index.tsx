@@ -285,7 +285,6 @@ export const BasedOnTable = ({
                                                 ? 'Show ontology information.'
                                                 : ''
                                             }
-                                            showArrow
                                           >
                                             <span>
                                               <TagWithUrl

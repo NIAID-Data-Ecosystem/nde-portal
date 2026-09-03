@@ -130,7 +130,7 @@ export const Th = React.memo(
         <th>
           {label && (
             <Flex alignItems='center' gap={1}>
-              <Tooltip content={tooltip} showArrow>
+              <Tooltip content={tooltip}>
                 <Box as='span' display='inline-flex' color='gray.600'>
                   <Label>{label}</Label>
                 </Box>

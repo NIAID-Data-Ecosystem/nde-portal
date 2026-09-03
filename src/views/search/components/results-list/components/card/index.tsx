@@ -270,10 +270,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   alignItems='center'
                   justify='space-between'
                 >
-                  <Tooltip
-                    content='Corresponds to the most recent of date modified, date published and date created.'
-                    showArrow
-                  >
+                  <Tooltip content='Corresponds to the most recent of date modified, date published and date created.'>
                     <Flex whiteSpace='nowrap' alignItems='center'>
                       <Icon mr={2}>
                         <FaRegClock />

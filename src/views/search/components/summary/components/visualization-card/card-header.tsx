@@ -41,7 +41,7 @@ export const VisualizationCardIconButton = ({
   icon: React.ReactElement<IconProps>;
 }) => {
   return (
-    <Tooltip content={tooltipContent} showArrow>
+    <Tooltip content={tooltipContent}>
       <IconButton
         aria-label={ariaLabel}
         onClick={onClick}

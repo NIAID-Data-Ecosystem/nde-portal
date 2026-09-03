@@ -19,7 +19,6 @@ const OperatingSystems: React.FC<OperatingSystemProps> = ({ data }) => {
           <Tooltip
             key={`${item}`}
             content={`Operating system supported: ${item}`}
-            showArrow
           >
             <Flex>
               <Icon key={`${item}-${index}`} as={osIcon || FaComputer} mr={2} />

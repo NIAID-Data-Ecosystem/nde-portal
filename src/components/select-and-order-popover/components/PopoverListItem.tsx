@@ -81,7 +81,6 @@ export const PopoverListItem = ({
       {enableOrdering && (
         <Tooltip
           content={dragTooltip}
-          showArrow
           openDelay={400}
           positioning={{
             placement: 'left',
