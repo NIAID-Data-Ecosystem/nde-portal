@@ -1,7 +1,10 @@
+import { Button, Flex, FlexProps, Stack, Tag, VStack } from '@chakra-ui/react';
 import React, { useMemo, useState } from 'react';
-import { Button, FlexProps, Tag } from '@chakra-ui/react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
-import { ScrollContainer } from 'src/components/scroll-container';
+import {
+  ScrollContainer,
+  ScrollContainerProps,
+} from 'src/components/scroll-container';
 import { TagWithUrl } from 'src/components/tag-with-url';
 
 export interface SearchableItem {
@@ -17,7 +20,7 @@ export interface SearchableItem {
   query?: string;
 }
 
-interface SearchableItemsProps extends Omit<FlexProps, 'onToggle'> {
+interface SearchableItemsProps extends Omit<ScrollContainerProps, 'onToggle'> {
   items: SearchableItem[];
   /** Extra params merged into every item's /search link, e.g. `{ tab: 'dc' }`. */
   searchParams?: Record<string, string>;
@@ -52,7 +55,7 @@ const generateDefaultLabel = (limit: number, length: number) => {
  */
 export const SearchableItems: React.FC<SearchableItemsProps> = ({
   colorPalette = 'primary',
-  linkColor = `${colorPalette}.500`,
+  linkColor = `colorPalette.500`,
   tagColor,
   generateButtonLabel = generateDefaultLabel,
   itemLimit = 3,
@@ -61,7 +64,7 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
   name,
   isExpanded,
   onToggle,
-  ...props
+  ...ScrollContainerProps
 }) => {
   const uniqueItems = useMemo(
     () =>
@@ -101,46 +104,39 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
   const buttonLabel = generateButtonLabel(currentLimit, uniqueItems.length);
 
   return (
-    <ScrollContainer
-      maxHeight='300px'
-      m={0}
-      p={0}
-      display='flex'
-      flexWrap='wrap'
-      {...props}
-    >
-      {name}
-      {uniqueItems.slice(0, currentLimit).map(item => (
-        <TagWithUrl
-          key={getItemQuery(item)}
-          colorPalette={colorPalette}
-          color={tagColor}
-          href={{
-            pathname: '/search',
-            query: {
-              q: getItemQuery(item),
-              ...searchParams,
-            },
-          }}
-          m={0.5}
-          leftIcon={FaMagnifyingGlass}
-        >
-          {item.name}
-        </TagWithUrl>
-      ))}
-      {uniqueItems.length > itemLimit && (
-        <Button
-          colorPalette={colorPalette}
-          size='xs'
-          variant='plain'
-          justifyContent='flex-end'
-          m={1}
-          color={linkColor}
-          onClick={toggleLimit}
-        >
-          {buttonLabel}
-        </Button>
-      )}
+    <ScrollContainer maxHeight='300px' {...ScrollContainerProps}>
+      <Flex flexWrap='wrap' gap={1}>
+        {name}
+        {uniqueItems.slice(0, currentLimit).map(item => (
+          <TagWithUrl
+            key={getItemQuery(item)}
+            colorPalette={colorPalette}
+            color={tagColor}
+            href={{
+              pathname: '/search',
+              query: {
+                q: getItemQuery(item),
+                ...searchParams,
+              },
+            }}
+            leftIcon={FaMagnifyingGlass}
+          >
+            {item.name}
+          </TagWithUrl>
+        ))}
+        {uniqueItems.length > itemLimit && (
+          <Button
+            colorPalette={colorPalette}
+            variant='unstyled'
+            underline
+            size='xs'
+            color={linkColor}
+            onClick={toggleLimit}
+          >
+            {buttonLabel}
+          </Button>
+        )}
+      </Flex>
     </ScrollContainer>
   );
 };
