@@ -55,7 +55,7 @@ const generateDefaultLabel = (limit: number, length: number) => {
  */
 export const SearchableItems: React.FC<SearchableItemsProps> = ({
   colorPalette = 'primary',
-  linkColor = `colorPalette.500`,
+  linkColor,
   tagColor,
   generateButtonLabel = generateDefaultLabel,
   itemLimit = 3,
