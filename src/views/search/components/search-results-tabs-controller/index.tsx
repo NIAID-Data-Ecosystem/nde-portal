@@ -444,7 +444,7 @@ export const SearchResultsController = ({
             const defaultValues = getAccordionDefaultValues(sections);
 
             return (
-              <Tabs.Content key={tab.id} value={tab.id}>
+              <Tabs.Content key={tab.id} value={tab.id} pt={0}>
                 <AccordionWrapper
                   key={`${tab.id}-${defaultValues.join('|')}`}
                   defaultValue={defaultValues}
