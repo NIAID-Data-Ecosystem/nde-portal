@@ -61,17 +61,22 @@ export const colors = defineTokens.colors({
     800: { value: '#2D131D' },
     900: { value: '#16090E' },
   },
-  gray: {
-    50: { value: '#FDFDFD' },
-    100: { value: '#EDEDEE' },
-    200: { value: '#D5D5D5' },
-    300: { value: '#C2C4C6' },
-    400: { value: '#B1B3B5' },
-    500: { value: '#9DA0A3' },
-    600: { value: '#858A8D' },
-    700: { value: '#6D6D6D' },
-    800: { value: '#5A5959' },
-    900: { value: '#414141' },
-    950: { value: '#1A1A1A' },
-  },
+
+  /**
+   * This is our custom gray palette but can cause issues with accessibility when paired with certain background colors in chakra ui components theming. Uncomment and see how it affects subtle variant tags for example.
+   */
+
+  // gray: {
+  //   50: { value: '#FDFDFD' },
+  //   100: { value: '#EDEDEE' },
+  //   200: { value: '#D5D5D5' },
+  //   300: { value: '#C2C4C6' },
+  //   400: { value: '#B1B3B5' },
+  //   500: { value: '#9DA0A3' },
+  //   600: { value: '#858A8D' },
+  //   700: { value: '#6D6D6D' },
+  //   800: { value: '#5A5959' },
+  //   900: { value: '#414141' },
+  //   950: { value: '#1A1A1A' },
+  // },
 });
