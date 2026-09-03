@@ -1,4 +1,4 @@
-import { Button, Flex, Skeleton, Text } from '@chakra-ui/react';
+import { Button, Card, Flex, Skeleton, Text } from '@chakra-ui/react';
 import React, { useMemo, useState } from 'react';
 import { ConditionsOfAccess, CreativeWorkStatus } from 'src/components/badges';
 import { HasAPI } from 'src/components/badges/components/HasAPI';
@@ -113,35 +113,18 @@ export const ResourceCatalogCard = ({
       </CompactCard.Header>
       <CompactCard.Body>
         {/* Date and badges */}
-        <Skeleton loading={loading} minHeight='30px'>
+        <Skeleton loading={loading}>
           {date && (
-            <Flex
-              bg={cardBg}
-              fontWeight='semibold'
-              whiteSpace='nowrap'
-              alignItems='flex-start'
-              justify='space-between'
-              px={0}
-            >
-              <Tooltip
-                content='Corresponds to the most recent of date modified, date published and date created.'
-                showArrow
-              >
-                <Text fontSize='13px'>{date}</Text>
+            <Flex whiteSpace='nowrap' alignItems='flex-start'>
+              <Tooltip content='Corresponds to the most recent of date modified, date published and date created.'>
+                <Text fontSize='xs' fontWeight='medium'>
+                  {date}
+                </Text>
               </Tooltip>
               {(conditionsOfAccess ||
                 hasAPI ||
                 creativeWorkStatus === 'Retired') && (
-                <Flex
-                  justifyContent={['flex-start']}
-                  alignItems='center'
-                  w={['100%', 'unset']}
-                  flex={[1]}
-                  p={[0.5, 0.5]}
-                  flexWrap='wrap'
-                  ml={0.5}
-                  gap={0.5}
-                >
+                <Flex flexWrap='wrap'>
                   <ConditionsOfAccess
                     type={data?.['@type']}
                     conditionsOfAccess={conditionsOfAccess}
@@ -181,44 +164,40 @@ export const ResourceCatalogCard = ({
           {aboutItems.length > 0 && (
             <Flex bg={cardBg} direction='column'>
               <MetadataLabel label='Content Types' />
-              <ScrollContainer overflow='auto' maxHeight='200px'>
-                <SearchableItems
-                  items={aboutItems}
-                  itemLimit={2}
-                  colorPalette={isRetired ? 'gray' : 'primary'}
-                  tagColor={isRetired ? 'gray.900' : undefined}
-                  linkColor={isRetired ? 'gray.900' : undefined}
-                  isExpanded={showAllTypes}
-                  onToggle={handleTypesToggle}
-                  generateButtonLabel={(limit, length) =>
-                    limit === length
-                      ? 'Show fewer types'
-                      : `Show more types (${length - limit} more)`
-                  }
-                />
-              </ScrollContainer>
+              <SearchableItems
+                items={aboutItems}
+                itemLimit={2}
+                colorPalette={isRetired ? 'gray' : 'primary'}
+                tagColor={isRetired ? 'gray.900' : undefined}
+                linkColor={isRetired ? 'gray.900' : undefined}
+                isExpanded={showAllTypes}
+                onToggle={handleTypesToggle}
+                generateButtonLabel={(limit, length) =>
+                  limit === length
+                    ? 'Show fewer types'
+                    : `Show more types (${length - limit} more)`
+                }
+              />
             </Flex>
           )}
         </Skeleton>
 
         {/* Description */}
-        <Skeleton loading={loading} flex='1' mt={2} mb={1}>
+        <Skeleton loading={loading} flex='1'>
           {description && (
             <>
               {shouldShowDescription ? (
-                <Text fontSize='xs' lineHeight='short' lineClamp={3}>
+                <Card.Description lineClamp={3}>
                   {description.trim()}
-                </Text>
+                </Card.Description>
               ) : (
                 <Button
-                  variant='plain'
+                  colorPalette={isRetired ? 'gray' : 'primary'}
+                  variant='unstyled'
+                  underline
                   size='xs'
                   onClick={handleShowDescription}
                   alignSelf='flex-start'
-                  p={0}
-                  minH='auto'
-                  height='auto'
-                  fontSize='xs'
                   {...(isRetired && { color: 'gray.900' })}
                 >
                   See description
