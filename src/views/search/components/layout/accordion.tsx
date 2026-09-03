@@ -16,28 +16,24 @@ export const AccordionContent = ({
   children: React.ReactNode;
 }) => {
   return (
-    <Accordion.Item bg='bg.alt' {...rest}>
+    <Accordion.Item {...rest}>
       <Accordion.ItemContext>
         {({ expanded }) => (
           <>
             <h2>
-              <Accordion.ItemTrigger>
-                <Heading
-                  as='span'
-                  flex='1'
-                  textAlign='left'
-                  size='sm'
-                  fontWeight='semibold'
-                >
+              <Accordion.ItemTrigger cursor='pointer'>
+                <Heading fontSize='sm' fontWeight='semibold' flex='1' gap={1}>
                   {title}
                 </Heading>
-                <Icon as={expanded ? FaMinus : FaPlus} fontSize='xs' />
+                <Icon
+                  as={expanded ? FaMinus : FaPlus}
+                  fontSize='xs'
+                  aria-label={expanded ? 'Collapse' : 'Expand'}
+                />
               </Accordion.ItemTrigger>
             </h2>
-            <Accordion.ItemContent bg='#fff' px={0}>
-              <Accordion.ItemBody>
-                <Box px={2}>{children}</Box>
-              </Accordion.ItemBody>
+            <Accordion.ItemContent>
+              <Accordion.ItemBody>{children}</Accordion.ItemBody>
             </Accordion.ItemContent>
           </>
         )}
@@ -54,12 +50,12 @@ export const AccordionWrapper = ({
   return (
     <Accordion.Root
       defaultValue={defaultValue ?? []}
+      collapsible
       multiple
-      boxShadow='sm'
-      border='1px solid'
-      borderColor='gray.100'
-      borderRadius='semi'
-      overflow='hidden'
+      bg='white'
+      variant='enclosed'
+      size='lg'
+      lazyMount
       {...props}
     >
       {children}

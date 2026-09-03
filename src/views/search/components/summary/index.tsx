@@ -82,10 +82,7 @@ const SummaryGrid = (props: SummaryGridProps) => {
               {({ expanded }) => (
                 <>
                   <h2>
-                    <Accordion.ItemTrigger
-                      px={0}
-                      _hover={{ bg: 'transparent' }}
-                    >
+                    <Accordion.ItemTrigger cursor='pointer'>
                       <VStack
                         width='100%'
                         alignItems='flex-start'

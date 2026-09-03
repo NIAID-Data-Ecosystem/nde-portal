@@ -1,12 +1,13 @@
-import React, { useRef } from 'react';
 import { Box, Flex } from '@chakra-ui/react';
+import React, { useRef } from 'react';
 import { useResizeObserver } from 'usehooks-ts';
-import { CarouselProps } from './types';
-import { useCarouselState } from './hooks/useCarouselState';
-import { useCarouselNavigation } from './hooks/useCarouselNavigation';
+
 import { CarouselControls } from './components/CarouselControls';
-import { Track } from './components/Track';
 import { Item } from './components/Item';
+import { Track } from './components/Track';
+import { useCarouselNavigation } from './hooks/useCarouselNavigation';
+import { useCarouselState } from './hooks/useCarouselState';
+import { CarouselProps } from './types';
 
 export const Carousel = ({
   children,
@@ -81,7 +82,7 @@ export const Carousel = ({
 
   return (
     <Flex ref={containerRef} direction='column' align='center'>
-      <Box className='padded-carousel' w='100%' overflow='hidden' p={2}>
+      <Box className='padded-carousel' w='100%' overflow='hidden'>
         <Track {...trackProps}>
           {children.map((child, index) => (
             <Item {...itemProps} index={index} key={index}>
