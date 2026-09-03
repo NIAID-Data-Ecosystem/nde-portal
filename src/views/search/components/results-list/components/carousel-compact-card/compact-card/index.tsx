@@ -1,6 +1,7 @@
 import { BoxProps, Card, Skeleton, Text, TextProps } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import React, { ReactNode } from 'react';
+import { Link } from 'src/components/link';
 import { TypeBanner } from 'src/components/resource-sections/components';
 import { TypeBannerProps } from 'src/components/resource-sections/components/type-banner';
 
@@ -21,11 +22,10 @@ interface BaseProps extends Omit<Card.RootProps, 'children' | 'as'> {
 const Base = ({ loading = false, children, ...cardProps }: BaseProps) => {
   return (
     <Card.Root
-      variant='niaid'
+      variant='outline'
       boxShadow='none'
-      border='1px solid'
-      borderColor='gray.200'
       height={CARD_HEIGHTS}
+      size='xs'
       {...cardProps}
     >
       {children}
@@ -72,28 +72,7 @@ interface HeaderProps extends BoxProps {
 
 const Header = ({ loading = false, children, ...boxProps }: HeaderProps) => {
   return (
-    <Card.Header
-      bg='transparent'
-      position='relative'
-      px={2}
-      pt={1}
-      pb={1}
-      w='100%'
-      color='link'
-      _hover={{
-        '& p': { textDecoration: 'none' },
-        '& svg': {
-          transform: 'translate(0px)',
-          opacity: 0.9,
-          transition: '0.2s ease-in-out',
-        },
-      }}
-      _visited={{
-        color: 'link',
-        '& svg': { color: 'link' },
-      }}
-      {...boxProps}
-    >
+    <Card.Header {...boxProps}>
       <Skeleton loading={loading} minHeight='27px' flex={1}>
         {!loading && children}
       </Skeleton>
@@ -114,21 +93,9 @@ interface TitleProps extends Omit<TextProps, 'children'> {
 
 const Title = ({ children, linkProps, ...textProps }: TitleProps) => {
   const content = (
-    <Text
-      lineClamp={3}
-      fontWeight='semibold'
-      color='inherit'
-      fontSize='md'
-      lineHeight='short'
-      w='100%'
-      textDecoration='underline'
-      _hover={{
-        textDecoration: 'none',
-      }}
-      {...textProps}
-    >
+    <Card.Title lineClamp={3} color='inherit' textStyle='md' {...textProps}>
       {children}
-    </Text>
+    </Card.Title>
   );
 
   if (!linkProps) {
@@ -136,18 +103,20 @@ const Title = ({ children, linkProps, ...textProps }: TitleProps) => {
   }
 
   return (
-    <NextLink
-      href={linkProps.href}
-      as={linkProps.as}
-      prefetch={false}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        width: '100%',
-      }}
-    >
-      {content}
-    </NextLink>
+    <Link asChild>
+      <NextLink
+        href={linkProps.href}
+        as={linkProps.as}
+        prefetch={false}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          width: '100%',
+        }}
+      >
+        {content}
+      </NextLink>
+    </Link>
   );
 };
 
@@ -157,22 +126,7 @@ interface BodyProps extends BoxProps {
 }
 
 const Body = ({ children, ...boxProps }: BodyProps) => {
-  return (
-    <Card.Body
-      p={2}
-      css={{
-        '& >*': {
-          my: 0,
-        },
-      }}
-      flex='1'
-      display='flex'
-      flexDirection='column'
-      {...boxProps}
-    >
-      {children}
-    </Card.Body>
-  );
+  return <Card.Body {...boxProps}>{children}</Card.Body>;
 };
 
 // Export compound component
