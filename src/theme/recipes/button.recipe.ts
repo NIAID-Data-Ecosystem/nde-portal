@@ -24,6 +24,7 @@ export const buttonRecipe = defineRecipe({
     */
     underline: {
       true: {
+        color: 'colorPalette.500',
         textDecoration: 'underline',
         _hover: {
           textDecoration: 'none',
@@ -45,6 +46,7 @@ export const buttonRecipe = defineRecipe({
       },
 
       unstyled: {
+        px: 0,
         height: 'unset',
         borderRadius: 'none',
         background: 'transparent',
