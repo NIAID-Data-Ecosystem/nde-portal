@@ -1,7 +1,10 @@
 import { Button, Card, Flex, Skeleton, Text } from '@chakra-ui/react';
 import React, { useMemo, useState } from 'react';
-import { ConditionsOfAccess, CreativeWorkStatus } from 'src/components/badges';
-import { HasAPI } from 'src/components/badges/components/HasAPI';
+import {
+  ConditionsOfAccess,
+  CreativeWorkStatus,
+  HasAPI,
+} from 'src/components/badges';
 import { MetadataLabel } from 'src/components/metadata';
 import { hasSourceOrganization } from 'src/components/resource-sections/components/type-banner';
 import { ScrollContainer } from 'src/components/scroll-container';
@@ -115,7 +118,7 @@ export const ResourceCatalogCard = ({
         {/* Date and badges */}
         <Skeleton loading={loading}>
           {date && (
-            <Flex whiteSpace='nowrap' alignItems='flex-start'>
+            <Flex whiteSpace='nowrap' alignItems='flex-start' gap={1}>
               <Tooltip content='Corresponds to the most recent of date modified, date published and date created.'>
                 <Text fontSize='xs' fontWeight='medium'>
                   {date}
@@ -124,7 +127,7 @@ export const ResourceCatalogCard = ({
               {(conditionsOfAccess ||
                 hasAPI ||
                 creativeWorkStatus === 'Retired') && (
-                <Flex flexWrap='wrap'>
+                <Flex flexWrap='wrap' gap={1}>
                   <ConditionsOfAccess
                     type={data?.['@type']}
                     conditionsOfAccess={conditionsOfAccess}

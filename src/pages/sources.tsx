@@ -20,7 +20,7 @@ import {
   SidebarItem,
 } from 'src/components/table-of-contents/layouts/sidebar';
 import { formatDate } from 'src/utils/api/helpers';
-import { BadgeWithTooltip } from 'src/components/badges/components/BadgeWithTooltip';
+import { BadgeWithTooltip } from 'src/components/badges';
 import { fetchSourceInformationFromGithub } from 'src/views/sources/helpers';
 
 export interface SourceResponse extends MetadataSource {

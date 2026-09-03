@@ -8,9 +8,12 @@ import {
   Stack,
 } from '@chakra-ui/react';
 import React from 'react';
-import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
-import { HasAPI } from 'src/components/badges/components/HasAPI';
-import { HasDownload } from 'src/components/badges/components/HasDownload';
+import {
+  AccessibleForFree,
+  ConditionsOfAccess,
+  HasAPI,
+  HasDownload,
+} from 'src/components/badges';
 import { getMetadataDescription } from 'src/components/metadata/helpers';
 import { FormattedResource } from 'src/utils/api/types';
 
