@@ -79,11 +79,12 @@ describe('BasedOnActionProcess', () => {
     );
 
     await user.click(screen.getByRole('button', { name: /Show/ }));
-
     expect(screen.getByRole('button', { name: /Hide/ })).toBeInTheDocument();
-    expect(screen.getByText('How the collection was built.')).toBeVisible();
+
+    // AccordionPanel animates open, so it stays `hidden` for a frame or two
+    // after the click. Wait for the panel before asserting on its contents.
     await waitFor(() =>
-      expect(screen.getByText('Search the source')).toBeVisible(),
+      expect(screen.getByText('How the collection was built.')).toBeVisible(),
     );
     expect(screen.getByText('Search the source')).toBeVisible();
     expect(screen.getByText('Review the records')).toBeVisible();
@@ -101,7 +102,7 @@ describe('BasedOnActionProcess', () => {
 
     await user.click(screen.getByRole('button', { name: /Show/ }));
 
-    expect(screen.getByText('Only step')).toBeVisible();
+    await waitFor(() => expect(screen.getByText('Only step')).toBeVisible());
   });
 });
 
