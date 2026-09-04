@@ -86,4 +86,4 @@ export const USE_MERGED_SOURCES_AND_CATALOGS = !isProd;
 // When disabled, the Datasets and Computational Tools tabs always render
 // cards and the Data Collections tab always renders the table.
 // To enable in production, set this flag to `true`.
-export const SHOW_SEARCH_VIEW_MODES = !isProd;
+export const SHOW_SEARCH_VIEW_MODES = true;

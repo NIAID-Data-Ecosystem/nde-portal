@@ -47,13 +47,13 @@ export type HeatmapProps = {
   margin?: { top: number; right: number; bottom: number; left: number };
 };
 
-export const defaultMargin = { top: 10, left: 0, right: 0, bottom: 0 };
+export const defaultMargin = { top: 0, left: 0, right: 0, bottom: 0 };
 
 // Fixed bin sizing — bins wrap to the next row when they exceed the parent width.
 const BIN_SIZE = 14;
 const BIN_GAP = 2;
 const LABEL_HEIGHT = 18;
-const CATEGORY_GAP = 14;
+const CATEGORY_GAP = 10;
 const RADIUS = 2;
 
 let tooltipTimeout: number;
