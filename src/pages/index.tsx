@@ -148,7 +148,7 @@ const Home: NextPage<{
                     return (
                       <Button
                         key={query.title}
-                        size='xs'
+                        size='sm'
                         colorPalette='niaid'
                         asChild
                       >
@@ -233,7 +233,7 @@ const Home: NextPage<{
                       more...
                     </Text>
                     <Button
-                      size={{ base: 'md', sm: 'sm' }}
+                      size='md'
                       width={{ base: '100%', sm: 'auto' }}
                       asChild
                       truncate

@@ -9,6 +9,9 @@ export const linkRecipe = defineRecipe({
     fontSize: 'inherit',
     fontWeight: 'inherit',
     lineHeight: 'inherit',
+    _icon: {
+      verticalAlign: 'baseline',
+    },
     _focus: {
       outlineColor: 'currentColor/50',
     },

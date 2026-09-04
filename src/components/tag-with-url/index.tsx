@@ -25,7 +25,6 @@ const inheritTypography = {
   color: 'inherit',
   fontSize: 'inherit',
   lineHeight: 'inherit',
-  textDecoration: 'inherit',
 } as const;
 
 /**
@@ -80,18 +79,14 @@ export const TagWithUrl = ({
           {leftIcon && <Tag.StartElement as={leftIcon} />}
           {/* `display: inline` keeps the prefix and value on one run of text,
             overriding the line clamp the recipe puts on this slot. */}
-          <Tag.Label display='inline' color='inherit' textDecoration='inherit'>
+          <Tag.Label display='inline' color='inherit'>
             {prefix}
             <Text as='span' {...inheritTypography}>
               {children}
             </Text>
           </Tag.Label>
           {isExternal && (
-            <Tag.EndElement
-              as={FaSquareArrowUpRight}
-              ml={1}
-              {...inheritTypography}
-            />
+            <Tag.EndElement as={FaSquareArrowUpRight} {...inheritTypography} />
           )}
         </NextLink>
       </Link>

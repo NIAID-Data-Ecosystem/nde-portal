@@ -23,6 +23,14 @@ export const globalCss = defineGlobalStyles({
     fontFamily: 'body',
     color: 'text.body',
   },
+  /* Chakra's own rule here is `fg.muted/80`. Overriding the same key — rather
+     than a per-recipe `_placeholder` — is what makes `text.placeholder` the
+     default everywhere a placeholder can appear: input, textarea, and the
+     `data-placeholder` elements Select/Combobox render instead of real
+     placeholder text. */
+  '*::placeholder, *[data-placeholder]': {
+    color: 'text.placeholder',
+  },
   // [chakra-todo] unsure if needed, but keeping for now to match v2's `styles.global`
   // strong: {
   //   lineHeight: 'inherit',

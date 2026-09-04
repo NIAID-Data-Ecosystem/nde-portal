@@ -88,7 +88,7 @@ export const SearchResultsHeader = ({
       <Stack
         // Use row layout for "All Results" and column layout for other queries
         flexDirection={querystring === '__all__' ? 'row' : 'column'}
-        alignItems='flex-start'
+        alignItems='center'
         gap={1}
       >
         <SearchResultsHeading as='h1' fontSize='inherit' whiteSpace='nowrap'>
@@ -106,6 +106,7 @@ export const SearchResultsHeader = ({
 
           {ENABLE_AUTH && (
             <BookmarkIconButton
+              size='xs'
               aria-label={
                 isFavorited
                   ? 'Remove search from saved searches'

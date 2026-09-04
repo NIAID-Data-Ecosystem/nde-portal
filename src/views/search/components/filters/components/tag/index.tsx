@@ -123,8 +123,10 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
         <SearchResultsHeading as='h2'>Filtered by: </SearchResultsHeading>
         <HStack flexWrap='wrap' gap={1.5} py={1}>
           {/* Clear all filters button */}
+
           <Button
             size='2xs'
+            fontSize='14px'
             onClick={() => {
               resetPagination();
               removeAllFilters();

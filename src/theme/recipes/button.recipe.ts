@@ -30,6 +30,30 @@ export const buttonRecipe = defineRecipe({
         },
       },
     },
+    size: {
+      xs: {
+        textStyle: 'sm',
+        gap: 1.5,
+        _icon: {
+          width: '3.5',
+          height: '3.5',
+        },
+      },
+
+      sm: {
+        _icon: {
+          width: '3.5',
+          height: '3.5',
+        },
+      },
+
+      md: {
+        _icon: {
+          width: '4',
+          height: '4',
+        },
+      },
+    },
     variant: {
       solid: {},
       /*
@@ -61,5 +85,6 @@ export const buttonRecipe = defineRecipe({
 
   defaultVariants: {
     variant: 'solid',
+    size: 'md',
   },
 });

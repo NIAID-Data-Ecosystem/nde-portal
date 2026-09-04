@@ -1,8 +1,9 @@
 import { Box, FlexProps, Heading } from '@chakra-ui/react';
-import theme from './theme';
 import { JSONTree } from 'react-json-tree';
-import { ScrollContainer } from '../scroll-container';
 import { CopyButton } from 'src/components/copy-button';
+
+import { ScrollContainer } from '../scroll-container';
+import theme from './theme';
 
 /*
  [COMPONENT INFO]: Code block to display and copy JSON content.
@@ -40,21 +41,22 @@ export const JsonViewer = ({ data, ...props }: JsonViewerProps) => {
           zIndex: 1,
         }}
       />
+      {/* [chakra-to-do]: Convert with the appropriate styles applied. */}
       <ScrollContainer
-        display='flex'
-        tabIndex={0}
-        bg={theme.base00}
-        borderBottomRadius='8px'
-        flexDirection='column'
-        fontSize='sm'
-        fontFamily='monospace'
-        lineHeight='tall'
-        maxHeight={600}
-        overflow='auto'
-        pb={8}
-        pl={5}
-        pr={6}
-        {...props}
+      // display='flex'
+      // tabIndex={0}
+      // bg={theme.base00}
+      // borderBottomRadius='8px'
+      // flexDirection='column'
+      // fontSize='sm'
+      // fontFamily='monospace'
+      // lineHeight='tall'
+      // maxHeight={600}
+      // overflow='auto'
+      // pb={8}
+      // pl={5}
+      // pr={6}
+      // {...props}
       >
         <JSONTree
           data={data}

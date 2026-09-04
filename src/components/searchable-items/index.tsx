@@ -64,7 +64,7 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
   name,
   isExpanded,
   onToggle,
-  ...ScrollContainerProps
+  ...scrollContainerProps
 }) => {
   const uniqueItems = useMemo(
     () =>
@@ -104,7 +104,7 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
   const buttonLabel = generateButtonLabel(currentLimit, uniqueItems.length);
 
   return (
-    <ScrollContainer maxHeight='300px' {...ScrollContainerProps}>
+    <ScrollContainer maxHeight='300px' {...scrollContainerProps}>
       <Flex flexWrap='wrap' gap={1}>
         {name}
         {uniqueItems.slice(0, currentLimit).map(item => (

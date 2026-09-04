@@ -165,7 +165,7 @@ export const ResourceCatalogCard = ({
         {/* Content types */}
         <Skeleton loading={loading} px={-1}>
           {aboutItems.length > 0 && (
-            <Flex bg={cardBg} direction='column'>
+            <Flex bg={cardBg} flexDirection='column' gap='0.5'>
               <MetadataLabel label='Content Types' />
               <SearchableItems
                 items={aboutItems}
