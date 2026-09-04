@@ -7,7 +7,6 @@ import {
 } from 'src/components/badges';
 import { MetadataLabel } from 'src/components/metadata';
 import { hasSourceOrganization } from 'src/components/resource-sections/components/type-banner';
-import { ScrollContainer } from 'src/components/scroll-container';
 import { SearchableItems } from 'src/components/searchable-items';
 import { FormattedResource } from 'src/utils/api/types';
 import {

@@ -1,4 +1,4 @@
-import { BoxProps, Card, Skeleton, Text, TextProps } from '@chakra-ui/react';
+import { BoxProps, Card, Skeleton, TextProps } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import React, { ReactNode } from 'react';
 import { Link } from 'src/components/link';

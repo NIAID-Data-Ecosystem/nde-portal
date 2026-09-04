@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Card,
   Flex,
@@ -121,7 +122,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
       <Card.Header
         bg='transparent'
         position='relative'
-        px={paddingCard}
         pt={4}
         color='link'
         _hover={{
@@ -188,6 +188,24 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           </NextLink>
         </Skeleton>
       </Card.Header>
+      {author?.length && (
+        <Box flex={1} px={'calc(var(--card-padding)/2)'}>
+          <ToggleContainer
+            ariaLabel='Toggle authors list'
+            noOfLines={1}
+            px={'calc(var(--card-padding)/2)'}
+            py={2}
+            flex={1}
+            fontSize='sm'
+            colorPalette='gray'
+            variant='ghost'
+          >
+            <Highlight query={highlightProps.query}>
+              {formatAuthorsList2String(author, ',', 10) || ''}
+            </Highlight>
+          </ToggleContainer>
+        </Box>
+      )}
       <Skeleton
         loading={loading}
         p='0px!important'
@@ -199,58 +217,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
       >
         {inView && (
           <>
-            {(author?.length || isAccessibleForFree || conditionsOfAccess) && (
-              <Flex
-                flexDirection={['column-reverse', 'row']}
-                flexWrap={['wrap-reverse', 'wrap']}
-                w='100%'
-                borderY='1px solid'
-                borderColor='gray.100'
-              >
-                {author && (
-                  <ToggleContainer
-                    ariaLabel=''
-                    noOfLines={1}
-                    justifyContent='flex-start'
-                    m={0}
-                    px={paddingCard}
-                    py={2}
-                    flex={1}
-                    w='100%'
-                    _focus={{ outlineColor: 'transparent' }}
-                    fontSize='xs'
-                    color='text.body'
-                  >
-                    <Highlight query={highlightProps.query}>
-                      {formatAuthorsList2String(author, ',', 10) || ''}
-                    </Highlight>
-                  </ToggleContainer>
-                )}
-                {(typeof isAccessibleForFree !== undefined ||
-                  typeof isAccessibleForFree !== null ||
-                  conditionsOfAccess) && (
-                  <Flex
-                    justifyContent={['flex-end']}
-                    alignItems='center'
-                    w={['100%', 'unset']}
-                    flex={[1]}
-                    p={[0.5, 2]}
-                  >
-                    <AccessibleForFree
-                      type={data?.['@type']}
-                      isAccessibleForFree={isAccessibleForFree}
-                      mx={1}
-                    />
-                    <ConditionsOfAccess
-                      type={data?.['@type']}
-                      conditionsOfAccess={conditionsOfAccess}
-                      mx={1}
-                    />
-                  </Flex>
-                )}
-              </Flex>
-            )}
-
             <Card.Body
               p={0}
               css={{
@@ -350,18 +316,14 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 
                 {description && (
                   <ToggleContainer
-                    ariaLabel=''
+                    ariaLabel='Toggle description'
                     noOfLines={[3, 10]}
-                    px={4}
+                    px={'calc(var(--card-padding)/2)'}
                     py={2}
-                    my={0}
-                    borderColor='transparent'
-                    justifyContent='space-between'
-                    _hover={{ bg: 'bg.alt' }}
-                    _focus={{ outlineColor: 'transparent', bg: 'white' }}
-                    alignIcon='center'
-                    borderRadius='semi'
                     flex={1}
+                    fontSize='sm'
+                    colorPalette='gray'
+                    variant='ghost'
                   >
                     <DisplayHTMLContent
                       content={description}
