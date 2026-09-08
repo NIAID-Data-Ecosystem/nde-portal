@@ -86,42 +86,110 @@ const isHiddenSourceType = (source: Source): boolean =>
   (!SHOW_DATA_COLLECTIONS_TAB && source.type.includes('Data Repository')) ||
   (!SHOW_SAMPLES_TAB && source.type.includes('Sample Repository'));
 
-// In dev the base URL is localhost, so the base-URL check below is meaningless
-// there; the `/resources` path check still applies in every environment.
-const isDevMode = process.env.NODE_ENV === 'development';
+/**
+ * The portal pathname that renders a single resource catalog record, e.g.
+ * `/resources?id=dde_8b9a4aa0d78d0659` (see `src/pages/resources.tsx`).
+ */
+const RESOURCE_CATALOG_PATHNAME = '/resources';
+
+/**
+ * Whether a pathname is the resource catalog page.
+ */
+const isResourceCatalogPathname = (pathname: string): boolean =>
+  pathname.replace(/\/+$/, '').toLowerCase() === RESOURCE_CATALOG_PATHNAME;
+
+/**
+ * Every hostname this portal is deployed under (see the `BASE_URL` in each
+ * `.env.*` file).
+ */
+const KNOWN_PORTAL_HOSTNAMES = [
+  'data.niaid.nih.gov', // production
+  'data-staging.niaid.nih.gov', // staging
+  'nde-dev.biothings.io', // dev
+];
+
+/**
+ * `KNOWN_PORTAL_HOSTNAMES` plus the running deployment's own hostname, from
+ * `NEXT_PUBLIC_BASE_URL`.
+ */
+const PORTAL_HOSTNAMES = new Set(
+  [
+    ...KNOWN_PORTAL_HOSTNAMES,
+    (() => {
+      try {
+        return new URL(process.env.NEXT_PUBLIC_BASE_URL || '').hostname;
+      } catch {
+        return undefined;
+      }
+    })(),
+  ]
+    .filter((hostname): hostname is string => !!hostname)
+    .map(hostname => hostname.toLowerCase()),
+);
 
 /**
  * Parse the `resourceCatalogIdentifier` from a `sameAs` value that points to a
  * resource catalog, e.g. `https://data.niaid.nih.gov/resources?id=dde_8b9a4aa0d78d0659`
- * returns `dde_8b9a4aa0d78d0659`.
+ * returns `dde_8b9a4aa0d78d0659`. Accepts a string or an array of `sameAs`
+ * values and returns the first identifier found.
  *
- * To avoid mistaking an unrelated `sameAs` link that merely carries an `id`
- * query param for a catalog link, the value must either point at a `/resources`
- * page or — outside dev — share our portal's base URL. Accepts a string or an
- * array of `sameAs` values.
+ * `sameAs` is free-form, source-supplied data, so an unrelated link that merely
+ * carries an `id` query param must not be mistaken for a catalog link. A value
+ * qualifies only in these two forms:
+ *   - a root-relative catalog link — `/resources?id=…`
+ *   - an absolute catalog link on one of the portal's own hostnames
+ *     (`PORTAL_HOSTNAMES`) — `https://data.niaid.nih.gov/resources?id=…`
+ * The `/resources` pathname is required either way: a portal hostname alone is
+ * not enough, so `https://data.niaid.nih.gov/other?id=x` does not qualify.
  */
-const getResourceCatalogIdentifier = (
+export const getResourceCatalogIdentifier = (
   sameAs?: string | string[],
 ): string | undefined => {
   if (!sameAs) return undefined;
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
   const values = Array.isArray(sameAs) ? sameAs : [sameAs];
+
   for (const value of values) {
-    if (!value) continue;
+    // Guard each element: `sameAs` comes from upstream metadata, so an array
+    // can hold `null`/non-strings despite the declared `string[]`.
+    if (typeof value !== 'string' || !value.trim()) continue;
 
-    const isResourceCatalogLink =
-      value.includes('resources') ||
-      (!isDevMode && !!baseUrl && value.startsWith(baseUrl));
-    if (!isResourceCatalogLink) continue;
+    const href = value.trim();
+    let searchParams: URLSearchParams;
 
-    try {
-      const id = new URL(value).searchParams.get('id');
-      if (id) return id;
-    } catch {
-      // Not a fully-qualified URL — fall back to matching the `id` query param.
-      const match = value.match(/[?&]id=([^&#]+)/);
-      if (match) return decodeURIComponent(match[1]);
+    // One leading slash means root-relative, which is ours by definition.
+    if (href.startsWith('/') && !href.startsWith('//')) {
+      // Split the path off the query
+      const pathAndQuery = href.split('#')[0];
+      const queryIndex = pathAndQuery.indexOf('?');
+      const pathname =
+        queryIndex === -1 ? pathAndQuery : pathAndQuery.slice(0, queryIndex);
+
+      // Relative values still have to point at the catalog page.
+      if (!isResourceCatalogPathname(pathname)) continue;
+      searchParams = new URLSearchParams(
+        queryIndex === -1 ? '' : pathAndQuery.slice(queryIndex + 1),
+      );
+    } else {
+      let url: URL;
+      try {
+        url = new URL(href);
+      } catch {
+        continue; // Neither an absolute URL nor a root-relative path.
+      }
+
+      // Compare hostnames.
+      if (!PORTAL_HOSTNAMES.has(url.hostname.toLowerCase())) continue;
+
+      // The path is required here too. Matching the whole pathname rather than
+      // a substring is what keeps `https://x.org/human-resources?id=1` and
+      // `https://x.org/a?q=resources&id=1` out.
+      if (!isResourceCatalogPathname(url.pathname)) continue;
+      searchParams = url.searchParams;
     }
+
+    // `URLSearchParams` percent-decodes for us; ignore a present-but-empty `id`.
+    const id = searchParams.get('id')?.trim();
+    if (id) return id;
   }
   return undefined;
 };
@@ -169,9 +237,9 @@ export function useSourcesList(
             sameAs,
             type: sourceInfoType,
           } = sourceInfo || {};
+          // use type if available, otherwise fallback to collectionType
           const sourceType = sourceInfoType || collectionType;
 
-          // use type if available, otherwise fallback to collectionType
           const type = (
             Array.isArray(sourceType)
               ? sourceType
