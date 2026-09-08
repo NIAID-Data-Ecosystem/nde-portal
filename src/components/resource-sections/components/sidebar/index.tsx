@@ -59,6 +59,7 @@ export const Sidebar = ({
             divider={
               <Divider
                 borderColor='page.placeholder'
+                marginTop={'0!important'}
                 marginBottom={'0!important'}
               />
             }

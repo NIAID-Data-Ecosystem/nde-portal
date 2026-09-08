@@ -27,6 +27,7 @@ import type { SourceDisplayItem } from 'src/pages/sources';
 import { formatDate } from 'src/utils/api/helpers';
 import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-string';
 import NextLink from 'next/link';
+import { USE_MERGED_SOURCES_AND_CATALOGS } from 'src/utils/feature-flags';
 
 interface Main {
   data?: SourceDisplayItem[];
@@ -165,21 +166,31 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                     gap={2}
                     w='100%'
                   >
-                    <Button
-                      as='a'
-                      width={{ base: '100%', md: 'unset' }}
-                      maxWidth='500px'
-                      size='sm'
-                      href={sourceObj.resourceCatalogIdentifier}
+                    <Flex
+                      flex={1}
                       visibility={
+                        USE_MERGED_SOURCES_AND_CATALOGS &&
                         sourceObj.resourceCatalogIdentifier
                           ? 'visible'
                           : 'hidden'
                       }
-                      variant='outline'
                     >
-                      Learn about source
-                    </Button>
+                      <Button
+                        as={NextLink}
+                        size='sm'
+                        variant='outline'
+                        width={{ base: '100%', md: 'unset' }}
+                        maxWidth='500px'
+                        href={{
+                          pathname: '/resources',
+                          query: {
+                            id: sourceObj.resourceCatalogIdentifier,
+                          },
+                        }}
+                      >
+                        Learn about source
+                      </Button>
+                    </Flex>
                     <StyledCardButton
                       maxWidth='500px'
                       href={sourceObj.searchURL}

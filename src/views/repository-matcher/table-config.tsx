@@ -51,7 +51,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
     }) => (
       <TextCellWithLink
         label={value?.label || ''}
-        // [TO DO] - Use the `url` field for the link if the `USE_MERGED_SOURCES_AND_CATALOGS` feature flag is disabled. If the feature flag is enabled, use the `_id` field to generate a link to the source's anchor on the `/sources` page.
+        // Use the `url` field for the link if the `USE_MERGED_SOURCES_AND_CATALOGS` feature flag is disabled. If the feature flag is enabled, use the `_id` field to generate a link to the source's anchor on the `/sources` page.
         url={
           USE_MERGED_SOURCES_AND_CATALOGS
             ? `/sources#${value?._id || ''}`
