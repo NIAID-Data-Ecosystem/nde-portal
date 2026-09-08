@@ -11,7 +11,7 @@ export const SHOULD_HIDE_SAMPLES = (hash: string) => false;
 export const SHOW_SAMPLES_TAB = true;
 
 // Hide the data collections tab on the search results page in production builds until approved. To enable tab in production, set this flag to `true`.
-export const SHOW_DATA_COLLECTIONS_TAB = !isProd;
+export const SHOW_DATA_COLLECTIONS_TAB = true;
 
 // Show AI-assisted search toggle and related components (e.g. banner) in non-production environments for testing/review. To enable in production, set this flag to `true`.
 export const SHOW_AI_ASSISTED_SEARCH = true;
@@ -83,6 +83,17 @@ export const SHOW_FILTER_SPECIFIED_UNSPECIFIED_LABELS = true;
 // Show the search results "View mode" radio (Card / Table) and the
 // alternate views it switches between in non-production environments.
 // When disabled, the Datasets and Computational Tools tabs always render
-// cards and the Data Collections tab always renders the table.
+// cards and the Data Collections tab always renders the table. The Data
+// Collections tab is additionally gated by SHOW_DATA_COLLECTIONS_VIEW_MODES
+// below, so this flag alone is not enough to give that tab the radio.
 // To enable in production, set this flag to `true`.
 export const SHOW_SEARCH_VIEW_MODES = true;
+
+// Show the "View mode" radio (Card / Table) and the card view on the Data
+// Collections tab in non-production environments for testing/review. This is
+// gated separately from SHOW_SEARCH_VIEW_MODES because the Data Collections
+// card view is not yet approved for production. When disabled, that tab hides
+// the radio and always renders the table, regardless of any view mode the user
+// has persisted in localStorage. To enable in production, set this flag to
+// `true`.
+export const SHOW_DATA_COLLECTIONS_VIEW_MODES = !isProd;
