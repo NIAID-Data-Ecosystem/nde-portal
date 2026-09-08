@@ -4,6 +4,10 @@ import { PieChart } from 'src/components/visualizations/pie';
 import { BarChart } from 'src/components/visualizations/bar';
 import { DateFilter } from '../filters/components/date-filter';
 import { DateHistogram } from 'src/components/visualizations/histogram';
+import { CollectionSizeHistogram } from 'src/components/visualizations/collection-size-histogram';
+import { getBucketByKey } from 'src/views/search/config/collection-size';
+import { formatNumericValue } from 'src/components/resource-sections/components/samples/helpers';
+import { formatNumber } from 'src/utils/helpers';
 
 // Helper functions for processing aggregate data for chart visualizations.
 export const normalizeAggregateData = (
@@ -191,6 +195,44 @@ const mapFacetsToChartData = (
   });
 };
 
+/**
+ * Compact axis tick for a range bucket, e.g. `1K` for 1,000.
+ *
+ * Only the bucket's lower bound is shown: with eight decades side by side the
+ * full range ("1,000 - 9,999") does not fit under a bar. The tooltip and the
+ * bar's accessible label carry the full range.
+ */
+const formatBucketAxisLabel = (value: number): string =>
+  new Intl.NumberFormat('en-US', {
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(value);
+
+/**
+ * Maps range-bucket terms to chart data.
+ *
+ * The term is the bucket key, so the bucket's endpoints are looked up rather
+ * than parsed back out of it. Ranges are formatted with the same helper the
+ * filter tag uses, so a bar's tooltip and its resulting tag read alike.
+ */
+const mapBucketsToChartData = (data: FacetTerm[]): ChartDatum[] =>
+  data.map(({ term, count }) => {
+    const bucket = getBucketByKey(term);
+    const rangeLabel = bucket
+      ? formatNumericValue({ minValue: bucket.min, maxValue: bucket.max })
+      : term;
+
+    return {
+      id: term,
+      term,
+      value: count,
+      label: bucket ? formatBucketAxisLabel(bucket.min) : term,
+      tooltip: `${rangeLabel}: ${formatNumber(count)} result${
+        count === 1 ? '' : 's'
+      }`,
+    };
+  });
+
 export const chartRegistry: Record<
   ChartType,
   {
@@ -226,6 +268,11 @@ export const chartRegistry: Record<
   histogram: {
     mapFacetsToChartData,
     Component: DateHistogram,
+    getFacetKey: d => d.id,
+  },
+  rangeHistogram: {
+    mapFacetsToChartData: mapBucketsToChartData,
+    Component: CollectionSizeHistogram,
     getFacetKey: d => d.id,
   },
 };

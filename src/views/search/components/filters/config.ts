@@ -158,8 +158,14 @@ export const FILTER_CONFIGS: FilterConfig[] = [
       ...item,
       label: formatUnitLabel(item.label || item.term),
     }),
-    // No `chart`: a 143-term uncontrolled vocabulary in which the top 9 terms
-    // cover >99.8% of records does not make a readable pie or bar chart.
+    // Histogram only. The 143-term uncontrolled unit vocabulary, in which the
+    // top 9 terms cover >99.8% of records, makes no readable pie or bar; the
+    // numeric range does make a readable distribution, counted per decade by
+    // useCollectionSizeBuckets.
+    chart: {
+      availableOptions: ['rangeHistogram'],
+      defaultOption: 'rangeHistogram',
+    },
     category: 'Shared / Dataset',
     tabIds: ['d', 'dc'],
   },

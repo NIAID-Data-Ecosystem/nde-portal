@@ -85,3 +85,51 @@ export const RANGE_WILDCARD = '*';
 export const GROUPED_VALUE_FILTER_PROPERTIES = new Set([
   COLLECTION_SIZE_UNIT_FIELD,
 ]);
+
+/** One bar of the collection size histogram: a closed or open-ended range. */
+export interface CollectionSizeBucket {
+  /** Stable id, also the chart datum's term. */
+  key: string;
+  min: number;
+  /** Absent on the final bucket, which is open-ended. */
+  max?: number;
+}
+
+/**
+ * Histogram buckets, ordered ascending.
+ *
+ * Decades rather than equal-width bins: collection sizes run from 0 to the
+ * billions and the distribution is heavily weighted to single digits, so a
+ * linear binning would put nearly every record in the first bin.
+ *
+ * The counts come from one range query per bucket — `collectionSize.minValue`
+ * is neither faceted nor histogram-able (the API's `hist` param only produces
+ * date histograms, and a terms facet is capped at 1000 values ordered by
+ * count, which drops the entire large-value tail).
+ */
+export const COLLECTION_SIZE_BUCKETS: CollectionSizeBucket[] = [
+  { key: '0-9', min: 0, max: 9 },
+  { key: '10-99', min: 10, max: 99 },
+  { key: '100-999', min: 100, max: 999 },
+  { key: '1000-9999', min: 1000, max: 9999 },
+  { key: '10000-99999', min: 10000, max: 99999 },
+  { key: '100000-999999', min: 100000, max: 999999 },
+  { key: '1000000-9999999', min: 1000000, max: 9999999 },
+  { key: `10000000-${RANGE_WILDCARD}`, min: 10000000 },
+];
+
+/** The bucket a chart datum's term refers to, if any. */
+export const getBucketByKey = (key: string): CollectionSizeBucket | undefined =>
+  COLLECTION_SIZE_BUCKETS.find(bucket => bucket.key === key);
+
+/**
+ * A bucket's endpoints as filter values, with `*` for the open end. Matches
+ * what the range inputs write, so a bar click and a typed range are
+ * indistinguishable downstream.
+ */
+export const getBucketRangeValues = (
+  bucket: CollectionSizeBucket,
+): string[] => [
+  String(bucket.min),
+  bucket.max === undefined ? RANGE_WILDCARD : String(bucket.max),
+];

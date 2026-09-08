@@ -1,5 +1,4 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { omit } from 'lodash';
 import { fetchSearchResults } from 'src/utils/api';
 import { CollectionSize, FormattedResource } from 'src/utils/api/types';
 import { encodeString } from 'src/utils/querystring-helpers';
@@ -7,11 +6,8 @@ import {
   COLLECTION_SIZE_UNIT_FIELD,
   COLLECTION_SIZE_VALUE_FIELD,
 } from 'src/views/search/config/collection-size';
-import {
-  queryFilterObject2String,
-  queryFilterString2Object,
-} from '../../../utils/query-string';
-import { CollectionSizeBounds } from '../utils';
+import { queryFilterObject2String } from '../../../utils/query-string';
+import { CollectionSizeBounds, withoutRangeFilter } from '../utils';
 
 export interface UseCollectionSizeBoundsParams {
   q: string;
@@ -46,11 +42,8 @@ const collectionSizeValues = (resource?: FormattedResource): number[] => {
 
 /**
  * Scopes the probes to the same result set the filter is shown against, minus
- * the range itself.
- *
- * Leaving the applied range in would bound the inputs by the current selection,
- * so the user could never widen it. The unit selection is kept, so the bounds
- * describe the unit actually being filtered on.
+ * the range itself (see `withoutRangeFilter`). The unit selection is kept, so
+ * the bounds describe the unit actually being filtered on.
  */
 export const buildBoundsFilter = ({
   extra_filter = '',
@@ -59,11 +52,7 @@ export const buildBoundsFilter = ({
   UseCollectionSizeBoundsParams,
   'extra_filter' | 'unitTerms'
 >): string => {
-  const filtersObject = extra_filter
-    ? queryFilterString2Object(extra_filter)
-    : {};
-
-  const withoutRange = omit(filtersObject ?? {}, [COLLECTION_SIZE_VALUE_FIELD]);
+  const withoutRange = withoutRangeFilter(extra_filter);
 
   // The unit may not be applied yet: the dropdown probes bounds for the unit
   // the user is looking at, not only for the one already in the URL.

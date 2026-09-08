@@ -109,7 +109,7 @@ describe('CollectionSizeFilter', () => {
     fireEvent.change(screen.getByLabelText(/minimum collection size/i), {
       target: { value: '150' },
     });
-    fireEvent.click(screen.getByRole('button', { name: /apply/i }));
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
     expect(onApply).toHaveBeenCalledTimes(1);
     expect(onApply).toHaveBeenCalledWith({
@@ -131,7 +131,7 @@ describe('CollectionSizeFilter', () => {
     fireEvent.change(screen.getByLabelText(/minimum collection size/i), {
       target: { value: '150' },
     });
-    fireEvent.click(screen.getByRole('button', { name: /apply/i }));
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
     expect(onApply).toHaveBeenLastCalledWith({
       [UNIT_FIELD]: ['Assays', 'assays'],
@@ -146,7 +146,7 @@ describe('CollectionSizeFilter', () => {
     fireEvent.change(screen.getByLabelText(/minimum collection size/i), {
       target: { value: '150' },
     });
-    fireEvent.click(screen.getByRole('button', { name: /apply/i }));
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
     fireEvent.click(screen.getByRole('combobox'));
     fireEvent.click(screen.getByText('Genomes'));
@@ -163,7 +163,7 @@ describe('CollectionSizeFilter', () => {
     fireEvent.change(screen.getByLabelText(/maximum collection size/i), {
       target: { value: '99999' },
     });
-    fireEvent.click(screen.getByRole('button', { name: /apply/i }));
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
     expect(onApply).toHaveBeenCalledWith({
       [UNIT_FIELD]: [],
@@ -240,7 +240,7 @@ describe('CollectionSizeFilter', () => {
 
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
     expect(
-      screen.queryByRole('button', { name: /apply/i }),
+      screen.queryByRole('button', { name: /submit/i }),
     ).not.toBeInTheDocument();
   });
 });

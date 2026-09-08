@@ -1,3 +1,4 @@
+import { omit } from 'lodash';
 import { FilterTermType, SelectedFilterType } from '../../types';
 import {
   ALL_UNITS_KEY,
@@ -7,6 +8,7 @@ import {
   RANGE_WILDCARD,
   normalizeUnitKey,
 } from 'src/views/search/config/collection-size';
+import { queryFilterString2Object } from '../../utils/query-string';
 
 /**
  * One selectable unit in the dropdown.
@@ -145,6 +147,24 @@ export const buildFilterPatch = ({
       ? [min || RANGE_WILDCARD, max || RANGE_WILDCARD]
       : [],
   };
+};
+
+/**
+ * The applied filters with the collection size range removed.
+ *
+ * Both the bounds probe and the histogram describe the range the user could
+ * pick, not the one already picked: leaving the applied range in would bound
+ * the inputs by the current selection and collapse the histogram to the
+ * selected buckets. Everything else is kept.
+ */
+export const withoutRangeFilter = (
+  extra_filter: string,
+): SelectedFilterType => {
+  const filtersObject = extra_filter
+    ? queryFilterString2Object(extra_filter)
+    : {};
+
+  return omit(filtersObject ?? {}, [COLLECTION_SIZE_VALUE_FIELD]);
 };
 
 /** Non-negative integer, or `null` when the input is not a usable number. */

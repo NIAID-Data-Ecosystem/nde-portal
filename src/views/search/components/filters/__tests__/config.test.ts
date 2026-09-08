@@ -125,9 +125,14 @@ describe('filters/config', () => {
     });
 
     // A 143-term uncontrolled vocabulary whose top 9 terms cover >99.8% of
-    // records makes no readable pie or bar chart.
-    it('has no visualization chart', () => {
-      expect(collectionSize()?.chart).toBeUndefined();
+    // records makes no readable pie or bar chart. The numeric range does make a
+    // readable distribution, so the filter offers a range histogram and nothing
+    // else.
+    it('offers a range histogram and no other chart type', () => {
+      expect(collectionSize()?.chart?.availableOptions).toEqual([
+        'rangeHistogram',
+      ]);
+      expect(collectionSize()?.chart?.defaultOption).toBe('rangeHistogram');
     });
   });
 

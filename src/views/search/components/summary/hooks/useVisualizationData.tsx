@@ -16,6 +16,7 @@ import { useBioSampleAggregation } from 'src/views/search/hooks/useBioSampleAggr
 import { useComputationalToolAggregation } from 'src/views/search/hooks/useComputationalToolAggregation';
 import { useSharedDatasetAggregation } from 'src/views/search/hooks/useSharedDatasetAggregation';
 import { useDataCollectionAggregation } from 'src/views/search/hooks/useDataCollectionAggregation';
+import { useCollectionSizeBuckets } from './useCollectionSizeBuckets';
 
 interface UseVisualizationDataParams {
   config: FilterConfig;
@@ -95,8 +96,13 @@ export const useVisualizationData = ({
   }, [preferredChartType, config.chart]);
 
   const filterProperty = config.filterProperty || config.property;
-  const isHistogramChart =
+  // The date histogram reads the API's `hist=date` buckets; the range
+  // histogram reads per-bucket counts from its own hook. Both skip
+  // small-value bucketing, but only the date one carries date-shaped terms.
+  const isDateHistogram =
     chartType === 'histogram' || config.queryType === 'histogram';
+  const isRangeHistogram = chartType === 'rangeHistogram';
+  const isHistogramChart = isDateHistogram || isRangeHistogram;
 
   const extraFilter = useMemo(
     () => queryFilterObject2String(searchState.filters) || '',
@@ -148,6 +154,13 @@ export const useVisualizationData = ({
     enabled: isActive && hasChartConfig,
   });
 
+  // Range histogram counts. Not part of any aggregation response: the numeric
+  // field is neither faceted nor histogram-able, so each bucket is counted
+  // with its own range query (see the hook).
+  const collectionSizeBuckets = useCollectionSizeBuckets(scopedAggParams, {
+    enabled: isActive && hasChartConfig && isRangeHistogram,
+  });
+
   // The response for this chart's category. This ensures chart counts match the
   // filter panel counts exactly.
   const activeAggResponse = useMemo(
@@ -171,6 +184,11 @@ export const useVisualizationData = ({
   // Derive loading/fetching state from the scoped hook that is actually used
   // for this config, so the loading spinner reflects the right request.
   const activeScopedQuery = useMemo(() => {
+    // The range histogram's data comes from its own query, so the card's
+    // spinner, error state, and retry have to follow that one.
+    if (isRangeHistogram) {
+      return collectionSizeBuckets;
+    }
     switch (config.category) {
       case 'Sample':
         return bioSampleAgg;
@@ -184,6 +202,8 @@ export const useVisualizationData = ({
     }
   }, [
     config.category,
+    isRangeHistogram,
+    collectionSizeBuckets,
     bioSampleAgg,
     computationalToolAgg,
     sharedDatasetAgg,
@@ -222,12 +242,33 @@ export const useVisualizationData = ({
     [activeAggResponse, config.property],
   );
 
+  // Range buckets as facet terms, so they travel the same mapping path as
+  // every other chart's data. The bucket key is the term; the registry's
+  // mapper looks the bucket's endpoints back up from it.
+  const rangeHistogramTerms = useMemo(
+    () =>
+      collectionSizeBuckets.data?.map(bucket => ({
+        term: bucket.key,
+        count: bucket.count,
+      })),
+    [collectionSizeBuckets.data],
+  );
+
   const chartTerms = useMemo(() => {
-    if (isHistogramChart) {
+    if (isRangeHistogram) {
+      return rangeHistogramTerms;
+    }
+    if (isDateHistogram) {
       return dateHistogramTerms;
     }
     return facetTerms?.slice(0, 100);
-  }, [isHistogramChart, dateHistogramTerms, facetTerms]);
+  }, [
+    isDateHistogram,
+    isRangeHistogram,
+    dateHistogramTerms,
+    rangeHistogramTerms,
+    facetTerms,
+  ]);
 
   const chartTermsLength = chartTerms?.length ?? 0;
   const availableOptionsKey = useMemo(
@@ -238,10 +279,13 @@ export const useVisualizationData = ({
   const formatChartLabel = useCallback(
     (term: string, count: number) => {
       if (chartType === 'bar') return term;
-      if (isHistogramChart) return term.split('-')[0] || term;
+      // Date buckets are `YYYY-MM-DD`, so the year is the label. Range buckets
+      // are also hyphenated but label themselves in their own mapper, so this
+      // must stay date-only.
+      if (isDateHistogram) return term.split('-')[0] || term;
       return `${term} (${count.toLocaleString()})`;
     },
-    [chartType, isHistogramChart],
+    [chartType, isDateHistogram],
   );
 
   // Format chart data.

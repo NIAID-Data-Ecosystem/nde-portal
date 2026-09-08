@@ -38,8 +38,12 @@ export type FilterQueryType = 'facet' | 'source' | 'histogram';
 
 /**
  * Chart types available for visualizations
+ *
+ * - 'histogram': the date histogram, driven by the API's `hist=date` buckets
+ * - 'rangeHistogram': counts per numeric range bucket, for a filter that owns
+ *   a `rangeProperty`.
  */
-export type ChartType = 'pie' | 'bar' | 'histogram';
+export type ChartType = 'pie' | 'bar' | 'histogram' | 'rangeHistogram';
 
 /**
  * Filter category types available for grouping filters in the UI
