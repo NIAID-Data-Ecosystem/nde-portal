@@ -4,9 +4,11 @@ import {
   Box,
   Card,
   Collapse,
+  Divider,
   Flex,
   Icon,
   ListItem,
+  Stack,
   UnorderedList,
 } from '@chakra-ui/react';
 import { Navigation } from 'src/components/resource-sections/components';
@@ -38,6 +40,8 @@ export const Sidebar = ({
 
   const [isMounted, setIsMounted] = React.useState(false);
 
+  const isDataCollectionType = data?.['@type'] === 'DataCollection';
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -51,24 +55,35 @@ export const Sidebar = ({
     >
       <Box className='sidebar' position='sticky' top='0px'>
         <Card flex={1} ml={[0, 0, 4]} my={[2, 2, 0]} sx={{ '>*': { p: 0 } }}>
-          {data && data['_meta'] && (
-            <CompletenessBadgeCircle
-              type={data['@type']}
-              stats={data['_meta']}
-              p={6}
-            />
-          )}
-          {/* External links to access data, documents or dataset at the source. */}
-          <ExternalAccess data={data} isLoading={isLoading} hasDivider={true} />
-          <UsageInfo data={data} isLoading={isLoading} />
-          {data?.['@type'] === 'ResourceCatalog' && (
-            <LinkToSourcePage
-              href={`/sources#${formatIdentifierAsAnchorSlug(data?._id || '')}`}
-              isLoading={isLoading}
-            >
-              Learn more about {data?.name} in the sources page
-            </LinkToSourcePage>
-          )}
+          <Stack
+            divider={
+              <Divider
+                borderColor='page.placeholder'
+                marginBottom={'0!important'}
+              />
+            }
+          >
+            {data && data['_meta'] && !isDataCollectionType && (
+              <CompletenessBadgeCircle
+                type={data['@type']}
+                stats={data['_meta']}
+                p={6}
+              />
+            )}
+            {/* External links to access data, documents or dataset at the source. */}
+            <ExternalAccess data={data} isLoading={isLoading} />
+            <UsageInfo data={data} isLoading={isLoading} />
+            {data?.['@type'] === 'ResourceCatalog' && (
+              <LinkToSourcePage
+                href={`/sources#${formatIdentifierAsAnchorSlug(
+                  data?._id || '',
+                )}`}
+                isLoading={isLoading}
+              >
+                Learn more about {data?.name} in the sources page
+              </LinkToSourcePage>
+            )}
+          </Stack>
         </Card>
 
         {/* Local navigation for page */}

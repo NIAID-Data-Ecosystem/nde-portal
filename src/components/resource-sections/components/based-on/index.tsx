@@ -387,8 +387,8 @@ export const BasedOnActionProcess = ({
 }: IsBasedOn) => {
   // step may come back from the API as a single string or a list.
   const steps = castArray(actionProcess?.step ?? []).filter(Boolean);
-
-  if (!description && steps.length === 0) return <>No details provided.</>;
+  const showAccordion = description || steps.length > 0;
+  if (!showAccordion) return <>No details provided.</>;
 
   return (
     <Stack
@@ -421,7 +421,7 @@ export const BasedOnActionProcess = ({
                     {disambiguatingDescription}
                   </Text>
                 )} */}
-                {steps.length > 0 && (
+                {showAccordion && (
                   <AccordionButton
                     w='auto'
                     gap={2}
@@ -439,13 +439,13 @@ export const BasedOnActionProcess = ({
                   </AccordionButton>
                 )}
               </Flex>
-              {steps.length > 0 && (
+              {showAccordion && (
                 <AccordionPanel px={0} pt={1} pb={1}>
                   <VStack alignItems='start' spacing={1} fontSize='xs'>
                     <VStack alignItems='start' spacing={1.5}>
                       {description && <Text fontSize='xs'>{description}</Text>}
 
-                      {steps.map((step, index) => (
+                      {steps?.map((step, index) => (
                         <Text key={index}>{step}</Text>
                       ))}
                     </VStack>

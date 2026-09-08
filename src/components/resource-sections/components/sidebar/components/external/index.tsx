@@ -42,18 +42,12 @@ export const LinkToSourcePage = ({
 export const ExternalAccess = ({
   data,
   isLoading,
-  hasDivider = true,
   ...props
 }: ExternalProps) => {
   return (
     <>
       {/* Source + data access info. */}
-      <Wrapper
-        isLoading={isLoading}
-        label='Resource Access'
-        hasDivider={hasDivider}
-        {...props}
-      >
+      <Wrapper isLoading={isLoading} label='Resource Access' {...props}>
         {(data?.isAccessibleForFree === true ||
           data?.isAccessibleForFree === false ||
           data?.conditionsOfAccess) && (
@@ -151,7 +145,6 @@ interface WrapperProps extends SkeletonProps {
   isLoading: boolean;
   children: React.ReactNode;
   headingProps?: HeadingProps;
-  hasDivider?: boolean;
 }
 
 export const Wrapper = ({
@@ -159,11 +152,9 @@ export const Wrapper = ({
   isLoading,
   children,
   headingProps,
-  hasDivider = true,
   ...props
 }: WrapperProps) => (
   <Skeleton isLoaded={!isLoading} fontSize='xs' flex={1} {...props}>
-    {hasDivider && <Divider borderColor='page.placeholder' />}
     {label && (
       <Heading
         as='h2'

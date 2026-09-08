@@ -69,7 +69,10 @@ import {
   SAMPLE_FIELDS,
   DATA_COLLECTION_FIELDS,
 } from '../../config/fields';
-import { SHOW_SEARCH_VIEW_MODES } from 'src/utils/feature-flags';
+import {
+  SHOW_DATA_COLLECTIONS_VIEW_MODES,
+  SHOW_SEARCH_VIEW_MODES,
+} from 'src/utils/feature-flags';
 import { TABS_WITH_VIEW_MODE } from '../../config/view-mode';
 import { useViewMode } from '../../hooks/useViewMode';
 import { ViewModeRadio } from './components/toolbar/components/view-mode-radio';
@@ -231,9 +234,12 @@ export const SearchResults = ({
   // Selected tab index is stored in context to sync with other components.
   const urlQueryParams = useSearchQueryFromURL();
 
-  // Persisted per-tab card/table preference. Only some tabs offer the choice.
+  // Persisted per-tab card/table preference. Only some tabs offer the choice,
+  // and the Data Collections tab is gated behind its own flag.
   const showViewMode =
-    SHOW_SEARCH_VIEW_MODES && TABS_WITH_VIEW_MODE.includes(id);
+    SHOW_SEARCH_VIEW_MODES &&
+    TABS_WITH_VIEW_MODE.includes(id) &&
+    (id !== 'dc' || SHOW_DATA_COLLECTIONS_VIEW_MODES);
   const [viewMode, setViewMode] = useViewMode(id);
 
   // For Samples and DataCollection tabs, use extra fields for the table columns.
@@ -249,10 +255,13 @@ export const SearchResults = ({
     SHOW_SEARCH_VIEW_MODES && id === 'ct' && viewMode === 'table';
   // Data Collections also offer both views, but default to cards. Unlike the
   // two tabs above, this tab predates the view mode radio and was table-only,
-  // so when the flag hides the radio it must fall back to the table rather
+  // so when either flag hides the radio it must fall back to the table rather
   // than to the card default.
   const isDataCollectionTable =
-    isDataCollectionTab && (!SHOW_SEARCH_VIEW_MODES || viewMode === 'table');
+    isDataCollectionTab &&
+    (!SHOW_SEARCH_VIEW_MODES ||
+      !SHOW_DATA_COLLECTIONS_VIEW_MODES ||
+      viewMode === 'table');
 
   // Each tab type uses a minimal, tab-specific field list rather than the
   // shared RESULT_FIELDS base (which carries many fields that other tabs never
