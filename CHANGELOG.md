@@ -1,21 +1,52 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+All notable changes to this project will be documented in this file. See
+[standard-version](https://github.com/conventional-changelog/standard-version)
+for commit guidelines.
+
+## [7.0.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v6.5.0...v7.0.0) (2026-09-08)
+
+### 🚀 Features
+
+- **data collection:** add data collection type
+
+### 🐛 Bugfixes
+
+- **deps:** bump @humanfs/node resolution to ^0.16.8
+  ([a1584d4](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/a1584d438f6724ce6430813e8f95ef2978f716a1))
+- **deps:** bump @xmldom/xmldom resolution to ^0.8.15
+  ([3c88d0f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/3c88d0f403a0676c1b996dd462ffb9e1aee8d541))
+- **deps:** bump browserslist resolution to ^4.28.7
+  ([eb4f82a](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/eb4f82a8d73def1aacd6e0ef78f2938571f6f719))
+- **deps:** bump fast-uri resolution to ^3.1.6
+  ([0dff900](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/0dff9006e2aac8663dc265334c96a2571745a32f))
 
 ## [6.5.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v6.4.0...v6.5.0) (2026-08-31)
 
-
 ### 🚀 Features
 
-* **sources:** sources page reorganization ([#533](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/533)) ([0a07310](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/0a0731090f21a1063db54732df5e22eb1880dd50))
+- **sources:** sources page reorganization
+  ([#533](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/533))
+  ([0a07310](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/0a0731090f21a1063db54732df5e22eb1880dd50))
 
 ## [6.4.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v6.3.0...v6.4.0) (2026-08-21)
 
-
 ### 🚀 Features
 
-* add Google OAuth providers ([#524](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/524)) ([b88ccbd](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/b88ccbd0a11edb36e409f11728cea78f4d7d0456)), closes [#515](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/515) [#516](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/516) [#517](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/517) [#518](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/518) [#519](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/519) [#520](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/520) [#523](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/523)
-* create DataCollection Resource view page [#444](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/444) ([#529](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/529)) ([9f9385c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/9f9385c724ce933f1e9423545fd17241db16b998))
+- add Google OAuth providers
+  ([#524](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/524))
+  ([b88ccbd](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/b88ccbd0a11edb36e409f11728cea78f4d7d0456)),
+  closes [#515](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/515)
+  [#516](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/516)
+  [#517](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/517)
+  [#518](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/518)
+  [#519](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/519)
+  [#520](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/520)
+  [#523](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/523)
+- create DataCollection Resource view page
+  [#444](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/444)
+  ([#529](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/529))
+  ([9f9385c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/9f9385c724ce933f1e9423545fd17241db16b998))
 
 ## [6.3.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v6.2.2...v6.3.0) (2026-08-12)
 
