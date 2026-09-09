@@ -22,7 +22,7 @@ import { BIOSAMPLE_EXTRA_FILTER } from '../../hooks/useBioSampleAggregation';
 import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
 import { useSearchResultsData } from '../../hooks/useSearchResultsData';
 import { useViewMode } from '../../hooks/useViewMode';
-import { TabType } from '../../types';
+import { SearchViewMode, TabType } from '../../types';
 import { updateRoute } from '../../utils/update-route';
 import Card from './components/card';
 import {
@@ -436,7 +436,13 @@ export const SearchResults = ({
           params={params}
           viewModeControl={
             showViewMode ? (
-              <ViewModeRadio id={id} value={viewMode} onChange={setViewMode} />
+              <ViewModeRadio
+                id={id}
+                value={viewMode}
+                onValueChange={({ value }) => {
+                  value && setViewMode(value as SearchViewMode);
+                }}
+              />
             ) : undefined
           }
           extraActions={
