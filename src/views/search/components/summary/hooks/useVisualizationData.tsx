@@ -218,8 +218,9 @@ export const useVisualizationData = ({
         activeAggResponse?.facets,
         config.property,
         activeAggResponse?.total ?? 0,
+        { caseInsensitive: config.caseInsensitive },
       )?.terms,
-    [activeAggResponse, config.property],
+    [activeAggResponse, config.property, config.caseInsensitive],
   );
 
   const chartTerms = useMemo(() => {

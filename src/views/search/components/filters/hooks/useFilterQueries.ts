@@ -354,6 +354,7 @@ export const useFilterQueries = ({
             activeResponse.facets,
             config.property,
             activeResponse.total,
+            { caseInsensitive: config.caseInsensitive },
           );
           if (facetData?.terms) {
             const mappedTerms = facetData.terms.map(t => {

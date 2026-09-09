@@ -95,6 +95,12 @@ export interface FilterConfig {
   groupBy?: { property: string; label: string }[];
   /** Optional: Whether to show "No {facet}" option (defaults to true) */
   showMissing?: boolean;
+  /**
+   * Optional: Merge this filter's facet terms case-insensitively even when
+   * it maps to a single API field (see mergeFacets). Multi-field filters
+   * are always merged case-insensitively regardless of this flag.
+   */
+  caseInsensitive?: boolean;
   /** Optional: Chart configuration for visualizations */
   chart?: ChartConfig;
   /** Optional: Transform function for visualization data */

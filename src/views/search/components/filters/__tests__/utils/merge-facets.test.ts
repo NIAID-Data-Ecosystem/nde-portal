@@ -62,6 +62,46 @@ describe('filters/utils/merge-facets', () => {
     });
   });
 
+  describe('single-field filters with caseInsensitive', () => {
+    it('collapses terms that differ only by case, keeping the first casing and largest count', () => {
+      const result = mergeFacets(
+        {
+          'collectionSize.unitText': facet([
+            { term: 'Records', count: 10 },
+            { term: 'records', count: 40 },
+            { term: 'specimens', count: 5 },
+          ]),
+        },
+        'collectionSize.unitText',
+        100,
+        { caseInsensitive: true },
+      );
+
+      expect(result?.terms).toEqual([
+        { term: 'Records', count: 40 },
+        { term: 'specimens', count: 5 },
+      ]);
+    });
+
+    it('passes terms through untouched when caseInsensitive is not set', () => {
+      const result = mergeFacets(
+        {
+          'collectionSize.unitText': facet([
+            { term: 'Records', count: 10 },
+            { term: 'records', count: 40 },
+          ]),
+        },
+        'collectionSize.unitText',
+        100,
+      );
+
+      expect(result?.terms).toEqual([
+        { term: 'Records', count: 10 },
+        { term: 'records', count: 40 },
+      ]);
+    });
+  });
+
   describe('merged multi-field filters', () => {
     it('unions the terms of every field', () => {
       const result = mergeFacets(

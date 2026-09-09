@@ -190,6 +190,22 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     tabIds: ['d', 'dc'],
   },
   {
+    id: 'collectionSize.unitText',
+    name: 'Collection Size',
+    property: 'collectionSize.unitText',
+    queryType: 'facet',
+    caseInsensitive: true,
+    // Only ResourceCatalog/DataCollection records can have a Collection
+    // Size; "No collection size" would otherwise count every Dataset and
+    // Disease record, which is not a useful option (same rationale as
+    // Content Type above).
+    showMissing: false,
+    description: getMetadataDescription('collectionSize.unitText') || '',
+    chart: DEFAULT_BAR_PIE_CHART,
+    category: 'Shared / Dataset',
+    tabIds: ['d', 'dc'],
+  },
+  {
     id: 'applicationCategory.raw',
     name: 'Application Category',
     property: 'applicationCategory.raw',

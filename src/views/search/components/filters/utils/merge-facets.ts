@@ -26,12 +26,17 @@ export interface MergedFacet {
  * Terms are merged case-insensitively, keeping the casing from the first
  * occurrence and the largest count for each term.
  *
+ * A single-field filter is merged case-insensitively too when
+ * `options.caseInsensitive` is set, for filters whose values are known to
+ * contain case-only duplicates (e.g. "Records" vs "records").
+ *
  * Returns `null` when none of the filter's fields contain facet terms.
  */
 export const mergeFacets = (
   facets: Facet | undefined,
   property: string,
   total: number,
+  options?: { caseInsensitive?: boolean },
 ): MergedFacet | null => {
   if (!facets) return null;
 
@@ -42,9 +47,9 @@ export const mergeFacets = (
 
   if (present.length === 0) return null;
 
-  // Single-field filters don't need merging, so preserve their original
-  // terms and counts.
-  if (present.length === 1) {
+  // Single-field filters don't need merging by default, so preserve their
+  // original terms and counts.
+  if (present.length === 1 && !options?.caseInsensitive) {
     const [facet] = present;
     return {
       terms: facet.terms,
