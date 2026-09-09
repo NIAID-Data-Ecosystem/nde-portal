@@ -1,22 +1,23 @@
-import React from 'react';
 import {
   Center,
   ColorPalette,
   Flex,
-  FlexProps,
   IconButton,
   NativeSelect,
   Separator,
-  Skeleton,
+  Stack,
+  StackProps,
   Text,
   useSlotRecipe,
 } from '@chakra-ui/react';
+import React from 'react';
 import {
   FaAngleLeft,
   FaAngleRight,
   FaAnglesLeft,
   FaAnglesRight,
 } from 'react-icons/fa6';
+import { PageCombobox } from 'src/components/page-combobox';
 
 // Based on NIAID's Table Styles
 // https://designsystem.niaid.nih.gov/components/atoms
@@ -26,7 +27,7 @@ const formatNumber = (number: number, separator = ',') => {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, separator);
 };
 
-export interface TablePaginationProps extends FlexProps {
+export interface TablePaginationProps extends StackProps {
   /**
    * Total number of data.
    */
@@ -120,7 +121,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
   };
 
   return (
-    <Flex colorPalette={colorPalette} css={styles.pagination} {...props}>
+    <Stack colorPalette={colorPalette} css={styles.pagination} {...props}>
       <Flex
         p={4}
         bg='bg.alt'
@@ -131,8 +132,13 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
         {/* Select options for displaying per page rows */}
         <Flex pb={[4, 0]} flex={[1, 'unset']} flexDirection={['column', 'row']}>
           <Text fontSize='sm'>Rows per page: </Text>
-          {/* Display row options by increments of 5. */}
-          <NativeSelect.Root size='sm' mx={[0, 2]}>
+          {/*
+          The width is explicit because the recipe makes the root `width: 100%`
+          while the field keeps `minWidth: 0`. Inside this shrink-to-fit flex
+          row that resolves to min-content, collapsing the select onto the 2rem
+          of padding reserved for its indicator and clipping the value away.
+          */}
+          <NativeSelect.Root flexShrink={0} mx={[0, 2]} size='sm' width='5rem'>
             <NativeSelect.Field
               value={size}
               onChange={e => {
@@ -169,24 +175,20 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
             disabled={from === 0}
             handleClick={() => setFrom(from - 1)}
           ></ArrowButton>
-          <NativeSelect.Root size='sm' mx={[0, 4]} my={[2, 0]}>
-            <NativeSelect.Field
-              value={from}
-              onChange={e => setFrom(+e.currentTarget.value)}
-              cursor='pointer'
-              bg='white'
-              aria-label='Select page'
-            >
-              {Array.from(Array(numPages)).map((_, i) => {
-                return (
-                  <option key={i} value={i}>
-                    Page {i + 1}
-                  </option>
-                );
-              })}
-            </NativeSelect.Field>
-            <NativeSelect.Indicator />
-          </NativeSelect.Root>
+          {/*
+          `from` is a 0-based page index here, while PageCombobox works in
+          1-based page numbers, so both directions convert at this boundary.
+          */}
+          <PageCombobox
+            // Matches the white "rows per page" select beside it on `bg.alt`.
+            inputProps={{ bg: 'white' }}
+            mx={[0, 4]}
+            my={[2, 0]}
+            onPageChange={page => setFrom(page - 1)}
+            page={from + 1}
+            totalPages={numPages}
+            width='5rem'
+          />
           <ArrowButton
             icon={<FaAngleRight />}
             ariaLabel='Go to next page.'
@@ -209,20 +211,16 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
         bg='white'
         p={4}
       >
-        <Skeleton loading={loading}>
-          <Text fontSize='sm'>
-            Page {formatNumber(from + 1)} of {formatNumber(numPages)}
-          </Text>
-        </Skeleton>
+        <Text fontSize='sm'>
+          Page {formatNumber(from + 1)} of {formatNumber(numPages)}
+        </Text>
         <Center display={'flex'} h='20px' mx={2}>
           <Separator orientation='vertical' />
         </Center>
-        <Skeleton loading={loading}>
-          <Text fontSize='sm'>
-            {formatNumber(total)} {total > 1 ? 'items' : 'item'}
-          </Text>
-        </Skeleton>
+        <Text fontSize='sm'>
+          {formatNumber(total)} {total > 1 ? 'items' : 'item'}
+        </Text>
       </Flex>
-    </Flex>
+    </Stack>
   );
 };

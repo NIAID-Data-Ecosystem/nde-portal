@@ -1,9 +1,17 @@
-import React from 'react';
-import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Table } from '../index';
-import { RowWithDrawer } from '../components/row'; // Adjust the import path accordingly
+import React from 'react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from 'src/__tests__/utils/render';
+
 import { TablePagination } from '../components/pagination';
+import { RowWithDrawer } from '../components/row'; // Adjust the import path accordingly
+import { Table } from '../index';
 
 describe('Table', () => {
   test('renders with data', () => {
@@ -127,11 +135,20 @@ describe('Table', () => {
       />,
     );
 
-    const nextPageButton = screen.getByRole('button', { name: /next page/i });
-    await userEvent.click(nextPageButton);
+    /*
+    The arrow buttons are `display={['none', 'flex']}` and jsdom reports the
+    base breakpoint, so they are hidden here (and a hidden node has no
+    accessible name). Pagination is driven through the page combobox, which is
+    the only page control the small-viewport layout shows anyway.
+    */
+    const user = userEvent.setup();
+    await act(async () => {});
+
+    await user.click(screen.getByLabelText('Select page'));
+    await user.click(await screen.findByRole('option', { name: /^Page 2/ }));
 
     // Check if the table now shows data for the next page
-    expect(screen.getByText('Person 6')).toBeInTheDocument();
+    expect(await screen.findByText('Person 6')).toBeInTheDocument();
   });
 
   /*** Table expandable row ***/
@@ -142,19 +159,27 @@ describe('Table', () => {
       expect(button).toHaveTextContent('More');
     });
 
-    test('toggles display of children on click', () => {
+    test('toggles display of children on click', async () => {
+      /*
+      The panel is mounted through zag's presence machine, so the body is not in
+      the DOM synchronously after the click, and the accordion only responds to
+      a real pointer sequence — `fireEvent.click` leaves it closed.
+      */
+      const user = userEvent.setup();
       const testMessage = 'Test Child';
       render(<RowWithDrawer>{testMessage}</RowWithDrawer>);
       const button = screen.getByRole('button');
       expect(screen.queryByText(testMessage)).not.toBeInTheDocument();
 
       // Click the button to expand
-      fireEvent.click(button);
-      expect(screen.getByText(testMessage)).toBeInTheDocument();
+      await user.click(button);
+      expect(await screen.findByText(testMessage)).toBeInTheDocument();
 
       // Click again to collapse
-      fireEvent.click(button);
-      expect(screen.queryByText(testMessage)).not.toBeInTheDocument();
+      await user.click(button);
+      await waitFor(() =>
+        expect(screen.queryByText(testMessage)).not.toBeInTheDocument(),
+      );
     });
   });
 });
@@ -222,11 +247,47 @@ describe('Table Pagination', () => {
     expect(setFrom).toHaveBeenCalledWith(totalPages - 1); // Should navigate to the last page
   });
 
-  test('updates the page when a new page is selected from the dropdown', async () => {
-    renderComponent({ setSize, setFrom });
-    const select = screen.getByLabelText('Select page');
-    await user.selectOptions(select, '2'); // Selecting page 3 (option value is zero-based index)
-    expect(setFrom).toHaveBeenCalledWith(2);
+  test('updates the page when a page is picked from the combobox', async () => {
+    const onSetFrom = jest.fn();
+    renderComponent({ setFrom: onSetFrom });
+    // Let the combobox's state machine start before interacting.
+    await act(async () => {});
+
+    await user.click(screen.getByLabelText('Select page'));
+    await user.click(await screen.findByRole('option', { name: /^Page 2/ }));
+
+    // PageCombobox reports 1-based pages; `from` is a 0-based index.
+    await waitFor(() => expect(onSetFrom).toHaveBeenCalledWith(1));
+  });
+
+  test('updates the page when a page number is typed into the combobox', async () => {
+    const onSetFrom = jest.fn();
+    renderComponent({ setFrom: onSetFrom });
+    await act(async () => {});
+
+    const input = screen.getByLabelText('Select page');
+    await user.clear(input);
+    await user.type(input, '7');
+    await act(async () => {});
+    await user.keyboard('{Enter}');
+
+    await waitFor(() => expect(onSetFrom).toHaveBeenCalledWith(6));
+  });
+
+  test('reverts a page number past the last page instead of navigating', async () => {
+    const onSetFrom = jest.fn();
+    renderComponent({ setFrom: onSetFrom });
+    await act(async () => {});
+
+    const input = screen.getByLabelText('Select page');
+    await user.clear(input);
+    await user.type(input, '99');
+    await act(async () => {});
+    await user.keyboard('{Enter}');
+
+    // Only 10 pages exist, so nothing matches and zag restores the current page.
+    await waitFor(() => expect(input).toHaveValue('1'));
+    expect(onSetFrom).not.toHaveBeenCalled();
   });
 
   test('displays correct total pages and current page information', async () => {

@@ -1,21 +1,19 @@
 import {
   ButtonGroup,
-  Combobox,
-  createListCollection,
   IconButton,
   Pagination as ChakraPagination,
-  Portal,
   Span,
   usePaginationContext,
   VisuallyHidden,
 } from '@chakra-ui/react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   FaAngleLeft,
   FaAngleRight,
   FaAnglesLeft,
   FaAnglesRight,
 } from 'react-icons/fa6';
+import { PageCombobox } from 'src/components/page-combobox';
 
 /*
  [COMPONENT INFO]: Pagination
@@ -24,7 +22,7 @@ import {
  ellipses), the disabled state of the edge triggers, and the ARIA wiring —
  `nav[aria-label]`, `aria-current='page'` on the active page and an accessible
  label on every trigger. What is left here is the API's result ceiling and the
- small-viewport select.
+ small-viewport page combobox.
 */
 
 interface PaginationProps {
@@ -90,169 +88,33 @@ const EdgeTrigger: React.FC<{
   );
 };
 
-// How many rows to offer, so typing "1" does not list every page.
-const PAGE_SUGGESTION_LIMIT = 10;
-
 /*
-The pages to offer for what has been typed, plus which of them to highlight.
+Below `md` the row of page buttons is replaced by the shared page combobox, so a
+page can be picked from the suggestions or typed straight in — the window around
+the current page is often nowhere near the page someone wants, and the native
+select this replaced could only ever offer that window.
 
-With no digits to match on, offer the same window the button row shows.
-Otherwise offer the pages whose number starts with what was typed. Building the
-full range is cheap: the smallest page size is 10, so `totalPages` is at most
-MAX_RESULTS / 10.
-
-The current page is appended when it is not itself a match, because zag reverts
-the input to the *selected item's* string and resolves that item through the
-collection — a selection missing from it stringifies to '', which would blank
-the field rather than restore it. (`resolveSelectedItems` does fall back to a
-cache, but that cache is only written when `value` changes, so it is empty until
-the first selection and cannot be relied on.)
+Chakra's pagination machine already knows the page, the total, and the window its
+button row shows, so the combobox is fed from context rather than from props.
 */
-const getSuggestions = (
-  inputValue: string,
-  page: number,
-  windowPages: number[],
-  totalPages: number,
-) => {
-  const digits = inputValue.replace(/\D/g, '');
-
-  const matches = digits
-    ? Array.from({ length: totalPages }, (_, index) => index + 1)
-        .filter(value => String(value).startsWith(digits))
-        .slice(0, PAGE_SUGGESTION_LIMIT - 1)
-    : windowPages;
-
-  return {
-    pages: matches.includes(page) ? matches : [...matches, page],
-    // Highlighting the first match is what lets Enter commit a typed page; with
-    // nothing matching there is deliberately no highlight, so Enter reverts.
-    highlight: digits ? matches[0] ?? null : page,
-  };
-};
-
-/*
-Below `md` the row of page buttons is replaced by a combobox, so a page can be
-picked from the suggestions or typed straight in — the window around the current
-page is often nowhere near the page someone wants, and the native select this
-replaced could only ever offer that window.
-
-`allowCustomValue` is deliberately left off. It does not commit typed text: zag
-still only selects the *highlighted* item on Enter, which is why Chakra's
-"creatable" example has to fabricate a synthetic item. What the flag actually
-does is suppress the revert. Leaving it off means an unparseable or out-of-range
-entry reverts to the current page on Enter / Escape / blur — exactly the
-validation wanted here.
-
-`highlightedValue` is controlled rather than left to `inputBehavior`, which
-highlights the *selected* item (always present, per `getSuggestions`) instead of
-the page just typed, so Enter would re-select the current page and go nowhere.
-
-The enclosing `nav` already carries `ariaLabel`, so the input only has to name
-itself; zag sets no `aria-labelledby` on it, so a plain `aria-label` is enough.
-*/
-const PageCombobox = () => {
+const PaginationPageCombobox = () => {
   const { page, pages, totalPages, setPage } = usePaginationContext();
 
-  const windowPages = useMemo(
+  const suggestedPages = useMemo(
     () => pages.flatMap(item => (item.type === 'page' ? [item.value] : [])),
     [pages],
   );
 
-  const suggest = useCallback(
-    (value: string) => getSuggestions(value, page, windowPages, totalPages),
-    [page, windowPages, totalPages],
-  );
-
-  /*
-  What has been typed, tracked only to build the suggestions. The input's own
-  text is left to zag: it is written imperatively from the machine, and also
-  driving it from React state loses keystrokes to the race between the two.
-  Page changes from elsewhere still reach the input, because `value` is
-  controlled and zag rewrites the text whenever the selection changes.
-  */
-  const [query, setQuery] = useState('');
-  const [highlightedValue, setHighlightedValue] = useState<string | null>(
-    String(page),
-  );
-
-  // A page change from elsewhere puts the suggestions back to the window.
-  useEffect(() => {
-    setQuery('');
-    setHighlightedValue(String(page));
-  }, [page]);
-
-  const collection = useMemo(() => {
-    const items = suggest(query).pages.map(value => ({
-      label: String(value),
-      value: String(value),
-    }));
-    return createListCollection({ items });
-  }, [suggest, query]);
-
   return (
-    <Combobox.Root
-      collection={collection}
-      defaultInputValue={String(page)}
+    <PageCombobox
       display={{ base: 'flex', md: 'none' }}
-      highlightedValue={highlightedValue}
-      onHighlightChange={details =>
-        setHighlightedValue(details.highlightedValue)
-      }
-      onInputValueChange={details => {
-        /*
-        Only the user's own edits should change what is suggested — ignore the
-        machine's rewrites (`item-select`, `interact-outside`, `script`), which
-        would otherwise narrow the list to just the page it had already picked.
-        */
-        if (
-          details.reason !== 'input-change' &&
-          details.reason !== 'clear-trigger'
-        ) {
-          return;
-        }
-        setQuery(details.inputValue);
-        const { highlight } = suggest(details.inputValue);
-        setHighlightedValue(highlight === null ? null : String(highlight));
-      }}
-      onValueChange={details => {
-        const [value] = details.value;
-        if (value) setPage(+value);
-      }}
-      openOnClick
-      size='sm'
-      value={[String(page)]}
-      width='9rem'
-    >
-      <Combobox.Control>
-        {/* `inputMode` gets the numeric keypad on the touch devices this serves. */}
-        <Combobox.Input aria-label='Select page' inputMode='numeric' />
-        <Combobox.IndicatorGroup>
-          <Combobox.Trigger />
-        </Combobox.IndicatorGroup>
-      </Combobox.Control>
-      {/* Portalled so an `overflow: hidden` ancestor cannot clip the list. */}
-      <Portal>
-        <Combobox.Positioner>
-          {/* Wider than the 9rem control, so a row never wraps. */}
-          <Combobox.Content minW='11rem'>
-            <Combobox.Empty>No such page</Combobox.Empty>
-            {collection.items.map(item => (
-              <Combobox.Item item={item} key={item.value}>
-                <Combobox.ItemText whiteSpace='nowrap'>
-                  Page {item.label}
-                </Combobox.ItemText>
-                {item.value === String(page) && (
-                  <Span color='fg.muted' textStyle='xs'>
-                    current
-                  </Span>
-                )}
-                <Combobox.ItemIndicator />
-              </Combobox.Item>
-            ))}
-          </Combobox.Content>
-        </Combobox.Positioner>
-      </Portal>
-    </Combobox.Root>
+      mx={2}
+      onPageChange={setPage}
+      page={page}
+      suggestedPages={suggestedPages}
+      totalPages={totalPages}
+      width='5rem'
+    />
   );
 };
 
@@ -320,7 +182,7 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
           </ChakraPagination.PrevTrigger>
 
           {/* Mobile: pick or type a page number */}
-          <PageCombobox />
+          <PaginationPageCombobox />
 
           {/*
           `Pagination.Items` types only `render` and `ellipsis`, so the
