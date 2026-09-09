@@ -487,15 +487,13 @@ export const SearchResults = ({
         />
 
         {/* Display banner on last page if results exceed amount allotted by API */}
-        <Collapsible.Root open={from === Math.floor(MAX_RESULTS / size)}>
-          <Collapsible.Content>
-            <Alert status='info'>
-              Only the first {MAX_RESULTS.toLocaleString()} results are
-              displayed, please limit your query to get better results or use
-              our API to download all results.
-            </Alert>
-          </Collapsible.Content>
-        </Collapsible.Root>
+        {from === Math.floor(MAX_RESULTS / size) && (
+          <Alert status='info' title='Results Limit Reached'>
+            Only the first {MAX_RESULTS.toLocaleString()} results are displayed,
+            please limit your query to get better results or use our API to
+            download all results.
+          </Alert>
+        )}
 
         {/* Samples tab */}
         {isSamplesTab ? (
