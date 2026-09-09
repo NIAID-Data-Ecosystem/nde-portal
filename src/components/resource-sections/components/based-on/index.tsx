@@ -387,8 +387,8 @@ export const BasedOnActionProcess = ({
 }: IsBasedOn) => {
   // step may come back from the API as a single string or a list.
   const steps = castArray(actionProcess?.step ?? []).filter(Boolean);
-
-  if (!description && steps.length === 0) return <>No details provided.</>;
+  const showAccordion = description || steps.length > 0;
+  if (!showAccordion) return <>No details provided.</>;
 
   return (
     <Stack
@@ -405,18 +405,23 @@ export const BasedOnActionProcess = ({
         <AccordionItem border='none'>
           {({ isExpanded }) => (
             <>
-              <Flex flexDirection='column' rowGap={0.5} lineHeight='short'>
+              <Flex
+                flexDirection='row'
+                justifyContent='space-between'
+                lineHeight='short'
+                flexWrap='wrap'
+                gap={2}
+              >
                 {/* Name of action */}
                 <Text fontWeight='semibold'>
                   {name || 'Generation process'}
                 </Text>
-                {disambiguatingDescription && (
+                {/* {disambiguatingDescription && (
                   <Text fontWeight='medium' fontSize='xs'>
                     {disambiguatingDescription}
                   </Text>
-                )}
-                {description && <Text fontSize='xs'>{description}</Text>}
-                {steps.length > 0 && (
+                )} */}
+                {showAccordion && (
                   <AccordionButton
                     w='auto'
                     gap={2}
@@ -429,16 +434,18 @@ export const BasedOnActionProcess = ({
                     textDecoration='underline'
                     _hover={{ textDecoration: 'none' }}
                   >
-                    {isExpanded ? 'Hide "How To"' : 'Show "How To"'}
+                    {isExpanded ? 'Hide' : 'Show'}
                     <Icon as={isExpanded ? FaMinus : FaPlus} fontSize='2xs' />
                   </AccordionButton>
                 )}
               </Flex>
-              {steps.length > 0 && (
+              {showAccordion && (
                 <AccordionPanel px={0} pt={1} pb={1}>
                   <VStack alignItems='start' spacing={1} fontSize='xs'>
                     <VStack alignItems='start' spacing={1.5}>
-                      {steps.map((step, index) => (
+                      {description && <Text fontSize='xs'>{description}</Text>}
+
+                      {steps?.map((step, index) => (
                         <Text key={index}>{step}</Text>
                       ))}
                     </VStack>
