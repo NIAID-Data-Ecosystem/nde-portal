@@ -438,6 +438,7 @@ export const SearchResults = ({
             showViewMode ? (
               <ViewModeRadio
                 id={id}
+                label='View mode'
                 value={viewMode}
                 onValueChange={({ value }) => {
                   value && setViewMode(value as SearchViewMode);
