@@ -6,15 +6,14 @@ import {
   Flex,
   FlexProps,
   Icon,
-  List,
+  Menu,
   Progress,
   Text,
-  useDisclosure,
 } from '@chakra-ui/react';
 import { sendGTMEvent } from '@next/third-parties/google';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FaCircleExclamation, FaDownload } from 'react-icons/fa6';
 import { FaXmark } from 'react-icons/fa6';
 import { fetchAllSearchResults, Params } from 'src/utils/api';
@@ -24,12 +23,45 @@ import { DownloadArgs, downloadAsCsv, downloadAsJson } from './helpers';
 
 /*
  [COMPONENT INFO]: Download data button that gives JSON or CSV download options.
+
+ The format list is a `Menu`: it owns its own open state, so the button gets
+ `aria-haspopup`/`aria-expanded`, the items are real `menuitem`s reachable by
+ keyboard, and Escape / outside-click / focus-return are handled for us.
 */
+
+export interface DownloadOption {
+  name: string;
+  format: string;
+  /** Builds the object URL + filename. Empty/null when there is no data. */
+  fn: (
+    data: DownloadArgs['dataObject'],
+    exportFileName: DownloadArgs['downloadName'],
+  ) => { href?: string; download?: string } | null;
+}
+
+/*
+ Hoisted out of the render body: the array is referenced (via `downloadFormat`)
+ from the download effect, so a fresh identity every render meant a fresh
+ `downloadFormat` object too.
+*/
+export const DOWNLOAD_OPTIONS: DownloadOption[] = [
+  { name: 'JSON Format', format: 'json', fn: downloadAsJson },
+  { name: 'CSV Format', format: 'csv', fn: downloadAsCsv },
+];
+
+/** How long the completed progress bar stays up before the UI resets. */
+const DOWNLOAD_RESET_DELAY_MS = 2000;
+
+const DEFAULT_COLOR_PALETTE = 'primary';
 
 interface DownloadMetadataProps extends FlexProps {
   exportFileName: string;
   params: Params;
   buttonProps?: ButtonProps;
+  /** Download formats offered in the menu. */
+  options?: DownloadOption[];
+  /** Width of the download progress bar row. */
+  progressWidth?: FlexProps['w'];
 }
 
 const trackDownloadEvent = (params: {
@@ -43,33 +75,21 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
   exportFileName,
   children,
   buttonProps,
+  options = DOWNLOAD_OPTIONS,
+  maxW = '300px',
+  progressWidth = '200px',
   ...props
 }) => {
-  // Toggle open/close a download format list.
-  const { open, onToggle, onClose } = useDisclosure();
   const router = useRouter();
 
   // Options for download format and corresponding formatting functions.
-  const [downloadFormat, setDownloadFormat] = useState<any | null>(null);
+  const [downloadFormat, setDownloadFormat] = useState<DownloadOption | null>(
+    null,
+  );
 
-  const options = [
-    {
-      name: 'JSON Format',
-      format: 'json',
-      fn: (
-        data: DownloadArgs['dataObject'],
-        exportFileName: DownloadArgs['downloadName'],
-      ) => downloadAsJson(data, exportFileName),
-    },
-    {
-      name: 'CSV Format',
-      format: 'csv',
-      fn: (
-        data: DownloadArgs['dataObject'],
-        exportFileName: DownloadArgs['downloadName'],
-      ) => downloadAsCsv(data, exportFileName),
-    },
-  ];
+  // Drives the trigger, the cancel button, the progress bar and the menu
+  // highlight, so it is resolved once here instead of at each call site.
+  const colorPalette = buttonProps?.colorPalette ?? DEFAULT_COLOR_PALETTE;
 
   // Detect if query has change by using the stringified params as a query key.
   const [queryKey, setQueryKey] = useState(['all-search-results', params]);
@@ -115,6 +135,15 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
     setDownloadFormat(null);
   }, []);
 
+  // `percentComplete` is a number, so this must be coerced to a boolean before
+  // it gates JSX — `0 && <x/>` renders a literal "0".
+  const showProgress = !!downloadFormat || percentComplete > 0;
+
+  const optionsByFormat = useMemo(
+    () => new Map(options.map(option => [option.format, option])),
+    [options],
+  );
+
   useEffect(() => {
     let downloadTimeoutId: NodeJS.Timeout;
 
@@ -133,7 +162,10 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
       downloadLink.click();
       document.body.removeChild(downloadLink);
 
-      downloadTimeoutId = setTimeout(clearDownloadState, 2000);
+      downloadTimeoutId = setTimeout(
+        clearDownloadState,
+        DOWNLOAD_RESET_DELAY_MS,
+      );
     };
 
     // Function to retrieve data and process it for downloading.
@@ -144,8 +176,16 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
         const response = await fetchDownloadData();
         const results = response.data?.results;
         if (results) {
-          const downloadDetails = downloadFormat.fn(results, exportFileName);
-          initiateDownload(downloadDetails);
+          const details = downloadFormat.fn(results, exportFileName);
+          if (details?.href && details?.download) {
+            initiateDownload({
+              href: details.href,
+              download: details.download,
+            });
+          } else {
+            // Nothing to write out — reset rather than stall on the progress bar.
+            clearDownloadState();
+          }
         }
       } catch (error) {
         console.error('Error in data fetching for download:', error);
@@ -175,123 +215,92 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
           </Text>
         </Collapsible.Content>
       </Collapsible.Root>
-      <Box maxW='300px'>
-        {downloadFormat || percentComplete ? (
-          <Flex flexDirection='column'>
-            <Flex w='200px' alignItems='center'>
-              <Progress.Root
-                w='100%'
-                striped
-                value={percentComplete}
-                colorPalette='primary'
-                animated
-              >
-                <Progress.Track>
-                  <Progress.Range />
-                </Progress.Track>
-              </Progress.Root>
-              <Text
-                fontSize='xs'
-                color='text.placeholder'
-                textAlign='end'
-                fontWeight='medium'
-                ml={1}
-              >
-                {percentComplete}%
-              </Text>
-            </Flex>
+      <Box maxW={maxW}>
+        {showProgress && (
+          <Flex w={progressWidth} alignItems='center'>
+            <Progress.Root
+              w='100%'
+              striped
+              value={percentComplete}
+              colorPalette={colorPalette}
+              animated
+            >
+              <Progress.Track>
+                <Progress.Range />
+              </Progress.Track>
+            </Progress.Root>
+            <Text
+              fontSize='xs'
+              color='text.placeholder'
+              textAlign='end'
+              fontWeight='medium'
+              ml={1}
+            >
+              {percentComplete}%
+            </Text>
           </Flex>
-        ) : (
-          <></>
         )}
 
         {isFetching ? (
           // cancel query
           <Button
-            colorPalette='primary'
+            colorPalette={colorPalette}
             onClick={() => {
               queryClient.cancelQueries({ queryKey });
               clearDownloadState();
             }}
             variant='solid'
             size='xs'
-            fontSize='12px'
             {...buttonProps}
           >
             <FaXmark />
             cancel
           </Button>
         ) : (
-          <Box position='relative'>
-            <Button
-              colorPalette='primary'
-              onClick={onToggle}
-              variant='solid'
-              size='sm'
-              loading={isFetching}
-              loadingText='Downloading'
-              w='100%'
-              {...buttonProps}
-            >
-              <FaDownload />
-              {children}
-            </Button>
-            <Box
-              zIndex='dropdown'
-              position='absolute'
-              w='100%'
-              boxShadow='base'
-              borderRadius='semi'
-              bg='white'
-            >
-              <Collapsible.Root open={open}>
-                <Collapsible.Content>
-                  <List.Root as='ul' ml={0}>
-                    {options.map((option, idx) => {
-                      return (
-                        <List.Item
-                          key={option.name}
-                          borderBottom={
-                            idx < options.length - 1 ? '1px solid' : 'none'
-                          }
-                          borderColor='bg.alt'
-                        >
-                          <Box
-                            w='100%'
-                            display='block'
-                            px={4}
-                            py={2}
-                            cursor='pointer'
-                            _hover={{
-                              bg: `${
-                                buttonProps?.colorPalette || 'primary'
-                              }.50`,
-                            }}
-                            asChild
-                          >
-                            <a
-                              onClick={async () => {
-                                trackDownloadEvent({
-                                  label: `Download Metadata: From ${router.pathname}`,
-                                  event: 'download_metadata_click',
-                                  value: `downloadFormat: ${option.format}`,
-                                });
-                                onClose();
-                                setPercentComplete(0);
-                                setDownloadFormat(option);
-                              }}
-                            >
-                              <Text fontWeight='semibold'>{option.name}</Text>
-                            </a>
-                          </Box>
-                        </List.Item>
-                      );
-                    })}
-                  </List.Root>
-                </Collapsible.Content>
-              </Collapsible.Root>
-            </Box>
-          </Box>
+          <Menu.Root
+            positioning={{ sameWidth: true }}
+            onSelect={({ value }) => {
+              const option = optionsByFormat.get(value);
+              if (!option) return;
+
+              trackDownloadEvent({
+                label: `Download Metadata: From ${router.pathname}`,
+                event: 'download_metadata_click',
+                value: `downloadFormat: ${option.format}`,
+              });
+              setPercentComplete(0);
+              setDownloadFormat(option);
+            }}
+          >
+            <Menu.Trigger asChild>
+              <Button
+                colorPalette={colorPalette}
+                variant='solid'
+                size='sm'
+                w='100%'
+                {...buttonProps}
+              >
+                <FaDownload />
+                {children}
+              </Button>
+            </Menu.Trigger>
+            <Menu.Positioner>
+              <Menu.Content colorPalette={colorPalette}>
+                {options.map((option, idx) => (
+                  <React.Fragment key={option.format}>
+                    {idx > 0 && <Menu.Separator />}
+                    <Menu.Item
+                      value={option.format}
+                      fontWeight='semibold'
+                      _highlighted={{ bg: 'colorPalette.50' }}
+                    >
+                      {option.name}
+                    </Menu.Item>
+                  </React.Fragment>
+                ))}
+              </Menu.Content>
+            </Menu.Positioner>
+          </Menu.Root>
         )}
       </Box>
       <Disclaimer isFetching={isFetching} />
