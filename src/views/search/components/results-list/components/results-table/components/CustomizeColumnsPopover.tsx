@@ -1,9 +1,11 @@
 import {
   Button,
   CloseButton,
+  Flex,
   Icon,
   Popover,
   Portal,
+  Separator,
   Text,
 } from '@chakra-ui/react';
 import React, { useEffect, useMemo } from 'react';
@@ -166,15 +168,23 @@ export const CustomizeColumnsPopover = ({
       <Portal>
         <Popover.Positioner>
           <Popover.Content minW='280px' maxW='320px'>
-            <Popover.Arrow />
-            <Popover.CloseTrigger asChild>
-              <CloseButton size='xs' />
-            </Popover.CloseTrigger>
-            <Popover.Title fontWeight='semibold'>
-              <Text>{copy.header}</Text>
-              <Text fontSize='sm' fontWeight='normal'>
-                {copy.description}
-              </Text>
+            <Popover.Arrow>
+              <Popover.ArrowTip />
+            </Popover.Arrow>
+            <Popover.Header>
+              <Flex>
+                <Flex flexDirection='column' flex={1}>
+                  <Popover.Title fontWeight='semibold'>
+                    {copy.header}
+                  </Popover.Title>
+                  <Text fontSize='sm' fontWeight='normal'>
+                    {copy.description}
+                  </Text>
+                </Flex>
+                <Popover.CloseTrigger asChild>
+                  <CloseButton size='xs' />
+                </Popover.CloseTrigger>
+              </Flex>
               <PopoverSelectAll
                 allSelected={allSelected}
                 totalCount={totalCount}
@@ -182,13 +192,9 @@ export const CustomizeColumnsPopover = ({
                 selectAllLabel={copy.selectAll}
                 clearAllLabel={copy.clearAll}
               />
-            </Popover.Title>
-            {/*
-              v3's popover recipe caps Content at `--available-height` but
-              leaves it `overflow: visible`, so an unconstrained Body spills
-              its last rows outside the panel. Make the Body the scroll box.
-            */}
-            <Popover.Body p={0} py={1} minH={0} overflowY='auto'>
+            </Popover.Header>
+            <Separator />
+            <Popover.Body overflowY='auto'>
               <PopoverSearchInput
                 value={searchTerm}
                 onChange={setSearchTerm}

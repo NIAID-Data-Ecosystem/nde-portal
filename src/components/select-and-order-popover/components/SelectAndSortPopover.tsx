@@ -2,10 +2,12 @@ import {
   Button,
   ButtonProps,
   CloseButton,
+  Flex,
   Icon,
   Popover,
   PopoverContentProps,
   Portal,
+  Separator,
   Text,
 } from '@chakra-ui/react';
 import React, { useEffect, useMemo } from 'react';
@@ -237,14 +239,26 @@ export const SelectAndSortPopover = ({
         <Popover.Positioner>
           <Popover.Content minW='280px' maxW='320px' {...popoverContentProps}>
             <Popover.Arrow />
-            <Popover.CloseTrigger asChild>
-              <CloseButton size='xs' />
-            </Popover.CloseTrigger>
-            <Popover.Title fontWeight='semibold'>
-              <Text>{copy.header}</Text>
-              <Text fontSize='sm' fontWeight='normal'>
-                {copy.description}
-              </Text>
+
+            {/*
+              v3's popover recipe caps Content at `--available-height` but
+              leaves it `overflow: visible`, so an unconstrained Body spills
+              its last rows outside the panel. Make the Body the scroll box.
+            */}
+            <Popover.Header>
+              <Flex>
+                <Flex flexDirection='column' flex={1}>
+                  <Popover.Title fontWeight='semibold'>
+                    {copy.header}
+                  </Popover.Title>
+                  <Text fontSize='sm' fontWeight='normal'>
+                    {copy.description}
+                  </Text>
+                </Flex>
+                <Popover.CloseTrigger asChild>
+                  <CloseButton size='xs' />
+                </Popover.CloseTrigger>
+              </Flex>
               {showSelectAll && (
                 <PopoverSelectAll
                   allSelected={allSelected}
@@ -254,13 +268,9 @@ export const SelectAndSortPopover = ({
                   clearAllLabel={copy.clearAll}
                 />
               )}
-            </Popover.Title>
-            {/*
-              v3's popover recipe caps Content at `--available-height` but
-              leaves it `overflow: visible`, so an unconstrained Body spills
-              its last rows outside the panel. Make the Body the scroll box.
-            */}
-            <Popover.Body p={0} py={1} minH={0} overflowY='auto'>
+            </Popover.Header>
+            <Separator />
+            <Popover.Body overflowY='auto'>
               {showSearch && (
                 <PopoverSearchInput
                   value={searchTerm}

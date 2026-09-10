@@ -109,13 +109,16 @@ export const PopoverListItem = ({
         flex={1}
         minW={0}
         checked={isChecked}
+        size='sm'
+        variant='solid'
+        colorPalette='blue'
       >
         <Checkbox.HiddenInput />
         <Checkbox.Control>
           <Checkbox.Indicator />
         </Checkbox.Control>
         <Checkbox.Label>
-          <Text ml={1} fontSize='xs' lineClamp={1} title={item.title}>
+          <Text ml={1} lineClamp={1} title={item.title}>
             {item.title}
           </Text>
         </Checkbox.Label>
@@ -123,35 +126,33 @@ export const PopoverListItem = ({
       {/* Up/down buttons, which is rendered only when ordering is enabled and not searching */}
       {enableOrdering && !isSearching && (
         <Flex
+          py={0.5}
           gap={0.5}
           flexShrink={0}
+          alignItems='center'
           opacity={0}
-          _groupHover={{ opacity: isRequired ? 0 : 1 }}
+          _hover={{ opacity: isRequired ? 0 : 1 }}
           transition='opacity 0.15s'
         >
           <IconButton
             aria-label={`Move ${item.title} up`}
-            size='xs'
+            size='2xs'
             variant='ghost'
-            colorPalette='gray'
+            colorPalette='blue'
             disabled={isRequired || isFirst}
             onClick={() => onMoveUp?.(item.id)}
           >
-            <Icon>
-              <FaAngleUp />
-            </Icon>
+            <FaAngleUp />
           </IconButton>
           <IconButton
             aria-label={`Move ${item.title} down`}
-            size='xs'
+            size='2xs'
             variant='ghost'
-            colorPalette='gray'
+            colorPalette='blue'
             disabled={isRequired || isLast}
             onClick={() => onMoveDown?.(item.id)}
           >
-            <Icon>
-              <FaAngleDown />
-            </Icon>
+            <FaAngleDown />
           </IconButton>
         </Flex>
       )}

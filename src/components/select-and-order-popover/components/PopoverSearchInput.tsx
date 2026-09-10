@@ -15,12 +15,10 @@ export const PopoverSearchInput = ({
   onChange,
   placeholder = 'Search',
 }: PopoverSearchInputProps) => (
-  <Flex px={2} py={1}>
-    <Input
-      size='sm'
-      placeholder={placeholder}
-      value={value}
-      onChange={e => onChange(e.target.value)}
-    />
-  </Flex>
+  <Input
+    size='sm'
+    placeholder={placeholder}
+    value={value}
+    onChange={e => onChange(e.target.value)}
+  />
 );
