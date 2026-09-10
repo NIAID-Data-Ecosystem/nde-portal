@@ -1,4 +1,12 @@
-import { Accordion, Flex, Icon, SimpleGrid, Tag, Text } from '@chakra-ui/react';
+import {
+  Accordion,
+  Flex,
+  Icon,
+  SimpleGrid,
+  Stack,
+  Tag,
+  Text,
+} from '@chakra-ui/react';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import dynamic from 'next/dynamic';
 import NextLink from 'next/link';
@@ -51,8 +59,6 @@ interface MetadataAccordionProps {
 }
 
 const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
-  const paddingCard = [4, 6, 8, 10];
-
   const type = data?.['@type'] || 'Dataset';
 
   const id = data?.id;
@@ -101,16 +107,16 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
   return (
     <>
       {/* Details expandable drawer */}
-      <Accordion.Root collapsible p={0} my={0}>
-        <Accordion.Item value='item-0'>
+      <Accordion.Root collapsible p={0} my={0} border='none'>
+        <Accordion.Item value='item-0' border='none'>
           <Accordion.ItemContext>
             {({ expanded }) => (
               <>
                 <h2>
                   <Accordion.ItemTrigger
-                    px={paddingCard}
                     _hover={{ bg: 'bg.alt' }}
                     flexDirection={{ base: 'column', md: 'row' }}
+                    px='var(--card-padding)'
                   >
                     <Flex
                       flex='1'
@@ -175,7 +181,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                     </Flex>
                   </Accordion.ItemTrigger>
                 </h2>
-                <Accordion.ItemContent w='100%' px={paddingCard} my={2} py={4}>
+                <Accordion.ItemContent w='100%'>
                   <Accordion.ItemBody>
                     {expanded ? (
                       <SimpleGrid
@@ -186,7 +192,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                         }}
                         rowGap={20}
                         columnGap={10}
-                        px={4}
+                        px='calc(var(--card-padding)/2)'
                       >
                         {sortedMetadataContent.map(
                           ({ img, items, name, url, ...props }) => {
@@ -206,7 +212,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                                   />
                                 )}
                                 {items && items.length > 0 && (
-                                  <>
+                                  <Stack gap={1}>
                                     <MetadataList>
                                       {items
                                         .slice(0, maxItemsCount)
@@ -231,26 +237,14 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                                       "Show more details" link below the list using
                                       the top-level url set by createSampleContent. */}
                                     {props.property === 'sample' && url && (
-                                      <Link
-                                        fontSize='xs'
-                                        lineHeight='moderate'
-                                        display='flex'
-                                        ml={4}
-                                        asChild
-                                      >
+                                      <Link asChild>
                                         <NextLink href={url}>
                                           Show more details
                                         </NextLink>
                                       </Link>
                                     )}
                                     {items.length > 3 && (
-                                      <Link
-                                        lineHeight='moderate'
-                                        display='flex'
-                                        ml={4}
-                                        fontSize='xs'
-                                        asChild
-                                      >
+                                      <Link asChild>
                                         <NextLink
                                           href={{
                                             pathname: '/resources',
@@ -272,7 +266,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                                         </NextLink>
                                       </Link>
                                     )}
-                                  </>
+                                  </Stack>
                                 )}
                               </MetadataBlock>
                             );

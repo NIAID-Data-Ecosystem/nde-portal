@@ -9,6 +9,7 @@ import {
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FaAngleDown } from 'react-icons/fa6';
 
+// [chakra-to-do]: consider replacing with chakra Collapsible component
 // Expandable container.
 export interface ToggleContainerProps extends ButtonProps {
   defaultIsOpen?: boolean;
@@ -72,6 +73,7 @@ export const ToggleContainer: React.FC<ToggleContainerProps> = ({
     <Button
       height='unset'
       textAlign='left'
+      py={1}
       onClick={() => (open ? onClose() : onOpen())}
       flexWrap={['wrap', 'nowrap']}
       aria-label={ariaLabel}

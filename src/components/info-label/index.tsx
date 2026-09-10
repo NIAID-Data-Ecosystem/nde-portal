@@ -36,8 +36,8 @@ export const InfoLabel: React.FC<InfoLabelProps> = ({
   return (
     <Tooltip {...tooltipProps} content={content}>
       <Text
-        fontSize='xs'
-        color='gray.800'
+        fontSize='sm'
+        color='text.body'
         userSelect='none'
         alignItems='center'
         {...textProps}

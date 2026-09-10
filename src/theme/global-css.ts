@@ -7,13 +7,17 @@ inside it).
 
 The `'*'` block deep-merges into Chakra's own, which is substantial — the
 `--ring-*`, filter and backdrop variables plus `fontFeatureSettings` all
-survive alongside `listStyleType`.
+survive alongside anything added here.
+
+Do NOT reset `listStyleType` here. v2 needed it, v3 does not: preflight already
+ships `ol, ul { list-style: none }` in `@layer reset`. That targets the list
+element only, so the `li` inherits and any override on the list wins. Pinning
+it on `'*'` instead matches the `li` directly, and a direct declaration always
+beats an inherited one — which makes `listStyleType` on `List.Root`
+(and List's own `variant='marker'`) silently do nothing.
 */
 export const globalCss = defineGlobalStyles({
-  '*': {
-    listStyleType: 'none',
-    lineHeight: '1.5',
-  },
+  '*': {},
   // sets default color palette for components if not specified
   // https://chakra-ui.com/guides/theming-change-default-color-palette
   html: {
@@ -39,5 +43,4 @@ export const globalCss = defineGlobalStyles({
   //   color: 'inherit',
   //   lineHeight: 'inherit',
   // },
-  // ul: { listStyle: 'none' },
 });

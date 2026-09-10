@@ -2,19 +2,28 @@ import {
   Box,
   Button,
   Card,
+  Collapsible,
   Flex,
   Highlight,
   HStack,
   Icon,
+  IconButton,
+  Separator,
   Skeleton,
   Stack,
   Text,
+  Wrap,
 } from '@chakra-ui/react';
 import { useInView } from '@react-spring/web';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import NextLink from 'next/link';
 import React, { useMemo } from 'react';
-import { FaAngleRight, FaCircleArrowRight, FaRegClock } from 'react-icons/fa6';
+import {
+  FaAngleRight,
+  FaChevronDown,
+  FaCircleArrowRight,
+  FaRegClock,
+} from 'react-icons/fa6';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
 import { BookmarkButton } from 'src/components/bookmark-buttons/button';
@@ -105,10 +114,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     // {/* Banner with resource type + date of publication */}
     <Card.Root
       ref={cardRef}
-      variant='niaid'
       boxShadow='none'
       border='1px solid'
       borderColor='gray.100'
+      size='sm'
     >
       <TypeBanner
         label={formatAPIResourceTypeForDisplay(type)}
@@ -122,7 +131,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
       <Card.Header
         bg='transparent'
         position='relative'
-        pt={4}
+        py={4}
         color='link'
         _hover={{
           '& p': { textDecoration: 'none' },
@@ -188,24 +197,57 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           </NextLink>
         </Skeleton>
       </Card.Header>
-      {author?.length && (
-        <Box flex={1} px={'calc(var(--card-padding)/2)'}>
-          <ToggleContainer
-            ariaLabel='Toggle authors list'
-            noOfLines={1}
-            px={'calc(var(--card-padding)/2)'}
-            py={2}
-            flex={1}
-            fontSize='sm'
-            colorPalette='gray'
-            variant='ghost'
+      <>
+        {(author?.length ||
+          isAccessibleForFree != null ||
+          conditionsOfAccess != null) && (
+          <Flex
+            flexDirection={['column-reverse', 'row']}
+            flexWrap={['wrap-reverse', 'wrap']}
+            w='100%'
+            px='calc(var(--card-padding)/2)' // divided by 2 because of toggle inner padding
+            pb={0.5}
           >
-            <Highlight query={highlightProps.query}>
-              {formatAuthorsList2String(author, ',', 10) || ''}
-            </Highlight>
-          </ToggleContainer>
-        </Box>
-      )}
+            {author && (
+              <ToggleContainer
+                ariaLabel='Toggle authors list'
+                noOfLines={1}
+                px='calc(var(--card-padding)/2)'
+                flex={1}
+                py={1}
+                fontSize='sm'
+                colorPalette='gray'
+                variant='ghost'
+              >
+                <Highlight query={highlightProps.query}>
+                  {formatAuthorsList2String(author, ',', 10) || ''}
+                </Highlight>
+              </ToggleContainer>
+            )}
+
+            {(isAccessibleForFree != null || conditionsOfAccess != null) && (
+              <Flex
+                justifyContent={['flex-end']}
+                alignItems='center'
+                w={['100%', 'unset']}
+                px='calc(var(--card-padding)/2)'
+              >
+                <AccessibleForFree
+                  type={data?.['@type']}
+                  isAccessibleForFree={isAccessibleForFree}
+                  mx={1}
+                />
+                <ConditionsOfAccess
+                  type={data?.['@type']}
+                  conditionsOfAccess={conditionsOfAccess}
+                  mx={1}
+                />
+              </Flex>
+            )}
+          </Flex>
+        )}
+      </>
+
       <Skeleton
         loading={loading}
         p='0px!important'
@@ -217,64 +259,35 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
       >
         {inView && (
           <>
-            <Card.Body
-              p={0}
-              css={{
-                '& >*': {
-                  my: 0,
-                },
-              }}
-            >
-              {date && (
-                <Flex
-                  px={paddingCard}
-                  flex={1}
-                  borderRadius='semi'
-                  bg='secondary.50'
-                  fontWeight='semibold'
-                  whiteSpace='nowrap'
-                  alignItems='center'
-                  justify='space-between'
-                >
-                  <Tooltip content='Corresponds to the most recent of date modified, date published and date created.'>
-                    <Flex whiteSpace='nowrap' alignItems='center'>
-                      <Icon mr={2}>
-                        <FaRegClock />
-                      </Icon>
-                      <Text fontSize='xs'>{date}</Text>
-                    </Flex>
-                  </Tooltip>
-
-                  {operatingSystem && (
-                    <OperatingSystems data={operatingSystem} />
-                  )}
-                </Flex>
-              )}
-
-              {!date && (
-                <Flex
-                  px={paddingCard}
-                  py={1}
-                  flex={1}
-                  borderRadius='semi'
-                  bg='secondary.50'
-                  fontWeight='semibold'
-                  whiteSpace='nowrap'
-                  alignItems='center'
-                  justify='end'
-                >
-                  {operatingSystem && (
-                    <OperatingSystems data={operatingSystem} />
-                  )}
-                </Flex>
-              )}
-
-              <Stack
-                px={paddingCard}
-                py={[0, 1]}
-                flexDirection={{ base: 'column', md: 'row' }}
-                gap={[1, 3, 4]}
+            {(date || operatingSystem) && (
+              <Flex
+                px='calc(var(--card-padding))'
+                py={1}
+                bg='secondary.50'
+                alignItems='center'
               >
+                <HStack
+                  whiteSpace='nowrap'
+                  alignItems='center'
+                  fontSize='sm'
+                  fontWeight='semibold'
+                  flex={1}
+                >
+                  {date && (
+                    <Tooltip content='Corresponds to the most recent of date modified, date published and date created.'>
+                      <>
+                        <FaRegClock />
+                        <Text>{date}</Text>
+                      </>
+                    </Tooltip>
+                  )}
+                </HStack>
+
+                {operatingSystem && <OperatingSystems data={operatingSystem} />}
+              </Flex>
+            )}
+            <Card.Body p={0} gap={0}>
+              <Wrap justifyContent='center' p='calc(var(--card-padding)/2)'>
                 {data && (
                   <CompletenessBadgeCircle
                     type={data['@type']}
@@ -282,67 +295,90 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     animate={false}
                     size='md'
                     minWidth='176px'
-                    p={0}
+                    px='calc(var(--card-padding)/2)'
                   />
                 )}
-                <Flex
-                  display={{ base: 'block', sm: 'none' }}
-                  px={2}
-                  py={{ base: 1, sm: 3 }}
-                  flexDirection={{ base: 'row', sm: 'column' }}
-                  alignItems='center'
-                  border={{ base: '1px', sm: 'none' }}
-                  borderColor='gray.100'
-                  borderRadius='semi'
-                  justifyContent='center'
-                >
-                  <SourceLogo.Wrapper>
-                    {sources?.length > 0 &&
-                      sources.map(source => {
-                        return (
-                          <SourceLogo.Component
-                            key={source.name}
-                            source={source}
-                            type={type}
-                            url={getAccessResourceURL({
-                              recordType: type,
-                              source,
-                            })}
-                          />
-                        );
-                      })}
-                  </SourceLogo.Wrapper>
-                </Flex>
 
                 {description && (
-                  <ToggleContainer
-                    ariaLabel='Toggle description'
-                    noOfLines={[3, 10]}
-                    px={'calc(var(--card-padding)/2)'}
-                    py={2}
+                  <Collapsible.Root
                     flex={1}
-                    fontSize='sm'
-                    colorPalette='gray'
-                    variant='ghost'
+                    collapsedHeight='100px'
+                    collapsedWidth='100%'
+                    _hover={{ bg: 'secondary.50' }}
                   >
-                    <DisplayHTMLContent
-                      content={description}
-                      highlightProps={highlightProps}
-                    />
-                  </ToggleContainer>
+                    <Collapsible.Trigger
+                      cursor='pointer'
+                      px='calc(var(--card-padding)/2)'
+                      py={1}
+                    >
+                      <Collapsible.Content
+                        position='relative'
+                        _closed={{
+                          _after: {
+                            content: '""',
+                            position: 'absolute',
+                            inset: 0,
+                            zIndex: 1,
+                            pointerEvents: 'none',
+                            shadow:
+                              'inset 0 -12px 12px -9px var(--shadow-color)',
+                            shadowColor: 'whiteAlpha.800',
+                          },
+                        }}
+                      >
+                        <Flex
+                          lineClamp={10}
+                          overflow='clip'
+                          textAlign='left'
+                          css={{
+                            '& > :first-of-type': {
+                              overflow: 'clip',
+                            },
+                          }}
+                        >
+                          <DisplayHTMLContent
+                            content={description}
+                            highlightProps={highlightProps}
+                          />
+                        </Flex>
+                      </Collapsible.Content>
+                      <Collapsible.Context>
+                        {api => (
+                          <HStack py={1}>
+                            <Text as='span' fontSize='xs' gap={1}>
+                              {api.open ? 'Show Less' : 'Show More'}
+                            </Text>
+                            <Icon
+                              transform={
+                                api.open ? 'rotate(180deg)' : undefined
+                              }
+                              boxSize='3'
+                              transition='transform 0.2s'
+                            >
+                              <FaChevronDown />
+                            </Icon>
+                          </HStack>
+                        )}
+                      </Collapsible.Context>
+                    </Collapsible.Trigger>
+                  </Collapsible.Root>
                 )}
-              </Stack>
-
+              </Wrap>
               <MetadataAccordion data={data} />
-
-              {data?.topicCategory &&
-                data?.topicCategory.some(topic => topic.name) && (
-                  <Flex
-                    borderBottom='1px solid'
-                    borderBottomColor='gray.200'
-                    px={paddingCard}
-                    py={1}
-                  >
+              <Stack
+                gap={1}
+                separator={<Separator />}
+                py={1}
+                borderY='1px solid'
+                borderColor='border'
+                css={{
+                  '& > *': {
+                    px: 'var(--card-padding)',
+                  },
+                }}
+              >
+                {data?.topicCategory &&
+                  data?.topicCategory.some(topic => topic.name) && (
                     <SearchableItems
                       generateButtonLabel={(
                         limit,
@@ -367,6 +403,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       )}
                       name={
                         <InfoLabel
+                          fontSize='sm'
                           tooltipProps={{
                             content:
                               metadataFields['topicCategory'].description?.[
@@ -378,16 +415,9 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                         </InfoLabel>
                       }
                     />
-                  </Flex>
-                )}
+                  )}
 
-              {contentTypeItems.length > 0 && (
-                <Flex
-                  borderBottom='1px solid'
-                  borderBottomColor='gray.200'
-                  px={paddingCard}
-                  py={1}
-                >
+                {contentTypeItems.length > 0 && (
                   <SearchableItems
                     generateButtonLabel={(
                       limit,
@@ -411,17 +441,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       </InfoLabel>
                     }
                   />
-                </Flex>
-              )}
+                )}
 
-              {data?.applicationCategory &&
-                data?.applicationCategory.length > 0 && (
-                  <Flex
-                    borderBottom='1px solid'
-                    borderBottomColor='gray.200'
-                    px={paddingCard}
-                    py={1}
-                  >
+                {data?.applicationCategory &&
+                  data?.applicationCategory.length > 0 && (
                     <SearchableItems
                       generateButtonLabel={(
                         limit,
@@ -450,17 +473,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                         </InfoLabel>
                       }
                     />
-                  </Flex>
-                )}
+                  )}
 
-              {data?.programmingLanguage &&
-                data?.programmingLanguage.length > 0 && (
-                  <Flex
-                    borderBottom='1px solid'
-                    borderBottomColor='gray.200'
-                    px={paddingCard}
-                    py={1}
-                  >
+                {data?.programmingLanguage &&
+                  data?.programmingLanguage.length > 0 && (
                     <SearchableItems
                       generateButtonLabel={(
                         limit,
@@ -489,24 +505,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                         </InfoLabel>
                       }
                     />
-                  </Flex>
-                )}
-
-              <Stack
-                flex={1}
-                p={1}
-                flexDirection={{ base: 'column', sm: 'row' }}
-                alignItems={{ base: 'center', sm: 'flex-end' }}
-                flexWrap='wrap'
-                px={paddingCard}
-                pt={[0, 1, 2]}
-                pb={[2, 4]}
-                my={1}
-              >
-                <SourceLogo.Wrapper
-                  display={{ base: 'none', sm: 'flex' }}
-                  flex={1}
-                >
+                  )}
+              </Stack>
+              <Card.Footer>
+                <SourceLogo.Wrapper flex={1}>
                   {sources?.length > 0 &&
                     sources.map(source => {
                       return (
@@ -584,7 +586,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     </Flex>
                   )}
                 </HStack>
-              </Stack>
+              </Card.Footer>
             </Card.Body>
           </>
         )}

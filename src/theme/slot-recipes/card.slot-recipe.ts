@@ -42,7 +42,7 @@ export const cardSlotRecipe = defineSlotRecipe({
       niaid: {
         root: {},
         header: { bg: 'niaid.500', color: 'white' },
-        footer: { bg: 'bg.alt' },
+        footer: {},
       },
       outline: {
         root: {

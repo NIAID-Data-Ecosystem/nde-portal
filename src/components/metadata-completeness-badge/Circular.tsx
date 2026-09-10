@@ -286,14 +286,21 @@ export const CompletenessBadgeCircle = ({
           </span>
         </Tooltip>
       </Box>
-      <Tooltip content='See metadata compatibility documentation.'>
+      <Tooltip
+        interactive
+        content={
+          <Link href='/knowledge-center/metadata-compatibility-score'>
+            See metadata compatibility documentation.
+          </Link>
+        }
+      >
         <Link
           href='/knowledge-center/metadata-compatibility-score'
           mt={2}
           textDecoration='underline'
           lineHeight='shorter'
           color='gray.800!important'
-          fontSize='xs'
+          fontSize='sm'
           textAlign='center'
           _hover={{ textDecoration: 'none' }}
         >

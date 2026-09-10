@@ -1,9 +1,10 @@
 import { Box, Flex, Icon, Image, Text } from '@chakra-ui/react';
-import { MetadataItem } from '../helpers';
-import { MetadataWithTag } from './tag';
-import { MetadataButtonGroup, OntologyButton, SearchButton } from './buttons';
 import { FaSquareArrowUpRight } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
+
+import { MetadataItem } from '../helpers';
+import { MetadataButtonGroup, OntologyButton, SearchButton } from './buttons';
+import { MetadataWithTag } from './tag';
 
 interface MetadataContentProps extends Omit<MetadataItem, 'key'> {
   includeSearch?: boolean;

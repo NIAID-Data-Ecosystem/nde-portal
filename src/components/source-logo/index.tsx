@@ -10,6 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { FormattedResource, IncludedInDataCatalog } from 'src/utils/api/types';
+
 import { getSourceImagePath } from './helpers';
 
 // Wrapper container for the source logos.
