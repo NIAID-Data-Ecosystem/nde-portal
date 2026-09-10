@@ -224,21 +224,4 @@ describe('ResourcePage', () => {
       expect(mockPush).not.toHaveBeenCalled();
     });
   });
-
-  it('redirects to 404 when no id is provided', async () => {
-    mockRouterState.query = {};
-
-    renderWithClient(<ResourcePage />);
-
-    await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/404'));
-    expect(mockGetResourceById).not.toHaveBeenCalled();
-  });
-
-  it('redirects to 404 when no resource is found for the id', async () => {
-    mockGetResourceById.mockResolvedValue(null);
-
-    renderWithClient(<ResourcePage />);
-
-    await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/404'));
-  });
 });

@@ -31,13 +31,14 @@ export function useResourceCatalogs({
       return fetchSearchResults({
         q: '@type:"ResourceCatalog"',
         fields,
-        size: 100,
+        size: 1000,
       });
     },
     select: (data: FetchSearchResultsResponse | undefined) => {
       const catalogs = data?.results || [];
       return catalogs.map(catalog => ({
         ...catalog,
+        description: (catalog.description || '').replace(/\s+/g, ' ').trim(),
         identifier: catalog._id || catalog.identifier || '',
         type: ['Resource Catalog'],
       }));

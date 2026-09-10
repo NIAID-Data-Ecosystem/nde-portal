@@ -1,10 +1,11 @@
 import React from 'react';
 import {
   Button,
-  Flex,
-  usePrefersReducedMotion,
-  Stack,
   ButtonProps,
+  Flex,
+  Icon,
+  Stack,
+  VStack,
 } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import NextLink from 'next/link';
@@ -25,20 +26,31 @@ interface DataAccessProps {
   creativeWorkStatus?: FormattedResource['creativeWorkStatus'];
   children?: React.ReactNode;
   colorScheme?: ButtonProps['colorScheme'];
+  submittingDataUrl: FormattedResource['publishingPrinciples'];
 }
 
-const AccessResourceButton: React.FC<{ url: string; colorScheme: string }> = ({
-  url,
-  colorScheme,
-}) => {
+const AccessResourceButton: React.FC<
+  ButtonProps & { label: string; url: string; showIcon?: boolean }
+> = ({ url, colorScheme, label, showIcon = true, ...buttonProps }) => {
   // Internal routes (e.g. the retired resources page) should navigate
   // in the same tab; external source links continue to open in a new tab.
   const isInternalLink = url.startsWith('/');
 
   return (
-    <NextLink href={url} target={isInternalLink ? undefined : '_blank'}>
-      <Button colorScheme={colorScheme} size='sm' rightIcon={<FaArrowRight />}>
-        Access Resource
+    <NextLink
+      href={url}
+      target={isInternalLink ? undefined : '_blank'}
+      style={{ width: '100%' }}
+      passHref
+    >
+      <Button
+        colorScheme={colorScheme}
+        size='sm'
+        rightIcon={showIcon ? <Icon as={FaArrowRight} /> : undefined}
+        width='100%'
+        {...buttonProps}
+      >
+        {label}
       </Button>
     </NextLink>
   );
@@ -50,12 +62,10 @@ export const DataAccess: React.FC<DataAccessProps> = ({
   url,
   recordType,
   creativeWorkStatus,
+  submittingDataUrl,
   colorScheme = 'secondary',
 }) => {
-  const prefersReducedMotion = usePrefersReducedMotion();
-
   // If resource is part of a catalog, only show DDE as source
-
   const catalogForLookup =
     includedInDataCatalog && recordType === 'ResourceCatalog'
       ? getDDECatalog(includedInDataCatalog) || []
@@ -81,34 +91,29 @@ export const DataAccess: React.FC<DataAccessProps> = ({
             url={getSourceLogoLinkOut(source)}
           />
           {source?.archivedAt && (
-            <Flex
-              w='100%'
-              mt={2}
-              justifyContent='flex-end'
-              sx={{
-                svg: {
-                  transform: 'translateX(-2px)',
-                  transition: 'transform 0.2s ease-in-out',
-                },
-              }}
-              _hover={{
-                svg: prefersReducedMotion
-                  ? {}
-                  : {
-                      transform: 'translateX(4px)',
-                      transition: 'transform 0.2s ease-in-out',
-                    },
-              }}
-            >
-              <AccessResourceButton
-                url={getAccessResourceURL({
-                  recordType,
-                  source,
-                  url,
-                  creativeWorkStatus,
-                })}
-                colorScheme={colorScheme}
-              />
+            <Flex w='100%' mt={2} justifyContent='flex-end'>
+              <VStack w='100%' maxWidth='300px'>
+                <AccessResourceButton
+                  label='Access Resource'
+                  url={getAccessResourceURL({
+                    recordType,
+                    source,
+                    url,
+                    creativeWorkStatus,
+                  })}
+                  colorScheme={colorScheme}
+                />
+                {/* [TO DO]: add data submission functionality when property is added to source */}
+                {submittingDataUrl && (
+                  <AccessResourceButton
+                    label='Submit Data'
+                    url={submittingDataUrl}
+                    colorScheme={colorScheme}
+                    variant='outline'
+                    showIcon={false}
+                  />
+                )}
+              </VStack>
             </Flex>
           )}
         </React.Fragment>

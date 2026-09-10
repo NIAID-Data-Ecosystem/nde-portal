@@ -8,6 +8,7 @@ import {
   Skeleton,
   SkeletonProps,
   Stack,
+  Text,
 } from '@chakra-ui/react';
 import { DataAccess } from './components/data-access';
 import { DataUsage } from './components/usage';
@@ -17,11 +18,26 @@ import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
 import { HasDownload } from 'src/components/badges/components/HasDownload';
 import { HasAPI } from 'src/components/badges/components/HasAPI';
 import { CreditText } from './components/credit-text';
+import { Link, LinkProps } from 'src/components/link';
 import { getMetadataDescription } from 'src/components/metadata/helpers';
 
 interface ExternalProps extends Omit<WrapperProps, 'children'> {
   data?: FormattedResource;
 }
+
+export const LinkToSourcePage = ({
+  children,
+  href,
+  isLoading,
+}: LinkProps & { isLoading: boolean }) => {
+  return (
+    <Wrapper isLoading={isLoading}>
+      <Link href={href}>
+        <Text>{children}</Text>
+      </Link>
+    </Wrapper>
+  );
+};
 
 export const ExternalAccess = ({
   data,
@@ -62,6 +78,7 @@ export const ExternalAccess = ({
           url={data?.url}
           recordType={data?.['@type']}
           creativeWorkStatus={data?.creativeWorkStatus}
+          submittingDataUrl={data?.publishingPrinciples}
         />
       </Wrapper>
     </>
