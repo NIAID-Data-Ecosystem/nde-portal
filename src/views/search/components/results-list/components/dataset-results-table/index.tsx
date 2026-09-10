@@ -30,7 +30,7 @@ import {
   LinkOrTextCell,
   ResourceNameCell,
 } from '../results-table/components/SharedCells';
-import { DATASET_REQUIRED_COLUMN_IDS } from '../results-table/constants';
+import { DATASET_FALLBACK_COLUMN_IDS } from '../results-table/constants';
 
 export interface DatasetColumn extends BaseColumn {}
 
@@ -414,7 +414,7 @@ export const DatasetResultsTable = ({
       getCells={getCells}
       ariaLabel='Dataset search results'
       caption='Table of dataset search results'
-      requiredColumnIds={DATASET_REQUIRED_COLUMN_IDS as unknown as string[]}
+      requiredColumnIds={DATASET_FALLBACK_COLUMN_IDS as unknown as string[]}
       visibleColumnIds={visibleColumnIds}
       columnOrder={columnOrder}
       currentSort={currentSort}

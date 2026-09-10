@@ -16,6 +16,13 @@ interface PopoverListItemProps {
   isChecked: boolean;
   /** When true the item is always checked and cannot be reordered. */
   isRequired?: boolean;
+  /**
+   * When true, the item is only restored as a fallback when the visible
+   * set would otherwise be empty (e.g., after "Clear All"). Unlike
+   * `isRequired`, the checkbox/drag stay fully enabled: this only adds a
+   * "(shown by default)" label so users understand why it reappears.
+   */
+  isFallback?: boolean;
   /** Whether to show the drag handle and up/down arrows. */
   enableOrdering?: boolean;
   /** Whether a search is currently active (disables drag while searching). */
@@ -34,6 +41,7 @@ export const PopoverListItem = ({
   item,
   isChecked,
   isRequired = false,
+  isFallback = false,
   enableOrdering = false,
   isSearching = false,
   isFirst = false,
@@ -108,8 +116,19 @@ export const PopoverListItem = ({
         flex={1}
         minW={0}
       >
-        <Text ml={1} fontSize='xs' noOfLines={1} title={item.title}>
+        <Text
+          ml={1}
+          fontSize='xs'
+          noOfLines={1}
+          title={isFallback ? `${item.title} (shown by default)` : item.title}
+        >
           {item.title}
+          {isFallback && (
+            <Text as='span' color='gray.600' fontWeight='normal'>
+              {' '}
+              (shown by default)
+            </Text>
+          )}
         </Text>
       </Checkbox>
 

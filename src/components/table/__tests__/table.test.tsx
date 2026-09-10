@@ -109,6 +109,20 @@ describe('Table', () => {
     tableWithNullValues.unmount();
   });
 
+  test('renders without crashing when columns is empty', () => {
+    render(
+      <Table
+        ariaLabel='Empty Columns Table'
+        caption='Empty Columns Test'
+        columns={[]}
+        data={[{ name: 'John Doe' }]}
+        getCells={({ column, data }) => <span>{data[column.property]}</span>}
+      />,
+    );
+
+    expect(screen.getByRole('table')).toBeInTheDocument();
+  });
+
   test('handles pagination', async () => {
     const columns = [{ title: 'Name', property: 'name' }];
     const data = new Array(20)
