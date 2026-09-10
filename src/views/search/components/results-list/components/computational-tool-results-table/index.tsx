@@ -24,7 +24,7 @@ import {
   LinkOrTextCell,
   ResourceNameCell,
 } from '../results-table/components/SharedCells';
-import { COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS } from '../results-table/constants';
+import { COMPUTATIONAL_TOOL_FALLBACK_COLUMN_IDS } from '../results-table/constants';
 
 export interface ComputationalToolColumn extends BaseColumn {}
 
@@ -353,7 +353,7 @@ export const ComputationalToolResultsTable = ({
       ariaLabel='Computational tool search results'
       caption='Table of computational tool search results'
       requiredColumnIds={
-        COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS as unknown as string[]
+        COMPUTATIONAL_TOOL_FALLBACK_COLUMN_IDS as unknown as string[]
       }
       visibleColumnIds={visibleColumnIds}
       columnOrder={columnOrder}
