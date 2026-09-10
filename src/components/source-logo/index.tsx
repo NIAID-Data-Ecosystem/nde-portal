@@ -8,6 +8,7 @@ import {
   StackProps,
   Text,
 } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { Link } from 'src/components/link';
 import { FormattedResource, IncludedInDataCatalog } from 'src/utils/api/types';
 
@@ -36,6 +37,55 @@ type SourceWithLogo = IncludedInDataCatalog & {
   logo?: string | null;
 };
 
+// Shown in place of the logo when no image file exists for the source.
+const Fallback = ({ name }: { name: SourceWithLogo['name'] }) => (
+  <Flex minHeight='40px' alignItems='center'>
+    <Text
+      fontSize='xl'
+      lineHeight='shorter'
+      color='text.heading'
+      fontWeight='bold'
+    >
+      {name}
+    </Text>
+  </Flex>
+);
+
+interface SourceLogoImageProps extends ImageProps {
+  fallback: React.ReactNode;
+}
+
+// Chakra v3 dropped Image's `fallback` prop, so track the load error ourselves
+// and swap in the fallback content when the source has no matching image file.
+const ImageWithFallback = ({
+  fallback,
+  onError,
+  src,
+  alt,
+  ...props
+}: SourceLogoImageProps) => {
+  const [hasError, setHasError] = useState(false);
+
+  // Give a new src a fresh attempt at loading.
+  useEffect(() => setHasError(false), [src]);
+
+  if (!src || hasError) {
+    return <>{fallback}</>;
+  }
+
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      {...props}
+      onError={event => {
+        setHasError(true);
+        onError?.(event);
+      }}
+    />
+  );
+};
+
 interface SourceLogoProps extends BoxProps {
   imageProps?: ImageProps;
   source: SourceWithLogo;
@@ -57,8 +107,8 @@ const Component = ({
     <Box key={source.name} maxW={{ base: '200px', sm: '250px' }} {...props}>
       {logo ? (
         source.url ? (
-          <Link target='_blank' href={source.url}>
-            <Image
+          <Link target='_blank' href={source.url} variant='unstyled'>
+            <ImageWithFallback
               objectFit='contain'
               objectPosition='left'
               w='100%'
@@ -66,11 +116,12 @@ const Component = ({
               mr={4}
               src={logo}
               alt={`Click to open the source (${source.name}) in a new tab.`}
+              fallback={<Fallback name={source.name} />}
               {...imageProps}
             />
           </Link>
         ) : (
-          <Image
+          <ImageWithFallback
             objectFit='contain'
             objectPosition='left'
             w='100%'
@@ -78,6 +129,7 @@ const Component = ({
             mr={4}
             src={logo}
             alt={`Logo for ${source.name}`}
+            fallback={<Fallback name={source.name} />}
             {...imageProps}
           />
         )
