@@ -3,7 +3,10 @@ import {
   CustomizeColumnsPopover as GenericCustomizeColumnsPopover,
   ColumnConfig,
 } from '../../results-table/components/CustomizeColumnsPopover';
-import { COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS } from '../../results-table/constants';
+import {
+  COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS,
+  COMPUTATIONAL_TOOL_FALLBACK_COLUMN_IDS,
+} from '../../results-table/constants';
 
 export const CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY =
   'search-visible-computational-tool-columns';
@@ -57,6 +60,7 @@ export const CustomizeColumnsPopover = ({
     storageKeyOrder={CUSTOM_COLUMN_ORDER_STORAGE_KEY}
     defaultVisibleIds={DEFAULT_VISIBLE_COLUMN_IDS}
     requiredIds={COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS}
+    clearAllFallbackIds={COMPUTATIONAL_TOOL_FALLBACK_COLUMN_IDS}
     onVisibleColumnsChange={onVisibleColumnsChange}
     onColumnOrderChange={onColumnOrderChange}
   />
