@@ -22,6 +22,7 @@ import {
 import { formatDate } from 'src/utils/api/helpers';
 import { BadgeWithTooltip } from 'src/components/badges/components/BadgeWithTooltip';
 import { fetchSourceInformationFromGithub } from 'src/views/sources/helpers';
+import { USE_MERGED_SOURCES_AND_CATALOGS } from 'src/utils/feature-flags';
 
 /** Build-time GitHub commit info, keyed by source identifier. */
 interface GithubSourceInfo {
@@ -96,6 +97,11 @@ const Sources: NextPage<SourcesProps> = ({ data }) => {
   const sourceItems = useMemo<SourceDisplayItem[]>(() => {
     const githubInfo = data?.githubInfo?.data || [];
     return (sources || [])
+      .filter(
+        item =>
+          USE_MERGED_SOURCES_AND_CATALOGS ||
+          (item.type.length === 1 && !item.type.includes('Resource Catalog')),
+      )
       .map(source => {
         const github = githubInfo.find(item => item.id === source.identifier);
 
