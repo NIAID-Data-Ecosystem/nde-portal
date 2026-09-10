@@ -1,8 +1,13 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See
-[standard-version](https://github.com/conventional-changelog/standard-version)
-for commit guidelines.
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [7.0.1](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v7.0.0...v7.0.1) (2026-09-10)
+
+
+### 🐛 Bugfixes
+
+* ensure tables have at least one column ([#541](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/541)) ([8b728ee](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/8b728ee5bba641005ae40f43d3a7bb0b81f8bdd8))
 
 ## [7.0.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v6.5.0...v7.0.0) (2026-09-08)
 
