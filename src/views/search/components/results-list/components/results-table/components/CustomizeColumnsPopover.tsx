@@ -63,6 +63,12 @@ interface CustomizeColumnsPopoverProps {
    * checkbox is disabled so users cannot toggle them off.
    */
   requiredIds: readonly string[] | string[];
+  /**
+   * Column IDs restored when "Clear All" would otherwise leave the
+   * selection empty. Unlike `requiredIds`, these stay individually
+   * hideable/movable. Defaults to `requiredIds`.
+   */
+  clearAllFallbackIds?: readonly string[] | string[];
   /** Called whenever the set of visible column IDs changes. */
   onVisibleColumnsChange?: (visibleColumnIds: string[]) => void;
   /** Called whenever the column display order changes. */
@@ -87,6 +93,7 @@ export const CustomizeColumnsPopover = ({
   storageKeyOrder,
   defaultVisibleIds,
   requiredIds,
+  clearAllFallbackIds,
   onVisibleColumnsChange,
   onColumnOrderChange,
   copy: copyOverrides,
@@ -101,6 +108,8 @@ export const CustomizeColumnsPopover = ({
 
   const allIds = useMemo(() => items.map(i => i.id), [items]);
 
+  const resolvedFallbackIds = (clearAllFallbackIds ?? requiredIds) as string[];
+
   const {
     selectedIds,
     order,
@@ -113,6 +122,7 @@ export const CustomizeColumnsPopover = ({
   } = useSelectableList({
     items,
     requiredIds: requiredIds as string[],
+    clearAllFallbackIds: resolvedFallbackIds,
     enableOrdering: true,
     storageKeyVisible,
     storageKeyOrder,
@@ -205,6 +215,7 @@ export const CustomizeColumnsPopover = ({
                 items={filteredItems}
                 selectedIds={selectedIds}
                 requiredIds={requiredIds as string[]}
+                fallbackIds={resolvedFallbackIds}
                 enableOrdering
                 isSearching={isSearching}
                 orderedIds={order}

@@ -1,6 +1,15 @@
-import { Box, Card, Collapsible, Flex, Icon, List } from '@chakra-ui/react';
+import {
+  Box,
+  Card,
+  Collapsible,
+  Flex,
+  Icon,
+  List,
+  Separator,
+  Stack,
+} from '@chakra-ui/react';
 import NextLink from 'next/link';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
@@ -9,9 +18,15 @@ import { CardContainer } from 'src/components/resource-sections/components/card-
 import { Route } from 'src/components/resource-sections/helpers';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { ResourceData } from 'src/pages/resources';
+import { formatIdentifierAsAnchorSlug } from 'src/pages/sources';
+import { USE_MERGED_SOURCES_AND_CATALOGS } from 'src/utils/feature-flags';
 import { useLocalStorage } from 'usehooks-ts';
 
-import { ExternalAccess, UsageInfo } from './components/external';
+import {
+  ExternalAccess,
+  LinkToSourcePage,
+  UsageInfo,
+} from './components/external';
 
 export const Sidebar = ({
   data,
@@ -25,6 +40,8 @@ export const Sidebar = ({
   const [searchHistory] = useLocalStorage<string[]>('basic-searches', []);
 
   const [isMounted, setIsMounted] = React.useState(false);
+
+  const isDataCollectionType = data?.['@type'] === 'DataCollection';
 
   useEffect(() => {
     setIsMounted(true);
@@ -42,20 +59,39 @@ export const Sidebar = ({
           flex={1}
           ml={[0, 0, 4]}
           my={[2, 2, 0]}
-          css={{
-            '& >*': { p: 0 },
-          }}
+          css={{ '>*': { p: 0 } }}
         >
-          {data && data['_meta'] && (
-            <CompletenessBadgeCircle
-              type={data['@type']}
-              stats={data['_meta']}
-              p={6}
-            />
-          )}
-          {/* External links to access data, documents or dataset at the source. */}
-          <ExternalAccess data={data} loading={loading} hasDivider={true} />
-          <UsageInfo data={data} loading={loading} />
+          <Stack
+            separator={
+              <Separator
+                borderColor='page.placeholder'
+                marginTop={'0!important'}
+                marginBottom={'0!important'}
+              />
+            }
+          >
+            {data && data['_meta'] && !isDataCollectionType && (
+              <CompletenessBadgeCircle
+                type={data['@type']}
+                stats={data['_meta']}
+                p={6}
+              />
+            )}
+            {/* External links to access data, documents or dataset at the source. */}
+            <ExternalAccess data={data} loading={loading} />
+            <UsageInfo data={data} loading={loading} />
+            {data?.['@type'] === 'ResourceCatalog' &&
+              USE_MERGED_SOURCES_AND_CATALOGS && (
+                <LinkToSourcePage
+                  href={`/sources#${formatIdentifierAsAnchorSlug(
+                    data?._id || '',
+                  )}`}
+                  loading={loading}
+                >
+                  Learn more about {data?.name} in the sources page
+                </LinkToSourcePage>
+              )}
+          </Stack>
         </Card.Root>
 
         {/* Local navigation for page */}

@@ -31,6 +31,12 @@ interface PopoverSelectableListProps {
 
   selectedIds: string[];
   requiredIds?: string[];
+  /**
+   * IDs only restored as a fallback when the visible set would otherwise
+   * be empty. Rendered with a "(shown by default)" label. Unlike
+   * `requiredIds`, these stay individually checkable/movable.
+   */
+  fallbackIds?: string[];
 
   enableOrdering?: boolean;
   isSearching?: boolean;
@@ -56,6 +62,7 @@ interface RenderItemsProps {
   items: PopoverItem[];
   selectedIds: string[];
   requiredIds: string[];
+  fallbackIds: string[];
   enableOrdering: boolean;
   isSearching: boolean;
   movableIds: string[];
@@ -68,6 +75,7 @@ const RenderItems = ({
   items,
   selectedIds,
   requiredIds,
+  fallbackIds,
   enableOrdering,
   isSearching,
   movableIds,
@@ -78,6 +86,7 @@ const RenderItems = ({
   <>
     {items.map(item => {
       const isRequired = requiredIds.includes(item.id);
+      const isFallback = !isRequired && fallbackIds.includes(item.id);
       const movableIdx = movableIds.indexOf(item.id);
       return (
         <PopoverListItem
@@ -85,6 +94,7 @@ const RenderItems = ({
           item={item}
           isChecked={selectedIds.includes(item.id)}
           isRequired={isRequired}
+          isFallback={isFallback}
           enableOrdering={enableOrdering}
           isSearching={isSearching}
           isFirst={isRequired || movableIdx === 0}
@@ -110,6 +120,7 @@ export const PopoverSelectableList = ({
   groups,
   selectedIds,
   requiredIds = [],
+  fallbackIds = [],
   enableOrdering = false,
   isSearching = false,
   orderedIds,
@@ -145,6 +156,7 @@ export const PopoverSelectableList = ({
   const itemProps = {
     selectedIds,
     requiredIds,
+    fallbackIds,
     enableOrdering,
     isSearching,
     movableIds,

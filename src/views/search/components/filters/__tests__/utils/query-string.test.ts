@@ -3,11 +3,13 @@ jest.mock('src/utils/formatting/formatResourceType', () => ({
 }));
 
 import {
+  OR_FILTER_KEY,
   queryFilterObject2String,
   queryFilterString2Object,
   normalizeFilterValues,
   getSelectedFilterDisplay,
 } from '../../utils/query-string';
+import { SelectedFilterType } from '../../types';
 
 describe('filters/utils/query-string', () => {
   it('builds query strings for standard values, date ranges, @type, and exists objects', () => {
@@ -65,6 +67,55 @@ describe('filters/utils/query-string', () => {
       topic: ['alpha', 'beta'],
       date: ['2020-01-01', '2021-12-31'],
     });
+  });
+
+  it('serializes and round-trips a cross-field OR (`_or`) group', () => {
+    const filters: SelectedFilterType = {
+      [OR_FILTER_KEY]: [
+        { 'includedInDataCatalog.name': ['acd@NIAID'] },
+        { _id: ['dde_123'] },
+      ],
+    };
+    const str = queryFilterObject2String(filters);
+
+    expect(str).toBe(
+      '(includedInDataCatalog.name:("acd@NIAID") OR _id:("dde_123"))',
+    );
+    expect(queryFilterString2Object(str!)).toEqual(filters);
+  });
+
+  it('keeps a single field multi-value OR distinct from an `_or` group', () => {
+    // The inner OR sits inside the parens -> a single field, not an `_or` group.
+    expect(queryFilterString2Object('(topic:("alpha" OR "beta"))')).toEqual({
+      topic: ['alpha', 'beta'],
+    });
+  });
+
+  it('AND-combines an `_or` group with other filters without disturbing them', () => {
+    const filters: SelectedFilterType = {
+      [OR_FILTER_KEY]: [
+        { 'includedInDataCatalog.name': ['acd@NIAID'] },
+        { _id: ['dde_123'] },
+      ],
+      topic: ['alpha'],
+    };
+    const str = queryFilterObject2String(filters);
+    expect(str).toContain(
+      '(includedInDataCatalog.name:("acd@NIAID") OR _id:("dde_123"))',
+    );
+    expect(str).toContain('(topic:("alpha"))');
+    expect(str).toContain(' AND ');
+    expect(queryFilterString2Object(str!)).toEqual(filters);
+  });
+
+  it('does not misparse an _exists_ OR group as a cross-field `_or`', () => {
+    // Later segments start with `(` (no `field:` prefix), so this stays a
+    // single-field parse and never produces an `_or` key.
+    const parsed = queryFilterString2Object(
+      '(source:(_exists_:("source")) OR (-_exists_:("source")))',
+    );
+    expect(parsed).not.toBeNull();
+    expect(parsed).not.toHaveProperty(OR_FILTER_KEY);
   });
 
   it('handles invalid and array queryString input safely', () => {

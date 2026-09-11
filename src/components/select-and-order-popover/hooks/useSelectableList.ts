@@ -37,6 +37,14 @@ export interface UseSelectableListOptions {
    * Defaults to all item IDs.
    */
   defaultVisibleIds?: string[];
+
+  /**
+   * IDs restored when "Clear All" would otherwise leave the selection empty.
+   * Unlike `requiredIds`, these stay individually hideable and movable.
+   * They're only reinstated as a fallback so there are no situations
+   * with zero visible columns. Defaults to `requiredIds`.
+   */
+  clearAllFallbackIds?: string[];
 }
 
 export interface UseSelectableListResult {
@@ -178,6 +186,7 @@ export const useSelectableList = ({
   storageKeyVisible,
   storageKeyOrder = null,
   defaultVisibleIds,
+  clearAllFallbackIds = requiredIds,
 }: UseSelectableListOptions): UseSelectableListResult => {
   const allIds = useMemo(() => items.map(i => i.id), [items]);
   const defaults = useMemo(
@@ -240,12 +249,12 @@ export const useSelectableList = ({
     setSelectedIds(prev => {
       const allSelected = prev.length === allIds.length;
       const next = allSelected
-        ? requiredIds.filter(id => allIds.includes(id))
+        ? clearAllFallbackIds.filter(id => allIds.includes(id))
         : [...allIds];
       writeToStorage(storageKeyVisible, next);
       return next;
     });
-  }, [allIds, requiredIds, storageKeyVisible]);
+  }, [allIds, clearAllFallbackIds, storageKeyVisible]);
 
   // Ordering actions (only wired when enableOrdering is true)
   const moveUp = useCallback(

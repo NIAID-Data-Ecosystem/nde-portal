@@ -379,8 +379,8 @@ export const BasedOnActionProcess = ({
 }: IsBasedOn) => {
   // step may come back from the API as a single string or a list.
   const steps = castArray(actionProcess?.step ?? []).filter(Boolean);
-
-  if (!description && steps.length === 0) return <>No details provided.</>;
+  const showAccordion = description || steps.length > 0;
+  if (!showAccordion) return <>No details provided.</>;
 
   return (
     <Stack
@@ -403,13 +403,8 @@ export const BasedOnActionProcess = ({
                   <Text fontWeight='semibold'>
                     {name || 'Generation process'}
                   </Text>
-                  {disambiguatingDescription && (
-                    <Text fontWeight='medium' fontSize='xs'>
-                      {disambiguatingDescription}
-                    </Text>
-                  )}
                   {description && <Text fontSize='xs'>{description}</Text>}
-                  {steps.length > 0 && (
+                  {showAccordion && (
                     <Accordion.ItemTrigger>
                       <Button
                         w='auto'
@@ -423,18 +418,24 @@ export const BasedOnActionProcess = ({
                         textDecoration='underline'
                         _hover={{ textDecoration: 'none' }}
                       >
-                        {expanded ? 'Hide "How To"' : 'Show "How To"'}
+                        {expanded ? 'Hide' : 'Show'}
                         <Icon as={expanded ? FaMinus : FaPlus} fontSize='2xs' />
                       </Button>
                     </Accordion.ItemTrigger>
                   )}
                 </Flex>
-                {steps.length > 0 && (
+                {showAccordion && (
                   <Accordion.ItemContent px={0} pt={1} pb={1}>
                     <Accordion.ItemBody>
-                      <VStack alignItems='start' gap={1.5}>
+                      <VStack alignItems='start' gap={1.5} fontSize='sm'>
+                        {description && (
+                          <Text fontSize='inherit'>{description}</Text>
+                        )}
+
                         {steps.map((step, index) => (
-                          <Text key={index}>{step}</Text>
+                          <Text key={index} fontSize='inherit'>
+                            {step}
+                          </Text>
                         ))}
                       </VStack>
                     </Accordion.ItemBody>

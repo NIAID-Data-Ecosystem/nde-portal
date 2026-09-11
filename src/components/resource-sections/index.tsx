@@ -169,7 +169,6 @@ const Sections = ({
                   <ExternalAccess
                     data={data}
                     loading={loading}
-                    hasDivider={false}
                     minWidth={{ base: 'unset', sm: '350px' }}
                   />
                 </Stack>

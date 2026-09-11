@@ -7,7 +7,10 @@ import {
   resolveStoredVisibleIds,
 } from 'src/components/select-and-order-popover';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
-import { SHOW_SEARCH_VIEW_MODES } from 'src/utils/feature-flags';
+import {
+  SHOW_DATA_COLLECTIONS_VIEW_MODES,
+  SHOW_SEARCH_VIEW_MODES,
+} from 'src/utils/feature-flags';
 
 import {
   DATA_COLLECTION_FIELDS,
@@ -72,7 +75,6 @@ import {
   CustomizeColumnsPopover as SampleCustomizeColumnsPopover,
   DEFAULT_VISIBLE_COLUMN_IDS as SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS,
 } from './components/sample-results-table/components/CustomizeColumnsPopover';
-import { SearchResultsToolbar } from './components/toolbar';
 import { ViewModeRadio } from './components/toolbar/components/view-mode-radio';
 
 const readFromStorage = (key: string, fallback: string[]): string[] => {
@@ -232,9 +234,12 @@ export const SearchResults = ({
   // Selected tab index is stored in context to sync with other components.
   const urlQueryParams = useSearchQueryFromURL();
 
-  // Persisted per-tab card/table preference. Only some tabs offer the choice.
+  // Persisted per-tab card/table preference. Only some tabs offer the choice,
+  // and the Data Collections tab is gated behind its own flag.
   const showViewMode =
-    SHOW_SEARCH_VIEW_MODES && TABS_WITH_VIEW_MODE.includes(id);
+    SHOW_SEARCH_VIEW_MODES &&
+    TABS_WITH_VIEW_MODE.includes(id) &&
+    (id !== 'dc' || SHOW_DATA_COLLECTIONS_VIEW_MODES);
   const [viewMode, setViewMode] = useViewMode(id);
 
   // For Samples and DataCollection tabs, use extra fields for the table columns.
@@ -250,10 +255,13 @@ export const SearchResults = ({
     SHOW_SEARCH_VIEW_MODES && id === 'ct' && viewMode === 'table';
   // Data Collections also offer both views, but default to cards. Unlike the
   // two tabs above, this tab predates the view mode radio and was table-only,
-  // so when the flag hides the radio it must fall back to the table rather
+  // so when either flag hides the radio it must fall back to the table rather
   // than to the card default.
   const isDataCollectionTable =
-    isDataCollectionTab && (!SHOW_SEARCH_VIEW_MODES || viewMode === 'table');
+    isDataCollectionTab &&
+    (!SHOW_SEARCH_VIEW_MODES ||
+      !SHOW_DATA_COLLECTIONS_VIEW_MODES ||
+      viewMode === 'table');
 
   // Each tab type uses a minimal, tab-specific field list rather than the
   // shared RESULT_FIELDS base (which carries many fields that other tabs never

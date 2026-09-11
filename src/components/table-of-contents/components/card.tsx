@@ -4,7 +4,6 @@ import {
   ButtonProps,
   Flex,
   HStack,
-  Icon,
   Image,
   Skeleton,
   Stack,
@@ -14,7 +13,6 @@ import {
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import React from 'react';
-import { FaChevronRight } from 'react-icons/fa6';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
@@ -50,7 +48,12 @@ export const StyledCard: React.FC<StyledCardProps> = ({
   return (
     <StyledCardWrapper id={id} loading={loading}>
       <VStack alignItems='flex-start' lineHeight='moderate'>
-        <Stack flexDirection='row' alignItems='unset' flexWrap='wrap-reverse'>
+        <Stack
+          flexDirection='row'
+          alignItems='unset'
+          flexWrap='wrap-reverse'
+          w='100%'
+        >
           <Stack
             flexDirection='column'
             minWidth={{ base: '250px', sm: '350px' }}
@@ -185,7 +188,7 @@ export const StyledCardDescription: React.FC<{ children: string }> = ({
 };
 
 interface StyledCardButtonProps extends ButtonProps {
-  href: UrlObject;
+  href: string | UrlObject;
 }
 
 export const StyledCardButton: React.FC<StyledCardButtonProps> = ({

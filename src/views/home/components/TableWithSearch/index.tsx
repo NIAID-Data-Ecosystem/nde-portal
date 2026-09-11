@@ -4,7 +4,7 @@ import React, { useCallback, useState } from 'react';
 import { Link } from 'src/components/link';
 import { SearchInput, SearchInputProps } from 'src/components/search-input';
 import { Table } from 'src/components/table';
-import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
+import { getTabIdFromResourceType } from 'src/views/search/config/tabs';
 
 import { Filters } from './filters/';
 import { formatDomainName, formatTypeName } from './helpers';
@@ -197,7 +197,7 @@ export const RepositoryCells = ({
   loading?: boolean;
 }) => {
   const tab = data?.type?.includes('Computational Tool Repository')
-    ? getTabIdFromTypeLabel('ComputationalTool')
+    ? getTabIdFromResourceType('ComputationalTool')
     : undefined;
 
   return (

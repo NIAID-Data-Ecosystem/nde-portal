@@ -1,4 +1,4 @@
-import { Button, ButtonProps, Flex, Stack } from '@chakra-ui/react';
+import { Button, ButtonProps, Flex, Stack, VStack } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import React from 'react';
 import { FaArrowRight } from 'react-icons/fa6';
@@ -10,7 +10,6 @@ import {
   getSourceLogoLinkOut,
 } from 'src/components/source-logo/helpers';
 import { FormattedResource } from 'src/utils/api/types';
-import { useMediaQuery } from 'usehooks-ts';
 
 interface DataAccessProps {
   loading: boolean;
@@ -20,23 +19,33 @@ interface DataAccessProps {
   creativeWorkStatus?: FormattedResource['creativeWorkStatus'];
   children?: React.ReactNode;
   colorPalette?: ButtonProps['colorPalette'];
+  submittingDataUrl: FormattedResource['publishingPrinciples'];
 }
 
-const AccessResourceButton: React.FC<{
-  url: string;
-  colorPalette: ButtonProps['colorPalette'];
-}> = ({ url, colorPalette }) => {
+const AccessResourceButton: React.FC<
+  ButtonProps & { label: string; url: string; showIcon?: boolean }
+> = ({ url, colorPalette, label, showIcon = true, ...buttonProps }) => {
   // Internal routes (e.g. the retired resources page) should navigate
   // in the same tab; external source links continue to open in a new tab.
   const isInternalLink = url.startsWith('/');
 
   return (
-    <Button colorPalette={colorPalette} size='sm' asChild>
-      <NextLink href={url} target={isInternalLink ? undefined : '_blank'}>
-        Access Resource
-        <FaArrowRight />
-      </NextLink>
-    </Button>
+    <NextLink
+      href={url}
+      target={isInternalLink ? undefined : '_blank'}
+      style={{ width: '100%' }}
+      passHref
+    >
+      <Button
+        colorPalette={colorPalette}
+        size='sm'
+        width='100%'
+        {...buttonProps}
+      >
+        {showIcon ? <FaArrowRight /> : undefined}
+        {label}
+      </Button>
+    </NextLink>
   );
 };
 
@@ -46,14 +55,10 @@ export const DataAccess: React.FC<DataAccessProps> = ({
   url,
   recordType,
   creativeWorkStatus,
+  submittingDataUrl,
   colorPalette = 'secondary',
 }) => {
-  const prefersReducedMotion = useMediaQuery(
-    '(prefers-reduced-motion: reduce)',
-  );
-
   // If resource is part of a catalog, only show DDE as source
-
   const catalogForLookup =
     includedInDataCatalog && recordType === 'ResourceCatalog'
       ? getDDECatalog(includedInDataCatalog) || []
@@ -79,34 +84,29 @@ export const DataAccess: React.FC<DataAccessProps> = ({
             url={getSourceLogoLinkOut(source)}
           />
           {source?.archivedAt && (
-            <Flex
-              w='100%'
-              mt={2}
-              justifyContent='flex-end'
-              css={{
-                '& svg': {
-                  transform: 'translateX(-2px)',
-                  transition: 'transform 0.2s ease-in-out',
-                },
-              }}
-              _hover={{
-                '& svg': prefersReducedMotion
-                  ? {}
-                  : {
-                      transform: 'translateX(4px)',
-                      transition: 'transform 0.2s ease-in-out',
-                    },
-              }}
-            >
-              <AccessResourceButton
-                url={getAccessResourceURL({
-                  recordType,
-                  source,
-                  url,
-                  creativeWorkStatus,
-                })}
-                colorPalette={colorPalette}
-              />
+            <Flex w='100%' mt={2} justifyContent='flex-end'>
+              <VStack w='100%' maxWidth='300px'>
+                <AccessResourceButton
+                  label='Access Resource'
+                  url={getAccessResourceURL({
+                    recordType,
+                    source,
+                    url,
+                    creativeWorkStatus,
+                  })}
+                  colorPalette={colorPalette}
+                />
+                {/* [TO DO]: add data submission functionality when property is added to source */}
+                {submittingDataUrl && (
+                  <AccessResourceButton
+                    label='Submit Data'
+                    url={submittingDataUrl}
+                    colorPalette={colorPalette}
+                    variant='outline'
+                    showIcon={false}
+                  />
+                )}
+              </VStack>
             </Flex>
           )}
         </React.Fragment>
