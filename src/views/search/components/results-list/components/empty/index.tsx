@@ -1,4 +1,4 @@
-import { Box, Text, List } from '@chakra-ui/react';
+import { Box, List, Text } from '@chakra-ui/react';
 import Empty from 'src/components/empty';
 import { Link } from 'src/components/link';
 import { RESERVED_CHARS } from 'src/utils/querystring-helpers';

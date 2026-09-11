@@ -22,6 +22,12 @@ To opt a list in: `variant='marker'` for the UA default, or `listStyleType`
 */
 export const listSlotRecipe = defineSlotRecipe({
   slots: listAnatomy.keys(),
+  base: {
+    root: {
+      paddingStart: 6,
+    },
+    item: { display: 'list-item' },
+  },
   variants: {
     variant: {
       /* Chakra's `plain` also swaps the item to `inline-flex`, which shrink-wraps
