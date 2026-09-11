@@ -1,6 +1,4 @@
 import {
-  Box,
-  BoxProps,
   Flex,
   Image,
   ImageProps,
@@ -8,34 +6,78 @@ import {
   StackProps,
   Text,
 } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { Link } from 'src/components/link';
 import { FormattedResource, IncludedInDataCatalog } from 'src/utils/api/types';
+
 import { getSourceImagePath } from './helpers';
 
-// Wrapper container for the source logos.
-interface SourceLogoWrapperProps extends StackProps {}
+const LOGO_HEIGHT = ['20px', '20px', '30px'];
 
-const Wrapper = ({ children, ...props }: SourceLogoWrapperProps) => {
-  return (
-    <Stack
-      alignItems='flex-start'
-      flexDirection='row'
-      flexWrap='wrap'
-      my={0}
-      gap={[2, 4]}
-      py={[2, 0]}
-      {...props}
+// Wrapper container for the source logos.
+type SourceLogoWrapperProps = StackProps;
+
+const Wrapper = (props: SourceLogoWrapperProps) => (
+  <Stack
+    flexDirection='row'
+    justifyContent={['space-between', 'flex-start']}
+    flexWrap='wrap'
+    gap={[2, 4]}
+    {...props}
+  />
+);
+
+type SourceWithLogo = IncludedInDataCatalog;
+// Shown in place of the logo when no image file exists for the source.
+const Fallback = ({ name }: { name: SourceWithLogo['name'] }) => (
+  <Flex minHeight={LOGO_HEIGHT} alignItems='center'>
+    <Text
+      fontSize={['md', 'md', 'xl']}
+      lineHeight='shorter'
+      color='text.heading'
+      fontWeight='bold'
     >
-      {children}
-    </Stack>
+      {name}
+    </Text>
+  </Flex>
+);
+
+interface SourceLogoImageProps extends ImageProps {
+  fallback: React.ReactNode;
+}
+
+// Chakra v3 dropped Image's `fallback` prop, so track the load error ourselves
+// and swap in the fallback content when the source has no matching image file.
+const ImageWithFallback = ({
+  fallback,
+  onError,
+  src,
+  alt,
+  ...props
+}: SourceLogoImageProps) => {
+  const [hasError, setHasError] = useState(false);
+
+  // Give a new src a fresh attempt at loading.
+  useEffect(() => setHasError(false), [src]);
+
+  if (!src || hasError) {
+    return <>{fallback}</>;
+  }
+
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      {...props}
+      onError={event => {
+        setHasError(true);
+        onError?.(event);
+      }}
+    />
   );
 };
 
-type SourceWithLogo = IncludedInDataCatalog & {
-  logo?: string | null;
-};
-
-interface SourceLogoProps extends BoxProps {
+interface SourceLogoProps extends StackProps {
   imageProps?: ImageProps;
   source: SourceWithLogo;
   type?: FormattedResource['@type'];
@@ -51,56 +93,47 @@ const Component = ({
   ...props
 }: SourceLogoProps) => {
   const logo = getSourceImagePath(source.name);
+  const label = `${type === 'ResourceCatalog' ? 'Provided by' : 'Indexed in'} ${
+    source.name
+  }`;
+
+  const logoImage = logo ? (
+    <ImageWithFallback
+      objectFit='contain'
+      objectPosition='left'
+      w='100%'
+      h={LOGO_HEIGHT}
+      src={logo}
+      alt={
+        source.url
+          ? `Click to open the source (${source.name}) in a new tab.`
+          : `Logo for ${source.name}`
+      }
+      fallback={<Fallback name={source.name} />}
+      {...imageProps}
+    />
+  ) : null;
 
   return (
-    <Box key={source.name} maxW={{ base: '200px', sm: '250px' }} {...props}>
-      {logo ? (
-        source.url ? (
-          <Link target='_blank' href={source.url}>
-            <Image
-              objectFit='contain'
-              objectPosition='left'
-              w='100%'
-              h='40px'
-              mr={4}
-              src={logo}
-              alt={`Click to open the source (${source.name}) in a new tab.`}
-              {...imageProps}
-            />
-          </Link>
-        ) : (
-          <Image
-            objectFit='contain'
-            objectPosition='left'
-            w='100%'
-            h='40px'
-            mr={4}
-            src={logo}
-            alt={`Logo for ${source.name}`}
-            {...imageProps}
-          />
-        )
+    <Stack minWidth='150px' maxW={['200px', '250px']} gap={1} {...props}>
+      {logoImage && source.url ? (
+        <Link target='_blank' href={source.url} variant='unstyled'>
+          {logoImage}
+        </Link>
       ) : (
-        <></>
+        logoImage
       )}
-      <Flex bg='#fff'>
-        {url ? (
-          <Link href={url} isExternal lineHeight='shorter'>
-            <Text fontSize='12px' lineHeight='short'>
-              {type === 'ResourceCatalog'
-                ? `Provided by ${source.name}`
-                : `Indexed in ${source.name}`}
-            </Text>
-          </Link>
-        ) : (
-          <Text fontSize='12px' lineHeight='short'>
-            {type === 'ResourceCatalog'
-              ? `Provided by ${source.name}`
-              : `Indexed in ${source.name}`}
-          </Text>
-        )}
-      </Flex>
-    </Box>
+
+      {url ? (
+        <Link href={url} isExternal lineHeight='moderate' fontSize='xs'>
+          {label}
+        </Link>
+      ) : (
+        <Text fontSize='xs' lineHeight='moderate'>
+          {label}
+        </Text>
+      )}
+    </Stack>
   );
 };
 

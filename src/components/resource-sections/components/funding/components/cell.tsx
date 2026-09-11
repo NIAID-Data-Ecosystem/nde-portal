@@ -30,7 +30,7 @@ export const Content = React.memo(({ children, ...props }: BoxProps) => {
     <Box
       my={2}
       fontSize='xs'
-      lineHeight='short'
+      lineHeight='moderate'
       whiteSpace='pre-wrap'
       wordBreak='break-word'
       fontWeight='normal'
@@ -56,7 +56,7 @@ export const Cell = React.memo(({ label, children, ...props }: CellProps) => {
       py={1}
       minW='280px'
       fontSize='xs'
-      lineHeight='short'
+      lineHeight='moderate'
       {...props}
     >
       {label && <Label>{label}</Label>}

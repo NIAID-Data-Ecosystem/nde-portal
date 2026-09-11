@@ -128,7 +128,7 @@ export const CheckboxMenu = <T extends Option>({
                         fontSize='sm'
                         fontStyle='italic'
                         fontWeight='normal'
-                        lineHeight='short'
+                        lineHeight='moderate'
                         mt={1.5}
                       >
                         {description}
@@ -145,7 +145,8 @@ export const CheckboxMenu = <T extends Option>({
                     >
                       <Button
                         size='2xs'
-                        variant='link'
+                        variant='ghost'
+                        underline
                         onClick={() => {
                           if (selectedOptions.length === options.length) {
                             handleChange([]);

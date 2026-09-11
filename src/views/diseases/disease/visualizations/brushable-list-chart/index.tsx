@@ -50,7 +50,7 @@ export const BrushableListChart = ({
         <Flex
           fontSize='xs'
           fontWeight='semibold'
-          lineHeight='short'
+          lineHeight='moderate'
           justifyContent='space-between'
           mr={4}
           ml={1}
@@ -82,7 +82,7 @@ export const BrushableListChart = ({
               py={1}
               borderBottom='1px solid'
               borderBottomColor='#ededed'
-              lineHeight='short'
+              lineHeight='moderate'
               asChild
             >
               {/* Term: Links to search results */}

@@ -1,9 +1,8 @@
 import { Flex, FlexProps, Icon } from '@chakra-ui/react';
 import React from 'react';
 import { FaComputer } from 'react-icons/fa6';
+import Tooltip from 'src/components/tooltip';
 import { operatingSystemIcons } from 'src/utils/helpers/operating-system-icons';
-
-import Tooltip from '../../../../../../../components/tooltip';
 
 interface OperatingSystemProps extends FlexProps {
   data: string[];
@@ -12,18 +11,15 @@ interface OperatingSystemProps extends FlexProps {
 const OperatingSystems: React.FC<OperatingSystemProps> = ({ data }) => {
   return (
     <Flex whiteSpace='nowrap' alignItems='start'>
-      {data.map((item, index) => {
+      {data.map(item => {
         const osIcon = operatingSystemIcons.find(obj => obj.os === item)?.icon;
 
         return (
           <Tooltip
             key={`${item}`}
             content={`Operating system supported: ${item}`}
-            showArrow
           >
-            <Flex>
-              <Icon key={`${item}-${index}`} as={osIcon || FaComputer} mr={2} />
-            </Flex>
+            <Icon as={osIcon || FaComputer} mr={2} />
           </Tooltip>
         );
       })}

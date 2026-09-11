@@ -24,8 +24,7 @@ import {
   PageContent,
   Search,
 } from 'src/components/page-container';
-import { useRepoData } from 'src/hooks/api/useRepoData';
-import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
+import { useSourcesList } from 'src/hooks/api/useSourcesList';
 import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
 import {
   formatConditionsOfAccess,
@@ -43,7 +42,6 @@ import {
 } from 'src/views/home/components/NewsCarousel';
 import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { formatDomainName } from 'src/views/home/components/TableWithSearch/helpers';
-import { buildItemUrl } from 'src/views/repository-matcher/utils';
 import { useReadLocalStorage } from 'usehooks-ts';
 
 import { fetchEvents, NewsOrEventsObject } from './updates';
@@ -57,34 +55,18 @@ const Home: NextPage<{
   error?: { message: string };
 }> = props => {
   const enableAISearch = useReadLocalStorage('enableAISearch');
-  /****** Resource Catalogs Data ******/
-  const {
-    isLoading: resourceCatalogsIsLoading,
-    data: resourceCatalogs,
-    error: resourceCatalogsError,
-  } = useResourceCatalogs({
-    fields: [
-      '_id',
-      '@type',
-      'abstract',
-      'collectionType',
-      'conditionsOfAccess',
-      'genre',
-      'name',
-      'url',
-    ],
-  });
-
-  /****** Repository Data ******/
+  /****** Repository + Resource Catalog Data ******/
+  // `useSourcesList` merges standalone resource catalogs into the metadata
+  // sources list until the two data sources are consolidated on one endpoint.
   const {
     isLoading: repositoriesIsLoading,
     data: repositories,
     error: repositoriesError,
-  } = useRepoData({ refetchOnWindowFocus: false, refetchOnMount: false });
+  } = useSourcesList({ refetchOnWindowFocus: false, refetchOnMount: false });
 
   const tableData = useMemo(
     () =>
-      [...(resourceCatalogs || []), ...(repositories || [])].map(item => {
+      (repositories || []).map(item => {
         const domain = item?.genre
           ? formatDomainName(item.genre).sort((a, b) => a.localeCompare(b))
           : '';
@@ -98,10 +80,10 @@ const Home: NextPage<{
           ),
           domain,
           type: item.type,
-          url: buildItemUrl(item),
+          url: item.searchURL,
         };
       }),
-    [repositories, resourceCatalogs],
+    [repositories],
   );
 
   return (
@@ -179,7 +161,7 @@ const Home: NextPage<{
       </HeroBanner>
       <>
         {/**** Repositories Table section *****/}
-        {!(repositoriesError || resourceCatalogsError) && (
+        {!repositoriesError && (
           <PageContent
             flexDirection='column'
             bg='#fff'
@@ -233,7 +215,7 @@ const Home: NextPage<{
                       more...
                     </Text>
                     <Button
-                      size={{ base: 'md', sm: 'sm' }}
+                      size='md'
                       width={{ base: '100%', sm: 'auto' }}
                       asChild
                       truncate
@@ -255,7 +237,7 @@ const Home: NextPage<{
                 <Heading as='h2' fontSize='2xl' fontWeight='semibold' mb={4}>
                   Explore All Included Resources
                 </Heading>
-                <Text lineHeight='short'>
+                <Text lineHeight='moderate'>
                   The following <strong>Resource Catalogs</strong> (collections
                   of scientific information or research outputs) and{' '}
                   <strong>Dataset Repositories</strong> (collections of data of
@@ -269,7 +251,7 @@ const Home: NextPage<{
                   ariaLabel='List of repositories and resource catalogs'
                   caption='List of repositories and resource catalogs'
                   data={tableData}
-                  loading={repositoriesIsLoading || resourceCatalogsIsLoading}
+                  isLoading={repositoriesIsLoading}
                   columns={[
                     {
                       title: 'name',

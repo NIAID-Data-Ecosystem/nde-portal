@@ -19,7 +19,7 @@ export function SavedEmptyState({ title, children }: SavedEmptyStateProps) {
         color='gray.700'
         maxWidth='300px'
         textAlign='center'
-        lineHeight='short'
+        lineHeight='moderate'
         whiteSpace='normal'
       >
         {children}

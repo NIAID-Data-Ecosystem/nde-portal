@@ -1,62 +1,53 @@
-import { Flex, NativeSelect, Text } from '@chakra-ui/react';
+import { Portal, Select, SelectRootProps, Span, Stack } from '@chakra-ui/react';
 import React from 'react';
 
-interface SelectWithLabelProps
-  extends Omit<NativeSelect.FieldProps, 'onChange' | 'size'> {
-  id: string;
+interface SelectWithLabelProps extends SelectRootProps {
   label: string;
-  handleChange: (value: string | number) => void;
-  options: { name: string; value: string | number; tooltip?: string }[];
-  size?: NativeSelect.RootProps['size'];
 }
 
-/*
- [COMPONENT INFO]: SelectWithLabel
-  Handles a select input with a label and options and optional tooltips.
-*/
 export const SelectWithLabel = ({
-  id,
   label,
-  options,
+  collection,
   size = 'sm',
   value,
-  handleChange,
+  onValueChange,
   ...props
 }: SelectWithLabelProps) => {
   return (
-    <Flex alignItems='center' gap={2} cursor='pointer' asChild>
-      <label htmlFor={id}>
-        <Text as='span' fontSize='sm' whiteSpace='nowrap' color='gray.900'>
-          {label}
-        </Text>
-        <NativeSelect.Root size={size}>
-          <NativeSelect.Field
-            id={id}
-            aria-label={label}
-            onChange={e => handleChange(e.currentTarget.value)}
-            value={value}
-            bg='white'
-            borderColor='gray.200'
-            borderRadius='semi'
-            cursor='pointer'
-            _hover={{ boxShadow: 'low' }}
-            {...props}
-          >
-            {options.map(option => {
-              return (
-                <option
-                  key={option.value}
-                  title={option?.tooltip || ''}
-                  value={option.value}
-                >
-                  {option.name}
-                </option>
-              );
-            })}
-          </NativeSelect.Field>
-          <NativeSelect.Indicator />
-        </NativeSelect.Root>
-      </label>
-    </Flex>
+    <Select.Root
+      collection={collection}
+      size={size}
+      value={value}
+      onValueChange={onValueChange}
+      {...props}
+    >
+      <Select.HiddenSelect />
+      <Select.Label>{label}</Select.Label>
+      <Select.Control>
+        <Select.Trigger>
+          <Select.ValueText placeholder={`Select ${label.toLowerCase()}`} />
+        </Select.Trigger>
+        <Select.IndicatorGroup>
+          <Select.Indicator />
+        </Select.IndicatorGroup>
+      </Select.Control>
+      <Portal>
+        <Select.Positioner>
+          <Select.Content>
+            {collection.items.map(option => (
+              <Select.Item item={option} key={option.value}>
+                <Stack gap='0'>
+                  <Select.ItemText>{option.label}</Select.ItemText>
+                  <Span color='fg.muted' textStyle='xs'>
+                    {option.description}
+                  </Span>
+                </Stack>
+                <Select.ItemIndicator />
+              </Select.Item>
+            ))}
+          </Select.Content>
+        </Select.Positioner>
+      </Portal>
+    </Select.Root>
   );
 };

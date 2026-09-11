@@ -1,23 +1,23 @@
-import React, { useMemo, useState } from 'react';
-import NextLink from 'next/link';
-import { UrlObject } from 'url';
 import { Box, Checkbox, Flex, Text, VisuallyHidden } from '@chakra-ui/react';
-import { animated, useTransition, to } from '@react-spring/web';
+import { animated, to, useTransition } from '@react-spring/web';
 import { Annotation, HtmlLabel } from '@visx/annotation';
 import { localPoint } from '@visx/event';
 import { Group } from '@visx/group';
 import { useParentSize } from '@visx/responsive';
 import { scaleLog } from '@visx/scale';
-import Pie, { ProvidedProps, PieArcDatum } from '@visx/shape/lib/shapes/Pie';
+import Pie, { PieArcDatum, ProvidedProps } from '@visx/shape/lib/shapes/Pie';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
+import NextLink from 'next/link';
+import React, { useMemo, useState } from 'react';
 import { InfoLabel } from 'src/components/info-label';
-import { FacetTerm } from 'src/utils/api/types';
 import {
   customTooltipStyles,
   TooltipSubtitle,
   TooltipTitle,
   TooltipWrapper,
 } from 'src/components/visualizations/tooltip/index';
+import { FacetTerm } from 'src/utils/api/types';
+import { UrlObject } from 'url';
 
 interface Datum {
   count: number;
@@ -205,10 +205,13 @@ export const DonutChart = ({
         </Checkbox.Control>
         <Checkbox.Label>
           <InfoLabel
-            title='Apply log scale'
-            tooltipText='Log scale compresses large values, making smaller categories more visible while preserving
-          proportions. Original counts are shown in tooltips.'
-          ></InfoLabel>
+            tooltipProps={{
+              content:
+                'Log scale compresses large values, making smaller categories more visible while preserving proportions. Original counts are shown in tooltips.',
+            }}
+          >
+            Apply log scale
+          </InfoLabel>
         </Checkbox.Label>
       </Checkbox.Root>
       {/* Donut Chart */}

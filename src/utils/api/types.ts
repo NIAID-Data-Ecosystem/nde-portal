@@ -578,6 +578,7 @@ export interface FormattedResource {
   processorRequirements: string[] | null;
   programmingLanguage: string[] | null;
   publisher: Publisher | null;
+  publishingPrinciples?: string | null;
   rawData?: any;
   sameAs: string | null;
   sample?: SampleAggregate | SampleCollection | null;

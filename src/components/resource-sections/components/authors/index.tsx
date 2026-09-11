@@ -91,7 +91,7 @@ const ResourceAuthors = ({
                       fontSize='sm'
                       color='gray.700'
                       fontWeight='light'
-                      lineHeight='short'
+                      lineHeight='moderate'
                     >
                       {formatAuthorsList2String(authors, ',', 10)}
                       {authors.length === 1 ? '' : '.'}
@@ -116,7 +116,7 @@ const ResourceAuthors = ({
                       as='ul'
                       display={authors_have_details ? '' : 'inline-flex'}
                       flexWrap='wrap'
-                      lineHeight='short'
+                      lineHeight='moderate'
                     >
                       {authors.map((author, i) => {
                         let { identifier, name, url, email } = author;

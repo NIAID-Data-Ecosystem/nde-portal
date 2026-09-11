@@ -46,7 +46,7 @@ export const CarouselControls = ({
         size='sm'
         flexShrink={0}
       >
-        <Icon boxSize={4} asChild>
+        <Icon boxSize={4}>
           <FaAngleLeft />
         </Icon>
       </Button>
@@ -134,7 +134,7 @@ export const CarouselControls = ({
         size='sm'
         flexShrink={0}
       >
-        <Icon boxSize={4} asChild>
+        <Icon boxSize={4}>
           <FaAngleRight />
         </Icon>
       </Button>

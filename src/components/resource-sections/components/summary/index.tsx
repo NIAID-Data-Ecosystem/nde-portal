@@ -15,7 +15,7 @@ export const Summary = ({
 
   return (
     <Flex
-      lineHeight='short'
+      lineHeight='moderate'
       display='flex'
       alignItems='baseline'
       flexWrap='wrap'
@@ -46,14 +46,13 @@ export const Summary = ({
             borderRadius='full'
             p={0.5}
             color='gray.800!important'
-            asChild
           >
             <FaInfo />
           </Icon>
         </Link>
       </Tooltip>
       <Text
-        lineHeight='short'
+        lineHeight='moderate'
         pt={1}
         mx={1}
         fontSize='lg'

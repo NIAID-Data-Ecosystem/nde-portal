@@ -40,7 +40,7 @@ export const MetadataBlock = ({
         borderRadius='semi'
       />
 
-      <Box fontSize='xs' mx={1} lineHeight='short'>
+      <Box fontSize='xs' mx={1} lineHeight='moderate'>
         {disabled ? <></> : children}
       </Box>
     </Box>
@@ -53,14 +53,11 @@ export const MetadataLabel = ({
 }: Pick<MetadataBlockProps, 'label'>) => {
   return (
     <Text
-      mx={1}
-      fontSize='13px'
+      fontSize='xs'
       fontWeight='medium'
-      letterSpacing='wide'
       textTransform='uppercase'
       color='inherit'
       whiteSpace={['unset', 'nowrap']}
-      lineHeight='inherit'
       {...props}
     >
       {label}
@@ -97,7 +94,7 @@ export const MetadataTooltip = ({
           borderColor={disabled ? 'gray.500' : 'gray.600'}
           color={disabled ? 'gray.500' : 'gray.600'}
         >
-          <Icon boxSize='0.75rem' p={0.5} asChild>
+          <Icon boxSize='0.75rem' p={0.5}>
             <FaInfo />
           </Icon>
         </Button>

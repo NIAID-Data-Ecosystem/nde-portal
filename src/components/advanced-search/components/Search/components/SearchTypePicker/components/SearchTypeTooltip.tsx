@@ -20,7 +20,6 @@ export const SearchTypeTooltip = ({
   disabled,
 }: SearchTypeTooltipProps) => (
   <Tooltip
-    showArrow
     disabled={disabled || !(description || example)}
     // Examples embed newlines that need preserving.
     contentProps={{ whiteSpace: 'pre-line' }}

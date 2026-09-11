@@ -1,9 +1,10 @@
 import { Box, Flex, Icon, Image, Text } from '@chakra-ui/react';
-import { MetadataItem } from '../helpers';
-import { MetadataWithTag } from './tag';
-import { MetadataButtonGroup, OntologyButton, SearchButton } from './buttons';
 import { FaSquareArrowUpRight } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
+
+import { MetadataItem } from '../helpers';
+import { MetadataButtonGroup, OntologyButton, SearchButton } from './buttons';
+import { MetadataWithTag } from './tag';
 
 interface MetadataContentProps extends Omit<MetadataItem, 'key'> {
   includeSearch?: boolean;
@@ -30,7 +31,7 @@ export const MetadataContent = ({
       flexWrap='wrap'
       w='100%'
     >
-      <Box flex={1} fontSize='xs' lineHeight='short' minW='130px' mx={0.5}>
+      <Box flex={1} fontSize='xs' lineHeight='moderate' minW='130px' mx={0.5}>
         {scientificName && <Text fontWeight='semibold'>{scientificName}</Text>}
         <Flex>
           {img && (
@@ -49,7 +50,7 @@ export const MetadataContent = ({
                 <Text wordBreak='break-word' w='100%'>
                   {name}
                 </Text>
-                <Icon boxSize={2.5} ml={1} color='gray.800' asChild>
+                <Icon boxSize={2.5} ml={1} color='gray.800'>
                   <FaSquareArrowUpRight />
                 </Icon>
               </Link>

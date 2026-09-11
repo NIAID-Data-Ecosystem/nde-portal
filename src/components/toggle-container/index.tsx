@@ -9,6 +9,7 @@ import {
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FaAngleDown } from 'react-icons/fa6';
 
+// [chakra-to-do]: consider replacing with chakra Collapsible component
 // Expandable container.
 export interface ToggleContainerProps extends ButtonProps {
   defaultIsOpen?: boolean;
@@ -70,36 +71,20 @@ export const ToggleContainer: React.FC<ToggleContainerProps> = ({
   const isExpandable = (isOverflowing && !open) || open;
   return (
     <Button
-      bg={open ? 'blackAlpha.50' : 'white'}
+      height='unset'
+      textAlign='left'
+      py={1}
       onClick={() => (open ? onClose() : onOpen())}
       flexWrap={['wrap', 'nowrap']}
       aria-label={ariaLabel}
-      alignItems={alignIcon}
       disabled={!isExpandable}
-      px={[2, 4, 8, 10]}
-      py={[2, 4, 6]}
       transition='all 0.2s ease-in-out'
       whiteSpace='normal'
-      color='text.body'
-      lineHeight='inherit'
-      height='unset'
-      textAlign='unset'
-      borderRadius='none'
-      borderTop={undefined}
-      borderBottom={undefined}
-      borderColor={'transparent'}
-      _hover={{
-        bg: 'blackAlpha.50',
-        transition: 'all 0.2s ease-in-out',
-      }}
       _disabled={{
         opacity: 1,
-        bg: 'white',
-        _hover: { bg: 'white', cursor: 'default' },
-        _active: { bg: 'white' },
-      }}
-      _active={{
-        bg: 'blackAlpha.100',
+        cursor: 'default',
+        _hover: { cursor: 'default' },
+        _active: {},
       }}
       {...props}
     >
@@ -108,6 +93,7 @@ export const ToggleContainer: React.FC<ToggleContainerProps> = ({
         overflow={'hidden'}
         height={open ? undefined : minHeight}
         lineClamp={open ? maxNoOfLines : minNoOfLines}
+        flex={1}
       >
         {children}
       </Flex>
@@ -129,7 +115,6 @@ export const ToggleContainer: React.FC<ToggleContainerProps> = ({
             transform={open ? 'rotate(-180deg)' : undefined}
             transformOrigin='center'
             transition='transform 0.2s'
-            asChild
           >
             <FaAngleDown />
           </Icon>

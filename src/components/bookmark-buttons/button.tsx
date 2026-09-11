@@ -1,4 +1,4 @@
-import { Button, ButtonProps, Icon } from '@chakra-ui/react';
+import { Button, ButtonProps } from '@chakra-ui/react';
 import { FaBookmark, FaRegBookmark } from 'react-icons/fa6';
 
 export const BookmarkButton: React.FC<
@@ -10,19 +10,11 @@ export const BookmarkButton: React.FC<
     <Button
       colorPalette={colorPalette}
       onClick={onClick}
-      variant='ghost'
       size='sm'
+      variant='ghost'
       {...rest}
     >
-      {isFavorited ? (
-        <Icon w='inherit' asChild>
-          <FaBookmark />
-        </Icon>
-      ) : (
-        <Icon w='inherit' asChild>
-          <FaRegBookmark />
-        </Icon>
-      )}
+      {isFavorited ? <FaBookmark /> : <FaRegBookmark />}
       {children || (isFavorited ? 'Saved' : 'Save')}
     </Button>
   );

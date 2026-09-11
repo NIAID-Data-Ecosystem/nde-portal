@@ -16,49 +16,43 @@ export const cardSlotRecipe = defineSlotRecipe({
   slots: cardAnatomy.keys(),
   base: {
     root: {
-      // bg: 'white',
-      // boxShadow: 'base',
-      // borderRadius: 'semi',
-      // overflow: 'hidden',
+      overflow: 'hidden',
     },
-    header: {
-      // pb: [2, 4],
-      // display: 'flex',
-      // flexWrap: 'wrap',
-      // justifyContent: 'space-between',
-      // alignItems: 'center',
-    },
-    body: {
-      // display: 'flex',
-      // flexDirection: 'column',
-      // pt: 0,
-      // '>*': {
-      //   my: 4,
-      // },
-      // _notLast: {
-      //   pb: 0,
-      // },
-      // _last: {
-      //   '>*': {
-      //     _last: { mb: 0 },
-      //   },
-      // },
-    },
+    header: {},
+    body: {},
+
     description: {
       lineHeight: 'short',
-      fontSize: 'md',
+      color: 'text.body',
     },
-    footer: {
-      // display: 'flex',
-    },
+    footer: {},
   },
   variants: {
+    size: {
+      xs: {
+        root: {
+          '--card-padding': 'spacing.2',
+        },
+        title: {
+          textStyle: 'sm',
+        },
+      },
+      xl: {
+        root: {
+          '--card-padding': 'spacing.8',
+        },
+      },
+      '2xl': {
+        root: {
+          '--card-padding': 'spacing.10',
+        },
+      },
+    },
     variant: {
-      elevated: {}, // needed to set default variant, but no styles are applied
       niaid: {
         root: {},
         header: { bg: 'niaid.500', color: 'white' },
-        footer: { bg: 'bg.alt' },
+        footer: {},
       },
       outline: {
         root: {
@@ -68,6 +62,6 @@ export const cardSlotRecipe = defineSlotRecipe({
     },
   },
   defaultVariants: {
-    variant: 'elevated',
+    variant: 'outline',
   },
 });

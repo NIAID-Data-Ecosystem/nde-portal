@@ -1,6 +1,9 @@
 import { FlexProps, Heading, Separator, Text, VStack } from '@chakra-ui/react';
 import React from 'react';
-import { ScrollContainer } from 'src/components/scroll-container';
+import {
+  ScrollContainer,
+  ScrollContainerProps,
+} from 'src/components/scroll-container';
 
 interface RelatedResourceSectionHeaderProps extends FlexProps {
   title: string;
@@ -25,7 +28,7 @@ export const RelatedResourceSectionHeader = ({
   );
 };
 
-interface RelatedResourceSectionWrapperProps extends FlexProps {}
+interface RelatedResourceSectionWrapperProps extends ScrollContainerProps {}
 /**
  * A wrapper for the related resource section, which includes a scroll container
  * and a stack divider.
@@ -36,19 +39,19 @@ export const RelatedResourceSectionWrapper = ({
 }: RelatedResourceSectionWrapperProps) => {
   return (
     <ScrollContainer
-      as={VStack}
       maxHeight={500}
       alignItems='flex-start'
       border='1px solid'
       borderColor='gray.200'
       borderRadius='base'
-      divider={<Separator borderColor='gray.200' />}
       flexDirection='column'
-      spacing={0}
       pr={0}
+      asChild
       {...props}
     >
-      {children}
+      <VStack separator={<Separator />} gap={0}>
+        {children}
+      </VStack>
     </ScrollContainer>
   );
 };

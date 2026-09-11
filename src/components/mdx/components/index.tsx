@@ -64,7 +64,6 @@ const Details = (props: any) => {
             transition='transform 250ms ease'
             transform={!isOpen ? `rotate(-90deg)` : `rotate(0deg)`}
             {...props}
-            asChild
           >
             <FaAngleDown />
           </Icon>
@@ -272,7 +271,7 @@ export const MDXComponents = {
         as='figcaption'
         fontSize='xs'
         opacity={0.8}
-        lineHeight='short'
+        lineHeight='moderate'
         fontStyle='italic'
         mt={1}
         {...props}

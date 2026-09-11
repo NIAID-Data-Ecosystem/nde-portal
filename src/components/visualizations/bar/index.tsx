@@ -1,30 +1,31 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Flex, Text } from '@chakra-ui/react';
-import { useSpring, animated } from '@react-spring/web';
+import { animated, useSpring } from '@react-spring/web';
 import { Annotation, HtmlLabel } from '@visx/annotation';
 import { AxisBottom } from '@visx/axis';
 import { localPoint } from '@visx/event';
+import { GridColumns } from '@visx/grid';
 import { Group } from '@visx/group';
 import { useParentSize } from '@visx/responsive';
 import { scaleBand, scaleLinear, scaleLog } from '@visx/scale';
+import { scaleOrdinal } from '@visx/scale';
 import {
   TooltipWithBounds,
   useTooltip,
   useTooltipInPortal,
 } from '@visx/tooltip';
-import { system } from 'src/theme';
-import {
-  TooltipWrapper,
-  TooltipTitle,
-} from 'src/components/visualizations/tooltip/index';
-import { ChartDatum } from 'src/views/search/components/summary/types';
 import { schemeObservable10 } from 'd3-scale-chromatic';
-import { scaleOrdinal } from '@visx/scale';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  TooltipTitle,
+  TooltipWrapper,
+} from 'src/components/visualizations/tooltip/index';
+import { system } from 'src/theme';
 import { MORE_ID } from 'src/views/search/components/summary/helpers';
-import { BarChartProps, TooltipEvt } from './types';
+import { ChartDatum } from 'src/views/search/components/summary/types';
+
 import { getMaxLabelWidthPx } from '../pie/helpers';
-import { GridColumns } from '@visx/grid';
 import { makeNiceTicks } from './helpers';
+import { BarChartProps, TooltipEvt } from './types';
 
 const barStyles = {
   height: {
@@ -237,6 +238,9 @@ export const BarChart = ({
                     style: {
                       fontFamily: system.token('fonts.body'),
                       fontSize: system.token('fontSizes.2xs'),
+                      style: {
+                        fontSize: system.token('fontSizes.2xs'),
+                      },
                       fontWeight: system.token('fontWeights.semibold'),
                       fill: system.token('colors.text.heading'),
                       textAnchor: 'middle',

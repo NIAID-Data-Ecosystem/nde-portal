@@ -11,6 +11,13 @@ interface PopoverListItemProps {
   isChecked: boolean;
   /** When true the item is always checked and cannot be reordered. */
   isRequired?: boolean;
+  /**
+   * When true, the item is only restored as a fallback when the visible
+   * set would otherwise be empty (e.g., after "Clear All"). Unlike
+   * `isRequired`, the checkbox/drag stay fully enabled: this only adds a
+   * "(shown by default)" label so users understand why it reappears.
+   */
+  isFallback?: boolean;
   /** Whether to show the drag handle and up/down arrows. */
   enableOrdering?: boolean;
   /** Whether a search is currently active (disables drag while searching). */
@@ -29,6 +36,7 @@ export const PopoverListItem = ({
   item,
   isChecked,
   isRequired = false,
+  isFallback = false,
   enableOrdering = false,
   isSearching = false,
   isFirst = false,
@@ -81,7 +89,6 @@ export const PopoverListItem = ({
       {enableOrdering && (
         <Tooltip
           content={dragTooltip}
-          showArrow
           openDelay={400}
           positioning={{
             placement: 'left',
@@ -96,7 +103,7 @@ export const PopoverListItem = ({
             px={0.5}
             flexShrink={0}
           >
-            <Icon boxSize={3} asChild>
+            <Icon boxSize={3}>
               <FaGripVertical />
             </Icon>
           </Flex>
@@ -106,53 +113,65 @@ export const PopoverListItem = ({
       <Checkbox.Root
         value={item.id}
         disabled={isRequired}
+        checked={isChecked}
         onCheckedChange={e => onCheck(item.id, !!e.checked)}
         flex={1}
         minW={0}
-        checked={isChecked}
+        size='sm'
+        variant='solid'
+        colorPalette='blue'
       >
         <Checkbox.HiddenInput />
         <Checkbox.Control>
           <Checkbox.Indicator />
         </Checkbox.Control>
         <Checkbox.Label>
-          <Text ml={1} fontSize='xs' lineClamp={1} title={item.title}>
+          <Text
+            ml={1}
+            fontSize='xs'
+            lineClamp={1}
+            title={isFallback ? `${item.title} (shown by default)` : item.title}
+          >
             {item.title}
+            {isFallback && (
+              <Text as='span' color='gray.600' fontWeight='normal'>
+                {' '}
+                (shown by default)
+              </Text>
+            )}
           </Text>
         </Checkbox.Label>
       </Checkbox.Root>
       {/* Up/down buttons, which is rendered only when ordering is enabled and not searching */}
       {enableOrdering && !isSearching && (
         <Flex
+          py={0.5}
           gap={0.5}
           flexShrink={0}
+          alignItems='center'
           opacity={0}
-          _groupHover={{ opacity: isRequired ? 0 : 1 }}
+          _hover={{ opacity: isRequired ? 0 : 1 }}
           transition='opacity 0.15s'
         >
           <IconButton
             aria-label={`Move ${item.title} up`}
-            size='xs'
+            size='2xs'
             variant='ghost'
-            colorPalette='gray'
+            colorPalette='blue'
             disabled={isRequired || isFirst}
             onClick={() => onMoveUp?.(item.id)}
           >
-            <Icon asChild>
-              <FaAngleUp />
-            </Icon>
+            <FaAngleUp />
           </IconButton>
           <IconButton
             aria-label={`Move ${item.title} down`}
-            size='xs'
+            size='2xs'
             variant='ghost'
-            colorPalette='gray'
+            colorPalette='blue'
             disabled={isRequired || isLast}
             onClick={() => onMoveDown?.(item.id)}
           >
-            <Icon asChild>
-              <FaAngleDown />
-            </Icon>
+            <FaAngleDown />
           </IconButton>
         </Flex>
       )}

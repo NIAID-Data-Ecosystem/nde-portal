@@ -1,17 +1,18 @@
-import React, { useCallback, useMemo } from 'react';
 import { Box, Flex, Text } from '@chakra-ui/react';
-import { system } from 'src/theme';
+import { AxisBottom } from '@visx/axis';
 import { Group } from '@visx/group';
+import { useParentSize } from '@visx/responsive';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { Bar } from '@visx/shape';
-import { AxisBottom } from '@visx/axis';
-import { useTooltip, useTooltipInPortal, defaultStyles } from '@visx/tooltip';
+import { defaultStyles, useTooltip, useTooltipInPortal } from '@visx/tooltip';
+import React, { useCallback, useMemo } from 'react';
+import { system } from 'src/theme';
 import { formatNumber } from 'src/utils/helpers';
+
+import { FilterTermType } from '../../../types';
 import { addMissingYears } from '../helpers';
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
-import { FilterTermType } from '../../../types';
 import { DateBrush } from './date-brush';
-import { useParentSize } from '@visx/responsive';
 
 interface HistogramProps {
   updatedData: FilterTermType[];
@@ -410,6 +411,9 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
                       tickLabelProps={() => ({
                         fill: system.token('colors.gray.600'),
                         fontSize: 13,
+                        style: {
+                          fontSize: 13,
+                        },
                         textAnchor: 'middle',
                       })}
                     />

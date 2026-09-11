@@ -1,4 +1,4 @@
-import { Box, Text, List } from '@chakra-ui/react';
+import { Box, List, Text } from '@chakra-ui/react';
 import Empty from 'src/components/empty';
 import { Link } from 'src/components/link';
 import { RESERVED_CHARS } from 'src/utils/querystring-helpers';
@@ -16,7 +16,7 @@ export const EmptyState = () => {
         bg='niaid.50'
       >
         <Text fontWeight='medium'>Suggestions:</Text>
-        <List.Root as='ul' listStyleType='disc' gap={1} lineHeight='short'>
+        <List.Root as='ul' listStyleType='disc' gap={1} lineHeight='moderate'>
           <List.Item listStyleType='inherit'>
             Try using more general keywords.
           </List.Item>

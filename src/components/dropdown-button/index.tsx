@@ -78,7 +78,7 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
             _focus={{ boxShadow: 'none' }}
             {...props.iconButtonProps}
           >
-            <Icon asChild>
+            <Icon>
               <FaAngleDown />
             </Icon>
           </IconButton>

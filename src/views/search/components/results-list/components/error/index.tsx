@@ -36,7 +36,7 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
               {!validation.isValid && validation.errors.length > 0
                 ? validation.errors.map(error => (
                     <List.Item key={error.id} listStyleType='inherit'>
-                      <Text lineHeight='short' mt={0.5}>
+                      <Text lineHeight='moderate' mt={0.5}>
                         {error.message}
                       </Text>
                     </List.Item>

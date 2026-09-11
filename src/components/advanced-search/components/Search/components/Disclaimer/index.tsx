@@ -42,7 +42,7 @@ export const Disclaimer = () => {
             _focus={{ boxShadow: 'none' }}
           >
             <Flex mx={1}>
-              <Icon color='inherit' asChild>
+              <Icon color='inherit'>
                 <FaTriangleExclamation />
               </Icon>
             </Flex>

@@ -9,7 +9,8 @@ import {
   DiseaseCollectionApiResponse,
 } from 'src/views/diseases/types';
 import { sendGTMEvent } from '@next/third-parties/google';
-import { getTabIdFromTypeLabel } from '../search/components/filters/utils/tab-filter-utils';
+import { getTabIdFromResourceType } from 'src/views/search/config/tabs';
+import { APIResourceType } from 'src/utils/formatting/formatResourceType';
 
 export const normalizeSearchText = (value: string = '') => {
   return value
@@ -56,7 +57,8 @@ export const getSearchResultsRoute = ({
 
   // Get the tab ID from the facet term if applicable
   const tabId =
-    (facet === '@type' && getTabIdFromTypeLabel(term || '')) || undefined;
+    (facet === '@type' && getTabIdFromResourceType(term as APIResourceType)) ||
+    undefined;
 
   return {
     pathname: '/search',

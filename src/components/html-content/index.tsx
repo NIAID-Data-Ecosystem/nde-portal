@@ -48,6 +48,7 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
   content,
   reactMarkdownProps,
   highlightProps,
+  css,
   ...props
 }) => {
   // Highlight search query in content.
@@ -89,6 +90,7 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
           color: 'inherit',
           ...highlightProps?.styles,
         },
+        ...css,
       }}
       {...props}
     >

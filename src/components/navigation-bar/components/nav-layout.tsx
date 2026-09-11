@@ -68,11 +68,11 @@ const Toggle: React.FC<{
       size='md'
     >
       {isOpen ? (
-        <Icon w={5} h={5} asChild>
+        <Icon w={5} h={5}>
           <FaXmark />
         </Icon>
       ) : (
-        <Icon w={4} h={4} asChild>
+        <Icon w={4} h={4}>
           <FaBars />
         </Icon>
       )}

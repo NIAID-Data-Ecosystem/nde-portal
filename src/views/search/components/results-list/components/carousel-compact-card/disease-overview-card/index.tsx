@@ -1,4 +1,4 @@
-import { Skeleton, Text } from '@chakra-ui/react';
+import { Card, Flex, Skeleton, Text } from '@chakra-ui/react';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
@@ -60,10 +60,10 @@ export const DiseaseOverviewCard = ({
       </CompactCard.Header>
       <CompactCard.Body>
         <Skeleton loading={loading} flex='1'>
-          {/* Description (if present) */}
-          {topicEmphasizedDescription || description ? (
-            <>
-              <Text as='div' lineClamp={6} fontSize='xs' lineHeight='short'>
+          <Card.Description as='div'>
+            {/* Description (if present) */}
+            {(topicEmphasizedDescription || description) && (
+              <Flex lineClamp={6}>
                 {topicEmphasizedDescription ? (
                   <ReactMarkdown rehypePlugins={[rehypeRaw, remarkGfm]}>
                     {topicEmphasizedDescription}
@@ -71,16 +71,10 @@ export const DiseaseOverviewCard = ({
                 ) : (
                   <>{description}</>
                 )}
-              </Text>
-              <Text fontSize='xs' lineHeight='short' marginTop={7}>
-                {invitation}
-              </Text>
-            </>
-          ) : (
-            <Text fontSize='xs' lineHeight='short'>
-              {invitation}
-            </Text>
-          )}
+              </Flex>
+            )}
+            <Text marginTop={7}>{invitation}</Text>
+          </Card.Description>
         </Skeleton>
       </CompactCard.Body>
     </CompactCard.Base>

@@ -36,7 +36,7 @@ export const TooltipWrapper = ({
       gap={2}
       alignItems='flex-start'
       fontSize='sm'
-      lineHeight='short'
+      lineHeight='moderate'
       {...props}
     >
       <VStack alignItems='flex-start' gap={0.5}>
@@ -52,7 +52,7 @@ export const TooltipWrapper = ({
             width='100%'
             fontSize='xs'
           >
-            <Icon color='gray.500' mr={0.5} boxSize={3} asChild>
+            <Icon color='gray.500' mr={0.5} boxSize={3}>
               <FaMagnifyingGlass />
             </Icon>{' '}
             {searchHintText}

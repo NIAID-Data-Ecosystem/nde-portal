@@ -22,8 +22,8 @@ glyph in an unchanged line box. That is why the recipes in ../recipes set
 `fontSize` + `lineHeight` explicitly instead of going through `textStyle`.
 */
 export const fontSizes = defineTokens.fontSizes({
-  xs: { value: '0.875rem' },
-  sm: { value: '0.937rem' },
+  // xs: { value: '0.875rem' },
+  // sm: { value: '0.937rem' },
 });
 
 /*
@@ -34,6 +34,6 @@ taller). The global body style and every Heading size reference
 line-height of 1.5. `short` overrides v3's 1.375 back to the v2 value.
 */
 export const lineHeights = defineTokens.lineHeights({
-  base: { value: 2 },
-  short: { value: 1.5 },
+  // base: { value: 2 },
+  // short: { value: 1.5 },
 });

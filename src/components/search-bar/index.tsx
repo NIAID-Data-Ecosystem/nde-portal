@@ -13,8 +13,9 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { FaClockRotateLeft, FaMagnifyingGlass } from 'react-icons/fa6';
 import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
+import { APIResourceType } from 'src/utils/formatting/formatResourceType';
 import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-string';
-import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
+import { getTabIdFromResourceType } from 'src/views/search/config/tabs';
 import { useLocalStorage, useReadLocalStorage } from 'usehooks-ts';
 
 import { CheckboxMenu, CheckboxMenuProps } from '../checkbox-list';
@@ -75,7 +76,7 @@ const SearchInput = ({
               display={{ base: 'flex', sm: 'none' }}
               alignSelf='flex-start'
             >
-              <Icon asChild>
+              <Icon>
                 <FaMagnifyingGlass />
               </Icon>
             </Button>
@@ -98,7 +99,7 @@ const SearchInput = ({
                   display={{ base: 'none', md: 'flex' }}
                 >
                   <Flex px={2}>
-                    <Icon asChild>
+                    <Icon>
                       <FaClockRotateLeft />
                     </Icon>
                   </Flex>
@@ -175,7 +176,7 @@ const SearchBar = ({
       .filter(item => item.property === '@type')
       ?.map(filter => filter.value);
 
-    const tab = getTabIdFromTypeLabel(filters[0]);
+    const tab = getTabIdFromResourceType(filters[0] as APIResourceType);
 
     router.push({
       pathname: `/search`,
@@ -279,7 +280,7 @@ const SearchBar = ({
                 aria-label='View search history.'
                 onClick={() => setIsOpen(!isOpen)}
               >
-                <Icon asChild>
+                <Icon>
                   <FaClockRotateLeft />
                 </Icon>
               </IconButton>

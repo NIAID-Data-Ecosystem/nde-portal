@@ -51,10 +51,10 @@ export const LoginErrorBanner = () => {
     >
       <HStack gap={4} flex={1} alignItems='center'>
         <HStack flex={1} gap={{ base: 2, sm: 4 }} alignItems='center'>
-          <Icon boxSize={6} fill='error' asChild>
+          <Icon boxSize={6} fill='error'>
             <FaCircleXmark />
           </Icon>
-          <Text fontSize='md' fontWeight='medium' lineHeight='short'>
+          <Text fontSize='md' fontWeight='medium' lineHeight='moderate'>
             {message}
           </Text>
         </HStack>

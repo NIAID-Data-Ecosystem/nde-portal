@@ -55,7 +55,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   const [showInput, setShowInput] = useState(false);
 
   const startElement = (
-    <Icon color='text.placeholder' boxSize={4} asChild>
+    <Icon color='text.placeholder' boxSize={4}>
       <FaMagnifyingGlass />
     </Icon>
   );
@@ -63,7 +63,11 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   const endElement = (onClose || handleSubmit) && (
     <Flex py={1} alignItems='center' gap={1} height='100%'>
       {onClose && props.value && (
-        <CloseButton onClick={onClose} colorPalette='primary' height='100%' />
+        <CloseButton
+          onClick={onClose}
+          colorPalette={colorPalette}
+          height='100%'
+        />
       )}
       {handleSubmit && (
         <Button

@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { SelectAndSortPopover } from 'src/components/select-and-order-popover';
+
 import { FilterConfig } from '../../types';
 
 const CUSTOM_VISIBLE_FILTERS_STORAGE_KEY = 'search-visible-filters';

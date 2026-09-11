@@ -37,7 +37,7 @@ export const DropdownListItem = React.memo(
           onClick: () => handleSubmit(),
         })}
       >
-        <Icon mr={2} mt={1.5} color='primary.400' boxSize={3} asChild>
+        <Icon mr={2} mt={1.5} color='primary.400' boxSize={3}>
           <FaMagnifyingGlass />
         </Icon>
         <Box>
@@ -58,7 +58,7 @@ export const DropdownListItem = React.memo(
             color='text.body'
             fontSize='sm'
             fontWeight='normal'
-            lineHeight='short'
+            lineHeight='moderate'
             textAlign='left'
             wordBreak='break-word'
           >

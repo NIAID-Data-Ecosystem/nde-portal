@@ -2,15 +2,19 @@ import {
   Box,
   Heading,
   HeadingProps,
-  Separator,
   Skeleton,
   SkeletonProps,
   Stack,
+  Text,
 } from '@chakra-ui/react';
 import React from 'react';
-import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
-import { HasAPI } from 'src/components/badges/components/HasAPI';
-import { HasDownload } from 'src/components/badges/components/HasDownload';
+import {
+  AccessibleForFree,
+  ConditionsOfAccess,
+  HasAPI,
+  HasDownload,
+} from 'src/components/badges';
+import { Link, LinkProps } from 'src/components/link';
 import { getMetadataDescription } from 'src/components/metadata/helpers';
 import { FormattedResource } from 'src/utils/api/types';
 
@@ -20,25 +24,28 @@ import { DataAccess } from './components/data-access';
 import { License } from './components/license';
 import { DataUsage } from './components/usage';
 
+export const LinkToSourcePage = ({
+  children,
+  href,
+  loading,
+}: WrapperProps & { href: LinkProps['href'] }) => {
+  return (
+    <Wrapper loading={loading}>
+      <Link href={href}>
+        <Text>{children}</Text>
+      </Link>
+    </Wrapper>
+  );
+};
+
 interface ExternalProps extends Omit<WrapperProps, 'children'> {
   data?: FormattedResource;
 }
-
-export const ExternalAccess = ({
-  data,
-  loading,
-  hasDivider = true,
-  ...props
-}: ExternalProps) => {
+export const ExternalAccess = ({ data, loading, ...props }: ExternalProps) => {
   return (
     <>
       {/* Source + data access info. */}
-      <Wrapper
-        loading={loading}
-        label='Resource Access'
-        hasDivider={hasDivider}
-        {...props}
-      >
+      <Wrapper loading={loading} label='Resource Access' {...props}>
         {(data?.isAccessibleForFree === true ||
           data?.isAccessibleForFree === false ||
           data?.conditionsOfAccess) && (
@@ -69,6 +76,7 @@ export const ExternalAccess = ({
           url={data?.url}
           recordType={data?.['@type']}
           creativeWorkStatus={data?.creativeWorkStatus}
+          submittingDataUrl={data?.publishingPrinciples}
         />
       </Wrapper>
     </>
@@ -135,7 +143,6 @@ interface WrapperProps extends SkeletonProps {
   loading: boolean;
   children: React.ReactNode;
   headingProps?: HeadingProps;
-  hasDivider?: boolean;
 }
 
 export const Wrapper = ({
@@ -143,11 +150,9 @@ export const Wrapper = ({
   loading,
   children,
   headingProps,
-  hasDivider = true,
   ...props
 }: WrapperProps) => (
   <Skeleton loading={!!loading} fontSize='xs' flex={1} {...props}>
-    {hasDivider && <Separator borderColor='gray.600' />}
     {label && (
       <Heading
         as='h2'
@@ -166,7 +171,7 @@ export const Wrapper = ({
       p={{ base: 4, md: 6 }}
       pt={{ base: 2, md: label ? 0 : 6 }}
       gap={{ base: 2, md: 4 }}
-      lineHeight='short'
+      lineHeight='moderate'
     >
       {children}
     </Stack>

@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen } from 'src/__tests__/utils/render';
+
 import { DateBrush } from '../../../../components/date-filter/components/date-brush';
 
 const useDateRangeContext = jest.fn();

@@ -33,7 +33,7 @@ export const OptionItem: React.FC<OptionProps> = ({
       <Heading
         size='xs'
         fontWeight='medium'
-        lineHeight='short'
+        lineHeight='moderate'
         textTransform='capitalize'
       >
         {name}

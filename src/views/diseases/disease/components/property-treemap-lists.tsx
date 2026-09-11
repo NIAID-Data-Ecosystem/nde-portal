@@ -136,7 +136,7 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
           flexDirection='column'
           px={{ base: 0, md: 4 }}
         >
-          <Text fontWeight='medium' lineHeight='short'>
+          <Text fontWeight='medium' lineHeight='moderate'>
             Select Chart Type
           </Text>
           <RadioGroup.Root
@@ -202,10 +202,13 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
                 maxWidth={{ base: 'unset', lg: '500px' }}
               >
                 <InfoLabel
-                  title={facet.label}
-                  tooltipText={facet.tooltip}
-                  textProps={textProps}
-                />
+                  tooltipProps={{
+                    content: facet.tooltip,
+                  }}
+                  {...textProps}
+                >
+                  {facet.label}
+                </InfoLabel>
 
                 {listView ? (
                   <BrushableListChart {...props} />

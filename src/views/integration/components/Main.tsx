@@ -181,7 +181,7 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
                                     flexWrap='wrap'
                                   >
                                     <Circle bg='whiteAlpha.900' p={2} m={2}>
-                                      <Icon color='warning' boxSize={4} asChild>
+                                      <Icon color='warning' boxSize={4}>
                                         <FaLightbulb />
                                       </Icon>
                                     </Circle>

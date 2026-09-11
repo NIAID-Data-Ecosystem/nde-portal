@@ -10,7 +10,6 @@ import {
   IconProps,
 } from '@chakra-ui/react';
 import { FaExpand, FaXmark } from 'react-icons/fa6';
-
 import Tooltip from 'src/components/tooltip';
 
 interface CardHeaderProps {
@@ -42,20 +41,17 @@ export const VisualizationCardIconButton = ({
   icon: React.ReactElement<IconProps>;
 }) => {
   return (
-    <Tooltip content={tooltipContent} showArrow>
-      <Box>
-        <IconButton
-          aria-label={ariaLabel}
-          onClick={onClick}
-          variant='ghost'
-          cursor='pointer'
-          colorPalette='gray'
-          boxSize={5}
-          p={0.5}
-        >
-          {icon}
-        </IconButton>
-      </Box>
+    <Tooltip content={tooltipContent}>
+      <IconButton
+        aria-label={ariaLabel}
+        onClick={onClick}
+        variant='ghost'
+        cursor='pointer'
+        colorPalette='gray'
+        size='xs'
+      >
+        {icon}
+      </IconButton>
     </Tooltip>
   );
 };
@@ -76,7 +72,7 @@ export const CardHeader = ({
             ariaLabel='Expand chart to modal view'
             tooltipContent='Expand chart to modal view.'
             icon={
-              <Icon asChild>
+              <Icon>
                 <FaExpand />
               </Icon>
             }
@@ -88,7 +84,7 @@ export const CardHeader = ({
           ariaLabel='Remove chart from display.'
           tooltipContent='Remove chart from display.'
           icon={
-            <Icon asChild>
+            <Icon>
               <FaXmark />
             </Icon>
           }

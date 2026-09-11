@@ -1,5 +1,5 @@
-import React from 'react';
 import { Button, Flex } from '@chakra-ui/react';
+import React from 'react';
 
 interface PopoverSelectAllProps {
   allSelected: boolean;
@@ -21,7 +21,13 @@ export const PopoverSelectAll = ({
   clearAllLabel = 'Clear All',
 }: PopoverSelectAllProps) => (
   <Flex justifyContent='flex-end' mt={1}>
-    <Button size='xs' variant='plain' colorPalette='black' onClick={onToggle}>
+    <Button
+      size='xs'
+      variant='plain'
+      underline
+      colorPalette='black'
+      onClick={onToggle}
+    >
       {allSelected ? clearAllLabel : `${selectAllLabel} (${totalCount})`}
     </Button>
   </Flex>

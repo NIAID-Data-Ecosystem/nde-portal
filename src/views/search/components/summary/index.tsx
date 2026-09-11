@@ -1,4 +1,11 @@
-import { Accordion, Flex, Icon, SimpleGrid, Text } from '@chakra-ui/react';
+import {
+  Accordion,
+  Flex,
+  Icon,
+  SimpleGrid,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
 import { FaMinus, FaPlus } from 'react-icons/fa6';
 import { InfoLabel } from 'src/components/info-label';
@@ -75,40 +82,41 @@ const SummaryGrid = (props: SummaryGridProps) => {
               {({ expanded }) => (
                 <>
                   <h2>
-                    <Accordion.ItemTrigger
-                      px={0}
-                      _hover={{ bg: 'transparent' }}
-                    >
-                      <Flex
-                        flexDirection='column'
+                    <Accordion.ItemTrigger cursor='pointer'>
+                      <VStack
                         width='100%'
                         alignItems='flex-start'
                         px={1}
+                        gap={1}
                       >
                         <InfoLabel
-                          title='Visual Summary'
-                          tooltipText={
-                            <Flex direction='column' gap={2}>
-                              <Text>
-                                A visual summary of your search results.
-                                Interact with the charts and/or the filters list
-                                on the left to filter your results.
-                              </Text>
-                              <Text>
-                                The visual summary charts are based on the{' '}
-                                <Text as='span' fontWeight='bold'>
-                                  top 100 facet values
-                                </Text>{' '}
-                                (e.g., sources, pathogen species) in your search
-                                and may not reflect the full distribution of
-                                your search results.
-                              </Text>
-                            </Flex>
-                          }
-                          textProps={{ fontSize: 'sm', fontWeight: 'semibold' }}
-                        />
+                          tooltipProps={{
+                            content: (
+                              <Flex direction='column' gap={2}>
+                                <Text>
+                                  A visual summary of your search results.
+                                  Interact with the charts and/or the filters
+                                  list on the left to filter your results.
+                                </Text>
+                                <Text>
+                                  The visual summary charts are based on the{' '}
+                                  <Text as='span' fontWeight='bold'>
+                                    top 100 facet values
+                                  </Text>{' '}
+                                  (e.g., sources, pathogen species) in your
+                                  search and may not reflect the full
+                                  distribution of your search results.
+                                </Text>
+                              </Flex>
+                            ),
+                          }}
+                          fontSize='sm'
+                          fontWeight='semibold'
+                        >
+                          Visual Summary
+                        </InfoLabel>
                         <FiltersDisclaimer />
-                      </Flex>
+                      </VStack>
                       <Icon
                         as={expanded ? FaMinus : FaPlus}
                         fontSize='xs'

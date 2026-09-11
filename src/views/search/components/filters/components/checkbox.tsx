@@ -1,14 +1,18 @@
-import React, { useCallback } from 'react';
 import {
   Checkbox as ChakraCheckbox,
   Skeleton,
+  Stack,
   Tag,
   Text,
 } from '@chakra-ui/react';
 import { sendGTMEvent } from '@next/third-parties/google';
+import React, { useCallback } from 'react';
 import Tooltip from 'src/components/tooltip';
 import { SHOW_FILTER_SPECIFIED_UNSPECIFIED_LABELS } from 'src/utils/feature-flags';
+
 import { FilterItem } from '../types';
+
+// [chakra-to-do]: consider: Virtualized listbox component https://chakra-ui.com/docs/components/listbox#virtualized
 
 // Memoized Checkbox component to prevent unnecessary re-renders
 interface FilterCheckboxProps extends FilterItem {
@@ -109,6 +113,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
         });
       }
     }, []);
+    const tooltipText = getTooltipLabel(term, filterName);
 
     // Display the header label for the group
     if (isHeader) {
@@ -142,30 +147,23 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
         }}
         css={{
           '& .chakra-checkbox__control': {
-            mt: 1, // to keep checkbox in line with top of text for options with multiple lines
-          },
-
-          '& .chakra-checkbox__label': {
-            display: 'flex',
-            alignItems: 'center',
-            flex: 1,
-            opacity: count ? 1 : 0.8,
+            mt: 0.5, // to keep checkbox in line with top of text for options with multiple lines
           },
         }}
       >
         <ChakraCheckbox.HiddenInput />
         <ChakraCheckbox.Control />
         {/* Loading skeleton only on load  */}
-        <ChakraCheckbox.Label>
+        <ChakraCheckbox.Label flex={1}>
           <Skeleton
             loading={!(!loading && !isUpdating)}
             display='flex'
             alignItems='center'
             flex={1}
           >
-            <Tooltip content={getTooltipLabel(term, filterName)}>
-              <Text
-                as='span'
+            <Tooltip content={tooltipText} disabled={!tooltipText}>
+              <Stack
+                gap={0.5}
                 flex={1}
                 wordBreak='break-word'
                 color='text.heading'
@@ -177,21 +175,13 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
                 fontWeight={subLabel ? 'semibold' : 'normal'}
               >
                 {label}
+
                 {subLabel && (
-                  <Text
-                    as='span'
-                    flex={1}
-                    wordBreak='break-word'
-                    color='text.heading'
-                    fontSize='xs'
-                    lineHeight='short'
-                    fontWeight='normal'
-                    mr={0.5}
-                  >
+                  <Text as='span' color='fg.muted' mr={0.5}>
                     {subLabel}
                   </Text>
                 )}
-              </Text>
+              </Stack>
             </Tooltip>
 
             {/* Display the count of the filter term */}
@@ -202,8 +192,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
                 variant='subtle'
                 size='sm'
                 colorPalette={colorPalette}
-                borderRadius='full'
-                alignSelf='flex-start'
+                rounded='full'
               >
                 {count?.toLocaleString('en-US')}
               </Tag.Root>

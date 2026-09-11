@@ -412,7 +412,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                   <Card.Root>
                     <Card.Body p={0} px={4} py={1}>
                       <Text
-                        lineHeight='short'
+                        lineHeight='moderate'
                         color='gray.800'
                         fontWeight='medium'
                       >
@@ -428,7 +428,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                     <Card.Root>
                       <Card.Body px={4} py={1}>
                         <Text
-                          lineHeight='short'
+                          lineHeight='moderate'
                           color='gray.800'
                           fontWeight='medium'
                         >

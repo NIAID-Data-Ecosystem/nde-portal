@@ -429,10 +429,12 @@ test.describe('a11y: DataCollection resource — populated', () => {
     ).toBeVisible();
     await expect(page.getByText(DESCRIPTION_SNIPPET).first()).toBeVisible();
 
-    // Generation-process card, collapsed at rest.
+    // Generation-process card, collapsed at rest. Its toggle is labelled just
+    // "Show"/"Hide", so match exactly — a loose /show/i also picks up the six
+    // `show more details about …` collapsible-Section accordion buttons.
     await expect(page.getByText(ACTION_NAME).first()).toBeVisible();
     await expect(
-      page.getByRole('button', { name: /show "how to"/i }),
+      page.getByRole('button', { name: 'Show', exact: true }),
     ).toBeVisible();
 
     // `AboutResource` blocks above the overview.
@@ -484,12 +486,14 @@ test.describe('a11y: DataCollection resource — action process details', () => 
     await gotoDataCollection(page);
 
     // Expand the action's details, then wait for the panel's own accessible
-    // proof — the button flips to "Hide details" and the "Steps" block mounts —
-    // before scanning, so we scan the expanded DOM and not the frame before it.
-    await page.getByRole('button', { name: /show "how to"/i }).click();
+    // proof — the toggle flips from "Show" to "Hide" — before scanning, so we
+    // scan the expanded DOM and not the frame before it. Both names are matched
+    // exactly: the collapsible Sections expose `show more details about …`
+    // buttons that a loose /show/i would also resolve to.
+    await page.getByRole('button', { name: 'Show', exact: true }).click();
 
     await expect(
-      page.getByRole('button', { name: /hide "how to"/i }),
+      page.getByRole('button', { name: 'Hide', exact: true }),
     ).toBeVisible();
 
     await runAxeScans(page, testInfo, 'action-process-expanded', {

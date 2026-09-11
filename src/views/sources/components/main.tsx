@@ -24,12 +24,13 @@ import {
 import { SectionHeader } from 'src/components/table-of-contents/layouts/section-header';
 import { SectionSearch } from 'src/components/table-of-contents/layouts/section-search';
 import { TagWithUrl } from 'src/components/tag-with-url';
-import type { SourceResponse } from 'src/pages/sources';
+import type { SourceDisplayItem } from 'src/pages/sources';
 import { formatDate } from 'src/utils/api/helpers';
+import { USE_MERGED_SOURCES_AND_CATALOGS } from 'src/utils/feature-flags';
 import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-string';
 
 interface Main {
-  data?: SourceResponse[];
+  data?: SourceDisplayItem[];
   loading: boolean;
   metadata?: {
     version: string;
@@ -76,7 +77,7 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
             <Flex alignItems='center'>
               <Text
                 fontSize='xs'
-                lineHeight='short'
+                lineHeight='moderate'
                 fontWeight='semibold'
                 color='text.body'
               >
@@ -96,7 +97,7 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
           </SkeletonText>
           <SkeletonText loading={loading} noOfLines={1} height={5}>
             {metadata?.date && (
-              <Text fontSize='xs' lineHeight='short' fontWeight='semibold'>
+              <Text fontSize='xs' lineHeight='moderate' fontWeight='semibold'>
                 Data last harvested:
                 <Text as='span' fontWeight='normal'>
                   {' '}
@@ -116,20 +117,24 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
         />
       </Flex>
       <StyledCardStack>
-        {sources.map((sourceObj: SourceResponse, index: number) => {
-          // used for metadata compatibility badge
-          const parentCollectionInfo = sourceObj?.sourceInfo?.parentCollection
-            ?.id
+        {sources.map((sourceObj: SourceDisplayItem, index: number) => {
+          // Metadata compatibility badge. `Source` is flattened, so
+          // `parentCollection`/`metadata_completeness` sit at the top level.
+          // The parent is matched by `identifier` (the hook's `key` is a
+          // composite string, not the raw source id `parentCollection.id`
+          // references). Resource catalogs have neither field.
+          const parentCollectionInfo = sourceObj?.parentCollection?.id
             ? sources.find(
-                source =>
-                  source.key === sourceObj?.sourceInfo?.parentCollection?.id,
+                source => source.identifier === sourceObj?.parentCollection?.id,
               )
             : null;
 
           const metadataCompatibilityData =
-            sourceObj?.sourceInfo?.metadata_completeness ||
-            parentCollectionInfo?.sourceInfo.metadata_completeness ||
+            sourceObj?.metadata_completeness ||
+            parentCollectionInfo?.metadata_completeness ||
             null;
+
+          const numberOfRecords = sourceObj.numberOfRecords ?? 0;
 
           return (
             <StyledCard
@@ -138,8 +143,8 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
               loading={loading}
               title={sourceObj.name}
               subtitle={
-                sourceObj.numberOfRecords > 0
-                  ? `${sourceObj.numberOfRecords.toLocaleString()} resources
+                numberOfRecords > 0
+                  ? `${numberOfRecords.toLocaleString()} resources
                         available`
                   : ''
               }
@@ -153,39 +158,44 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
                 </>
               }
               renderCTA={() =>
-                sourceObj.id ? (
+                sourceObj.searchURL ? (
                   <Flex
-                    justifyContent='space-between'
+                    justifyContent={{ base: 'center', md: 'space-between' }}
                     flexWrap='wrap'
                     gap={2}
                     w='100%'
                   >
-                    <Flex flex={1}>
-                      {sourceObj.resourceCatalogUrl && (
-                        <Button
-                          asChild
-                          width={{ base: '100%', md: 'unset' }}
-                          maxWidth='500px'
-                          size='sm'
-                          variant='outline'
+                    <Flex
+                      flex={1}
+                      visibility={
+                        USE_MERGED_SOURCES_AND_CATALOGS &&
+                        sourceObj.resourceCatalogIdentifier
+                          ? 'visible'
+                          : 'hidden'
+                      }
+                    >
+                      <Button
+                        size='sm'
+                        variant='outline'
+                        width={{ base: '100%', md: 'unset' }}
+                        maxWidth='500px'
+                        asChild
+                      >
+                        <NextLink
+                          href={{
+                            pathname: '/resources',
+                            query: {
+                              id: sourceObj.resourceCatalogIdentifier,
+                            },
+                          }}
                         >
-                          <NextLink href={sourceObj.resourceCatalogUrl}>
-                            Learn about source
-                          </NextLink>
-                        </Button>
-                      )}
+                          Learn about source
+                        </NextLink>
+                      </Button>
                     </Flex>
                     <StyledCardButton
                       maxWidth='500px'
-                      href={{
-                        pathname: `/search`,
-                        query: {
-                          q: '',
-                          filters: queryFilterObject2String({
-                            'includedInDataCatalog.name': [sourceObj.id],
-                          }),
-                        },
-                      }}
+                      href={sourceObj.searchURL}
                     >
                       See search results
                     </StyledCardButton>
@@ -220,7 +230,7 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
                 {/* Description, with the link to the source's website
                 inlined at the end of the text. */}
                 {sourceObj?.description && (
-                  <Box fontSize='sm' lineHeight='short' color='text.body'>
+                  <Box fontSize='sm' lineHeight='moderate' color='text.body'>
                     <StyledCardDescription>
                       {sourceObj.url
                         ? `${sourceObj.description.trimEnd()} [Visit ${
@@ -259,7 +269,7 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
                         fontWeight='semibold'
                         color='gray.800'
                         textAlign='left'
-                        lineHeight='short'
+                        lineHeight='moderate'
                       >
                         Mapping of {sourceObj.name} Properties to NIAID Data
                         Ecosystem Properties

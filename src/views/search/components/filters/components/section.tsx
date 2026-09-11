@@ -73,7 +73,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                           flex={1}
                           textAlign='left'
                           fontSize='sm'
-                          color='gray.800'
+                          color='gray.600'
                           mr={2}
                           fontWeight='medium'
                         >
@@ -106,12 +106,13 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                 {expanded ? (
                   <Accordion.ItemContent
                     p={0}
+                    py={0}
                     borderLeft='4px solid'
                     borderLeftColor='secondary.200'
                     borderBottom='0.25px solid'
                     borderBottomColor='gray.100'
                   >
-                    <Accordion.ItemBody>{children}</Accordion.ItemBody>
+                    <Accordion.ItemBody py={0}>{children}</Accordion.ItemBody>
                   </Accordion.ItemContent>
                 ) : (
                   <></>

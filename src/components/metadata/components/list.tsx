@@ -1,18 +1,10 @@
-import React from 'react';
 import { List } from '@chakra-ui/react';
-import { FaCircle } from 'react-icons/fa6';
+import React from 'react';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 
 export const MetadataList = ({ children, ...props }: List.RootProps) => {
   return (
-    <List.Root
-      as='ul'
-      ml={0}
-      my={1.5}
-      display='flex'
-      flexDirection='column'
-      {...props}
-    >
+    <List.Root as='ul' listStyleType='disc' gap={2} paddingStart={3} {...props}>
       {children}
     </List.Root>
   );
@@ -26,16 +18,10 @@ export const MetadataListItem = ({
   property: string;
 }) => {
   return (
-    <List.Item mb={3} display='flex' fontSize='xs' lineHeight='short' w='100%'>
-      <List.Indicator
-        m={2}
-        mx={1}
-        boxSize={1}
-        fill={`${getMetadataTheme(property)}.400`}
-        asChild
-      >
-        <FaCircle />
-      </List.Indicator>
+    <List.Item
+      w='100%'
+      _marker={{ color: `${getMetadataTheme(property)}.400` }}
+    >
       {children}
     </List.Item>
   );

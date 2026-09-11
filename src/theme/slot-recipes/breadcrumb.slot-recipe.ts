@@ -7,26 +7,37 @@ export const breadcrumbSlotRecipe = defineSlotRecipe({
   variants: {
     variant: {
       nav: {
-        item: { fontWeight: 'medium' },
-        link: {
-          borderRadius: 'semi',
+        list: {
+          alignItems: 'center',
+          px: 4,
+          py: 2,
+          gap: 0,
+        },
+        item: {
           color: 'niaid.600',
-          overflow: 'hidden',
-          px: 2,
+          fontWeight: 'semibold',
+          lineHeight: 'shorter',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
+          '& > *': {
+            px: 2,
+            py: 1,
+            _icon: { color: 'niaid.500', boxSize: 4, mb: 0.5 },
+          },
+        },
+        link: {
+          borderRadius: 'semi',
+
+          lineHeight: 'inherit',
           _hover: {
             bg: 'blue.50',
             color: 'link',
             textDecoration: 'underline',
           },
-          _icon: { color: 'niaid.500' },
         },
         currentLink: {
-          color: 'gray.800',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
+          opacity: 0.8,
+          lineHeight: 'inherit',
         },
       },
     },

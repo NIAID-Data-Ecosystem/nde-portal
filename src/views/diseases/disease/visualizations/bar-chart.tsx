@@ -1,14 +1,12 @@
-import React, { useMemo, useState } from 'react';
-import NextLink from 'next/link';
 import {
-  Text as ChakraText,
   Checkbox,
   Flex,
   HStack,
+  Text as ChakraText,
   VisuallyHidden,
   VStack,
 } from '@chakra-ui/react';
-import { useSpring, animated } from '@react-spring/web';
+import { animated, useSpring } from '@react-spring/web';
 import { Annotation, HtmlLabel } from '@visx/annotation';
 import { localPoint } from '@visx/event';
 import { Group } from '@visx/group';
@@ -21,18 +19,21 @@ import {
   useTooltip,
   useTooltipInPortal,
 } from '@visx/tooltip';
-import { UrlObject } from 'url';
+import NextLink from 'next/link';
+import React, { useMemo, useState } from 'react';
 import { InfoLabel } from 'src/components/info-label';
-import { MetadataSource } from 'src/hooks/api/types';
-import { system } from 'src/theme';
-import { FacetTerm } from 'src/utils/api/types';
 import {
   customTooltipStyles,
-  TooltipWrapper,
   TooltipBody,
   TooltipSubtitle,
   TooltipTitle,
+  TooltipWrapper,
 } from 'src/components/visualizations/tooltip/index';
+import { MetadataSource } from 'src/hooks/api/types';
+import { system } from 'src/theme';
+import { FacetTerm } from 'src/utils/api/types';
+import { UrlObject } from 'url';
+
 import { getFillColor } from '../../chart-utils';
 
 export interface SourceFacet {
@@ -197,10 +198,13 @@ export const BarChart = ({
           </Checkbox.Control>
           <Checkbox.Label>
             <InfoLabel
-              title='Apply log scale'
-              tooltipText='Log scale compresses large values, making smaller categories more visible while preserving
-              proportions. Original counts are shown in tooltips.'
-            ></InfoLabel>
+              tooltipProps={{
+                content:
+                  'Log scale compresses large values, making smaller categories more visible while preserving proportions. Original counts are shown in tooltips.',
+              }}
+            >
+              Apply log scale
+            </InfoLabel>
           </Checkbox.Label>
         </Checkbox.Root>
         <Legend id={`${id}-iidpattern-swatch`} />

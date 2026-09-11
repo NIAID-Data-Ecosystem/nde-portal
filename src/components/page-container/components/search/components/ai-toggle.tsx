@@ -131,13 +131,12 @@ export const AIToggle: React.FC<AIToggleProps> = ({
         <Switch.Control>
           <Switch.Thumb />
         </Switch.Control>
-        <Tooltip content={tooltipContent} showArrow interactive>
+        <Tooltip content={tooltipContent} interactive>
           <Switch.Label>
             <HStack gap={1} cursor='help' alignItems='flex-start' my={1}>
               <Text>AI-assisted search</Text>
               <Icon
                 color='text.placeholder'
-                asChild
                 lineHeight='1em'
                 display='inline-block'
               >

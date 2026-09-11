@@ -121,7 +121,7 @@ export const LegendItem = ({
       <HStack
         alignItems='flex-start'
         fontSize='xs'
-        lineHeight='short'
+        lineHeight='moderate'
         justifyContent='flex-start'
         gap={1.5}
         width='100%'

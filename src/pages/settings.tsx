@@ -174,7 +174,7 @@ function SettingToggle({
             px={3}
             py={2}
           >
-            <Text fontSize='sm' color='orange.800' lineHeight='short'>
+            <Text fontSize='sm' color='orange.800' lineHeight='moderate'>
               {alert}
             </Text>
           </Box>

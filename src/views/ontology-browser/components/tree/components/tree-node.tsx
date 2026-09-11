@@ -276,7 +276,7 @@ export const TreeNode = (props: {
             alignItems='flex-start'
             flex={1}
             fontWeight='normal'
-            lineHeight='short'
+            lineHeight='moderate'
             ml={2}
             textAlign='left'
             wordBreak='break-word'
@@ -296,7 +296,7 @@ export const TreeNode = (props: {
                 } OR infectiousAgent.identifier:${node.taxonId})`}
                 fontSize='xs'
               >
-                <Icon mr={1.5} boxSize={3} asChild>
+                <Icon mr={1.5} boxSize={3}>
                   <FaMagnifyingGlass />
                 </Icon>
                 <Text

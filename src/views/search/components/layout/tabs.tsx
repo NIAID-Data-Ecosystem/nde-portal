@@ -11,104 +11,79 @@ interface TabWithCounts extends Omit<TabType, 'types'> {
 }
 
 interface SearchTabsProps extends Omit<Tabs.RootProps, 'children'> {
-  colorPalette?: string;
   tabs: TabWithCounts[];
   renderTabPanels: () => React.ReactNode;
 }
 
 export const SearchTabs = ({
   colorPalette = 'secondary',
-  value,
-  onValueChange,
-  renderTabPanels,
   tabs,
-}: SearchTabsProps) => {
-  return (
-    <Tabs.Root
-      value={value}
-      onValueChange={onValueChange}
-      colorPalette={colorPalette}
-      bg='#fff'
-      lazyMount
-    >
-      {/* Render each tab with its label(s) and count(s) */}
-      <Tabs.List
-        borderTop='1px solid'
-        borderTopColor='gray.100'
-        borderBottom='hidden'
-        bg='bg.alt'
-      >
-        {tabs.map(tab => (
-          <Tabs.Trigger
-            key={tab.id}
-            id={tab.id}
-            value={tab.id}
-            aria-label={tab.types.map(t => t.label).join(', ')}
-            _selected={{
-              color: `${colorPalette}.500`,
-              bg: '#fff',
-            }}
-          >
-            <TabLabels types={tab.types} colorPalette={colorPalette} />
-          </Tabs.Trigger>
-        ))}
-      </Tabs.List>
-      <Tabs.ContentGroup>{renderTabPanels()}</Tabs.ContentGroup>
-    </Tabs.Root>
-  );
+  renderTabPanels,
+  ...props
+}: SearchTabsProps) => (
+  <Tabs.Root
+    colorPalette={colorPalette}
+    lazyMount
+    borderTop='1px solid'
+    borderTopColor='gray.100'
+    size='md'
+    {...props}
+  >
+    <Tabs.List>
+      {tabs.map(tab => (
+        <Tabs.Trigger
+          key={tab.id}
+          id={tab.id}
+          value={tab.id}
+          color='text.body'
+          _selected={{ color: 'colorPalette.solid', bg: 'white' }}
+        >
+          <TabLabel types={tab.types} />
+        </Tabs.Trigger>
+      ))}
+    </Tabs.List>
+    <Tabs.ContentGroup>{renderTabPanels()}</Tabs.ContentGroup>
+  </Tabs.Root>
+);
+
+const isOtherResourceType = (type: string): boolean => {
+  return type === 'ResourceCatalog' || type === 'Disease';
 };
 
-const TabLabels = ({
-  types,
-  colorPalette,
-}: {
-  types: TabWithCounts['types'];
-  colorPalette: string;
-}) => {
-  const datasetType = types.find(type => type.type === 'Dataset');
-  const resourceCatalogType = types.find(
-    type => type.type === 'ResourceCatalog',
-  );
-  const diseaseType = types.find(type => type.type === 'Disease');
+// Each tab is labelled with one or more resource types and their result counts.
+const TabLabel = ({ types }: { types: TabWithCounts['types'] }) => {
+  const dataset = types.find(type => type.type === 'Dataset');
+  const otherResources = types.filter(type => isOtherResourceType(type.type));
 
-  const tagStyles = {
-    borderRadius: 'full',
-    colorPalette,
-    ml: 1.5,
-    my: 1,
-    size: 'sm' as const,
-    variant: 'subtle' as const,
-  };
-  const textStyles = {
-    color: 'inherit',
-    fontSize: 'sm',
-    noOfLines: 1,
-  };
+  // The default tab folds Resource Catalogs and Disease Overviews into a single
+  // "Other Resources" count alongside Datasets; every other tab has one type.
+  const segments =
+    dataset && otherResources.length === 2
+      ? [
+          { label: `${TAB_LABELS.DATASET}s`, count: dataset.count },
+          {
+            label: `and ${TAB_LABELS.OTHER_RESOURCES}`,
+            count: otherResources.reduce(
+              (total, type) => total + type.count,
+              0,
+            ),
+          },
+        ]
+      : [{ label: types[0].label, count: types[0].count }];
 
-  if (datasetType && resourceCatalogType && diseaseType) {
-    const datasetCount = datasetType.count || 0;
-    const resourceCatalogCount = resourceCatalogType.count || 0;
-    const diseaseCount = diseaseType.count || 0;
-    const otherResourcesCount = resourceCatalogCount + diseaseCount;
-
-    return (
-      <Text as='h2' {...textStyles}>
-        {`${TAB_LABELS.DATASET}s`}
-        <Tag.Root {...tagStyles}>{datasetCount.toLocaleString()}</Tag.Root>
-        {` and ${TAB_LABELS.OTHER_RESOURCES} `}
-        <Tag.Root {...tagStyles}>
-          {otherResourcesCount.toLocaleString()}
-        </Tag.Root>
-      </Text>
-    );
-  }
-
-  // Single-type tabs
-  const type = types[0];
   return (
-    <Text as='h2' {...textStyles}>
-      {type.label}
-      <Tag.Root {...tagStyles}>{type.count.toLocaleString()}</Tag.Root>
+    // `color: inherit` lets the trigger's selected color win over the Text
+    // recipe's `text.body`; `lineClamp` keeps long labels on the trigger's
+    // single fixed-height row.
+    <Text as='span' color='inherit' lineClamp={1} textAlign='left'>
+      {segments.map(({ label, count }) => (
+        <React.Fragment key={label}>
+          {label}
+          <Tag.Root mx={1} size='sm' variant='surface' rounded='full'>
+            <Tag.Label>{count.toLocaleString()}</Tag.Label>
+          </Tag.Root>
+        </React.Fragment>
+      ))}
     </Text>
   );
 };

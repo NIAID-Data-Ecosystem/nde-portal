@@ -1,4 +1,4 @@
-import { Box, Button, HStack, Tag } from '@chakra-ui/react';
+import { Box, Button, HStack, Tag, TagRootProps } from '@chakra-ui/react';
 import { isEqual } from 'lodash';
 import React, { useMemo } from 'react';
 import {
@@ -13,7 +13,10 @@ import {
   SelectedFilterType,
   SelectedFilterValueType,
 } from '../../types';
-import { queryFilterObject2String } from '../../utils/query-string';
+import {
+  OR_FILTER_KEY,
+  queryFilterObject2String,
+} from '../../utils/query-string';
 import { generateTags } from './utils';
 
 interface FilterTagsProps {
@@ -36,10 +39,22 @@ export interface TagInfo {
  * Users can remove individual tags or clear all filters at once.
  */
 
-const tagStyles = {
-  colorPalette: 'secondary' as const,
-  size: 'sm' as const,
-  variant: 'solid' as const,
+const FilterTag: React.FC<
+  TagRootProps & {
+    label: string;
+    onRemove?: () => void;
+  }
+> = ({ label, onRemove, ...props }) => {
+  return (
+    <Tag.Root colorPalette='secondary' size='lg' variant='solid' {...props}>
+      <Tag.Label>{label}</Tag.Label>
+      {onRemove && (
+        <Tag.EndElement>
+          <Tag.CloseTrigger aria-label='close' onClick={onRemove} />
+        </Tag.EndElement>
+      )}
+    </Tag.Root>
+  );
 };
 export const FilterTags: React.FC<FilterTagsProps> = React.memo(
   ({ filtersConfig, selectedFilters, handleRouteUpdate, removeAllFilters }) => {
@@ -76,6 +91,12 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
           ...selectedFilters,
           [filterKey]: [],
         };
+      } else if (filterKey === OR_FILTER_KEY) {
+        // A cross-field OR group is a single logical filter — clear it whole.
+        updatedFilters = {
+          ...selectedFilters,
+          [OR_FILTER_KEY]: [],
+        };
       } else {
         // For other filters, remove the specific value(s)
         updatedFilters = {
@@ -111,30 +132,27 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
         <SearchResultsHeading as='h2'>Filtered by: </SearchResultsHeading>
         <HStack flexWrap='wrap' gap={1.5} py={1}>
           {/* Clear all filters button */}
+
           <Button
-            size='xs'
+            size='2xs'
+            fontSize='14px'
             onClick={() => {
               resetPagination();
               removeAllFilters();
             }}
             colorPalette='secondary'
             variant='outline'
-            lineHeight='unset'
-            fontWeight='medium'
           >
             Clear All
           </Button>
 
           {/* Render each tag with close button */}
           {tags.map(({ key, name, value, displayValue, filterKey }) => (
-            <Tag.Root key={key} {...tagStyles}>
-              <Tag.Label>{`${name}: ${displayValue}`}</Tag.Label>
-              <Tag.EndElement>
-                <Tag.CloseTrigger
-                  onClick={() => removeSelectedFilter(filterKey, value)}
-                />
-              </Tag.EndElement>
-            </Tag.Root>
+            <FilterTag
+              key={key}
+              label={`${name}: ${displayValue}`}
+              onRemove={() => removeSelectedFilter(filterKey, value)}
+            />
           ))}
         </HStack>
       </Box>

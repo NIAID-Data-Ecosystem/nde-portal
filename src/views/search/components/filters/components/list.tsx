@@ -1,3 +1,4 @@
+import { Box, CheckboxGroup, Text } from '@chakra-ui/react';
 import React, {
   useCallback,
   useEffect,
@@ -5,13 +6,58 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Box, CheckboxGroup, Text } from '@chakra-ui/react';
 import { VariableSizeList as List } from 'react-window';
-import { useDebounceValue } from 'usehooks-ts';
 import { SearchInput } from 'src/components/search-input';
-import { Checkbox } from './checkbox';
-import { FilterTermType, FilterItem, FilterConfig } from '../types';
 import { SHOW_FILTER_ANY_NO_EXCLUSIVITY } from 'src/utils/feature-flags';
+import { useDebounceValue } from 'usehooks-ts';
+
+import { FilterConfig, FilterItem, FilterTermType } from '../types';
+import { Checkbox } from './checkbox';
+
+// Rows are measured after they mount, so the list starts out assuming every row
+// is this tall.
+const DEFAULT_ROW_SIZE = 40;
+
+// A single measured row. The height of a filter option is not known ahead of
+// time - a term with both a common and a scientific name wraps onto two lines,
+// and any label can re-wrap when the panel changes width - so each row reports
+// its rendered height back to the list.
+const Row = ({
+  children,
+  index,
+  setItemSize,
+  style,
+}: {
+  children: React.ReactNode;
+  index: number;
+  setItemSize: (index: number, size: number) => void;
+  style: React.CSSProperties;
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const measure = () => setItemSize(index, el.clientHeight);
+    measure();
+
+    if (typeof ResizeObserver === 'undefined') return;
+
+    // Keep measuring after mount: a row's height also changes when its loading
+    // skeleton is replaced with the real label, or when the label re-wraps as
+    // the filter panel is resized.
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [index, setItemSize]);
+
+  return (
+    <div className='virtualized-row' style={style}>
+      <div ref={ref}>{children}</div>
+    </div>
+  );
+};
 
 // VirtualizedList component to render the list of filter terms
 const VirtualizedList = React.memo(
@@ -22,49 +68,21 @@ const VirtualizedList = React.memo(
     items: FilterItem[];
     children: (props: FilterItem) => JSX.Element;
   }) => {
-    const DEFAULT_SIZE = useMemo(() => 40, []);
-    const listRef = useRef<any>();
-    const itemRefs = useRef<number[]>(Array(items.length).fill(DEFAULT_SIZE));
+    const listRef = useRef<List>(null);
+    const itemSizes = useRef<number[]>([]);
+
     const setItemSize = useCallback((index: number, size: number) => {
-      listRef?.current?.resetAfterIndex?.(0);
+      // A hidden or not-yet-painted row measures 0; keep the default until it
+      // reports a real height.
+      if (!size || itemSizes.current[index] === size) return;
 
-      itemRefs.current[index] = size;
+      // Record the measurement *before* invalidating the list's cached offsets.
+      // Resetting first makes react-window recalculate against the size this
+      // row had a moment ago, which left taller rows overlapping the row below
+      // them until some later event happened to invalidate the cache again.
+      itemSizes.current[index] = size;
+      listRef.current?.resetAfterIndex?.(index);
     }, []);
-
-    const Row = ({
-      children,
-      index,
-      style,
-    }: {
-      children: React.ReactNode;
-      index: number;
-      style: any;
-    }) => {
-      const ref = useRef<HTMLDivElement>(null);
-
-      // Set the item size in the list for virtualization.
-      const handleRowSize = useCallback(() => {
-        if (ref.current) {
-          setItemSize(index, ref.current.clientHeight);
-        }
-      }, [index]);
-
-      // Set the item size on mount and on resize
-      useEffect(() => {
-        handleRowSize();
-      }, [handleRowSize]);
-
-      useEffect(() => {
-        window.addEventListener('resize', handleRowSize);
-        return () => window.removeEventListener('resize', handleRowSize);
-      }, [handleRowSize]);
-
-      return (
-        <div className='virtualized-row' style={style}>
-          <div ref={ref}>{children}</div>
-        </div>
-      );
-    };
 
     return (
       <Box
@@ -96,13 +114,15 @@ const VirtualizedList = React.memo(
           ref={listRef}
           width='100%'
           height={
-            items.length > 10 ? 400 : Math.max(100, items.length * DEFAULT_SIZE)
+            items.length > 10
+              ? 400
+              : Math.max(100, items.length * DEFAULT_ROW_SIZE)
           }
           itemCount={items.length}
-          itemSize={index => itemRefs.current[index] || DEFAULT_SIZE}
+          itemSize={index => itemSizes.current[index] || DEFAULT_ROW_SIZE}
         >
           {({ index, style }) => (
-            <Row index={index} style={style}>
+            <Row index={index} style={style} setItemSize={setItemSize}>
               {children(items[index])}
             </Row>
           )}

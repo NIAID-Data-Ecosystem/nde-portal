@@ -53,7 +53,7 @@ export const CopyIconButton = ({
         size='sm'
         {...buttonProps}
       >
-        <Icon asChild>
+        <Icon>
           <FaRegCopy />
         </Icon>
         {copied ? copiedText : ''}

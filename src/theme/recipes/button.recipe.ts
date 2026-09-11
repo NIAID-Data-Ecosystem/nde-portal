@@ -16,17 +16,42 @@ export const buttonRecipe = defineRecipe({
       error: { colorPalette: 'red' },
       neutral: { colorPalette: 'gray' },
     },
-
-    size: {
-      sm: {
-        // fontSize: 'sm',
-        // px: 3,
-        // py: 1.5,
+    /*
+    Modifier axis, independent of `variant`. Composes with any variant/status:
+    `<Button variant='ghost' underline>`. NOT named `type` — recipe variant keys
+    are stripped from the DOM by splitVariantProps, so a `type` variant would
+    swallow the native `<button type>` attribute.
+    */
+    underline: {
+      true: {
+        textDecoration: 'underline',
+        _hover: {
+          textDecoration: 'none',
+        },
       },
+    },
+    size: {
+      xs: {
+        textStyle: 'sm',
+        gap: 1.5,
+        _icon: {
+          width: '3.5',
+          height: '3.5',
+        },
+      },
+
+      sm: {
+        _icon: {
+          width: '3.5',
+          height: '3.5',
+        },
+      },
+
       md: {
-        // fontSize: 'md',
-        // px: 8,
-        // py: 4,
+        _icon: {
+          width: '4',
+          height: '4',
+        },
       },
     },
     variant: {
@@ -42,48 +67,24 @@ export const buttonRecipe = defineRecipe({
         color: 'colorPalette.outlineFg',
         borderColor: 'colorPalette.outlineBorder',
       },
-      // outline: {
-      //   borderColor: 'colorPalette.outlineBorder',
-      //   color: 'colorPalette.outlineFg',
-      //   bg: 'white',
-      //   '&:hover, &:active': {
-      //     borderColor: 'colorPalette.outlineHoverBg',
-      //     bg: 'colorPalette.outlineHoverBg',
-      //     color: 'white',
-      //     '&:disabled': {
-      //       bg: 'white',
-      //       color: 'colorPalette.outlineFg',
-      //       borderColor: 'colorPalette.outlineBorder',
-      //     },
-      //   },
-      //   _visited: {
-      //     color: 'colorPalette.outlineFg',
-      //     '&:hover': {
-      //       color: 'white',
-      //     },
-      //   },
-      // },
-      // ghost: {
-      //   color: 'colorPalette.ghostFg',
-      //   '&:hover': {
-      //     bg: 'colorPalette.ghostHoverBg',
-      //   },
-      //   _visited: {
-      //     color: 'colorPalette.ghostFg',
-      //   },
-      // },
-      link: {
-        color: 'colorPalette.ghostFg',
-        textDecoration: 'underline',
-        '&:hover': {
-          textDecoration: 'none',
-        },
+
+      /*
+      Explicit border reset so `variant` can be used responsively, e.g.
+      `variant={{ base: 'outline', md: 'ghost' }}`. A variant only overrides
+      properties it names — without this, `outline`'s border from the base
+      breakpoint stays in the cascade at every width.
+      */
+      ghost: {
+        borderWidth: '0',
       },
+
       unstyled: {
+        px: 0,
         height: 'unset',
         borderRadius: 'none',
         background: 'transparent',
-        color: 'inherit',
+        color: 'colorPalette.outlineFg',
+
         '&:hover': {
           background: 'transparent',
           color: 'inherit',
@@ -93,7 +94,7 @@ export const buttonRecipe = defineRecipe({
   },
 
   defaultVariants: {
-    size: 'md',
     variant: 'solid',
+    size: 'md',
   },
 });

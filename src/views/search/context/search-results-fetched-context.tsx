@@ -1,5 +1,5 @@
-import React, { createContext, useCallback, useContext, useState } from 'react';
 import { useRouter } from 'next/router';
+import React, { createContext, useCallback, useContext, useState } from 'react';
 
 type SearchFiltersGatePhase = 'waiting_for_results' | 'filters_enabled';
 

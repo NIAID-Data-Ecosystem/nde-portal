@@ -4,7 +4,6 @@ import {
   ButtonGroupProps,
   Icon,
   IconButtonProps,
-  Text,
   VisuallyHidden,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
@@ -17,7 +16,7 @@ export const MetadataButtonGroup = ({
   ...props
 }: ButtonGroupProps) => {
   return (
-    <ButtonGroup size='xs' attached variant='outline' {...props}>
+    <ButtonGroup size='2xs' attached variant='outline' {...props}>
       {children}
     </ButtonGroup>
   );
@@ -40,40 +39,24 @@ export const OntologyButton = ({
 
   return (
     <Tooltip content={ariaLabel || 'See ontology information.'}>
-      {label || inDefinedTermSet ? (
-        <Button
-          variant='outline'
-          colorPalette='gray'
-          fontSize='12px'
-          fontWeight='medium'
-          color='gray.800'
-          asChild
-        >
-          <Link href={value} target='_blank'>
-            <Icon asChild>
-              <FaSitemap />
-            </Icon>
-            <Text pt={0.25}>{label || inDefinedTermSet} </Text>
-          </Link>
-        </Button>
-      ) : (
-        <Button
-          variant='outline'
-          colorPalette='gray'
-          fontSize='12px'
-          px={0}
-          asChild
-        >
-          <a href={value} target='_blank'>
+      <Button
+        variant='outline'
+        colorPalette='gray'
+        fontWeight='medium'
+        color='gray.800'
+        asChild
+      >
+        <Link href={value} target='_blank' variant='unstyled'>
+          {label || inDefinedTermSet ? (
+            label || inDefinedTermSet
+          ) : (
             <VisuallyHidden>
               {ariaLabel || 'View the ontology for this value.'}
             </VisuallyHidden>
-            <Icon asChild>
-              <FaSitemap />
-            </Icon>
-          </a>
-        </Button>
-      )}
+          )}
+          <FaSitemap />
+        </Link>
+      </Button>
     </Tooltip>
   );
 };
@@ -116,7 +99,7 @@ export const SearchButton = ({
           <VisuallyHidden>
             {ariaLabel || `Search the NDE for this property value`}
           </VisuallyHidden>
-          <Icon fontSize='12px' asChild>
+          <Icon fontSize='xs'>
             <FaMagnifyingGlass />
           </Icon>
         </a>
@@ -124,49 +107,3 @@ export const SearchButton = ({
     </Tooltip>
   );
 };
-
-// FilterByButton is used to filter the current results by a specific property and value
-// export const FilterByButton = ({
-//   property,
-//   value,
-//   children,
-// }: {
-//   property: string;
-//   value: SelectedFilterValueType;
-//   children: React.ReactNode;
-// }) => {
-//   const router = useRouter();
-//   const { filters } = router.query;
-//   const selectedFilters = queryFilterString2Object(filters) || [];
-//   return (
-//     <Flex
-//       alignItems='center'
-//       _hover={{
-//         cursor: 'pointer',
-//         textDecoration: 'underline',
-//         svg: { opacity: 1 },
-//       }}
-//       onClick={() => {
-//         if (value) {
-//           if (selectedFilters[property]) {
-//             if (!selectedFilters[property].includes(value)) {
-//               selectedFilters[property].push(value);
-//             }
-//           } else {
-//             selectedFilters[property] = [value];
-//           }
-//         }
-//         updateRoute(
-//           {
-//             from: 1,
-//             filters: queryFilterObject2String(selectedFilters),
-//           },
-//           router,
-//         );
-//       }}
-//     >
-//       {children}
-//       <Icon as={FaFilter} boxSize={3} mx={1} color='gray.600' opacity={0} />
-//     </Flex>
-//   );
-// };

@@ -87,14 +87,14 @@ export const OntologySearchList = ({
               alignItems='center'
               justifyContent='space-between'
             >
-              <Icon asChild>
+              <Icon>
                 <FaMagnifyingGlass />
               </Icon>
 
               <Text fontSize='sm' fontWeight='medium'>
                 List of selected search terms
               </Text>
-              <Icon ml={4} fill='gray.600' asChild>
+              <Icon ml={4} fill='gray.600'>
                 <FaAnglesRight />
               </Icon>
             </Button>
@@ -207,7 +207,7 @@ export const OntologySearchList = ({
                               );
                             }}
                           >
-                            <Icon boxSize={2.5} asChild>
+                            <Icon boxSize={2.5}>
                               <FaX />
                             </Icon>
                           </IconButton>
@@ -218,7 +218,7 @@ export const OntologySearchList = ({
               </Box>
 
               {/* Query summary */}
-              {/* <Text mt={4} px={6} lineHeight='short' fontSize='sm'>
+              {/* <Text mt={4} px={6} lineHeight='moderate' fontSize='sm'>
                 Search for resources associated with: <br />
                 {searchList.map((item, idx) => {
                   return (

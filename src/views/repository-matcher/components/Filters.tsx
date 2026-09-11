@@ -101,7 +101,7 @@ export const Filters: React.FC<FiltersProps> = ({
           colorPalette='gray'
           fontWeight='medium'
         >
-          <Icon boxSize={3} asChild>
+          <Icon boxSize={3}>
             <FaFilter />
           </Icon>
           Filters

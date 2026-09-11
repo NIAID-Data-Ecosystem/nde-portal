@@ -34,7 +34,6 @@ const TooltipWithLink: React.FC<TooltipProps> = ({
           p={0.5}
           ml={1}
           color='gray.800!important'
-          asChild
         >
           <FaInfo />
         </Icon>

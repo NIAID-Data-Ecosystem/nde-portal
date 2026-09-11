@@ -19,7 +19,7 @@ export const Label = React.memo(({ children, ...props }: TextProps) => {
       fontSize='xs'
       color='gray.800'
       textTransform='uppercase'
-      lineHeight='short'
+      lineHeight='moderate'
       textAlign='start'
       {...props}
     >
@@ -35,7 +35,7 @@ export const Content = React.memo(({ children, ...props }: BoxProps) => {
       className='content'
       my={2}
       fontSize='xs'
-      lineHeight='short'
+      lineHeight='moderate'
       whiteSpace='pre-wrap'
       wordBreak='break-word'
       fontWeight='normal'
@@ -63,7 +63,7 @@ export const Cell = React.memo(({ label, children, ...props }: CellProps) => {
       py={1}
       minW='280px'
       fontSize='xs'
-      lineHeight='short'
+      lineHeight='moderate'
       {...props}
     >
       {label && <Label>{label}</Label>}
@@ -116,9 +116,8 @@ export const Th = React.memo(
         borderBottomColor={`${colorPalette}.200`}
         flex={1}
         fontSize='xs'
-        fontWeight='bold'
         justifyContent='flex-start'
-        lineHeight='short'
+        lineHeight='moderate'
         minW='280px'
         overflow='hidden'
         px={4}
@@ -130,9 +129,11 @@ export const Th = React.memo(
         <th>
           {label && (
             <Flex alignItems='center' gap={1}>
-              <Tooltip content={tooltip} showArrow>
-                <Box as='span' display='inline-flex' color='gray.600'>
-                  <Label>{label}</Label>
+              <Tooltip content={tooltip}>
+                <Box as='span' display='inline-flex'>
+                  <Label color='gray.600' fontWeight='bold'>
+                    {label}
+                  </Label>
                 </Box>
               </Tooltip>
             </Flex>
@@ -141,7 +142,7 @@ export const Th = React.memo(
             <Box
               my={1}
               fontSize='xs'
-              lineHeight='short'
+              lineHeight='moderate'
               whiteSpace='pre-wrap'
               wordBreak='break-word'
               fontWeight='normal'

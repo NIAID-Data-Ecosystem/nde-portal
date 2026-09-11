@@ -5,7 +5,7 @@ import { render, screen } from '@testing-library/react';
 import { system } from 'src/theme';
 import { fetchSearchResults } from 'src/utils/api';
 import { getSearchResultsRoute } from 'src/views/diseases/helpers';
-import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
+import { getTabIdFromResourceType } from 'src/views/search/config/tabs';
 
 import { DataTypes } from '../data-types';
 
@@ -88,7 +88,7 @@ describe('DataTypes Component', () => {
       query: {
         q: querystring,
         filters: `(${facet}:("${term}"))`,
-        tab: getTabIdFromTypeLabel(term),
+        tab: getTabIdFromResourceType(term),
       },
     };
 

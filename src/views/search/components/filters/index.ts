@@ -1,36 +1,37 @@
 // Types
 export type {
+  ChartConfig,
+  ChartType,
+  ChartTypeConfig,
   FilterConfig,
-  FilterTermType,
   FilterItem,
-  FilterResults,
   FilterQueryResult,
+  FilterQueryType,
+  FilterResults,
+  FilterTermType,
   SelectedFilterType,
   SelectedFilterValueType,
-  FilterQueryType,
-  ChartType,
-  ChartConfig,
-  ChartTypeConfig,
 } from './types';
 
 // Config
-export { FILTER_CONFIGS, ALL_FACET_PROPERTIES, getFilterById } from './config';
+export { ALL_FACET_PROPERTIES, FILTER_CONFIGS, getFilterById } from './config';
 
 // Components
-export { Filters } from './components/filters';
-export { FiltersSection } from './components/section';
-export { FiltersList } from './components/list';
 export { FiltersContainer } from './components/container';
 export { DateFilter } from './components/date-filter';
+export { Filters } from './components/filters';
+export { FiltersList } from './components/list';
+export { FiltersSection } from './components/section';
 
 // Hooks
 export { useFilterQueries } from './hooks/useFilterQueries';
 
 // Utils
 export {
+  getSelectedFilterDisplay,
+  normalizeFilterValues,
+  OR_FILTER_KEY,
   queryFilterObject2String,
   queryFilterString2Object,
-  normalizeFilterValues,
-  getSelectedFilterDisplay,
   sanitizeExistsFilterValues,
 } from './utils/query-string';

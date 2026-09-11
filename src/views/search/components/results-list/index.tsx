@@ -1,4 +1,4 @@
-import { Collapsible, List, VStack } from '@chakra-ui/react';
+import { List, VStack } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Alert } from 'src/components/alert';
@@ -7,7 +7,10 @@ import {
   resolveStoredVisibleIds,
 } from 'src/components/select-and-order-popover';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
-import { SHOW_SEARCH_VIEW_MODES } from 'src/utils/feature-flags';
+import {
+  SHOW_DATA_COLLECTIONS_VIEW_MODES,
+  SHOW_SEARCH_VIEW_MODES,
+} from 'src/utils/feature-flags';
 
 import {
   DATA_COLLECTION_FIELDS,
@@ -22,7 +25,7 @@ import { BIOSAMPLE_EXTRA_FILTER } from '../../hooks/useBioSampleAggregation';
 import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
 import { useSearchResultsData } from '../../hooks/useSearchResultsData';
 import { useViewMode } from '../../hooks/useViewMode';
-import { TabType } from '../../types';
+import { SearchViewMode, TabType } from '../../types';
 import { updateRoute } from '../../utils/update-route';
 import Card from './components/card';
 import {
@@ -232,9 +235,12 @@ export const SearchResults = ({
   // Selected tab index is stored in context to sync with other components.
   const urlQueryParams = useSearchQueryFromURL();
 
-  // Persisted per-tab card/table preference. Only some tabs offer the choice.
+  // Persisted per-tab card/table preference. Only some tabs offer the choice,
+  // and the Data Collections tab is gated behind its own flag.
   const showViewMode =
-    SHOW_SEARCH_VIEW_MODES && TABS_WITH_VIEW_MODE.includes(id);
+    SHOW_SEARCH_VIEW_MODES &&
+    TABS_WITH_VIEW_MODE.includes(id) &&
+    (id !== 'dc' || SHOW_DATA_COLLECTIONS_VIEW_MODES);
   const [viewMode, setViewMode] = useViewMode(id);
 
   // For Samples and DataCollection tabs, use extra fields for the table columns.
@@ -250,10 +256,13 @@ export const SearchResults = ({
     SHOW_SEARCH_VIEW_MODES && id === 'ct' && viewMode === 'table';
   // Data Collections also offer both views, but default to cards. Unlike the
   // two tabs above, this tab predates the view mode radio and was table-only,
-  // so when the flag hides the radio it must fall back to the table rather
+  // so when either flag hides the radio it must fall back to the table rather
   // than to the card default.
   const isDataCollectionTable =
-    isDataCollectionTab && (!SHOW_SEARCH_VIEW_MODES || viewMode === 'table');
+    isDataCollectionTab &&
+    (!SHOW_SEARCH_VIEW_MODES ||
+      !SHOW_DATA_COLLECTIONS_VIEW_MODES ||
+      viewMode === 'table');
 
   // Each tab type uses a minimal, tab-specific field list rather than the
   // shared RESULT_FIELDS base (which carries many fields that other tabs never
@@ -436,7 +445,14 @@ export const SearchResults = ({
           params={params}
           viewModeControl={
             showViewMode ? (
-              <ViewModeRadio id={id} value={viewMode} onChange={setViewMode} />
+              <ViewModeRadio
+                id={id}
+                label='View mode'
+                value={viewMode}
+                onValueChange={({ value }) => {
+                  value && setViewMode(value as SearchViewMode);
+                }}
+              />
             ) : undefined
           }
           extraActions={
@@ -480,15 +496,13 @@ export const SearchResults = ({
         />
 
         {/* Display banner on last page if results exceed amount allotted by API */}
-        <Collapsible.Root open={from === Math.floor(MAX_RESULTS / size)}>
-          <Collapsible.Content>
-            <Alert status='info'>
-              Only the first {MAX_RESULTS.toLocaleString()} results are
-              displayed, please limit your query to get better results or use
-              our API to download all results.
-            </Alert>
-          </Collapsible.Content>
-        </Collapsible.Root>
+        {from === Math.floor(MAX_RESULTS / size) && (
+          <Alert status='info' title='Results Limit Reached'>
+            Only the first {MAX_RESULTS.toLocaleString()} results are displayed,
+            please limit your query to get better results or use our API to
+            download all results.
+          </Alert>
+        )}
 
         {/* Samples tab */}
         {isSamplesTab ? (

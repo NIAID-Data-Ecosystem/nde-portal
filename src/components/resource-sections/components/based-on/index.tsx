@@ -285,7 +285,6 @@ export const BasedOnTable = ({
                                                 ? 'Show ontology information.'
                                                 : ''
                                             }
-                                            showArrow
                                           >
                                             <span>
                                               <TagWithUrl
@@ -332,7 +331,7 @@ export const BasedOnTable = ({
                           px={3}
                           my={2}
                           fontSize='xs'
-                          lineHeight='short'
+                          lineHeight='moderate'
                           whiteSpace='pre-wrap'
                           wordBreak='break-word'
                           fontWeight='normal'
@@ -380,8 +379,8 @@ export const BasedOnActionProcess = ({
 }: IsBasedOn) => {
   // step may come back from the API as a single string or a list.
   const steps = castArray(actionProcess?.step ?? []).filter(Boolean);
-
-  if (!description && steps.length === 0) return <>No details provided.</>;
+  const showAccordion = description || steps.length > 0;
+  if (!showAccordion) return <>No details provided.</>;
 
   return (
     <Stack
@@ -390,7 +389,7 @@ export const BasedOnActionProcess = ({
       bg='info.subtle'
       borderRadius='sm'
       fontSize='sm'
-      lineHeight='short'
+      lineHeight='moderate'
       p={[2, 4]}
     >
       {/* "How to" steps are collapsed by default to keep the card compact. */}
@@ -399,18 +398,13 @@ export const BasedOnActionProcess = ({
           <Accordion.ItemContext>
             {({ expanded }) => (
               <>
-                <Flex flexDirection='column' rowGap={0.5} lineHeight='short'>
+                <Flex flexDirection='column' rowGap={0.5} lineHeight='moderate'>
                   {/* Name of action */}
                   <Text fontWeight='semibold'>
                     {name || 'Generation process'}
                   </Text>
-                  {disambiguatingDescription && (
-                    <Text fontWeight='medium' fontSize='xs'>
-                      {disambiguatingDescription}
-                    </Text>
-                  )}
                   {description && <Text fontSize='xs'>{description}</Text>}
-                  {steps.length > 0 && (
+                  {showAccordion && (
                     <Accordion.ItemTrigger>
                       <Button
                         w='auto'
@@ -424,18 +418,24 @@ export const BasedOnActionProcess = ({
                         textDecoration='underline'
                         _hover={{ textDecoration: 'none' }}
                       >
-                        {expanded ? 'Hide "How To"' : 'Show "How To"'}
+                        {expanded ? 'Hide' : 'Show'}
                         <Icon as={expanded ? FaMinus : FaPlus} fontSize='2xs' />
                       </Button>
                     </Accordion.ItemTrigger>
                   )}
                 </Flex>
-                {steps.length > 0 && (
+                {showAccordion && (
                   <Accordion.ItemContent px={0} pt={1} pb={1}>
                     <Accordion.ItemBody>
-                      <VStack alignItems='start' gap={1.5}>
+                      <VStack alignItems='start' gap={1.5} fontSize='sm'>
+                        {description && (
+                          <Text fontSize='inherit'>{description}</Text>
+                        )}
+
                         {steps.map((step, index) => (
-                          <Text key={index}>{step}</Text>
+                          <Text key={index} fontSize='inherit'>
+                            {step}
+                          </Text>
                         ))}
                       </VStack>
                     </Accordion.ItemBody>

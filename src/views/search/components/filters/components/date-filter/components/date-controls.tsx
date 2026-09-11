@@ -1,8 +1,9 @@
-import React from 'react';
 import { Checkbox, Flex, Text } from '@chakra-ui/react';
-import { DatePicker } from './date-picker';
+import React from 'react';
 import { formatNumber } from 'src/utils/helpers';
+
 import { FilterItem } from '../../../types';
+import { DatePicker } from './date-picker';
 
 interface DateControlsProps {
   colorPalette: string;
@@ -51,7 +52,7 @@ export const DateControls: React.FC<DateControlsProps> = ({
     selectedDates.length === 0 || selectedDates.includes('-_exists_');
 
   return (
-    <Flex bg='secondary.50' flexDirection='column' px={4} py={2}>
+    <Flex bg='secondary.50' flexDirection='column' px={4} py={2} gap={4}>
       <DatePicker
         colorPalette={colorPalette}
         selectedDates={selectedDates}
@@ -60,7 +61,6 @@ export const DateControls: React.FC<DateControlsProps> = ({
       />
       {/* Checkbox to toggle items with/without dates. Default behavior shows all resources. */}
       <Checkbox.Root
-        mt={4}
         onCheckedChange={handleToggleNoDateResources}
         disabled={!resourcesWithNoDate.length}
         checked={isNoDateCheckboxChecked}
@@ -70,9 +70,7 @@ export const DateControls: React.FC<DateControlsProps> = ({
           <Checkbox.Indicator />
         </Checkbox.Control>
         <Checkbox.Label>
-          <Text fontSize='sm' fontWeight='medium' lineHeight='shorter'>
-            Include {noDateCount} resources with no date information.
-          </Text>
+          Include {noDateCount} resources with no date information.
         </Checkbox.Label>
       </Checkbox.Root>
     </Flex>

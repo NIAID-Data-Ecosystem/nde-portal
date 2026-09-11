@@ -1,4 +1,4 @@
-import { Flex, Stack } from '@chakra-ui/react';
+import { createListCollection, Flex, Stack } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { DownloadMetadata } from 'src/components/download-metadata';
@@ -45,12 +45,6 @@ export const SearchResultsToolbar = ({
 
   return (
     <>
-      {/* View mode (optional), on its own row above the other controls */}
-      {viewModeControl && (
-        <Flex w='100%' pb={2}>
-          {viewModeControl}
-        </Flex>
-      )}
       <Flex
         borderBottom={{ base: '1px solid' }}
         borderColor={{ base: 'bg.alt' }}
@@ -67,39 +61,43 @@ export const SearchResultsToolbar = ({
           flexWrap='wrap'
           gap={[1, 4]}
         >
+          {/* View mode (optional), on its own row above the other controls */}
+          {viewModeControl}
           {/* Sort menu */}
           <SelectWithLabel
-            id='sort-results'
-            label='Sort by:'
-            options={SORT_OPTIONS}
-            value={sort}
-            handleChange={newSort => {
-              const update = { sort: newSort, from: 1 };
+            label='Sort by'
+            collection={createListCollection({ items: SORT_OPTIONS })}
+            value={[sort]}
+            onValueChange={({ value }) => {
+              const update = { sort: value[0], from: 1 };
               setPagination(id, update);
               updateRoute(router, update);
             }}
-            minWidth='200px'
+            width='250px'
           />
 
           {/* Size menu */}
           <SelectWithLabel
-            id='size-results'
-            label='Rows per page:'
-            options={PAGE_SIZE_OPTIONS}
-            value={size}
-            handleChange={newSize => {
-              const update = { size: +newSize, from: 1 };
+            label='Rows per page'
+            collection={createListCollection({ items: PAGE_SIZE_OPTIONS })}
+            value={[`${size}`]}
+            onValueChange={({ value }) => {
+              const update = { size: +value[0], from: 1 };
               // Update pagination state for the current tab.
               setPagination(id, update);
               updateRoute(router, update);
             }}
+            width='100px'
           />
         </Stack>
 
         {/* Right-side actions: optional extra slot + Download Metadata */}
         <Flex flexWrap='wrap' columnGap={2} rowGap={2} alignItems='center'>
-          {extraActions && <Flex pb={{ base: 2, md: 0 }}>{extraActions}</Flex>}
-          {/* Download CTA */}
+          {extraActions && (
+            <Flex pb={{ base: 2, md: 0 }} alignItems='flex-end'>
+              {extraActions}
+            </Flex>
+          )}
           <DownloadMetadata
             pb={{ base: 2, md: 0 }}
             exportFileName={`nde-results-${(params.q ?? '').replaceAll(

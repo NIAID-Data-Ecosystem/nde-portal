@@ -18,7 +18,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({ onRetry }) => {
         <Text fontSize='sm'>Failed to load chart data.</Text>
       </Alert.Root>
       <Button size='sm' onClick={onRetry} variant='outline' colorPalette='gray'>
-        <Icon asChild>
+        <Icon>
           <FaRotateRight />
         </Icon>
         Retry

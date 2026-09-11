@@ -13,7 +13,9 @@ Ported from the v2 `Input` style config. Two structural changes:
 v2's `filled` variant is named `subtle` in v3. `defaultProps._placeholder` is
 dropped: v2 merged defaultProps into the props bag handed to the style
 functions, and Input's functions only destructured `colorPalette`, so it never
-reached CSS (the real placeholder colour comes from `base` below).
+reached CSS. The placeholder colour now comes from the global
+`*::placeholder` rule in ../global-css.ts, which applies to every placeholder
+in the app rather than just this recipe.
 */
 /**
  * The height each `size` resolves to, published on the input as the
@@ -41,9 +43,6 @@ export const DEFAULT_INPUT_SIZE = 'sm';
 export const inputRecipe = defineRecipe({
   base: {
     fontWeight: 'light',
-    _placeholder: {
-      color: 'text.placeholder',
-    },
   },
   variants: {
     size: {

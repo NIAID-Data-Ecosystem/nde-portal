@@ -31,19 +31,19 @@ export const StatusIcon = ({
 }) => {
   if (status === 'error') {
     return (
-      <Icon color={status} {...props} asChild>
+      <Icon color={status} {...props}>
         <FaCircleXmark />
       </Icon>
     );
   } else if (status === 'warning') {
     return (
-      <Icon color={status} {...props} asChild>
+      <Icon color={status} {...props}>
         <FaCircleExclamation />
       </Icon>
     );
   } else if (status === 'info') {
     return (
-      <Icon color={status} {...props} asChild>
+      <Icon color={status} {...props}>
         <FaCircleInfo />
       </Icon>
     );

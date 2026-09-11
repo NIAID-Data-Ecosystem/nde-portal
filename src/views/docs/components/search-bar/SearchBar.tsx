@@ -291,7 +291,7 @@ export const SearchBar = ({
                   onClick={toggleHistory}
                 >
                   <Flex px={2}>
-                    <Icon asChild>
+                    <Icon>
                       <FaClockRotateLeft />
                     </Icon>
                   </Flex>
@@ -342,7 +342,7 @@ export const SearchBar = ({
           <Box py={6}>
             {!searchTerm && (
               <Flex flexDirection='column' alignItems='center' margin='0 auto'>
-                <Icon boxSize={5} color='primary.400' mb={4} asChild>
+                <Icon boxSize={5} color='primary.400' mb={4}>
                   <FaMagnifyingGlass />
                 </Icon>
                 <Text fontWeight='medium' color='gray.600'>
