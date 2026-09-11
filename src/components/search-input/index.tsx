@@ -63,7 +63,11 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   const endElement = (onClose || handleSubmit) && (
     <Flex py={1} alignItems='center' gap={1} height='100%'>
       {onClose && props.value && (
-        <CloseButton onClick={onClose} colorPalette='primary' height='100%' />
+        <CloseButton
+          onClick={onClose}
+          colorPalette={colorPalette}
+          height='100%'
+        />
       )}
       {handleSubmit && (
         <Button
