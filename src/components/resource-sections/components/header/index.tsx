@@ -3,8 +3,7 @@ import { CreativeWorkStatus } from 'src/components/badges';
 import { BookmarkButton } from 'src/components/bookmark-buttons/button';
 import { CopyIconButton } from 'src/components/copy-button';
 import { DisplayHTMLString } from 'src/components/html-content';
-import { useAuth } from 'src/hooks/useAuth';
-import { useUserData } from 'src/hooks/useUserData';
+import { useBookmarkDataset } from 'src/hooks/useBookmarkDataset';
 import { FormattedResource } from 'src/utils/api/types';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
@@ -29,13 +28,10 @@ const Header = ({
   type,
   creativeWorkStatus,
 }: HeaderProps) => {
-  const { user, login } = useAuth();
-
-  const { savedDatasets, addSavedDataset, removeSavedDataset } = useUserData();
-
-  const isFavorited = id
-    ? savedDatasets.some(fd => fd.dataset_id === id)
-    : false;
+  const { isFavorited, toggleBookmark, isDisabled } = useBookmarkDataset({
+    id,
+    name: name || alternateName,
+  });
 
   const showBookmarkButton = ENABLE_AUTH;
 
@@ -82,24 +78,8 @@ const Header = ({
           {showBookmarkButton && (
             <BookmarkButton
               isFavorited={isFavorited}
-              onClick={() => {
-                // Redirect logged-out users to the login page.
-                if (!user) {
-                  login();
-                  return;
-                }
-                if (!id) return;
-                if (isFavorited) {
-                  removeSavedDataset(id);
-                } else {
-                  addSavedDataset({
-                    dataset_id: id,
-                    name: name || alternateName || 'Untitled Dataset',
-                    saved_at: new Date().toISOString(),
-                  });
-                }
-              }}
-              disabled={!id}
+              onClick={toggleBookmark}
+              disabled={isDisabled}
             />
           )}
         </HStack>

@@ -39,8 +39,7 @@ import {
 } from 'src/components/source-logo/helpers';
 import { ToggleContainer } from 'src/components/toggle-container';
 import Tooltip from 'src/components/tooltip';
-import { useAuth } from 'src/hooks/useAuth';
-import { useUserData } from 'src/hooks/useUserData';
+import { useBookmarkDataset } from 'src/hooks/useBookmarkDataset';
 import { FormattedResource } from 'src/utils/api/types';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
@@ -66,12 +65,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   referrerPath,
   querystring,
 }) => {
-  const { user, login } = useAuth();
-
-  const { savedDatasets, addSavedDataset, removeSavedDataset } = useUserData();
-  const isFavorited = data?.id
-    ? savedDatasets.some(fd => fd.dataset_id === data.id)
-    : false;
   const {
     ['@type']: type,
     id,
@@ -86,6 +79,11 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     operatingSystem,
     url,
   } = data || {};
+
+  const { isFavorited, toggleBookmark, isDisabled } = useBookmarkDataset({
+    id,
+    name: name || alternateName,
+  });
 
   const paddingCard = [4, 6, 8, 10];
   // lazy load large portion of cards on scroll.
@@ -116,24 +114,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     href: { pathname: '/resources/', query: { id, referrerPath } },
     as: `/resources?id=${id}`,
     prefetch: false,
-  };
-
-  const toggleBookmark = () => {
-    if (!id) return;
-    // Send logged-out users to the login page before saving.
-    if (!user) {
-      login();
-      return;
-    }
-    if (isFavorited) {
-      removeSavedDataset(id);
-    } else {
-      addSavedDataset({
-        dataset_id: id,
-        name: name || alternateName || 'Untitled Dataset',
-        saved_at: new Date().toISOString(),
-      });
-    }
   };
 
   return (
@@ -561,7 +541,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     variant={{ base: 'outline', md: 'ghost' }}
                     isFavorited={isFavorited}
                     onClick={toggleBookmark}
-                    disabled={!id}
+                    disabled={isDisabled}
                   />
                 )}
                 {id && (
