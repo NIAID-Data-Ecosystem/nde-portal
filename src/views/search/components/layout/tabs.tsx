@@ -1,7 +1,7 @@
 import { Tabs, Tag, Text } from '@chakra-ui/react';
 import React from 'react';
 
-import { isOtherResourceType, TAB_LABELS } from '../../config/tabs';
+import { TAB_LABELS } from '../../config/tabs';
 import { TabType } from '../../types';
 
 interface TabWithCounts extends Omit<TabType, 'types'> {
@@ -45,6 +45,10 @@ export const SearchTabs = ({
     <Tabs.ContentGroup>{renderTabPanels()}</Tabs.ContentGroup>
   </Tabs.Root>
 );
+
+const isOtherResourceType = (type: string): boolean => {
+  return type === 'ResourceCatalog' || type === 'Disease';
+};
 
 // Each tab is labelled with one or more resource types and their result counts.
 const TabLabel = ({ types }: { types: TabWithCounts['types'] }) => {

@@ -1,4 +1,4 @@
-import { Collapsible, List, VStack } from '@chakra-ui/react';
+import { List, VStack } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Alert } from 'src/components/alert';
@@ -75,6 +75,7 @@ import {
   CustomizeColumnsPopover as SampleCustomizeColumnsPopover,
   DEFAULT_VISIBLE_COLUMN_IDS as SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS,
 } from './components/sample-results-table/components/CustomizeColumnsPopover';
+import { SearchResultsToolbar } from './components/toolbar';
 import { ViewModeRadio } from './components/toolbar/components/view-mode-radio';
 
 const readFromStorage = (key: string, fallback: string[]): string[] => {
