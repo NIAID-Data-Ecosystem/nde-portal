@@ -1,3 +1,4 @@
+import { Box, CheckboxGroup, Text } from '@chakra-ui/react';
 import React, {
   useCallback,
   useEffect,
@@ -5,13 +6,13 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Box, CheckboxGroup, Text } from '@chakra-ui/react';
 import { VariableSizeList as List } from 'react-window';
-import { useDebounceValue } from 'usehooks-ts';
 import { SearchInput } from 'src/components/search-input';
-import { Checkbox } from './checkbox';
-import { FilterTermType, FilterItem, FilterConfig } from '../types';
 import { SHOW_FILTER_ANY_NO_EXCLUSIVITY } from 'src/utils/feature-flags';
+import { useDebounceValue } from 'usehooks-ts';
+
+import { FilterConfig, FilterItem, FilterTermType } from '../types';
+import { Checkbox } from './checkbox';
 
 // VirtualizedList component to render the list of filter terms
 const VirtualizedList = React.memo(

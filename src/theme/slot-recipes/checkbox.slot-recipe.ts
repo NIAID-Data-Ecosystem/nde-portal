@@ -18,4 +18,8 @@ export const checkboxSlotRecipe = defineSlotRecipe({
       color: 'text.body',
     },
   },
+  defaultVariants: {
+    size: 'sm',
+    colorPalette: 'blue',
+  },
 });
