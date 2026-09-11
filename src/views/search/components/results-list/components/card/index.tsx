@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   Card,
-  Collapsible,
   Flex,
   Highlight,
   HStack,
@@ -17,16 +16,12 @@ import {
 import { useInView } from '@react-spring/web';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import NextLink from 'next/link';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  FaAngleRight,
-  FaChevronDown,
-  FaCircleArrowRight,
-  FaRegClock,
-} from 'react-icons/fa6';
+import React, { useMemo } from 'react';
+import { FaAngleRight, FaCircleArrowRight, FaRegClock } from 'react-icons/fa6';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
 import { BookmarkButton } from 'src/components/bookmark-buttons/button';
+import { CollapsibleText } from 'src/components/collapsible-text';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import { InfoLabel } from 'src/components/info-label';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
@@ -62,11 +57,7 @@ interface SearchResultCardProps {
 
 const metadataFields = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
-/*
- * Height of the description peek shown while the card's Collapsible is closed.
- * Descriptions shorter than this are fully visible, so there is nothing for the
- * trigger to reveal.
- */
+// Height of the description peek shown while the card's description is collapsed.
 const COLLAPSED_DESCRIPTION_HEIGHT = 100;
 
 /* One pill list in the card's searchable metadata strip. */
@@ -115,35 +106,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   const paddingCard = [4, 6, 8, 10];
   // lazy load large portion of cards on scroll.
   const [cardRef, inView] = useInView({ once: true });
-
-  /*
-   * Whether the description is taller than the collapsed peek. Measured on the
-   * description itself rather than the Collapsible content, whose height is
-   * pinned to the peek while closed. Only when it is clipped does the trigger
-   * have anything to show, so it stays disabled and unlabelled otherwise.
-   */
-  const descriptionRef = useRef<HTMLDivElement>(null);
-  const [isDescriptionClipped, setIsDescriptionClipped] = useState(false);
-
-  useEffect(() => {
-    const el = descriptionRef.current;
-    if (!el) {
-      setIsDescriptionClipped(false);
-      return;
-    }
-
-    const checkClipped = () =>
-      setIsDescriptionClipped(el.offsetHeight > COLLAPSED_DESCRIPTION_HEIGHT);
-
-    checkClipped();
-
-    // Catches both card resizes and description content that renders late.
-    if (typeof ResizeObserver === 'undefined') return;
-    const observer = new ResizeObserver(checkClipped);
-    observer.observe(el);
-    return () => observer.disconnect();
-    // `inView` gates the card body, so the description mounts after it flips.
-  }, [description, inView]);
 
   const sources =
     loading || !includedInDataCatalog
@@ -406,84 +368,20 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   />
                 )}
 
-                <Collapsible.Root
+                <CollapsibleText
                   flex={1}
-                  collapsedHeight={`${COLLAPSED_DESCRIPTION_HEIGHT}px`}
-                  collapsedWidth='100%'
-                  disabled={!isDescriptionClipped}
-                  _hover={
-                    isDescriptionClipped ? { bg: 'secondary.50' } : undefined
-                  }
+                  collapsedHeight={COLLAPSED_DESCRIPTION_HEIGHT}
+                  lineClamp={10}
+                  triggerProps={{ px: 'calc(var(--card-padding)/2)', py: 1 }}
+                  _hover={{ bg: 'secondary.50' }}
                 >
-                  <Collapsible.Trigger
-                    // Nothing to toggle, so keep it out of the tab order too.
-                    disabled={!isDescriptionClipped}
-                    cursor={isDescriptionClipped ? 'pointer' : 'default'}
-                    px='calc(var(--card-padding)/2)'
-                    py={1}
-                  >
-                    <Collapsible.Content
-                      position='relative'
-                      // Fade hinting at the clipped text below.
-                      _closed={
-                        isDescriptionClipped
-                          ? {
-                              _after: {
-                                content: '""',
-                                position: 'absolute',
-                                inset: 0,
-                                zIndex: 1,
-                                pointerEvents: 'none',
-                                shadow:
-                                  'inset 0 -12px 12px -9px var(--shadow-color)',
-                                shadowColor: 'whiteAlpha.800',
-                              },
-                            }
-                          : undefined
-                      }
-                    >
-                      {description && (
-                        <Flex
-                          ref={descriptionRef}
-                          minWidth='200px'
-                          lineClamp={10}
-                          overflow='clip'
-                          textAlign='left'
-                          css={{
-                            '& > :first-of-type': {
-                              overflow: 'clip',
-                            },
-                          }}
-                        >
-                          <DisplayHTMLContent
-                            content={description}
-                            highlightProps={highlightProps}
-                          />
-                        </Flex>
-                      )}
-                    </Collapsible.Content>
-                    {isDescriptionClipped && (
-                      <Collapsible.Context>
-                        {api => (
-                          <HStack py={1}>
-                            <Text as='span' fontSize='xs' gap={1}>
-                              {api.open ? 'Show Less' : 'Show More'}
-                            </Text>
-                            <Icon
-                              transform={
-                                api.open ? 'rotate(180deg)' : undefined
-                              }
-                              boxSize='3'
-                              transition='transform 0.2s'
-                            >
-                              <FaChevronDown />
-                            </Icon>
-                          </HStack>
-                        )}
-                      </Collapsible.Context>
-                    )}
-                  </Collapsible.Trigger>
-                </Collapsible.Root>
+                  {description && (
+                    <DisplayHTMLContent
+                      content={description}
+                      highlightProps={highlightProps}
+                    />
+                  )}
+                </CollapsibleText>
               </Wrap>
               <MetadataAccordion data={data} />
               {searchableSections.length > 0 && (
