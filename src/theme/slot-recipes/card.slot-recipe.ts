@@ -19,7 +19,7 @@ export const cardSlotRecipe = defineSlotRecipe({
       overflow: 'hidden',
     },
     header: {},
-    body: { gap: 'var(--card-padding)' },
+    body: {},
 
     description: {
       lineHeight: 'short',
@@ -35,6 +35,16 @@ export const cardSlotRecipe = defineSlotRecipe({
         },
         title: {
           textStyle: 'sm',
+        },
+      },
+      xl: {
+        root: {
+          '--card-padding': 'spacing.8',
+        },
+      },
+      '2xl': {
+        root: {
+          '--card-padding': 'spacing.10',
         },
       },
     },

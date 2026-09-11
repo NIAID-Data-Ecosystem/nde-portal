@@ -1,6 +1,4 @@
 import {
-  Box,
-  BoxProps,
   Flex,
   Image,
   ImageProps,
@@ -14,34 +12,27 @@ import { FormattedResource, IncludedInDataCatalog } from 'src/utils/api/types';
 
 import { getSourceImagePath } from './helpers';
 
+const LOGO_HEIGHT = ['20px', '20px', '30px'];
+
 // Wrapper container for the source logos.
-interface SourceLogoWrapperProps extends StackProps {}
+type SourceLogoWrapperProps = StackProps;
 
-const Wrapper = ({ children, ...props }: SourceLogoWrapperProps) => {
-  return (
-    <Stack
-      alignItems='flex-start'
-      flexDirection='row'
-      flexWrap='wrap'
-      my={0}
-      gap={[2, 4]}
-      py={[2, 0]}
-      {...props}
-    >
-      {children}
-    </Stack>
-  );
-};
+const Wrapper = (props: SourceLogoWrapperProps) => (
+  <Stack
+    flexDirection='row'
+    justifyContent={['space-between', 'flex-start']}
+    flexWrap='wrap'
+    gap={[2, 4]}
+    {...props}
+  />
+);
 
-type SourceWithLogo = IncludedInDataCatalog & {
-  logo?: string | null;
-};
-
+type SourceWithLogo = IncludedInDataCatalog;
 // Shown in place of the logo when no image file exists for the source.
 const Fallback = ({ name }: { name: SourceWithLogo['name'] }) => (
-  <Flex minHeight='40px' alignItems='center'>
+  <Flex minHeight={LOGO_HEIGHT} alignItems='center'>
     <Text
-      fontSize='xl'
+      fontSize={['md', 'md', 'xl']}
       lineHeight='shorter'
       color='text.heading'
       fontWeight='bold'
@@ -86,7 +77,7 @@ const ImageWithFallback = ({
   );
 };
 
-interface SourceLogoProps extends BoxProps {
+interface SourceLogoProps extends StackProps {
   imageProps?: ImageProps;
   source: SourceWithLogo;
   type?: FormattedResource['@type'];
@@ -102,58 +93,47 @@ const Component = ({
   ...props
 }: SourceLogoProps) => {
   const logo = getSourceImagePath(source.name);
+  const label = `${type === 'ResourceCatalog' ? 'Provided by' : 'Indexed in'} ${
+    source.name
+  }`;
+
+  const logoImage = logo ? (
+    <ImageWithFallback
+      objectFit='contain'
+      objectPosition='left'
+      w='100%'
+      h={LOGO_HEIGHT}
+      src={logo}
+      alt={
+        source.url
+          ? `Click to open the source (${source.name}) in a new tab.`
+          : `Logo for ${source.name}`
+      }
+      fallback={<Fallback name={source.name} />}
+      {...imageProps}
+    />
+  ) : null;
 
   return (
-    <Box key={source.name} maxW={{ base: '200px', sm: '250px' }} {...props}>
-      {logo ? (
-        source.url ? (
-          <Link target='_blank' href={source.url} variant='unstyled'>
-            <ImageWithFallback
-              objectFit='contain'
-              objectPosition='left'
-              w='100%'
-              h='40px'
-              mr={4}
-              src={logo}
-              alt={`Click to open the source (${source.name}) in a new tab.`}
-              fallback={<Fallback name={source.name} />}
-              {...imageProps}
-            />
-          </Link>
-        ) : (
-          <ImageWithFallback
-            objectFit='contain'
-            objectPosition='left'
-            w='100%'
-            h='40px'
-            mr={4}
-            src={logo}
-            alt={`Logo for ${source.name}`}
-            fallback={<Fallback name={source.name} />}
-            {...imageProps}
-          />
-        )
+    <Stack minWidth='150px' maxW={['200px', '250px']} gap={1} {...props}>
+      {logoImage && source.url ? (
+        <Link target='_blank' href={source.url} variant='unstyled'>
+          {logoImage}
+        </Link>
       ) : (
-        <></>
+        logoImage
       )}
-      <Flex bg='#fff'>
-        {url ? (
-          <Link href={url} isExternal lineHeight='shorter'>
-            <Text fontSize='12px' lineHeight='moderate'>
-              {type === 'ResourceCatalog'
-                ? `Provided by ${source.name}`
-                : `Indexed in ${source.name}`}
-            </Text>
-          </Link>
-        ) : (
-          <Text fontSize='12px' lineHeight='moderate'>
-            {type === 'ResourceCatalog'
-              ? `Provided by ${source.name}`
-              : `Indexed in ${source.name}`}
-          </Text>
-        )}
-      </Flex>
-    </Box>
+
+      {url ? (
+        <Link href={url} isExternal lineHeight='moderate' fontSize='xs'>
+          {label}
+        </Link>
+      ) : (
+        <Text fontSize='xs' lineHeight='moderate'>
+          {label}
+        </Text>
+      )}
+    </Stack>
   );
 };
 

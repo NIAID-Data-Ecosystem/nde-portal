@@ -68,6 +68,16 @@ export const buttonRecipe = defineRecipe({
         borderColor: 'colorPalette.outlineBorder',
       },
 
+      /*
+      Explicit border reset so `variant` can be used responsively, e.g.
+      `variant={{ base: 'outline', md: 'ghost' }}`. A variant only overrides
+      properties it names — without this, `outline`'s border from the base
+      breakpoint stays in the cascade at every width.
+      */
+      ghost: {
+        borderWidth: '0',
+      },
+
       unstyled: {
         px: 0,
         height: 'unset',

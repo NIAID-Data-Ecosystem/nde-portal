@@ -110,6 +110,32 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     [querystring],
   );
 
+  // Shared by the header title link and the footer's "View resource" button.
+  // referrerPath is the current path of the page - used for breadcrumbs in resources page
+  const resourcePageLinkProps = {
+    href: { pathname: '/resources/', query: { id, referrerPath } },
+    as: `/resources?id=${id}`,
+    prefetch: false,
+  };
+
+  const toggleBookmark = () => {
+    if (!id) return;
+    // Send logged-out users to the login page before saving.
+    if (!user) {
+      login();
+      return;
+    }
+    if (isFavorited) {
+      removeSavedDataset(id);
+    } else {
+      addSavedDataset({
+        dataset_id: id,
+        name: name || alternateName || 'Untitled Dataset',
+        saved_at: new Date().toISOString(),
+      });
+    }
+  };
+
   return (
     // {/* Banner with resource type + date of publication */}
     <Card.Root
@@ -117,7 +143,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
       boxShadow='none'
       border='1px solid'
       borderColor='gray.100'
-      size='sm'
+      size='md'
     >
       <TypeBanner
         label={formatAPIResourceTypeForDisplay(type)}
@@ -153,14 +179,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           flex={1}
         >
           <NextLink
-            // referrerPath is the current path of the page - used for breadcrumbs in resources page
-            href={{
-              pathname: '/resources/',
-              query: { id, referrerPath },
-            }}
-            as={`/resources?id=${id}`}
+            {...resourcePageLinkProps}
             passHref
-            prefetch={false}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -286,7 +306,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 {operatingSystem && <OperatingSystems data={operatingSystem} />}
               </Flex>
             )}
-            <Card.Body p={0} gap={0}>
+            <Card.Body p={0} gap={1}>
               <Wrap justifyContent='center' p='calc(var(--card-padding)/2)'>
                 {data && (
                   <CompletenessBadgeCircle
@@ -327,6 +347,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                         }}
                       >
                         <Flex
+                          minWidth='200px'
                           lineClamp={10}
                           overflow='clip'
                           textAlign='left'
@@ -507,87 +528,58 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     />
                   )}
               </Stack>
-              <Card.Footer>
-                <SourceLogo.Wrapper flex={1}>
-                  {sources?.length > 0 &&
-                    sources.map(source => {
-                      return (
-                        <SourceLogo.Component
-                          key={source.name}
-                          source={source}
-                          type={type}
-                          url={getAccessResourceURL({
-                            recordType: type,
-                            source,
-                          })}
-                        />
-                      );
-                    })}
-                </SourceLogo.Wrapper>
-
-                <HStack
-                  flex={{ base: 1, sm: 'unset' }}
-                  mt={[2, 0]}
-                  w={{ base: '100%', sm: 'unset' }}
-                >
-                  {ENABLE_AUTH && (
-                    <BookmarkButton
-                      isFavorited={isFavorited}
-                      onClick={() => {
-                        if (!data?.id) return;
-                        if (!user) {
-                          login();
-                          return;
-                        }
-                        if (isFavorited) {
-                          removeSavedDataset(data.id);
-                        } else {
-                          addSavedDataset({
-                            dataset_id: data.id,
-                            name:
-                              data.name ||
-                              data.alternateName ||
-                              'Untitled Dataset',
-                            saved_at: new Date().toISOString(),
-                          });
-                        }
-                      }}
-                      disabled={!data?.id}
-                    />
-                  )}
-                  {id && (
-                    <Flex
-                      flex={1}
-                      justifyContent='flex-end'
-                      flexWrap='wrap'
-                      maxW={{ base: '100%', sm: '150px' }}
-                    >
-                      <Button
-                        as='span'
-                        flex={1}
-                        size={{ base: 'md', sm: 'sm' }}
-                        aria-label={`Go to details about resource ${name}`}
-                        asChild
-                      >
-                        <NextLink
-                          // referrerPath is the current path of the page - used for breadcrumbs in resources page
-                          href={{
-                            pathname: '/resources/',
-                            query: { id, referrerPath },
-                          }}
-                          as={`/resources?id=${id}`}
-                          style={{ flex: 1 }}
-                          prefetch={false}
-                        >
-                          View resource
-                          <FaCircleArrowRight />
-                        </NextLink>
-                      </Button>
-                    </Flex>
-                  )}
-                </HStack>
-              </Card.Footer>
             </Card.Body>
+            <Card.Footer
+              gap={4}
+              flexWrap='wrap'
+              pt='calc(var(--card-padding)/2)'
+              justifyContent='space-between'
+              alignItems='flex-end'
+            >
+              <SourceLogo.Wrapper flex={1}>
+                {sources.map(source => (
+                  <SourceLogo.Component
+                    key={source.name}
+                    source={source}
+                    type={type}
+                    url={getAccessResourceURL({ recordType: type, source })}
+                  />
+                ))}
+              </SourceLogo.Wrapper>
+
+              <HStack
+                flex={{ base: 1, sm: 'unset' }}
+                mt={{ base: 2, sm: 0 }}
+                w={{ base: '100%', md: 'unset' }}
+                flexWrap='wrap'
+              >
+                {ENABLE_AUTH && (
+                  <BookmarkButton
+                    size={{ base: 'md', sm: 'sm' }}
+                    minWidth={{ base: '200px', sm: 'unset' }}
+                    flex={1}
+                    variant={{ base: 'outline', md: 'ghost' }}
+                    isFavorited={isFavorited}
+                    onClick={toggleBookmark}
+                    disabled={!id}
+                  />
+                )}
+                {id && (
+                  <Button
+                    flex={1}
+                    size={{ base: 'md', sm: 'sm' }}
+                    aria-label={`Go to details about resource ${name}`}
+                    asChild
+                    minWidth={{ base: '200px', sm: '150px' }}
+                  >
+                    <NextLink {...resourcePageLinkProps} style={{ flex: 1 }}>
+                      View resource
+                      <FaCircleArrowRight />
+                    </NextLink>
+                  </Button>
+                )}
+              </HStack>
+            </Card.Footer>
           </>
         )}
       </Skeleton>

@@ -148,7 +148,7 @@ const Home: NextPage<{
                     return (
                       <Button
                         key={query.title}
-                        size='sm'
+                        size='xs'
                         colorPalette='niaid'
                         asChild
                       >
