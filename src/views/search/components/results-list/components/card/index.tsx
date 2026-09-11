@@ -17,7 +17,7 @@ import {
 import { useInView } from '@react-spring/web';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import NextLink from 'next/link';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   FaAngleRight,
   FaChevronDown,
@@ -31,7 +31,10 @@ import { DisplayHTMLContent } from 'src/components/html-content';
 import { InfoLabel } from 'src/components/info-label';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
 import { TypeBanner } from 'src/components/resource-sections/components';
-import { SearchableItems } from 'src/components/searchable-items';
+import {
+  SearchableItem,
+  SearchableItems,
+} from 'src/components/searchable-items';
 import { SourceLogo } from 'src/components/source-logo';
 import {
   formatSourcesWithLogos,
@@ -58,6 +61,30 @@ interface SearchResultCardProps {
 }
 
 const metadataFields = SCHEMA_DEFINITIONS as SchemaDefinitions;
+
+/*
+ * Height of the description peek shown while the card's Collapsible is closed.
+ * Descriptions shorter than this are fully visible, so there is nothing for the
+ * trigger to reveal.
+ */
+const COLLAPSED_DESCRIPTION_HEIGHT = 100;
+
+/* One pill list in the card's searchable metadata strip. */
+interface SearchableSection {
+  /** Heading shown beside the pills. */
+  label: string;
+  /** Plural noun used in the show more/fewer button, e.g. "topics". */
+  itemLabel: string;
+  tooltip?: string;
+  items: SearchableItem[];
+  searchParams?: Record<string, string>;
+}
+
+const generateShowAllLabel =
+  (itemLabel: string) => (limit: number, length: number) =>
+    limit === length
+      ? `Show fewer ${itemLabel}`
+      : `Show all ${itemLabel} (${(length - limit).toLocaleString()} more)`;
 
 const SearchResultCard: React.FC<SearchResultCardProps> = ({
   loading,
@@ -89,6 +116,35 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   // lazy load large portion of cards on scroll.
   const [cardRef, inView] = useInView({ once: true });
 
+  /*
+   * Whether the description is taller than the collapsed peek. Measured on the
+   * description itself rather than the Collapsible content, whose height is
+   * pinned to the peek while closed. Only when it is clipped does the trigger
+   * have anything to show, so it stays disabled and unlabelled otherwise.
+   */
+  const descriptionRef = useRef<HTMLDivElement>(null);
+  const [isDescriptionClipped, setIsDescriptionClipped] = useState(false);
+
+  useEffect(() => {
+    const el = descriptionRef.current;
+    if (!el) {
+      setIsDescriptionClipped(false);
+      return;
+    }
+
+    const checkClipped = () =>
+      setIsDescriptionClipped(el.offsetHeight > COLLAPSED_DESCRIPTION_HEIGHT);
+
+    checkClipped();
+
+    // Catches both card resizes and description content that renders late.
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(checkClipped);
+    observer.observe(el);
+    return () => observer.disconnect();
+    // `inView` gates the card body, so the description mounts after it flips.
+  }, [description, inView]);
+
   const sources =
     loading || !includedInDataCatalog
       ? []
@@ -97,6 +153,57 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   // `about` and `exampleOfWork.about` values, merged into one unlabeled pill
   // list. Data Collections only.
   const contentTypeItems = useMemo(() => getContentTypeItems(data), [data]);
+
+  // Sections without values are dropped so the strip has no empty rows or
+  // stray separators.
+  const searchableSections = useMemo<SearchableSection[]>(() => {
+    if (!data) return [];
+
+    const describe = (field: string) =>
+      metadataFields[field].description?.[data['@type']];
+
+    const sections: SearchableSection[] = [
+      {
+        label: 'Topic Categories',
+        itemLabel: 'topics',
+        tooltip: describe('topicCategory'),
+        items: (data.topicCategory ?? []).flatMap(({ name }) =>
+          name ? [{ name, value: name, field: 'topicCategory.name' }] : [],
+        ),
+      },
+      {
+        label: 'Content Type',
+        itemLabel: 'content types',
+        tooltip: CONTENT_TYPE_TOOLTIP,
+        items: contentTypeItems,
+        // These values only exist on Data Collections, so a search without the
+        // tab param would land on the empty Datasets tab.
+        searchParams: { tab: 'dc' },
+      },
+      {
+        label: 'Application Categories',
+        itemLabel: 'application categories',
+        tooltip: describe('applicationCategory'),
+        items: (data.applicationCategory ?? []).map(value => ({
+          name: value,
+          value,
+          field: 'applicationCategory',
+        })),
+      },
+      {
+        label: 'Programming Languages',
+        itemLabel: 'languages',
+        tooltip: describe('programmingLanguage'),
+        items: (data.programmingLanguage ?? []).map(value => ({
+          name: value,
+          value,
+          field: 'programmingLanguage',
+        })),
+      },
+    ];
+
+    return sections.filter(section => section.items.length > 0);
+  }, [data, contentTypeItems]);
 
   const highlightProps = useMemo(
     () =>
@@ -299,34 +406,45 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   />
                 )}
 
-                {description && (
-                  <Collapsible.Root
-                    flex={1}
-                    collapsedHeight='100px'
-                    collapsedWidth='100%'
-                    _hover={{ bg: 'secondary.50' }}
+                <Collapsible.Root
+                  flex={1}
+                  collapsedHeight={`${COLLAPSED_DESCRIPTION_HEIGHT}px`}
+                  collapsedWidth='100%'
+                  disabled={!isDescriptionClipped}
+                  _hover={
+                    isDescriptionClipped ? { bg: 'secondary.50' } : undefined
+                  }
+                >
+                  <Collapsible.Trigger
+                    // Nothing to toggle, so keep it out of the tab order too.
+                    disabled={!isDescriptionClipped}
+                    cursor={isDescriptionClipped ? 'pointer' : 'default'}
+                    px='calc(var(--card-padding)/2)'
+                    py={1}
                   >
-                    <Collapsible.Trigger
-                      cursor='pointer'
-                      px='calc(var(--card-padding)/2)'
-                      py={1}
+                    <Collapsible.Content
+                      position='relative'
+                      // Fade hinting at the clipped text below.
+                      _closed={
+                        isDescriptionClipped
+                          ? {
+                              _after: {
+                                content: '""',
+                                position: 'absolute',
+                                inset: 0,
+                                zIndex: 1,
+                                pointerEvents: 'none',
+                                shadow:
+                                  'inset 0 -12px 12px -9px var(--shadow-color)',
+                                shadowColor: 'whiteAlpha.800',
+                              },
+                            }
+                          : undefined
+                      }
                     >
-                      <Collapsible.Content
-                        position='relative'
-                        _closed={{
-                          _after: {
-                            content: '""',
-                            position: 'absolute',
-                            inset: 0,
-                            zIndex: 1,
-                            pointerEvents: 'none',
-                            shadow:
-                              'inset 0 -12px 12px -9px var(--shadow-color)',
-                            shadowColor: 'whiteAlpha.800',
-                          },
-                        }}
-                      >
+                      {description && (
                         <Flex
+                          ref={descriptionRef}
                           minWidth='200px'
                           lineClamp={10}
                           overflow='clip'
@@ -342,7 +460,9 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                             highlightProps={highlightProps}
                           />
                         </Flex>
-                      </Collapsible.Content>
+                      )}
+                    </Collapsible.Content>
+                    {isDescriptionClipped && (
                       <Collapsible.Context>
                         {api => (
                           <HStack py={1}>
@@ -361,154 +481,44 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           </HStack>
                         )}
                       </Collapsible.Context>
-                    </Collapsible.Trigger>
-                  </Collapsible.Root>
-                )}
+                    )}
+                  </Collapsible.Trigger>
+                </Collapsible.Root>
               </Wrap>
               <MetadataAccordion data={data} />
-              <Stack
-                gap={1}
-                separator={<Separator />}
-                py={1}
-                borderY='1px solid'
-                borderColor='border'
-                css={{
-                  '& > *': {
-                    px: 'var(--card-padding)',
-                  },
-                }}
-              >
-                {data?.topicCategory &&
-                  data?.topicCategory.some(topic => topic.name) && (
-                    <SearchableItems
-                      generateButtonLabel={(
-                        limit,
-                        length,
-                        itemLabel = 'topics',
-                      ) =>
-                        limit === length
-                          ? `Show fewer ${itemLabel}`
-                          : `Show all ${itemLabel} (${length - limit} more)`
-                      }
-                      itemLimit={3}
-                      items={(data?.topicCategory ?? []).flatMap(topic =>
-                        typeof topic?.name === 'string'
-                          ? [
-                              {
-                                name: topic.name,
-                                value: topic.name,
-                                field: 'topicCategory.name',
-                              },
-                            ]
-                          : [],
-                      )}
-                      name={
-                        <InfoLabel
-                          fontSize='sm'
-                          tooltipProps={{
-                            content:
-                              metadataFields['topicCategory'].description?.[
-                                data['@type']
-                              ],
-                          }}
-                        >
-                          Topic Categories
-                        </InfoLabel>
-                      }
-                    />
+              {searchableSections.length > 0 && (
+                <Stack
+                  gap={1}
+                  separator={<Separator />}
+                  py={1}
+                  borderTop='1px solid'
+                  borderColor='border'
+                  css={{
+                    '& > *': {
+                      px: 'var(--card-padding)',
+                    },
+                  }}
+                >
+                  {searchableSections.map(
+                    ({ label, itemLabel, tooltip, items, searchParams }) => (
+                      <SearchableItems
+                        key={label}
+                        itemLimit={3}
+                        items={items}
+                        searchParams={searchParams}
+                        generateButtonLabel={generateShowAllLabel(itemLabel)}
+                        name={
+                          <InfoLabel tooltipProps={{ content: tooltip }}>
+                            {label}
+                          </InfoLabel>
+                        }
+                      />
+                    ),
                   )}
-
-                {contentTypeItems.length > 0 && (
-                  <SearchableItems
-                    generateButtonLabel={(
-                      limit,
-                      length,
-                      itemLabel = 'content types',
-                    ) =>
-                      limit === length
-                        ? `Show fewer ${itemLabel}`
-                        : `Show all ${itemLabel} (${length - limit} more)`
-                    }
-                    itemLimit={3}
-                    items={contentTypeItems}
-                    // These values only exist on Data Collections, so a search
-                    // without the tab param would land on the empty Datasets tab.
-                    searchParams={{ tab: 'dc' }}
-                    name={
-                      <InfoLabel
-                        tooltipProps={{ content: CONTENT_TYPE_TOOLTIP }}
-                      >
-                        Content Type
-                      </InfoLabel>
-                    }
-                  />
-                )}
-
-                {data?.applicationCategory &&
-                  data?.applicationCategory.length > 0 && (
-                    <SearchableItems
-                      generateButtonLabel={(
-                        limit,
-                        length,
-                        itemLabel = 'Application Categories',
-                      ) =>
-                        limit === length
-                          ? `Show fewer ${itemLabel}`
-                          : `Show all ${itemLabel} (${length - limit} more)`
-                      }
-                      itemLimit={3}
-                      items={data?.applicationCategory.map(ac => ({
-                        name: ac,
-                        value: ac,
-                        field: 'applicationCategory',
-                      }))}
-                      name={
-                        <InfoLabel
-                          tooltipProps={{
-                            content:
-                              metadataFields['applicationCategory']
-                                .description?.[data['@type']],
-                          }}
-                        >
-                          Application Categories
-                        </InfoLabel>
-                      }
-                    />
-                  )}
-
-                {data?.programmingLanguage &&
-                  data?.programmingLanguage.length > 0 && (
-                    <SearchableItems
-                      generateButtonLabel={(
-                        limit,
-                        length,
-                        itemLabel = 'languages',
-                      ) =>
-                        limit === length
-                          ? `Show fewer ${itemLabel}`
-                          : `Show all ${itemLabel} (${length - limit} more)`
-                      }
-                      itemLimit={3}
-                      items={data?.programmingLanguage.map(pl => ({
-                        name: pl,
-                        value: pl,
-                        field: 'programmingLanguage',
-                      }))}
-                      name={
-                        <InfoLabel
-                          tooltipProps={{
-                            content:
-                              metadataFields['programmingLanguage']
-                                .description?.[data['@type']],
-                          }}
-                        >
-                          Programming Languages
-                        </InfoLabel>
-                      }
-                    />
-                  )}
-              </Stack>
+                </Stack>
+              )}
             </Card.Body>
+            <Separator />
             <Card.Footer
               gap={4}
               flexWrap='wrap'
