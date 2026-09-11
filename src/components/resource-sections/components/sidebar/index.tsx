@@ -9,7 +9,7 @@ import {
   Stack,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
@@ -39,7 +39,7 @@ export const Sidebar = ({
 }) => {
   const [searchHistory] = useLocalStorage<string[]>('basic-searches', []);
 
-  const [isMounted, setIsMounted] = React.useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const isDataCollectionType = data?.['@type'] === 'DataCollection';
 
