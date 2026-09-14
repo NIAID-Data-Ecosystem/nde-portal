@@ -330,7 +330,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 {data && data['@type'] === 'DataCollection'
                   ? collectionSize && (
                       <Tooltip
-                        label='Type and number of items in the data collection'
+                        label='What the data collection contains and its size'
                         hasArrow
                         bg='#fff'
                         sx={{

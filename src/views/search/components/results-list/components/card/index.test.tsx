@@ -103,9 +103,7 @@ describe('collection size rectangle', () => {
     await user.hover(screen.getByText('42'));
 
     expect(
-      await screen.findByText(
-        'Type and number of items in the data collection',
-      ),
+      await screen.findByText('What the data collection contains and its size'),
     ).toBeInTheDocument();
   });
 
