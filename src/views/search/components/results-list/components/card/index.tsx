@@ -329,44 +329,53 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               >
                 {data && data['@type'] === 'DataCollection'
                   ? collectionSize && (
-                      <Flex
-                        flexDirection='column'
-                        alignItems='center'
-                        justifyContent='center'
-                        textAlign='center'
-                        minWidth='176px'
-                        px={3}
-                        py={2}
-                        border='1px solid'
-                        borderColor='gray.200'
-                        borderRadius='lg'
-                        bg='blue.50'
+                      <Tooltip
+                        label='Type and number of items in the data collection'
+                        hasArrow
+                        bg='#fff'
+                        sx={{
+                          color: 'text.body',
+                        }}
                       >
-                        <Text
-                          fontSize='2xl'
-                          fontWeight='bold'
-                          color='blue.800'
-                          lineHeight='shorter'
+                        <Flex
+                          flexDirection='column'
+                          alignItems='center'
+                          justifyContent='center'
+                          textAlign='center'
+                          minWidth='176px'
+                          px={3}
+                          py={2}
+                          border='1px solid'
+                          borderColor='gray.200'
+                          borderRadius='lg'
+                          bg='blue.50'
                         >
-                          {collectionSize.count}
-                        </Text>
-                        <Text
-                          fontSize='sm'
-                          fontWeight='medium'
-                          color='blue.800'
-                          lineHeight='shorter'
-                        >
-                          {collectionSize.unitText}
-                        </Text>
-                        <Text
-                          fontSize='sm'
-                          color='blue.800'
-                          fontWeight='medium'
-                          lineHeight='shorter'
-                        >
-                          in this collection
-                        </Text>
-                      </Flex>
+                          <Text
+                            fontSize='2xl'
+                            fontWeight='bold'
+                            color='blue.800'
+                            lineHeight='shorter'
+                          >
+                            {collectionSize.count}
+                          </Text>
+                          <Text
+                            fontSize='sm'
+                            fontWeight='medium'
+                            color='blue.800'
+                            lineHeight='shorter'
+                          >
+                            {collectionSize.unitText}
+                          </Text>
+                          <Text
+                            fontSize='sm'
+                            color='blue.800'
+                            fontWeight='medium'
+                            lineHeight='shorter'
+                          >
+                            in this collection
+                          </Text>
+                        </Flex>
+                      </Tooltip>
                     )
                   : data && (
                       <CompletenessBadgeCircle
