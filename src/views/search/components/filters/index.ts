@@ -28,6 +28,7 @@ export { useFilterQueries } from './hooks/useFilterQueries';
 
 // Utils
 export {
+  OR_FILTER_KEY,
   queryFilterObject2String,
   queryFilterString2Object,
   normalizeFilterValues,

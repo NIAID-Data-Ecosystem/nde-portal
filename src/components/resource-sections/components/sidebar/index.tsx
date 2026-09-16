@@ -16,11 +16,17 @@ import { Route } from 'src/components/resource-sections/helpers';
 import { useLocalStorage } from 'usehooks-ts';
 import { CardContainer } from 'src/components/resource-sections/components/card-container';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
-import { ExternalAccess, UsageInfo } from './components/external';
+import {
+  ExternalAccess,
+  LinkToSourcePage,
+  UsageInfo,
+} from './components/external';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { ResourceData } from 'src/pages/resources';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
 import { Link } from 'src/components/link';
+import { formatIdentifierAsAnchorSlug } from 'src/pages/sources';
+import { USE_MERGED_SOURCES_AND_CATALOGS } from 'src/utils/feature-flags';
 
 export const Sidebar = ({
   data,
@@ -54,6 +60,7 @@ export const Sidebar = ({
             divider={
               <Divider
                 borderColor='page.placeholder'
+                marginTop={'0!important'}
                 marginBottom={'0!important'}
               />
             }
@@ -68,6 +75,17 @@ export const Sidebar = ({
             {/* External links to access data, documents or dataset at the source. */}
             <ExternalAccess data={data} isLoading={isLoading} />
             <UsageInfo data={data} isLoading={isLoading} />
+            {data?.['@type'] === 'ResourceCatalog' &&
+              USE_MERGED_SOURCES_AND_CATALOGS && (
+                <LinkToSourcePage
+                  href={`/sources#${formatIdentifierAsAnchorSlug(
+                    data?._id || '',
+                  )}`}
+                  isLoading={isLoading}
+                >
+                  Learn more about {data?.name} in the sources page
+                </LinkToSourcePage>
+              )}
           </Stack>
         </Card>
 

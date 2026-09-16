@@ -7,6 +7,18 @@ import {
 } from '../table-config';
 import { RepositoryMatcherColumn } from '../types';
 
+// The name column links either to the raw source `url` or to a `/sources`
+// anchor depending on the `USE_MERGED_SOURCES_AND_CATALOGS` flag; make it
+// controllable per-test. The getter is re-read on every render, so toggling
+// `mockUseMergedSourcesAndCatalogs` between renders switches the branch.
+let mockUseMergedSourcesAndCatalogs = true;
+jest.mock('src/utils/feature-flags', () => ({
+  ...jest.requireActual('src/utils/feature-flags'),
+  get USE_MERGED_SOURCES_AND_CATALOGS() {
+    return mockUseMergedSourcesAndCatalogs;
+  },
+}));
+
 const byId = REPOSITORY_MATCHER_COLUMNS.reduce((acc, col) => {
   acc[col.id] = col;
   return acc;
@@ -55,7 +67,8 @@ describe('name column', () => {
     expect(col().getSearchValue!(value)).toBe('NCBI');
   });
 
-  it('renders a link cell', () => {
+  it('links to the raw source url when USE_MERGED_SOURCES_AND_CATALOGS is disabled', () => {
+    mockUseMergedSourcesAndCatalogs = false;
     renderCell(
       col().component({
         value: { label: 'NCBI', url: 'https://ncbi.gov', _id: 'x' },
@@ -68,7 +81,24 @@ describe('name column', () => {
     );
   });
 
+  it('links to the /sources anchor by _id when USE_MERGED_SOURCES_AND_CATALOGS is enabled', () => {
+    mockUseMergedSourcesAndCatalogs = true;
+    renderCell(
+      col().component({
+        value: { label: 'NCBI', url: 'https://ncbi.gov', _id: 'x' },
+        data: {} as any,
+      }),
+    );
+    expect(screen.getByText('NCBI').closest('a')).toHaveAttribute(
+      'href',
+      '/sources#x',
+    );
+  });
+
   it('renders a fallback when value is missing', () => {
+    // With the merged-sources link disabled the url is empty, so the cell
+    // falls back to the dash placeholder rather than an empty link.
+    mockUseMergedSourcesAndCatalogs = false;
     renderCell(col().component({ value: undefined as any, data: {} as any }));
     expect(screen.getByText('-')).toBeInTheDocument();
   });

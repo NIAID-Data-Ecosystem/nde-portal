@@ -40,6 +40,35 @@ export const filterWords = (inputString: string) => {
   return filteredWords;
 };
 
+export interface CollectionSizeText {
+  count: string;
+  unitText: string;
+}
+
+/*
+ * Formats a DataCollection's `collectionSize` into the count + unitText
+ * shown in the card's collection-size rectangle. Returns null when
+ * there's no entry, no unitText, or none of minValue/maxValue/value.
+ */
+export const formatCollectionSize = (
+  collectionSize?: FormattedResource['collectionSize'],
+): CollectionSizeText | null => {
+  const entry = collectionSize?.[0];
+  if (!entry?.unitText) return null;
+
+  const unitText = entry.unitText;
+  if (typeof entry.minValue === 'number') {
+    return { count: `${entry.minValue.toLocaleString()}+`, unitText };
+  }
+  if (typeof entry.maxValue === 'number') {
+    return { count: entry.maxValue.toLocaleString(), unitText };
+  }
+  if (typeof entry.value === 'number') {
+    return { count: entry.value.toLocaleString(), unitText };
+  }
+  return null;
+};
+
 /*
  * Builds the "Content Type" pills for a card from the record's merged `about`
  * and `exampleOfWork.about` terms. Each pill's link searches both fields with

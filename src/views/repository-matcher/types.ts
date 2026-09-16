@@ -1,8 +1,8 @@
 import React from 'react';
-import { Repository } from 'src/hooks/api/useRepoData';
+import { Source } from 'src/hooks/api/useSourcesList';
 import { FormattedResource } from 'src/utils/api/types';
 
-export type RepositoryMatcherItem = Repository | FormattedResource;
+export type RepositoryMatcherItem = Source | FormattedResource;
 
 export type NameValue = { label: string; url: string; _id: string };
 

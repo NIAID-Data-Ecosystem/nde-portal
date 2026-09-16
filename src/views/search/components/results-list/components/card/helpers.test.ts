@@ -1,10 +1,64 @@
 import { FormattedResource } from 'src/utils/api/types';
-import { getContentTypeItems } from './helpers';
+import { formatCollectionSize, getContentTypeItems } from './helpers';
 
 // The helper only reads `about` and `exampleOfWork`, so the fixtures are
 // cast rather than filled out with a whole FormattedResource.
 const resource = (data: Record<string, unknown>) =>
   data as unknown as FormattedResource;
+
+describe('formatCollectionSize', () => {
+  it('returns count and unitText from `value`', () => {
+    expect(formatCollectionSize([{ value: 42, unitText: 'genomes' }])).toEqual({
+      count: '42',
+      unitText: 'genomes',
+    });
+  });
+
+  it('prefers `minValue` over `maxValue` and `value`, formatting count as "N+"', () => {
+    expect(
+      formatCollectionSize([
+        { minValue: 10, maxValue: 20, value: 30, unitText: 'genomes' },
+      ]),
+    ).toEqual({ count: '10+', unitText: 'genomes' });
+  });
+
+  it('prefers `maxValue` over `value` when `minValue` is absent', () => {
+    expect(
+      formatCollectionSize([{ maxValue: 20, value: 30, unitText: 'genomes' }]),
+    ).toEqual({ count: '20', unitText: 'genomes' });
+  });
+
+  it('formats large numbers with grouping via toLocaleString', () => {
+    expect(
+      formatCollectionSize([{ value: 1234567, unitText: 'genomes' }]),
+    ).toEqual({ count: '1,234,567', unitText: 'genomes' });
+  });
+
+  it('returns null when unitText is missing, even if a numeric field is present', () => {
+    expect(formatCollectionSize([{ value: 42 }])).toBeNull();
+  });
+
+  it('returns null when none of minValue/maxValue/value is a number', () => {
+    expect(formatCollectionSize([{ unitText: 'genomes' }])).toBeNull();
+  });
+
+  it('returns null for undefined input', () => {
+    expect(formatCollectionSize(undefined)).toBeNull();
+  });
+
+  it('returns null for an empty array', () => {
+    expect(formatCollectionSize([])).toBeNull();
+  });
+
+  it('only reads the first entry of the array', () => {
+    expect(
+      formatCollectionSize([
+        { value: 1, unitText: 'genomes' },
+        { value: 2, unitText: 'samples' },
+      ]),
+    ).toEqual({ count: '1', unitText: 'genomes' });
+  });
+});
 
 describe('getContentTypeItems', () => {
   it('handles `about` returned as a single object', () => {

@@ -5,7 +5,7 @@ import { fetchSearchResults } from 'src/utils/api';
 import { getSearchResultsRoute } from 'src/views/diseases/helpers';
 import { useQuery } from '@tanstack/react-query';
 import { DataTypes } from '../data-types';
-import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
+import { getTabIdFromResourceType } from 'src/views/search/config/tabs';
 
 jest.mock('src/views/diseases/chart-utils', () => ({
   getFillColor: jest.fn((key: string) => {
@@ -86,7 +86,7 @@ describe('DataTypes Component', () => {
       query: {
         q: querystring,
         filters: `(${facet}:("${term}"))`,
-        tab: getTabIdFromTypeLabel(term),
+        tab: getTabIdFromResourceType(term),
       },
     };
 

@@ -23,13 +23,14 @@ import {
 import { SectionHeader } from 'src/components/table-of-contents/layouts/section-header';
 import { SectionSearch } from 'src/components/table-of-contents/layouts/section-search';
 import { TagWithUrl } from 'src/components/tag-with-url';
-import type { SourceResponse } from 'src/pages/sources';
+import type { SourceDisplayItem } from 'src/pages/sources';
 import { formatDate } from 'src/utils/api/helpers';
 import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-string';
 import NextLink from 'next/link';
+import { USE_MERGED_SOURCES_AND_CATALOGS } from 'src/utils/feature-flags';
 
 interface Main {
-  data?: SourceResponse[];
+  data?: SourceDisplayItem[];
   isLoading: boolean;
   metadata?: {
     version: string;
@@ -117,20 +118,24 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
         />
       </Flex>
       <StyledCardStack>
-        {sources.map((sourceObj: SourceResponse, index: number) => {
-          // used for metadata compatibility badge
-          const parentCollectionInfo = sourceObj?.sourceInfo?.parentCollection
-            ?.id
+        {sources.map((sourceObj: SourceDisplayItem, index: number) => {
+          // Metadata compatibility badge. `Source` is flattened, so
+          // `parentCollection`/`metadata_completeness` sit at the top level.
+          // The parent is matched by `identifier` (the hook's `key` is a
+          // composite string, not the raw source id `parentCollection.id`
+          // references). Resource catalogs have neither field.
+          const parentCollectionInfo = sourceObj?.parentCollection?.id
             ? sources.find(
-                source =>
-                  source.key === sourceObj?.sourceInfo?.parentCollection?.id,
+                source => source.identifier === sourceObj?.parentCollection?.id,
               )
             : null;
 
           const metadataCompatibilityData =
-            sourceObj?.sourceInfo?.metadata_completeness ||
-            parentCollectionInfo?.sourceInfo.metadata_completeness ||
+            sourceObj?.metadata_completeness ||
+            parentCollectionInfo?.metadata_completeness ||
             null;
+
+          const numberOfRecords = sourceObj.numberOfRecords ?? 0;
 
           return (
             <StyledCard
@@ -139,8 +144,8 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
               isLoading={isLoading}
               title={sourceObj.name}
               subtitle={
-                sourceObj.numberOfRecords > 0
-                  ? `${sourceObj.numberOfRecords.toLocaleString()} resources
+                numberOfRecords > 0
+                  ? `${numberOfRecords.toLocaleString()} resources
                         available`
                   : ''
               }
@@ -154,36 +159,41 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                 </>
               }
               renderCTA={() =>
-                sourceObj.id ? (
+                sourceObj.searchURL ? (
                   <Flex
                     justifyContent={{ base: 'center', md: 'space-between' }}
                     flexWrap='wrap'
                     gap={2}
                     w='100%'
                   >
-                    <Button
-                      as='a'
-                      width={{ base: '100%', md: 'unset' }}
-                      maxWidth='500px'
-                      size='sm'
-                      href={sourceObj.resourceCatalogUrl}
-                      visibility='hidden'
-                      // visibility={sourceObj.resourceCatalogUrl? "visible" : "hidden"}
-                      variant='outline'
+                    <Flex
+                      flex={1}
+                      visibility={
+                        USE_MERGED_SOURCES_AND_CATALOGS &&
+                        sourceObj.resourceCatalogIdentifier
+                          ? 'visible'
+                          : 'hidden'
+                      }
                     >
-                      Learn about source
-                    </Button>
+                      <Button
+                        as={NextLink}
+                        size='sm'
+                        variant='outline'
+                        width={{ base: '100%', md: 'unset' }}
+                        maxWidth='500px'
+                        href={{
+                          pathname: '/resources',
+                          query: {
+                            id: sourceObj.resourceCatalogIdentifier,
+                          },
+                        }}
+                      >
+                        Learn about source
+                      </Button>
+                    </Flex>
                     <StyledCardButton
                       maxWidth='500px'
-                      href={{
-                        pathname: `/search`,
-                        query: {
-                          q: '',
-                          filters: queryFilterObject2String({
-                            'includedInDataCatalog.name': [sourceObj.id],
-                          }),
-                        },
-                      }}
+                      href={sourceObj.searchURL}
                     >
                       See search results
                     </StyledCardButton>

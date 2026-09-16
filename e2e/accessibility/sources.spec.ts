@@ -18,9 +18,9 @@
  * SSR Error block: getStaticProps returns empty props and the page falls back to
  * the client query, so the route always loads content client-side and the only
  * Error UI is driven by the client query's `metadataError`. We therefore drive
- * every state through the interceptable client-side `/metadata` request
- * (`page.route` runs in the browser; the getStaticProps fetch happens in the
- * Next dev server and is out of reach, but it can no longer gate the view):
+ * every state through the interceptable client-side requests (`page.route` runs
+ * in the browser; the getStaticProps fetch happens at build time and is out of
+ * reach, but it can no longer gate the view):
  *   - loading   — `/metadata` kept pending → skeleton cards/text (`isFetching`)
  *   - empty     — `/metadata` resolved with no sources → "0 results."
  *   - populated — `/metadata` resolved with fixture sources → source cards
@@ -36,7 +36,16 @@
  * dark background and light text, exactly the kind of place contrast/structure
  * regressions hide and which the resting scans never see.
  *
- * Endpoints mocked (client-side): `**\/metadata*` — the NDE metadata API.
+ * Endpoints mocked (client-side):
+ *   - `**\/metadata*` — the NDE metadata API (source list + build version).
+ *   - `**\/query*` — the NDE search API. The route does NOT read `/metadata`
+ *     alone: `useSourcesList` also calls `useResourceCatalogs`, which fetches
+ *     `<API>\/query?q=@type:"ResourceCatalog"` and merges standalone catalogs
+ *     into the SAME source list (USE_MERGED_SOURCES_AND_CATALOGS is on outside
+ *     production, and the a11y export is built with `.env.staging`). Left
+ *     unmocked it reaches the live staging API and adds ~45 real sources, which
+ *     is what made the empty state a race: the count flipped from 0 to 45 as
+ *     soon as that response landed. Every state mocks it.
  */
 import { test, expect, type Page, type TestInfo } from '@playwright/test';
 import { runAxeScans } from '../utils/axe';
@@ -45,13 +54,21 @@ import { runAxeScans } from '../utils/axe';
 
 const ROUTE = '/sources';
 
-// The only endpoint the route reads client-side. The NDE metadata API is NOT
-// under `/api/` — it is `<NEXT_PUBLIC_API_URL>/metadata`.
-const API_GLOBS = ['**/metadata*'];
+// The two endpoints the route reads client-side. Neither sits under `/api/`:
+// they are `<NEXT_PUBLIC_API_URL>/metadata` and `<NEXT_PUBLIC_API_URL>/query`.
+const METADATA_GLOB = '**/metadata*';
+const RESOURCE_CATALOG_GLOB = '**/query*';
+const API_GLOBS = [METADATA_GLOB, RESOURCE_CATALOG_GLOB];
 
 // Card title used as the populated-state proof. It is NOT in live data, so once
 // it renders we know the mocked fixture — not the SSR seed — owns the DOM.
 const FIXTURE_SOURCE_NAME = 'Fixture Source Alpha';
+
+// Rendered as the "API Version: V.<version>" tag — but only once BOTH client
+// queries have resolved (`isLoading` false). It is absent from the static
+// export's pre-hydration markup, which makes it the proof that mocked client
+// data, not the server-rendered HTML, owns the DOM.
+const FIXTURE_BUILD_VERSION = '2026-06-01';
 
 // Minimal but representative `Metadata` payload (see src/hooks/api/types.ts).
 // fetchMetadata returns this object directly; the page's `select` turns
@@ -61,7 +78,7 @@ const FIXTURE_SOURCE_NAME = 'Fixture Source Alpha';
 const POPULATED_FIXTURE = {
   biothing_type: 'source',
   build_date: '2026-06-01T00:00:00Z',
-  build_version: '2026-06-01',
+  build_version: FIXTURE_BUILD_VERSION,
   src: {
     fixturealpha: {
       version: '2026-05-20T00:00:00Z',
@@ -96,9 +113,31 @@ const POPULATED_FIXTURE = {
 const EMPTY_FIXTURE = {
   biothing_type: 'source',
   build_date: '2026-06-01T00:00:00Z',
-  build_version: '2026-06-01',
+  build_version: FIXTURE_BUILD_VERSION,
   src: {},
 };
+
+// Search-API response carrying no resource catalogs, so the mocked `/metadata`
+// payload alone determines the source list.
+const EMPTY_CATALOG_RESPONSE = { took: 1, total: 0, max_score: null, hits: [] };
+
+/** Fulfil both client-side endpoints for a resolved (non-loading) state. */
+async function mockSourceEndpoints(page: Page, metadata: unknown) {
+  await page.route(METADATA_GLOB, route =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(metadata),
+    }),
+  );
+  await page.route(RESOURCE_CATALOG_GLOB, route =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(EMPTY_CATALOG_RESPONSE),
+    }),
+  );
+}
 
 /**
  * Resting-state checks: the view renders the same chrome (the "Data Sources"
@@ -148,19 +187,17 @@ test.describe('a11y: Sources — loading', () => {
 
 test.describe('a11y: Sources — empty', () => {
   test('passes axe with no sources', async ({ page }, testInfo) => {
-    for (const glob of API_GLOBS) {
-      await page.route(glob, route =>
-        route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(EMPTY_FIXTURE),
-        }),
-      );
-    }
+    await mockSourceEndpoints(page, EMPTY_FIXTURE);
     await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
-    // The SectionSearch result counter reads the filtered source list. With no
-    // sources it renders "0 results." — proof the client query resolved empty
-    // (not the placeholder/SSR seed, which would show a non-zero count).
+
+    // "0 results." on its own does NOT prove the empty state: the static export
+    // ships the page's pre-hydration markup, where the source list is still
+    // empty, so that text is in the HTML before any client query runs. Wait for
+    // the mocked build version first — it renders only once both client queries
+    // have resolved — then assert the count.
+    await expect(page.getByText(`V.${FIXTURE_BUILD_VERSION}`)).toBeVisible();
+    // The SectionSearch result counter reads the filtered source list; with the
+    // mocked data resolved and empty, it reads "0 results.".
     await expect(page.getByText(/0 results\./i)).toBeVisible();
 
     await runSharedChecks(page, testInfo, 'empty');
@@ -171,15 +208,7 @@ test.describe('a11y: Sources — empty', () => {
 
 test.describe('a11y: Sources — populated', () => {
   test('passes axe with representative sources', async ({ page }, testInfo) => {
-    for (const glob of API_GLOBS) {
-      await page.route(glob, route =>
-        route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(POPULATED_FIXTURE),
-        }),
-      );
-    }
+    await mockSourceEndpoints(page, POPULATED_FIXTURE);
     await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
     // Wait for a fixture source name (rendered as a card title and a sidebar
     // heading) that only appears once the mocked query resolves, so we scan the
@@ -251,15 +280,7 @@ test.describe('a11y: Sources — schema property table', () => {
   test('passes axe with a source schema table expanded', async ({
     page,
   }, testInfo) => {
-    for (const glob of API_GLOBS) {
-      await page.route(glob, route =>
-        route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(POPULATED_FIXTURE),
-        }),
-      );
-    }
+    await mockSourceEndpoints(page, POPULATED_FIXTURE);
     await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
     // Wait for the populated card, then expand its schema table. dispatchEvent
     // fires the toggle's React onClick directly, bypassing the Next.js dev

@@ -190,7 +190,7 @@ export const StyledCardDescription: React.FC<{ children: string }> = ({
 };
 
 interface StyledCardButtonProps extends ButtonProps {
-  href: UrlObject;
+  href: string | UrlObject;
 }
 
 export const StyledCardButton: React.FC<StyledCardButtonProps> = ({

@@ -115,4 +115,40 @@ describe('tag/utils', () => {
       ]),
     );
   });
+
+  it('renders a cross-field OR (`_or`) group as one tag labelled from a known facet', () => {
+    const orConfigMap = {
+      ...configMap,
+      'includedInDataCatalog.name': {
+        id: 'includedInDataCatalog',
+        name: 'Sources',
+        property: 'includedInDataCatalog.name',
+        category: 'Shared',
+        queryType: 'source',
+        description: '',
+      },
+    } as any;
+
+    const tags = generateTags(
+      {
+        _or: [
+          { 'includedInDataCatalog.name': ['acd@NIAID'] },
+          { _id: ['dde_123'] },
+        ],
+      } as any,
+      orConfigMap,
+    );
+
+    expect(tags).toHaveLength(1);
+    expect(tags[0]).toMatchObject({
+      filterKey: '_or',
+      name: 'Sources',
+      displayValue: 'acd@NIAID',
+    });
+    // The tag's value is the whole group so removing it clears the filter.
+    expect(tags[0].value).toEqual([
+      { 'includedInDataCatalog.name': ['acd@NIAID'] },
+      { _id: ['dde_123'] },
+    ]);
+  });
 });

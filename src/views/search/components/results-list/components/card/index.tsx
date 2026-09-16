@@ -27,7 +27,11 @@ import { ToggleContainer } from 'src/components/toggle-container';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 import { Skeleton } from 'src/components/skeleton';
-import { filterWords, getContentTypeItems } from './helpers';
+import {
+  filterWords,
+  formatCollectionSize,
+  getContentTypeItems,
+} from './helpers';
 import { CONTENT_TYPE_TOOLTIP } from 'src/views/search/config/content-type';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
@@ -91,6 +95,13 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   // `about` and `exampleOfWork.about` values, merged into one unlabeled pill
   // list. Data Collections only.
   const contentTypeItems = useMemo(() => getContentTypeItems(data), [data]);
+
+  // Count and unitText for the DataCollection card's collection-size
+  // rectangle.
+  const collectionSize = useMemo(
+    () => formatCollectionSize(data?.collectionSize),
+    [data],
+  );
 
   const highlightProps = useMemo(
     () =>
@@ -316,16 +327,66 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 flexDirection={{ base: 'column', md: 'row' }}
                 spacing={[1, 3, 4]}
               >
-                {data && (
-                  <CompletenessBadgeCircle
-                    type={data['@type']}
-                    stats={data['_meta']}
-                    animate={false}
-                    size='md'
-                    minWidth='176px'
-                    p={0}
-                  />
-                )}
+                {data && data['@type'] === 'DataCollection'
+                  ? collectionSize && (
+                      <Tooltip
+                        label='What the data collection contains and its size'
+                        hasArrow
+                        bg='#fff'
+                        sx={{
+                          color: 'text.body',
+                        }}
+                      >
+                        <Flex
+                          flexDirection='column'
+                          alignItems='center'
+                          justifyContent='center'
+                          textAlign='center'
+                          minWidth='176px'
+                          px={3}
+                          py={2}
+                          border='1px solid'
+                          borderColor='gray.200'
+                          borderRadius='lg'
+                          bg='blue.50'
+                        >
+                          <Text
+                            fontSize='2xl'
+                            fontWeight='bold'
+                            color='blue.800'
+                            lineHeight='shorter'
+                          >
+                            {collectionSize.count}
+                          </Text>
+                          <Text
+                            fontSize='sm'
+                            fontWeight='medium'
+                            color='blue.800'
+                            lineHeight='shorter'
+                          >
+                            {collectionSize.unitText}
+                          </Text>
+                          <Text
+                            fontSize='sm'
+                            color='blue.800'
+                            fontWeight='medium'
+                            lineHeight='shorter'
+                          >
+                            in this collection
+                          </Text>
+                        </Flex>
+                      </Tooltip>
+                    )
+                  : data && (
+                      <CompletenessBadgeCircle
+                        type={data['@type']}
+                        stats={data['_meta']}
+                        animate={false}
+                        size='md'
+                        minWidth='176px'
+                        p={0}
+                      />
+                    )}
                 <Flex
                   display={{ base: 'block', sm: 'none' }}
                   px={2}
