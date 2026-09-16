@@ -100,4 +100,4 @@ export const SHOW_SEARCH_VIEW_MODES = true;
 // the radio and always renders the table, regardless of any view mode the user
 // has persisted in localStorage. To enable in production, set this flag to
 // `true`.
-export const SHOW_DATA_COLLECTIONS_VIEW_MODES = !isProd;
+export const SHOW_DATA_COLLECTIONS_VIEW_MODES = true;
