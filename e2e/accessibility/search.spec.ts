@@ -20,7 +20,7 @@
  *   - `**\/api/diseases*` the Strapi diseases lookup behind the carousel
  */
 import { test, expect, type Page, type TestInfo } from '@playwright/test';
-import { runAxeScans } from '../utils/axe';
+import { runAxeScans, waitForSearchFiltersSettled } from '../utils/axe';
 import {
   expectKeyboardOpens,
   expectEscapeReturnsFocus,
@@ -5726,6 +5726,11 @@ async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
   const search = page.getByRole('textbox', { name: /search for resources/i });
   await expect(search).toBeVisible();
   await expect(search).toBeEditable();
+
+  // Let the filters' "Clear All" button finish fading from disabled to enabled
+  // before scanning — otherwise axe can catch it mid-fade and report a false,
+  // intermittent color-contrast failure. See waitForSearchFiltersSettled.
+  await waitForSearchFiltersSettled(page);
 
   await runAxeScans(page, testInfo, state);
 }

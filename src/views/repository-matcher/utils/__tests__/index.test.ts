@@ -1,6 +1,6 @@
 import { buildItemUrl, itemTypes } from '..';
-import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
 import { RepositoryMatcherItem } from 'src/views/repository-matcher/types';
+import { getTabIdFromResourceType } from 'src/views/search/config/tabs';
 
 const makeItem = (overrides: Partial<RepositoryMatcherItem>) =>
   overrides as RepositoryMatcherItem;
@@ -53,7 +53,7 @@ describe('buildItemUrl', () => {
   });
 
   it('adds the computational tool tab for Computational Tool Repository items', () => {
-    const tab = getTabIdFromTypeLabel('ComputationalTool');
+    const tab = getTabIdFromResourceType('ComputationalTool');
     const url = buildItemUrl(
       makeItem({
         identifier: 'tool-1',
@@ -67,7 +67,7 @@ describe('buildItemUrl', () => {
   });
 
   it('adds the sample tab for Sample Repository items', () => {
-    const tab = getTabIdFromTypeLabel('Sample');
+    const tab = getTabIdFromResourceType('Sample');
     const url = buildItemUrl(
       makeItem({ identifier: 'sample-1', type: ['Sample Repository'] }),
     );

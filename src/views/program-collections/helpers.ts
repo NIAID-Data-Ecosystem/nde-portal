@@ -20,6 +20,22 @@ const transformTermToId = (term: string) => {
  */
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+// Retry transient failures: network errors (no response, e.g., ECONNRESET) and
+// 5xx responses.
+const isRetryableError = (err: unknown): boolean => {
+  if (!axios.isAxiosError(err)) {
+    return false;
+  }
+  // No response means a network-level failure (ECONNRESET, ETIMEDOUT, ...).
+  if (!err.response) {
+    return true;
+  }
+  return err.response.status >= 500;
+};
+
+// Number of retries on transient failures before giving up.
+const MAX_RETRIES = 3;
+
 /**
  * Fetches program collections and their associated counts from the NIAID Data Ecosystem API.
  * Processes each detail request sequentially to avoid rate limits.
@@ -55,45 +71,67 @@ export const fetchProgramCollections = async (
   for (const { term, count } of collections) {
     const id = transformTermToId(term);
 
-    try {
-      const { data } = await axios.get(`${API_URL}/query`, {
-        params: {
-          q: `_exists_:sourceOrganization.name AND sourceOrganization.name:"${term}"`,
-          size: 1,
-          fields: 'sourceOrganization',
-        },
-      });
+    let matchingOrg: SourceOrganization | null = null;
 
-      const hit = data?.hits?.[0];
-      const sourceOrg = hit?.sourceOrganization;
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        const { data } = await axios.get(`${API_URL}/query`, {
+          params: {
+            q: `_exists_:sourceOrganization.name AND sourceOrganization.name:"${term}"`,
+            size: 1,
+            fields: 'sourceOrganization',
+          },
+        });
 
-      let matchingOrg: SourceOrganization | null = null;
+        const hit = data?.hits?.[0];
+        const sourceOrg = hit?.sourceOrganization;
 
-      if (Array.isArray(sourceOrg)) {
-        matchingOrg = sourceOrg.find(
-          (org: SourceOrganization) =>
-            org.name.toLowerCase() === term.toLowerCase(),
+        if (Array.isArray(sourceOrg)) {
+          matchingOrg = sourceOrg.find(
+            (org: SourceOrganization) =>
+              org.name.toLowerCase() === term.toLowerCase(),
+          );
+        } else if (sourceOrg?.name?.toLowerCase() === term.toLowerCase()) {
+          matchingOrg = sourceOrg;
+        }
+
+        if (matchingOrg?.alternateName) {
+          const nameWords = matchingOrg.name.split(' ');
+          // The API sometimes returns a single string instead of an array
+          // (e.g., IEDB's alternateName is just "IEDB"). Normalize to an
+          // array since downstream consumers expect alternateName to be one.
+          const alternateNames = Array.isArray(matchingOrg.alternateName)
+            ? matchingOrg.alternateName
+            : [matchingOrg.alternateName];
+          matchingOrg.alternateName = alternateNames.filter(
+            (alt: string) => !nameWords.includes(alt),
+          );
+        }
+
+        break;
+      } catch (error) {
+        if (isRetryableError(error) && attempt < MAX_RETRIES) {
+          // Exponential backoff: 300ms, 600ms, 1200ms, ...
+          await delay(300 * 2 ** attempt);
+          continue;
+        }
+
+        console.error(
+          `Failed to fetch program collection details for ${term}:`,
+          error,
         );
-      } else if (sourceOrg?.name?.toLowerCase() === term.toLowerCase()) {
-        matchingOrg = sourceOrg;
-      }
-
-      if (matchingOrg?.alternateName) {
-        const nameWords = matchingOrg.name.split(' ');
-        matchingOrg.alternateName = matchingOrg.alternateName.filter(
-          (alt: string) => !nameWords.includes(alt),
+        throw new Error(
+          `Unable to fetch program collection details for ${term}`,
         );
       }
-
-      collectionsWithDetails.push({
-        id,
-        term,
-        count,
-        sourceOrganization: matchingOrg,
-      });
-    } catch (error) {
-      throw new Error(`Unable to fetch program collection details for ${term}`);
     }
+
+    collectionsWithDetails.push({
+      id,
+      term,
+      count,
+      sourceOrganization: matchingOrg,
+    });
 
     // Optional delay to avoid rate limiting
     await delay(delayTime);

@@ -16,8 +16,7 @@ import { SearchInput, SearchInputProps } from 'src/components/search-input';
 import { formatDomainName, formatTypeName } from './helpers';
 import { Filters } from './filters/';
 import useFilteredData from './hooks/useFilteredData';
-import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-string';
-import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
+import { getTabIdFromResourceType } from 'src/views/search/config/tabs';
 
 export interface TableData {
   _id: string;
@@ -208,7 +207,7 @@ export const RepositoryCells = ({
   isLoading?: boolean;
 }) => {
   const tab = data?.type?.includes('Computational Tool Repository')
-    ? getTabIdFromTypeLabel('ComputationalTool')
+    ? getTabIdFromResourceType('ComputationalTool')
     : undefined;
 
   return (
