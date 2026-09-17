@@ -9,6 +9,7 @@ import { ScrollContainer } from 'src/components/scroll-container';
 import { SearchableItems } from 'src/components/searchable-items';
 import { Skeleton } from 'src/components/skeleton';
 import { CompactCard } from '../compact-card';
+import { getResourceCatalogContentTypeItems } from 'src/views/search/components/results-list/components/card/helpers';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 import { hasSourceOrganization } from 'src/components/resource-sections/components/type-banner';
 import {
@@ -39,7 +40,6 @@ export const ResourceCatalogCard = ({
     conditionsOfAccess,
     hasAPI,
     creativeWorkStatus,
-    about,
     description,
     sourceOrganization,
   } = data || {};
@@ -61,15 +61,10 @@ export const ResourceCatalogCard = ({
   };
 
   // Transform about array to string array for SearchableItems
-  const aboutItems = useMemo(() => {
-    if (!about) return [];
-    const aboutArray = Array.isArray(about) ? about : [about];
-    return aboutArray.map(a => ({
-      name: a.displayName,
-      value: a.displayName,
-      field: 'about.displayName',
-    }));
-  }, [about]);
+  const aboutItems = useMemo(
+    () => getResourceCatalogContentTypeItems(data),
+    [data],
+  );
 
   const shouldShowDescription = !showAllTypes;
 
