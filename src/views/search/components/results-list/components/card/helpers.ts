@@ -70,6 +70,23 @@ export const formatCollectionSize = (
 };
 
 /*
+ * Builds the "Content Types" pills for a Resource Catalog card from `about`
+ * alone, linking each pill to a search on `about.displayName`.
+ */
+export const getResourceCatalogContentTypeItems = (
+  data?: FormattedResource | null,
+): SearchableItem[] => {
+  const about = data?.about;
+  if (!about) return [];
+  const aboutArray = Array.isArray(about) ? about : [about];
+  return aboutArray.map(a => ({
+    name: a.displayName,
+    value: a.displayName,
+    field: 'about.displayName',
+  }));
+};
+
+/*
  * Builds the "Content Type" pills for a card from the record's merged `about`
  * and `exampleOfWork.about` terms. Each pill's link searches both fields with
  * OR, so the results are the same no matter which field supplied the value.

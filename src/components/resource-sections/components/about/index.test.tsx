@@ -262,6 +262,49 @@ describe('AboutResource', () => {
         screen.queryByRole('link', { name: /Unlinked/ }),
       ).not.toBeInTheDocument();
     });
+
+    it('for a ResourceCatalog, links each tag to the same search as the Resource Catalog card', () => {
+      renderWithChakra(
+        <AboutResource
+          type='ResourceCatalog'
+          about={
+            [
+              { displayName: 'Genomic', name: 'genomic' },
+              { displayName: 'Clinical', name: 'clinical' },
+            ] as any
+          }
+          isLoading={false}
+        />,
+      );
+
+      // next/link is stubbed in jest.setup.js so only the pathname survives.
+      expect(screen.getByRole('link', { name: /Genomic/ })).toHaveAttribute(
+        'href',
+        '/search',
+      );
+    });
+
+    it('for a DataCollection, links each tag to the same search as the Data Collection card', () => {
+      renderWithChakra(
+        <AboutResource
+          type='DataCollection'
+          about={[{ displayName: 'Genomic', name: 'genomic' } as any]}
+          exampleOfWork={
+            { about: { displayName: 'Proteomic', name: 'proteomic' } } as any
+          }
+          isLoading={false}
+        />,
+      );
+
+      expect(screen.getByRole('link', { name: /Genomic/ })).toHaveAttribute(
+        'href',
+        '/search',
+      );
+      expect(screen.getByRole('link', { name: /Proteomic/ })).toHaveAttribute(
+        'href',
+        '/search',
+      );
+    });
   });
 
   describe('Collection Size Details', () => {
