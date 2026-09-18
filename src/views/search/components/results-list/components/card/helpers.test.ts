@@ -1,5 +1,9 @@
 import { FormattedResource } from 'src/utils/api/types';
-import { formatCollectionSize, getContentTypeItems } from './helpers';
+import {
+  formatCollectionSize,
+  getContentTypeItems,
+  getResourceCatalogContentTypeItems,
+} from './helpers';
 
 // The helper only reads `about` and `exampleOfWork`, so the fixtures are
 // cast rather than filled out with a whole FormattedResource.
@@ -241,5 +245,79 @@ describe('getContentTypeItems', () => {
     expect(
       getContentTypeItems(data ? resource(data) : (data as null | undefined)),
     ).toEqual([]);
+  });
+});
+
+describe('getResourceCatalogContentTypeItems', () => {
+  it('widens the query to also match @type:Dataset records', () => {
+    const items = getResourceCatalogContentTypeItems(
+      resource({ about: { displayName: 'Dataset' } }),
+    );
+
+    expect(items).toEqual([
+      {
+        name: 'Dataset',
+        value: 'Dataset',
+        field: 'about.displayName',
+        query: '(about.displayName:"Dataset" OR @type:"Dataset")',
+      },
+    ]);
+  });
+
+  it('widens the query to also match @type:Sample records', () => {
+    const items = getResourceCatalogContentTypeItems(
+      resource({ about: { displayName: 'Sample' } }),
+    );
+
+    expect(items[0].query).toEqual(
+      '(about.displayName:"Sample" OR @type:"Sample")',
+    );
+  });
+
+  it('maps Software to the underlying @type:ComputationalTool', () => {
+    const items = getResourceCatalogContentTypeItems(
+      resource({ about: { displayName: 'Software' } }),
+    );
+
+    expect(items[0].query).toEqual(
+      '(about.displayName:"Software" OR @type:"ComputationalTool")',
+    );
+  });
+
+  it('matches Dataset/Sample/Software case-insensitively', () => {
+    const items = getResourceCatalogContentTypeItems(
+      resource({ about: { displayName: 'dataset' } }),
+    );
+
+    expect(items[0].query).toEqual(
+      '(about.displayName:"dataset" OR @type:"Dataset")',
+    );
+  });
+
+  it('leaves unrelated about values without a query override', () => {
+    const items = getResourceCatalogContentTypeItems(
+      resource({ about: { displayName: 'Genomic' } }),
+    );
+
+    expect(items).toEqual([
+      {
+        name: 'Genomic',
+        value: 'Genomic',
+        field: 'about.displayName',
+      },
+    ]);
+  });
+
+  it('applies the mapping per-entry across an array of about values', () => {
+    const items = getResourceCatalogContentTypeItems(
+      resource({
+        about: [{ displayName: 'Dataset' }, { displayName: 'Genomic' }],
+      }),
+    );
+
+    expect(items[0].query).toEqual(
+      '(about.displayName:"Dataset" OR @type:"Dataset")',
+    );
+    expect(items[1].query).toBeUndefined();
   });
 });

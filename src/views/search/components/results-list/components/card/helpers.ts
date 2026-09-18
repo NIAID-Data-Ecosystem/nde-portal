@@ -70,8 +70,20 @@ export const formatCollectionSize = (
 };
 
 /*
+ * When the Content Type corresponds to a resource type, the search will
+ * also match the actual typed records.
+ */
+const CONTENT_TYPE_TO_RESOURCE_TYPE: Record<string, string> = {
+  dataset: 'Dataset',
+  sample: 'Sample',
+  software: 'ComputationalTool',
+};
+
+/*
  * Builds the "Content Types" pills for a Resource Catalog card from `about`
- * alone, linking each pill to a search on `about.displayName`.
+ * alone, linking each pill to a search on `about.displayName`. When the
+ * value is a known resource type, the search also matches records of
+ * the corresponding `@type`.
  */
 export const getResourceCatalogContentTypeItems = (
   data?: FormattedResource | null,
@@ -79,11 +91,21 @@ export const getResourceCatalogContentTypeItems = (
   const about = data?.about;
   if (!about) return [];
   const aboutArray = Array.isArray(about) ? about : [about];
-  return aboutArray.map(a => ({
-    name: a.displayName,
-    value: a.displayName,
-    field: 'about.displayName',
-  }));
+  return aboutArray.map(a => {
+    const value = a.displayName;
+    const resourceType = value
+      ? CONTENT_TYPE_TO_RESOURCE_TYPE[value.toLowerCase()]
+      : undefined;
+
+    return {
+      name: value,
+      value,
+      field: 'about.displayName',
+      ...(resourceType && {
+        query: `(about.displayName:"${value}" OR @type:"${resourceType}")`,
+      }),
+    };
+  });
 };
 
 /*
