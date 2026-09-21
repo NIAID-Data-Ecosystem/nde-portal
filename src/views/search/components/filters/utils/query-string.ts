@@ -2,7 +2,12 @@ import { SelectedFilterType, SelectedFilterValueType } from '../types';
 import { formatResourceTypeForAPI } from 'src/utils/formatting/formatResourceType';
 import { SHOW_FILTER_ANY_NO_EXCLUSIVITY } from 'src/utils/feature-flags';
 import { APPLY_DEFAULT_DATE_FILTER_KEY } from 'src/views/search/config/defaultQuery';
-import { MERGED_FILTER_FIELDS } from 'src/views/search/config/content-type';
+import {
+  CONTENT_TYPE_ABOUT_FIELD,
+  CONTENT_TYPE_RESOURCE_TYPE_FIELD,
+  getContentTypeResourceTypes,
+  MERGED_FILTER_FIELDS,
+} from 'src/views/search/config/content-type';
 
 // Regex to split filter values by quoted/bare OR and TO separators.
 // Matches: " OR ", OR, " TO ", TO (used in both date ranges and multi-value filters)
@@ -161,6 +166,27 @@ export const queryFilterObject2String = (
               : valueString;
           return `(${filter}:${fieldValueString})`;
         });
+
+        // Content Type values that name a resource type also match records of
+        // that type, matching the Content Types pills on cards and resource
+        // pages. Built from the string values alone, so an _exists_ selection
+        // is never widened into `@type:_exists_`, which matches everything.
+        //
+        // This clause goes last so the first clause stays the filter's own
+        // `property`, which is what MERGED_CLAUSE_PATTERN reads when parsing
+        // the string back into a selection.
+        const resourceTypes =
+          filterName === CONTENT_TYPE_ABOUT_FIELD
+            ? getContentTypeResourceTypes(stringValues)
+            : [];
+        if (resourceTypes.length > 0) {
+          clauses.push(
+            `(${CONTENT_TYPE_RESOURCE_TYPE_FIELD}:("${resourceTypes.join(
+              '" OR "',
+            )}"))`,
+          );
+        }
+
         return `(${clauses.join(' OR ')})`;
       }
 

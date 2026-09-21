@@ -11,7 +11,7 @@ import {
 import {
   CONTENT_TYPE_ABOUT_FIELD,
   CONTENT_TYPE_TOOLTIP,
-  getFacetProperties,
+  getRequestedFacetProperties,
 } from 'src/views/search/config/content-type';
 import { formatTermLabel } from 'src/utils/formatting/formatTermLabel';
 
@@ -344,7 +344,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
  * the aggregation response contains every key needed to build its facet data.
  */
 export const ALL_FACET_PROPERTIES = FILTER_CONFIGS.flatMap(c =>
-  getFacetProperties(c.property),
+  getRequestedFacetProperties(c.property),
 ).join(',');
 
 /**
@@ -364,7 +364,7 @@ export const ALL_FACET_PROPERTIES = FILTER_CONFIGS.flatMap(c =>
  */
 export const FACET_PROPERTIES_BY_CATEGORY = FILTER_CONFIGS.reduce(
   (acc, config) => {
-    const properties = getFacetProperties(config.property).join(',');
+    const properties = getRequestedFacetProperties(config.property).join(',');
     acc[config.category] = acc[config.category]
       ? `${acc[config.category]},${properties}`
       : properties;
