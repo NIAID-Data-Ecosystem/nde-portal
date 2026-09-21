@@ -4,6 +4,7 @@ import { FormattedResource } from 'src/utils/api/types';
 import {
   CONTENT_TYPE_ABOUT_FIELD,
   CONTENT_TYPE_EXAMPLE_OF_WORK_FIELD,
+  getResourceTypeForContentType,
 } from 'src/views/search/config/content-type';
 import {
   getContentTypeLabel,
@@ -70,16 +71,6 @@ export const formatCollectionSize = (
 };
 
 /*
- * When the Content Type corresponds to a resource type, the search will
- * also match the actual typed records.
- */
-const CONTENT_TYPE_TO_RESOURCE_TYPE: Record<string, string> = {
-  dataset: 'Dataset',
-  sample: 'Sample',
-  software: 'ComputationalTool',
-};
-
-/*
  * Builds the "Content Types" pills for a Resource Catalog card from `about`
  * alone, linking each pill to a search on `about.displayName`. When the
  * value is a known resource type, the search also matches records of
@@ -91,21 +82,27 @@ export const getResourceCatalogContentTypeItems = (
   const about = data?.about;
   if (!about) return [];
   const aboutArray = Array.isArray(about) ? about : [about];
-  return aboutArray.map(a => {
-    const value = a.displayName;
-    const resourceType = value
-      ? CONTENT_TYPE_TO_RESOURCE_TYPE[value.toLowerCase()]
-      : undefined;
 
-    return {
+  const itemsByValue = new Map<string, SearchableItem>();
+
+  aboutArray.forEach(a => {
+    const value = a.displayName;
+    const key = String(value).toLowerCase();
+    if (itemsByValue.has(key)) return;
+
+    const resourceType = getResourceTypeForContentType(value);
+
+    itemsByValue.set(key, {
       name: value,
       value,
       field: 'about.displayName',
       ...(resourceType && {
         query: `(about.displayName:"${value}" OR @type:"${resourceType}")`,
       }),
-    };
+    });
   });
+
+  return Array.from(itemsByValue.values());
 };
 
 /*

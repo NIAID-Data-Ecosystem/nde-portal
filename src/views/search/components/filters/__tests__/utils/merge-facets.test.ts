@@ -148,4 +148,107 @@ describe('filters/utils/merge-facets', () => {
       expect(result?.existsCount).toBe(95);
     });
   });
+
+  // Selecting a Content Type that names a resource type also matches records
+  // of that type, so its count has to include them.
+  describe('Content Type resource type widening', () => {
+    const typedFacets: Facet = {
+      'about.name': facet(
+        [
+          { term: 'Genome', count: 500 },
+          { term: 'Dataset', count: 60 },
+          { term: 'Software', count: 11 },
+        ],
+        90,
+      ),
+      'exampleOfWork.about.name.raw': facet(
+        [{ term: 'Genome', count: 120 }],
+        95,
+      ),
+      '@type': facet([
+        { term: 'Dataset', count: 5000 },
+        { term: 'ComputationalTool', count: 300 },
+        { term: 'ResourceCatalog', count: 100 },
+      ]),
+    };
+
+    const widened = () =>
+      mergeFacets(typedFacets, CONTENT_TYPE_ABOUT_FIELD, 1000);
+
+    it('adds the @type count to the terms that name a resource type', () => {
+      const terms = widened()?.terms;
+
+      // Disjoint sets: a ResourceCatalog about datasets is not @type:Dataset,
+      // so unlike the overlapping content fields these counts are summed.
+      expect(terms?.find(t => t.term === 'Dataset')?.count).toBe(5060);
+      expect(terms?.find(t => t.term === 'Software')?.count).toBe(311);
+    });
+
+    it('leaves terms that name no resource type untouched', () => {
+      expect(widened()?.terms.find(t => t.term === 'Genome')?.count).toBe(500);
+    });
+
+    it('re-sorts by the widened counts', () => {
+      expect(widened()?.terms.map(t => t.term)).toEqual([
+        'Dataset',
+        'Genome',
+        'Software',
+      ]);
+    });
+
+    // @type is on every record, so an "Any" count including it would be the
+    // whole index. The _exists_ query is not widened either.
+    it('leaves the Any/No counts alone', () => {
+      expect(widened()?.existsCount).toBe(910);
+      expect(widened()?.missing).toBe(90);
+    });
+
+    it('does not add resource types that no record is about', () => {
+      // @type:ResourceCatalog has no Content Type value, and nothing is about
+      // samples here, so neither becomes an option.
+      expect(widened()?.terms.map(t => t.term)).not.toContain('Sample');
+    });
+
+    it('is a no-op when the response has no @type facet', () => {
+      const result = mergeFacets(
+        {
+          'about.name': facet([{ term: 'Dataset', count: 60 }], 90),
+          'exampleOfWork.about.name.raw': facet(
+            [{ term: 'Genome', count: 120 }],
+            95,
+          ),
+        },
+        CONTENT_TYPE_ABOUT_FIELD,
+        1000,
+      );
+
+      expect(result?.terms.find(t => t.term === 'Dataset')?.count).toBe(60);
+    });
+
+    it('widens a single-field response too', () => {
+      const result = mergeFacets(
+        {
+          'about.name': facet([{ term: 'Dataset', count: 60 }], 90),
+          '@type': facet([{ term: 'Dataset', count: 5000 }]),
+        },
+        CONTENT_TYPE_ABOUT_FIELD,
+        1000,
+      );
+
+      expect(result?.terms).toEqual([{ term: 'Dataset', count: 5060 }]);
+    });
+
+    it('does not widen other filters that happen to share a term', () => {
+      const result = mergeFacets(
+        {
+          'topicCategory.name.raw': facet([{ term: 'Dataset', count: 7 }]),
+          '@type': facet([{ term: 'Dataset', count: 5000 }]),
+        },
+        'topicCategory.name.raw',
+        1000,
+      );
+
+      expect(result?.terms).toEqual([{ term: 'Dataset', count: 7 }]);
+    });
+  });
 });

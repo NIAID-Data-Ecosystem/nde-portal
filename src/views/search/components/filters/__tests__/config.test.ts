@@ -56,6 +56,17 @@ describe('filters/config', () => {
       expect(properties).toContain('exampleOfWork.about.name.raw');
     });
 
+    // Terms naming a resource type carry the count of the records of that
+    // type, so the aggregation has to return @type alongside the content
+    // fields. @type contributes no terms of its own.
+    it('also requests @type, once, to widen its resource type counts', () => {
+      const properties =
+        getFacetPropertiesForCategory('Shared / Dataset').split(',');
+      expect(properties.filter(property => property === '@type')).toEqual([
+        '@type',
+      ]);
+    });
+
     // Facet terms are the raw indexed values. `about.displayName` is not
     // facetable, which means the readable label needs to be derived.
     describe('transformData', () => {

@@ -320,4 +320,53 @@ describe('getResourceCatalogContentTypeItems', () => {
     );
     expect(items[1].query).toBeUndefined();
   });
+
+  // Resource Catalogs in the index repeat identical `about` entries, and each
+  // repeat would become a pill linking to the very same search.
+  describe('duplicate about values', () => {
+    it('keeps one item per repeated value', () => {
+      const items = getResourceCatalogContentTypeItems(
+        resource({
+          about: [
+            { displayName: 'Dataset' },
+            { displayName: 'Dataset' },
+            { displayName: 'Genome' },
+            { displayName: 'Genome' },
+            { displayName: 'Image' },
+          ],
+        }),
+      );
+
+      expect(items.map(item => item.value)).toEqual([
+        'Dataset',
+        'Genome',
+        'Image',
+      ]);
+    });
+
+    it('treats values differing only in casing as one', () => {
+      const items = getResourceCatalogContentTypeItems(
+        resource({
+          about: [{ displayName: 'Dataset' }, { displayName: 'dataset' }],
+        }),
+      );
+
+      expect(items).toHaveLength(1);
+      expect(items[0].value).toBe('Dataset');
+    });
+
+    it('preserves encounter order', () => {
+      const items = getResourceCatalogContentTypeItems(
+        resource({
+          about: [
+            { displayName: 'Image' },
+            { displayName: 'Dataset' },
+            { displayName: 'Image' },
+          ],
+        }),
+      );
+
+      expect(items.map(item => item.value)).toEqual(['Image', 'Dataset']);
+    });
+  });
 });
