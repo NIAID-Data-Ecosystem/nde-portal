@@ -6,7 +6,24 @@ import { StyledLabel } from './styles';
 import { APIResourceType } from 'src/utils/formatting/formatResourceType';
 import Tooltip from 'src/components/tooltip';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
-import { SHOW_RETIRED_RESOURCE_CATALOG_UI } from 'src/utils/feature-flags';
+import {
+  SHOW_PROGRAM_RESOURCE_UI,
+  SHOW_RETIRED_RESOURCE_CATALOG_UI,
+} from 'src/utils/feature-flags';
+
+// Program-related variants of the ResourceCatalog banner:
+// - 'resource': ResourceCatalog with a sourceOrganization.
+// - 'info-and-resource': ResourceCatalog with a sourceOrganization
+// whose sameAs links to its program collection.
+export type ProgramVariant = 'resource' | 'info-and-resource';
+
+export const PROGRAM_VARIANT_LABELS: Record<ProgramVariant, string> = {
+  resource: 'Program Resource',
+  'info-and-resource': 'Program Info and Resource',
+};
+
+export const PROGRAM_COLLECTIONS_SAMEAS_STUB =
+  'https://data.niaid.nih.gov/program-collections#';
 
 export interface TypeBannerProps extends FlexProps {
   label: string;
@@ -15,10 +32,10 @@ export interface TypeBannerProps extends FlexProps {
   sourceName?: string[] | null;
   isNiaidFunded?: boolean;
   creativeWorkStatus?: FormattedResource['creativeWorkStatus'];
-  // True when this ResourceCatalog has a non-empty sourceOrganization.
-  // Renders as "Program Resource" with cyan styling instead of the
-  // default ResourceCatalog treatment.
-  isProgramResource?: boolean;
+  // Set for ResourceCatalogs with a non-empty sourceOrganization. Renders the
+  // matching program label with cyan styling instead of the default
+  // ResourceCatalog treatment.
+  programVariant?: ProgramVariant;
 }
 
 // Determines whether a record's sourceOrganization should be treated as
@@ -34,6 +51,30 @@ export const hasSourceOrganization = (
   return true;
 };
 
+// Returns the program banner variant for a ResourceCatalog with a
+// sourceOrganization, or undefined when the default treatment applies.
+export const getProgramResourceVariant = (
+  resource?: Partial<
+    Pick<FormattedResource, '@type' | 'sourceOrganization'>
+  > & { sameAs?: string | string[] | null },
+): ProgramVariant | undefined => {
+  if (
+    !SHOW_PROGRAM_RESOURCE_UI ||
+    resource?.['@type'] !== 'ResourceCatalog' ||
+    !hasSourceOrganization(resource.sourceOrganization)
+  ) {
+    return undefined;
+  }
+  // sameAs comes from upstream metadata, so it may be a single value or a list.
+  const sameAs = resource.sameAs == null ? [] : [resource.sameAs].flat();
+  const linksToProgramCollection = sameAs.some(
+    url =>
+      typeof url === 'string' &&
+      url.startsWith(PROGRAM_COLLECTIONS_SAMEAS_STUB),
+  );
+  return linksToProgramCollection ? 'info-and-resource' : 'resource';
+};
+
 export const getTypeColor = (
   type?: APIResourceType | string,
   isRetired?: boolean,
@@ -45,8 +86,8 @@ export const getTypeColor = (
     return { lt: 'gray.800', dk: 'gray.300' };
   }
 
-  // ResourceCatalogs with a sourceOrganization are displayed as
-  // "Program Resource" and use a distinct cyan treatment.
+  // Program Resource and Program Info and Resource use a distinct
+  // cyan treatment.
   if (isProgramResource) {
     return { lt: 'cyan.900', dk: 'cyan.600' };
   }
@@ -84,7 +125,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
   pl,
   isNiaidFunded,
   creativeWorkStatus,
-  isProgramResource,
+  programVariant,
   ...props
 }) => {
   // Retired ResourceCatalogs get the gray banner treatment; every other
@@ -95,7 +136,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
     type === 'ResourceCatalog' &&
     creativeWorkStatus === 'Retired';
 
-  const colorScheme = getTypeColor(type, isRetired, isProgramResource);
+  const colorScheme = getTypeColor(type, isRetired, !!programVariant);
 
   // Most types pair a light label (lt) with a dark banner (dk), so the white
   // "NIAID" sub-label reads against dk. Retired catalogs and Data Collections
@@ -115,11 +156,11 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
       ? (description as Record<string, string>)[type]
       : '';
 
-  // ResourceCatalogs that have a sourceOrganization are labeled
-  // "Program Resource" instead of the default type label.
+  // Program ResourceCatalogs use their program label instead of the default
+  // type label.
   const displayLabel =
-    isProgramResource && type === 'ResourceCatalog'
-      ? 'Program Resource'
+    programVariant && type === 'ResourceCatalog'
+      ? PROGRAM_VARIANT_LABELS[programVariant]
       : label;
 
   return (

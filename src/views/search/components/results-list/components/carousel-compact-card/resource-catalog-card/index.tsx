@@ -11,11 +11,8 @@ import { Skeleton } from 'src/components/skeleton';
 import { CompactCard } from '../compact-card';
 import { getResourceCatalogContentTypeItems } from 'src/views/search/components/results-list/components/card/helpers';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
-import { hasSourceOrganization } from 'src/components/resource-sections/components/type-banner';
-import {
-  SHOW_PROGRAM_RESOURCE_UI,
-  SHOW_RETIRED_RESOURCE_CATALOG_UI,
-} from 'src/utils/feature-flags';
+import { getProgramResourceVariant } from 'src/components/resource-sections/components/type-banner';
+import { SHOW_RETIRED_RESOURCE_CATALOG_UI } from 'src/utils/feature-flags';
 
 interface ResourceCatalogCardProps {
   data?: FormattedResource | null;
@@ -41,16 +38,12 @@ export const ResourceCatalogCard = ({
     hasAPI,
     creativeWorkStatus,
     description,
-    sourceOrganization,
   } = data || {};
 
-  // ResourceCatalogs with a non-null sourceOrganization are displayed as
-  // "Program Resource" with cyan banner styling instead of the default
-  // ResourceCatalog treatment.
-  const isProgramResource =
-    SHOW_PROGRAM_RESOURCE_UI &&
-    type === 'ResourceCatalog' &&
-    hasSourceOrganization(sourceOrganization);
+  // ResourceCatalogs with a sourceOrganization are displayed as
+  // "Program Resource" or "Program Info and Resource" with cyan banner
+  // styling instead of the default ResourceCatalog treatment.
+  const programVariant = getProgramResourceVariant(data ?? undefined);
 
   const handleTypesToggle = (expanded: boolean) => {
     setShowAllTypes(expanded);
@@ -96,7 +89,7 @@ export const ResourceCatalogCard = ({
         isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
         isLoading={isLoading}
         creativeWorkStatus={creativeWorkStatus}
-        isProgramResource={isProgramResource}
+        programVariant={programVariant}
       />
 
       <CompactCard.Header isLoading={isLoading}>
