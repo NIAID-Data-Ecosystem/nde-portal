@@ -19,8 +19,7 @@ export const ProgramInfoCard = ({
   const { id, term, sourceOrganization } = data || {};
 
   const title = sourceOrganization?.name || term;
-  const description =
-    sourceOrganization?.abstract || sourceOrganization?.description;
+  const description = sourceOrganization?.abstract;
 
   const linkProps = id ? { href: `/program-collections#${id}` } : undefined;
 
