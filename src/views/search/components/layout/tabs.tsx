@@ -20,6 +20,8 @@ interface TabWithCounts extends Omit<TabType, 'types'> {
 interface SearchTabsProps extends Omit<TabsProps, 'children'> {
   colorScheme?: string;
   tabs: TabWithCounts[];
+  // Number of Program Info cards shown with the Other Resources.
+  programInfoCount?: number;
   renderTabPanels: () => React.ReactNode;
 }
 
@@ -27,6 +29,7 @@ export const SearchTabs = ({
   colorScheme = 'secondary',
   index,
   onChange,
+  programInfoCount = 0,
   renderTabPanels,
   tabs,
 }: SearchTabsProps) => {
@@ -58,7 +61,11 @@ export const SearchTabs = ({
               },
             }}
           >
-            <TabLabels types={tab.types} colorScheme={colorScheme} />
+            <TabLabels
+              types={tab.types}
+              colorScheme={colorScheme}
+              programInfoCount={programInfoCount}
+            />
           </Tab>
         ))}
       </TabList>
@@ -70,9 +77,11 @@ export const SearchTabs = ({
 const TabLabels = ({
   types,
   colorScheme,
+  programInfoCount,
 }: {
   types: TabWithCounts['types'];
   colorScheme: string;
+  programInfoCount: number;
 }) => {
   const datasetType = types.find(type => type.type === 'Dataset');
   const resourceCatalogType = types.find(
@@ -98,7 +107,8 @@ const TabLabels = ({
     const datasetCount = datasetType.count || 0;
     const resourceCatalogCount = resourceCatalogType.count || 0;
     const diseaseCount = diseaseType.count || 0;
-    const otherResourcesCount = resourceCatalogCount + diseaseCount;
+    const otherResourcesCount =
+      resourceCatalogCount + diseaseCount + programInfoCount;
 
     return (
       <Text as='h2' {...textStyles}>

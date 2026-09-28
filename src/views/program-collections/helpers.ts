@@ -16,6 +16,58 @@ const transformTermToId = (term: string) => {
 };
 
 /**
+ * Whether a program collection should be displayed as "Program Info", i.e., its
+ * sourceOrganization has no sameAs, or none of its sameAs URLs link to a
+ * resource catalog.
+ */
+export const isProgramInfoCollection = (
+  collection: ProgramCollection,
+): boolean => {
+  const sameAs = collection.sourceOrganization?.sameAs;
+  // sameAs comes from upstream metadata, so it may be a single value or a list.
+  const urls = sameAs == null ? [] : [sameAs].flat();
+  return !urls.some(url => typeof url === 'string' && url.includes('dde_'));
+};
+
+/**
+ * Whether every term of a search query appears in a program collection's
+ * name, alternate names or abstract. Returns false for an empty query.
+ */
+export const matchesProgramQuery = (
+  collection: ProgramCollection,
+  query?: string,
+): boolean => {
+  if (!query || query.trim() === '__all__') return false;
+
+  // Clean the query by removing field-specific syntax and operators.
+  const terms = query
+    .replace(/\w+\.\w+:\s*["']([^"']+)["']/gi, '$1')
+    .replace(/\b(AND|OR|NOT)\b/gi, '')
+    .replace(/[()]/g, '')
+    .replace(/["']/g, '')
+    .trim()
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(term => term.length > 2);
+
+  if (terms.length === 0) return false;
+
+  const { sourceOrganization, term } = collection;
+  const alternateName = sourceOrganization?.alternateName;
+  const text = [
+    term,
+    sourceOrganization?.name,
+    ...(alternateName == null ? [] : [alternateName].flat()),
+    sourceOrganization?.abstract,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+
+  return terms.every(t => text.includes(t));
+};
+
+/**
  * Optional delay between requests to avoid rate limits.
  */
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));

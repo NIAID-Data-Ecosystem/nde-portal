@@ -15,11 +15,13 @@ import {
 // - 'resource': ResourceCatalog with a sourceOrganization.
 // - 'info-and-resource': ResourceCatalog with a sourceOrganization
 // whose sameAs links to its program collection.
-export type ProgramVariant = 'resource' | 'info-and-resource';
+// - 'info': program collection without a resource catalog.
+export type ProgramVariant = 'resource' | 'info-and-resource' | 'info';
 
 export const PROGRAM_VARIANT_LABELS: Record<ProgramVariant, string> = {
   resource: 'Program Resource',
   'info-and-resource': 'Program Info and Resource',
+  info: 'Program Info',
 };
 
 export const PROGRAM_COLLECTIONS_SAMEAS_STUB =
@@ -27,7 +29,7 @@ export const PROGRAM_COLLECTIONS_SAMEAS_STUB =
 
 export interface TypeBannerProps extends FlexProps {
   label: string;
-  type?: APIResourceType | 'Disease';
+  type?: APIResourceType | 'Disease' | 'ProgramInfo';
   date?: FormattedResource['date'];
   sourceName?: string[] | null;
   isNiaidFunded?: boolean;
@@ -156,12 +158,11 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
       ? (description as Record<string, string>)[type]
       : '';
 
-  // Program ResourceCatalogs use their program label instead of the default
-  // type label.
-  const displayLabel =
-    programVariant && type === 'ResourceCatalog'
-      ? PROGRAM_VARIANT_LABELS[programVariant]
-      : label;
+  // Program ResourceCatalogs and Program Info cards use their program label
+  // instead of the default type label.
+  const displayLabel = programVariant
+    ? PROGRAM_VARIANT_LABELS[programVariant]
+    : label;
 
   return (
     <Flex flexWrap='wrap' w='100%' bg={props.bg || colorScheme.dk} {...props}>
