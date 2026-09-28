@@ -327,6 +327,7 @@ export const SearchResultsController = ({
     use_ai_search: queryParams.use_ai_search,
     enabled: router.isReady,
   });
+  const programInfoCount = programCollections.length;
 
   const carouselItems = useMemo(() => {
     const items: Array<{
@@ -444,6 +445,7 @@ export const SearchResultsController = ({
         onChange={handleTabChange}
         colorScheme={colorScheme}
         tabs={tabsWithFacetCounts}
+        programInfoCount={programInfoCount}
         renderTabPanels={() =>
           tabsWithFacetCounts.map(tab => {
             const sections = tab.types;
@@ -470,7 +472,10 @@ export const SearchResultsController = ({
                       return (
                         <AccordionContent
                           key='resource-catalog'
-                          title={generateOtherResourcesTitle(sections)}
+                          title={generateOtherResourcesTitle(
+                            sections,
+                            programInfoCount,
+                          )}
                         >
                           {isCarouselLoading || shouldShowCarousel ? (
                             <CarouselWrapper>
