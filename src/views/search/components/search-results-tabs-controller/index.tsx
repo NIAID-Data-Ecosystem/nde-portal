@@ -47,6 +47,7 @@ const CAROUSEL_RESULTS_FIELDS = [
   'hasAPI',
   'includedInDataCatalog',
   'name',
+  'sameAs',
   'sourceOrganization',
 ];
 
@@ -284,7 +285,7 @@ export const SearchResultsController = ({
       filters: { ...queryParams.filters, ['@type']: ['ResourceCatalog'] },
       fields: CAROUSEL_RESULTS_FIELDS,
       // No facets: this query is only read for `results`.
-      size: 50,
+      size: 200,
       sort: 'name.raw',
       use_ai_search: queryParams.use_ai_search ?? 'false',
     },
