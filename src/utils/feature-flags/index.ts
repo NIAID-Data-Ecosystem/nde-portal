@@ -99,3 +99,10 @@ export const SHOW_SEARCH_VIEW_MODES = true;
 // has persisted in localStorage. To enable in production, set this flag to
 // `true`.
 export const SHOW_DATA_COLLECTIONS_VIEW_MODES = true;
+
+// Make the "Dataset", "Sample" and "Software" Content Type values also match
+// records of @type Dataset, Sample and ComputationalTool respectively, in the
+// Content Type UI pills, the Content Type filter query, and the Content Type
+// filter's facet counts, in non-production environments.
+// To enable in production, set this flag to `true`.
+export const SHOW_CONTENT_TYPE_RESOURCE_TYPE_MATCHING = !isProd;

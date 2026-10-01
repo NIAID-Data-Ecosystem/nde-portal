@@ -1,4 +1,5 @@
 import { Facet, FacetTerm } from 'src/utils/api/types';
+import { SHOW_CONTENT_TYPE_RESOURCE_TYPE_MATCHING } from 'src/utils/feature-flags';
 import {
   CONTENT_TYPE_ABOUT_FIELD,
   CONTENT_TYPE_RESOURCE_TYPE_FIELD,
@@ -61,7 +62,8 @@ const widenResourceTypeCounts = (
  * occurrence and the largest count for each term.
  *
  * Content Type is the one exception to the `max` rule, for the disjoint
- * `@type` counts it folds in.
+ * `@type` counts it folds in when SHOW_CONTENT_TYPE_RESOURCE_TYPE_MATCHING is
+ * enabled.
  *
  * Returns `null` when none of the filter's fields contain facet terms.
  */
@@ -73,8 +75,10 @@ export const mergeFacets = (
   if (!facets) return null;
 
   // Content Type terms that name a resource type also match records of that
-  // type, so their counts include the `@type` count.
+  // type, so their counts include the `@type` count. Gated by
+  // SHOW_CONTENT_TYPE_RESOURCE_TYPE_MATCHING.
   const widen = (terms: FacetTerm[]): FacetTerm[] =>
+    SHOW_CONTENT_TYPE_RESOURCE_TYPE_MATCHING &&
     property === CONTENT_TYPE_ABOUT_FIELD
       ? widenResourceTypeCounts(terms, facets)
       : terms;

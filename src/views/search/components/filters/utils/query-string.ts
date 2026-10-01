@@ -1,6 +1,9 @@
 import { SelectedFilterType, SelectedFilterValueType } from '../types';
 import { formatResourceTypeForAPI } from 'src/utils/formatting/formatResourceType';
-import { SHOW_FILTER_ANY_NO_EXCLUSIVITY } from 'src/utils/feature-flags';
+import {
+  SHOW_CONTENT_TYPE_RESOURCE_TYPE_MATCHING,
+  SHOW_FILTER_ANY_NO_EXCLUSIVITY,
+} from 'src/utils/feature-flags';
 import { APPLY_DEFAULT_DATE_FILTER_KEY } from 'src/views/search/config/defaultQuery';
 import {
   CONTENT_TYPE_ABOUT_FIELD,
@@ -171,11 +174,13 @@ export const queryFilterObject2String = (
         // that type, matching the Content Types pills on cards and resource
         // pages. Built from the string values alone, so an _exists_ selection
         // is never widened into `@type:_exists_`, which matches everything.
+        // Gated by SHOW_CONTENT_TYPE_RESOURCE_TYPE_MATCHING.
         //
         // This clause goes last so the first clause stays the filter's own
         // `property`, which is what MERGED_CLAUSE_PATTERN reads when parsing
         // the string back into a selection.
         const resourceTypes =
+          SHOW_CONTENT_TYPE_RESOURCE_TYPE_MATCHING &&
           filterName === CONTENT_TYPE_ABOUT_FIELD
             ? getContentTypeResourceTypes(stringValues)
             : [];

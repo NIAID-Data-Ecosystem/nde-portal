@@ -2,6 +2,7 @@ import {
   APIResourceType,
   formatAPIResourceTypeForDisplay,
 } from 'src/utils/formatting/formatResourceType';
+import { SHOW_PROGRAM_RESOURCE_UI } from 'src/utils/feature-flags';
 import { TabType } from '../types';
 
 // Tab labels
@@ -66,8 +67,10 @@ export const tabs: TabType[] = [
   },
 ];
 
-// Generate an accordion title for the "Other Resources" group, counting
-// Resource Catalogs, Program Info cards and Disease Overviews.
+// Generate an accordion title for the "Other Resources" group. When
+// SHOW_PROGRAM_RESOURCE_UI is enabled, the title is a single total counting
+// Resource Catalogs, Program Info cards and Disease Overviews. Otherwise, the
+// title breaks down Resource Catalogs and Disease Overviews.
 export const generateOtherResourcesTitle = (
   sections: Array<{ type: string; count: number }>,
   programInfoCount = 0,
@@ -77,9 +80,32 @@ export const generateOtherResourcesTitle = (
 
   const resourceCount = resourceCatalog?.count || 0;
   const diseaseCount = disease?.count || 0;
-  const totalCount = resourceCount + diseaseCount + programInfoCount;
 
-  return `${TAB_LABELS.OTHER_RESOURCES} (${totalCount.toLocaleString()})`;
+  if (SHOW_PROGRAM_RESOURCE_UI) {
+    const totalCount = resourceCount + diseaseCount + programInfoCount;
+    return `${TAB_LABELS.OTHER_RESOURCES} (${totalCount.toLocaleString()})`;
+  }
+
+  const totalCount = resourceCount + diseaseCount;
+
+  // If there are no diseases, show only Resource Catalogs
+  if (diseaseCount === 0) {
+    return `${
+      TAB_LABELS.RESOURCE_CATALOG
+    }s (${resourceCount.toLocaleString()})`;
+  }
+
+  // If there are diseases, show the full "Other Resources" breakdown
+  const resourcePart = `${
+    TAB_LABELS.RESOURCE_CATALOG
+  }s (${resourceCount.toLocaleString()})`;
+  const diseasePart = `${
+    TAB_LABELS.DISEASE_OVERVIEW
+  }s (${diseaseCount.toLocaleString()})`;
+
+  return `${
+    TAB_LABELS.OTHER_RESOURCES
+  } (${totalCount.toLocaleString()}): ${resourcePart}, ${diseasePart}`;
 };
 
 /**

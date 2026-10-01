@@ -24,6 +24,7 @@ import { useProgramInfoCollections } from '../../hooks/useProgramInfoCollections
 import {
   SHOW_SAMPLES_TAB,
   SHOW_DATA_COLLECTIONS_TAB,
+  SHOW_PROGRAM_RESOURCE_UI,
 } from 'src/utils/feature-flags';
 import {
   useBioSampleAggregation,
@@ -328,7 +329,9 @@ export const SearchResultsController = ({
     use_ai_search: queryParams.use_ai_search,
     enabled: router.isReady,
   });
-  const programInfoCount = programCollections.length;
+  const programInfoCount = SHOW_PROGRAM_RESOURCE_UI
+    ? programCollections.length
+    : 0;
 
   const carouselItems = useMemo(() => {
     const items: Array<{
