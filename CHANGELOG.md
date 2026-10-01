@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.2.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v7.1.0...v7.2.0) (2026-10-01)
+
+
+### 🚀 Features
+
+* change searches related to content type buttons ([5303072](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/53030728e1d9a944fa42126790fb269a7460fb4a))
+* enable content type searches on ResourceCatalog and DataCollection pages ([d262b91](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/d262b913ecf0e954115e89d1b9090f0ba5b3f77c))
+
+
+### 🐛 Bugfixes
+
+* render program info and resource cards ([#554](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/554)) ([856410a](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/856410ad6dad0234715fbffed725f82ae34b28c3))
+
 ## [7.1.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v7.0.1...v7.1.0) (2026-09-16)
 
 ### [7.0.1](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v7.0.0...v7.0.1) (2026-09-10)
