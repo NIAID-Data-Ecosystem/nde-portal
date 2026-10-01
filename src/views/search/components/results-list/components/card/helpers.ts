@@ -1,6 +1,7 @@
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SearchableItem } from 'src/components/searchable-items';
 import { FormattedResource } from 'src/utils/api/types';
+import { SHOW_CONTENT_TYPE_RESOURCE_TYPE_MATCHING } from 'src/utils/feature-flags';
 import {
   CONTENT_TYPE_ABOUT_FIELD,
   CONTENT_TYPE_EXAMPLE_OF_WORK_FIELD,
@@ -73,8 +74,8 @@ export const formatCollectionSize = (
 /*
  * Builds the "Content Types" pills for a Resource Catalog card from `about`
  * alone, linking each pill to a search on `about.displayName`. When the
- * value is a known resource type, the search also matches records of
- * the corresponding `@type`.
+ * value is a known resource type and SHOW_CONTENT_TYPE_RESOURCE_TYPE_MATCHING
+ * is enabled, the search also matches records of the corresponding `@type`.
  */
 export const getResourceCatalogContentTypeItems = (
   data?: FormattedResource | null,
@@ -90,7 +91,9 @@ export const getResourceCatalogContentTypeItems = (
     const key = String(value).toLowerCase();
     if (itemsByValue.has(key)) return;
 
-    const resourceType = getResourceTypeForContentType(value);
+    const resourceType = SHOW_CONTENT_TYPE_RESOURCE_TYPE_MATCHING
+      ? getResourceTypeForContentType(value)
+      : undefined;
 
     itemsByValue.set(key, {
       name: value,
