@@ -57,12 +57,10 @@ export const SHOW_SAMPLE_UI_PILL = true;
 // set this flag to `true`.
 export const SHOW_RETIRED_RESOURCE_CATALOG_UI = true;
 
-// Show the "Program Resource" treatment for ResourceCatalog resources that have
-// a sourceOrganization (cyan type banner + "Program Resource" label on cards and
-// resource pages, and sourceOrganization names in the Collection information
-// section linked to the /program-collections page) in non-production
-// environments for testing/review. To enable in production, set this flag to
-// `true`.
+// Show the program treatments for ResourceCatalog resources in
+// non-production environments for testing/review: a cyan type banner
+// on cards and resource pages labeled "Program Info and Resource"
+// or "Program Resource". To enable in production, set this flag to `true`.
 export const SHOW_PROGRAM_RESOURCE_UI = !isProd;
 
 // Show the mutual-exclusivity behavior for the "Any <filter>" (_exists_) and
@@ -101,3 +99,10 @@ export const SHOW_SEARCH_VIEW_MODES = true;
 // has persisted in localStorage. To enable in production, set this flag to
 // `true`.
 export const SHOW_DATA_COLLECTIONS_VIEW_MODES = true;
+
+// Make the "Dataset", "Sample" and "Software" Content Type values also match
+// records of @type Dataset, Sample and ComputationalTool respectively, in the
+// Content Type UI pills, the Content Type filter query, and the Content Type
+// filter's facet counts, in non-production environments.
+// To enable in production, set this flag to `true`.
+export const SHOW_CONTENT_TYPE_RESOURCE_TYPE_MATCHING = !isProd;

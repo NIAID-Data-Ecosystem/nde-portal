@@ -63,13 +63,19 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
   onToggle,
   ...props
 }) => {
-  const uniqueItems = useMemo(
-    () =>
-      Array.from(new Set(items ?? [])).sort((a, b) =>
-        a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
-      ),
-    [items],
-  );
+  const uniqueItems = useMemo(() => {
+    // Keyed by the item's search query, which is also its React key below, so
+    // two items can never collide there.
+    const itemsByQuery = new Map<string, SearchableItem>();
+    (items ?? []).forEach(item => {
+      const query = getItemQuery(item);
+      if (!itemsByQuery.has(query)) itemsByQuery.set(query, item);
+    });
+
+    return Array.from(itemsByQuery.values()).sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
+    );
+  }, [items]);
 
   // Internal state (used only when not controlled externally)
   const [internalLimit, setInternalLimit] = useState(itemLimit);

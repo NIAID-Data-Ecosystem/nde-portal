@@ -58,4 +58,40 @@ describe('ResourceCatalogCard', () => {
       expect(screen.queryByText('Content Types')).not.toBeInTheDocument();
     });
   });
+
+  describe('type banner', () => {
+    const sourceOrganization = [{ name: 'A program' }];
+
+    it('labels catalogs without a sourceOrganization as Resource Catalog', () => {
+      renderWithChakra(<ResourceCatalogCard data={makeData()} />);
+
+      expect(screen.getByText('Resource Catalog')).toBeInTheDocument();
+    });
+
+    it('labels catalogs with a sourceOrganization as Program Resource', () => {
+      renderWithChakra(
+        <ResourceCatalogCard
+          data={makeData({
+            sourceOrganization,
+            sameAs: 'https://example.org/program',
+          })}
+        />,
+      );
+
+      expect(screen.getByText('Program Resource')).toBeInTheDocument();
+    });
+
+    it('labels catalogs linked to a program collection as Program Info and Resource', () => {
+      renderWithChakra(
+        <ResourceCatalogCard
+          data={makeData({
+            sourceOrganization,
+            sameAs: 'https://data.niaid.nih.gov/program-collections#a-program',
+          })}
+        />,
+      );
+
+      expect(screen.getByText('Program Info and Resource')).toBeInTheDocument();
+    });
+  });
 });
