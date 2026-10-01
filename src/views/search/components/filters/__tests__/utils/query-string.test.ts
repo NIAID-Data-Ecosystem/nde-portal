@@ -205,5 +205,65 @@ describe('filters/utils/query-string', () => {
         [ABOUT]: ['Genome'],
       });
     });
+
+    // Content Type values that name a resource type also match records of
+    // that type, so the filter returns the same results as the Content Types
+    // pills on cards and resource pages.
+    describe('resource type widening', () => {
+      it.each([
+        ['Dataset', 'Dataset'],
+        ['Sample', 'Sample'],
+        ['Software', 'ComputationalTool'],
+      ])('widens %s with @type:%s', (value, resourceType) => {
+        expect(queryFilterObject2String({ [ABOUT]: [value] })).toBe(
+          `((${ABOUT}:("${value}")) OR ` +
+            `(${EXAMPLE_OF_WORK}:("${value}")) OR ` +
+            `(@type:("${resourceType}")))`,
+        );
+      });
+
+      it('matches the value case-insensitively', () => {
+        expect(queryFilterObject2String({ [ABOUT]: ['dataset'] })).toContain(
+          '(@type:("Dataset"))',
+        );
+      });
+
+      it('leaves values that name no resource type alone', () => {
+        expect(queryFilterObject2String({ [ABOUT]: ['Genome'] })).toBe(
+          `((${ABOUT}:("Genome")) OR (${EXAMPLE_OF_WORK}:("Genome")))`,
+        );
+      });
+
+      it('lists only the mapped values when the selection is mixed', () => {
+        expect(
+          queryFilterObject2String({ [ABOUT]: ['Genome', 'Dataset'] }),
+        ).toBe(
+          `((${ABOUT}:("Genome" OR "Dataset")) OR ` +
+            `(${EXAMPLE_OF_WORK}:("Genome" OR "Dataset")) OR ` +
+            '(@type:("Dataset")))',
+        );
+      });
+
+      it('emits each resource type once when several values map to it', () => {
+        expect(
+          queryFilterObject2String({ [ABOUT]: ['Dataset', 'dataset'] }),
+        ).toContain('(@type:("Dataset")))');
+      });
+
+      // @type is on every record, so widening "Any" would match everything.
+      it('never widens an _exists_ selection', () => {
+        expect(
+          queryFilterObject2String({ [ABOUT]: [{ _exists_: [ABOUT] }] }),
+        ).not.toContain('@type');
+      });
+
+      it.each([
+        ['a widened value', { [ABOUT]: ['Dataset'] }],
+        ['a mixed selection', { [ABOUT]: ['Genome', 'Dataset'] }],
+      ])('round-trips %s back to the filter object', (_label, filters) => {
+        const built = queryFilterObject2String(filters);
+        expect(queryFilterString2Object(built!)).toEqual(filters);
+      });
+    });
   });
 });

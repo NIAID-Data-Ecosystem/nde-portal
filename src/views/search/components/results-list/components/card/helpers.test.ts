@@ -1,5 +1,9 @@
 import { FormattedResource } from 'src/utils/api/types';
-import { formatCollectionSize, getContentTypeItems } from './helpers';
+import {
+  formatCollectionSize,
+  getContentTypeItems,
+  getResourceCatalogContentTypeItems,
+} from './helpers';
 
 // The helper only reads `about` and `exampleOfWork`, so the fixtures are
 // cast rather than filled out with a whole FormattedResource.
@@ -241,5 +245,128 @@ describe('getContentTypeItems', () => {
     expect(
       getContentTypeItems(data ? resource(data) : (data as null | undefined)),
     ).toEqual([]);
+  });
+});
+
+describe('getResourceCatalogContentTypeItems', () => {
+  it('widens the query to also match @type:Dataset records', () => {
+    const items = getResourceCatalogContentTypeItems(
+      resource({ about: { displayName: 'Dataset' } }),
+    );
+
+    expect(items).toEqual([
+      {
+        name: 'Dataset',
+        value: 'Dataset',
+        field: 'about.displayName',
+        query: '(about.displayName:"Dataset" OR @type:"Dataset")',
+      },
+    ]);
+  });
+
+  it('widens the query to also match @type:Sample records', () => {
+    const items = getResourceCatalogContentTypeItems(
+      resource({ about: { displayName: 'Sample' } }),
+    );
+
+    expect(items[0].query).toEqual(
+      '(about.displayName:"Sample" OR @type:"Sample")',
+    );
+  });
+
+  it('maps Software to the underlying @type:ComputationalTool', () => {
+    const items = getResourceCatalogContentTypeItems(
+      resource({ about: { displayName: 'Software' } }),
+    );
+
+    expect(items[0].query).toEqual(
+      '(about.displayName:"Software" OR @type:"ComputationalTool")',
+    );
+  });
+
+  it('matches Dataset/Sample/Software case-insensitively', () => {
+    const items = getResourceCatalogContentTypeItems(
+      resource({ about: { displayName: 'dataset' } }),
+    );
+
+    expect(items[0].query).toEqual(
+      '(about.displayName:"dataset" OR @type:"Dataset")',
+    );
+  });
+
+  it('leaves unrelated about values without a query override', () => {
+    const items = getResourceCatalogContentTypeItems(
+      resource({ about: { displayName: 'Genomic' } }),
+    );
+
+    expect(items).toEqual([
+      {
+        name: 'Genomic',
+        value: 'Genomic',
+        field: 'about.displayName',
+      },
+    ]);
+  });
+
+  it('applies the mapping per-entry across an array of about values', () => {
+    const items = getResourceCatalogContentTypeItems(
+      resource({
+        about: [{ displayName: 'Dataset' }, { displayName: 'Genomic' }],
+      }),
+    );
+
+    expect(items[0].query).toEqual(
+      '(about.displayName:"Dataset" OR @type:"Dataset")',
+    );
+    expect(items[1].query).toBeUndefined();
+  });
+
+  // Resource Catalogs in the index repeat identical `about` entries, and each
+  // repeat would become a pill linking to the very same search.
+  describe('duplicate about values', () => {
+    it('keeps one item per repeated value', () => {
+      const items = getResourceCatalogContentTypeItems(
+        resource({
+          about: [
+            { displayName: 'Dataset' },
+            { displayName: 'Dataset' },
+            { displayName: 'Genome' },
+            { displayName: 'Genome' },
+            { displayName: 'Image' },
+          ],
+        }),
+      );
+
+      expect(items.map(item => item.value)).toEqual([
+        'Dataset',
+        'Genome',
+        'Image',
+      ]);
+    });
+
+    it('treats values differing only in casing as one', () => {
+      const items = getResourceCatalogContentTypeItems(
+        resource({
+          about: [{ displayName: 'Dataset' }, { displayName: 'dataset' }],
+        }),
+      );
+
+      expect(items).toHaveLength(1);
+      expect(items[0].value).toBe('Dataset');
+    });
+
+    it('preserves encounter order', () => {
+      const items = getResourceCatalogContentTypeItems(
+        resource({
+          about: [
+            { displayName: 'Image' },
+            { displayName: 'Dataset' },
+            { displayName: 'Image' },
+          ],
+        }),
+      );
+
+      expect(items.map(item => item.value)).toEqual(['Image', 'Dataset']);
+    });
   });
 });

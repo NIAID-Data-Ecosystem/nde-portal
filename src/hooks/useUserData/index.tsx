@@ -22,6 +22,7 @@ import {
   formatSavedQueryFilters,
   parseSavedQueries,
 } from './helpers';
+import { fetchWithXsrf } from 'src/utils/auth/xsrf';
 
 const DEFAULT_PREFERENCES: UserPreferences = {
   ai_toggle_preference: false,
@@ -260,9 +261,8 @@ function useUserDataState() {
       const url = `${API_BASE_URL}${path}`;
 
       try {
-        const response = await fetch(url, {
+        const response = await fetchWithXsrf(API_BASE_URL, url, {
           method,
-          credentials: 'include',
           headers: body ? { 'Content-Type': 'application/json' } : undefined,
           body: body ? JSON.stringify(body) : undefined,
         });

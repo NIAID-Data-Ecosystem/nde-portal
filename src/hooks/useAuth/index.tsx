@@ -14,6 +14,7 @@ import React, {
 } from 'react';
 import { AuthState, AuthContextValue, User } from 'src/utils/auth/types';
 import { getAuthConfig } from 'src/utils/auth/config';
+import { fetchWithXsrf } from 'src/utils/auth/xsrf';
 import { devMockAuth } from './mock';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
@@ -165,9 +166,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   );
 
   /**
-   * Redirect to API's logout endpoint
+   * Log out through the API (POST with the XSRF token), then go home
    */
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
     const mockState = devMockAuth.logoutState();
     if (mockState) {
       setState(mockState);
@@ -180,8 +181,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
       isLoading: false,
       error: null,
     });
+
+    try {
+      const response = await fetchWithXsrf(
+        config.apiBaseUrl,
+        `${config.apiBaseUrl}/logout`,
+        { method: 'POST' },
+      );
+      if (response.ok) {
+        window.location.href = '/';
+        return;
+      }
+    } catch {
+      // Fall back to the redirect-based logout below.
+    }
+    // API deployments without POST /logout still clear the session on GET.
     window.location.href = config.logoutUrl;
-  }, [config.logoutUrl]);
+  }, [config.apiBaseUrl, config.logoutUrl]);
 
   const contextValue: AuthContextValue = useMemo(
     () => ({

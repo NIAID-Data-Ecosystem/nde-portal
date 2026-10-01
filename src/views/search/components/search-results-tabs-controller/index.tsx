@@ -12,6 +12,7 @@ import { SearchTabs } from '../layout/tabs';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { ResourceCatalogCard } from '../results-list/components/carousel-compact-card/resource-catalog-card';
 import { DiseaseOverviewCard } from '../results-list/components/carousel-compact-card/disease-overview-card';
+import { ProgramInfoCard } from '../results-list/components/carousel-compact-card/program-info-card';
 import { Carousel } from 'src/components/carousel';
 import { CarouselWrapper } from '../layout/carousel-wrapper';
 import { EmptyState } from '../results-list/components/empty';
@@ -19,9 +20,11 @@ import { TabType } from '../../types';
 import { generateOtherResourcesTitle, tabs } from '../../config/tabs';
 import { getDefaultTabId } from '../../utils/get-default-tab';
 import { useDiseaseData } from '../../hooks/useDiseaseData';
+import { useProgramInfoCollections } from '../../hooks/useProgramInfoCollections';
 import {
   SHOW_SAMPLES_TAB,
   SHOW_DATA_COLLECTIONS_TAB,
+  SHOW_PROGRAM_RESOURCE_UI,
 } from 'src/utils/feature-flags';
 import {
   useBioSampleAggregation,
@@ -45,6 +48,7 @@ const CAROUSEL_RESULTS_FIELDS = [
   'hasAPI',
   'includedInDataCatalog',
   'name',
+  'sameAs',
   'sourceOrganization',
 ];
 
@@ -282,7 +286,7 @@ export const SearchResultsController = ({
       filters: { ...queryParams.filters, ['@type']: ['ResourceCatalog'] },
       fields: CAROUSEL_RESULTS_FIELDS,
       // No facets: this query is only read for `results`.
-      size: 50,
+      size: 200,
       sort: 'name.raw',
       use_ai_search: queryParams.use_ai_search ?? 'false',
     },
@@ -317,11 +321,30 @@ export const SearchResultsController = ({
   const matchingDiseases =
     matchingDiseasesRaw.length === 0 ? EMPTY_DISEASES : matchingDiseasesRaw;
 
+  // Program collections without a resource catalog, shown as "Program Info"
+  // cards after the resource catalogs.
+  const { programCollections, hasProgramInfo } = useProgramInfoCollections({
+    q: queryParams.q,
+    filters: queryParams.filters,
+    use_ai_search: queryParams.use_ai_search,
+    enabled: router.isReady,
+  });
+  const programInfoCount = SHOW_PROGRAM_RESOURCE_UI
+    ? programCollections.length
+    : 0;
+
   const carouselItems = useMemo(() => {
-    const items: Array<{ type: 'resource' | 'disease'; data: any }> = [];
+    const items: Array<{
+      type: 'resource' | 'program-info' | 'disease';
+      data: any;
+    }> = [];
 
     resourceCatalogData.forEach(resource => {
       items.push({ type: 'resource', data: resource });
+    });
+
+    programCollections.forEach(collection => {
+      items.push({ type: 'program-info', data: collection });
     });
 
     matchingDiseases.forEach(disease => {
@@ -329,9 +352,10 @@ export const SearchResultsController = ({
     });
 
     return items;
-  }, [resourceCatalogData, matchingDiseases]);
+  }, [resourceCatalogData, programCollections, matchingDiseases]);
 
-  const shouldShowCarousel = hasResourceCatalogRecords || hasMatchingDiseases;
+  const shouldShowCarousel =
+    hasResourceCatalogRecords || hasMatchingDiseases || hasProgramInfo;
 
   const isCarouselLoading =
     (hasResourceCatalogRecords && (carouselIsLoading || carouselIsPending)) ||
@@ -393,7 +417,7 @@ export const SearchResultsController = ({
   ) =>
     sections.reduce((indices: number[], section, index) => {
       if (section.type === 'ResourceCatalog') {
-        if (section.count > 0 || hasMatchingDiseases) {
+        if (section.count > 0 || hasMatchingDiseases || hasProgramInfo) {
           indices.push(index);
         }
       } else if (section.type === 'Dataset') {
@@ -425,6 +449,7 @@ export const SearchResultsController = ({
         onChange={handleTabChange}
         colorScheme={colorScheme}
         tabs={tabsWithFacetCounts}
+        programInfoCount={programInfoCount}
         renderTabPanels={() =>
           tabsWithFacetCounts.map(tab => {
             const sections = tab.types;
@@ -451,7 +476,10 @@ export const SearchResultsController = ({
                       return (
                         <AccordionContent
                           key='resource-catalog'
-                          title={generateOtherResourcesTitle(sections)}
+                          title={generateOtherResourcesTitle(
+                            sections,
+                            programInfoCount,
+                          )}
                         >
                           {isCarouselLoading || shouldShowCarousel ? (
                             <CarouselWrapper>
@@ -465,7 +493,9 @@ export const SearchResultsController = ({
                                 ).map((carouselItem, idx) => (
                                   <div
                                     key={
-                                      carouselItem?.data?.id || `loading-${idx}`
+                                      carouselItem?.data?.id
+                                        ? `${carouselItem.type}-${carouselItem.data.id}`
+                                        : `loading-${idx}`
                                     }
                                   >
                                     {carouselItem.type === 'resource' ? (
@@ -473,6 +503,11 @@ export const SearchResultsController = ({
                                         data={carouselItem.data}
                                         isLoading={isCarouselLoading}
                                         referrerPath={router.asPath}
+                                      />
+                                    ) : carouselItem.type === 'program-info' ? (
+                                      <ProgramInfoCard
+                                        data={carouselItem.data}
+                                        isLoading={isCarouselLoading}
                                       />
                                     ) : (
                                       <DiseaseOverviewCard

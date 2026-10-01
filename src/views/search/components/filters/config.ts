@@ -3,6 +3,7 @@ import { getMetadataDescription } from 'src/components/metadata';
 import {
   SHOW_SAMPLES_TAB,
   SHOW_DATA_COLLECTIONS_TAB,
+  SHOW_CONTENT_TYPE_RESOURCE_TYPE_MATCHING,
 } from 'src/utils/feature-flags';
 import {
   formatConditionsOfAccess,
@@ -12,6 +13,7 @@ import {
   CONTENT_TYPE_ABOUT_FIELD,
   CONTENT_TYPE_TOOLTIP,
   getFacetProperties,
+  getRequestedFacetProperties,
 } from 'src/views/search/config/content-type';
 import { formatTermLabel } from 'src/utils/formatting/formatTermLabel';
 
@@ -336,6 +338,13 @@ export const FILTER_CONFIGS: FilterConfig[] = [
   return true;
 }) as FilterConfig[];
 
+// API fields a filter's aggregation requests. Content Type only requests
+// `@type` when its resource-type counts are widened.
+const getFilterFacetProperties = (property: string): string[] =>
+  SHOW_CONTENT_TYPE_RESOURCE_TYPE_MATCHING
+    ? getRequestedFacetProperties(property)
+    : getFacetProperties(property);
+
 /**
  * Static comma-separated list of all facet properties from FILTER_CONFIGS.
  * Used to ensure a stable query key across all consumers (filters, date filter, visual summary).
@@ -344,7 +353,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
  * the aggregation response contains every key needed to build its facet data.
  */
 export const ALL_FACET_PROPERTIES = FILTER_CONFIGS.flatMap(c =>
-  getFacetProperties(c.property),
+  getFilterFacetProperties(c.property),
 ).join(',');
 
 /**
@@ -364,7 +373,7 @@ export const ALL_FACET_PROPERTIES = FILTER_CONFIGS.flatMap(c =>
  */
 export const FACET_PROPERTIES_BY_CATEGORY = FILTER_CONFIGS.reduce(
   (acc, config) => {
-    const properties = getFacetProperties(config.property).join(',');
+    const properties = getFilterFacetProperties(config.property).join(',');
     acc[config.category] = acc[config.category]
       ? `${acc[config.category]},${properties}`
       : properties;
