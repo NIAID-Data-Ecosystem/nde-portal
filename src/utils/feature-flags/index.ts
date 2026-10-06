@@ -80,7 +80,7 @@ export const SHOW_FILTER_SPECIFIED_UNSPECIFIED_LABELS = true;
 
 // To enable in production, set to true to show merged sources and resource catalogs as a single list.
 // See: https://github.com/NIAID-Data-Ecosystem/niaid-feedback/issues/294
-export const USE_MERGED_SOURCES_AND_CATALOGS = !isProd;
+export const USE_MERGED_SOURCES_AND_CATALOGS = true;
 
 // Show the search results "View mode" radio (Card / Table) and the
 // alternate views it switches between in non-production environments.

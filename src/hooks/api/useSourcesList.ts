@@ -343,6 +343,9 @@ const resourceCatalogToSource = (catalog: FormattedResource): Source => {
     name: catalog.name || id,
     type: ['Resource Catalog'],
     isNiaidFunded: getFundedByNIAID(catalog.name || ''),
+    // A standalone catalog is its own catalog record, so it links to its own
+    // `/resources?id=` page ("Learn about source").
+    resourceCatalogIdentifier: id || undefined,
     // A standalone catalog is its own record, so scope search to it by `_id`.
     searchURL: buildResourceCatalogSearchURL(id),
     // A search-API catalog record has no `schema`/`metadata_completeness`/`stats`

@@ -302,11 +302,13 @@ describe('useSourcesList', () => {
     const repoB = data.find(source => source.identifier === 'repoB');
     expect(repoB?.resourceCatalogIdentifier).toBe('dde_existing');
 
-    // The unrepresented catalog is added, typed, and scoped by `_id`.
+    // The unrepresented catalog is added, typed, and scoped by `_id`...
     const added = data.find(source => source._id === 'dde_new');
     expect(added).toBeDefined();
     expect(added?.name).toBe('New Catalog');
     expect(added?.type).toEqual(['Resource Catalog']);
+    // ... and links to its own catalog page.
+    expect(added?.resourceCatalogIdentifier).toBe('dde_new');
     const params = new URLSearchParams((added?.searchURL || '').split('?')[1]);
     expect(params.get('filters')).toBe('(_id:("dde_new"))');
   });
