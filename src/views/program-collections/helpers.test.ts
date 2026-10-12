@@ -68,6 +68,7 @@ describe('matchesProgramQuery', () => {
     name: 'Centers for Research in Emerging Infectious Diseases',
     alternateName: ['CREID'],
     abstract: 'A global network studying viral outbreaks.',
+    description: 'Research centers located in regions with emerging threats.',
   });
 
   it('returns false for an empty or default query', () => {
@@ -76,10 +77,18 @@ describe('matchesProgramQuery', () => {
     expect(matchesProgramQuery(collection, '__all__')).toBe(false);
   });
 
-  it('matches the name, alternate names and abstract', () => {
+  it('matches the name, abstract and description', () => {
     expect(matchesProgramQuery(collection, 'emerging')).toBe(true);
-    expect(matchesProgramQuery(collection, 'creid')).toBe(true);
     expect(matchesProgramQuery(collection, 'outbreaks')).toBe(true);
+    expect(matchesProgramQuery(collection, 'regions')).toBe(true);
+  });
+
+  it('does not match alternate names', () => {
+    expect(matchesProgramQuery(collection, 'creid')).toBe(false);
+  });
+
+  it('does not match a term absent from name, abstract and description', () => {
+    expect(matchesProgramQuery(collection, 'CRSTAL')).toBe(false);
   });
 
   it('requires every term to match', () => {
@@ -92,7 +101,7 @@ describe('matchesProgramQuery', () => {
       true,
     );
     expect(
-      matchesProgramQuery(collection, 'sourceOrganization.name:"CREID"'),
+      matchesProgramQuery(collection, 'sourceOrganization.name:"Emerging"'),
     ).toBe(true);
   });
 });

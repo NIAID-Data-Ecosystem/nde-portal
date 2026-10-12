@@ -31,7 +31,8 @@ export const isProgramInfoCollection = (
 
 /**
  * Whether every term of a search query appears in a program collection's
- * name, alternate names or abstract. Returns false for an empty query.
+ * sourceOrganization name, abstract or description. Returns false for an empty
+ * query.
  */
 export const matchesProgramQuery = (
   collection: ProgramCollection,
@@ -52,13 +53,11 @@ export const matchesProgramQuery = (
 
   if (terms.length === 0) return false;
 
-  const { sourceOrganization, term } = collection;
-  const alternateName = sourceOrganization?.alternateName;
+  const { sourceOrganization } = collection;
   const text = [
-    term,
     sourceOrganization?.name,
-    ...(alternateName == null ? [] : [alternateName].flat()),
     sourceOrganization?.abstract,
+    sourceOrganization?.description,
   ]
     .filter(Boolean)
     .join(' ')
