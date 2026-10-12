@@ -326,7 +326,6 @@ export const SearchResultsController = ({
   const { programCollections, hasProgramInfo } = useProgramInfoCollections({
     q: queryParams.q,
     filters: queryParams.filters,
-    use_ai_search: queryParams.use_ai_search,
     enabled: router.isReady,
   });
   const programInfoCount = SHOW_PROGRAM_RESOURCE_UI

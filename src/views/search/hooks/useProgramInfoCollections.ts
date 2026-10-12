@@ -12,12 +12,10 @@ import {
   APPLY_DEFAULT_DATE_FILTER_KEY,
   defaultQuery,
 } from '../config/defaultQuery';
-import { useSearchResultsData } from './useSearchResultsData';
 
 interface UseProgramInfoCollectionsOptions {
   q?: string;
   filters?: SelectedFilterType;
-  use_ai_search?: string;
   enabled?: boolean;
 }
 
@@ -35,13 +33,12 @@ const sortByName = (a: ProgramCollection, b: ProgramCollection) =>
 /**
  * Program collections without a resource catalog, displayed as "Program Info"
  * cards in the search carousel. All of them are returned when there is no
- * search; otherwise only those whose name, alternate names or abstract match
- * the query, or that have resources matching the current query and filters.
+ * search; otherwise only those whose sourceOrganization name, abstract or
+ * description match the query.
  */
 export const useProgramInfoCollections = ({
   q,
   filters,
-  use_ai_search,
   enabled = true,
 }: UseProgramInfoCollectionsOptions) => {
   const isEnabled = SHOW_PROGRAM_RESOURCE_UI && enabled;
@@ -64,22 +61,6 @@ export const useProgramInfoCollections = ({
     staleTime: 5 * 60 * 1000,
   });
 
-  // Names of the programs that have resources matching the current search.
-  const facetResponse = useSearchResultsData(
-    {
-      q: q || defaultQuery.q,
-      filters,
-      facets: ['sourceOrganization.name'],
-      facet_size: 1000,
-      size: 0,
-      use_ai_search: use_ai_search ?? 'false',
-    },
-    { enabled: isEnabled && !isDefaultSearch },
-  ).response;
-
-  const facetTerms =
-    facetResponse.data?.facets?.['sourceOrganization.name']?.terms;
-
   const programCollections = useMemo(() => {
     if (!isEnabled || !collections) return EMPTY_COLLECTIONS;
 
@@ -89,24 +70,16 @@ export const useProgramInfoCollections = ({
 
     if (isDefaultSearch) return programInfoCollections;
 
-    const matchingNames = new Set(
-      (facetTerms || []).map(({ term }) => term.toLowerCase()),
-    );
-
-    const relevant = programInfoCollections.filter(
-      collection =>
-        matchesProgramQuery(collection, q) ||
-        matchingNames.has(collection.term.toLowerCase()),
+    const relevant = programInfoCollections.filter(collection =>
+      matchesProgramQuery(collection, q),
     );
 
     return relevant.length > 0 ? relevant : EMPTY_COLLECTIONS;
-  }, [isEnabled, collections, isDefaultSearch, facetTerms, q]);
+  }, [isEnabled, collections, isDefaultSearch, q]);
 
   return {
     programCollections,
-    isLoading:
-      isEnabled &&
-      (collectionsIsLoading || (!isDefaultSearch && facetResponse.isLoading)),
+    isLoading: isEnabled && collectionsIsLoading,
     hasProgramInfo: programCollections.length > 0,
   };
 };
