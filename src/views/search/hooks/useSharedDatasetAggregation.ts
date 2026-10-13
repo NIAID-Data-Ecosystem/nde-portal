@@ -13,21 +13,26 @@ export interface SharedDatasetAggregationParams {
 
 /**
  * The raw Elasticsearch filter string that scopes any query to all record
- * types EXCEPT non-BioSample Sample records.
+ * types EXCEPT non-BioSample Sample records and Inference records.
+ *
+ * Inference records are excluded as no search results tab displays them
+ * yet. Counting inference records would make facet counts exceed the tab
+ * counts
  *
  * Written as a negative exclusion so the query remains compatible with the
  * existing extra_filter AND-chaining pattern:
- *   NOT (@type:Sample AND NOT additionalType:"BioSample")
+ *   NOT (@type:Sample AND NOT additionalType:"BioSample") AND NOT (@type:Inference)
  */
 export const SHARED_DATASET_EXTRA_FILTER =
-  'NOT (@type:Sample AND NOT additionalType:"BioSample")';
+  'NOT (@type:Sample AND NOT additionalType:"BioSample") AND NOT (@type:Inference)';
 
 /**
  * Always-on aggregation hook for Shared/Dataset filters.
  *
  * Includes all record types but excludes Sample records that do NOT have
  * additionalType="BioSample", so that BioSample records are counted alongside
- * Datasets, ResourceCatalogs, and ComputationalTools.
+ * Datasets, ResourceCatalogs, and ComputationalTools. Inference records are
+ * excluded too.
  *
  * Uses size=0 so no result documents are fetched (only facet data and the
  * total count are returned), keeping the request lightweight.
