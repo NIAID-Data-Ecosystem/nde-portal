@@ -93,19 +93,24 @@ export const AboutResource = ({
               py: 0,
             }}
           >
-            <TagWithUrl
-              colorScheme='primary'
-              href={{
-                pathname: '/search',
-                query: {
-                  q: `genre:"${genre}"`,
-                },
-              }}
-              m={0.5}
-              leftIcon={FaMagnifyingGlass}
-            >
-              {genre}
-            </TagWithUrl>
+            {(Array.isArray(genre) ? genre : genre ? [genre] : []).map(
+              (item, idx) => (
+                <TagWithUrl
+                  key={`${item}-${idx}`}
+                  colorScheme='primary'
+                  m={0.5}
+                  leftIcon={FaMagnifyingGlass}
+                  href={{
+                    pathname: '/search',
+                    query: {
+                      q: `genre:"${item}"`,
+                    },
+                  }}
+                >
+                  {item}
+                </TagWithUrl>
+              ),
+            )}
           </OverviewSectionWrapper>
         )}
         {/* `about` and `exampleOfWork.about` are displayed under the umbrella term "Content Types" */}
