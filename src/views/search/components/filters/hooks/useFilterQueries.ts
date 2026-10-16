@@ -337,11 +337,7 @@ export const useFilterQueries = ({
               count: t.count,
               facet: config.property,
               groupBy: (repoList as any[])
-                .find(
-                  (r: any) =>
-                    r.sourceInfo?.name === t.term ||
-                    r.sourceInfo?.identifier === t.term,
-                )
+                .find((r: any) => r.sourceInfo?.name === t.term)
                 ?.sourceInfo?.genre?.includes('IID')
                 ? 'IID'
                 : 'Generalist',
