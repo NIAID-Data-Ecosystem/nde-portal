@@ -1,3 +1,4 @@
+import { isEqual, isPlainObject, omit, uniqWith } from 'lodash';
 import { SelectedFilterType, SelectedFilterValueType } from '../types';
 import { formatResourceTypeForAPI } from 'src/utils/formatting/formatResourceType';
 import {
@@ -18,9 +19,13 @@ const VALUE_SPLIT_PATTERN = /(?:" OR ")| OR |(?:" TO ")| TO /;
 
 /**
  * Reserved filter key for a cross-field OR group. Its value is an array of
- * single-field filter objects that are OR-ed together across different fields,
+ * filter objects that are OR-ed together across different fields,
  * e.g. `{ _or: [{ 'includedInDataCatalog.name': ['x'] }, { _id: ['y'] }] }`
  * serializes to `(includedInDataCatalog.name:("x") OR _id:("y"))`.
+ *
+ * An entry with several fields is AND-ed internally, e.g.
+ * `{ _or: [{ a: ['x'] }, { b: ['y'], _id: ['z'] }] }` serializes to
+ * `(a:("x") OR ((b:("y")) AND (_id:("z"))))`.
  *
  * This is the only cross-field OR the helpers support and is entirely opt-in:
  * nothing produces this key unless it is explicitly set, so existing filters
@@ -33,19 +38,22 @@ export const OR_FILTER_KEY = '_or';
 const FIELD_PREFIX = /^[@\w][\w.@-]*:/;
 
 // Split a string on a separator that appears at paren-depth 0 only, leaving
-// separators nested inside `(...)` untouched. Lets us detect a cross-field OR
-// group (`a:("x") OR b:("y")`) without splitting a single field's internal
-// multi-value OR (`a:("x" OR "y")`).
+// separators nested inside `(...)` or quoted values untouched. Lets us detect a
+// cross-field OR group (`a:("x") OR b:("y")`) without splitting a single
+// field's internal multi-value OR (`a:("x" OR "y")`), and keeps parens inside
+// values (e.g. `"Data Discovery Engine (DDE)"`) from skewing the depth.
 const splitTopLevel = (input: string, separator: string): string[] => {
   const result: string[] = [];
   let depth = 0;
+  let inQuote = false;
   let current = '';
   for (let i = 0; i < input.length; i++) {
     const char = input[i];
-    if (char === '(') depth++;
-    else if (char === ')') depth = Math.max(0, depth - 1);
+    if (char === '"') inQuote = !inQuote;
+    else if (!inQuote && char === '(') depth++;
+    else if (!inQuote && char === ')') depth = Math.max(0, depth - 1);
 
-    if (depth === 0 && input.startsWith(separator, i)) {
+    if (!inQuote && depth === 0 && input.startsWith(separator, i)) {
       result.push(current);
       current = '';
       i += separator.length - 1;
@@ -56,6 +64,13 @@ const splitTopLevel = (input: string, separator: string): string[] => {
   result.push(current);
   return result;
 };
+
+// A parenthesized AND-ed sub-group inside an `_or` group, e.g.
+// `((a:("x")) AND (b:("y")))` — produced by a multi-field `_or` entry.
+const isAndGroupSegment = (segment: string): boolean =>
+  segment.startsWith('(') &&
+  segment.endsWith(')') &&
+  splitTopLevel(segment.slice(1, -1), ' AND ').length > 1;
 // Matches the first clause of a merged multi-field filter, such as `a:(x)`
 // in `((a:(x)) OR (b:(x)))`. The non-greedy match stops at the first `) OR (`.
 // Quoted value separators such as `" OR "` do not match this pattern.
@@ -100,10 +115,11 @@ export const queryFilterObject2String = (
         return null;
       }
 
-      // Cross-field OR group: recurse each single-field entry, drop the single
-      // outer paren layer it adds, and OR the segments inside one paren group.
-      // Segments keep their own `field:` prefix, which is how the parser tells
-      // this apart from a single field's multi-value OR.
+      // Cross-field OR group: recurse each entry and OR the segments inside one
+      // paren group. A single-field entry drops the outer paren layer it adds,
+      // so it keeps its own `field:` prefix, which is how the parser tells this
+      // apart from a single field's multi-value OR. A multi-field entry is
+      // AND-ed and wrapped in its own parens so it binds as one OR operand.
       if (filterName === OR_FILTER_KEY) {
         const orParts = values
           .filter(
@@ -111,7 +127,11 @@ export const queryFilterObject2String = (
           )
           .map(obj => queryFilterObject2String(obj))
           .filter((s): s is string => !!s)
-          .map(s => s.replace(/^\((.*)\)$/, '$1'));
+          .map(s =>
+            splitTopLevel(s, ' AND ').length > 1
+              ? `(${s})`
+              : s.replace(/^\((.*)\)$/, '$1'),
+          );
         return orParts.length > 0 ? `(${orParts.join(' OR ')})` : null;
       }
 
@@ -213,9 +233,9 @@ export const queryFilterString2Object = (
     return null;
   }
 
-  const filterParts = queryString.includes(' AND ')
-    ? queryString.split(' AND ')
-    : [queryString];
+  // Split on top-level ANDs only, so an AND-ed sub-group nested inside an
+  // `_or` group stays intact.
+  const filterParts = splitTopLevel(queryString, ' AND ');
 
   return filterParts.reduce((acc, part) => {
     let cleanPart = part;
@@ -233,17 +253,22 @@ export const queryFilterString2Object = (
     }
 
     // Cross-field OR group (inverse of the `OR_FILTER_KEY` serialization):
-    //   includedInDataCatalog.name:("X") OR _id:("Y")
-    // Every top-level OR segment carries its own `field:` prefix — unlike a
-    // single field's multi-value OR (one prefix-less segment) or an _exists_
-    // group (later segments start with `(`), so neither is misread here.
+    //   includedInDataCatalog.name:("X") OR ((b:("Y")) AND (_id:("Z")))
+    // Every top-level OR segment carries its own `field:` prefix or is an
+    // AND-ed sub-group — unlike a single field's multi-value OR (one
+    // prefix-less segment) or an _exists_ group (later segments start with `(`
+    // and hold no top-level AND), so neither is misread here.
     const orSegments = splitTopLevel(cleanPart, ' OR ').map(s => s.trim());
     if (
       orSegments.length > 1 &&
-      orSegments.every(seg => FIELD_PREFIX.test(seg))
+      orSegments.every(seg => FIELD_PREFIX.test(seg) || isAndGroupSegment(seg))
     ) {
       acc[OR_FILTER_KEY] = orSegments
-        .map(seg => queryFilterString2Object(seg))
+        .map(seg =>
+          queryFilterString2Object(
+            isAndGroupSegment(seg) ? seg.slice(1, -1) : seg,
+          ),
+        )
         .filter(
           (o): o is SelectedFilterType => !!o,
         ) as SelectedFilterValueType[];
@@ -381,4 +406,87 @@ export const sanitizeExistsFilterValues = <T extends SelectedFilterValueType>(
   }
 
   return values;
+};
+
+type OrGroupEntry = { [key: string]: SelectedFilterValueType[] };
+
+const includesValue = (
+  list: SelectedFilterValueType[],
+  value: SelectedFilterValueType,
+): boolean => list.some(item => isEqual(item, value));
+
+// The filter objects OR-ed together in a cross-field `_or` group.
+export const getOrGroupEntries = (
+  selectedFilters?: SelectedFilterType,
+): OrGroupEntry[] =>
+  (selectedFilters?.[OR_FILTER_KEY] || []).filter(entry =>
+    isPlainObject(entry),
+  ) as unknown as OrGroupEntry[];
+
+/**
+ * All selected values for a facet, including those held inside an `_or`
+ * group, e.g. both catalog names in
+ * `{ _or: [{ name: ['x'] }, { name: ['DDE'], _id: ['y'] }] }` for `name`.
+ * Use this (rather than `selectedFilters[facet]`) to reflect checkbox state.
+ */
+export const getFacetSelection = (
+  selectedFilters: SelectedFilterType | undefined,
+  facet: string,
+): SelectedFilterValueType[] =>
+  uniqWith(
+    [
+      ...(selectedFilters?.[facet] || []),
+      ...getOrGroupEntries(selectedFilters).flatMap(
+        entry => entry[facet] || [],
+      ),
+    ],
+    isEqual,
+  );
+
+/**
+ * Set a facet's selection to `values`, keeping any `_or` group the facet takes
+ * part in consistent:
+ * - a deselected value drops it from its `_or` entry, and drops the whole
+ *   entry once it has no values left for the facet (so deselecting
+ *   "Data Discovery Engine (DDE)" also drops the `_id` AND-ed with it);
+ * - a newly selected value is OR-ed into the group as its own entry;
+ * - a group left with a single entry is flattened into plain filters.
+ * Facets outside an `_or` group are simply replaced.
+ */
+export const updateFacetSelection = (
+  selectedFilters: SelectedFilterType,
+  facet: string,
+  values: SelectedFilterValueType[],
+): SelectedFilterType => {
+  const entries = getOrGroupEntries(selectedFilters);
+  if (!entries.some(entry => facet in entry)) {
+    return { ...selectedFilters, [facet]: values };
+  }
+
+  const prevValues = getFacetSelection(selectedFilters, facet);
+  const removed = prevValues.filter(v => !includesValue(values, v));
+  const added = values.filter(v => !includesValue(prevValues, v));
+
+  const nextEntries = entries.flatMap(entry => {
+    if (!entry[facet]) return [entry];
+    const remaining = entry[facet].filter(v => !includesValue(removed, v));
+    return remaining.length > 0 ? [{ ...entry, [facet]: remaining }] : [];
+  });
+  if (added.length > 0) nextEntries.push({ [facet]: added });
+
+  const rest = omit(selectedFilters, OR_FILTER_KEY);
+  const next: SelectedFilterType = {
+    ...rest,
+    [facet]: (rest[facet] || []).filter(v => !includesValue(removed, v)),
+  };
+
+  if (nextEntries.length > 1) {
+    next[OR_FILTER_KEY] = nextEntries as SelectedFilterValueType[];
+  } else if (nextEntries.length === 1) {
+    Object.entries(nextEntries[0]).forEach(([key, entryValues]) => {
+      next[key] = uniqWith([...(next[key] || []), ...entryValues], isEqual);
+    });
+  }
+
+  return next;
 };
