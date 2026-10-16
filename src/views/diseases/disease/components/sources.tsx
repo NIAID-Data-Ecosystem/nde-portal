@@ -95,7 +95,7 @@ export const Sources = ({
       // Add details from source info
       const facetsWithSourceInfo = mergedFacets.map(facet => {
         const matchingSourceEntry = Object.values(data.sources.src).find(
-          src => src.sourceInfo?.identifier === facet.term,
+          src => src.sourceInfo?.name === facet.term,
         );
 
         if (!matchingSourceEntry) {
