@@ -26,7 +26,7 @@ import { USE_MERGED_SOURCES_AND_CATALOGS } from 'src/utils/feature-flags';
 
 /** Build-time GitHub commit info, keyed by source identifier. */
 interface GithubSourceInfo {
-  id: string;
+  name: string;
   dateCreated?: string;
 }
 
@@ -96,6 +96,7 @@ const Sources: NextPage<SourcesProps> = ({ data }) => {
   // `dateCreated`, then sort alphabetically by name.
   const sourceItems = useMemo<SourceDisplayItem[]>(() => {
     const githubInfo = data?.githubInfo?.data || [];
+
     return (sources || [])
       .filter(
         item =>
@@ -103,7 +104,7 @@ const Sources: NextPage<SourcesProps> = ({ data }) => {
           (item.type.length === 1 && !item.type.includes('Resource Catalog')),
       )
       .map(source => {
-        const github = githubInfo.find(item => item.id === source.identifier);
+        const github = githubInfo.find(item => item.name === source.name);
 
         return {
           ...source,
