@@ -349,7 +349,7 @@ describe('useSourcesList', () => {
     // single field's multi-value OR.
     const params = new URLSearchParams((source.searchURL || '').split('?')[1]);
     expect(params.get('filters')).toBe(
-      '(includedInDataCatalog.name:("Repo Cat") OR name:("Repo Cat"))',
+      '(includedInDataCatalog.name:("Repo Cat") OR _id:("dde_catalog"))',
     );
   });
 
