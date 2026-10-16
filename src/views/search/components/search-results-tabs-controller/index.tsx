@@ -350,7 +350,14 @@ export const SearchResultsController = ({
       items.push({ type: 'disease', data: disease });
     });
 
-    return items;
+    return items.sort((a, b) => {
+      // sort by name alphabetically
+      const nameA = a.data.name?.toLowerCase() || '';
+      const nameB = b.data.name?.toLowerCase() || '';
+      if (nameA < nameB) return -1;
+      if (nameA > nameB) return 1;
+      return 0;
+    });
   }, [resourceCatalogData, programCollections, matchingDiseases]);
 
   const shouldShowCarousel =
