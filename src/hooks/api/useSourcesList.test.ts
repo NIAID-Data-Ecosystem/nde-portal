@@ -6,6 +6,7 @@ import { useResourceCatalogs } from './useResourceCatalogs';
 import {
   buildResourceCatalogSearchURL,
   getResourceCatalogIdentifier,
+  getTabIdFromSourceType,
   useSourcesList,
 } from './useSourcesList';
 
@@ -392,6 +393,82 @@ describe('useSourcesList', () => {
       );
     },
   );
+
+  it.each([
+    [
+      'drops unrecognized values from a collectionType array',
+      ['Software', 'Dataset Repository', 'Knowledgebase'],
+      ['Dataset Repository'],
+    ],
+    [
+      'skips non-string array members despite the declared string[]',
+      [null, 'Dataset Repository', 42],
+      ['Dataset Repository'],
+    ],
+    [
+      'leaves a source untyped when its only collectionType is unrecognized',
+      'Knowledgebase',
+      [],
+    ],
+    [
+      'treats collectionType values as case-sensitive',
+      ['dataset repository', 'Dataset Repository'],
+      ['Dataset Repository'],
+    ],
+  ])('%s', async (_label, collectionType, expected) => {
+    mockFetchMetadata.mockResolvedValue({
+      src: {
+        repoMixed: {
+          sourceInfo: {
+            identifier: 'repoMixed',
+            name: 'Repo Mixed',
+            collectionType,
+          },
+        },
+      },
+    } as any);
+    setCatalogs({ data: undefined });
+
+    const { result } = renderHook(() => useSourcesList(), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    const source = (result.current.data || [])[0];
+
+    expect(source.type).toEqual(expected);
+  });
+
+  it('preselects the search tab from the first recognized type', async () => {
+    mockFetchMetadata.mockResolvedValue({
+      src: {
+        repoTool: {
+          sourceInfo: {
+            identifier: 'repoTool',
+            name: 'Repo Tool',
+            // `Aardvark` would sort first and hide the tab if it weren't
+            // dropped before sorting.
+            collectionType: ['Computational Tool Repository', 'Aardvark'],
+          },
+        },
+      },
+    } as any);
+    setCatalogs({ data: undefined });
+
+    const { result } = renderHook(() => useSourcesList(), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    const source = (result.current.data || [])[0];
+
+    expect(source.type).toEqual(['Computational Tool Repository']);
+    const params = new URLSearchParams((source.searchURL || '').split('?')[1]);
+    expect(params.get('tab')).toBe(
+      getTabIdFromSourceType('Computational Tool Repository'),
+    );
+    expect(params.get('tab')).toBeTruthy();
+  });
 
   it('enriches metadata sources with numberOfRecords, isNiaidFunded and dateModified', async () => {
     mockFetchMetadata.mockResolvedValue({

@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
 import { RepositoryMatcherItem } from '../types';
 import { useSourcesList } from 'src/hooks/api/useSourcesList';
-import { SHOW_DATA_COLLECTIONS_TAB } from 'src/utils/feature-flags';
 
 export type RepositoryMatcherRow = {
   _id: string;
@@ -66,12 +65,7 @@ export const useRepositoryMatcherData = (fields: string[] = ['@type']) => {
         const statusIsAcceptingData =
           item?.creativeWorkStatus === 'Accepting Data';
 
-        // Exclude items with type "Data Repository"
-        const shouldExucludeDataRepository =
-          !SHOW_DATA_COLLECTIONS_TAB &&
-          item['type'].includes('Data Repository');
-
-        return statusIsAcceptingData && !shouldExucludeDataRepository;
+        return statusIsAcceptingData;
       })
       .forEach(item => {
         const row = {

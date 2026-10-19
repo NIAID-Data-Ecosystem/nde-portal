@@ -32,12 +32,23 @@ const RESOURCE_CATALOG_FIELDS = [
   'url',
 ];
 
-export type SourceType =
-  | 'Dataset Repository'
-  | 'Computational Tool Repository'
-  | 'Sample Repository'
-  | 'Data Repository'
-  | 'Resource Catalog';
+export const SOURCE_TYPES = [
+  'Dataset Repository',
+  'Computational Tool Repository',
+  'Sample Repository',
+  'Data Repository',
+  'Resource Catalog',
+] as const;
+
+export type SourceType = (typeof SOURCE_TYPES)[number];
+
+/**
+ * Whether a value is one of the recognized `SOURCE_TYPES`. `collectionType` is
+ * upstream metadata and can hold values outside this set.
+ */
+const isSourceType = (value: unknown): value is SourceType =>
+  typeof value === 'string' &&
+  (SOURCE_TYPES as readonly string[]).includes(value);
 
 export const getTabIdFromSourceType = (
   sourceType: SourceType,
@@ -210,23 +221,17 @@ export function useSourcesList(
         )
         .map(([srcKey, metadataSource]) => {
           const { sourceInfo, stats, version } = metadataSource;
-          const {
-            _id,
-            name,
-            collectionType,
-            sameAs,
-            type: sourceInfoType,
-          } = sourceInfo || {};
-          // use type if available, otherwise fallback to collectionType
-          const sourceType = sourceInfoType || collectionType;
-
+          const { _id, name, collectionType, sameAs } = sourceInfo || {};
+          // Keep only recognized source types from `collectionType`.
           const type = (
-            Array.isArray(sourceType)
-              ? sourceType
-              : sourceType
-              ? [sourceType]
+            Array.isArray(collectionType)
+              ? collectionType
+              : collectionType
+              ? [collectionType]
               : []
-          ).sort((a, b) => a.localeCompare(b));
+          )
+            .filter(isSourceType)
+            .sort((a, b) => a.localeCompare(b));
 
           const resourceName = name || '';
 
@@ -249,7 +254,7 @@ export function useSourcesList(
             // otherwise fall back to the metadata `_id` or the `identifier`.
             _id: resourceCatalogIdentifier || _id || '',
             key: `${name}-${type.join(',')}`,
-            type: type as SourceType[],
+            type,
             name: resourceName,
             resourceCatalogIdentifier,
             numberOfRecords,
