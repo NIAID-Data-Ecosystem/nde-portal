@@ -28,6 +28,20 @@ export const defaultSearchValue = (
   return null;
 };
 
+const isUnnamedDefinedTerm = (v: unknown): boolean =>
+  typeof v === 'object' &&
+  v !== null &&
+  (v as Record<string, unknown>)['@type'] === 'DefinedTerm' &&
+  !(v as Record<string, unknown>).name;
+
+/** Drops `DefinedTerm` objects without a `name` from array values so they
+ * don't render as empty tags or produce blank filter options. Non-array
+ * values are returned unchanged. */
+export const removeUnnamedDefinedTerms = <T>(value: T): T =>
+  Array.isArray(value)
+    ? (value.filter(v => !isUnnamedDefinedTerm(v)) as T)
+    : value;
+
 export const useRepositoryMatcherData = (fields: string[] = ['@type']) => {
   /****** Source + Resource Catalog Data ******/
   // `useSourcesList` merges standalone resource catalogs into the metadata
@@ -66,7 +80,7 @@ export const useRepositoryMatcherData = (fields: string[] = ['@type']) => {
         } as RepositoryMatcherRow;
         const searchParts: string[] = [];
         for (const col of REPOSITORY_MATCHER_COLUMNS) {
-          const value = col.transform(item);
+          const value = removeUnnamedDefinedTerms(col.transform(item));
           row[col.id] = value;
           const searchValue = col.getSearchValue
             ? col.getSearchValue(value)

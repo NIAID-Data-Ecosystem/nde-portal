@@ -1,6 +1,7 @@
 import { renderHook } from '@testing-library/react';
 import {
   defaultSearchValue,
+  removeUnnamedDefinedTerms,
   useRepositoryMatcherData,
 } from '../useRepositoryMatcherData';
 import { useSourcesList } from 'src/hooks/api/useSourcesList';
@@ -43,6 +44,29 @@ describe('defaultSearchValue', () => {
   it('returns null for objects and mixed arrays', () => {
     expect(defaultSearchValue({ name: 'x' })).toBeNull();
     expect(defaultSearchValue([{ a: 1 }])).toBeNull();
+  });
+});
+
+describe('removeUnnamedDefinedTerms', () => {
+  it('drops DefinedTerm objects without a name', () => {
+    expect(
+      removeUnnamedDefinedTerms([
+        { '@type': 'DefinedTerm', name: 'Malaria' },
+        { '@type': 'DefinedTerm', identifier: '123' },
+        { '@type': 'DefinedTerm', name: '' },
+      ]),
+    ).toEqual([{ '@type': 'DefinedTerm', name: 'Malaria' }]);
+  });
+
+  it('keeps unnamed objects of other types and non-object entries', () => {
+    const value = [{ '@type': 'QuantitativeValue', minValue: 1 }, 'a', null];
+    expect(removeUnnamedDefinedTerms(value)).toEqual(value);
+  });
+
+  it('returns non-array values unchanged', () => {
+    const obj = { '@type': 'DefinedTerm' };
+    expect(removeUnnamedDefinedTerms(obj)).toBe(obj);
+    expect(removeUnnamedDefinedTerms('x')).toBe('x');
   });
 });
 
@@ -92,6 +116,27 @@ describe('useRepositoryMatcherData', () => {
     expect((data[0].name as { label: string }).label).toBe('Catalog One');
     expect(data[0]._search).toContain('catalog one');
     expect(data[0]._search).toContain('iid');
+  });
+
+  it('removes unnamed DefinedTerms from column values', () => {
+    setSources({
+      sources: [
+        {
+          _id: 'r1',
+          name: 'Repo One',
+          type: ['Dataset Repository'],
+          creativeWorkStatus: 'Accepting Data',
+          healthCondition: [
+            { '@type': 'DefinedTerm', name: 'Malaria' },
+            { '@type': 'DefinedTerm', identifier: 'MONDO_123' },
+          ],
+        },
+      ],
+    });
+    const { result } = renderHook(() => useRepositoryMatcherData());
+    expect(result.current.data[0].healthCondition).toEqual([
+      { '@type': 'DefinedTerm', name: 'Malaria' },
+    ]);
   });
 
   it('falls back to an empty id for items without an _id', () => {
