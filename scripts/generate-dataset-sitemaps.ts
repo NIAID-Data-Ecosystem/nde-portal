@@ -26,7 +26,7 @@ const SITEMAP_URL_PATH = `${process.env.BASE_URL}/sitemaps/datasets`;
 const SITEMAP_INDEX_FILENAME = 'sitemap-index.xml';
 
 // Sources that should be omitted from the sitemap.
-const OMITTED_SOURCES = ['Data Discovery Engine'];
+const OMITTED_SOURCES = ['Data Discovery Engine (DDE)'];
 
 // [SCORING CRITERIA] used for fetching top scoring results.
 // Note: Scoring criteria are defined in this issue: https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/346#issuecomment-3164920234.
@@ -124,7 +124,6 @@ const fetchSourceIdsGroupedByDomain = async (): Promise<
         return acc; // Skip if the source has a parent collection
       }
 
-      const id = src?.sourceInfo?.identifier;
       const name = src?.sourceInfo?.name;
       // Only allow known domains; default to 'Generalist' if unknown
       const rawGenre = src?.sourceInfo?.genre;
@@ -138,13 +137,13 @@ const fetchSourceIdsGroupedByDomain = async (): Promise<
         ? rawGenre
         : 'Generalist';
 
-      if (!id || OMITTED_SOURCES.includes(id)) return acc;
+      if (!name || OMITTED_SOURCES.includes(name)) return acc;
 
       const funded = getFundedByNIAID(name);
 
       // Add the source to the NIAID array if it is funded by NIAID. Otherwise, add it to the domain array.
       // This ensures that NIAID sources are prioritized in the sitemap.
-      funded ? acc.NIAID.push(id) : acc[genre].push(id);
+      funded ? acc.NIAID.push(name) : acc[genre].push(name);
 
       return acc;
     },

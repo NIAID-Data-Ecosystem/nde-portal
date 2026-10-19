@@ -206,13 +206,12 @@ export function useSourcesList(
           ([, source]) =>
             source?.sourceInfo &&
             !Array.isArray(source.sourceInfo) &&
-            source.sourceInfo.identifier,
+            source.sourceInfo.name,
         )
         .map(([srcKey, metadataSource]) => {
           const { sourceInfo, stats, version } = metadataSource;
           const {
             _id,
-            identifier,
             name,
             collectionType,
             sameAs,
@@ -229,7 +228,7 @@ export function useSourcesList(
               : []
           ).sort((a, b) => a.localeCompare(b));
 
-          const resourceName = name || identifier || '';
+          const resourceName = name || '';
 
           // A `sameAs` link pointing to a resource catalog marks this source as
           // being available in a catalog.
@@ -249,8 +248,7 @@ export function useSourcesList(
             // Use the resource catalog identifier as the source `_id` if present,
             // otherwise fall back to the metadata `_id` or the `identifier`.
             _id: resourceCatalogIdentifier || _id || '',
-            identifier,
-            key: `${identifier}-${name}-${type.join(',')}`,
+            key: `${name}-${type.join(',')}`,
             type: type as SourceType[],
             name: resourceName,
             resourceCatalogIdentifier,

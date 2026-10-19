@@ -107,7 +107,6 @@ export const Sources = ({
           info: {
             abstract: matchingSourceEntry?.sourceInfo?.abstract || '',
             genre: matchingSourceEntry?.sourceInfo?.genre,
-            identifier: matchingSourceEntry?.sourceInfo?.identifier || '',
             name: matchingSourceEntry?.sourceInfo?.name || '',
             description: matchingSourceEntry?.sourceInfo?.description || '',
           },
