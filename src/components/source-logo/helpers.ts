@@ -13,7 +13,7 @@ export const getSourceImagePath = (
     .toLowerCase()
     .replace(/\s+/g, '-')
     .replace(/[^a-z-]/g, '');
-
+  console.log(path + identifier);
   return path + identifier + '.png';
 };
 
