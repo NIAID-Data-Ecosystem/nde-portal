@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.4.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v7.3.1...v7.4.0) (2026-10-20)
+
+
+### 🚀 Features
+
+* update filters for source reconciliation ([#570](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/570)) ([5d391f3](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/5d391f3d9a73c39f625bb1b1b5805badfb45178d))
+
+
+### 🐛 Bugfixes
+
+* **deps:** bump packages to address vulnerabilities ([#568](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/568)) ([b9fe330](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/b9fe3309e992b201fa6b5d8dd211f717523a5ba7))
+* prevent inference records from being counted ([713c4cd](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/713c4cdd2882a400373ed34b136711d6087bfc6a))
+* **repository-matcher:** omit DefinedTerm objects missing name property ([d1aff44](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/d1aff449f408ed4e962afc78babefcbb0bee1809))
+* **repository-matcher:** standardize type across sources ([304a412](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/304a412e849e335223b4042e3b6c0b153cea1023))
+* **resource:** handle genre array ([47e108c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/47e108c9e37975ae793658bd6f507af8716eaebb))
+
 ### [7.3.1](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v7.3.0...v7.3.1) (2026-10-12)
 
 
