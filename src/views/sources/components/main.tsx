@@ -25,7 +25,6 @@ import { SectionSearch } from 'src/components/table-of-contents/layouts/section-
 import { TagWithUrl } from 'src/components/tag-with-url';
 import type { SourceDisplayItem } from 'src/pages/sources';
 import { formatDate } from 'src/utils/api/helpers';
-import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-string';
 import NextLink from 'next/link';
 import { USE_MERGED_SOURCES_AND_CATALOGS } from 'src/utils/feature-flags';
 
@@ -206,22 +205,34 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
               <>
                 {/* Release dates */}
                 <HStack divider={<StackDivider borderColor='gray.100' />}>
-                  <Text fontSize='xs' fontWeight='semibold' color='text.body'>
-                    Latest Release:{' '}
-                    <Text as='span' fontWeight='normal'>
-                      {sourceObj.dateModified
-                        ? formatDate(sourceObj.dateModified)
-                        : 'N/A'}
+                  {sourceObj.latestRelease && (
+                    <Text fontSize='xs' fontWeight='semibold' color='text.body'>
+                      Latest Release:{' '}
+                      <Text as='span' fontWeight='normal'>
+                        {sourceObj.latestRelease
+                          ? sourceObj.latestRelease
+                          : 'N/A'}
+                      </Text>
                     </Text>
-                  </Text>
-                  <Text fontSize='xs' fontWeight='semibold' color='text.body'>
-                    First Released:{' '}
-                    <Text as='span' fontWeight='normal'>
-                      {sourceObj.dateCreated
-                        ? formatDate(sourceObj.dateCreated)
-                        : 'N/A'}
+                  )}
+                  {sourceObj.lastCurated && (
+                    <Text fontSize='xs' fontWeight='semibold' color='text.body'>
+                      Last Curated:{' '}
+                      <Text as='span' fontWeight='normal'>
+                        {sourceObj.lastCurated ? sourceObj.lastCurated : 'N/A'}
+                      </Text>
                     </Text>
-                  </Text>
+                  )}
+                  {sourceObj.firstReleased && (
+                    <Text fontSize='xs' fontWeight='semibold' color='text.body'>
+                      First Released:{' '}
+                      <Text as='span' fontWeight='normal'>
+                        {sourceObj.firstReleased
+                          ? sourceObj.firstReleased
+                          : 'N/A'}
+                      </Text>
+                    </Text>
+                  )}
                 </HStack>
 
                 {/* Description, with the link to the source's website

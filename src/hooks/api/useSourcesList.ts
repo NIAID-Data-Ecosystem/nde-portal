@@ -205,7 +205,7 @@ const normalizeDateModified = (version?: string): string => {
 
 export function useSourcesList(
   options: any = {},
-  resourceCatalogFields: string[] = [], // [TO DO]: Remove once resource catalogs are served from the metadata endpoint
+  resourceCatalogFields: string[] = [],
 ) {
   const metadataQuery = useQuery<Metadata | undefined, Error, Source[]>({
     queryKey: ['metadata'],
@@ -271,12 +271,6 @@ export function useSourcesList(
     ...options,
   });
 
-  // [TO DO] TEMPORARY: sources and resource catalogs live on separate endpoints. Until
-  // they are consolidated onto the metadata endpoint `fetchMetadata` uses, fetch
-  // resource catalogs separately and merge in any the metadata sources list
-  // doesn't already represent (via `resourceCatalogIdentifier`). When the data
-  // is consolidated this whole block — and the `useResourceCatalogs` call — can
-  // be removed and `metadataQuery` returned directly.
   const resourceCatalogsQuery = useResourceCatalogs({
     // Callers can request extra fields (e.g. `creativeWorkStatus`) on top of
     // the defaults; dedupe so a repeated field isn't fetched twice.
