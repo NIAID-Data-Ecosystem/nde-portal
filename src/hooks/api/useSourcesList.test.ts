@@ -6,6 +6,7 @@ import { useResourceCatalogs } from './useResourceCatalogs';
 import {
   buildResourceCatalogSearchURL,
   getResourceCatalogIdentifier,
+  getTabIdFromSourceType,
   useSourcesList,
 } from './useSourcesList';
 
@@ -119,30 +120,26 @@ describe('getResourceCatalogIdentifier', () => {
 
   // A trailing slash is tolerated, and the pathname match is case-insensitive.
   it.each([
-    ['/resources/?id=dde_rel_slash', 'dde_rel_slash'],
-    ['https://data.niaid.nih.gov/resources/?id=dde_abs_slash', 'dde_abs_slash'],
-    ['/Resources?id=dde_rel_case', 'dde_rel_case'],
-    ['https://data.niaid.nih.gov/Resources?id=dde_abs_case', 'dde_abs_case'],
+    ['https://data.niaid.nih.gov/resources/?id=dde_slash', 'dde_slash'],
+    ['https://data.niaid.nih.gov/Resources?id=dde_case', 'dde_case'],
   ])('parses %s', (sameAs, expected) => {
     expect(getResourceCatalogIdentifier(sameAs)).toBe(expected);
   });
 
-  // Relative links are accepted only in the exact canonical `/resources?…`
-  // form. Anything looser is rejected below.
-  it('parses a relative /resources link', () => {
-    expect(getResourceCatalogIdentifier('/resources?id=dde_1')).toBe('dde_1');
-  });
-
-  it('ignores a fragment on a relative link', () => {
-    expect(getResourceCatalogIdentifier('/resources?id=dde_frag#section')).toBe(
-      'dde_frag',
-    );
+  it('ignores a fragment', () => {
+    expect(
+      getResourceCatalogIdentifier(
+        'https://data.niaid.nih.gov/resources?id=dde_frag#section',
+      ),
+    ).toBe('dde_frag');
   });
 
   it('tolerates surrounding whitespace', () => {
-    expect(getResourceCatalogIdentifier('  /resources?id=dde_trim  ')).toBe(
-      'dde_trim',
-    );
+    expect(
+      getResourceCatalogIdentifier(
+        '  https://data.niaid.nih.gov/resources?id=dde_trim  ',
+      ),
+    ).toBe('dde_trim');
   });
 
   // `sameAs` is free-form, source-supplied data: an unrelated link that merely
@@ -165,7 +162,7 @@ describe('getResourceCatalogIdentifier', () => {
     ],
     ['an unrelated host', 'https://orcid.org/0000-0002?id=BAD'],
     // A portal hostname alone is not enough — the `/resources` path is
-    // required in both the relative and the absolute form.
+    // required too.
     [
       'a portal host on another path',
       'https://data.niaid.nih.gov/other?id=BAD',
@@ -177,14 +174,19 @@ describe('getResourceCatalogIdentifier', () => {
     ],
     // Protocol-relative values resolve to the *other* host, not the portal.
     ['a protocol-relative link', '//data.niaid.nih.gov/resources?id=BAD'],
-    // Relative links must be exactly `/resources?…`.
+    // Relative links are never accepted, even on the catalog path: only an
+    // absolute link proves the value points back at this portal.
+    ['a root-relative catalog link', '/resources?id=dde_1'],
+    [
+      'a root-relative catalog link with a trailing slash',
+      '/resources/?id=dde_1',
+    ],
     ['a relative link without a leading slash', 'resources?id=dde_2'],
     ['a dot-prefixed relative link', './resources?id=dde_3'],
     ['a relative link on another path', '/some/other/page?id=dde_4'],
     ['a query-only relative link', '?id=dde_5'],
     // No usable `id` to extract.
-    ['an empty id', '/resources?id='],
-    ['no id param at all', '/resources'],
+    ['an empty id', 'https://data.niaid.nih.gov/resources?id='],
     ['a portal link with no id param', 'https://data.niaid.nih.gov/resources'],
     // Not URL-like.
     ['a non-URL string', 'not a url'],
@@ -219,7 +221,7 @@ describe('getResourceCatalogIdentifier', () => {
         undefined,
         42,
         '  ',
-        '/resources?id=dde_guarded',
+        'https://data.niaid.nih.gov/resources?id=dde_guarded',
       ] as any),
     ).toBe('dde_guarded');
   });
@@ -313,15 +315,15 @@ describe('useSourcesList', () => {
     expect(params.get('filters')).toBe('(_id:("dde_new"))');
   });
 
-  it('types a source with a relative sameAs as a Resource Catalog and ORs it into the search URL', async () => {
+  it('types a source with a catalog sameAs as a Resource Catalog and ORs it into the search URL', async () => {
     mockFetchMetadata.mockResolvedValue({
       src: {
-        repoRel: {
+        repoCat: {
           sourceInfo: {
-            identifier: 'repoRel',
-            name: 'Repo Rel',
+            identifier: 'repoCat',
+            name: 'Repo Cat',
             collectionType: 'Dataset Repository',
-            sameAs: '/resources?id=dde_relative',
+            sameAs: 'https://data.niaid.nih.gov/resources?id=dde_catalog',
           },
         },
       },
@@ -337,30 +339,90 @@ describe('useSourcesList', () => {
 
     // The parsed identifier is adopted as the source `_id` and adds the
     // "Resource Catalog" type alongside the source's own type.
-    expect(source.resourceCatalogIdentifier).toBe('dde_relative');
-    expect(source._id).toBe('dde_relative');
+    expect(source.resourceCatalogIdentifier).toBe('dde_catalog');
+    expect(source._id).toBe('dde_catalog');
     expect(source.type).toEqual(['Dataset Repository', 'Resource Catalog']);
 
-    // The catalog record is OR-ed in by `_id` next to the source's resources.
-    // The `_or` key itself is not serialized: the parts keep their `field:`
-    // prefixes inside one paren group, which is how the filter parser tells a
-    // cross-field OR from a single field's multi-value OR.
+    // Resources are matched by the source's display name, and the DDE catalog
+    // record is OR-ed in by `name` next to them. The `_or` key itself is not
+    // serialized: the parts keep their `field:` prefixes inside one paren
+    // group, which is how the filter parser tells a cross-field OR from a
+    // single field's multi-value OR.
     const params = new URLSearchParams((source.searchURL || '').split('?')[1]);
     expect(params.get('filters')).toBe(
-      '(includedInDataCatalog.name:("repoRel") OR _id:("dde_relative"))',
+      '(includedInDataCatalog.name:("Repo Cat") OR _id:("dde_catalog"))',
     );
   });
 
-  it('leaves a source whose sameAs is not a catalog link untyped as a catalog', async () => {
+  it.each([
+    // Carries an `id` param but is not a portal link.
+    ['an unrelated link', 'https://example.org/human-resources?id=BAD'],
+    // Points at the catalog page, but relative links are not accepted.
+    ['a root-relative catalog link', '/resources?id=dde_relative'],
+  ])(
+    'leaves a source whose sameAs is %s untyped as a catalog',
+    async (_label, sameAs) => {
+      mockFetchMetadata.mockResolvedValue({
+        src: {
+          repoOther: {
+            sourceInfo: {
+              identifier: 'repoOther',
+              name: 'Repo Other',
+              collectionType: 'Dataset Repository',
+              sameAs,
+            },
+          },
+        },
+      } as any);
+      setCatalogs({ data: undefined });
+
+      const { result } = renderHook(() => useSourcesList(), {
+        wrapper: createWrapper(),
+      });
+
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+      const source = (result.current.data || [])[0];
+
+      expect(source.resourceCatalogIdentifier).toBeUndefined();
+      expect(source.type).toEqual(['Dataset Repository']);
+      const params = new URLSearchParams(
+        (source.searchURL || '').split('?')[1],
+      );
+      expect(params.get('filters')).toBe(
+        '(includedInDataCatalog.name:("Repo Other"))',
+      );
+    },
+  );
+
+  it.each([
+    [
+      'drops unrecognized values from a collectionType array',
+      ['Software', 'Dataset Repository', 'Knowledgebase'],
+      ['Dataset Repository'],
+    ],
+    [
+      'skips non-string array members despite the declared string[]',
+      [null, 'Dataset Repository', 42],
+      ['Dataset Repository'],
+    ],
+    [
+      'leaves a source untyped when its only collectionType is unrecognized',
+      'Knowledgebase',
+      [],
+    ],
+    [
+      'treats collectionType values as case-sensitive',
+      ['dataset repository', 'Dataset Repository'],
+      ['Dataset Repository'],
+    ],
+  ])('%s', async (_label, collectionType, expected) => {
     mockFetchMetadata.mockResolvedValue({
       src: {
-        repoOther: {
+        repoMixed: {
           sourceInfo: {
-            identifier: 'repoOther',
-            name: 'Repo Other',
-            collectionType: 'Dataset Repository',
-            // Carries an `id` param but is not a portal link.
-            sameAs: 'https://example.org/human-resources?id=BAD',
+            identifier: 'repoMixed',
+            name: 'Repo Mixed',
+            collectionType,
           },
         },
       },
@@ -374,12 +436,38 @@ describe('useSourcesList', () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     const source = (result.current.data || [])[0];
 
-    expect(source.resourceCatalogIdentifier).toBeUndefined();
-    expect(source.type).toEqual(['Dataset Repository']);
+    expect(source.type).toEqual(expected);
+  });
+
+  it('preselects the search tab from the first recognized type', async () => {
+    mockFetchMetadata.mockResolvedValue({
+      src: {
+        repoTool: {
+          sourceInfo: {
+            identifier: 'repoTool',
+            name: 'Repo Tool',
+            // `Aardvark` would sort first and hide the tab if it weren't
+            // dropped before sorting.
+            collectionType: ['Computational Tool Repository', 'Aardvark'],
+          },
+        },
+      },
+    } as any);
+    setCatalogs({ data: undefined });
+
+    const { result } = renderHook(() => useSourcesList(), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    const source = (result.current.data || [])[0];
+
+    expect(source.type).toEqual(['Computational Tool Repository']);
     const params = new URLSearchParams((source.searchURL || '').split('?')[1]);
-    expect(params.get('filters')).toBe(
-      '(includedInDataCatalog.name:("repoOther"))',
+    expect(params.get('tab')).toBe(
+      getTabIdFromSourceType('Computational Tool Repository'),
     );
+    expect(params.get('tab')).toBeTruthy();
   });
 
   it('enriches metadata sources with numberOfRecords, isNiaidFunded and dateModified', async () => {
