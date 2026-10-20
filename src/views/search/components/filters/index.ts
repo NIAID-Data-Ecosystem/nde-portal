@@ -34,4 +34,6 @@ export {
   normalizeFilterValues,
   getSelectedFilterDisplay,
   sanitizeExistsFilterValues,
+  getFacetSelection,
+  updateFacetSelection,
 } from './utils/query-string';

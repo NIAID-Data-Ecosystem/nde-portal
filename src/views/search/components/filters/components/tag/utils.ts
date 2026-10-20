@@ -1,6 +1,6 @@
 import { TagInfo } from '.';
 
-import { capitalize, has, isPlainObject } from 'lodash';
+import { capitalize, has, isPlainObject, uniqBy } from 'lodash';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import {
@@ -20,6 +20,7 @@ const DISPLAY_NAME_SEPARATOR = ' | ';
 const DATE_FILTER_KEY = 'date';
 const EXISTS_PREFIX = '_exists_';
 const NOT_EXISTS_PREFIX = '-_exists_';
+const RAW_SUFFIX = /\.raw$/;
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -177,52 +178,55 @@ const createValueTags = (
     .filter((tag): tag is TagInfo => tag !== null);
 };
 
-// Creates a single tag for a cross-field OR group (`OR_FILTER_KEY`). Labels it
-// from the first entry that maps to a known facet (falling back to the first
-// entry), so e.g. `[{ 'includedInDataCatalog.name': ['acd@NIAID'] }, { _id: [..] }]`
-// renders as "Sources: acd@NIAID". The whole group is removed as one unit.
-const createOrGroupTag = (
+// Creates tags for a cross-field OR group (`OR_FILTER_KEY`): one per value of
+// each field in the group, so e.g.
+// `[{ 'includedInDataCatalog.name': ['acd@NIAID'] },
+//   { 'includedInDataCatalog.name': ['Data Discovery Engine (DDE)'], _id: [..] }]`
+// renders as "Sources: acd@NIAID", "Sources: Data Discovery Engine (DDE)" and
+// "ID: ..". Fields that aren't in the filter list are labelled from the schema
+// definitions. Each tag is keyed by its field so removing it updates the group
+// the same way unchecking the facet's checkbox does.
+const createOrGroupTags = (
   values: SelectedFilterValueType[],
   configMap: Record<string, FilterConfig>,
 ): TagInfo[] => {
   const entries = values.filter((v): v is { [key: string]: string[] } =>
     isObjectValue(v),
   );
-  if (entries.length === 0) {
-    return [];
-  }
 
-  const primary =
-    entries.find(entry => {
-      const field = Object.keys(entry)[0];
-      return Boolean(configMap[field] || schema?.[field]);
-    }) ?? entries[0];
+  const tags = entries.flatMap(entry =>
+    Object.entries(entry).flatMap(([field, fieldValues]) =>
+      createValueTags(
+        field,
+        generateTagName(field, configMap[field]),
+        fieldValues,
+        configMap[field],
+      ).map(tag => ({
+        ...tag,
+        key: `${OR_FILTER_KEY}-${field}-${JSON.stringify(tag.value)}`,
+      })),
+    ),
+  );
 
-  const field = Object.keys(primary)[0];
-  const displayValue = String(primary[field]?.[0] ?? '');
-  if (!displayValue) {
-    return [];
-  }
-
-  return [
-    {
-      key: `${OR_FILTER_KEY}-${field}`,
-      filterKey: OR_FILTER_KEY,
-      name: generateTagName(field, configMap[field]),
-      value: values,
-      displayValue,
-    },
-  ];
+  return uniqBy(tags, 'key');
 };
 
 // Exported functions
 
-// Generates a human-readable name for a filter key
+// Generates a human-readable name for a filter key. Keys not in the filter list
+// fall back to the schema definition's name; schema definitions are keyed
+// without the `.raw` keyword suffix, so e.g. `sdPublisher.name.raw` resolves to
+// "SDPublisher Name".
 export const generateTagName = (key: string, config?: FilterConfig): string => {
   if (key === '_id') {
     return 'ID';
   }
-  return config?.name ?? schema?.[key]?.name ?? key;
+  return (
+    config?.name ??
+    schema?.[key]?.name ??
+    schema?.[key.replace(RAW_SUFFIX, '')]?.name ??
+    key
+  );
 };
 
 // Generates a flat list of tag metadata objects from selected filters
@@ -239,9 +243,9 @@ export const generateTags = (
       return [];
     }
 
-    // Handle a cross-field OR group as a single tag
+    // Handle a cross-field OR group's facet values
     if (key === OR_FILTER_KEY) {
-      return createOrGroupTag(tagValues, configMap);
+      return createOrGroupTags(tagValues, configMap);
     }
 
     // Handle date ranges as a single tag

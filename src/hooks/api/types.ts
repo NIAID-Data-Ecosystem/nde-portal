@@ -28,7 +28,7 @@ export interface MetadataSource {
     abstract?: string;
     alternateName?: string[];
     collectionSize?: QuantitativeValue[];
-    collectionType?: string;
+    collectionType?: string | string[];
     conditionsOfAccess?: string;
     creativeWorkStatus?: CreativeWorkStatusDatasetType;
     date?: string;

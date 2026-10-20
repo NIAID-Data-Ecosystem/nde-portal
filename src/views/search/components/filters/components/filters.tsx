@@ -10,8 +10,10 @@ import {
 } from '@chakra-ui/react';
 import { useFilterQueries } from '../hooks/useFilterQueries';
 import {
+  getFacetSelection,
   queryFilterObject2String,
   sanitizeExistsFilterValues,
+  updateFacetSelection,
 } from '../utils/query-string';
 import { SelectedFilterType } from '../types';
 import { useRouter } from 'next/router';
@@ -180,10 +182,11 @@ export const Filters = React.memo(
       const categoriesWithActiveFilters = new Set(
         groupedCategories
           .map(([_, filters], index) => {
-            const hasSelection = filters.some(filterConfig => {
-              const values = selectedFilters?.[filterConfig.property];
-              return Array.isArray(values) && values.length > 0;
-            });
+            const hasSelection = filters.some(
+              filterConfig =>
+                getFacetSelection(selectedFilters, filterConfig.property)
+                  .length > 0,
+            );
             return hasSelection ? index : -1;
           })
           .filter(index => index !== -1),
@@ -208,8 +211,8 @@ export const Filters = React.memo(
       (values: string[], facet: string) => {
         // Normalize the facet's previous selection to plain strings, mirroring
         // how `selected` is derived for each filter section below.
-        const prevValues = (selectedFilters[facet] || []).map(value =>
-          typeof value === 'object' ? Object.keys(value)[0] : value,
+        const prevValues = getFacetSelection(selectedFilters, facet).map(
+          value => (typeof value === 'object' ? Object.keys(value)[0] : value),
         );
 
         // Checking "Any"/"No" clears everything else for this facet.
@@ -222,10 +225,11 @@ export const Filters = React.memo(
           }
           return value;
         });
-        let updatedFilterString = queryFilterObject2String({
-          ...selectedFilters,
-          ...{ [facet]: updatedValues },
-        } as SelectedFilterType);
+        // Facets inside an `_or` group (e.g. a source's catalog names) are
+        // updated within the group rather than AND-ed alongside it.
+        let updatedFilterString = queryFilterObject2String(
+          updateFacetSelection(selectedFilters, facet, updatedValues),
+        );
         handleUpdate({
           from: 1,
           filters: updatedFilterString,
@@ -246,10 +250,11 @@ export const Filters = React.memo(
     const getFilterIndicesForOpenState = useCallback(
       (filtersInCategory: typeof visibleFiltersList) => {
         return filtersInCategory
-          .map((config, index) => {
-            const values = selectedFilters?.[config.property];
-            return Array.isArray(values) && values.length > 0 ? index : -1;
-          })
+          .map((config, index) =>
+            getFacetSelection(selectedFilters, config.property).length > 0
+              ? index
+              : -1,
+          )
           .filter(index => index !== -1);
       },
       [selectedFilters],
@@ -306,14 +311,17 @@ export const Filters = React.memo(
                   >
                     {filtersInCategory.map(filterConfig => {
                       const { id, name, property, description } = filterConfig;
-                      const selected = selectedFilters?.[property]?.map(
-                        filter => {
-                          if (typeof filter === 'object') {
-                            return Object.keys(filter)[0];
-                          }
-                          return filter;
-                        },
-                      );
+                      // Includes values held in an `_or` group so they show as
+                      // checked too.
+                      const selected = getFacetSelection(
+                        selectedFilters,
+                        property,
+                      ).map(filter => {
+                        if (typeof filter === 'object') {
+                          return Object.keys(filter)[0];
+                        }
+                        return filter;
+                      });
 
                       return (
                         <FiltersSection
