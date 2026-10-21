@@ -14,8 +14,15 @@ jest.mock('src/views/search/components/search-results-header', () => ({
 }));
 
 jest.mock('src/views/search/components/filters/utils/query-string', () => ({
+  ...jest.requireActual(
+    'src/views/search/components/filters/utils/query-string',
+  ),
   queryFilterObject2String: jest.fn(() => '(compiled-filter)'),
 }));
+
+const { queryFilterObject2String } = jest.requireMock(
+  'src/views/search/components/filters/utils/query-string',
+);
 
 describe('filters/components/tag', () => {
   beforeEach(() => {
@@ -77,5 +84,31 @@ describe('filters/components/tag', () => {
     expect(handleRouteUpdate).toHaveBeenCalledWith(
       expect.objectContaining({ filters: '(compiled-filter)' }),
     );
+  });
+
+  it('renders and removes tags for an `_or` field outside the filter list', () => {
+    const handleRouteUpdate = jest.fn();
+    render(
+      <FilterTags
+        filtersConfig={filtersConfig}
+        selectedFilters={{
+          _or: [{ topic: ['alpha'] }, { topic: ['beta'], _id: ['dde_123'] }],
+        }}
+        handleRouteUpdate={handleRouteUpdate}
+        removeAllFilters={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByText('ID: dde_123')).toBeInTheDocument();
+
+    // Removing the `_id` drops the `_or` entry it's AND-ed into, flattening
+    // the group back to a plain filter.
+    // Tags render in order: "Topic: alpha", "Topic: beta", "ID: dde_123".
+    fireEvent.click(screen.getAllByLabelText('close')[2]);
+    expect(queryFilterObject2String).toHaveBeenLastCalledWith({
+      topic: ['alpha'],
+      _id: [],
+    });
+    expect(handleRouteUpdate).toHaveBeenCalled();
   });
 });

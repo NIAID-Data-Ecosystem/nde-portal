@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { useSourcesList } from 'src/hooks/api/useSourcesList';
-import { SHOW_DATA_COLLECTIONS_TAB } from 'src/utils/feature-flags';
 import { REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
 
 import { RepositoryMatcherItem } from '../types';
@@ -29,6 +28,20 @@ export const defaultSearchValue = (
   return null;
 };
 
+const isUnnamedDefinedTerm = (v: unknown): boolean =>
+  typeof v === 'object' &&
+  v !== null &&
+  (v as Record<string, unknown>)['@type'] === 'DefinedTerm' &&
+  !(v as Record<string, unknown>).name;
+
+/** Drops `DefinedTerm` objects without a `name` from array values so they
+ * don't render as empty tags or produce blank filter options. Non-array
+ * values are returned unchanged. */
+export const removeUnnamedDefinedTerms = <T>(value: T): T =>
+  Array.isArray(value)
+    ? (value.filter(v => !isUnnamedDefinedTerm(v)) as T)
+    : value;
+
 export const useRepositoryMatcherData = (fields: string[] = ['@type']) => {
   /****** Source + Resource Catalog Data ******/
   // `useSourcesList` merges standalone resource catalogs into the metadata
@@ -53,12 +66,7 @@ export const useRepositoryMatcherData = (fields: string[] = ['@type']) => {
         const statusIsAcceptingData =
           item?.creativeWorkStatus === 'Accepting Data';
 
-        // Exclude items with type "Data Repository"
-        const shouldExucludeDataRepository =
-          !SHOW_DATA_COLLECTIONS_TAB &&
-          item['type'].includes('Data Repository');
-
-        return statusIsAcceptingData && !shouldExucludeDataRepository;
+        return statusIsAcceptingData;
       })
       .forEach(item => {
         const row = {
@@ -67,7 +75,7 @@ export const useRepositoryMatcherData = (fields: string[] = ['@type']) => {
         } as RepositoryMatcherRow;
         const searchParts: string[] = [];
         for (const col of REPOSITORY_MATCHER_COLUMNS) {
-          const value = col.transform(item);
+          const value = removeUnnamedDefinedTerms(col.transform(item));
           row[col.id] = value;
           const searchValue = col.getSearchValue
             ? col.getSearchValue(value)

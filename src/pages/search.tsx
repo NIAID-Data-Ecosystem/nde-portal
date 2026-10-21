@@ -19,6 +19,10 @@ import {
   queryFilterString2Object,
   sanitizeExistsFilterValues,
 } from 'src/views/search/components/filters/utils/query-string';
+import {
+  getFacetSelection,
+  updateFacetSelection,
+} from 'src/views/search/components/filters/utils/query-string';
 import { SearchResultsHeader } from 'src/views/search/components/search-results-header';
 import { SearchResultsController } from 'src/views/search/components/search-results-tabs-controller';
 import SummaryGrid from 'src/views/search/components/summary';
@@ -129,16 +133,17 @@ const Search: NextPage<{
       //     : value,
       // );
 
-      const prevValues = selectedFilters[facet] || [];
+      const prevValues = getFacetSelection(selectedFilters, facet);
 
       // Checking "Any"/"No" clears everything else for this facet, and
       // checking a normal value clears "Any"/"No" if it was active.
       const sanitizedValues = sanitizeExistsFilterValues(values, prevValues);
 
-      const updatedFilterString = queryFilterObject2String({
-        ...selectedFilters,
-        [facet]: sanitizedValues,
-      });
+      // Facets inside an `_or` group are updated within the group rather than
+      // AND-ed alongside it.
+      const updatedFilterString = queryFilterObject2String(
+        updateFacetSelection(selectedFilters, facet, sanitizedValues),
+      );
 
       handleUpdate({
         from: 1,

@@ -1,9 +1,11 @@
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SearchableItem } from 'src/components/searchable-items';
 import { FormattedResource } from 'src/utils/api/types';
+import { SHOW_CONTENT_TYPE_RESOURCE_TYPE_MATCHING } from 'src/utils/feature-flags';
 import {
   CONTENT_TYPE_ABOUT_FIELD,
   CONTENT_TYPE_EXAMPLE_OF_WORK_FIELD,
+  getResourceTypeForContentType,
 } from 'src/views/search/config/content-type';
 import {
   getContentTypeLabel,
@@ -38,6 +40,72 @@ export const filterWords = (inputString: string) => {
     // Sort the words by length in descending order so that the longest words are matched first i.e. when searching for mus musculus the first mus will be matched with the first mus in mus musculus and the second musculus will be fully matched with the second musculus in mus musculus.
     .sort((a, b) => b.length - a.length);
   return filteredWords;
+};
+
+export interface CollectionSizeText {
+  count: string;
+  unitText: string;
+}
+
+/*
+ * Formats a DataCollection's `collectionSize` into the count + unitText
+ * shown in the card's collection-size rectangle. Returns null when
+ * there's no entry, no unitText, or none of minValue/maxValue/value.
+ */
+export const formatCollectionSize = (
+  collectionSize?: FormattedResource['collectionSize'],
+): CollectionSizeText | null => {
+  const entry = collectionSize?.[0];
+  if (!entry?.unitText) return null;
+
+  const unitText = entry.unitText;
+  if (typeof entry.minValue === 'number') {
+    return { count: `${entry.minValue.toLocaleString()}+`, unitText };
+  }
+  if (typeof entry.maxValue === 'number') {
+    return { count: entry.maxValue.toLocaleString(), unitText };
+  }
+  if (typeof entry.value === 'number') {
+    return { count: entry.value.toLocaleString(), unitText };
+  }
+  return null;
+};
+
+/*
+ * Builds the "Content Types" pills for a Resource Catalog card from `about`
+ * alone, linking each pill to a search on `about.displayName`. When the
+ * value is a known resource type and SHOW_CONTENT_TYPE_RESOURCE_TYPE_MATCHING
+ * is enabled, the search also matches records of the corresponding `@type`.
+ */
+export const getResourceCatalogContentTypeItems = (
+  data?: FormattedResource | null,
+): SearchableItem[] => {
+  const about = data?.about;
+  if (!about) return [];
+  const aboutArray = Array.isArray(about) ? about : [about];
+
+  const itemsByValue = new Map<string, SearchableItem>();
+
+  aboutArray.forEach(a => {
+    const value = a.displayName;
+    const key = String(value).toLowerCase();
+    if (itemsByValue.has(key)) return;
+
+    const resourceType = SHOW_CONTENT_TYPE_RESOURCE_TYPE_MATCHING
+      ? getResourceTypeForContentType(value)
+      : undefined;
+
+    itemsByValue.set(key, {
+      name: value,
+      value,
+      field: 'about.displayName',
+      ...(resourceType && {
+        query: `(about.displayName:"${value}" OR @type:"${resourceType}")`,
+      }),
+    });
+  });
+
+  return Array.from(itemsByValue.values());
 };
 
 /*

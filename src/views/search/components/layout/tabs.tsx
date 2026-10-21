@@ -12,6 +12,8 @@ interface TabWithCounts extends Omit<TabType, 'types'> {
 
 interface SearchTabsProps extends Omit<Tabs.RootProps, 'children'> {
   tabs: TabWithCounts[];
+  // Number of Program Info cards shown with the Other Resources.
+  programInfoCount?: number;
   renderTabPanels: () => React.ReactNode;
 }
 

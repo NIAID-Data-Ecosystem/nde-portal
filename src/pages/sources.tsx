@@ -27,6 +27,7 @@ import { fetchSourceInformationFromGithub } from 'src/views/sources/helpers';
 /** Build-time GitHub commit info, keyed by source identifier. */
 interface GithubSourceInfo {
   id: string;
+  name: string;
   dateCreated?: string;
 }
 
@@ -53,7 +54,9 @@ const getSourceAnchorSlug = (source: Source) => {
  */
 export type SourceDisplayItem = Source & {
   slug: string;
-  dateCreated?: string;
+  firstReleased?: string | null;
+  latestRelease?: string | null;
+  lastCurated?: string | null;
 };
 
 interface SourcesProps {
@@ -78,9 +81,12 @@ const Sources: NextPage<SourcesProps> = ({ data }) => {
     data: sources,
     isLoading,
     error: metadataError,
-  } = useSourcesList({
-    refetchOnWindowFocus: false,
-  });
+  } = useSourcesList(
+    {
+      refetchOnWindowFocus: false,
+    },
+    ['dateModified'],
+  );
 
   // Build metadata (API version + last-harvested date). Shares the cached
   // ['metadata'] query with `useSourcesList`, so this adds no network request.
@@ -92,23 +98,30 @@ const Sources: NextPage<SourcesProps> = ({ data }) => {
     refetchOnWindowFocus: false,
   });
 
-  // Enrich each source with the anchor `slug` and the build-time GitHub
-  // `dateCreated`, then sort alphabetically by name.
+  // Add anchor slugs and release/curation dates, then sort by name.
   const sourceItems = useMemo<SourceDisplayItem[]>(() => {
-    const githubInfo = data?.githubInfo?.data || [];
-    return (sources || [])
+    const githubInfo = data?.githubInfo?.data ?? [];
+
+    return (sources ?? [])
       .filter(
-        item =>
+        source =>
           USE_MERGED_SOURCES_AND_CATALOGS ||
-          (item.type.length === 1 && !item.type.includes('Resource Catalog')),
+          (source.type.length === 1 && source.type[0] !== 'Resource Catalog'),
       )
       .map(source => {
-        const github = githubInfo.find(item => item.id === source.identifier);
+        const github = githubInfo.find(item => item.name === source.name);
+
+        const isResourceCatalogOnly =
+          source.type.length === 1 && source.type[0] === 'Resource Catalog';
+
+        const dateModified = formatDate(source.dateModified);
 
         return {
           ...source,
           slug: getSourceAnchorSlug(source),
-          dateCreated: github?.dateCreated,
+          firstReleased: formatDate(github?.dateCreated),
+          latestRelease: isResourceCatalogOnly ? undefined : dateModified,
+          lastCurated: isResourceCatalogOnly ? dateModified : undefined,
         };
       })
       .sort((a, b) => a.name.localeCompare(b.name));
@@ -181,11 +194,13 @@ const Sources: NextPage<SourcesProps> = ({ data }) => {
                           )}
                         </Label>
                       }
-                      subLabel={`Latest Release ${
-                        source.dateModified
-                          ? formatDate(source.dateModified)
-                          : 'N/A'
-                      }`}
+                      subLabel={
+                        source.latestRelease
+                          ? `Latest Release ${source.latestRelease}`
+                          : source.lastCurated
+                          ? `Last Curated ${source.lastCurated}`
+                          : ''
+                      }
                       href={`#${source.slug}`}
                     />
                   );

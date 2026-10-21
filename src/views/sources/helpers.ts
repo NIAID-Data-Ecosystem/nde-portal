@@ -43,14 +43,18 @@ export const extractCommitDates = (data: any[]) => {
 export const fetchSourceInformationFromGithub = async (
   sourceData: any[],
 ): Promise<{
-  data: Array<{ id: string; sourcePath: string | null; dateCreated?: string }>;
+  data: Array<{
+    name: string;
+    sourcePath: string | null;
+    dateCreated?: string;
+  }>;
   error: null | { type: string; status: number; message: string };
 }> => {
   try {
     const data = await Promise.all(
       sourceData.map(async ([k, source]: [string, any]) => {
         const sourceObject = {
-          id: source?.sourceInfo?.identifier || k,
+          name: source?.sourceInfo?.name || k,
           sourcePath: source?.code?.file || null,
         };
 
@@ -67,7 +71,7 @@ export const fetchSourceInformationFromGithub = async (
 
         // If no source path is found, skip fetching GitHub data
         if (!sourceObject.sourcePath) {
-          return sourceObject;
+          return { ...sourceObject, name: source?.sourceInfo?.name || k };
         }
 
         // Fetch source information from GitHub.

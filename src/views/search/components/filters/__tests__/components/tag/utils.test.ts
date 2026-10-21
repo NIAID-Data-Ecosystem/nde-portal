@@ -116,7 +116,27 @@ describe('tag/utils', () => {
     );
   });
 
-  it('renders a cross-field OR (`_or`) group as one tag labelled from a known facet', () => {
+  it('labels filters outside the filter list from the schema definitions', () => {
+    expect(generateTagName('sdPublisher.name')).toBe('SDPublisher Name');
+    // Schema definitions are keyed without the `.raw` keyword suffix.
+    expect(generateTagName('sdPublisher.name.raw')).toBe('SDPublisher Name');
+    expect(generateTagName('_id')).toBe('ID');
+    expect(generateTagName('notInSchema')).toBe('notInSchema');
+
+    expect(
+      generateTags({ 'sdPublisher.name.raw': ['ImmPort'] } as any, configMap),
+    ).toEqual([
+      {
+        key: 'sdPublisher.name.raw-0',
+        filterKey: 'sdPublisher.name.raw',
+        name: 'SDPublisher Name',
+        value: 'ImmPort',
+        displayValue: 'ImmPort',
+      },
+    ]);
+  });
+
+  it('renders one tag per value of every field in an `_or` group', () => {
     const orConfigMap = {
       ...configMap,
       'includedInDataCatalog.name': {
@@ -133,22 +153,67 @@ describe('tag/utils', () => {
       {
         _or: [
           { 'includedInDataCatalog.name': ['acd@NIAID'] },
-          { _id: ['dde_123'] },
+          {
+            'includedInDataCatalog.name': ['Data Discovery Engine (DDE)'],
+            _id: ['dde_123'],
+          },
         ],
       } as any,
       orConfigMap,
     );
 
-    expect(tags).toHaveLength(1);
-    expect(tags[0]).toMatchObject({
-      filterKey: '_or',
-      name: 'Sources',
-      displayValue: 'acd@NIAID',
-    });
-    // The tag's value is the whole group so removing it clears the filter.
-    expect(tags[0].value).toEqual([
-      { 'includedInDataCatalog.name': ['acd@NIAID'] },
-      { _id: ['dde_123'] },
+    expect(
+      tags.map(({ filterKey, name, value, displayValue }) => ({
+        filterKey,
+        name,
+        value,
+        displayValue,
+      })),
+    ).toEqual([
+      {
+        filterKey: 'includedInDataCatalog.name',
+        name: 'Sources',
+        value: 'acd@NIAID',
+        displayValue: 'acd@NIAID',
+      },
+      {
+        filterKey: 'includedInDataCatalog.name',
+        name: 'Sources',
+        value: 'Data Discovery Engine (DDE)',
+        displayValue: 'Data Discovery Engine (DDE)',
+      },
+      // `_id` isn't in the filter list but still gets a tag.
+      {
+        filterKey: '_id',
+        name: 'ID',
+        value: 'dde_123',
+        displayValue: 'dde_123',
+      },
+    ]);
+    expect(new Set(tags.map(tag => tag.key)).size).toBe(3);
+  });
+
+  it('labels `_or` group fields outside the filter list from the schema definitions', () => {
+    const tags = generateTags(
+      {
+        _or: [{ 'sdPublisher.name.raw': ['ImmPort'] }, { notInSchema: ['b'] }],
+      } as any,
+      configMap,
+    );
+
+    expect(
+      tags.map(({ filterKey, name, displayValue }) => ({
+        filterKey,
+        name,
+        displayValue,
+      })),
+    ).toEqual([
+      {
+        filterKey: 'sdPublisher.name.raw',
+        name: 'SDPublisher Name',
+        displayValue: 'ImmPort',
+      },
+      { filterKey: 'notInSchema', name: 'notInSchema', displayValue: 'b' },
     ]);
   });
 });

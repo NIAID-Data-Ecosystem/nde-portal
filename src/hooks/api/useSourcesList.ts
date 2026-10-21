@@ -33,12 +33,23 @@ const RESOURCE_CATALOG_FIELDS = [
   'url',
 ];
 
-export type SourceType =
-  | 'Dataset Repository'
-  | 'Computational Tool Repository'
-  | 'Sample Repository'
-  | 'Data Repository'
-  | 'Resource Catalog';
+export const SOURCE_TYPES = [
+  'Dataset Repository',
+  'Computational Tool Repository',
+  'Sample Repository',
+  'Data Repository',
+  'Resource Catalog',
+] as const;
+
+export type SourceType = (typeof SOURCE_TYPES)[number];
+
+/**
+ * Whether a value is one of the recognized `SOURCE_TYPES`. `collectionType` is
+ * upstream metadata and can hold values outside this set.
+ */
+const isSourceType = (value: unknown): value is SourceType =>
+  typeof value === 'string' &&
+  (SOURCE_TYPES as readonly string[]).includes(value);
 
 export const getTabIdFromSourceType = (
   sourceType: SourceType,
@@ -136,12 +147,11 @@ const PORTAL_HOSTNAMES = new Set(
  *
  * `sameAs` is free-form, source-supplied data, so an unrelated link that merely
  * carries an `id` query param must not be mistaken for a catalog link. A value
- * qualifies only in these two forms:
- *   - a root-relative catalog link — `/resources?id=…`
- *   - an absolute catalog link on one of the portal's own hostnames
- *     (`PORTAL_HOSTNAMES`) — `https://data.niaid.nih.gov/resources?id=…`
- * The `/resources` pathname is required either way: a portal hostname alone is
- * not enough, so `https://data.niaid.nih.gov/other?id=x` does not qualify.
+ * qualifies only as an absolute catalog link on one of the portal's own
+ * hostnames (`PORTAL_HOSTNAMES`) — `https://data.niaid.nih.gov/resources?id=…`.
+ * Relative links (e.g. `/resources?id=…`) are not accepted. The `/resources`
+ * pathname is required too: a portal hostname alone is not enough, so
+ * `https://data.niaid.nih.gov/other?id=x` does not qualify.
  */
 export const getResourceCatalogIdentifier = (
   sameAs?: string | string[],
@@ -154,42 +164,24 @@ export const getResourceCatalogIdentifier = (
     // can hold `null`/non-strings despite the declared `string[]`.
     if (typeof value !== 'string' || !value.trim()) continue;
 
-    const href = value.trim();
-    let searchParams: URLSearchParams;
-
-    // One leading slash means root-relative, which is ours by definition.
-    if (href.startsWith('/') && !href.startsWith('//')) {
-      // Split the path off the query
-      const pathAndQuery = href.split('#')[0];
-      const queryIndex = pathAndQuery.indexOf('?');
-      const pathname =
-        queryIndex === -1 ? pathAndQuery : pathAndQuery.slice(0, queryIndex);
-
-      // Relative values still have to point at the catalog page.
-      if (!isResourceCatalogPathname(pathname)) continue;
-      searchParams = new URLSearchParams(
-        queryIndex === -1 ? '' : pathAndQuery.slice(queryIndex + 1),
-      );
-    } else {
-      let url: URL;
-      try {
-        url = new URL(href);
-      } catch {
-        continue; // Neither an absolute URL nor a root-relative path.
-      }
-
-      // Compare hostnames.
-      if (!PORTAL_HOSTNAMES.has(url.hostname.toLowerCase())) continue;
-
-      // The path is required here too. Matching the whole pathname rather than
-      // a substring is what keeps `https://x.org/human-resources?id=1` and
-      // `https://x.org/a?q=resources&id=1` out.
-      if (!isResourceCatalogPathname(url.pathname)) continue;
-      searchParams = url.searchParams;
+    // Parsing without a base rejects relative links outright.
+    let url: URL;
+    try {
+      url = new URL(value.trim());
+    } catch {
+      continue; // Not an absolute URL.
     }
 
+    // Compare hostnames.
+    if (!PORTAL_HOSTNAMES.has(url.hostname.toLowerCase())) continue;
+
+    // Matching the whole pathname rather than a substring is what keeps
+    // `https://x.org/human-resources?id=1` and `https://x.org/a?q=resources&id=1`
+    // out.
+    if (!isResourceCatalogPathname(url.pathname)) continue;
+
     // `URLSearchParams` percent-decodes for us; ignore a present-but-empty `id`.
-    const id = searchParams.get('id')?.trim();
+    const id = url.searchParams.get('id')?.trim();
     if (id) return id;
   }
   return undefined;
@@ -214,7 +206,7 @@ const normalizeDateModified = (version?: string): string => {
 
 export function useSourcesList(
   options: any = {},
-  resourceCatalogFields: string[] = [], // [TO DO]: Remove once resource catalogs are served from the metadata endpoint
+  resourceCatalogFields: string[] = [],
 ) {
   const metadataQuery = useQuery<Metadata | undefined, Error, Source[]>({
     queryKey: ['metadata'],
@@ -226,30 +218,23 @@ export function useSourcesList(
           ([, source]) =>
             source?.sourceInfo &&
             !Array.isArray(source.sourceInfo) &&
-            source.sourceInfo.identifier,
+            source.sourceInfo.name,
         )
         .map(([srcKey, metadataSource]) => {
           const { sourceInfo, stats, version } = metadataSource;
-          const {
-            _id,
-            identifier,
-            name,
-            collectionType,
-            sameAs,
-            type: sourceInfoType,
-          } = sourceInfo || {};
-          // use type if available, otherwise fallback to collectionType
-          const sourceType = sourceInfoType || collectionType;
-
+          const { _id, name, collectionType, sameAs } = sourceInfo || {};
+          // Keep only recognized source types from `collectionType`.
           const type = (
-            Array.isArray(sourceType)
-              ? sourceType
-              : sourceType
-              ? [sourceType]
+            Array.isArray(collectionType)
+              ? collectionType
+              : collectionType
+              ? [collectionType]
               : []
-          ).sort((a, b) => a.localeCompare(b));
+          )
+            .filter(isSourceType)
+            .sort((a, b) => a.localeCompare(b));
 
-          const resourceName = name || identifier || '';
+          const resourceName = name || '';
 
           // A `sameAs` link pointing to a resource catalog marks this source as
           // being available in a catalog.
@@ -269,9 +254,8 @@ export function useSourcesList(
             // Use the resource catalog identifier as the source `_id` if present,
             // otherwise fall back to the metadata `_id` or the `identifier`.
             _id: resourceCatalogIdentifier || _id || '',
-            identifier,
-            key: `${identifier}-${name}-${type.join(',')}`,
-            type: type as SourceType[],
+            key: `${name}-${type.join(',')}`,
+            type,
             name: resourceName,
             resourceCatalogIdentifier,
             numberOfRecords,
@@ -288,12 +272,6 @@ export function useSourcesList(
     ...options,
   });
 
-  // [TO DO] TEMPORARY: sources and resource catalogs live on separate endpoints. Until
-  // they are consolidated onto the metadata endpoint `fetchMetadata` uses, fetch
-  // resource catalogs separately and merge in any the metadata sources list
-  // doesn't already represent (via `resourceCatalogIdentifier`). When the data
-  // is consolidated this whole block — and the `useResourceCatalogs` call — can
-  // be removed and `metadataQuery` returned directly.
   const resourceCatalogsQuery = useResourceCatalogs({
     // Callers can request extra fields (e.g. `creativeWorkStatus`) on top of
     // the defaults; dedupe so a repeated field isn't fetched twice.
@@ -344,6 +322,9 @@ const resourceCatalogToSource = (catalog: FormattedResource): Source => {
     name: catalog.name || id,
     type: ['Resource Catalog'],
     isNiaidFunded: getFundedByNIAID(catalog.name || ''),
+    // A standalone catalog is its own catalog record, so it links to its own
+    // `/resources?id=` page ("Learn about source").
+    resourceCatalogIdentifier: id || undefined,
     // A standalone catalog is its own record, so scope search to it by `_id`.
     searchURL: buildResourceCatalogSearchURL(id),
     // A search-API catalog record has no `schema`/`metadata_completeness`/`stats`
@@ -370,29 +351,27 @@ export const buildResourceCatalogSearchURL = (id: string): string => {
  * Build a `/search` link scoped to a source's resources.
  *
  * Resources are matched by `includedInDataCatalog.name` (the source
- * identifier). When the source maps to a resource catalog, the catalog record
- * itself is OR-ed in by `_id`, mirroring the API `extra_filter`:
- *   includedInDataCatalog.name:"accessclinicaldata@NIAID" OR _id:dde_42e839db86d4166d
+ * name). When the source maps to a resource catalog, the catalog record
+ * itself (a DDE record) is OR-ed in.
  * The matching tab is preselected from the source's repository type.
  */
 export const buildSearchURL = (item: Source): string => {
-  // `includedInDataCatalog.name` is stored as the source identifier
-  // (e.g. "accessclinicaldata@NIAID"), falling back to the display name.
-  const catalogName = item.identifier || item.name || '';
-  if (!catalogName) return '';
+  // Determine the name to use in the search filters. For a source that maps to a resource catalog, this will be OR-ed with the catalog record.
+  const name = item.name || '';
+  if (!name) return '';
   const types = item.type || [];
 
-  // When the source maps to a resource catalog, OR-in the catalog record by
-  // `_id` via an `_or` group (a cross-field OR the filter helpers round-trip);
+  // When the source maps to a resource catalog, OR-in the catalog record
+  // via an `_or` group (a cross-field OR the filter helpers round-trip);
   // otherwise just scope by catalog name.
   const filters = item.resourceCatalogIdentifier
     ? queryFilterObject2String({
         [OR_FILTER_KEY]: [
-          { 'includedInDataCatalog.name': [catalogName] },
+          { 'includedInDataCatalog.name': [name] },
           { _id: [item.resourceCatalogIdentifier] },
         ],
       })
-    : queryFilterObject2String({ 'includedInDataCatalog.name': [catalogName] });
+    : queryFilterObject2String({ 'includedInDataCatalog.name': [name] });
 
   const params = new URLSearchParams();
   params.set('q', '');

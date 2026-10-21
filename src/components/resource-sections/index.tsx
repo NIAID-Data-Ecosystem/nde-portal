@@ -192,6 +192,7 @@ const Sections = ({
                     exampleOfWork={data?.exampleOfWork}
                     genre={data?.genre}
                     loading={loading}
+                    type={data?.['@type']}
                   />
                   <ResourceOverview loading={loading} {...data} />
                 </VStack>

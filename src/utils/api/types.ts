@@ -314,6 +314,7 @@ export interface SourceOrganization {
   correctionApproved?: boolean;
   description?: string;
   parentOrganization?: string | string[];
+  sameAs?: string | string[] | null;
   url?: string;
 }
 

@@ -96,7 +96,6 @@ export const DataAccess: React.FC<DataAccessProps> = ({
                   })}
                   colorPalette={colorPalette}
                 />
-                {/* [TO DO]: add data submission functionality when property is added to source */}
                 {submittingDataUrl && (
                   <AccessResourceButton
                     label='Submit Data'

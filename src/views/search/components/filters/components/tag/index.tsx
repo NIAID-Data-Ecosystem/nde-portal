@@ -14,8 +14,10 @@ import {
   SelectedFilterValueType,
 } from '../../types';
 import {
+  getFacetSelection,
   OR_FILTER_KEY,
   queryFilterObject2String,
+  updateFacetSelection,
 } from '../../utils/query-string';
 import { generateTags } from './utils';
 
@@ -92,20 +94,22 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
           [filterKey]: [],
         };
       } else if (filterKey === OR_FILTER_KEY) {
-        // A cross-field OR group is a single logical filter — clear it whole.
+        // A cross-field OR group with no facet-backed tags — clear it whole.
         updatedFilters = {
           ...selectedFilters,
           [OR_FILTER_KEY]: [],
         };
       } else {
-        // For other filters, remove the specific value(s)
-        updatedFilters = {
-          ...selectedFilters,
-          [filterKey]: selectedFilters[filterKey].filter(v => {
+        // For other filters, remove the specific value(s). Values held in an
+        // `_or` group are removed from within the group.
+        updatedFilters = updateFacetSelection(
+          selectedFilters,
+          filterKey,
+          getFacetSelection(selectedFilters, filterKey).filter(v => {
             if (Array.isArray(filterValue)) return !filterValue.includes(v);
             return !isEqual(v, filterValue);
           }),
-        };
+        );
       }
 
       resetPagination();

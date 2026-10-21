@@ -6,7 +6,6 @@ import {
   Highlight,
   HStack,
   Icon,
-  IconButton,
   Separator,
   Skeleton,
   Stack,
@@ -45,7 +44,11 @@ import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 import { CONTENT_TYPE_TOOLTIP } from 'src/views/search/config/content-type';
 
-import { filterWords, getContentTypeItems } from './helpers';
+import {
+  filterWords,
+  formatCollectionSize,
+  getContentTypeItems,
+} from './helpers';
 import MetadataAccordion from './metadata-accordion';
 import OperatingSystems from './operating-systems';
 interface SearchResultCardProps {
@@ -166,6 +169,12 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 
     return sections.filter(section => section.items.length > 0);
   }, [data, contentTypeItems]);
+  // Count and unitText for the DataCollection card's collection-size
+  // rectangle.
+  const collectionSize = useMemo(
+    () => formatCollectionSize(data?.collectionSize),
+    [data],
+  );
 
   const highlightProps = useMemo(
     () =>

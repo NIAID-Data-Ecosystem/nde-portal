@@ -332,6 +332,37 @@ describe('useUserData', () => {
     expect(server.deleteCalls).toHaveLength(0);
     expect(result.current.savedQueries).toHaveLength(1);
   });
+
+  it('sends the XSRF token from /xsrf_token on writes', async () => {
+    const query = makeQuery('malaria', 10);
+    const server = createServerFetch([query]);
+    const fetchMock = jest.fn((url: string, init?: RequestInit) =>
+      url.endsWith('/xsrf_token')
+        ? Promise.resolve({
+            status: 200,
+            ok: true,
+            text: async () => JSON.stringify({ xsrf_token: 'test-token' }),
+          } as Response)
+        : server.fetchMock(url, init),
+    );
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    const { result } = renderHook(() => useUserData(), { wrapper });
+    await waitFor(() => expect(result.current.savedQueries).toHaveLength(1));
+
+    await act(async () => {
+      await result.current.removeSavedQuery(query);
+    });
+
+    const deleteCall = fetchMock.mock.calls.find(
+      ([, init]) => init?.method === 'DELETE',
+    );
+    expect(deleteCall?.[1]?.headers).toEqual({
+      'Content-Type': 'application/json',
+      'X-XSRFToken': 'test-token',
+    });
+    expect(server.deleteCalls).toEqual([{ index: 0 }]);
+  });
 });
 
 describe('findSavedQueryIndex', () => {

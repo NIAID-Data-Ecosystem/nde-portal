@@ -19,7 +19,6 @@ export function useRepoData(options: any = {}) {
         )
         .map(({ sourceInfo }) => {
           const {
-            identifier,
             name,
             collectionType,
             type: sourceInfoType,
@@ -38,8 +37,8 @@ export function useRepoData(options: any = {}) {
           return {
             ...sourceInfo,
             type: type as string[],
-            _id: `${identifier}-${name}-${type.join(',')}`,
-            name: name || identifier || '',
+            _id: `${name}-${type.join(',')}`,
+            name: name || '',
           };
         });
 

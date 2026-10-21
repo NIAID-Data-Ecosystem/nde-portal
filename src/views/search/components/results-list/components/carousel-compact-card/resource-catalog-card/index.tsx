@@ -6,15 +6,13 @@ import {
   HasAPI,
 } from 'src/components/badges';
 import { MetadataLabel } from 'src/components/metadata';
-import { hasSourceOrganization } from 'src/components/resource-sections/components/type-banner';
+import { getProgramResourceVariant } from 'src/components/resource-sections/components/type-banner';
 import { SearchableItems } from 'src/components/searchable-items';
 import { FormattedResource } from 'src/utils/api/types';
-import {
-  SHOW_PROGRAM_RESOURCE_UI,
-  SHOW_RETIRED_RESOURCE_CATALOG_UI,
-} from 'src/utils/feature-flags';
+import { SHOW_RETIRED_RESOURCE_CATALOG_UI } from 'src/utils/feature-flags';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
+import { getResourceCatalogContentTypeItems } from 'src/views/search/components/results-list/components/card/helpers';
 
 import Tooltip from '../../../../../../../components/tooltip';
 import { CompactCard } from '../compact-card';
@@ -42,18 +40,13 @@ export const ResourceCatalogCard = ({
     conditionsOfAccess,
     hasAPI,
     creativeWorkStatus,
-    about,
     description,
-    sourceOrganization,
   } = data || {};
 
-  // ResourceCatalogs with a non-null sourceOrganization are displayed as
-  // "Program Resource" with cyan banner styling instead of the default
-  // ResourceCatalog treatment.
-  const isProgramResource =
-    SHOW_PROGRAM_RESOURCE_UI &&
-    type === 'ResourceCatalog' &&
-    hasSourceOrganization(sourceOrganization);
+  // ResourceCatalogs with a sourceOrganization are displayed as
+  // "Program Resource" or "Program Info and Resource" with cyan banner
+  // styling instead of the default ResourceCatalog treatment.
+  const programVariant = getProgramResourceVariant(data ?? undefined);
 
   const handleTypesToggle = (expanded: boolean) => {
     setShowAllTypes(expanded);
@@ -64,15 +57,10 @@ export const ResourceCatalogCard = ({
   };
 
   // Transform about array to string array for SearchableItems
-  const aboutItems = useMemo(() => {
-    if (!about) return [];
-    const aboutArray = Array.isArray(about) ? about : [about];
-    return aboutArray.map(a => ({
-      name: a.displayName,
-      value: a.displayName,
-      field: 'about.displayName',
-    }));
-  }, [about]);
+  const aboutItems = useMemo(
+    () => getResourceCatalogContentTypeItems(data),
+    [data],
+  );
 
   const shouldShowDescription = !showAllTypes;
 
@@ -104,7 +92,7 @@ export const ResourceCatalogCard = ({
         isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
         loading={loading}
         creativeWorkStatus={creativeWorkStatus}
-        isProgramResource={isProgramResource}
+        programVariant={programVariant}
       />
       <CompactCard.Header loading={loading}>
         {(name || alternateName) && (

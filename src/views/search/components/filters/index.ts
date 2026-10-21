@@ -28,10 +28,12 @@ export { useFilterQueries } from './hooks/useFilterQueries';
 
 // Utils
 export {
+  getFacetSelection,
   getSelectedFilterDisplay,
   normalizeFilterValues,
   OR_FILTER_KEY,
   queryFilterObject2String,
   queryFilterString2Object,
   sanitizeExistsFilterValues,
+  updateFacetSelection,
 } from './utils/query-string';

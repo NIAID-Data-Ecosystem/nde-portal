@@ -68,3 +68,56 @@ export const MERGED_FILTER_FIELDS: Record<string, MergedFilterField[]> = {
  */
 export const getFacetProperties = (property: string): string[] =>
   MERGED_FILTER_FIELDS[property]?.map(field => field.facet) ?? [property];
+
+/** Field holding a record's own resource type. */
+export const CONTENT_TYPE_RESOURCE_TYPE_FIELD = '@type';
+
+/*
+ * Some Content Type values name a resource type. For those, a search matches
+ * both the records *about* that type and the records *of* that type, so the
+ * Content Type filter behaves like the Content Types pills on cards and
+ * resource pages.
+ */
+export const CONTENT_TYPE_TO_RESOURCE_TYPE: Record<string, string> = {
+  dataset: 'Dataset',
+  sample: 'Sample',
+  software: 'ComputationalTool',
+};
+
+/**
+ * Returns the `@type` a Content Type value corresponds to, or undefined when
+ * the value does not name a resource type. Matching is case-insensitive
+ * because the value can come from either `about.name` (`"Software"`) or
+ * `about.displayName`.
+ */
+export const getResourceTypeForContentType = (
+  value?: string,
+): string | undefined =>
+  value ? CONTENT_TYPE_TO_RESOURCE_TYPE[value.toLowerCase()] : undefined;
+
+/**
+ * Maps Content Type values to their resource types, dropping the values that
+ * have none. Order is preserved and duplicates are removed, since several
+ * values can map to the same type.
+ */
+export const getContentTypeResourceTypes = (values: string[]): string[] => {
+  const resourceTypes = values
+    .map(getResourceTypeForContentType)
+    .filter((type): type is string => Boolean(type));
+
+  return Array.from(new Set(resourceTypes));
+};
+
+/**
+ * Returns the API fields a filter's aggregation must request.
+ *
+ * This is deliberately not `getFacetProperties`. That function lists the
+ * fields whose terms are unioned into the filter's term list, while this one
+ * lists the fields the request needs. Content Type needs `@type` to widen the
+ * counts of its resource-type terms, but `@type` must not contribute terms of
+ * its own.
+ */
+export const getRequestedFacetProperties = (property: string): string[] =>
+  property === CONTENT_TYPE_ABOUT_FIELD
+    ? [...getFacetProperties(property), CONTENT_TYPE_RESOURCE_TYPE_FIELD]
+    : getFacetProperties(property);

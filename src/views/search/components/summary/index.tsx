@@ -14,6 +14,7 @@ import { FiltersDisclaimer } from 'src/views/search/components/filters/component
 import { FilterConfig } from '../filters';
 import { SelectedFilterType } from '../filters/types';
 import { SelectedFilterValueType } from '../filters/types';
+import { getFacetSelection } from '../filters/utils/query-string';
 import { VisualizationCard } from './components/visualization-card';
 import { SearchState } from './types';
 
@@ -152,9 +153,10 @@ const SummaryGrid = (props: SummaryGridProps) => {
                                 )}
                                 removeActiveVizId={props.removeActiveVizId}
                                 onFilterUpdate={props.onFilterUpdate}
-                                selectedFilters={
-                                  props.selectedFilters[filterKey] || []
-                                }
+                                selectedFilters={getFacetSelection(
+                                  props.selectedFilters,
+                                  filterKey,
+                                )}
                               />
                             );
                           })}

@@ -27,6 +27,7 @@ jest.mock('src/utils/feature-flags', () => ({
 
 jest.mock('src/utils/auth/config', () => ({
   getAuthConfig: () => ({
+    apiBaseUrl: 'https://api.example.org',
     loginProviders: [
       { id: 'github', label: 'GitHub' },
       { id: 'orcid', label: 'ORCID' },
@@ -397,6 +398,55 @@ describe('useAuth hooks', () => {
     await act(async () => {
       fireEvent.click(screen.getByText('logout-non-mock'));
     });
+
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('logs out with a POST that carries the XSRF token', async () => {
+    // jsdom logs "not implemented" for the navigation that follows logout.
+    const consoleErrorSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined);
+
+    mockResolveUserInfo.mockResolvedValue({
+      username: 'dev',
+      oauth_provider: 'GitHub',
+      name: 'Dev User',
+    });
+    mockLogoutState.mockReturnValue(null);
+    (global.fetch as jest.Mock).mockImplementation((url: string) =>
+      Promise.resolve({
+        ok: true,
+        status: url.endsWith('/xsrf_token') ? 200 : 204,
+        text: async () => JSON.stringify({ xsrf_token: 'test-token' }),
+      }),
+    );
+
+    const Consumer = () => {
+      const auth = useAuth();
+      return <button onClick={() => auth.logout()}>logout</button>;
+    };
+
+    render(
+      <AuthProvider>
+        <Consumer />
+      </AuthProvider>,
+    );
+
+    await act(async () => {
+      fireEvent.click(screen.getByText('logout'));
+    });
+
+    await waitFor(() =>
+      expect(global.fetch).toHaveBeenCalledWith(
+        'https://api.example.org/logout',
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'X-XSRFToken': 'test-token' },
+        },
+      ),
+    );
 
     consoleErrorSpy.mockRestore();
   });

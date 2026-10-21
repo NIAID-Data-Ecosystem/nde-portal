@@ -1,7 +1,12 @@
 import { Box, SimpleGrid, VStack } from '@chakra-ui/react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { SearchableItems } from 'src/components/searchable-items';
 import { TagWithUrl } from 'src/components/tag-with-url';
 import { FormattedResource } from 'src/utils/api/types';
+import {
+  getContentTypeItems,
+  getResourceCatalogContentTypeItems,
+} from 'src/views/search/components/results-list/components/card/helpers';
 
 import { ResourceCatalogCollection } from '../collection-information';
 import { OverviewSectionWrapper } from '../overview-section-wrapper';
@@ -14,43 +19,60 @@ export const AboutResource = ({
   exampleOfWork,
   genre,
   loading,
+  type,
 }: {
   about?: FormattedResource['about'];
   collectionSize?: FormattedResource['collectionSize'];
   exampleOfWork?: FormattedResource['exampleOfWork'];
   genre?: FormattedResource['genre'];
   loading: boolean;
+  type?: FormattedResource['@type'];
 }) => {
   // If none of the relevant fields are present, don't render the section at all
   if (!about && !collectionSize && !exampleOfWork?.about && !genre) {
     return null;
   }
 
+  // Resource Catalog and Data Collection resources link each Content Type tag
+  // to the same /search query as the corresponding search result card, using
+  // the same helpers those cards use.
+  const isResourceCatalogType = type === 'ResourceCatalog';
+  const isDataCollectionType = type === 'DataCollection';
+
+  const searchableContentTypeItems = isResourceCatalogType
+    ? getResourceCatalogContentTypeItems({ about } as FormattedResource)
+    : isDataCollectionType
+    ? getContentTypeItems({ about, exampleOfWork } as FormattedResource)
+    : [];
+
   // Combine exampleOfWork.about into about for display purposesand filter for unique values (in case there's overlap between about and exampleOfWork.about)
-  const contentTypes = [
-    ...(Array.isArray(about) ? about : about ? [about] : []),
-    ...(exampleOfWork?.about
-      ? Array.isArray(exampleOfWork.about)
-        ? exampleOfWork.about
-        : [exampleOfWork.about]
-      : []),
-  ]
-    // Normalize before deduplicating: some records nest the term one level
-    // deeper (`about[].about`), and those wrappers carry no displayName/name of
-    // their own — comparing them unnormalized makes every nested entry look
-    // like a duplicate of the first.
-    .map(item => {
-      const term = item.about || item;
-      return {
-        name: term.displayName || term.name || 'N/A',
-        url: term.url,
-      };
-    })
-    .filter(
-      (item, index, self) =>
-        index ===
-        self.findIndex(t => t.name === item.name && t.url === item.url), // consider name and url for uniqueness
-    );
+  const contentTypes =
+    isResourceCatalogType || isDataCollectionType
+      ? []
+      : [
+          ...(Array.isArray(about) ? about : about ? [about] : []),
+          ...(exampleOfWork?.about
+            ? Array.isArray(exampleOfWork.about)
+              ? exampleOfWork.about
+              : [exampleOfWork.about]
+            : []),
+        ]
+          // Normalize before deduplicating: some records nest the term one level
+          // deeper (`about[].about`), and those wrappers carry no displayName/name of
+          // their own — comparing them unnormalized makes every nested entry look
+          // like a duplicate of the first.
+          .map(item => {
+            const term = item.about || item;
+            return {
+              name: term.displayName || term.name || 'N/A',
+              url: term.url,
+            };
+          })
+          .filter(
+            (item, index, self) =>
+              index ===
+              self.findIndex(t => t.name === item.name && t.url === item.url), // consider name and url for uniqueness
+          );
 
   return (
     <SimpleGrid
@@ -71,22 +93,48 @@ export const AboutResource = ({
               py: 0,
             }}
           >
-            <TagWithUrl
-              colorPalette='primary'
-              href={{
-                pathname: '/search',
-                query: {
-                  q: `genre:"${genre}"`,
-                },
-              }}
-              m={0.5}
-              leftIcon={FaMagnifyingGlass}
-            >
-              {genre}
-            </TagWithUrl>
+            {(Array.isArray(genre) ? genre : genre ? [genre] : []).map(
+              (item, idx) => (
+                <TagWithUrl
+                  key={`${item}-${idx}`}
+                  colorPalette='primary'
+                  m={0.5}
+                  leftIcon={FaMagnifyingGlass}
+                  href={{
+                    pathname: '/search',
+                    query: {
+                      q: `genre:"${item}"`,
+                    },
+                  }}
+                >
+                  {item}
+                </TagWithUrl>
+              ),
+            )}
           </OverviewSectionWrapper>
         )}
         {/* `about` and `exampleOfWork.about` are displayed under the umbrella term "Content Types" */}
+        {searchableContentTypeItems.length > 0 && (
+          <OverviewSectionWrapper
+            loading={loading}
+            label='Content Types'
+            scrollContainerProps={{
+              border: 'none',
+              py: 0,
+              maxHeight: 'unset',
+            }}
+          >
+            {/* Resource Catalog and Data Collection resources link to the
+            same /search query as their search result card's Content Type
+            tags, via the same shared items + component the cards use. */}
+            <SearchableItems
+              items={searchableContentTypeItems}
+              itemLimit={Infinity}
+              maxHeight='unset'
+              searchParams={isDataCollectionType ? { tab: 'dc' } : undefined}
+            />
+          </OverviewSectionWrapper>
+        )}
         {contentTypes.length > 0 && (
           <OverviewSectionWrapper
             loading={loading}

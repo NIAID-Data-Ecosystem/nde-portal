@@ -427,7 +427,7 @@ export const BasedOnActionProcess = ({
                 {showAccordion && (
                   <Accordion.ItemContent px={0} pt={1} pb={1}>
                     <Accordion.ItemBody>
-                      <VStack alignItems='start' gap={1.5} fontSize='sm'>
+                      <VStack alignItems='start' gap={1.5} fontSize='xs'>
                         {description && (
                           <Text fontSize='inherit'>{description}</Text>
                         )}
