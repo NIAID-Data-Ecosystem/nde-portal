@@ -1,12 +1,13 @@
 import {
   Checkbox as ChakraCheckbox,
   Skeleton,
+  SkeletonProps,
   Stack,
   Tag,
   Text,
 } from '@chakra-ui/react';
 import { sendGTMEvent } from '@next/third-parties/google';
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import Tooltip from 'src/components/tooltip';
 import { SHOW_FILTER_SPECIFIED_UNSPECIFIED_LABELS } from 'src/utils/feature-flags';
 
@@ -40,6 +41,24 @@ const getTooltipLabel = (
     );
   }
   return '';
+};
+
+// v2's Skeleton faded its content in only when it went from loading to loaded,
+// but v3's also fades in whenever it mounts already loaded. The virtualized
+// list mounts checkboxes all the time - scrolling, clearing the filter search,
+// a group header row giving way to a term - and each of those would blink, so
+// the fade is held back until this skeleton has actually been seen loading.
+const LabelSkeleton = ({ loading, ...props }: SkeletonProps) => {
+  const hasBeenLoading = useRef(loading);
+  if (loading) hasBeenLoading.current = true;
+
+  return (
+    <Skeleton
+      loading={loading}
+      css={hasBeenLoading.current ? undefined : { '--fade-duration': '0s' }}
+      {...props}
+    />
+  );
 };
 
 // Capitalize the first letter of a string, but only if it is not empty
@@ -155,7 +174,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
         <ChakraCheckbox.Control />
         {/* Loading skeleton only on load  */}
         <ChakraCheckbox.Label flex={1}>
-          <Skeleton
+          <LabelSkeleton
             loading={!(!loading && !isUpdating)}
             display='flex'
             alignItems='center'
@@ -197,7 +216,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
                 {count?.toLocaleString('en-US')}
               </Tag.Root>
             )}
-          </Skeleton>
+          </LabelSkeleton>
         </ChakraCheckbox.Label>
       </ChakraCheckbox.Root>
     );

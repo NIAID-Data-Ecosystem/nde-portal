@@ -1,12 +1,16 @@
 import { Box, CheckboxGroup, Text } from '@chakra-ui/react';
 import React, {
   useCallback,
-  useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
-import { VariableSizeList as List } from 'react-window';
+import {
+  areEqual,
+  ListChildComponentProps,
+  VariableSizeList as List,
+} from 'react-window';
 import { SearchInput } from 'src/components/search-input';
 import { SHOW_FILTER_ANY_NO_EXCLUSIVITY } from 'src/utils/feature-flags';
 import { useDebounceValue } from 'usehooks-ts';
@@ -18,46 +22,63 @@ import { Checkbox } from './checkbox';
 // is this tall.
 const DEFAULT_ROW_SIZE = 40;
 
+// Measured heights are cached per term rather than per index: searching shifts
+// which term sits at a given index, and a height cached by index would lay the
+// new term out at the old one's height until it happened to be re-measured.
+const getItemKey = ({ isHeader, term }: FilterItem) =>
+  `${isHeader ? 'header' : 'term'}:${term}`;
+
+interface RowData {
+  items: FilterItem[];
+  renderItem: (props: FilterItem) => JSX.Element;
+  setItemSize: (index: number, key: string, size: number) => void;
+}
+
 // A single measured row. The height of a filter option is not known ahead of
 // time - a term with both a common and a scientific name wraps onto two lines,
 // and any label can re-wrap when the panel changes width - so each row reports
 // its rendered height back to the list.
-const Row = ({
-  children,
-  index,
-  setItemSize,
-  style,
-}: {
-  children: React.ReactNode;
-  index: number;
-  setItemSize: (index: number, size: number) => void;
-  style: React.CSSProperties;
-}) => {
-  const ref = useRef<HTMLDivElement>(null);
+//
+// This must stay a stable, module-level component. react-window renders its
+// `children` with createElement, so an inline row function is a new component
+// type on every render and React remounts every row - replaying each
+// checkbox's Skeleton fade-in, which made the whole list flicker whenever the
+// search term or the selection changed.
+const Row = React.memo(
+  ({ data, index, style }: ListChildComponentProps<RowData>) => {
+    const { items, renderItem, setItemSize } = data;
+    const item = items[index];
+    const itemKey = getItemKey(item);
+    const ref = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
+    // Measured in a layout effect so a row that has just mounted, or that now
+    // shows a different term, is corrected before the browser paints it at a
+    // stale height overlapping its neighbour.
+    useLayoutEffect(() => {
+      const el = ref.current;
+      if (!el) return;
 
-    const measure = () => setItemSize(index, el.clientHeight);
-    measure();
+      const measure = () => setItemSize(index, itemKey, el.clientHeight);
+      measure();
 
-    if (typeof ResizeObserver === 'undefined') return;
+      if (typeof ResizeObserver === 'undefined') return;
 
-    // Keep measuring after mount: a row's height also changes when its loading
-    // skeleton is replaced with the real label, or when the label re-wraps as
-    // the filter panel is resized.
-    const observer = new ResizeObserver(measure);
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [index, setItemSize]);
+      // Keep measuring after mount: a row's height also changes when its loading
+      // skeleton is replaced with the real label, or when the label re-wraps as
+      // the filter panel is resized.
+      const observer = new ResizeObserver(measure);
+      observer.observe(el);
+      return () => observer.disconnect();
+    }, [index, itemKey, setItemSize]);
 
-  return (
-    <div className='virtualized-row' style={style}>
-      <div ref={ref}>{children}</div>
-    </div>
-  );
-};
+    return (
+      <div className='virtualized-row' style={style}>
+        <div ref={ref}>{renderItem(item)}</div>
+      </div>
+    );
+  },
+  areEqual,
+);
 
 // VirtualizedList component to render the list of filter terms
 const VirtualizedList = React.memo(
@@ -69,20 +90,35 @@ const VirtualizedList = React.memo(
     children: (props: FilterItem) => JSX.Element;
   }) => {
     const listRef = useRef<List>(null);
-    const itemSizes = useRef<number[]>([]);
+    const itemSizes = useRef(new Map<string, number>());
 
-    const setItemSize = useCallback((index: number, size: number) => {
-      // A hidden or not-yet-painted row measures 0; keep the default until it
-      // reports a real height.
-      if (!size || itemSizes.current[index] === size) return;
+    const setItemSize = useCallback(
+      (index: number, key: string, size: number) => {
+        // A hidden or not-yet-painted row measures 0; keep the default until it
+        // reports a real height.
+        if (!size || itemSizes.current.get(key) === size) return;
 
-      // Record the measurement *before* invalidating the list's cached offsets.
-      // Resetting first makes react-window recalculate against the size this
-      // row had a moment ago, which left taller rows overlapping the row below
-      // them until some later event happened to invalidate the cache again.
-      itemSizes.current[index] = size;
-      listRef.current?.resetAfterIndex?.(index);
-    }, []);
+        // Record the measurement *before* invalidating the list's cached offsets.
+        // Resetting first makes react-window recalculate against the size this
+        // row had a moment ago, which left taller rows overlapping the row below
+        // them until some later event happened to invalidate the cache again.
+        itemSizes.current.set(key, size);
+        listRef.current?.resetAfterIndex?.(index);
+      },
+      [],
+    );
+
+    // react-window caches row offsets by index, so when the items change those
+    // offsets belong to whichever terms used to be at each index. Recompute them
+    // from the per-term sizes before the browser paints.
+    useLayoutEffect(() => {
+      listRef.current?.resetAfterIndex?.(0);
+    }, [items]);
+
+    const itemData = useMemo<RowData>(
+      () => ({ items, renderItem: children, setItemSize }),
+      [items, children, setItemSize],
+    );
 
     return (
       <Box
@@ -119,13 +155,12 @@ const VirtualizedList = React.memo(
               : Math.max(100, items.length * DEFAULT_ROW_SIZE)
           }
           itemCount={items.length}
-          itemSize={index => itemSizes.current[index] || DEFAULT_ROW_SIZE}
+          itemData={itemData}
+          itemSize={index =>
+            itemSizes.current.get(getItemKey(items[index])) ?? DEFAULT_ROW_SIZE
+          }
         >
-          {({ index, style }) => (
-            <Row index={index} style={style} setItemSize={setItemSize}>
-              {children(items[index])}
-            </Row>
-          )}
+          {Row}
         </List>
       </Box>
     );
@@ -300,6 +335,22 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
         t.label.toLowerCase().includes(debouncedSearchTerm.toLowerCase()),
       );
     }, [groupedAndSorted, debouncedSearchTerm]);
+
+    // Stable so the memoized list skips re-rendering on every keystroke while
+    // the search term is still debouncing.
+    const renderCheckbox = useCallback(
+      (props: FilterItem) => (
+        <Checkbox
+          loading={loading}
+          isUpdating={isUpdating}
+          colorPalette={colorPalette}
+          filterName={config.name}
+          {...props}
+        />
+      ),
+      [loading, isUpdating, colorPalette, config.name],
+    );
+
     return (
       <>
         {/* Search through filter terms */}
@@ -327,15 +378,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
           onValueChange={handleSelectedFilters}
         >
           <VirtualizedList items={searchedTerms}>
-            {props => (
-              <Checkbox
-                loading={loading}
-                isUpdating={isUpdating}
-                colorPalette={colorPalette}
-                filterName={config.name}
-                {...props}
-              />
-            )}
+            {renderCheckbox}
           </VirtualizedList>
         </CheckboxGroup>
       </>

@@ -5,14 +5,18 @@ import { FiltersList, groupTerms, sortTerms } from '../../components/list';
 
 jest.mock('react-window', () => {
   const React = require('react');
-  const VariableSizeList = ({ itemCount, children }: any) => (
+  // Renders every row, but keeps react-window's contract: `children` is a row
+  // component (rendered with createElement, so its identity decides whether
+  // rows remount) that receives `itemData` as `data`.
+  const VariableSizeList = ({ itemCount, itemData, children: Row }: any) => (
     <div data-testid='virtual-list'>
       {Array.from({ length: itemCount }, (_, index) => (
-        <div key={index}>{children({ index, style: {} })}</div>
+        <Row key={index} index={index} style={{}} data={itemData} />
       ))}
     </div>
   );
   return {
+    ...jest.requireActual('react-window'),
     VariableSizeList: React.forwardRef((props: any, _ref: any) => (
       <VariableSizeList {...props} />
     )),
@@ -76,6 +80,22 @@ describe('filters/components/list', () => {
       expect(screen.getByText('Beta')).toBeInTheDocument();
       expect(screen.queryByText('Alpha')).not.toBeInTheDocument();
     });
+  });
+
+  it('keeps rows mounted when the list re-renders', () => {
+    const { rerender } = render(<FiltersList {...baseProps} />);
+    const row = screen.getByText('Beta').closest('.virtualized-row');
+
+    // Same selection, new array: the list re-renders but nothing changed.
+    rerender(
+      <FiltersList
+        {...baseProps}
+        selectedFilters={[...baseProps.selectedFilters]}
+      />,
+    );
+
+    expect(row).toBeInTheDocument();
+    expect(screen.getByText('Beta').closest('.virtualized-row')).toBe(row);
   });
 
   it('sortTerms orders selected and exists terms first then by count', () => {
