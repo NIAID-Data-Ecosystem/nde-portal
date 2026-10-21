@@ -12,7 +12,7 @@ import { FormattedResource, IncludedInDataCatalog } from 'src/utils/api/types';
 
 import { getSourceImagePath } from './helpers';
 
-const LOGO_HEIGHT = ['20px', '20px', '30px'];
+const LOGO_HEIGHT = ['20px', '20px', '40px'];
 
 // Wrapper container for the source logos.
 type SourceLogoWrapperProps = StackProps;
@@ -125,11 +125,11 @@ const Component = ({
       )}
 
       {url ? (
-        <Link href={url} isExternal lineHeight='moderate' fontSize='xs'>
+        <Link href={url} isExternal lineHeight='taller' fontSize='2xs'>
           {label}
         </Link>
       ) : (
-        <Text fontSize='xs' lineHeight='moderate'>
+        <Text fontSize='2xs' lineHeight='taller'>
           {label}
         </Text>
       )}

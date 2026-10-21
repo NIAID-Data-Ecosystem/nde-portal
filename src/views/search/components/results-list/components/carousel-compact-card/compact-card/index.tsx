@@ -126,7 +126,11 @@ interface BodyProps extends BoxProps {
 }
 
 const Body = ({ children, ...boxProps }: BodyProps) => {
-  return <Card.Body {...boxProps}>{children}</Card.Body>;
+  return (
+    <Card.Body gap={2} {...boxProps}>
+      {children}
+    </Card.Body>
+  );
 };
 
 // Export compound component

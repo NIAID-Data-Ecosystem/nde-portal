@@ -14,6 +14,9 @@ still resolve `fg` the way Chakra intends. Same approach as the switch recipe.
 export const checkboxSlotRecipe = defineSlotRecipe({
   slots: checkboxAnatomy.keys(),
   base: {
+    root: {
+      cursor: 'pointer',
+    },
     label: {
       color: 'text.body',
     },

@@ -518,7 +518,7 @@ export const SearchResultsController = ({
                                     ) : carouselItem.type === 'program-info' ? (
                                       <ProgramInfoCard
                                         data={carouselItem.data}
-                                        isLoading={isCarouselLoading}
+                                        loading={isCarouselLoading}
                                       />
                                     ) : (
                                       <DiseaseOverviewCard

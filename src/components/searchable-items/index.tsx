@@ -135,7 +135,7 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
             colorPalette={colorPalette}
             variant='unstyled'
             underline
-            size='2xs'
+            size='xs'
             color={linkColor}
             onClick={toggleLimit}
           >
