@@ -14,6 +14,7 @@ import { Route } from './helpers';
 // handed to them is asserted through what they render.
 jest.mock('./components', () => ({
   ResourceHeader: () => null,
+  ResourceIdentifiers: () => null,
   ResourceBanner: () => null,
   ResourceAuthors: () => null,
   ResourceOverview: () => <div data-testid='resource-overview' />,

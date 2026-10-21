@@ -214,7 +214,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
         <Text fontSize='sm'>
           Page {formatNumber(from + 1)} of {formatNumber(numPages)}
         </Text>
-        <Center display={'flex'} h='20px' mx={2}>
+        <Center display='flex' h='20px' mx={2}>
           <Separator orientation='vertical' />
         </Center>
         <Text fontSize='sm'>

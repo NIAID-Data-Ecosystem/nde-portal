@@ -70,7 +70,7 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
       w='100%'
       fontSize='sm'
       flex={1}
-      style={{ whiteSpace: 'pre-line' }}
+      // style={{ whiteSpace: 'pre-line' }}
       css={{
         '& a': {
           color: 'link',

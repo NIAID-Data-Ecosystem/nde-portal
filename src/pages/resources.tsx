@@ -177,20 +177,18 @@ const ResourcePage: NextPage = () => {
                       'It’s possible that the server is experiencing some issues.'}{' '}
                     {errorResponse?.relatedLinks &&
                       errorResponse?.relatedLinks?.length > 0 &&
-                      errorResponse.relatedLinks.map(
-                        ({ label, href, isExternal }, idx) => {
-                          return (
-                            <Link
-                              key={`${label}-${idx}`}
-                              href={href}
-                              target='_blank'
-                              rel='noopener noreferrer'
-                            >
-                              {label}
-                            </Link>
-                          );
-                        },
-                      )}
+                      errorResponse.relatedLinks.map(({ label, href }, idx) => {
+                        return (
+                          <Link
+                            key={`${label}-${idx}`}
+                            href={href}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                          >
+                            {label}
+                          </Link>
+                        );
+                      })}
                   </Text>
 
                   <Box mt={4}>

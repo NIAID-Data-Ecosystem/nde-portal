@@ -1,244 +1,238 @@
 import {
   Accordion,
   Box,
-  Flex,
   Heading,
   HStack,
   Icon,
+  IconButton,
+  IconButtonProps,
   Image,
   Link as ChakraLink,
   List,
+  Separator,
   Text,
 } from '@chakra-ui/react';
 import React from 'react';
-import {
-  FaMinus,
-  FaPlus,
-  FaRegEnvelope,
-  FaRegWindowMaximize,
-} from 'react-icons/fa6';
+import { FaGlobe, FaMinus, FaPlus, FaRegEnvelope } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
-import { FormattedResource } from 'src/utils/api/types';
-import { formatAuthorsList2String } from 'src/utils/helpers/authors';
+import Tooltip from 'src/components/tooltip';
+import { Author, FormattedResource } from 'src/utils/api/types';
+import {
+  formatAuthorName,
+  formatAuthorsList2String,
+} from 'src/utils/helpers/authors';
 
-import Tooltip from '../../../tooltip';
+// The collapsed summary names this many authors before truncating to "et al".
+const MAX_SUMMARY_AUTHORS = 10;
 
-// An accordion containing author details such as name and affiliation + link to their profile pages if available.
+const isOrcid = (value?: string | null): value is string =>
+  !!value?.includes('orcid');
+
+// Prepend the ORCID domain if the identifier is missing it.
+const formatOrcid = (id: string) =>
+  /https?:\/\/orcid\.org\//.test(id)
+    ? id
+    : `https://orcid.org/${id.replace(/^\//, '')}`;
+
+// Whether the author has fields that are only shown in the expanded list.
+const hasDetails = ({ affiliation, email, url, role, identifier }: Author) =>
+  !!(affiliation?.name || email || url || role || isOrcid(identifier));
+
+const ContactLink = ({
+  label,
+  href,
+  isExternal,
+  children,
+  ...props
+}: {
+  label: string;
+  href: string;
+  isExternal?: boolean;
+  children: React.ReactNode;
+} & IconButtonProps) => (
+  <Tooltip content={label}>
+    <IconButton
+      asChild
+      size='2xs'
+      colorPalette='blue'
+      variant='subtle'
+      {...props}
+    >
+      <ChakraLink
+        href={href}
+        aria-label={label}
+        // display='flex'
+        {...(isExternal && { target: '_blank', rel: 'noopener noreferrer' })}
+      >
+        {children}
+      </ChakraLink>
+    </IconButton>
+  </Tooltip>
+);
+
+// Icon links to the author's website, email and ORCID profile.
+const AuthorContacts = ({ url, email, identifier }: Author) => {
+  const website = isOrcid(url) ? null : url;
+  const orcid = [url, identifier].find(isOrcid);
+
+  if (!website && !email && !orcid) {
+    return null;
+  }
+  return (
+    <HStack gap={2} mx={1} pl={1.5}>
+      <Separator borderColor='gray.300' height='1rem' orientation='vertical' />
+
+      {website && (
+        <ContactLink label='Website' href={website} isExternal>
+          <Icon>
+            <FaGlobe />
+          </Icon>
+        </ContactLink>
+      )}
+      {email && (
+        <ContactLink label='Email' href={`mailto:${email}`}>
+          <Icon>
+            <FaRegEnvelope />
+          </Icon>
+        </ContactLink>
+      )}
+      {orcid && (
+        <ContactLink
+          label='ORCID'
+          href={formatOrcid(orcid)}
+          isExternal
+          colorPalette='green'
+        >
+          <Image
+            src='https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png'
+            alt=''
+            boxSize={4}
+            flexShrink={0}
+            objectFit='contain'
+          />
+        </ContactLink>
+      )}
+    </HStack>
+  );
+};
+
+// A summary of the resource's authors that expands into each author's role, contact links and affiliation, when any are available.
 const ResourceAuthors = ({
   authors,
 }: {
   authors: FormattedResource['author'];
 }) => {
-  if (!authors) {
+  if (!authors?.length) {
     return null;
   }
-  // We'll display the authors in list form if authors have additional details in the expand drawer.
-  const authors_have_details =
-    authors.filter(author => {
-      return (
-        author?.affiliation?.name ||
-        author.email ||
-        author.url ||
-        author.role ||
-        author.identifier
-      );
-    }).length > 0;
 
-  // Check if ORCID url is in the identifier. Prepend it if missing.
-  const formatOrcid = (id: string) => {
-    if (id.includes('http://orcid.org/') || id.includes('https://orcid.org/')) {
-      return id;
-    } else {
-      return `http://orcid.org/${id.replace(/^\//g, '')}`;
-    }
-  };
+  // Authors with details get a line each; otherwise the list reads as a sentence.
+  const showAsList = authors.some(hasDetails);
+  // Only offer to expand when the list shows more than the summary.
+  const isExpandable = showAsList || authors.length > MAX_SUMMARY_AUTHORS;
 
-  const OrcidLink = ({ url }: { url: string }) => {
+  const summary = (
+    <Heading
+      flex='1'
+      fontSize='sm'
+      color='gray.700'
+      fontWeight='light'
+      lineHeight='moderate'
+    >
+      {formatAuthorsList2String(authors, ',', MAX_SUMMARY_AUTHORS)}
+      {authors.length > 1 && '.'}
+    </Heading>
+  );
+
+  if (!isExpandable) {
     return (
-      <ChakraLink
-        href={formatOrcid(url)}
-        target='_blank'
-        display='flex'
-        alignItems='center'
-      >
-        {/* Handle if the url corresponds to an ORCID. */}
-        <Image
-          display='inline'
-          boxSize='1rem'
-          objectFit='contain'
-          src='https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png'
-          alt='ORCID logo'
-          minW='1rem'
-        />
-      </ChakraLink>
+      <Box px={[4, 6]} py={2}>
+        {summary}
+      </Box>
     );
-  };
+  }
 
   return (
-    <Accordion.Root collapsible borderColor='gray.100'>
-      <Accordion.Item borderTopColor='transparent' value='authors-list'>
-        <Accordion.ItemContext>
-          {({ expanded }) => (
-            <>
-              <Accordion.ItemTrigger px={[4, 6]} _hover={{ bg: 'bg.alt' }}>
-                <Flex
-                  w='100%'
-                  direction={['column', 'column', 'row']}
-                  justifyContent='space-between'
-                >
-                  <Box w='100%' flex='1' textAlign='left' mr={6}>
-                    <Heading
-                      fontSize='sm'
-                      color='gray.700'
-                      fontWeight='light'
-                      lineHeight='moderate'
-                    >
-                      {formatAuthorsList2String(authors, ',', 10)}
-                      {authors.length === 1 ? '' : '.'}
-                    </Heading>
-                  </Box>
-                  <Flex alignItems='flex-end'>
-                    <Flex alignItems='center'>
-                      <Text fontSize='xs' fontWeight='light' mx={1}>
-                        {expanded ? 'collapse' : 'expand'}
-                      </Text>
-                      <Icon as={expanded ? FaMinus : FaPlus} fontSize='xs' />
-                    </Flex>
-                  </Flex>
-                </Flex>
-              </Accordion.ItemTrigger>
-              <Accordion.ItemContent px={[1, 4, 6]} py={4} bg='bg.alt'>
-                <Accordion.ItemBody>
-                  {/* If the author list has an author with affiliation, we display the authors as a vertical list.
-                Otherwise, display that authors as a paragraph */}
-                  {expanded ? (
-                    <List.Root
-                      as='ul'
-                      display={authors_have_details ? '' : 'inline-flex'}
-                      flexWrap='wrap'
-                      lineHeight='moderate'
-                    >
-                      {authors.map((author, i) => {
-                        let { identifier, name, url, email } = author;
+    <Accordion.Root
+      collapsible
+      lazyMount
+      unmountOnExit
+      variant='plain'
+      fontSize='sm'
+      size='sm'
+    >
+      <Accordion.Item
+        value='authors'
+        borderY='1px solid'
+        borderColor='gray.200'
+      >
+        <Accordion.ItemTrigger
+          px={[4, 6]}
+          flexDirection={['column', null, 'row']}
+          alignItems={['flex-start', null, 'flex-end']}
+          gap={[0, null, 6]}
+          bg='white'
+          borderRadius='none'
+          _hover={{ bg: 'bg.alt' }}
+        >
+          {summary}
+          <Accordion.ItemContext>
+            {({ expanded }) => (
+              <HStack gap={1} fontSize='xs' fontWeight='light'>
+                <Text data-accordion-control>
+                  {expanded ? 'hide' : 'show details'}
+                </Text>
 
-                        let authors_str =
-                          formatAuthorsList2String(authors).split(',');
-                        return (
-                          <List.Item
-                            key={`${i}-${name}`}
-                            display='flex'
-                            alignItems='center'
-                            mr={1}
-                            flexWrap='wrap'
-                          >
-                            {/* Author name. */}
-                            <Text>
-                              <strong>{authors_str[i]}</strong>
-                            </Text>
-                            {author.role ? (
-                              <>
-                                <Text ml={1}>{author.role}</Text>
-                              </>
-                            ) : (
-                              <></>
-                            )}
-                            {(url || identifier || email) && (
-                              <HStack
-                                gap={2}
-                                mx={1}
-                                pl={1.5}
-                                align='center'
-                                borderLeft='1px solid'
-                                borderLeftColor='primary.500'
-                              >
-                                {/* Author contact URLs(website, email, orcid). */}
-                                {url &&
-                                  (url?.includes('orcid') ? (
-                                    <OrcidLink url={url} />
-                                  ) : (
-                                    <Tooltip content='Website'>
-                                      <ChakraLink
-                                        href={url}
-                                        as='a'
-                                        target='_blank'
-                                        display='flex'
-                                        alignItems='center'
-                                      >
-                                        <Icon
-                                          as={FaRegWindowMaximize}
-                                          aria-label='Personal website.'
-                                        />
-                                      </ChakraLink>
-                                    </Tooltip>
-                                  ))}
+                <Icon>{expanded ? <FaMinus /> : <FaPlus />}</Icon>
+              </HStack>
+            )}
+          </Accordion.ItemContext>
+        </Accordion.ItemTrigger>
 
-                                {email && (
-                                  <ChakraLink
-                                    href={`mailto:${email}`}
-                                    display='flex'
-                                    alignItems='center'
-                                  >
-                                    <Icon as={FaRegEnvelope} />
-                                  </ChakraLink>
-                                )}
+        <Accordion.ItemContent>
+          <Accordion.ItemBody>
+            <List.Root
+              flexDirection={showAsList ? 'column' : 'row'}
+              flexWrap='wrap'
+              lineHeight='moderate'
+            >
+              {authors.map((author, i) => {
+                const { affiliation, role } = author;
+                const isLast = i === authors.length - 1;
+                return (
+                  <List.Item
+                    key={i}
+                    display='flex'
+                    alignItems='center'
+                    flexWrap='wrap'
+                    mr={1}
+                  >
+                    <Text fontWeight='medium'>
+                      {!showAsList && isLast && 'and '}
+                      {formatAuthorName(author)}
+                    </Text>
+                    {role && <Text>{role}</Text>}
 
-                                {/* Display author id if it's ORCID: */}
-                                {identifier &&
-                                  identifier?.includes('orcid') && (
-                                    <OrcidLink url={identifier} />
-                                  )}
-                              </HStack>
-                            )}
-                            {/* Author Affiliation. */}
-                            {author.affiliation?.name ? (
-                              <>
-                                {','}&nbsp;
-                                {author.affiliation.sameAs ? (
-                                  <>
-                                    <Link
-                                      href={author.affiliation.sameAs}
-                                      isExternal
-                                      css={{
-                                        '& svg': {
-                                          marginLeft: '0.25rem !important',
-                                        },
-                                      }}
-                                      ml={1}
-                                    >
-                                      {name
-                                        ? `${author.affiliation.name}`
-                                        : author.affiliation.name}
-                                    </Link>
-                                  </>
-                                ) : (
-                                  <Text>
-                                    {name
-                                      ? `${author.affiliation.name}`
-                                      : author.affiliation.name}
-                                  </Text>
-                                )}{' '}
-                              </>
-                            ) : (
-                              ''
-                            )}
-                            {/* Append punctuation when not in vertical list form. */}
-                            {authors_have_details
-                              ? ''
-                              : i === authors.length - 1
-                              ? '.'
-                              : ','}
-                          </List.Item>
-                        );
-                      })}
-                    </List.Root>
-                  ) : (
-                    <></>
-                  )}
-                </Accordion.ItemBody>
-              </Accordion.ItemContent>
-            </>
-          )}
-        </Accordion.ItemContext>
+                    <AuthorContacts {...author} />
+                    {affiliation?.name && (
+                      <>
+                        ,&nbsp;
+                        {affiliation.sameAs ? (
+                          <Link href={affiliation.sameAs} isExternal ml={1}>
+                            {affiliation.name}
+                          </Link>
+                        ) : (
+                          <Text>{affiliation.name}</Text>
+                        )}
+                      </>
+                    )}
+                    {!showAsList && (isLast ? '.' : ',')}
+                  </List.Item>
+                );
+              })}
+            </List.Root>
+          </Accordion.ItemBody>
+        </Accordion.ItemContent>
       </Accordion.Item>
     </Accordion.Root>
   );

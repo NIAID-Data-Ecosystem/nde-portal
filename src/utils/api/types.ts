@@ -1,4 +1,5 @@
 import { CreativeWorkStatusDatasetType } from 'src/hooks/api/types';
+
 import {
   APIResourceType,
   CollectionType,
@@ -518,7 +519,7 @@ export interface FormattedResource {
   about: About | About[] | null;
   abstract: string | null;
   aggregateRating: AggregateRating | null;
-  alternateName: string | null;
+  alternateName: string[] | string | null;
   applicationCategory: string[] | null;
   applicationSubCategory: ApplicationSubCategory[] | null;
   applicationSuite: string[] | null;

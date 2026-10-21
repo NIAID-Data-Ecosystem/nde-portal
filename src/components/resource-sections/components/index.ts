@@ -1,23 +1,25 @@
-import TypeBanner from './type-banner';
-import Navigation from './navigation';
-import Section from './section';
-import ResourceCitations from './citations';
-import ResourceHeader from './header';
 import ResourceAuthors from './authors';
 import ResourceBanner from './banner';
-import ResourceOverview from './overview';
+import ResourceCitations from './citations';
 import ResourceFilesTable from './files-table';
+import ResourceHeader from './header';
+import ResourceIdentifiers from './identifiers';
+import Navigation from './navigation';
+import ResourceOverview from './overview';
 import ResourceProvenance from './provenance';
+import Section from './section';
+import TypeBanner from './type-banner';
 
 export {
   Navigation,
-  Section,
   ResourceAuthors,
-  ResourceCitations,
   ResourceBanner,
-  ResourceOverview,
+  ResourceCitations,
   ResourceFilesTable,
   ResourceHeader,
+  ResourceIdentifiers,
+  ResourceOverview,
   ResourceProvenance,
+  Section,
   TypeBanner,
 };

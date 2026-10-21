@@ -1,3 +1,4 @@
+import { accordionSlotRecipe } from './accordion.slot-recipe';
 import { alertSlotRecipe } from './alert.slot-recipe';
 import { breadcrumbSlotRecipe } from './breadcrumb.slot-recipe';
 import { cardSlotRecipe } from './card.slot-recipe';
@@ -15,6 +16,7 @@ export const slotRecipes = {
   /* Field-level input labels — `text.heading` across every labelled input.
      Spread first so a named recipe below can still override a slot. */
   ...inputLabelSlotRecipes,
+  accordion: accordionSlotRecipe,
   alert: alertSlotRecipe,
   breadcrumb: breadcrumbSlotRecipe,
   card: cardSlotRecipe,

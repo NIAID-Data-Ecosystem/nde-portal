@@ -24,6 +24,7 @@ import {
   ResourceBanner,
   ResourceCitations,
   ResourceHeader,
+  ResourceIdentifiers,
   ResourceOverview,
   ResourceProvenance,
   Section,
@@ -65,18 +66,25 @@ const Sections = ({
   );
   return (
     <>
-      <ResourceHeader
-        loading={loading}
-        name={data?.name}
-        alternateName={data?.alternateName}
-        id={data?.id}
-        doi={data?.doi}
-        nctid={data?.nctid}
-        type={data?.['@type']}
-        creativeWorkStatus={data?.creativeWorkStatus}
-      />
+      <VStack alignItems='flex-start' py={2}>
+        <ResourceHeader
+          loading={loading}
+          name={data?.name}
+          alternateName={data?.alternateName}
+          id={data?.id}
+        />
+        {data?.author && <ResourceAuthors authors={data.author} />}
+        <ResourceIdentifiers
+          loading={loading}
+          id={data?.id}
+          doi={data?.doi}
+          nctid={data?.nctid}
+          type={data?.['@type']}
+          creativeWorkStatus={data?.creativeWorkStatus}
+        />
+      </VStack>
+
       {/* Banner showing data type and publish date. For computational tools, operating system info is displayed when available. */}
-      {data?.author && <ResourceAuthors authors={data.author} />}
       <ResourceBanner data={data} />
       {/*<--- AI Generated short description -->*/}
       {process.env.NEXT_PUBLIC_APP_ENV !== 'production' &&

@@ -1,7 +1,5 @@
-import { Heading, HStack, Skeleton, Text, VStack } from '@chakra-ui/react';
-import { CreativeWorkStatus } from 'src/components/badges';
+import { Heading, HStack, Skeleton, Text } from '@chakra-ui/react';
 import { BookmarkButton } from 'src/components/bookmark-buttons/button';
-import { CopyIconButton } from 'src/components/copy-button';
 import { DisplayHTMLString } from 'src/components/html-content';
 import { useBookmarkDataset } from 'src/hooks/useBookmarkDataset';
 import { FormattedResource } from 'src/utils/api/types';
@@ -12,47 +10,29 @@ interface HeaderProps {
   name?: FormattedResource['name'];
   alternateName?: FormattedResource['alternateName'];
   id?: FormattedResource['id'];
-  doi?: FormattedResource['doi'];
-  nctid?: FormattedResource['nctid'];
-  type?: FormattedResource['@type'];
-  creativeWorkStatus?: FormattedResource['creativeWorkStatus'];
+  authors?: React.ReactNode;
 }
 
-const Header = ({
-  loading,
-  name,
-  alternateName,
-  id,
-  doi,
-  nctid,
-  type,
-  creativeWorkStatus,
-}: HeaderProps) => {
+const Header = ({ loading, name, alternateName, id, authors }: HeaderProps) => {
   const { isFavorited, toggleBookmark, isDisabled } = useBookmarkDataset({
     id,
-    name: name || alternateName,
+    name: name || 'N/A',
   });
 
   const showBookmarkButton = ENABLE_AUTH;
 
-  const isRetiredResourceCatalog =
-    type === 'ResourceCatalog' && creativeWorkStatus === 'Retired';
-
   return (
     <>
       <Skeleton
-        loading={!!loading}
+        loading={loading}
         w='100%'
         overflow='unset'
         position={['unset', 'unset', 'sticky']}
         top='0px'
         zIndex='docked'
         bg='white'
-        borderBottom='2px solid'
-        borderBottomColor='gray.100'
         px={6}
         pt={4}
-        pb={2}
       >
         <HStack alignItems='flex-start' justifyContent='space-between' w='100%'>
           <Heading
@@ -61,18 +41,19 @@ const Header = ({
             fontWeight='bold'
             lineHeight='moderate'
           >
-            <DisplayHTMLString>{name || alternateName}</DisplayHTMLString>
-            {!!name && alternateName && (
-              <Heading
-                as='span'
-                size='sm'
+            <DisplayHTMLString>{name}</DisplayHTMLString>
+            {alternateName && (
+              <Text
                 color='gray.800'
+                fontSize='sm'
                 fontWeight='normal'
                 wordBreak='break-word'
-                my={0}
               >
-                Alternate name: {alternateName}
-              </Heading>
+                Alternate names:{' '}
+                {Array.isArray(alternateName)
+                  ? alternateName.join(', ')
+                  : alternateName}
+              </Text>
             )}
           </Heading>
           {showBookmarkButton && (
@@ -83,89 +64,9 @@ const Header = ({
             />
           )}
         </HStack>
-        <VStack alignItems='flex-start' mt={2} lineHeight='shorter'>
-          {id && (
-            <IdWithCopyButton
-              id={id}
-              label='Resource ID'
-              buttonText='Copy Resource ID'
-              copiedText='Resource ID Copied!'
-            />
-          )}
-
-          {(nctid || doi) && (
-            <>
-              {nctid && (
-                <IdWithCopyButton
-                  id={nctid}
-                  label='NCTID'
-                  buttonText='Copy NCTID'
-                  copiedText='NCTID Copied!'
-                />
-              )}
-              {doi && (
-                <IdWithCopyButton
-                  id={doi}
-                  label='DOI'
-                  buttonText='Copy DOI'
-                  copiedText='DOI Copied!'
-                />
-              )}
-            </>
-          )}
-
-          {/* Retired badge for ResourceCatalog records that have been retired. */}
-          {isRetiredResourceCatalog && (
-            <CreativeWorkStatus
-              creativeWorkStatus={creativeWorkStatus}
-              type={type}
-              mt={1}
-            />
-          )}
-        </VStack>
       </Skeleton>
     </>
   );
 };
 
-const IdWithCopyButton = ({
-  id,
-  label,
-  buttonText,
-  copiedText,
-}: {
-  id: string;
-  label?: string;
-  buttonText?: string;
-  copiedText?: string;
-}) => {
-  return (
-    <HStack
-      alignItems={{ base: 'flex-start', md: 'baseline' }}
-      flexDirection={{ base: 'column', md: 'row' }}
-      fontSize='sm'
-      gap={1}
-    >
-      <HStack flexWrap='wrap' gap={1} alignItems='baseline'>
-        {label && (
-          <Text fontWeight='semibold' whiteSpace='nowrap'>
-            {label} |
-          </Text>
-        )}
-        <HStack gap={1} alignItems='baseline'>
-          <Text wordBreak='break-all'>{id}</Text>
-          <CopyIconButton
-            textToCopy={id}
-            buttonText={buttonText || 'Copy ID'}
-            copiedText={copiedText || 'ID Copied!'}
-            buttonProps={{
-              size: 'xs',
-              flexShrink: 0,
-            }}
-          />
-        </HStack>
-      </HStack>
-    </HStack>
-  );
-};
 export default Header;
