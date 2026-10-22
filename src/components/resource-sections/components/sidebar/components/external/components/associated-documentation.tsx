@@ -1,11 +1,12 @@
-import React from 'react';
-import { Box, Flex, Icon, Stack, Text, List } from '@chakra-ui/react';
-import { FaBitbucket, FaGithub } from 'react-icons/fa6';
-import { FormattedResource } from 'src/utils/api/types';
-import { HeadingWithTooltip } from './heading-with-tooltip';
-import { Link } from 'src/components/link';
+import { Box, Flex, Icon, List, Stack, Text } from '@chakra-ui/react';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import React from 'react';
+import { FaBitbucket, FaGithub } from 'react-icons/fa6';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import { Link } from 'src/components/link';
+import { FormattedResource } from 'src/utils/api/types';
+
+import { HeadingWithTooltip } from './heading-with-tooltip';
 
 interface AssociatedDocumentation {
   loading: boolean;
@@ -47,19 +48,13 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
                     href={href}
                     isExternal
                     wordBreak='break-word'
-                    fontSize='xs'
                   >
                     {href}
                   </Link>
                 );
               })
             ) : (
-              <Link
-                href={mainEntityOfPage}
-                isExternal
-                wordBreak='break-word'
-                fontSize='xs'
-              >
+              <Link href={mainEntityOfPage} isExternal wordBreak='break-word'>
                 {mainEntityOfPage}
               </Link>
             ))}

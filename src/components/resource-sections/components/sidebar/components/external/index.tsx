@@ -94,7 +94,11 @@ export const UsageInfo = ({
     <>
       <Box bg='secondary.50'>
         {/* License, usage agreement */}
-        {(data?.creditText || data?.usageInfo || data?.license) && (
+        {(data?.creditText ||
+          data?.usageInfo ||
+          data?.license ||
+          data?.mainEntityOfPage ||
+          data?.codeRepository) && (
           <Wrapper
             loading={loading}
             label='Usage and Licensing'
@@ -119,18 +123,16 @@ export const UsageInfo = ({
                   data?.['@type'],
                 )}
               />
+              {/* Reference documents and code repositories */}
+              {(data?.mainEntityOfPage || data?.codeRepository) && (
+                <AssociatedDocumentation
+                  loading={loading}
+                  type={data?.['@type']}
+                  mainEntityOfPage={data?.mainEntityOfPage}
+                  codeRepository={data?.codeRepository}
+                />
+              )}
             </>
-          </Wrapper>
-        )}
-        {/* Reference documents and code repositories */}
-        {(data?.mainEntityOfPage || data?.codeRepository) && (
-          <Wrapper loading={loading} label=''>
-            <AssociatedDocumentation
-              loading={loading}
-              type={data?.['@type']}
-              mainEntityOfPage={data?.mainEntityOfPage}
-              codeRepository={data?.codeRepository}
-            />
           </Wrapper>
         )}
       </Box>
