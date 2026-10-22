@@ -19,6 +19,7 @@ export const accordionSlotRecipe = defineSlotRecipe({
   slots: accordionAnatomy.keys(),
   base: {
     itemTrigger: {
+      cursor: 'pointer',
       _hover: {
         '& [data-accordion-control]': {
           textDecoration: 'underline',

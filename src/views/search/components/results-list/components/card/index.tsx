@@ -89,7 +89,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   const {
     ['@type']: type,
     id,
-    alternateName,
     name,
     date,
     author,
@@ -98,15 +97,13 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     includedInDataCatalog,
     isAccessibleForFree,
     operatingSystem,
-    url,
   } = data || {};
 
   const { isFavorited, toggleBookmark, isDisabled } = useBookmarkDataset({
     id,
-    name: name || alternateName,
+    name: name || '',
   });
 
-  const paddingCard = [4, 6, 8, 10];
   // lazy load large portion of cards on scroll.
   const [cardRef, inView] = useInView({ once: true });
 
@@ -247,7 +244,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           >
             <DisplayHTMLContent
               lineClamp={3}
-              content={name || alternateName || 'N/A'}
+              content={name || 'N/A'}
               fontWeight='semibold'
               color='inherit'
               fontSize='lg'

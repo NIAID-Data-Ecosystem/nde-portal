@@ -44,7 +44,7 @@ const Header = ({ loading, name, alternateName, id, authors }: HeaderProps) => {
             <DisplayHTMLString>{name}</DisplayHTMLString>
             {alternateName && (
               <Text
-                color='gray.800'
+                color='text.body'
                 fontSize='sm'
                 fontWeight='normal'
                 wordBreak='break-word'

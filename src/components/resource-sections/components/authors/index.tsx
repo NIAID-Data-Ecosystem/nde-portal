@@ -135,7 +135,7 @@ const ResourceAuthors = ({
     <Heading
       flex='1'
       fontSize='sm'
-      color='gray.700'
+      color='text.heading'
       fontWeight='light'
       lineHeight='moderate'
     >
@@ -146,7 +146,13 @@ const ResourceAuthors = ({
 
   if (!isExpandable) {
     return (
-      <Box px={[4, 6]} py={2}>
+      <Box
+        px={[4, 6]}
+        py={2}
+        width='100%'
+        borderBottom='1px solid'
+        borderColor='gray.200'
+      >
         {summary}
       </Box>
     );
@@ -163,7 +169,7 @@ const ResourceAuthors = ({
     >
       <Accordion.Item
         value='authors'
-        borderY='1px solid'
+        borderBottom='1px solid'
         borderColor='gray.200'
       >
         <Accordion.ItemTrigger

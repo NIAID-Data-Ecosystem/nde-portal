@@ -4,6 +4,7 @@ import {
   Button,
   Flex,
   Heading,
+  HStack,
   Icon,
   Skeleton,
   Stack,
@@ -218,7 +219,7 @@ export const BasedOnTable = ({
                                 {/* name */}
                                 {column.key === 'name' && (
                                   <Box>
-                                    <Text fontSize='xs'>
+                                    <Text fontSize='sm'>
                                       {item.name ? (
                                         item.url ? (
                                           <Link
@@ -330,7 +331,7 @@ export const BasedOnTable = ({
                           role='cell'
                           px={3}
                           my={2}
-                          fontSize='xs'
+                          fontSize='sm'
                           lineHeight='moderate'
                           whiteSpace='pre-wrap'
                           wordBreak='break-word'
@@ -374,7 +375,6 @@ export const BasedOnTable = ({
 export const BasedOnActionProcess = ({
   name,
   description,
-  disambiguatingDescription,
   actionProcess,
 }: IsBasedOn) => {
   // step may come back from the API as a single string or a list.
@@ -384,13 +384,13 @@ export const BasedOnActionProcess = ({
 
   return (
     <Stack
-      gap={0.5}
       w='100%'
       bg='info.subtle'
-      borderRadius='sm'
+      borderRadius='semi'
       fontSize='sm'
-      lineHeight='moderate'
-      p={[2, 4]}
+      // lineHeight='moderate'
+      px={4}
+      py={2}
     >
       {/* "How to" steps are collapsed by default to keep the card compact. */}
       <Accordion.Root collapsible>
@@ -398,36 +398,32 @@ export const BasedOnActionProcess = ({
           <Accordion.ItemContext>
             {({ expanded }) => (
               <>
-                <Flex flexDirection='column' rowGap={0.5} lineHeight='moderate'>
-                  {/* Name of action */}
-                  <Text fontWeight='semibold'>
-                    {name || 'Generation process'}
-                  </Text>
-                  {description && <Text fontSize='xs'>{description}</Text>}
+                <Flex
+                  flexDirection='row'
+                  justifyContent='space-between'
+                  lineHeight='short'
+                  flexWrap='wrap'
+                >
                   {showAccordion && (
-                    <Accordion.ItemTrigger>
-                      <Button
-                        w='auto'
-                        gap={2}
-                        px={0}
-                        py={0}
-                        my={0.5}
-                        flexShrink={0}
-                        fontSize='xs'
-                        fontWeight='medium'
-                        textDecoration='underline'
-                        _hover={{ textDecoration: 'none' }}
-                      >
-                        {expanded ? 'Hide' : 'Show'}
-                        <Icon as={expanded ? FaMinus : FaPlus} fontSize='2xs' />
-                      </Button>
+                    <Accordion.ItemTrigger px={0} py={0}>
+                      {/* Name of action */}
+                      <Text fontWeight='semibold' flex={1} fontSize='sm'>
+                        {name || 'Generation process'}
+                      </Text>
+                      <HStack gap={1} fontSize='xs' fontWeight='light'>
+                        <Text data-accordion-control>
+                          {expanded ? 'hide' : 'show details'}
+                        </Text>
+
+                        <Icon>{expanded ? <FaMinus /> : <FaPlus />}</Icon>
+                      </HStack>
                     </Accordion.ItemTrigger>
                   )}
                 </Flex>
                 {showAccordion && (
                   <Accordion.ItemContent px={0} pt={1} pb={1}>
                     <Accordion.ItemBody>
-                      <VStack alignItems='start' gap={1.5} fontSize='xs'>
+                      <VStack alignItems='start' gap={1.5} fontSize='sm'>
                         {description && (
                           <Text fontSize='inherit'>{description}</Text>
                         )}
