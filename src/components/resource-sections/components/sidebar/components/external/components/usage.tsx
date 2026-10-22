@@ -1,9 +1,10 @@
-import React from 'react';
 import { Box } from '@chakra-ui/react';
-import { FormattedResource } from 'src/utils/api/types';
-import { HeadingWithTooltip } from './heading-with-tooltip';
-import { Link } from 'src/components/link';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import React from 'react';
+import { Link } from 'src/components/link';
+import { FormattedResource } from 'src/utils/api/types';
+
+import { HeadingWithTooltip } from './heading-with-tooltip';
 
 interface DataUsageProps {
   loading: boolean;

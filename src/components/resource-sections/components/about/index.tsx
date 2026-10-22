@@ -131,7 +131,6 @@ export const AboutResource = ({
               items={searchableContentTypeItems}
               itemLimit={Infinity}
               maxHeight='unset'
-              searchParams={isDataCollectionType ? { tab: 'dc' } : undefined}
             />
           </OverviewSectionWrapper>
         )}

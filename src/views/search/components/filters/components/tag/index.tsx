@@ -48,7 +48,7 @@ const FilterTag: React.FC<
   }
 > = ({ label, onRemove, ...props }) => {
   return (
-    <Tag.Root colorPalette='secondary' size='lg' variant='solid' {...props}>
+    <Tag.Root colorPalette='secondary' size='sm' variant='solid' {...props}>
       <Tag.Label>{label}</Tag.Label>
       {onRemove && (
         <Tag.EndElement>

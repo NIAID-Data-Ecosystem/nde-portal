@@ -153,7 +153,14 @@ export const ResourceCatalogCard = ({
         <Skeleton loading={loading} px={-1}>
           {aboutItems.length > 0 && (
             <Flex bg={cardBg} flexDirection='column' gap='1'>
-              <MetadataLabel label='Content Types' />
+              <Text
+                fontSize='xs'
+                fontWeight='medium'
+                textTransform='uppercase'
+                color='inherit'
+              >
+                Content Types
+              </Text>
               <SearchableItems
                 items={aboutItems}
                 itemLimit={2}

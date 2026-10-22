@@ -361,14 +361,16 @@ const RepositoryMatcher: NextPage = () => {
             {filterTags.length > 0 && (
               <Tag.Root
                 key='clear'
-                size='lg'
+                size='md'
                 variant='outline'
                 borderRadius='full'
                 colorPalette='primary'
                 borderColor='primary.100'
               >
                 <Tag.Label>Clear all</Tag.Label>
-                <Tag.CloseTrigger onClick={() => setSelectedFilters({})} />
+                <Tag.EndElement>
+                  <Tag.CloseTrigger onClick={() => setSelectedFilters({})} />
+                </Tag.EndElement>
               </Tag.Root>
             )}
             {filterTags.map(filter => {
@@ -376,15 +378,17 @@ const RepositoryMatcher: NextPage = () => {
               return (
                 <Tag.Root
                   key={property + '-' + value}
-                  size='lg'
+                  size='md'
                   variant='subtle'
                   borderRadius='full'
                   colorPalette='primary'
                 >
                   <Tag.Label fontWeight='medium'>{value}</Tag.Label>
-                  <Tag.CloseTrigger
-                    onClick={() => removeSingleFilter(property, value)}
-                  />
+                  <Tag.EndElement>
+                    <Tag.CloseTrigger
+                      onClick={() => removeSingleFilter(property, value)}
+                    />
+                  </Tag.EndElement>
                 </Tag.Root>
               );
             })}

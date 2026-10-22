@@ -1,8 +1,9 @@
+import { Flex } from '@chakra-ui/react';
 import React from 'react';
-import { Flex, Heading, HeadingProps } from '@chakra-ui/react';
-import { MetadataTooltip } from 'src/components/metadata';
+import type { InfoLabelProps } from 'src/components/info-label';
+import { InfoLabel } from 'src/components/info-label';
 
-interface HeadingWithTooltip extends HeadingProps {
+interface HeadingWithTooltip extends InfoLabelProps {
   label: string;
   tooltipLabel?: string;
 }
@@ -10,21 +11,13 @@ interface HeadingWithTooltip extends HeadingProps {
 export const HeadingWithTooltip: React.FC<HeadingWithTooltip> = ({
   label,
   tooltipLabel,
-  ...headingProps
+  ...props
 }) => {
   return (
     <Flex alignItems='baseline' textAlign='center'>
-      <Heading
-        as='h3'
-        fontSize='xs'
-        color='gray.800'
-        mb={1}
-        fontWeight='medium'
-        {...headingProps}
-      >
+      <InfoLabel tooltipProps={{ content: tooltipLabel ?? '' }} {...props}>
         {label}
-      </Heading>
-      {tooltipLabel && <MetadataTooltip tooltipLabel={tooltipLabel} />}
+      </InfoLabel>
     </Flex>
   );
 };

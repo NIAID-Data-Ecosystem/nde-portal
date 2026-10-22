@@ -71,14 +71,7 @@ interface SearchableSection {
   itemLabel: string;
   tooltip?: string;
   items: SearchableItem[];
-  searchParams?: Record<string, string>;
 }
-
-const generateShowAllLabel =
-  (itemLabel: string) => (limit: number, length: number) =>
-    limit === length
-      ? `Show fewer ${itemLabel}`
-      : `Show all ${itemLabel} (${(length - limit).toLocaleString()} more)`;
 
 const SearchResultCard: React.FC<SearchResultCardProps> = ({
   loading,
@@ -138,9 +131,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         itemLabel: 'content types',
         tooltip: CONTENT_TYPE_TOOLTIP,
         items: contentTypeItems,
-        // These values only exist on Data Collections, so a search without the
-        // tab param would land on the empty Datasets tab.
-        searchParams: { tab: 'dc' },
       },
       {
         label: 'Application Categories',
@@ -404,14 +394,13 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   }}
                 >
                   {searchableSections.map(
-                    ({ label, itemLabel, tooltip, items, searchParams }) => (
+                    ({ label, itemLabel, tooltip, items }) => (
                       <SearchableItems
                         key={label}
                         itemLimit={3}
                         items={items}
-                        searchParams={searchParams}
-                        generateButtonLabel={generateShowAllLabel(itemLabel)}
-                        name={
+                        itemLabel={itemLabel}
+                        heading={
                           <InfoLabel tooltipProps={{ content: tooltip }}>
                             {label}
                           </InfoLabel>

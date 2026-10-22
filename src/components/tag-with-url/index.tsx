@@ -40,6 +40,7 @@ export const TagWithUrl = ({
   href,
   isExternal,
   leftIcon,
+  size = 'sm',
   ...props
 }: TagWithUrlProps) => {
   const prefix = label && (
@@ -50,7 +51,7 @@ export const TagWithUrl = ({
 
   if (!href) {
     return (
-      <Text fontSize='xs' {...props}>
+      <Text textStyle={size} {...props}>
         {prefix}
         {children}
       </Text>
@@ -59,7 +60,7 @@ export const TagWithUrl = ({
 
   return (
     <Tag.Root
-      size='sm'
+      size={size}
       variant='subtle'
       alignItems='center'
       lineHeight='shorter'

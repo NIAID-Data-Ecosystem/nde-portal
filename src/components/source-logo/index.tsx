@@ -115,7 +115,13 @@ const Component = ({
   ) : null;
 
   return (
-    <Stack minWidth='150px' maxW={['200px', '250px']} gap={1} {...props}>
+    <Stack
+      minWidth='150px'
+      maxW={['200px', '250px']}
+      gap={1}
+      fontSize='xs'
+      {...props}
+    >
       {logoImage && source.url ? (
         <Link target='_blank' href={source.url} variant='unstyled'>
           {logoImage}
@@ -125,13 +131,11 @@ const Component = ({
       )}
 
       {url ? (
-        <Link href={url} isExternal lineHeight='taller' fontSize='2xs'>
+        <Link href={url} isExternal lineHeight='taller'>
           {label}
         </Link>
       ) : (
-        <Text fontSize='2xs' lineHeight='taller'>
-          {label}
-        </Text>
+        <Text lineHeight='taller'>{label}</Text>
       )}
     </Stack>
   );

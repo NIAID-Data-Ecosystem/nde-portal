@@ -100,7 +100,9 @@ export const getResourceCatalogContentTypeItems = (
       value,
       field: 'about.displayName',
       ...(resourceType && {
-        query: `(about.displayName:"${value}" OR @type:"${resourceType}")`,
+        query: {
+          q: `(about.displayName:"${value}" OR @type:"${resourceType}")`,
+        },
       }),
     });
   });
@@ -112,6 +114,8 @@ export const getResourceCatalogContentTypeItems = (
  * Builds the "Content Type" pills for a card from the record's merged `about`
  * and `exampleOfWork.about` terms. Each pill's link searches both fields with
  * OR, so the results are the same no matter which field supplied the value.
+ * Links open the Data Collections tab: these values only exist on Data
+ * Collections, so a search without it would land on the empty Datasets tab.
  */
 export const getContentTypeItems = (
   data?: FormattedResource | null,
@@ -128,6 +132,9 @@ export const getContentTypeItems = (
       // Primary field, kept so the item still resolves to a sensible query if
       // `query` is ever dropped.
       field: CONTENT_TYPE_ABOUT_FIELD,
-      query: `(${CONTENT_TYPE_ABOUT_FIELD}:"${value}" OR ${CONTENT_TYPE_EXAMPLE_OF_WORK_FIELD}:"${value}")`,
+      query: {
+        q: `(${CONTENT_TYPE_ABOUT_FIELD}:"${value}" OR ${CONTENT_TYPE_EXAMPLE_OF_WORK_FIELD}:"${value}")`,
+        tab: 'dc',
+      },
     };
   });

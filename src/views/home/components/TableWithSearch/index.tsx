@@ -122,22 +122,24 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
             {/* <!-- Filter Tags--> */}
             <Stack
               direction='row'
-              gap={2}
-              flex={1}
-              flexWrap='wrap'
-              minW='300px'
+              // gap={2}
+              // flex={1}
+              // flexWrap='wrap'
+              // minW='300px'
             >
               {filters.length > 0 && (
                 <Tag.Root
-                  key='clear'
-                  size='lg'
+                  key='clear-all'
+                  size='md'
                   variant='outline'
                   borderRadius='full'
                   colorPalette='primary'
                   borderColor='primary.100'
                 >
                   <Tag.Label>Clear all</Tag.Label>
-                  <Tag.CloseTrigger onClick={() => setFilters([])} />
+                  <Tag.EndElement>
+                    <Tag.CloseTrigger onClick={() => setFilters([])} />
+                  </Tag.EndElement>
                 </Tag.Root>
               )}
               {filters.map(filter => {
@@ -145,15 +147,17 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
                 return (
                   <Tag.Root
                     key={property + '-' + value}
-                    size='lg'
+                    size='md'
                     variant='subtle'
                     borderRadius='full'
                     colorPalette='primary'
                   >
                     <Tag.Label fontWeight='medium'>{name}</Tag.Label>
-                    <Tag.CloseTrigger
-                      onClick={() => removeSingleFilter(filter)}
-                    />
+                    <Tag.EndElement>
+                      <Tag.CloseTrigger
+                        onClick={() => removeSingleFilter(filter)}
+                      />
+                    </Tag.EndElement>
                   </Tag.Root>
                 );
               })}

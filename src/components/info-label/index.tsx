@@ -4,19 +4,20 @@ import { FaInfo } from 'react-icons/fa6';
 import type { TooltipProps } from 'src/components/tooltip';
 import Tooltip from 'src/components/tooltip';
 
-interface InfoLabelProps extends TextProps {
+export interface InfoLabelProps extends TextProps {
   children: string;
   tooltipProps?: Omit<TooltipProps, 'children'>;
   iconProps?: Omit<React.ComponentProps<typeof Icon>, 'children'>;
 }
 
-const InfoIcon = (
+export const InfoIcon = (
   props: Omit<React.ComponentProps<typeof Icon>, 'children'>,
 ) => (
   <Icon
     boxSize={3.5}
     border='1px solid'
     borderRadius='full'
+    color='gray.800'
     p={0.5}
     mx={1}
     mb={2}

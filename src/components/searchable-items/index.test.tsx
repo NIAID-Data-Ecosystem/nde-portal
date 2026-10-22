@@ -1,4 +1,6 @@
-import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { render, screen } from 'src/__tests__/utils/render';
+
 import { SearchableItem, SearchableItems } from './index';
 
 jest.mock('next/link', () => {
@@ -30,6 +32,36 @@ describe('SearchableItems', () => {
     expect(screen.getAllByRole('link')).toHaveLength(2);
   });
 
+  it('renders the heading before the tags', () => {
+    render(<SearchableItems items={[item()]} heading='Content Types' />);
+
+    expect(screen.getByText('Content Types')).toBeInTheDocument();
+  });
+
+  describe('links', () => {
+    const getHref = () =>
+      JSON.parse(screen.getByRole('link').getAttribute('href')!);
+
+    it('searches field:"value" by default', () => {
+      render(<SearchableItems items={[item()]} />);
+
+      expect(getHref()).toEqual({
+        pathname: '/search',
+        query: { q: 'about.displayName:"Dataset"' },
+      });
+    });
+
+    it('uses an explicit query verbatim', () => {
+      const query = {
+        q: '(about.name:"Dataset" OR @type:"Dataset")',
+        tab: 'dc',
+      };
+      render(<SearchableItems items={[item({ query })]} />);
+
+      expect(getHref()).toEqual({ pathname: '/search', query });
+    });
+  });
+
   // Callers build these objects fresh on every render, so deduplicating by
   // object identity silently keeps every duplicate.
   describe('deduplication', () => {
@@ -40,10 +72,10 @@ describe('SearchableItems', () => {
     });
 
     it('collapses items sharing an explicit query', () => {
-      const query = '(about.displayName:"Dataset" OR @type:"Dataset")';
+      const q = '(about.displayName:"Dataset" OR @type:"Dataset")';
       render(
         <SearchableItems
-          items={[item({ query }), item({ query })]}
+          items={[item({ query: { q } }), item({ query: { q } })]}
           itemLimit={Infinity}
         />,
       );
@@ -51,13 +83,27 @@ describe('SearchableItems', () => {
       expect(screen.getAllByRole('link')).toHaveLength(1);
     });
 
-    it('keeps items whose queries differ', () => {
+    it('ignores the order of query params', () => {
+      const q = 'about.displayName:"Dataset"';
       render(
         <SearchableItems
           items={[
-            item({ query: 'about.displayName:"Dataset"' }),
-            item({ query: '(about.displayName:"Dataset" OR @type:"Dataset")' }),
+            item({ query: { q, tab: 'dc' } }),
+            item({ query: { tab: 'dc', q } }),
           ]}
+          itemLimit={Infinity}
+        />,
+      );
+
+      expect(screen.getAllByRole('link')).toHaveLength(1);
+    });
+
+    // Same `q`, different tab: the links go to different places.
+    it('keeps items whose queries differ in any param', () => {
+      const q = 'about.displayName:"Dataset"';
+      render(
+        <SearchableItems
+          items={[item({ query: { q } }), item({ query: { q, tab: 'dc' } })]}
           itemLimit={Infinity}
         />,
       );
@@ -95,6 +141,68 @@ describe('SearchableItems', () => {
       expect(
         screen.getByRole('button', { name: /show all items \(2 more\)/i }),
       ).toBeInTheDocument();
+    });
+  });
+
+  describe('toggle', () => {
+    const items = [
+      item({ name: 'Alpha', value: 'Alpha' }),
+      item({ name: 'Beta', value: 'Beta' }),
+      item({ name: 'Gamma', value: 'Gamma' }),
+    ];
+
+    it('is hidden when every item fits within the limit', () => {
+      render(<SearchableItems items={items} itemLimit={3} />);
+
+      expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    });
+
+    it('expands and collapses the list', async () => {
+      const user = userEvent.setup();
+      render(<SearchableItems items={items} itemLimit={1} />);
+
+      const toggle = screen.getByRole('button', {
+        name: 'Show all items (2 more)',
+      });
+      expect(toggle).toHaveAttribute('aria-expanded', 'false');
+      expect(screen.getAllByRole('link')).toHaveLength(1);
+
+      await user.click(toggle);
+      expect(toggle).toHaveAttribute('aria-expanded', 'true');
+      expect(toggle).toHaveTextContent('Show fewer items');
+      expect(screen.getAllByRole('link')).toHaveLength(3);
+
+      await user.click(toggle);
+      expect(screen.getAllByRole('link')).toHaveLength(1);
+    });
+
+    it('names the items with itemLabel', () => {
+      render(
+        <SearchableItems items={items} itemLimit={1} itemLabel='keywords' />,
+      );
+
+      expect(
+        screen.getByRole('button', { name: 'Show all keywords (2 more)' }),
+      ).toBeInTheDocument();
+    });
+
+    it('defers to isExpanded and reports toggles when controlled', async () => {
+      const user = userEvent.setup();
+      const onToggle = jest.fn();
+      render(
+        <SearchableItems
+          items={items}
+          itemLimit={1}
+          isExpanded={false}
+          onToggle={onToggle}
+        />,
+      );
+
+      await user.click(screen.getByRole('button'));
+
+      expect(onToggle).toHaveBeenCalledWith(true);
+      // The parent did not update `isExpanded`, so the list stays collapsed.
+      expect(screen.getAllByRole('link')).toHaveLength(1);
     });
   });
 });

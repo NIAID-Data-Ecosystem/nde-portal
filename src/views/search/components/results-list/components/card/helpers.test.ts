@@ -77,7 +77,10 @@ describe('getContentTypeItems', () => {
         name: 'Genome',
         value: 'Genome',
         field: 'about.name',
-        query: '(about.name:"Genome" OR exampleOfWork.about.name:"Genome")',
+        query: {
+          q: '(about.name:"Genome" OR exampleOfWork.about.name:"Genome")',
+          tab: 'dc',
+        },
       },
     ]);
   });
@@ -118,12 +121,15 @@ describe('getContentTypeItems', () => {
       name: 'Electron Micrograph',
       value: 'electron micrograph',
       field: 'about.name',
-      query:
-        '(about.name:"electron micrograph" OR exampleOfWork.about.name:"electron micrograph")',
+      query: {
+        q: '(about.name:"electron micrograph" OR exampleOfWork.about.name:"electron micrograph")',
+        tab: 'dc',
+      },
     });
-    expect(items[1].query).toEqual(
-      '(about.name:"Tomogram" OR exampleOfWork.about.name:"Tomogram")',
-    );
+    expect(items[1].query).toEqual({
+      q: '(about.name:"Tomogram" OR exampleOfWork.about.name:"Tomogram")',
+      tab: 'dc',
+    });
   });
 
   it('handles `exampleOfWork.about` returned as a single object', () => {
@@ -176,9 +182,10 @@ describe('getContentTypeItems', () => {
 
     expect(items).toHaveLength(1);
     expect(items[0].value).toEqual('Image');
-    expect(items[0].query).toEqual(
-      '(about.name:"Image" OR exampleOfWork.about.name:"Image")',
-    );
+    expect(items[0].query).toEqual({
+      q: '(about.name:"Image" OR exampleOfWork.about.name:"Image")',
+      tab: 'dc',
+    });
   });
 
   it('upgrades the label when a later duplicate carries a displayName', () => {
@@ -199,8 +206,10 @@ describe('getContentTypeItems', () => {
         name: 'Electron Micrograph',
         value: 'electron micrograph',
         field: 'about.name',
-        query:
-          '(about.name:"electron micrograph" OR exampleOfWork.about.name:"electron micrograph")',
+        query: {
+          q: '(about.name:"electron micrograph" OR exampleOfWork.about.name:"electron micrograph")',
+          tab: 'dc',
+        },
       },
     ]);
   });
@@ -230,7 +239,10 @@ describe('getContentTypeItems', () => {
       name: 'Genome Assembly',
       value: 'Genome',
       field: 'about.name',
-      query: '(about.name:"Genome" OR exampleOfWork.about.name:"Genome")',
+      query: {
+        q: '(about.name:"Genome" OR exampleOfWork.about.name:"Genome")',
+        tab: 'dc',
+      },
     });
   });
 
@@ -259,7 +271,7 @@ describe('getResourceCatalogContentTypeItems', () => {
         name: 'Dataset',
         value: 'Dataset',
         field: 'about.displayName',
-        query: '(about.displayName:"Dataset" OR @type:"Dataset")',
+        query: { q: '(about.displayName:"Dataset" OR @type:"Dataset")' },
       },
     ]);
   });
@@ -269,9 +281,9 @@ describe('getResourceCatalogContentTypeItems', () => {
       resource({ about: { displayName: 'Sample' } }),
     );
 
-    expect(items[0].query).toEqual(
-      '(about.displayName:"Sample" OR @type:"Sample")',
-    );
+    expect(items[0].query).toEqual({
+      q: '(about.displayName:"Sample" OR @type:"Sample")',
+    });
   });
 
   it('maps Software to the underlying @type:ComputationalTool', () => {
@@ -279,9 +291,9 @@ describe('getResourceCatalogContentTypeItems', () => {
       resource({ about: { displayName: 'Software' } }),
     );
 
-    expect(items[0].query).toEqual(
-      '(about.displayName:"Software" OR @type:"ComputationalTool")',
-    );
+    expect(items[0].query).toEqual({
+      q: '(about.displayName:"Software" OR @type:"ComputationalTool")',
+    });
   });
 
   it('matches Dataset/Sample/Software case-insensitively', () => {
@@ -289,9 +301,9 @@ describe('getResourceCatalogContentTypeItems', () => {
       resource({ about: { displayName: 'dataset' } }),
     );
 
-    expect(items[0].query).toEqual(
-      '(about.displayName:"dataset" OR @type:"Dataset")',
-    );
+    expect(items[0].query).toEqual({
+      q: '(about.displayName:"dataset" OR @type:"Dataset")',
+    });
   });
 
   it('leaves unrelated about values without a query override', () => {
@@ -315,9 +327,9 @@ describe('getResourceCatalogContentTypeItems', () => {
       }),
     );
 
-    expect(items[0].query).toEqual(
-      '(about.displayName:"Dataset" OR @type:"Dataset")',
-    );
+    expect(items[0].query).toEqual({
+      q: '(about.displayName:"Dataset" OR @type:"Dataset")',
+    });
     expect(items[1].query).toBeUndefined();
   });
 
