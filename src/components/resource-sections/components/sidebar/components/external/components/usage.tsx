@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react';
+import { Box, VStack } from '@chakra-ui/react';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import React from 'react';
 import { Link } from 'src/components/link';
@@ -33,7 +33,7 @@ export const DataUsage: React.FC<DataUsageProps> = ({
       : '';
 
   return (
-    <Box>
+    <VStack align='start'>
       <HeadingWithTooltip
         label='Usage Information'
         tooltipLabel={tooltipLabel}
@@ -51,6 +51,6 @@ export const DataUsage: React.FC<DataUsageProps> = ({
           </Link>
         );
       })}
-    </Box>
+    </VStack>
   );
 };

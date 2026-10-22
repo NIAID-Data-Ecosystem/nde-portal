@@ -414,10 +414,9 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 
                 <CollapsibleText
                   flex={1}
+                  px='calc(var(--card-padding)/2)'
                   collapsedHeight={COLLAPSED_DESCRIPTION_HEIGHT}
                   lineClamp={10}
-                  triggerProps={{ px: 'calc(var(--card-padding)/2)', py: 1 }}
-                  _hover={{ bg: 'secondary.50' }}
                 >
                   {description && (
                     <DisplayHTMLContent

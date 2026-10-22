@@ -3,7 +3,7 @@ import React from 'react';
 import type { InfoLabelProps } from 'src/components/info-label';
 import { InfoLabel } from 'src/components/info-label';
 
-interface HeadingWithTooltip extends InfoLabelProps {
+interface HeadingWithTooltip extends Omit<InfoLabelProps, 'children'> {
   label: string;
   tooltipLabel?: string;
 }

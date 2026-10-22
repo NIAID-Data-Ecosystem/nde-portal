@@ -12,7 +12,7 @@ const renderWithChakra = (ui: React.ReactElement) =>
   render(<ChakraProvider value={system}>{ui}</ChakraProvider>);
 
 /*
- * The trigger only appears when the text is taller than the collapsed peek.
+ * The toggle only appears when the text is taller than the collapsed peek.
  * jsdom reports 0 for every measurement, so stub the height the component
  * measures. 100px is the default peek.
  */
@@ -70,16 +70,8 @@ describe('CollapsibleText', () => {
       expect(screen.queryByText('Show Less')).not.toBeInTheDocument();
     });
 
-    it('disables the trigger so it is not clickable or focusable', () => {
-      expect(screen.getByRole('button')).toBeDisabled();
-    });
-
-    it('stays collapsed when the trigger is clicked', async () => {
-      const trigger = screen.getByRole('button');
-      await userEvent.click(trigger);
-
-      expect(trigger).toHaveAttribute('aria-expanded', 'false');
-      expect(screen.queryByText('Show Less')).not.toBeInTheDocument();
+    it('renders no toggle button', () => {
+      expect(screen.queryByRole('button')).not.toBeInTheDocument();
     });
   });
 
@@ -89,27 +81,91 @@ describe('CollapsibleText', () => {
       renderWithChakra(<CollapsibleText>A long description.</CollapsibleText>);
     });
 
-    it('offers an enabled trigger', () => {
-      const trigger = screen.getByRole('button');
+    it('offers a toggle button that controls the text', () => {
+      const trigger = screen.getByRole('button', { name: 'Show More' });
 
-      expect(trigger).toBeEnabled();
-      expect(screen.getByText('Show More')).toBeInTheDocument();
+      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+      expect(
+        document.getElementById(trigger.getAttribute('aria-controls')!),
+      ).toHaveTextContent('A long description.');
     });
 
     it('expands and collapses on click', async () => {
       const trigger = screen.getByRole('button');
 
       await userEvent.click(trigger);
-      expect(trigger).toHaveAttribute('data-state', 'open');
       expect(trigger).toHaveAttribute('aria-expanded', 'true');
       expect(screen.getByText('Show Less')).toBeInTheDocument();
 
       await userEvent.click(trigger);
-      // `aria-expanded` is asserted only on the way open: it tracks the exit
-      // animation, which never completes without a layout engine, so it stays
-      // true while the state machine is already back to closed.
-      expect(trigger).toHaveAttribute('data-state', 'closed');
+      expect(trigger).toHaveAttribute('aria-expanded', 'false');
       expect(screen.getByText('Show More')).toBeInTheDocument();
+    });
+  });
+
+  it.each([
+    ['fits within', 40],
+    ['exceeds', 300],
+  ])(
+    'leaves links clickable when the text %s the collapsed height',
+    async (_, height) => {
+      mockTextHeight(height);
+      const onClick = jest.fn((event: React.MouseEvent) =>
+        event.preventDefault(),
+      );
+      renderWithChakra(
+        <CollapsibleText>
+          <a href='#details' onClick={onClick}>
+            A link
+          </a>
+        </CollapsibleText>,
+      );
+
+      const link = screen.getByRole('link', { name: 'A link' });
+      expect(link).not.toHaveAttribute('inert');
+
+      await userEvent.click(link);
+      expect(onClick).toHaveBeenCalledTimes(1);
+      // Clicking the text no longer toggles it.
+      expect(screen.queryByText('Show Less')).not.toBeInTheDocument();
+    },
+  );
+
+  describe('when a link in the collapsed text receives focus', () => {
+    /*
+     * jsdom has no layout, so stub the two rects the focus handler compares:
+     * the content box (the peek) and the focused link.
+     */
+    const focusLinkWithBottom = (linkBottom: number) => {
+      mockTextHeight(300);
+      renderWithChakra(
+        <CollapsibleText>
+          <a href='#details'>A link</a>
+        </CollapsibleText>,
+      );
+
+      const trigger = screen.getByRole('button');
+      const content = document.getElementById(
+        trigger.getAttribute('aria-controls')!,
+      )!;
+      const link = screen.getByRole('link');
+      jest
+        .spyOn(content, 'getBoundingClientRect')
+        .mockReturnValue({ bottom: 100 } as DOMRect);
+      jest
+        .spyOn(link, 'getBoundingClientRect')
+        .mockReturnValue({ bottom: linkBottom } as DOMRect);
+
+      act(() => link.focus());
+      return trigger;
+    };
+
+    it('expands when the link is clipped below the peek', () => {
+      expect(focusLinkWithBottom(150)).toHaveAttribute('aria-expanded', 'true');
+    });
+
+    it('stays collapsed when the link is inside the peek', () => {
+      expect(focusLinkWithBottom(50)).toHaveAttribute('aria-expanded', 'false');
     });
   });
 
@@ -122,8 +178,7 @@ describe('CollapsibleText', () => {
       </CollapsibleText>,
     );
 
-    expect(screen.getByRole('button')).toBeDisabled();
-    expect(screen.queryByText('Show More')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
 
   it('accepts custom trigger labels', async () => {
@@ -144,8 +199,7 @@ describe('CollapsibleText', () => {
     mockTextHeight(300);
     renderWithChakra(<CollapsibleText>{null}</CollapsibleText>);
 
-    expect(screen.getByRole('button')).toBeDisabled();
-    expect(screen.queryByText('Show More')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
 
   it('re-measures when the text is resized', () => {
@@ -159,8 +213,9 @@ describe('CollapsibleText', () => {
     offsetHeight.mockReturnValue(300);
     resizeObserver.triggerResize();
 
-    expect(screen.getByText('Show More')).toBeInTheDocument();
-    expect(screen.getByRole('button')).toBeEnabled();
+    expect(
+      screen.getByRole('button', { name: 'Show More' }),
+    ).toBeInTheDocument();
 
     resizeObserver.restore();
   });

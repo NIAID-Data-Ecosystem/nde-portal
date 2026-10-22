@@ -1,16 +1,16 @@
 import {
-  Collapsible,
+  Box,
+  BoxProps,
+  chakra,
   Flex,
-  HStack,
+  HTMLChakraProps,
   Icon,
   SystemStyleObject,
-  Text,
 } from '@chakra-ui/react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useId, useRef, useState } from 'react';
 import { FaChevronDown } from 'react-icons/fa6';
 
-export interface CollapsibleTextProps
-  extends Omit<Collapsible.RootProps, 'collapsedHeight' | 'children'> {
+export interface CollapsibleTextProps extends Omit<BoxProps, 'children'> {
   children?: React.ReactNode;
   /** Height of the peek shown while collapsed, in pixels. */
   collapsedHeight?: number;
@@ -25,16 +25,21 @@ export interface CollapsibleTextProps
    * block that is already fully visible does not look interactive.
    */
   _hover?: SystemStyleObject;
-  /** Styles for the clickable region wrapping the text and its label. */
-  triggerProps?: Collapsible.TriggerProps;
+  /** Props for the Show More / Show Less button. */
+  triggerProps?: HTMLChakraProps<'button'>;
 }
 
 /**
- * Text that is clipped to a short peek and expands on click.
+ * Text that is clipped to a short peek and expands from a Show More button.
  *
- * The trigger is only offered when the content is actually taller than the
- * peek: shorter content is already fully visible, so the toggle is disabled,
- * unlabelled, and left out of the tab order.
+ * Only the button toggles, so links in the text stay clickable. It is only
+ * offered when the content is actually taller than the peek: shorter content
+ * is already fully visible.
+ *
+ * Hand-rolled rather than built on Chakra's `Collapsible`: given a collapsed
+ * size, zag marks every focusable element in the content `inert` while closed,
+ * which leaves links in the visible peek, and in text too short to ever
+ * expand, unclickable.
  */
 export const CollapsibleText: React.FC<CollapsibleTextProps> = ({
   children,
@@ -46,103 +51,114 @@ export const CollapsibleText: React.FC<CollapsibleTextProps> = ({
   triggerProps,
   ...props
 }) => {
+  const contentId = useId();
+  const [isOpen, setIsOpen] = useState(false);
+
   /*
-   * Measured on the text itself rather than on the Collapsible content, whose
-   * height is pinned to the peek while closed. `offsetHeight` rather than
+   * Measured on the text itself rather than on the content box, whose height
+   * is pinned to the peek while collapsed. `offsetHeight` rather than
    * `scrollHeight`, because the text is clipped with `overflow: clip` and so
    * has no scrolling box to report a larger `scrollHeight` from.
    */
   const textRef = useRef<HTMLDivElement>(null);
-  const [isClipped, setIsClipped] = useState(false);
+  const [textHeight, setTextHeight] = useState(0);
+  const isClipped = textHeight > collapsedHeight;
+  const isCollapsed = isClipped && !isOpen;
 
   useEffect(() => {
     const el = textRef.current;
     if (!el) {
-      setIsClipped(false);
+      setTextHeight(0);
       return;
     }
 
-    const checkClipped = () => setIsClipped(el.offsetHeight > collapsedHeight);
+    const measure = () => setTextHeight(el.offsetHeight);
 
-    checkClipped();
+    measure();
 
     // Catches both container resizes and content that renders late.
     if (typeof ResizeObserver === 'undefined') return;
-    const observer = new ResizeObserver(checkClipped);
+    const observer = new ResizeObserver(measure);
     observer.observe(el);
     return () => observer.disconnect();
-  }, [children, collapsedHeight]);
+  }, [children]);
+
+  // Tabbing onto a link clipped below the peek expands the text, so keyboard
+  // focus never lands somewhere it cannot be seen.
+  const handleFocus = (event: React.FocusEvent<HTMLDivElement>) => {
+    if (!isCollapsed) return;
+    const { bottom } = event.currentTarget.getBoundingClientRect();
+    if (event.target.getBoundingClientRect().bottom > bottom) setIsOpen(true);
+  };
 
   return (
-    <Collapsible.Root
-      collapsedHeight={`${collapsedHeight}px`}
-      collapsedWidth='100%'
-      disabled={!isClipped}
-      _hover={isClipped ? _hover : undefined}
-      {...props}
-    >
-      <Collapsible.Trigger
-        // Nothing to toggle, so keep it out of the tab order too.
-        disabled={!isClipped}
-        cursor={isClipped ? 'pointer' : 'default'}
-        py={1}
-        {...triggerProps}
+    <Box py={1} _hover={isClipped ? _hover : undefined} {...props}>
+      <Box
+        id={contentId}
+        position='relative'
+        overflow='clip'
+        minHeight={`${collapsedHeight}px`}
+        maxHeight={`${isOpen ? textHeight : collapsedHeight}px`}
+        transitionProperty='max-height'
+        transitionDuration='moderate'
+        onFocus={handleFocus}
+        // Fade hinting at the clipped text below.
+        _after={
+          isCollapsed
+            ? {
+                content: '""',
+                position: 'absolute',
+                inset: 0,
+                zIndex: 1,
+                pointerEvents: 'none',
+                shadow: 'inset 0 -12px 12px -9px var(--shadow-color)',
+                shadowColor: 'whiteAlpha.800',
+              }
+            : undefined
+        }
       >
-        <Collapsible.Content
-          position='relative'
-          // Fade hinting at the clipped text below.
-          _closed={
-            isClipped
-              ? {
-                  _after: {
-                    content: '""',
-                    position: 'absolute',
-                    inset: 0,
-                    zIndex: 1,
-                    pointerEvents: 'none',
-                    shadow: 'inset 0 -12px 12px -9px var(--shadow-color)',
-                    shadowColor: 'whiteAlpha.800',
-                  },
-                }
-              : undefined
-          }
-        >
-          {children && (
-            <Flex
-              ref={textRef}
-              minWidth='200px'
-              lineClamp={lineClamp}
-              overflow='clip'
-              textAlign='left'
-              css={{
-                '& > :first-of-type': {
-                  overflow: 'clip',
-                },
-              }}
-            >
-              {children}
-            </Flex>
-          )}
-        </Collapsible.Content>
-        {isClipped && (
-          <Collapsible.Context>
-            {api => (
-              <HStack py={1}>
-                <Text as='span' fontSize='xs' gap={1}>
-                  {api.open ? collapseLabel : expandLabel}
-                </Text>
-                <Icon
-                  transform={api.open ? 'rotate(180deg)' : undefined}
-                  boxSize='3'
-                  transition='transform 0.2s'
-                >
-                  <FaChevronDown />
-                </Icon>
-              </HStack>
-            )}
-          </Collapsible.Context>
+        {children && (
+          <Flex
+            ref={textRef}
+            minWidth='200px'
+            lineClamp={lineClamp}
+            overflow='clip'
+            css={{
+              '& > :first-of-type': {
+                overflow: 'clip',
+              },
+            }}
+          >
+            {children}
+          </Flex>
         )}
-      </Collapsible.Trigger>
-    </Collapsible.Root>
+      </Box>
+      {isClipped && (
+        <chakra.button
+          type='button'
+          aria-expanded={isOpen}
+          aria-controls={contentId}
+          onClick={() => setIsOpen(open => !open)}
+          display='inline-flex'
+          alignItems='center'
+          gap={2}
+          py={1}
+          fontSize='xs'
+          cursor='pointer'
+          focusVisibleRing='outside'
+          _hover={{ textDecoration: 'underline' }}
+          {...triggerProps}
+        >
+          {isOpen ? collapseLabel : expandLabel}
+          <Icon
+            transform={isOpen ? 'rotate(180deg)' : undefined}
+            boxSize='3'
+            transition='transform 0.2s'
+          >
+            <FaChevronDown />
+          </Icon>
+        </chakra.button>
+      )}
+    </Box>
   );
 };

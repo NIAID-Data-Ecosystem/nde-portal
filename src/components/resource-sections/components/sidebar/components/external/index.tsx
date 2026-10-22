@@ -152,7 +152,7 @@ export const Wrapper = ({
   headingProps,
   ...props
 }: WrapperProps) => (
-  <Skeleton loading={!!loading} fontSize='xs' flex={1} {...props}>
+  <Skeleton loading={!!loading} fontSize='sm' flex={1} {...props}>
     {label && (
       <Heading
         as='h2'

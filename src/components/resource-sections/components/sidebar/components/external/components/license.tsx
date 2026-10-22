@@ -1,10 +1,11 @@
+import { Image, Text, VStack } from '@chakra-ui/react';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import React from 'react';
-import { Box, Image, Text } from '@chakra-ui/react';
+import { Link } from 'src/components/link';
 import { FormattedResource } from 'src/utils/api/types';
 import { formatLicense } from 'src/utils/helpers';
+
 import { HeadingWithTooltip } from './heading-with-tooltip';
-import { Link } from 'src/components/link';
-import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
 interface LicenseProps {
   loading: boolean;
@@ -19,7 +20,7 @@ export const License: React.FC<LicenseProps> = ({ loading, license, type }) => {
   const licenseInfo = license ? formatLicense(license) : null;
 
   return (
-    <Box>
+    <VStack align='start' gap={0.5}>
       <HeadingWithTooltip
         label='License'
         tooltipLabel={`${
@@ -46,6 +47,6 @@ export const License: React.FC<LicenseProps> = ({ loading, license, type }) => {
       ) : (
         <Text>{licenseInfo?.title}</Text>
       )}
-    </Box>
+    </VStack>
   );
 };

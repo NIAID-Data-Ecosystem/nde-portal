@@ -20,7 +20,7 @@ export const InfoIcon = (
     color='gray.800'
     p={0.5}
     mx={1}
-    mb={2}
+    mt='-0.5rem'
     {...props}
   >
     <FaInfo />
