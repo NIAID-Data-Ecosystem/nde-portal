@@ -156,6 +156,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 
     return sections.filter(section => section.items.length > 0);
   }, [data, contentTypeItems]);
+
   // Count and unitText for the DataCollection card's collection-size
   // rectangle.
   const collectionSize = useMemo(
@@ -353,16 +354,59 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
             )}
             <Card.Body p={0} gap={1}>
               <Wrap justifyContent='center' p='calc(var(--card-padding)/2)'>
-                {data && (
-                  <CompletenessBadgeCircle
-                    type={data['@type']}
-                    stats={data['_meta']}
-                    animate={false}
-                    size='md'
-                    minWidth='176px'
-                    px='calc(var(--card-padding)/2)'
-                  />
-                )}
+                {data && data['@type'] === 'DataCollection'
+                  ? collectionSize && (
+                      <Tooltip content='What the data collection contains and its size'>
+                        <Flex
+                          flexDirection='column'
+                          alignItems='center'
+                          justifyContent='center'
+                          textAlign='center'
+                          minWidth='176px'
+                          px={3}
+                          py={2}
+                          border='1px solid'
+                          borderColor='gray.200'
+                          borderRadius='lg'
+                          bg='blue.50'
+                        >
+                          <Text
+                            fontSize='2xl'
+                            fontWeight='bold'
+                            color='blue.800'
+                            lineHeight='shorter'
+                          >
+                            {collectionSize.count}
+                          </Text>
+                          <Text
+                            fontSize='sm'
+                            fontWeight='medium'
+                            color='blue.800'
+                            lineHeight='shorter'
+                          >
+                            {collectionSize.unitText}
+                          </Text>
+                          <Text
+                            fontSize='sm'
+                            color='blue.800'
+                            fontWeight='medium'
+                            lineHeight='shorter'
+                          >
+                            in this collection
+                          </Text>
+                        </Flex>
+                      </Tooltip>
+                    )
+                  : data && (
+                      <CompletenessBadgeCircle
+                        type={data['@type']}
+                        stats={data['_meta']}
+                        animate={false}
+                        size='md'
+                        minWidth='176px'
+                        p={0}
+                      />
+                    )}
 
                 <CollapsibleText
                   flex={1}
@@ -397,6 +441,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     ({ label, itemLabel, tooltip, items }) => (
                       <SearchableItems
                         key={label}
+                        size='xs'
                         itemLimit={3}
                         items={items}
                         itemLabel={itemLabel}

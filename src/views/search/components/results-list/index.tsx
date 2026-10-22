@@ -559,7 +559,7 @@ export const SearchResults = ({
               w='100%'
               asChild
             >
-              <List.Root as='ul'>
+              <List.Root as='ul' pl={0}>
                 {Array(numCards)
                   .fill(null)
                   .map((_, idx) => {

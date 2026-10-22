@@ -95,9 +95,9 @@ export const ResourceCatalogCard = ({
         programVariant={programVariant}
       />
       <CompactCard.Header loading={loading}>
-        {(name || alternateName) && (
+        {name && (
           <CompactCard.Title linkProps={linkProps}>
-            {name || alternateName || ''}
+            {name || ''}
           </CompactCard.Title>
         )}
       </CompactCard.Header>
@@ -162,6 +162,7 @@ export const ResourceCatalogCard = ({
                 Content Types
               </Text>
               <SearchableItems
+                size='xs'
                 items={aboutItems}
                 itemLimit={2}
                 colorPalette={isRetired ? 'gray' : 'primary'}

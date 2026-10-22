@@ -104,7 +104,7 @@ const createButtonLabel =
  */
 export const SearchableItems: React.FC<SearchableItemsProps> = ({
   items,
-  size = 'xs',
+  size = 'sm',
   itemLimit = 3,
   heading,
   itemLabel = 'items',
