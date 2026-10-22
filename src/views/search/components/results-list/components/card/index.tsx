@@ -353,7 +353,11 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               </Flex>
             )}
             <Card.Body p={0} gap={1}>
-              <Wrap justifyContent='center' p='calc(var(--card-padding)/2)'>
+              <Wrap
+                justifyContent='center'
+                px='calc(var(--card-padding))'
+                py='calc(var(--card-padding)/2)'
+              >
                 {data && data['@type'] === 'DataCollection'
                   ? collectionSize && (
                       <Tooltip content='What the data collection contains and its size'>
@@ -441,7 +445,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     ({ label, itemLabel, tooltip, items }) => (
                       <SearchableItems
                         key={label}
-                        size='xs'
                         itemLimit={3}
                         items={items}
                         itemLabel={itemLabel}
