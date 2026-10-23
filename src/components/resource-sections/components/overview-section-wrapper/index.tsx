@@ -37,10 +37,8 @@ export const OverviewSectionWrapper = ({
         border='1px solid'
         borderColor='gray.100'
         borderRadius='semi'
-        fontSize='xs'
-        mx={0.5}
+        fontSize='sm'
         py={2}
-        px={0.5}
         {...scrollContainerProps}
       >
         {children}
