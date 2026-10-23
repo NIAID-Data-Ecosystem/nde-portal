@@ -127,7 +127,8 @@ export const CreditText = ({
       {/* Only show toggle if there's credit text AND it overflows the set noOfLines*/}
       {data?.creditText && isOverflowing && (
         <Button
-          variant='plain'
+          variant='unstyled'
+          underline
           onClick={() => setExpanded(!expanded)}
           color='blue.500'
           mt={0}
