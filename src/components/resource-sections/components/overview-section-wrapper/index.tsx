@@ -9,6 +9,7 @@ interface OverviewSectionWrapper extends SkeletonProps {
   children: React.ReactNode;
   tooltipLabel?: React.ReactNode;
   scrollContainerProps?: BoxProps;
+  hasScroll?: boolean;
 }
 
 export const OverviewSectionWrapper = ({
@@ -16,12 +17,13 @@ export const OverviewSectionWrapper = ({
   loading,
   label,
   tooltipLabel,
+  hasScroll = true,
   scrollContainerProps,
   ...props
 }: OverviewSectionWrapper) => {
   return (
     <Skeleton loading={!!loading} width='100%' {...props}>
-      <Flex alignItems='baseline' lineHeight='moderate' minH={'22px'}>
+      <Flex alignItems='baseline' lineHeight='moderate' minH='22px'>
         {label && (
           <MetadataLabel
             label={label}
@@ -32,9 +34,9 @@ export const OverviewSectionWrapper = ({
         )}
       </Flex>
       <ScrollContainer
-        overflow='auto'
-        maxHeight='200px'
-        border='1px solid'
+        overflow={hasScroll ? 'auto' : 'visible'}
+        maxHeight={hasScroll ? '200px' : 'unset'}
+        border={hasScroll ? '1px solid' : 'none'}
         borderColor='gray.100'
         borderRadius='semi'
         fontSize='sm'

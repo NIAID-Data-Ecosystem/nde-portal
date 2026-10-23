@@ -83,7 +83,7 @@ export const AboutResource = ({
       w='100%'
     >
       {/* Col 1: Genre & Content Types */}
-      <VStack>
+      <VStack gap={3}>
         {genre && (
           <OverviewSectionWrapper
             loading={loading}
@@ -167,10 +167,7 @@ export const AboutResource = ({
           loading={loading}
           label='Collection Size Details'
           maxWidth={{ base: 'unset', xl: '500px' }}
-          scrollContainerProps={{
-            maxHeight: 'unset',
-            py: 0,
-          }}
+          hasScroll={false}
         >
           <ResourceCatalogCollection collectionSize={collectionSize} />
         </OverviewSectionWrapper>

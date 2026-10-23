@@ -1,25 +1,10 @@
-import { Box, Table } from '@chakra-ui/react';
+import { Table } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 
 interface ResourceCatalogCollectionProps {
   collectionSize?: FormattedResource['collectionSize'];
 }
 
-const thStyles = {
-  borderBottom: '1px!important',
-  borderBottomColor: 'gray.200!important',
-  color: 'text.heading!important',
-  fontWeight: 'medium!important',
-  textTransform: 'none!important',
-  p: '2!important',
-};
-
-const tdStyles = {
-  p: '2!important',
-  borderBottom: '1px!important',
-  borderBottomColor: 'gray.100!important',
-  fontSize: 'xs!important',
-};
 export const ResourceCatalogCollection = ({
   collectionSize,
 }: ResourceCatalogCollectionProps) => {
@@ -47,35 +32,30 @@ export const ResourceCatalogCollection = ({
     .sort((a, b) => b.value - a.value);
 
   return (
-    <Box>
-      <Table.Root size='sm'>
+    <Table.ScrollArea rounded='md' borderWidth='1px' maxHeight='200px'>
+      <Table.Root
+        size='sm'
+        colorPalette='primary'
+        variant='outline'
+        stickyHeader
+      >
         <Table.Header>
           <Table.Row>
-            <Table.ColumnHeader
-              {...thStyles}
-              textTransform='none'
-              textAlign='end'
-            >
-              Quantity
-            </Table.ColumnHeader>
-            <Table.ColumnHeader {...thStyles} textTransform='none'>
-              Type
-            </Table.ColumnHeader>
+            <Table.ColumnHeader textAlign='end'>Quantity</Table.ColumnHeader>
+            <Table.ColumnHeader textTransform='none'>Type</Table.ColumnHeader>
           </Table.Row>
         </Table.Header>
         <Table.Body>
           {collectionSizeRows.map((collection, idx) => {
             return (
               <Table.Row key={idx}>
-                <Table.Cell {...tdStyles} textAlign='end'>
-                  {collection?.valueText}
-                </Table.Cell>
-                <Table.Cell {...tdStyles}>{collection?.unitText}</Table.Cell>
+                <Table.Cell textAlign='end'>{collection?.valueText}</Table.Cell>
+                <Table.Cell>{collection?.unitText}</Table.Cell>
               </Table.Row>
             );
           })}
         </Table.Body>
       </Table.Root>
-    </Box>
+    </Table.ScrollArea>
   );
 };

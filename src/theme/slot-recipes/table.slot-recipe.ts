@@ -1,4 +1,5 @@
 import { defineSlotRecipe } from '@chakra-ui/react';
+import { tableAnatomy } from '@chakra-ui/react/anatomy';
 
 /*
 Table styles based on: https://designsystem.niaid.nih.gov/components/atoms
@@ -21,40 +22,23 @@ src/components/table renders `<Box as='thead'>` / `<Box as='tbody'>`, which
 never consumed these slot styles under v2 either.
 */
 export const tableSlotRecipe = defineSlotRecipe({
-  slots: [
-    'root',
-    'header',
-    'body',
-    'row',
-    'columnHeader',
-    'cell',
-    'footer',
-    'caption',
-  ],
+  slots: tableAnatomy.keys(),
   base: {
-    header: {
-      background: 'white',
-    },
-    columnHeader: {
-      color: 'text.body',
-      borderBottom: '0.25rem solid',
-      borderColor: 'colorPalette.500',
-      mb: 1,
-      position: 'relative',
-    },
     cell: {
       p: 4,
     },
+    columnHeader: {
+      color: 'colorPalette.fg',
+      mb: 1,
+      position: 'relative',
+    },
     footer: {
       background: 'white',
-      color: 'text.body',
-      borderTop: '0.25rem solid',
-      borderColor: 'colorPalette.500',
+      color: 'colorPalette.fg',
       mb: 1,
     },
-    caption: {
-      borderTop: '.0625rem solid',
-      borderColor: 'colorPalette.200',
+    header: {
+      background: 'white',
     },
   },
   variants: {
@@ -69,33 +53,59 @@ export const tableSlotRecipe = defineSlotRecipe({
     `variant` axis (line/outline) plus standalone booleans, so `striped`
     becomes a boolean and call sites move from `variant='striped'` to `striped`.
     */
+
     striped: {
       true: {
         row: {
-          // '&:nth-of-type(odd)': {
-          //   'th, td': {
-          //     borderBottomWidth: '1px',
-          //     borderColor: 'white',
-          //   },
-          //   td: {
-          //     background: 'white',
-          //   },
-          // },
-          // '&:nth-of-type(even)': {
-          //   'th, td': {
-          //     borderBottomWidth: '1px',
-          //     borderColor: 'bg.alt',
-          //   },
-          //   td: {
-          //     background: 'bg.alt',
-          //   },
-          // },
+          '&:nth-of-type(odd) td': {
+            bg: 'colorPalette.subtle/50',
+          },
+        },
+      },
+    },
+
+    showColumnBorder: {
+      true: {
+        columnHeader: {
+          '&:not(:last-of-type)': {
+            borderInlineEndWidth: '1px',
+            borderInlineEndColor: 'colorPalette.border/50',
+          },
+        },
+        cell: {
+          '&:not(:last-of-type)': {
+            borderInlineEndWidth: '1px',
+            borderInlineEndColor: 'colorPalette.muted',
+          },
+        },
+      },
+    },
+    variant: {
+      line: {
+        columnHeader: {},
+        row: {},
+      },
+      outline: {
+        root: {
+          boxShadow: '0 0 0 1px {colors.colorPalette.muted}',
+        },
+        row: {
+          borderColor: 'colorPalette.muted',
+        },
+        cell: {
+          borderColor: 'colorPalette.muted',
+        },
+
+        columnHeader: {
+          bg: 'colorPalette.muted',
         },
       },
     },
   },
+
   defaultVariants: {
     size: 'lg',
     striped: true,
+    variant: 'outline',
   },
 });
