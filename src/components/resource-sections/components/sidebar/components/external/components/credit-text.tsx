@@ -90,7 +90,11 @@ export const CreditText = ({
         />
       )}
       {/* Collapsed to select number of lines unless expanded */}
-      <Box ref={containerRef} lineClamp={expanded ? undefined : noOfLines}>
+      <Box
+        ref={containerRef}
+        color='text.body'
+        lineClamp={expanded ? undefined : noOfLines}
+      >
         {data?.creditText ? (
           <ReactMarkdown
             rehypePlugins={[rehypeRaw]}
