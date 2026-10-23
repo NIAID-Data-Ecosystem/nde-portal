@@ -12,14 +12,20 @@ export interface InfoLabelProps extends TextProps {
 }
 
 export const InfoIcon = (
-  props: Omit<React.ComponentProps<typeof Icon>, 'children'>,
+  props: Omit<React.ComponentProps<typeof Icon>, 'children'> & {
+    disabled?: boolean;
+  },
 ) => (
   <Icon
     boxSize={3.5}
     border='1px solid'
     borderRadius='full'
-    color='gray.800'
-    cursor='pointer'
+    color='gray.500'
+    cursor={props?.disabled ? 'auto' : 'pointer'}
+    _hover={{
+      bg: props?.disabled ? 'auto' : 'blue.100',
+      color: props?.disabled ? 'gray.500' : 'blue.500',
+    }}
     mx={1}
     mt='-0.5rem'
     p={0.5}
@@ -51,7 +57,9 @@ export const InfoLabel: React.FC<InfoLabelProps> = ({
         {...textProps}
       >
         {label || children}
-        {tooltipProps && content && <InfoIcon {...iconProps} />}
+        {tooltipProps && content && (
+          <InfoIcon disabled={tooltipProps?.disabled} {...iconProps} />
+        )}
       </Text>
     </Tooltip>
   );
