@@ -148,8 +148,8 @@ const Overview: React.FC<OverviewProps> = ({
                 {...props}
               >
                 {items && items.length > 0 && (
-                  <ScrollContainer maxHeight='150px' overflow='auto'>
-                    <MetadataList>
+                  <ScrollContainer maxHeight='150px'>
+                    <MetadataList px={4}>
                       {items.map(({ key, ...item }) => {
                         return (
                           <MetadataListItem key={key} property={props.property}>

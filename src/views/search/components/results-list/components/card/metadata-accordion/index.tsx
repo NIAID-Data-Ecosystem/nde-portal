@@ -195,7 +195,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                         px='calc(var(--card-padding)/2)'
                       >
                         {sortedMetadataContent.map(
-                          ({ img, items, name, url, ...props }) => {
+                          ({ img, items, url, ...props }) => {
                             const maxItemsCount = 3;
                             return (
                               <MetadataBlock
@@ -203,14 +203,6 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                                 glyph={props.property}
                                 {...props}
                               >
-                                {name && (
-                                  <MetadataContent
-                                    name={name}
-                                    img={img}
-                                    url={url}
-                                    {...content}
-                                  />
-                                )}
                                 {items && items.length > 0 && (
                                   <Stack gap={1}>
                                     <MetadataList>
