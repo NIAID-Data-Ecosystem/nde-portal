@@ -227,9 +227,8 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
           ),
         }}
       >
-        <VStack alignItems='flex-start'>
+        <VStack alignItems='flex-start' separator={<StackSeparator />}>
           {/* Geographic information of dataset */}
-          <StackSeparator />
           {spatialInformation && (
             <>
               <Text fontWeight='medium' color='gray.800'>
@@ -238,9 +237,7 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
               <MetadataContent name={spatialInformation.join(', ')} />
             </>
           )}
-          <StackSeparator />
           {/* Period information of dataset */}
-          <StackSeparator />
           {temporalCoverage &&
             temporalCoverage.map((coverage, idx) => {
               if (!coverage) {
@@ -254,13 +251,15 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
                     Temporal Coverage
                   </Text>
                   {/* Start */}
-                  {coverage?.name && <Text>{coverage?.name}</Text>}
+                  {coverage?.name && (
+                    <Text fontSize='inherit'>{coverage?.name}</Text>
+                  )}
                   {coverage?.startDate && (
                     <Text>
+                      Start Date:
                       <Text as='span' fontWeight='medium'>
-                        Start Date:
-                      </Text>{' '}
-                      {coverage.startDate}
+                        {coverage.startDate}
+                      </Text>
                     </Text>
                   )}
                   {/* End */}
@@ -284,9 +283,7 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
                 </React.Fragment>
               );
             })}
-          <StackSeparator />
           {/* Language of dataset */}
-          <StackSeparator />
           {inLanguage?.name && (
             <>
               <Text fontWeight='medium' color='gray.800'>

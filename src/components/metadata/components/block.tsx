@@ -30,6 +30,7 @@ export const MetadataBlock = ({
               : undefined
           }
           color='inherit'
+          iconProps={{ color: 'inherit' }}
         >
           {label}
         </MetadataLabel>
@@ -38,7 +39,7 @@ export const MetadataBlock = ({
       <Box
         mb={2}
         py={0.5}
-        bg={disabled ? 'gray.400' : bg || `${getMetadataTheme(property)}.300`}
+        bg={disabled ? 'gray.300' : bg || `${getMetadataTheme(property)}.300`}
         borderRadius='semi'
       />
 
