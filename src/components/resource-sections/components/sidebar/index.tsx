@@ -114,7 +114,7 @@ export const Sidebar = ({
             <Collapsible.Content>
               <CardContainer heading='Previous Searches'>
                 <ScrollContainer maxH={250}>
-                  <List.Root as='ul' ml={0} gap={2} my={2}>
+                  <List.Root as='ul' pl={0} gap={2} my={2}>
                     {searchHistory.slice(0, 3).map((search, idx) => (
                       <List.Item key={idx} lineHeight='moderate' display='flex'>
                         <Icon
