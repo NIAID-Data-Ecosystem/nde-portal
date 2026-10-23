@@ -5,7 +5,8 @@ import type { TooltipProps } from 'src/components/tooltip';
 import Tooltip from 'src/components/tooltip';
 
 export interface InfoLabelProps extends TextProps {
-  children: string;
+  children?: string;
+  label?: string;
   tooltipProps?: Omit<TooltipProps, 'children'>;
   iconProps?: Omit<React.ComponentProps<typeof Icon>, 'children'>;
 }
@@ -18,9 +19,10 @@ export const InfoIcon = (
     border='1px solid'
     borderRadius='full'
     color='gray.800'
-    p={0.5}
+    cursor='pointer'
     mx={1}
     mt='-0.5rem'
+    p={0.5}
     {...props}
   >
     <FaInfo />
@@ -29,13 +31,18 @@ export const InfoIcon = (
 
 export const InfoLabel: React.FC<InfoLabelProps> = ({
   children,
+  label,
   tooltipProps,
   iconProps,
   ...textProps
 }) => {
   const content = tooltipProps?.content ?? '';
   return (
-    <Tooltip {...tooltipProps} content={content}>
+    <Tooltip
+      {...tooltipProps}
+      content={content}
+      disabled={!tooltipProps || !content || tooltipProps.disabled}
+    >
       <Text
         fontSize='sm'
         color='text.body'
@@ -43,8 +50,8 @@ export const InfoLabel: React.FC<InfoLabelProps> = ({
         alignItems='center'
         {...textProps}
       >
-        {children}
-        {tooltipProps && <InfoIcon {...iconProps} />}
+        {label || children}
+        {tooltipProps && content && <InfoIcon {...iconProps} />}
       </Text>
     </Tooltip>
   );

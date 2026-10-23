@@ -117,68 +117,57 @@ const Overview: React.FC<OverviewProps> = ({
         borderRadius='semi'
         w='100%'
       >
-        {sortedMetadataContent.map(
-          ({ img, items, name, glyph, url, ...props }) => {
-            if (props.property === 'spatialCoverage') {
-              return (
-                <SpatiotemporalCoverage
-                  key={`block-${props.id}`}
-                  id={props.id}
-                  disabled={props.disabled}
-                  loading={loading}
-                  inLanguage={inLanguage}
-                  spatialCoverage={spatialCoverage}
-                  temporalCoverage={temporalCoverage}
-                  type={data['@type']}
-                />
-              );
-            }
-
+        {sortedMetadataContent.map(({ img, items, glyph, url, ...props }) => {
+          if (props.property === 'spatialCoverage') {
             return (
-              <Skeleton
-                key={`block-${props.id}-${props.property}`}
+              <SpatiotemporalCoverage
+                key={`block-${props.id}`}
+                id={props.id}
+                disabled={props.disabled}
                 loading={loading}
-              >
-                <MetadataBlock
-                  tooltipLabel={getMetadataDescription(
+                inLanguage={inLanguage}
+                spatialCoverage={spatialCoverage}
+                temporalCoverage={temporalCoverage}
+                type={data['@type']}
+              />
+            );
+          }
+
+          return (
+            <Skeleton
+              key={`block-${props.id}-${props.property}`}
+              loading={loading}
+            >
+              <MetadataBlock
+                tooltipProps={{
+                  content: getMetadataDescription(
                     props.property,
                     data['@type'],
-                  )}
-                  {...props}
-                >
-                  {name && (
-                    <MetadataContent
-                      name={name}
-                      img={img}
-                      url={url}
-                      {...content}
-                    />
-                  )}
-                  {items && items.length > 0 && (
-                    <ScrollContainer maxHeight='150px' overflow='auto'>
-                      <MetadataList>
-                        {items.map(({ key, ...item }) => {
-                          return (
-                            <MetadataListItem
-                              key={key}
-                              property={props.property}
-                            >
-                              <MetadataContent
-                                includeOntology
-                                includeSearch
-                                {...item}
-                              />
-                            </MetadataListItem>
-                          );
-                        })}
-                      </MetadataList>
-                    </ScrollContainer>
-                  )}
-                </MetadataBlock>
-              </Skeleton>
-            );
-          },
-        )}
+                  ),
+                }}
+                {...props}
+              >
+                {items && items.length > 0 && (
+                  <ScrollContainer maxHeight='150px' overflow='auto'>
+                    <MetadataList>
+                      {items.map(({ key, ...item }) => {
+                        return (
+                          <MetadataListItem key={key} property={props.property}>
+                            <MetadataContent
+                              includeOntology
+                              includeSearch
+                              {...item}
+                            />
+                          </MetadataListItem>
+                        );
+                      })}
+                    </MetadataList>
+                  </ScrollContainer>
+                )}
+              </MetadataBlock>
+            </Skeleton>
+          );
+        })}
       </SimpleGrid>
     </Flex>
   );
@@ -222,19 +211,21 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
         property='spatialCoverage'
         disabled={disabled}
         bg='gray.900'
-        tooltipLabel={
-          <>
-            <Box>
-              Spatial Coverage:{' '}
-              {getMetadataDescription('spatialCoverage', type)}
-            </Box>
-            <Box>
-              Temporal Coverage:{' '}
-              {getMetadataDescription('temporalCoverage', type)}
-            </Box>
-            <Box>Language: {getMetadataDescription('inLanguage', type)}</Box>
-          </>
-        }
+        tooltipProps={{
+          content: (
+            <>
+              <Box>
+                Spatial Coverage:{' '}
+                {getMetadataDescription('spatialCoverage', type)}
+              </Box>
+              <Box>
+                Temporal Coverage:{' '}
+                {getMetadataDescription('temporalCoverage', type)}
+              </Box>
+              <Box>Language: {getMetadataDescription('inLanguage', type)}</Box>
+            </>
+          ),
+        }}
       >
         <VStack alignItems='flex-start'>
           {/* Geographic information of dataset */}

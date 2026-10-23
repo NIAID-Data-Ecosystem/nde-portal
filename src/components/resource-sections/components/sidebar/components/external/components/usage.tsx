@@ -1,10 +1,9 @@
-import { Box, VStack } from '@chakra-ui/react';
+import { VStack } from '@chakra-ui/react';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import React from 'react';
+import { InfoLabel } from 'src/components/info-label';
 import { Link } from 'src/components/link';
 import { FormattedResource } from 'src/utils/api/types';
-
-import { HeadingWithTooltip } from './heading-with-tooltip';
 
 interface DataUsageProps {
   loading: boolean;
@@ -33,10 +32,10 @@ export const DataUsage: React.FC<DataUsageProps> = ({
       : '';
 
   return (
-    <VStack align='start'>
-      <HeadingWithTooltip
+    <VStack align='start' gap={0.5}>
+      <InfoLabel
         label='Usage Information'
-        tooltipLabel={tooltipLabel}
+        tooltipProps={{ content: tooltipLabel }}
       />
       {usageAgreement.map((usageInfo, idx) => {
         if (!usageInfo?.url)
@@ -46,7 +45,7 @@ export const DataUsage: React.FC<DataUsageProps> = ({
             </React.Fragment>
           );
         return (
-          <Link key={'ua' + idx} href={usageInfo?.url} fontSize='xs' isExternal>
+          <Link key={'ua' + idx} href={usageInfo?.url} isExternal>
             {usageInfo?.name || 'View usage agreement'}
           </Link>
         );

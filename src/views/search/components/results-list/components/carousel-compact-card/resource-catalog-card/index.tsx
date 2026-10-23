@@ -5,7 +5,6 @@ import {
   CreativeWorkStatus,
   HasAPI,
 } from 'src/components/badges';
-import { MetadataLabel } from 'src/components/metadata';
 import { getProgramResourceVariant } from 'src/components/resource-sections/components/type-banner';
 import { SearchableItems } from 'src/components/searchable-items';
 import { FormattedResource } from 'src/utils/api/types';
@@ -33,7 +32,6 @@ export const ResourceCatalogCard = ({
   const {
     ['@type']: type,
     id,
-    alternateName,
     name,
     includedInDataCatalog,
     date,

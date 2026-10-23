@@ -3,11 +3,10 @@ import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
+import { InfoLabel } from 'src/components/info-label';
 import { Link } from 'src/components/link';
 import { getAccessResourceURL } from 'src/components/source-logo/helpers';
 import { FormattedResource } from 'src/utils/api/types';
-
-import { HeadingWithTooltip } from './heading-with-tooltip';
 
 // Render markdown anchors with the themed Link component so credit text links
 // pick up the same color/underline/visited styles as the rest of the portal.
@@ -85,7 +84,10 @@ export const CreditText = ({
     <Box {...rest}>
       {/* Optional heading with tooltip */}
       {label && (
-        <HeadingWithTooltip label={label} tooltipLabel={tooltipLabel || ''} />
+        <InfoLabel
+          label={label}
+          tooltipProps={{ content: tooltipLabel || '' }}
+        />
       )}
       {/* Collapsed to select number of lines unless expanded */}
       <Box ref={containerRef} lineClamp={expanded ? undefined : noOfLines}>

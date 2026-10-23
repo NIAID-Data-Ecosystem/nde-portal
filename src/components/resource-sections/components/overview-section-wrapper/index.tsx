@@ -1,6 +1,6 @@
-import React from 'react';
 import { BoxProps, Flex, Skeleton, SkeletonProps } from '@chakra-ui/react';
-import { MetadataLabel, MetadataTooltip } from 'src/components/metadata';
+import React from 'react';
+import { MetadataLabel } from 'src/components/metadata/components/block';
 import { ScrollContainer } from 'src/components/scroll-container';
 
 interface OverviewSectionWrapper extends SkeletonProps {
@@ -21,9 +21,15 @@ export const OverviewSectionWrapper = ({
 }: OverviewSectionWrapper) => {
   return (
     <Skeleton loading={!!loading} width='100%' {...props}>
-      <Flex alignItems='baseline' lineHeight='moderate' mb={1} minH={'22px'}>
-        <MetadataLabel label={label} />
-        {tooltipLabel && <MetadataTooltip tooltipLabel={tooltipLabel} />}
+      <Flex alignItems='baseline' lineHeight='moderate' minH={'22px'}>
+        {label && (
+          <MetadataLabel
+            label={label}
+            tooltipProps={{
+              content: tooltipLabel,
+            }}
+          />
+        )}
       </Flex>
       <ScrollContainer
         overflow='auto'

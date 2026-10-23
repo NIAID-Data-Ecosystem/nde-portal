@@ -1,17 +1,18 @@
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { uniqueId } from 'lodash';
+import {
+  SchemaDefinition,
+  SchemaDefinitions,
+} from 'scripts/generate-schema-definitions/types';
 import {
   FormattedResource,
   SampleAggregate,
   SampleCollection,
 } from 'src/utils/api/types';
-import { formatLicense } from 'src/utils/helpers';
-import { OntologyButtonProps, SearchButtonProps } from './components/buttons';
-import { uniqueId } from 'lodash';
 import { APIResourceType } from 'src/utils/formatting/formatResourceType';
-import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
-import {
-  SchemaDefinition,
-  SchemaDefinitions,
-} from 'scripts/generate-schema-definitions/types';
+import { formatLicense } from 'src/utils/helpers';
+
+import { OntologyButtonProps, SearchButtonProps } from './components/buttons';
 
 // Sort [SORT_ORDER] based on: https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/214
 export const SORT_ORDER = [
@@ -87,7 +88,6 @@ export interface MetadataContentProps {
   property: string;
   glyph?: string;
   disabled: boolean;
-  name?: string;
   img?: { src: string; alt: string };
   url?: string;
   items?: MetadataItem[];

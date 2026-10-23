@@ -3,10 +3,9 @@ import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import React from 'react';
 import { FaBitbucket, FaGithub } from 'react-icons/fa6';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import { InfoLabel } from 'src/components/info-label';
 import { Link } from 'src/components/link';
 import { FormattedResource } from 'src/utils/api/types';
-
-import { HeadingWithTooltip } from './heading-with-tooltip';
 
 interface AssociatedDocumentation {
   loading: boolean;
@@ -26,18 +25,21 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
   if (!loading && !(mainEntityOfPage || codeRepository || type)) {
     return <></>;
   }
-
+  const isGithubRepo = (repo: string) => repo.includes('git');
+  const isBitbucketRepo = (repo: string) => repo.includes('bitbucket');
   return (
     <>
       {/* mainEntityOfPage refers to a website for the resource. */}
       {mainEntityOfPage && (
         <Stack gap={1}>
-          <HeadingWithTooltip
+          <InfoLabel
             label='Associated Website'
-            tooltipLabel={`${
-              schema?.['mainEntityOfPage']?.description?.[type || 'Dataset'] ??
-              ''
-            }`}
+            tooltipProps={{
+              content:
+                schema?.['mainEntityOfPage']?.description?.[
+                  type || 'Dataset'
+                ] ?? '',
+            }}
           />
           {mainEntityOfPage &&
             (Array.isArray(mainEntityOfPage) ? (
@@ -70,34 +72,38 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
           maxW='350px'
           flex={1}
         >
-          <HeadingWithTooltip
+          <InfoLabel
             label='Code Repository'
-            tooltipLabel={`${
-              schema?.['coreRepository']?.description?.[type || 'Dataset'] ?? ''
-            }`}
+            tooltipProps={{
+              content:
+                schema?.['codeRepository']?.description?.[type || 'Dataset'] ??
+                '',
+            }}
           />
-          <List.Root as='ul' alignItems='center' ml={0}>
+          <List.Root as='ul' alignItems='center' pl={0}>
             {(Array.isArray(codeRepository)
               ? codeRepository
               : [codeRepository]
             ).map((repo, idx) => {
               return (
-                <List.Item key={idx} alignItems='start' display='flex' pb={2}>
-                  <Box mx={1} mt={1}>
-                    {repo.includes('git') && (
-                      <Icon boxSize={4}>
-                        <FaGithub />
-                      </Icon>
-                    )}
-                    {repo.includes('bitbucket') && (
-                      <Icon boxSize={4}>
-                        <FaBitbucket />
-                      </Icon>
-                    )}
-                  </Box>
+                <List.Item
+                  key={idx}
+                  alignItems='start'
+                  display='flex'
+                  pb={2}
+                  listStyle='none'
+                  gap={1}
+                >
+                  {(isGithubRepo(repo) || isBitbucketRepo(repo)) && (
+                    <Icon boxSize={4} mt={1}>
+                      {isGithubRepo(repo) && <FaGithub />}
+                      {isBitbucketRepo(repo) && <FaBitbucket />}
+                    </Icon>
+                  )}
+
                   {repo.includes('http') ? (
-                    <Link href={repo} isExternal wordBreak='break-word' ml={1}>
-                      {repo.includes('git') ? 'View code on Github' : repo}
+                    <Link href={repo} isExternal wordBreak='break-word'>
+                      {isGithubRepo(repo) ? 'View code on Github' : repo}
                     </Link>
                   ) : (
                     <Text>{repo}</Text>
