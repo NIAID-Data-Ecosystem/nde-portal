@@ -23,6 +23,13 @@ export const MetadataContent = ({
   ontologyProps,
   searchProps,
 }: MetadataContentProps) => {
+  // Gate on `value` here rather than inside the buttons: ButtonGroup counts every
+  // child element when assigning first/last, so a button that renders nothing
+  // would leave its sibling with a squared-off edge.
+  const search = includeSearch && searchProps?.value ? searchProps : undefined;
+  const ontology =
+    includeOntology && ontologyProps?.value ? ontologyProps : undefined;
+
   return (
     <Flex
       flex={1}
@@ -65,13 +72,11 @@ export const MetadataContent = ({
             <MetadataWithTag key={idx} colorPalette={colorPalette} {...tag} />
           ))}
       </Box>
-      {((includeSearch && searchProps) ||
-        (includeOntology && ontologyProps)) && (
+
+      {(search || ontology) && (
         <MetadataButtonGroup>
-          {includeSearch && searchProps && <SearchButton {...searchProps} />}
-          {includeOntology && ontologyProps && (
-            <OntologyButton {...ontologyProps} />
-          )}
+          {search && <SearchButton {...search} />}
+          {ontology && <OntologyButton {...ontology} />}
         </MetadataButtonGroup>
       )}
     </Flex>

@@ -6,11 +6,18 @@ import {
   IconButtonProps,
   VisuallyHidden,
 } from '@chakra-ui/react';
-import { useRouter } from 'next/router';
+import NextLink from 'next/link';
 import { FaMagnifyingGlass, FaSitemap } from 'react-icons/fa6';
-import { Link } from 'src/components/link';
 import Tooltip from 'src/components/tooltip';
 
+/*
+`attached` styling comes from the `data-first` / `data-last` / `style` props that
+ButtonGroup clones onto each of its direct children, and its CSS only matches
+direct DOM children. So each button below must:
+  - forward its rest props to the `Button`, and
+  - keep `Tooltip` on the outside — `Tooltip.Trigger asChild` merges into the
+    `Button`, which merges into the anchor, so the group still sees one `<a>`.
+*/
 export const MetadataButtonGroup = ({
   children,
   ...props
@@ -32,6 +39,7 @@ export const OntologyButton = ({
   value,
   inDefinedTermSet,
   label,
+  ...props
 }: OntologyButtonProps) => {
   if (!value) {
     return <></>;
@@ -44,9 +52,10 @@ export const OntologyButton = ({
         colorPalette='gray'
         fontWeight='medium'
         color='gray.800'
+        {...props}
         asChild
       >
-        <Link href={value} target='_blank' variant='unstyled'>
+        <a href={value} target='_blank' rel='noopener noreferrer'>
           {label || inDefinedTermSet ? (
             label || inDefinedTermSet
           ) : (
@@ -55,7 +64,7 @@ export const OntologyButton = ({
             </VisuallyHidden>
           )}
           <FaSitemap />
-        </Link>
+        </a>
       </Button>
     </Tooltip>
   );
@@ -71,29 +80,19 @@ export const SearchButton = ({
   value,
   ...props
 }: SearchButtonProps) => {
-  const router = useRouter();
   if (!value) {
     return <></>;
   }
 
   return (
     <Tooltip content={ariaLabel || `Search the NDE for this property value`}>
-      <Button
-        cursor='pointer'
-        colorPalette='gray'
-        variant='outline'
-        px={0}
-        {...props}
-        asChild
-      >
-        <a
-          onClick={() => {
-            router.push({
-              pathname: `/search`,
-              query: {
-                q: `${property}:"${value}"`,
-              },
-            });
+      <Button colorPalette='gray' variant='outline' px={0} {...props} asChild>
+        <NextLink
+          href={{
+            pathname: `/search`,
+            query: {
+              q: `${property}:"${value}"`,
+            },
           }}
         >
           <VisuallyHidden>
@@ -102,7 +101,7 @@ export const SearchButton = ({
           <Icon fontSize='xs'>
             <FaMagnifyingGlass />
           </Icon>
-        </a>
+        </NextLink>
       </Button>
     </Tooltip>
   );
