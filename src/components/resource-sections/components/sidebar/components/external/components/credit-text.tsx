@@ -134,7 +134,6 @@ export const CreditText = ({
           variant='unstyled'
           underline
           onClick={() => setExpanded(!expanded)}
-          color='blue.500'
           mt={0}
         >
           {expanded ? 'Show less' : 'Show more'}
