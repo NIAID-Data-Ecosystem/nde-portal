@@ -21,7 +21,7 @@ export const MetadataBlock = ({
   tooltipProps,
 }: MetadataBlockProps) => {
   return (
-    <Box flexDirection='column' color={disabled ? 'gray.700' : 'text.body'}>
+    <Box flexDirection='column' color={disabled ? 'gray.400' : 'text.body'}>
       <Flex alignItems='baseline'>
         <MetadataLabel
           tooltipProps={
@@ -29,6 +29,7 @@ export const MetadataBlock = ({
               ? { ...tooltipProps, content: tooltipProps.content, disabled }
               : undefined
           }
+          color='inherit'
         >
           {label}
         </MetadataLabel>
@@ -37,12 +38,12 @@ export const MetadataBlock = ({
       <Box
         mb={2}
         py={0.5}
-        bg={disabled ? 'gray.500' : bg || `${getMetadataTheme(property)}.300`}
+        bg={disabled ? 'gray.400' : bg || `${getMetadataTheme(property)}.300`}
         borderRadius='semi'
       />
 
-      <Box fontSize='xs' mx={1} lineHeight='moderate'>
-        {disabled ? <></> : children}
+      <Box fontSize='sm' mx={1} lineHeight='moderate'>
+        {disabled ? <>N/A</> : children}
       </Box>
     </Box>
   );

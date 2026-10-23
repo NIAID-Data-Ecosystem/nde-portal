@@ -53,13 +53,8 @@ export const MetadataContent = ({
           )}
           {name &&
             (url ? (
-              <Link href={url} target='_blank' alignItems='center'>
-                <Text wordBreak='break-word' w='100%'>
-                  {name}
-                </Text>
-                <Icon boxSize={2.5} ml={1} color='gray.800'>
-                  <FaSquareArrowUpRight />
-                </Icon>
+              <Link href={url} isExternal>
+                {name}
               </Link>
             ) : (
               <Text fontWeight='normal' wordBreak='break-word' w='100%'>
