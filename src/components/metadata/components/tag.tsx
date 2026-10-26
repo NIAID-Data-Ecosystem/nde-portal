@@ -22,7 +22,6 @@ export const MetadataWithTag = ({
     <Tooltip content={<Flex fontSize='12px'>{tooltipLabel}</Flex>}>
       <TagWithUrl
         colorPalette={colorPalette}
-        fontSize='13px'
         href={url}
         isExternal
         label={label + ' |'}
