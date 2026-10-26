@@ -314,6 +314,22 @@ describe('Table Pagination', () => {
     expect(screen.getByLabelText('Select page')).toBeEnabled();
   });
 
+  test('disables the rows per page select when all items fit at the smallest size', () => {
+    renderComponent({ total: 5, size: 10 });
+    expect(
+      screen.getByLabelText(/select number of rows per page/i),
+    ).toBeDisabled();
+  });
+
+  test('keeps the rows per page select enabled when a smaller size would paginate', () => {
+    // Fewer items than the current size, but the smallest option (5) still
+    // splits them across pages, so it must stay reachable.
+    renderComponent({ total: 7, size: 10 });
+    expect(
+      screen.getByLabelText(/select number of rows per page/i),
+    ).toBeEnabled();
+  });
+
   test('displays correct total pages and current page information', async () => {
     renderComponent({ total: 45, size: 10 }); // Should result in 5 total pages
     expect(screen.getByText('Page 1 of 5')).toBeInTheDocument();

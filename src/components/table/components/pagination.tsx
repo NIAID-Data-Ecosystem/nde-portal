@@ -118,6 +118,10 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
   const selectSize = SELECT_SIZE[useTableSize(styleSize) ?? 'md'];
   const numPages =
     totalPages !== undefined ? totalPages : Math.ceil(total / size);
+  // When every item fits on one page even at the smallest option, no choice
+  // changes what is shown. Keyed to the smallest option rather than the
+  // current `size`, so picking a larger size never locks out the smaller ones.
+  const isPageSizeDisabled = total <= Math.min(...pageSizeOptions);
 
   const ArrowButton = ({
     ariaLabel,
@@ -176,6 +180,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
           of padding reserved for its indicator and clipping the value away.
           */}
           <NativeSelect.Root
+            disabled={isPageSizeDisabled}
             flexShrink={0}
             mx={[0, 2]}
             size={selectSize}
