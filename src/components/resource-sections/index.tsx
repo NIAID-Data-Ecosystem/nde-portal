@@ -321,7 +321,8 @@ const Sections = ({
             {section.hash === 'isBasedOn' && isBasedOn && (
               <BasedOnTable
                 id='software-information-is-based-on'
-                title={schema['isBasedOn']['description']?.[type]}
+                title={section.title}
+                subtitle={schema['isBasedOn']['description']?.[type]}
                 caption='Table showing resources that this resource is based on.'
                 loading={loading}
                 items={isBasedOn}
@@ -332,7 +333,8 @@ const Sections = ({
               <CitedByTable
                 loading={loading}
                 data={data?.citedBy || []}
-                title={schema['citedBy']['description']?.[type]}
+                title={section.title}
+                subtitle={schema['citedBy']['description']?.[type]}
               />
             )}
             {/* Show related resources */}

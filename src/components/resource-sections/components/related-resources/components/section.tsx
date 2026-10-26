@@ -1,38 +1,9 @@
-import {
-  FlexProps,
-  Heading,
-  StackSeparator,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { StackSeparator, VStack } from '@chakra-ui/react';
 import React from 'react';
 import {
   ScrollContainer,
   ScrollContainerProps,
 } from 'src/components/scroll-container';
-
-interface RelatedResourceSectionHeaderProps extends FlexProps {
-  title: string;
-  subtitle?: string;
-}
-/**
- * A header for the related resource section, which includes a title and subtitle.
- */
-export const RelatedResourceSectionHeader = ({
-  title,
-  subtitle,
-}: RelatedResourceSectionHeaderProps) => {
-  return (
-    <>
-      <Heading as='h3' fontSize='sm'>
-        {title}
-      </Heading>
-      <Text lineHeight='short' fontSize='sm' mt={0.5}>
-        {subtitle}
-      </Text>
-    </>
-  );
-};
 
 interface RelatedResourceSectionWrapperProps extends ScrollContainerProps {}
 /**

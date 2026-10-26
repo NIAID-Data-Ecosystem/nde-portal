@@ -98,7 +98,7 @@ export const tableSlotRecipe = defineSlotRecipe({
         },
 
         columnHeader: {
-          bg: 'colorPalette.100',
+          bg: 'white',
         },
       },
     },

@@ -2,7 +2,6 @@ import {
   Flex,
   FlexProps,
   HStack,
-  Span,
   Stack,
   StackProps,
   Tag,

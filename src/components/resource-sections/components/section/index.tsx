@@ -1,4 +1,15 @@
-import { Accordion, Box, BoxProps, Icon, Skeleton } from '@chakra-ui/react';
+import {
+  Accordion,
+  Box,
+  BoxProps,
+  FlexProps,
+  Heading,
+  HeadingProps,
+  Icon,
+  Skeleton,
+  Text,
+  TextProps,
+} from '@chakra-ui/react';
 import React from 'react';
 import { FaMinus, FaPlus } from 'react-icons/fa6';
 
@@ -14,7 +25,7 @@ interface SectionProps extends BoxProps {
   loading?: boolean;
 }
 
-const Section: React.FC<SectionProps> = ({
+export const Section: React.FC<SectionProps> = ({
   id,
   loading,
   name,
@@ -106,4 +117,35 @@ const Section: React.FC<SectionProps> = ({
     </Box>
   );
 };
-export default Section;
+
+export interface SectionHeaderProps extends FlexProps {
+  title: string;
+  subtitle?: string;
+  titleProps?: HeadingProps;
+  subtitleProps?: TextProps;
+}
+
+/**
+ * A header for content within the section, which includes a title and subtitle.
+ */
+export const SectionHeader = ({
+  title,
+  subtitle,
+  titleProps,
+  subtitleProps,
+}: SectionHeaderProps) => {
+  return (
+    <Box>
+      {title && (
+        <Heading as='h3' fontSize='sm' {...titleProps}>
+          {title}
+        </Heading>
+      )}
+      {subtitle && (
+        <Text lineHeight='short' fontSize='sm' mt={0.5} {...subtitleProps}>
+          {subtitle}
+        </Text>
+      )}
+    </Box>
+  );
+};
