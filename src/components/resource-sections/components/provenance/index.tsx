@@ -59,7 +59,7 @@ const ProvenanceSection = ({
       tooltipProps={{ content: tooltip }}
     />
     <Grid
-      templateColumns='repeat(auto-fill, minmax(min(100%, 260px), 1fr))'
+      templateColumns='repeat(auto-fill, minmax(min(100%, 400px), 1fr))'
       gap={4}
       py={2}
     >
