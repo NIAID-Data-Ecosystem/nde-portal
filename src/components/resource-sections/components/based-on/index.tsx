@@ -226,7 +226,7 @@ export const BasedOnTable = ({
                                           <Link
                                             href={item.url}
                                             isExternal
-                                            lineHeight={'shorter'}
+                                            lineHeight='shorter'
                                           >
                                             {item.name}
                                           </Link>

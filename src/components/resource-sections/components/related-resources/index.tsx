@@ -1,14 +1,15 @@
-import React from 'react';
-import type { FormattedResource } from 'src/utils/api/types';
 import { Grid, GridItem, VStack } from '@chakra-ui/react';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { uniqueId } from 'lodash';
+import React from 'react';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import type { FormattedResource } from 'src/utils/api/types';
+
+import { RelatedResourceBlock } from './components/block';
 import {
   RelatedResourceSectionHeader,
   RelatedResourceSectionWrapper,
 } from './components/section';
-import { RelatedResourceBlock } from './components/block';
-import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
-import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 

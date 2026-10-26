@@ -1,19 +1,22 @@
-import React from 'react';
 import {
   Flex,
   FlexProps,
+  HStack,
+  Span,
+  Stack,
   StackProps,
   Tag,
   Text,
   VStack,
 } from '@chakra-ui/react';
+import React from 'react';
+import { Link } from 'src/components/link';
 import {
   HasPart,
   IsBasisFor,
   IsPartOf,
   IsRelatedTo,
 } from 'src/utils/api/types';
-import { Link } from 'src/components/link';
 
 interface RelatedResourceBlockProps extends StackProps {
   data: IsBasisFor | IsRelatedTo | IsPartOf | HasPart;
@@ -80,7 +83,7 @@ export const RelatedResourceBlock = ({
   const pmid = 'pmid' in data && data?.pmid;
 
   return (
-    <VStack
+    <Stack
       alignItems='flex-start'
       fontSize='sm'
       px={2}
@@ -93,28 +96,31 @@ export const RelatedResourceBlock = ({
       {(label || type || additionalType) && (
         <RelatedResourceBlockItem label='' w='100%'>
           {(additionalType || label || type) && (
-            <Text w='100%' lineHeight='moderate' fontWeight='medium'>
-              {/* Label: name or identifier or url*/}
-              {label && (
-                <>
-                  {linkProps ? (
-                    <Link lineClamp={3} mr={1.5} display='unset' {...linkProps}>
-                      {label}
-                    </Link>
-                  ) : (
-                    <Text as='span' mr={1.5}>
-                      {label}
-                    </Text>
-                  )}
+            <HStack gap={0.5} alignItems='flex-start' flexWrap='wrap'>
+              <Text w='100%' lineHeight='moderate' fontWeight='medium'>
+                {/* Label: name or identifier or url*/}
+                {label && (
+                  <>
+                    {linkProps ? (
+                      <Link mr={1.5} {...linkProps}>
+                        {label}
+                      </Link>
+                    ) : (
+                      <Text as='span' mr={1.5}>
+                        {label}
+                      </Text>
+                    )}
 
-                  {/* Alternate Name */}
-                  {'alternateName' in data && data?.alternateName && (
-                    <Text as='span' fontStyle='italic'>
-                      ({data?.alternateName})
-                    </Text>
-                  )}
-                </>
-              )}
+                    {/* Alternate Name */}
+                    {'alternateName' in data && data?.alternateName && (
+                      <Text as='span' fontStyle='italic'>
+                        ({data?.alternateName})
+                      </Text>
+                    )}
+                  </>
+                )}
+              </Text>
+
               {/* Type */}
               {type && (
                 <Tag.Root
@@ -122,7 +128,6 @@ export const RelatedResourceBlock = ({
                   colorPalette='primary'
                   borderRadius='full'
                   variant='subtle'
-                  alignSelf='flex-end'
                 >
                   {type}
                 </Tag.Root>
@@ -135,12 +140,11 @@ export const RelatedResourceBlock = ({
                   colorPalette='primary'
                   borderRadius='full'
                   variant='subtle'
-                  alignSelf='flex-end'
                 >
                   {additionalType}
                 </Tag.Root>
               )}
-            </Text>
+            </HStack>
           )}
         </RelatedResourceBlockItem>
       )}
@@ -262,7 +266,7 @@ export const RelatedResourceBlock = ({
           )}
         </RelatedResourceBlockItem>
       )}
-    </VStack>
+    </Stack>
   );
 };
 
@@ -280,10 +284,11 @@ const RelatedResourceBlockItem = ({
 }: RelatedResourceBlockItemProps) => {
   return (
     <Flex
-      fontSize='xs'
+      fontSize='sm'
       flexDirection='column'
       lineHeight='shorter'
       wordBreak='break-word'
+      gap={0.5}
       {...props}
     >
       {label && (

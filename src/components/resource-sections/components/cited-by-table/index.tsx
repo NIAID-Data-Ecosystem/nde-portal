@@ -153,12 +153,15 @@ export const CitedByTable: React.FC<CitedByTable> = ({
                               {column.key === 'name' && (
                                 <>
                                   {item?.url ? (
-                                    <Link href={item.url} isExternal mb={2}>
-                                      <Text fontSize='inherit' lineClamp={3}>
-                                        {item.name ||
-                                          item.url ||
-                                          '[No title provided]'}
-                                      </Text>
+                                    <Link
+                                      href={item.url}
+                                      isExternal
+                                      fontSize='inherit'
+                                      lineClamp={3}
+                                    >
+                                      {item.name ||
+                                        item.url ||
+                                        '[No title provided]'}
                                     </Link>
                                   ) : (
                                     <Text

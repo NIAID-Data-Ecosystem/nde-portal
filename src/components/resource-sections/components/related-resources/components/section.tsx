@@ -1,4 +1,11 @@
-import { FlexProps, Heading, Separator, Text, VStack } from '@chakra-ui/react';
+import {
+  FlexProps,
+  Heading,
+  Separator,
+  StackSeparator,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import React from 'react';
 import {
   ScrollContainer,
@@ -21,7 +28,7 @@ export const RelatedResourceSectionHeader = ({
       <Heading as='h3' fontSize='sm'>
         {title}
       </Heading>
-      <Text lineHeight='shorter' mt={0.5}>
+      <Text lineHeight='short' fontSize='sm' mt={0.5}>
         {subtitle}
       </Text>
     </>
@@ -45,11 +52,9 @@ export const RelatedResourceSectionWrapper = ({
       borderColor='gray.200'
       borderRadius='base'
       flexDirection='column'
-      pr={0}
-      asChild
       {...props}
     >
-      <VStack separator={<Separator />} gap={0}>
+      <VStack separator={<StackSeparator />} gap={0}>
         {children}
       </VStack>
     </ScrollContainer>
