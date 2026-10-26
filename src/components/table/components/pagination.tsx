@@ -1,13 +1,14 @@
 import {
-  Center,
   ColorPalette,
   Flex,
+  HStack,
   IconButton,
   IconButtonProps,
   NativeSelect,
-  Separator,
+  Span,
   Stack,
   StackProps,
+  StackSeparator,
   Text,
   useSlotRecipe,
 } from '@chakra-ui/react';
@@ -137,6 +138,8 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
         size={size}
         aria-label={ariaLabel}
         variant='outline'
+        bg='white'
+        _hover={{ bg: 'colorPalette.subtle' }}
         disabled={disabled}
         onClick={handleClick}
         mx={0.5}
@@ -152,6 +155,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
       colorPalette={colorPalette}
       css={styles.pagination}
       alignItems='center'
+      gap={0}
       {...props}
     >
       <Flex
@@ -251,23 +255,23 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
         </Flex>
       </Flex>
       {/* Display of what is currently showing. */}
-      <Flex
+      <HStack
+        separator={<StackSeparator />}
         alignItems='center'
         justifyContent='flex-end'
         w='100%'
         bg='white'
-        p={4}
+        px={4}
+        fontSize='sm'
+        py={1}
       >
-        <Text fontSize='sm'>
+        <Span>
           Page {formatNumber(from + 1)} of {formatNumber(numPages)}
-        </Text>
-        <Center display='flex' h='20px' mx={2}>
-          <Separator orientation='vertical' />
-        </Center>
-        <Text fontSize='sm'>
+        </Span>
+        <Span>
           {formatNumber(total)} {total > 1 ? 'items' : 'item'}
-        </Text>
-      </Flex>
+        </Span>
+      </HStack>
     </Stack>
   );
 };

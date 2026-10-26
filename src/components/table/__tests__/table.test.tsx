@@ -304,6 +304,16 @@ describe('Table Pagination', () => {
     expect(onSetFrom).not.toHaveBeenCalled();
   });
 
+  test('disables the page combobox when there is only one page', () => {
+    renderComponent({ total: 5, size: 10 });
+    expect(screen.getByLabelText('Select page')).toBeDisabled();
+  });
+
+  test('enables the page combobox when there is more than one page', () => {
+    renderComponent();
+    expect(screen.getByLabelText('Select page')).toBeEnabled();
+  });
+
   test('displays correct total pages and current page information', async () => {
     renderComponent({ total: 45, size: 10 }); // Should result in 5 total pages
     expect(screen.getByText('Page 1 of 5')).toBeInTheDocument();

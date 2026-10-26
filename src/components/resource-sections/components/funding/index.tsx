@@ -282,7 +282,6 @@ export const Funding: React.FC<FundingProps> = ({
           setFrom={setFrom}
           pageSizeOptions={ROW_SIZES}
           colorPalette='gray'
-          css={{ '>div': { py: 1 } }}
         />
       </TableWrapper>
     </Skeleton>
