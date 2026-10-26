@@ -1,5 +1,6 @@
 import { Button, ButtonProps, Icon, useClipboard } from '@chakra-ui/react';
 import { FaCopy, FaRegCopy } from 'react-icons/fa6';
+
 import Tooltip from '../tooltip';
 
 /*
