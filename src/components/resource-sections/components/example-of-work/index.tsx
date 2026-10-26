@@ -20,7 +20,7 @@ export const ExampleOfWorkDisplay = ({
     ? [encodingFormat]
     : [];
   return (
-    <Stack mt={4} lineHeight='moderate' gap={4} fontSize='xs'>
+    <Stack mt={4} lineHeight='moderate' gap={4} fontSize='sm'>
       {schemaVersion && (
         <Box>
           <Text fontWeight='semibold' lineHeight='moderate' mb={0.5}>
@@ -78,19 +78,13 @@ export const ExampleOfWorkDisplay = ({
             border='1px solid'
             borderColor='gray.100'
             borderRadius='semi'
-            fontSize='xs'
-            mx={0.5}
+            fontSize='sm'
             py={0}
-            px={0.5}
           >
-            <Table.Root
-              size='sm'
-              fontSize='xs'
-              css={{ '& tr': { '& td': { px: 1.5, py: 1 } } }}
-            >
+            <Table.Root size='sm' fontSize='sm'>
               <Table.Body>
                 {properties.map((property, index) => (
-                  <Table.Row key={index} lineHeight='moderate' fontSize='xs'>
+                  <Table.Row key={index} lineHeight='moderate' fontSize='sm'>
                     <Table.Cell
                       fontSize='inherit'
                       fontWeight='medium'

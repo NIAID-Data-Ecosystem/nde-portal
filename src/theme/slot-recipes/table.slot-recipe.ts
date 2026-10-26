@@ -21,6 +21,12 @@ src/components/resource-sections/components/collection-information. The main
 src/components/table renders `<Box as='thead'>` / `<Box as='tbody'>`, which
 never consumed these slot styles under v2 either.
 */
+
+// `token(path, fallback)` compiles to `var(--palette-muted, var(--border))`, so
+// a palette without the role (or no palette at all) still gets a colour.
+const mutedBorder = 'token(colors.colorPalette.muted, colors.border)';
+const fg = 'token(colors.colorPalette.fg, colors.fg)';
+
 export const tableSlotRecipe = defineSlotRecipe({
   slots: tableAnatomy.keys(),
   base: {
@@ -29,13 +35,13 @@ export const tableSlotRecipe = defineSlotRecipe({
     },
     columnHeader: {
       bg: 'white',
-      color: 'colorPalette.fg',
+      color: fg,
       mb: 1,
       position: 'relative',
     },
     footer: {
       background: 'white',
-      color: 'colorPalette.fg',
+      color: fg,
       mb: 1,
     },
     header: {
@@ -76,7 +82,7 @@ export const tableSlotRecipe = defineSlotRecipe({
         cell: {
           '&:not(:last-of-type)': {
             borderInlineEndWidth: '1px',
-            borderInlineEndColor: 'colorPalette.muted',
+            borderInlineEndColor: mutedBorder,
           },
         },
       },
@@ -88,13 +94,13 @@ export const tableSlotRecipe = defineSlotRecipe({
       },
       outline: {
         root: {
-          boxShadow: '0 0 0 1px {colors.colorPalette.muted}',
+          boxShadow: `0 0 0 1px ${mutedBorder}`,
         },
         row: {
-          borderColor: 'colorPalette.muted',
+          borderColor: mutedBorder,
         },
         cell: {
-          borderColor: 'colorPalette.muted',
+          borderColor: mutedBorder,
         },
 
         columnHeader: {
