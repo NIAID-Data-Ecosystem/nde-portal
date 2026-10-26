@@ -54,6 +54,7 @@ export const InfoLabel: React.FC<InfoLabelProps> = ({
         color='text.body'
         userSelect='none'
         alignItems='center'
+        w='fit-content'
         {...textProps}
       >
         {label || children}
