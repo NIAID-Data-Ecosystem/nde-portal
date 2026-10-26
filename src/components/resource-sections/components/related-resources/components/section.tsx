@@ -1,7 +1,6 @@
 import {
   FlexProps,
   Heading,
-  Separator,
   StackSeparator,
   Text,
   VStack,

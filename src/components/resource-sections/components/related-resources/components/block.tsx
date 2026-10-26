@@ -96,24 +96,27 @@ export const RelatedResourceBlock = ({
       {(label || type || additionalType) && (
         <RelatedResourceBlockItem label='' w='100%'>
           {(additionalType || label || type) && (
-            <HStack gap={0.5} alignItems='flex-start' flexWrap='wrap'>
-              <Text w='100%' lineHeight='moderate' fontWeight='medium'>
+            // Tags sit beside the label, and wrap below it once the label
+            // would shrink past its flex-basis.
+            <Flex
+              alignItems='flex-start'
+              flexWrap='wrap'
+              columnGap={2}
+              rowGap={1}
+            >
+              <Text flex='1 1 12rem' lineHeight='moderate' fontWeight='medium'>
                 {/* Label: name or identifier or url*/}
                 {label && (
                   <>
                     {linkProps ? (
-                      <Link mr={1.5} {...linkProps}>
-                        {label}
-                      </Link>
+                      <Link {...linkProps}>{label}</Link>
                     ) : (
-                      <Text as='span' mr={1.5}>
-                        {label}
-                      </Text>
+                      <Text as='span'>{label}</Text>
                     )}
 
                     {/* Alternate Name */}
                     {'alternateName' in data && data?.alternateName && (
-                      <Text as='span' fontStyle='italic'>
+                      <Text as='span' fontStyle='italic' ml={1.5}>
                         ({data?.alternateName})
                       </Text>
                     )}
@@ -121,30 +124,36 @@ export const RelatedResourceBlock = ({
                 )}
               </Text>
 
-              {/* Type */}
-              {type && (
-                <Tag.Root
-                  size='sm'
-                  colorPalette='primary'
-                  borderRadius='full'
-                  variant='subtle'
-                >
-                  {type}
-                </Tag.Root>
-              )}
+              {(type || additionalType) && (
+                <HStack gap={1} flexWrap='wrap'>
+                  {/* Type */}
+                  {type && (
+                    <Tag.Root
+                      size='sm'
+                      colorPalette='primary'
+                      borderRadius='full'
+                      variant='subtle'
+                      whiteSpace='nowrap'
+                    >
+                      {type}
+                    </Tag.Root>
+                  )}
 
-              {/* Additional Type */}
-              {additionalType && (
-                <Tag.Root
-                  size='sm'
-                  colorPalette='primary'
-                  borderRadius='full'
-                  variant='subtle'
-                >
-                  {additionalType}
-                </Tag.Root>
+                  {/* Additional Type */}
+                  {additionalType && (
+                    <Tag.Root
+                      size='sm'
+                      colorPalette='primary'
+                      borderRadius='full'
+                      variant='subtle'
+                      whiteSpace='nowrap'
+                    >
+                      {additionalType}
+                    </Tag.Root>
+                  )}
+                </HStack>
               )}
-            </HStack>
+            </Flex>
           )}
         </RelatedResourceBlockItem>
       )}
@@ -289,6 +298,7 @@ const RelatedResourceBlockItem = ({
       lineHeight='shorter'
       wordBreak='break-word'
       gap={0.5}
+      px={2}
       {...props}
     >
       {label && (
