@@ -38,6 +38,7 @@ export const ResourceCatalogCollection = ({
         colorPalette='primary'
         variant='outline'
         stickyHeader
+        showColumnBorder
       >
         <Table.Header>
           <Table.Row>

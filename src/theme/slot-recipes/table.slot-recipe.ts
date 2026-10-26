@@ -28,6 +28,7 @@ export const tableSlotRecipe = defineSlotRecipe({
       p: 4,
     },
     columnHeader: {
+      bg: 'white',
       color: 'colorPalette.fg',
       mb: 1,
       position: 'relative',
@@ -97,7 +98,7 @@ export const tableSlotRecipe = defineSlotRecipe({
         },
 
         columnHeader: {
-          bg: 'colorPalette.muted',
+          bg: 'colorPalette.100',
         },
       },
     },
