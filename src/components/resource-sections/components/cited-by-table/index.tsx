@@ -96,10 +96,11 @@ export const CitedByTable: React.FC<CitedByTable> = ({
           {title}
         </Heading>
       )}
-      <TableWrapper colorPalette='gray'>
+      <TableWrapper colorPalette='gray' size='sm'>
         <TableContainer>
           <Table.Root
             role='table'
+            size='sm'
             aria-label='Cited by information'
             aria-describedby='citedby-table-caption'
             aria-rowcount={rows.length}
@@ -114,6 +115,7 @@ export const CitedByTable: React.FC<CitedByTable> = ({
                   return (
                     <Th
                       key={`table-col-th-${column.key}`}
+                      label={column.title}
                       borderBottomColor='primary.200'
                       isSelected={column.key === orderBy}
                       isSortable={true}
@@ -125,9 +127,7 @@ export const CitedByTable: React.FC<CitedByTable> = ({
                         },
                       }}
                       {...column.props}
-                    >
-                      {column.title}
-                    </Th>
+                    />
                   );
                 })}
               </Table.Row>

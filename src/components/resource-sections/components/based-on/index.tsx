@@ -163,10 +163,11 @@ export const BasedOnTable = ({
           {title}
         </Heading>
       )}
-      <TableWrapper colorPalette='primary'>
+      <TableWrapper colorPalette='primary' size='sm'>
         <TableContainer>
           <Table.Root
             role='table'
+            size='sm'
             aria-label={title}
             aria-describedby={caption}
             aria-rowcount={rows.length}
@@ -219,7 +220,7 @@ export const BasedOnTable = ({
                                 {/* name */}
                                 {column.key === 'name' && (
                                   <Box>
-                                    <Text fontSize='sm'>
+                                    <Text>
                                       {item.name ? (
                                         item.url ? (
                                           <Link
@@ -331,7 +332,6 @@ export const BasedOnTable = ({
                           role='cell'
                           px={3}
                           my={2}
-                          fontSize='sm'
                           lineHeight='moderate'
                           whiteSpace='pre-wrap'
                           wordBreak='break-word'
