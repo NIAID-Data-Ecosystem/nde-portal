@@ -224,15 +224,10 @@ const ResourcePage: NextPage = () => {
                     flexDirection={['column', 'column', 'row']}
                   >
                     <Card.Root
-                      className='main-content'
                       flex={3}
-                      p={0}
                       width='100%'
-                      css={{
-                        '& >*': { p: 0 },
-                      }}
-                      minW={150}
-                      overflow='unset'
+                      overflow='hidden'
+                      variant='elevated'
                     >
                       <Sections
                         loading={loading}
