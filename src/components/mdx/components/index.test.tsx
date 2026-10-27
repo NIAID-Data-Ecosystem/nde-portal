@@ -28,4 +28,20 @@ describe('MDX a', () => {
       '/search',
     );
   });
+
+  it('keeps same-page links in the current tab', () => {
+    render(<Markdown>{'[see below](#filters)'}</Markdown>);
+    const link = screen.getByRole('link', { name: 'see below' });
+    expect(link).toHaveAttribute('href', '#filters');
+    expect(link).not.toHaveAttribute('target');
+    expect(link.querySelector('svg')).not.toBeInTheDocument();
+  });
+
+  it('still opens other sites in a new tab', () => {
+    render(<Markdown>{'[Schema.org](https://schema.org/Dataset)'}</Markdown>);
+    expect(screen.getByRole('link', { name: /Schema\.org/ })).toHaveAttribute(
+      'target',
+      '_blank',
+    );
+  });
 });

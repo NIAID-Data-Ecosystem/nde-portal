@@ -149,9 +149,12 @@ export const MDXComponents = {
       return <chakra.a {...parsedProps} />;
     }
 
-    // Check if the link is a relative link or starts with portal domain
+    // Check if the link is a relative link, a same-page `#anchor`, or starts
+    // with portal domain
     const isPortalLink =
-      href.startsWith('/') || href.startsWith(process.env.NEXT_PUBLIC_BASE_URL);
+      href.startsWith('/') ||
+      href.startsWith('#') ||
+      href.startsWith(process.env.NEXT_PUBLIC_BASE_URL);
 
     const isExternal = props?.target === '_blank' || !isPortalLink;
 
@@ -314,7 +317,6 @@ export const MDXComponents = {
         fontSize='lg'
         mt={2}
         mb={1}
-        color='text.body'
         {...props}
       />
     );
