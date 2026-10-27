@@ -108,13 +108,28 @@ export const getLinkedMediaProps = ({
   alt: getTextContent(children).trim(),
 });
 
+/*
+A framed image takes the file's own width (preflight caps it at the column),
+and `aspectRatio` sets its height from that, so a small image is never
+stretched.
+*/
 const frameStyles = (aspectRatio: string): SystemStyleObject => ({
   aspectRatio,
-  w: '100%',
   objectFit: 'contain',
   // Letterbox bands read as part of the frame rather than stray whitespace.
   bg: 'bg.subtle',
 });
+
+/*
+Framed videos share one width instead, so recordings line up down the page.
+Not the full column: most recordings are 576–1038px wide, and stretching one
+to ~900px blurs its text. At 768px (`3xl`) the smallest grows by a third at
+most, and larger ones scale down.
+*/
+const videoFrameStyles: SystemStyleObject = {
+  w: '100%',
+  maxW: '3xl',
+};
 
 const borderStyles: SystemStyleObject = {
   border: '1px solid',
@@ -130,10 +145,12 @@ export const MDXMedia = ({ node, src, alt, title, ...props }: any) => {
   const resolvedSrc = resolveMediaSrc(src);
   const videoType = getUploadedVideoType(resolvedSrc);
   const aspectRatio = getAspectRatio(resolvedSrc, title);
+  const isFramed = aspectRatio !== 'auto';
 
   // Spread before `props`, so a consumer's own style props still win.
   const styles: SystemStyleObject = {
-    ...(aspectRatio !== 'auto' ? frameStyles(aspectRatio) : {}),
+    ...(isFramed ? frameStyles(aspectRatio) : {}),
+    ...(isFramed && videoType ? videoFrameStyles : {}),
     ...(props.className?.split(' ').includes('border') ? borderStyles : {}),
   };
   // A title that set the ratio is consumed; any other title is a tooltip.
