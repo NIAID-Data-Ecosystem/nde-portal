@@ -148,6 +148,9 @@ export const PageCombobox: React.FC<PageComboboxProps> = ({
   ariaLabel = 'Select page',
   inputProps,
   size = 'sm',
+  // With a single page there is nothing to pick, so it does not open onto a
+  // one-item list. A caller can still pass `disabled` to override this.
+  disabled = totalPages <= 1,
   ...props
 }) => {
   const pages = useMemo(
@@ -190,6 +193,7 @@ export const PageCombobox: React.FC<PageComboboxProps> = ({
     <Combobox.Root
       collection={collection}
       defaultInputValue={String(page)}
+      disabled={disabled}
       highlightedValue={highlightedValue}
       onHighlightChange={details =>
         setHighlightedValue(details.highlightedValue)

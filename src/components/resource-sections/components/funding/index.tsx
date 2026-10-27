@@ -129,10 +129,11 @@ export const Funding: React.FC<FundingProps> = ({
       <Heading as='h4' fontSize='sm' mx={1} mb={4} fontWeight='semibold'>
         Grant and Funding Information
       </Heading>
-      <TableWrapper colorPalette='gray'>
+      <TableWrapper colorPalette='gray' size='sm'>
         <TableContainer>
           <Table.Root
             role='table'
+            size='sm'
             aria-label='Grant and funding information'
             aria-describedby='funding-table-caption'
             aria-rowcount={rows.length}
@@ -281,7 +282,6 @@ export const Funding: React.FC<FundingProps> = ({
           setFrom={setFrom}
           pageSizeOptions={ROW_SIZES}
           colorPalette='gray'
-          css={{ '>div': { py: 1 } }}
         />
       </TableWrapper>
     </Skeleton>

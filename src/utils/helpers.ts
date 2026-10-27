@@ -37,13 +37,25 @@ export const formatNumber = (number: number, separator: string = ',') => {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, separator);
 };
 
+// Check if a string is an absolute http(s) url.
+const isUrl = (value: string) => {
+  try {
+    const { protocol } = new URL(value.trim());
+    return protocol === 'http:' || protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
+
 // Retrieve img and name for license url.
 export const formatLicense = (license: string) => {
+  const licenseIsUrl = isUrl(license);
   const formattedLicense = {
-    title: 'View license information',
+    // Non-url licenses (e.g. "MIT") have no link to view, so show the license itself.
+    title: licenseIsUrl ? 'View license information' : license,
     img: '',
     type: license,
-    url: license,
+    url: licenseIsUrl ? license.trim() : '',
   };
 
   // Get image for license

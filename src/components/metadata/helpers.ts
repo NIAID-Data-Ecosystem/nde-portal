@@ -507,8 +507,15 @@ const createLicenseContent = (
     property,
     glyph: property,
     disabled: !license,
-    name: license?.title,
-    url: license?.url,
+    items: license
+      ? [
+          {
+            key: uniqueId(`${property}-${id}-0`),
+            name: license.title,
+            url: license?.url,
+          },
+        ]
+      : [],
     img:
       showItems && license?.img && license?.type
         ? { src: license?.img, alt: license?.type }

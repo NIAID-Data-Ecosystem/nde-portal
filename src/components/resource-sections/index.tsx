@@ -43,7 +43,6 @@ import {
   ExternalAccess,
   UsageInfo,
 } from './components/sidebar/components/external';
-import { Summary } from './components/summary';
 import { Route } from './helpers';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
@@ -86,16 +85,6 @@ const Sections = ({
 
       {/* Banner showing data type and publish date. For computational tools, operating system info is displayed when available. */}
       <ResourceBanner data={data} />
-      {/*<--- AI Generated short description -->*/}
-      {process.env.NEXT_PUBLIC_APP_ENV !== 'production' &&
-        data?.disambiguatingDescription && (
-          <Flex mx={6} my={2}>
-            <Summary
-              description={data.disambiguatingDescription}
-              tagLabel='AI Generated'
-            />
-          </Flex>
-        )}
 
       {/* isBasedOn action property used for DataCollection contains an explanation of how the DataCollection was created */}
       {isDataCollectionType && (
@@ -116,7 +105,6 @@ const Sections = ({
             ))}
         </Stack>
       )}
-
       {sections.map(section => {
         const getSectionName = () => {
           if (section.hash === 'samples') {
@@ -293,7 +281,11 @@ const Sections = ({
             )}
             {/* Show provenance */}
             {section.hash === 'provenance' && (
-              <ResourceProvenance loading={loading} {...data} />
+              <ResourceProvenance
+                loading={loading}
+                {...data}
+                type={data?.['@type']}
+              />
             )}
             {/* Show downloads */}
             {section.hash === 'downloads' && (
@@ -329,7 +321,8 @@ const Sections = ({
             {section.hash === 'isBasedOn' && isBasedOn && (
               <BasedOnTable
                 id='software-information-is-based-on'
-                title={schema['isBasedOn']['description']?.[type]}
+                title={section.title}
+                subtitle={schema['isBasedOn']['description']?.[type]}
                 caption='Table showing resources that this resource is based on.'
                 loading={loading}
                 items={isBasedOn}
@@ -340,7 +333,8 @@ const Sections = ({
               <CitedByTable
                 loading={loading}
                 data={data?.citedBy || []}
-                title={schema['citedBy']['description']?.[type]}
+                title={section.title}
+                subtitle={schema['citedBy']['description']?.[type]}
               />
             )}
             {/* Show related resources */}

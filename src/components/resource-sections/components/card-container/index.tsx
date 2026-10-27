@@ -19,6 +19,7 @@ export const CardContainer: React.FC<CardContainerProps> = ({
       css={{
         '& >*': { p: [2, 4, 4, 6] },
       }}
+      variant='elevated'
     >
       <Box w='100%'>
         <Heading

@@ -28,6 +28,7 @@ const FilesTable: React.FC<FilesTableProps> = ({ loading, distribution }) => {
           getCells={props => <DistributionCells {...props} />}
           loading={loading}
           hasPagination
+          size='sm'
           columns={[
             {
               title: 'Name',
@@ -124,16 +125,14 @@ export const DistributionCells = ({
           column.property === 'dateCreated' ||
           column.property === 'dateModified' ||
           column.property === 'datePublished') && (
-          <Text fontSize='xs' lineClamp={3}>
-            {data[column.property]}
-          </Text>
+          <Text lineClamp={3}>{data[column.property]}</Text>
         )}
         {column.property === 'encodingFormat' && (
           <Box>
             {column.property === 'encodingFormat' &&
               encodingFormats.map(format => {
                 return (
-                  <Text key={format.name} fontSize='xs' mb={1}>
+                  <Text key={format.name} mb={1}>
                     {format.name}
                     {format?.icon && format?.icon?.icon && (
                       <Icon color={format.icon.color || undefined} ml={2}>
@@ -144,7 +143,7 @@ export const DistributionCells = ({
                 );
               })}
             {data?.['contentSize'] && (
-              <Text fontSize='xs' mb={1}>
+              <Text mb={1}>
                 <strong>size: </strong> {formatNumber(data['contentSize'])}
               </Text>
             )}

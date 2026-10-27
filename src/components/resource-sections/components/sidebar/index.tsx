@@ -60,6 +60,7 @@ export const Sidebar = ({
           ml={[0, 0, 4]}
           my={[2, 2, 0]}
           css={{ '>*': { p: 0 } }}
+          variant='elevated'
         >
           <Stack
             separator={
@@ -103,6 +104,7 @@ export const Sidebar = ({
             css={{
               '& >*': { p: [2, 4, 4, 6] },
             }}
+            variant='elevated'
           >
             <Navigation routes={sections} />
           </Card.Root>
@@ -114,7 +116,7 @@ export const Sidebar = ({
             <Collapsible.Content>
               <CardContainer heading='Previous Searches'>
                 <ScrollContainer maxH={250}>
-                  <List.Root as='ul' ml={0} gap={2} my={2}>
+                  <List.Root as='ul' pl={0} gap={2} my={2}>
                     {searchHistory.slice(0, 3).map((search, idx) => (
                       <List.Item key={idx} lineHeight='moderate' display='flex'>
                         <Icon

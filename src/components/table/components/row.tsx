@@ -22,7 +22,13 @@ export const RowWithDrawer = React.memo(({ children, ...props }: FlexProps) => {
   return (
     <Flex flex={1} {...props}>
       <Flex py={0} flexDirection='column' flex={1}>
-        <Accordion.Root collapsible>
+        {/*
+        `lazyMount` + `unmountOnExit` keep the drawer's children out of the DOM
+        while it is closed, but unmount them only once the collapse animation
+        has finished. Gating them on `expanded` instead removed them the moment
+        it started, so the panel went blank and dropped to its padding.
+        */}
+        <Accordion.Root collapsible lazyMount unmountOnExit>
           <Accordion.Item border='none' value='item-0'>
             <Accordion.ItemContext>
               {({ expanded }) => (
@@ -41,9 +47,16 @@ export const RowWithDrawer = React.memo(({ children, ...props }: FlexProps) => {
                       </Flex>
                     </Accordion.ItemTrigger>
                   </h2>
-                  <Accordion.ItemContent py={4} bg='bg.alt'>
-                    <Accordion.ItemBody>
-                      {expanded && children}
+                  {/*
+                  The padding sits on the body rather than the content, whose
+                  height is what animates: under `border-box` the content's
+                  own padding kept it from shrinking below 2rem, so it paused
+                  there on open and snapped the last 2rem away on close. The
+                  values are that padding plus the recipe's own body padding.
+                  */}
+                  <Accordion.ItemContent bg='bg.alt'>
+                    <Accordion.ItemBody pt={6} pb={8}>
+                      {children}
                     </Accordion.ItemBody>
                   </Accordion.ItemContent>
                 </Box>

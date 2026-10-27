@@ -17,13 +17,17 @@ import React, {
 } from 'react';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
 import { Cell, Th } from 'src/components/table/components/cell';
-import { TablePagination } from 'src/components/table/components/pagination';
+import {
+  TablePagination,
+  TablePaginationProps,
+} from 'src/components/table/components/pagination';
 import { Row } from 'src/components/table/components/row';
 import {
   TableContainer,
   TableContainerProps,
 } from 'src/components/table/components/table-container';
 import { TableWrapper } from 'src/components/table/components/wrapper';
+import { TableSize } from 'src/components/table/hooks/useTableSize';
 import { useTableSort } from 'src/components/table/hooks/useTableSort';
 
 export interface Column {
@@ -61,6 +65,22 @@ export interface TableProps<TData extends Record<string, string | number>> {
   getTableRowProps?: (row: any, idx: number) => any;
   tableHeadProps?: HTMLChakraProps<'thead'>;
   tableContainerProps?: TableContainerProps;
+  /**
+   * Props for the pagination bar. Its `styleSize` overrides the size it would
+   * otherwise inherit from the table.
+   */
+  tablePaginationProps?: Partial<
+    Omit<
+      TablePaginationProps,
+      'total' | 'size' | 'setSize' | 'from' | 'setFrom' | 'pageSizeOptions'
+    >
+  >;
+  /**
+   * Inherited by the table's cells, headers and pagination, each of which
+   * can override it with its own size (cells and headers through a column's
+   * `props`). Defaults to `sm`.
+   */
+  size?: TableSize;
   /**
    * When provided, the table operates in *controlled sort* mode:
    * - Internal `useTableSort` is bypassed entirely.
@@ -370,6 +390,7 @@ export const Table: React.FC<TableProps<any>> = ({
   tableBodyProps,
   getTableRowProps,
   tableContainerProps,
+  tablePaginationProps,
   controlledSortProperty,
   controlledSortAsc,
   onControlledSort,
@@ -378,6 +399,7 @@ export const Table: React.FC<TableProps<any>> = ({
   virtualized = false,
   emptyState,
   stickyFirstColumn = false,
+  size: tableSize = 'sm',
 }) => {
   const isControlled =
     controlledSortProperty !== undefined && onControlledSort !== undefined;
@@ -640,6 +662,7 @@ export const Table: React.FC<TableProps<any>> = ({
   const tableMarkup = (
     <ChakraTable.Root
       role='table'
+      size={tableSize}
       aria-label={ariaLabel}
       aria-describedby='table-caption'
       aria-rowcount={rows.length}
@@ -697,7 +720,11 @@ export const Table: React.FC<TableProps<any>> = ({
     // SSR / pre-mount placeholder. Same outer box so the page doesn't jump
     // when the virtualized list takes over.
     return (
-      <TableWrapper colorPalette={colorPalette} overflow='visible'>
+      <TableWrapper
+        colorPalette={colorPalette}
+        overflow='visible'
+        size={tableSize}
+      >
         <div
           role='table'
           aria-label={ariaLabel}
@@ -712,7 +739,11 @@ export const Table: React.FC<TableProps<any>> = ({
 
   if (virtualized) {
     return (
-      <TableWrapper colorPalette={colorPalette} overflow='visible'>
+      <TableWrapper
+        colorPalette={colorPalette}
+        overflow='visible'
+        size={tableSize}
+      >
         {/*
           Single horizontal scroll container. The outer div owns horizontal
           scroll for the entire table; header and virtualized body live
@@ -797,6 +828,7 @@ export const Table: React.FC<TableProps<any>> = ({
             pageSizeOptions={numRows}
             colorPalette='gray'
             css={{ '>div': { py: 1 } }}
+            {...tablePaginationProps}
           />
         )}
       </TableWrapper>
@@ -809,7 +841,7 @@ export const Table: React.FC<TableProps<any>> = ({
       overflow='auto'
       minH={loading ? '500px' : 'unset'}
     >
-      <TableWrapper colorPalette={colorPalette}>
+      <TableWrapper colorPalette={colorPalette} size={tableSize}>
         {/* Top scrollbar */}
         {/* Rendered only when showTopScrollbar is requested AND the table
             content is actually wider than the container. When there is no
@@ -870,8 +902,9 @@ export const Table: React.FC<TableProps<any>> = ({
             from={from}
             setFrom={setFrom}
             pageSizeOptions={numRows}
-            colorPalette='gray'
+            colorPalette={colorPalette}
             css={{ '>div': { py: 1 } }}
+            {...tablePaginationProps}
           />
         )}
       </TableWrapper>

@@ -90,7 +90,11 @@ export const CreditText = ({
         />
       )}
       {/* Collapsed to select number of lines unless expanded */}
-      <Box ref={containerRef} lineClamp={expanded ? undefined : noOfLines}>
+      <Box
+        ref={containerRef}
+        color='text.body'
+        lineClamp={expanded ? undefined : noOfLines}
+      >
         {data?.creditText ? (
           <ReactMarkdown
             rehypePlugins={[rehypeRaw]}
@@ -127,9 +131,9 @@ export const CreditText = ({
       {/* Only show toggle if there's credit text AND it overflows the set noOfLines*/}
       {data?.creditText && isOverflowing && (
         <Button
-          variant='plain'
+          variant='unstyled'
+          underline
           onClick={() => setExpanded(!expanded)}
-          color='blue.500'
           mt={0}
         >
           {expanded ? 'Show less' : 'Show more'}

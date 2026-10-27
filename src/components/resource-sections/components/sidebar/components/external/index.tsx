@@ -32,7 +32,7 @@ export const LinkToSourcePage = ({
   return (
     <Wrapper loading={loading}>
       <Link href={href}>
-        <Text>{children}</Text>
+        <Text color='inherit'>{children}</Text>
       </Link>
     </Wrapper>
   );

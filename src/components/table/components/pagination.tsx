@@ -1,12 +1,14 @@
 import {
-  Center,
   ColorPalette,
   Flex,
+  HStack,
   IconButton,
+  IconButtonProps,
   NativeSelect,
-  Separator,
+  Span,
   Stack,
   StackProps,
+  StackSeparator,
   Text,
   useSlotRecipe,
 } from '@chakra-ui/react';
@@ -18,6 +20,8 @@ import {
   FaAnglesRight,
 } from 'react-icons/fa6';
 import { PageCombobox } from 'src/components/page-combobox';
+
+import { TableSize, useTableSize } from '../hooks/useTableSize';
 
 // Based on NIAID's Table Styles
 // https://designsystem.niaid.nih.gov/components/atoms
@@ -72,7 +76,25 @@ export interface TablePaginationProps extends StackProps {
    * Loading state for loading indicator.
    */
   loading?: boolean;
+
+  /**
+   * Overrides the size inherited from the parent Table, which sets the size of
+   * the select menus. (`size` is taken by the number of rows per page.)
+   */
+  styleSize?: TableSize;
 }
+
+/*
+Table size → the size of the "rows per page" select, the page combobox and the
+arrow buttons, one step down so they sit inside the pagination bar. All three
+share this scale, with matching heights at each step, so one value sizes them
+and keeps the row level.
+*/
+const SELECT_SIZE = {
+  sm: 'xs',
+  md: 'sm',
+  lg: 'md',
+} as const satisfies Record<TableSize, 'xs' | 'sm' | 'md'>;
 
 export const TablePagination: React.FC<TablePaginationProps> = ({
   total,
@@ -84,32 +106,44 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
   colorPalette = 'gray',
   loading,
   numPages: totalPages,
+  styleSize,
   ...props
 }) => {
   // `pagination` is not part of Chakra's table anatomy — see
   // src/theme/slot-recipes/table-shell.slot-recipe.ts.
   const recipe = useSlotRecipe({ key: 'tableShell' });
   const styles = recipe();
+  // Outside a Table with no `styleSize`, fall back to `md`, which keeps the
+  // selects at their original `sm`.
+  const selectSize = SELECT_SIZE[useTableSize(styleSize) ?? 'md'];
   const numPages =
     totalPages !== undefined ? totalPages : Math.ceil(total / size);
+  // When every item fits on one page even at the smallest option, no choice
+  // changes what is shown. Keyed to the smallest option rather than the
+  // current `size`, so picking a larger size never locks out the smaller ones.
+  const isPageSizeDisabled = total <= Math.min(...pageSizeOptions);
 
   const ArrowButton = ({
     ariaLabel,
     icon,
     disabled,
     handleClick,
+    size,
   }: {
     ariaLabel: string;
     icon: React.ReactElement;
     disabled: boolean;
     handleClick: () => void;
+    size?: IconButtonProps['size'];
   }) => {
     return (
       <IconButton
         colorPalette={colorPalette}
-        size='sm'
+        size={size}
         aria-label={ariaLabel}
         variant='outline'
+        bg='white'
+        _hover={{ bg: 'colorPalette.subtle' }}
         disabled={disabled}
         onClick={handleClick}
         mx={0.5}
@@ -121,12 +155,19 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
   };
 
   return (
-    <Stack colorPalette={colorPalette} css={styles.pagination} {...props}>
+    <Stack
+      colorPalette={colorPalette}
+      css={styles.pagination}
+      alignItems='center'
+      gap={0}
+      {...props}
+    >
       <Flex
-        p={4}
+        p={2}
         bg='bg.alt'
         w='100%'
         justifyContent='space-between'
+        alignItems='center'
         flexDirection={['column', 'row']}
       >
         {/* Select options for displaying per page rows */}
@@ -138,7 +179,13 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
           row that resolves to min-content, collapsing the select onto the 2rem
           of padding reserved for its indicator and clipping the value away.
           */}
-          <NativeSelect.Root flexShrink={0} mx={[0, 2]} size='sm' width='5rem'>
+          <NativeSelect.Root
+            disabled={isPageSizeDisabled}
+            flexShrink={0}
+            mx={[0, 2]}
+            size={selectSize}
+            width='5rem'
+          >
             <NativeSelect.Field
               value={size}
               onChange={e => {
@@ -162,19 +209,25 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
         </Flex>
 
         {/* Navigation for pages. */}
-        <Flex flex={[1, 'unset']} flexDirection={['column', 'row']}>
+        <Flex
+          flex={[1, 'unset']}
+          flexDirection={['column', 'row']}
+          alignItems='center'
+        >
           <ArrowButton
             icon={<FaAnglesLeft />}
             ariaLabel='Go to first page.'
             disabled={from === 0}
             handleClick={() => setFrom(0)}
-          ></ArrowButton>
+            size={selectSize}
+          />
           <ArrowButton
             icon={<FaAngleLeft />}
             ariaLabel='Go to previous page.'
             disabled={from === 0}
             handleClick={() => setFrom(from - 1)}
-          ></ArrowButton>
+            size={selectSize}
+          />
           {/*
           `from` is a 0-based page index here, while PageCombobox works in
           1-based page numbers, so both directions convert at this boundary.
@@ -186,6 +239,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
             my={[2, 0]}
             onPageChange={page => setFrom(page - 1)}
             page={from + 1}
+            size={selectSize}
             totalPages={numPages}
             width='5rem'
           />
@@ -194,33 +248,35 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
             ariaLabel='Go to next page.'
             disabled={from + 1 === numPages}
             handleClick={() => setFrom(from + 1)}
-          ></ArrowButton>
+            size={selectSize}
+          />
           <ArrowButton
             icon={<FaAnglesRight />}
             ariaLabel='Go to last page.'
             disabled={from + 1 === numPages}
             handleClick={() => setFrom(numPages - 1)}
-          ></ArrowButton>
+            size={selectSize}
+          />
         </Flex>
       </Flex>
       {/* Display of what is currently showing. */}
-      <Flex
+      <HStack
+        separator={<StackSeparator />}
         alignItems='center'
         justifyContent='flex-end'
         w='100%'
         bg='white'
-        p={4}
+        px={4}
+        fontSize='sm'
+        py={1}
       >
-        <Text fontSize='sm'>
+        <Span>
           Page {formatNumber(from + 1)} of {formatNumber(numPages)}
-        </Text>
-        <Center display='flex' h='20px' mx={2}>
-          <Separator orientation='vertical' />
-        </Center>
-        <Text fontSize='sm'>
+        </Span>
+        <Span>
           {formatNumber(total)} {total > 1 ? 'items' : 'item'}
-        </Text>
-      </Flex>
+        </Span>
+      </HStack>
     </Stack>
   );
 };

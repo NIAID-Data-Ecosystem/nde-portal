@@ -139,6 +139,16 @@ describe('PageCombobox', () => {
     expect(onPageChange).not.toHaveBeenCalled();
   });
 
+  it('is disabled when there is only one page', async () => {
+    await setup({ page: 1, totalPages: 1 });
+    expect(input()).toBeDisabled();
+  });
+
+  it('lets the caller override the single-page default', async () => {
+    await setup({ page: 1, totalPages: 1, disabled: false });
+    expect(input()).toBeEnabled();
+  });
+
   it('takes the accessible name it is given', async () => {
     await setup({ ariaLabel: 'Select results page' });
     expect(screen.getByLabelText('Select results page')).toBeInTheDocument();

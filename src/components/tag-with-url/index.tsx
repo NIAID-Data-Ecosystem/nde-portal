@@ -1,35 +1,27 @@
-import { Tag, Text } from '@chakra-ui/react';
+import { Span, Tag, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import React from 'react';
 import { IconType } from 'react-icons';
 import { FaSquareArrowUpRight } from 'react-icons/fa6';
 import type { UrlObject } from 'url';
 
-import { Link } from '../link';
-
 interface TagWithUrlProps extends Tag.RootProps {
   /** Where the tag links to. Without one it renders as plain text. */
   href?: string | UrlObject | null;
   /** Optional prefix shown before `children`, e.g. `'DOI |'`. Never underlined. */
   label?: string;
+  /** Opens `href` in a new tab and appends an external-link icon. */
   isExternal?: boolean;
   leftIcon?: IconType;
 }
 
 /**
- * Defer typography to the tag rather than the `text` recipe, which sets its own
- * `color`, and to the caller's `fontSize` rather than the `xs` `textStyle` the
- * tag recipe puts on `Tag.Label`.
- */
-const inheritTypography = {
-  color: 'inherit',
-  fontSize: 'inherit',
-  lineHeight: 'inherit',
-} as const;
-
-/**
- * A tag that links to `href`. `children` is underlined to read as a link, and
- * the underline clears while the tag is hovered.
+ * A tag that links to `href`, with an optional bold `label` prefix.
+ *
+ * Only `children` is underlined to read as a link, and the underline clears
+ * while the tag is hovered. The underline lives on the value's own span rather
+ * than the anchor, because a decoration on the anchor would also be drawn
+ * under the prefix.
  *
  * Without an `href` the tag degrades to plain text instead of rendering a dead
  * link — see https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/245.
@@ -41,12 +33,13 @@ export const TagWithUrl = ({
   isExternal,
   leftIcon,
   size = 'sm',
+  colorPalette = 'primary',
   ...props
 }: TagWithUrlProps) => {
   const prefix = label && (
-    <Text as='span' {...inheritTypography} mr={1} fontWeight='semibold'>
+    <Span mr={1} fontWeight='semibold'>
       {label}
-    </Text>
+    </Span>
   );
 
   if (!href) {
@@ -60,37 +53,29 @@ export const TagWithUrl = ({
 
   return (
     <Tag.Root
+      asChild
+      className='group'
       size={size}
       variant='subtle'
-      alignItems='center'
+      colorPalette={colorPalette}
       lineHeight='shorter'
       {...props}
-      colorPalette='primary'
-      asChild
     >
-      <Link
-        asChild
-        colorPalette='primary'
-        _visited={{
-          color: 'colorPalette.fg',
-          _icon: { color: 'colorPalette.fg' },
-        }}
-      >
-        <NextLink href={href} target={isExternal ? '_blank' : '_self'}>
-          {leftIcon && <Tag.StartElement as={leftIcon} />}
-          {/* `display: inline` keeps the prefix and value on one run of text,
-            overriding the line clamp the recipe puts on this slot. */}
-          <Tag.Label display='inline' color='inherit'>
-            {prefix}
-            <Text as='span' {...inheritTypography}>
-              {children}
-            </Text>
-          </Tag.Label>
-          {isExternal && (
-            <Tag.EndElement as={FaSquareArrowUpRight} {...inheritTypography} />
-          )}
-        </NextLink>
-      </Link>
+      <NextLink href={href} target={isExternal ? '_blank' : undefined}>
+        {leftIcon && <Tag.StartElement as={leftIcon} />}
+        {/* `display: inline` lets the prefix and value wrap as one run of text,
+          overriding the single-line clamp the recipe puts on this slot. */}
+        <Tag.Label display='inline'>
+          {prefix}
+          <Span
+            textDecoration='underline'
+            _groupHover={{ textDecorationColor: 'transparent' }}
+          >
+            {children}
+          </Span>
+        </Tag.Label>
+        {isExternal && <Tag.EndElement as={FaSquareArrowUpRight} />}
+      </NextLink>
     </Tag.Root>
   );
 };

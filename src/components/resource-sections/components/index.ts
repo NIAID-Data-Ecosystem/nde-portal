@@ -7,7 +7,7 @@ import ResourceIdentifiers from './identifiers';
 import Navigation from './navigation';
 import ResourceOverview from './overview';
 import ResourceProvenance from './provenance';
-import Section from './section';
+import { Section } from './section';
 import TypeBanner from './type-banner';
 
 export {

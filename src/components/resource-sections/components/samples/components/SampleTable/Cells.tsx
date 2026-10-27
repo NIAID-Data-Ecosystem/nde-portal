@@ -5,11 +5,7 @@ import { DefinedTerm, QuantitativeValue } from 'src/utils/api/types';
 import { Column } from 'src/components/table';
 
 const TextCell = ({ children, ...rest }: TextProps) => {
-  return (
-    <Text fontSize='sm' {...rest}>
-      {children}
-    </Text>
-  );
+  return <Text {...rest}>{children}</Text>;
 };
 
 const DefinedTermCell = ({ identifier, name, url }: DefinedTerm) => {

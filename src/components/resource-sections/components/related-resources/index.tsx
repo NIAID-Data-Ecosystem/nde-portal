@@ -1,14 +1,13 @@
-import React from 'react';
-import type { FormattedResource } from 'src/utils/api/types';
 import { Grid, GridItem, VStack } from '@chakra-ui/react';
-import { uniqueId } from 'lodash';
-import {
-  RelatedResourceSectionHeader,
-  RelatedResourceSectionWrapper,
-} from './components/section';
-import { RelatedResourceBlock } from './components/block';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { uniqueId } from 'lodash';
+import React from 'react';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import type { FormattedResource } from 'src/utils/api/types';
+
+import { SectionHeader } from '../section';
+import { RelatedResourceBlock } from './components/block';
+import { RelatedResourceSectionWrapper } from './components/section';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -76,7 +75,7 @@ export const RelatedResources = ({
           {hasIsBasisFor && (
             <>
               <GridItem colSpan={1}>
-                <RelatedResourceSectionHeader
+                <SectionHeader
                   title='Basis For'
                   subtitle={schema['isBasisFor']['description']?.[type]}
                 />
@@ -102,7 +101,7 @@ export const RelatedResources = ({
           {hasIsRelatedTo && (
             <>
               <GridItem colSpan={1}>
-                <RelatedResourceSectionHeader
+                <SectionHeader
                   title='Related To'
                   subtitle={schema['isRelatedTo']['description']?.[type]}
                 />
@@ -143,7 +142,7 @@ export const RelatedResources = ({
           {hasIsPartOf && (
             <>
               <GridItem colSpan={1} width='100%'>
-                <RelatedResourceSectionHeader
+                <SectionHeader
                   title='Part Of'
                   subtitle={schema['isPartOf']['description']?.[type]}
                 />
@@ -169,7 +168,7 @@ export const RelatedResources = ({
           {hasHasPart && (
             <>
               <GridItem colSpan={1}>
-                <RelatedResourceSectionHeader
+                <SectionHeader
                   title='Has Part'
                   subtitle={schema['hasPart']['description']?.[type]}
                 />
