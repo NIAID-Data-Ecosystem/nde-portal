@@ -33,7 +33,7 @@ const SETTINGS_COPY = {
     emailUpdates: {
       label: 'Email Updates',
       description:
-        'Receive emails about new features and updates to the Discovery Portal.',
+        'Get monthly emails about new features and updates to the Discovery Portal.',
 
       alerts: {
         missingEmail: (
@@ -63,11 +63,11 @@ const SETTINGS_COPY = {
     feedbackTesting: {
       label: 'Feedback and Testing',
       description:
-        'Help improve the NIAID Data Ecosystem by participating in feedback and usability testing.',
+        'Help improve the NIAID Data Ecosystem by getting occasional invitations to participate in feedback and usability testing sessions.',
     },
     betaFeatures: {
       label: 'Beta features',
-      description: 'Get early access to experimental features.',
+      description: 'Receive invitations to try experimental features.',
     },
     aiSearch: {
       label: 'AI-assisted search',
