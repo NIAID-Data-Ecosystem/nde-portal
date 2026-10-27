@@ -19,8 +19,7 @@ export const SearchResultItem = React.memo(
       <List.Item
         px={2}
         mx={2}
-        my={1}
-        borderRadius='base'
+        borderRadius='sm'
         cursor='pointer'
         {...getListItemProps({
           index,
@@ -40,6 +39,8 @@ export const SearchResultItem = React.memo(
           {result.name && (
             <Highlight
               query={searchTerm.split(' ')}
+              // v2's Highlight matched case-insensitively; v3's opts in.
+              ignoreCase
               styles={{
                 fontWeight: 'bold',
                 textDecoration: 'underline',
@@ -55,6 +56,7 @@ export const SearchResultItem = React.memo(
           <Text color='gray.600' fontSize='sm'>
             <Highlight
               query={searchTerm.split(' ')}
+              ignoreCase
               styles={{
                 fontWeight: 'bold',
                 textDecoration: 'underline',

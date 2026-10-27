@@ -80,8 +80,6 @@ export const SidebarContainer = ({
             </Button>
             <ScrollContainer
               as='aside'
-              overflowX='hidden'
-              overflowY='auto'
               h='100%'
               borderY='1px solid'
               borderColor='gray.200'

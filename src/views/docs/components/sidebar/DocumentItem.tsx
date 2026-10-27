@@ -25,9 +25,7 @@ export const DocumentItem = ({
 }: DocumentItemProps) => {
   const isSelected = selectedSlug === item.slug;
   const bg = isSelected ? `${colorPalette}.100` : 'transparent';
-  const color = isSelected
-    ? `${colorPalette}.600!important`
-    : 'text.body!important';
+  const color = isSelected ? `${colorPalette}.600` : 'text.body';
 
   // Extract section and subsection names from description
   const tocItems: ContentHeading[] = item.description
@@ -49,6 +47,10 @@ export const DocumentItem = ({
       <Flex w='100%' alignItems='center'>
         <Link
           asChild
+          // Navigation row, not prose: no underline, and the colour is set here
+          // rather than by the link's (visited) states.
+          variant='unstyled'
+          display='flex'
           flex={1}
           fontSize='sm'
           px={8}
@@ -61,11 +63,10 @@ export const DocumentItem = ({
           aria-label={loading ? 'Loading' : undefined}
           _hover={{
             bg: isSelected ? bg : 'blackAlpha.50',
-            borderRadius: 'base',
-            transition: 'fast',
+            borderRadius: 'sm',
           }}
         >
-          <NextLink style={{ display: 'flex', flex: 1 }} href={item.href}>
+          <NextLink href={item.href}>
             <SkeletonText loading={loading} width={loading ? '75%' : '100%'}>
               {item.name}
             </SkeletonText>
@@ -85,14 +86,16 @@ export const DocumentItem = ({
               variant='ghost'
               onClick={() => setIsExpanded(!isExpanded)}
             >
-              <Icon as={isExpanded ? FaAngleDown : FaAngleRight} boxSize={4} />
+              <Icon boxSize={4}>
+                {isExpanded ? <FaAngleDown /> : <FaAngleRight />}
+              </Icon>
             </IconButton>
           )}
         </Box>
       </Flex>
       {/* Table of contents (TOC) items (sections and subsections): only render depth 2 items, their children will be nested */}
       {hasToc && isExpanded && (
-        <List.Root as='ul' ml={0} mt={1}>
+        <List.Root ps={0} mt={1}>
           {tocItems
             .filter(tocItem => tocItem.depth === 2)
             .map((tocItem, idx) => (

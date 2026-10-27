@@ -1,4 +1,4 @@
-import { Flex, Icon, Menu, Text } from '@chakra-ui/react';
+import { Flex, Icon, Menu, Portal, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { FaArrowsUpDown } from 'react-icons/fa6';
 
@@ -13,7 +13,7 @@ export const SidebarMobile = ({
   colorPalette = DEFAULT_COLOR_SCHEME,
 }: SidebarMobileProps) => {
   return (
-    <Menu.Root>
+    <Menu.Root positioning={{ sameWidth: true }}>
       <Flex bg='white'>
         <Menu.Trigger
           bg='blackAlpha.100'
@@ -35,36 +35,42 @@ export const SidebarMobile = ({
           </Flex>
         </Menu.Trigger>
       </Flex>
-      <Menu.Content w='100%'>
-        {!loading &&
-          sections?.map(category => (
-            <Menu.ItemGroup key={category.id} title={category.name}>
-              {category.items.map(item => {
-                if (!item?.slug) return null;
-                const isSelected = selectedSlug === item.slug;
-                return (
-                  // Compose the link onto the Menu.Item so the `menuitem` role is on
-                  // the anchor itself. Wrapping a Menu.Item in NextLink instead puts
-                  // a bare <a> as a direct child of role="menu", which fails axe's
-                  // `aria-required-children` (a menu may only contain menuitems).
-                  <Menu.Item
-                    key={item.id}
-                    pl={6}
-                    color={
-                      isSelected ? `${colorPalette}.600!important` : 'inherit'
-                    }
-                    bg={isSelected ? `${colorPalette}.100` : 'transparent'}
-                    value={item.name}
-                    asChild
-                    fontSize='sm'
-                  >
-                    <NextLink href={item.href}>{item.name}</NextLink>
-                  </Menu.Item>
-                );
-              })}
-            </Menu.ItemGroup>
-          ))}
-      </Menu.Content>
+      <Portal>
+        <Menu.Positioner>
+          <Menu.Content>
+            {!loading &&
+              sections?.map(category => (
+                <Menu.ItemGroup key={category.id}>
+                  <Menu.ItemGroupLabel>{category.name}</Menu.ItemGroupLabel>
+                  {category.items.map(item => {
+                    if (!item?.slug) return null;
+                    const isSelected = selectedSlug === item.slug;
+                    return (
+                      // Compose the link onto the Menu.Item so the `menuitem` role is on
+                      // the anchor itself. Wrapping a Menu.Item in NextLink instead puts
+                      // a bare <a> as a direct child of role="menu", which fails axe's
+                      // `aria-required-children` (a menu may only contain menuitems).
+                      <Menu.Item
+                        key={item.id}
+                        value={`${item.id}`}
+                        pl={6}
+                        fontSize='sm'
+                        // Unselected items leave `bg` to the recipe: a style
+                        // prop outranks its `_highlighted` background, which
+                        // is the keyboard focus indicator.
+                        color={isSelected ? `${colorPalette}.600` : undefined}
+                        bg={isSelected ? `${colorPalette}.100` : undefined}
+                        asChild
+                      >
+                        <NextLink href={item.href}>{item.name}</NextLink>
+                      </Menu.Item>
+                    );
+                  })}
+                </Menu.ItemGroup>
+              ))}
+          </Menu.Content>
+        </Menu.Positioner>
+      </Portal>
     </Menu.Root>
   );
 };

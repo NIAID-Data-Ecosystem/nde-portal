@@ -2,7 +2,6 @@ import {
   Box,
   chakra,
   Collapsible,
-  Flex,
   Heading,
   HStack,
   Icon,
@@ -11,7 +10,7 @@ import {
   List,
   Text,
 } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React from 'react';
 import { FaAngleDown } from 'react-icons/fa6';
 import { HeadingWithLink } from 'src/components/heading-with-link/components/HeadingWithLink';
 import { Link } from 'src/components/link';
@@ -19,12 +18,10 @@ import { transformString2Hash } from 'src/views/docs/utils/markdown';
 
 import { normalizeResponsiveProps } from '../helpers';
 
-const Details = (props: any) => {
-  const { children } = props;
+const Details = ({ children, node, open, ...props }: any) => {
   const summaryIndex = children.findIndex(
-    (node: any) => node.type === 'summary',
+    (child: any) => child.type === 'summary',
   );
-  const [isOpen, setIsOpen] = useState(false);
 
   // Render the summary's inner content rather than the <summary> element
   // itself: a host <summary> is focusable, and nesting it inside the toggle
@@ -35,63 +32,110 @@ const Details = (props: any) => {
       ? summaryNode.props.children
       : summaryNode;
 
+  // Open/closed styling keys off the `data-state` the collapsible machine sets
+  // on its trigger and indicator, so there is no mirrored `isOpen` state.
+  // `<details open>` maps to `defaultOpen`; left in `props`, the attribute
+  // would land on the trigger and match `_open` while the content is closed.
   return (
-    <Box border='1px solid' borderColor='gray.100' my={0.5}>
-      <Flex
+    <Collapsible.Root
+      defaultOpen={!!open}
+      border='1px solid'
+      borderColor='gray.100'
+      my={0.5}
+    >
+      <Collapsible.Trigger
+        display='flex'
         w='100%'
         borderLeft='4px solid'
+        borderLeftColor='secondary.500'
         p={4}
         alignItems='center'
         cursor='pointer'
-        bg={isOpen ? 'secondary.50' : 'white'}
-        borderLeftColor={isOpen ? 'secondary.600' : 'secondary.500'}
-        boxShadow={isOpen ? 'sm' : 'none'}
-        _hover={{
-          boxShadow: 'sm',
+        bg='white'
+        _hover={{ boxShadow: 'sm', bg: 'secondary.50' }}
+        _open={{
           bg: 'secondary.50',
+          borderLeftColor: 'secondary.600',
+          boxShadow: 'sm',
         }}
-        aria-expanded={isOpen}
         {...props}
-        asChild
       >
-        <button onClick={() => setIsOpen(!isOpen)}>
-          <Heading as='h2' fontSize='xl' flex={1} textAlign='left'>
-            {summaryContent}
-          </Heading>
-          <Icon
-            boxSize={4}
-            color={isOpen ? 'secondary.600' : 'secondary.500'}
-            transition='transform 250ms ease'
-            transform={!isOpen ? `rotate(-90deg)` : `rotate(0deg)`}
-            {...props}
-          >
+        <Heading as='h2' fontSize='xl' flex={1} textAlign='left'>
+          {summaryContent}
+        </Heading>
+        <Collapsible.Indicator
+          color='secondary.500'
+          transition='transform 250ms ease'
+          transform='rotate(-90deg)'
+          _open={{ color: 'secondary.600', transform: 'rotate(0deg)' }}
+          asChild
+        >
+          <Icon boxSize={4}>
             <FaAngleDown />
           </Icon>
-        </button>
-      </Flex>
-      <Collapsible.Root open={isOpen}>
-        <Collapsible.Content>
-          <Box
-            px={6}
-            py={4}
-            pb={6}
-            bg='whiteAlpha.800'
-            css={{
-              '& h3': {
-                fontSize: 'lg',
-                mt: 6,
-                mb: 4,
-              },
-            }}
-          >
-            {/* display content after summary */}
-            {children.slice(summaryIndex + 1)}
-          </Box>
-        </Collapsible.Content>
-      </Collapsible.Root>
-    </Box>
+        </Collapsible.Indicator>
+      </Collapsible.Trigger>
+      <Collapsible.Content>
+        <Box
+          px={6}
+          py={4}
+          pb={6}
+          bg='whiteAlpha.800'
+          css={{
+            '& h3': {
+              fontSize: 'lg',
+              mt: 6,
+              mb: 4,
+            },
+          }}
+        >
+          {/* display content after summary */}
+          {children.slice(summaryIndex + 1)}
+        </Box>
+      </Collapsible.Content>
+    </Collapsible.Root>
   );
 };
+
+/*
+`right-image` / `left-image` (or camelCase) classes on a raw-HTML `div` or
+`section` lay its children out side by side, with the image capped at 400px.
+Returns the row direction for the class, or `undefined` for a plain block.
+*/
+const getImageLayoutDirection = (className?: string) => {
+  const classNames = className?.split(' ');
+  if (
+    classNames?.includes('rightImage') ||
+    classNames?.includes('right-image')
+  ) {
+    return 'row';
+  }
+  if (classNames?.includes('leftImage') || classNames?.includes('left-image')) {
+    return 'row-reverse';
+  }
+};
+
+const ImageLayout = ({
+  direction,
+  ...props
+}: {
+  direction: 'row' | 'row-reverse';
+  [key: string]: any;
+}) => (
+  <HStack
+    alignItems='flex-start'
+    flexDirection={{ base: 'column', xl: direction }}
+    css={{
+      '& img': { maxWidth: { base: '100%', md: '400px' } },
+    }}
+    gap={6}
+    {...props}
+  >
+    {props.children.map((child: any, idx: number) => (
+      <React.Fragment key={idx}>{child}</React.Fragment>
+    ))}
+  </HStack>
+);
 
 export const MDXComponents = {
   a: (props: any) => {
@@ -113,17 +157,7 @@ export const MDXComponents = {
     const parsedProps = normalizeResponsiveProps(rest);
 
     return (
-      <Link
-        href={href}
-        isExternal={isExternal}
-        {...parsedProps}
-        css={{
-          '& .child-string, .child-node, .child-node p': {
-            borderBottom: '0.0625rem solid',
-            _hover: { borderBottomColor: 'transparent' },
-          },
-        }}
-      >
+      <Link href={href} isExternal={isExternal} {...parsedProps}>
         {props.children}
       </Link>
     );
@@ -182,8 +216,9 @@ export const MDXComponents = {
           '& p': {
             my: 4,
           },
-
-          'p:first-of-type':
+          // Without the `&` Chakra v3 reads this key as an unknown condition
+          // rather than a selector, and the title styling is silently dropped.
+          '& p:first-of-type':
             childrenEl.length > 1
               ? {
                   color: theme.color,
@@ -207,7 +242,7 @@ export const MDXComponents = {
       bg='primary.50'
       border='0.1rem solid'
       borderColor='primary.100'
-      borderRadius='base'
+      borderRadius='sm'
       color='primary.600'
       fontSize='xs'
       fontWeight='medium'
@@ -221,50 +256,17 @@ export const MDXComponents = {
     return <Details {...props} />;
   },
   div: (props: any) => {
-    const classNames = props?.className?.split(' ');
-    if (
-      classNames?.includes('rightImage') ||
-      classNames?.includes('right-image')
-    ) {
-      return (
-        <HStack
-          alignItems='flex-start'
-          flexDirection={{ base: 'column', xl: 'row' }}
-          css={{
-            '& img': { maxWidth: { base: '100%', md: '400px' } },
-          }}
-          gap={6}
-          {...props}
-        >
-          {props.children.map((child: any, idx: number) => (
-            <React.Fragment key={idx}>{child}</React.Fragment>
-          ))}
-        </HStack>
-      );
-    } else if (
-      classNames?.includes('leftImage') ||
-      classNames?.includes('left-image')
-    ) {
-      return (
-        <HStack
-          alignItems='flex-start'
-          flexDirection={{ base: 'column', xl: 'row-reverse' }}
-          css={{
-            '& img': { maxWidth: { base: '100%', md: '400px' } },
-          }}
-          gap={6}
-          {...props}
-        >
-          {props.children.map((child: any, idx: number) => (
-            <React.Fragment key={idx}>{child}</React.Fragment>
-          ))}
-        </HStack>
-      );
+    const direction = getImageLayoutDirection(props?.className);
+    if (direction) {
+      return <ImageLayout direction={direction} {...props} />;
     }
     const parsedProps = normalizeResponsiveProps(props);
 
     return <Box {...parsedProps} />;
   },
+  // Chakra v3's preflight resets `* { font: inherit }`, which strips the
+  // browser's italic from `em` (it restores bold for `b, strong`, not this).
+  em: (props: any) => <chakra.em fontStyle='italic' {...props} />,
   figcaption: (props: any) => {
     return (
       <Text
@@ -356,18 +358,20 @@ export const MDXComponents = {
     if (isVideo) {
       const { src: _src, alt, ...videoProps } = props;
       return (
-        <Box
+        <chakra.video
+          loop
+          muted
+          playsInline
+          controls
+          preload='metadata'
           aria-label={alt || undefined}
           {...(props?.className?.includes('border') ? borderStyles : {})}
           {...videoProps}
-          asChild
         >
-          <video loop muted playsInline controls preload='metadata'>
-            {src.includes('.webm') && <source src={src} type='video/webm' />}
-            {src.includes('.mp4') && <source src={src} type='video/mp4' />}Your
-            browser does not support the video tag.
-          </video>
-        </Box>
+          {src.includes('.webm') && <source src={src} type='video/webm' />}
+          {src.includes('.mp4') && <source src={src} type='video/mp4' />}
+          Your browser does not support the video tag.
+        </chakra.video>
       );
     }
 
@@ -400,7 +404,7 @@ export const MDXComponents = {
       return (MDXComponents.ul as any)(rest);
     }
     return (
-      <List.Root as='ol' ml={12} my={2} {...rest}>
+      <List.Root as='ol' listStyleType='decimal' ps={12} my={2} {...rest}>
         {props.children}
       </List.Root>
     );
@@ -439,60 +443,28 @@ export const MDXComponents = {
     );
   },
   section: (props: any) => {
-    const classNames = props?.className?.split(' ');
-    if (
-      classNames?.includes('rightImage') ||
-      classNames?.includes('right-image')
-    ) {
-      return (
-        <HStack
-          alignItems='flex-start'
-          flexDirection={{ base: 'column', xl: 'row' }}
-          css={{
-            '& img': { maxWidth: { base: '100%', md: '400px' } },
-          }}
-          gap={6}
-          {...props}
-        >
-          {props.children.map((child: any, idx: number) => (
-            <React.Fragment key={idx}>{child}</React.Fragment>
-          ))}
-        </HStack>
-      );
-    } else if (
-      classNames?.includes('leftImage') ||
-      classNames?.includes('left-image')
-    ) {
-      return (
-        <HStack
-          alignItems='flex-start'
-          flexDirection={{ base: 'column', xl: 'row-reverse' }}
-          css={{
-            '& img': { maxWidth: { base: '100%', md: '400px' } },
-          }}
-          gap={6}
-          {...props}
-        >
-          {props.children.map((child: any, idx: number) => (
-            <React.Fragment key={idx}>{child}</React.Fragment>
-          ))}
-        </HStack>
-      );
+    const direction = getImageLayoutDirection(props?.className);
+    if (direction) {
+      return <ImageLayout direction={direction} {...props} />;
     }
     return <Box {...props} />;
   },
-  strong: (props: any) => (
-    <Box fontWeight='semibold' {...props} asChild>
-      <strong />
-    </Box>
-  ),
+  // Not `<Box asChild><strong /></Box>`: with `asChild` the slotted element's
+  // own (empty) children win, so the bold text never rendered.
+  strong: (props: any) => <chakra.strong fontWeight='semibold' {...props} />,
+  /*
+  Prose lists opt in to markers: the List recipe renders none by default, and
+  `li` above inherits `listStyleType` from here. `ps` replaces v2's `ml` because
+  the recipe already pads the list start, which would otherwise stack with a
+  margin.
+  */
   ul: (props: any) => {
     const { ordered, ...rest } = props;
     if (ordered) {
       return (MDXComponents.ol as any)(rest);
     }
     return (
-      <List.Root as='ul' my={4} ml={12} {...rest}>
+      <List.Root listStyleType='disc' ps={12} my={4} {...rest}>
         {props.children}
       </List.Root>
     );

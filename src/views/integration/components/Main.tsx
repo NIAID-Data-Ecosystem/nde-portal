@@ -133,7 +133,12 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
                 slug={content.tabs.slug}
                 textAlign='center'
               >
-                <Tabs.Root colorPalette='primary'>
+                {/* v2 Tabs selected the first tab implicitly; v3 selects
+                    nothing (and so shows no panel) without a defaultValue. */}
+                <Tabs.Root
+                  colorPalette='primary'
+                  defaultValue={content.tabs.panels?.[0]?.id.toString()}
+                >
                   <Tabs.List>
                     {content.tabs.panels?.map(({ id, title }) => (
                       <Tabs.Trigger
@@ -142,11 +147,9 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
                         fontSize='sm'
                         color='blackAlpha.500'
                         _selected={{
-                          borderBottomColor: 'primary.400',
                           color: 'primary.500',
-                          '& .tag': {
-                            opacity: 1,
-                          },
+                          // v3 draws the underline as an indicator layer, not a border.
+                          '--indicator-color': 'colors.primary.400',
                         }}
                       >
                         {title}

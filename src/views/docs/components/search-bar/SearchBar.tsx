@@ -303,7 +303,7 @@ export const SearchBar = ({
       />
       {isOpen && showHistory && (
         <DropdownContent>
-          <List.Root as='ul' ml={0}>
+          <List.Root ps={0}>
             <List.Item
               px={2}
               mx={2}
@@ -356,7 +356,7 @@ export const SearchBar = ({
               </Text>
             )}
 
-            <List.Root as='ul' ml={0} w='100%'>
+            <List.Root ps={0} gap={1} w='100%'>
               {results?.map((result, index) => (
                 <SearchResultItem
                   key={`result-${result.id}-${index}`}
