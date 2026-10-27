@@ -5,8 +5,6 @@ import {
   Heading,
   HStack,
   Icon,
-  Image,
-  ImageProps,
   List,
   Text,
 } from '@chakra-ui/react';
@@ -17,6 +15,7 @@ import { Link } from 'src/components/link';
 import { transformString2Hash } from 'src/views/docs/utils/markdown';
 
 import { normalizeResponsiveProps } from '../helpers';
+import { MDXMedia } from './media';
 
 const Details = ({ children, node, open, ...props }: any) => {
   const summaryIndex = children.findIndex(
@@ -99,7 +98,7 @@ const Details = ({ children, node, open, ...props }: any) => {
 
 /*
 `right-image` / `left-image` (or camelCase) classes on a raw-HTML `div` or
-`section` lay its children out side by side, with the image capped at 400px.
+`section` lay its children out side by side, with the media capped at 400px.
 Returns the row direction for the class, or `undefined` for a plain block.
 */
 const getImageLayoutDirection = (className?: string) => {
@@ -126,7 +125,7 @@ const ImageLayout = ({
     alignItems='flex-start'
     flexDirection={{ base: 'column', xl: direction }}
     css={{
-      '& img': { maxWidth: { base: '100%', md: '400px' } },
+      '& img, & video': { maxWidth: { base: '100%', md: '400px' } },
     }}
     gap={6}
     {...props}
@@ -138,15 +137,16 @@ const ImageLayout = ({
 );
 
 export const MDXComponents = {
+  // Links to uploaded videos never reach this: `useMDXComponents` renders them
+  // through `img`, so an `img` override styles every video, however inserted.
   a: (props: any) => {
     let { href, ...rest } = props;
-    // If the href is a video file, render a video element using theimg component
-    if (
-      props?.href &&
-      props?.href.includes('/uploads') &&
-      (props.href.includes('.webm') || props.href.includes('.mp4'))
-    ) {
-      return MDXComponents.img({ ...props, src: href } as ImageProps); // Use img component to handle video files
+    const parsedProps = normalizeResponsiveProps(rest);
+
+    // A raw-HTML `<a>` with no `href` (e.g. `<a id="filters"></a>`) is a jump
+    // target, not a link, so there is nothing to classify as internal/external.
+    if (!href) {
+      return <chakra.a {...parsedProps} />;
     }
 
     // Check if the link is a relative link or starts with portal domain
@@ -154,7 +154,6 @@ export const MDXComponents = {
       href.startsWith('/') || href.startsWith(process.env.NEXT_PUBLIC_BASE_URL);
 
     const isExternal = props?.target === '_blank' || !isPortalLink;
-    const parsedProps = normalizeResponsiveProps(rest);
 
     return (
       <Link href={href} isExternal={isExternal} {...parsedProps}>
@@ -335,55 +334,9 @@ export const MDXComponents = {
     />
   ),
   hr: (props: any) => <chakra.hr my={4} borderColor='gray.100' {...props} />,
-  img: (props: any) => {
-    if (!props.src) {
-      return null;
-    }
-
-    // If the src starts with a slash, prepend the Strapi API URL
-    const src = props.src.startsWith('/')
-      ? `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${props.src}`
-      : props.src;
-
-    const borderStyles = {
-      border: '1px solid',
-      borderColor: 'gray.100',
-      my: 2,
-    };
-
-    const isVideo =
-      src.includes('/uploads') &&
-      (src.includes('.webm') || src.includes('.mp4'));
-
-    if (isVideo) {
-      const { src: _src, alt, ...videoProps } = props;
-      return (
-        <chakra.video
-          loop
-          muted
-          playsInline
-          controls
-          preload='metadata'
-          aria-label={alt || undefined}
-          {...(props?.className?.includes('border') ? borderStyles : {})}
-          {...videoProps}
-        >
-          {src.includes('.webm') && <source src={src} type='video/webm' />}
-          {src.includes('.mp4') && <source src={src} type='video/mp4' />}
-          Your browser does not support the video tag.
-        </chakra.video>
-      );
-    }
-
-    return (
-      <Image
-        alt={props.alt || ''}
-        {...(props?.className?.includes('border') ? borderStyles : {})}
-        {...props}
-        src={src}
-      />
-    );
-  },
+  // Images and uploaded videos, with a shared aspect-ratio convention. See
+  // `./media.tsx` for the syntax editors use in Strapi.
+  img: (props: any) => <MDXMedia {...props} />,
   li: (props: any) => {
     const { ordered, ...rest } = props;
     return (
