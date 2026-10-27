@@ -8,6 +8,7 @@ import {
   List,
   Text,
 } from '@chakra-ui/react';
+import NextLink from 'next/link';
 import React from 'react';
 import { FaAngleDown } from 'react-icons/fa6';
 import { HeadingWithLink } from 'src/components/heading-with-link/components/HeadingWithLink';
@@ -35,6 +36,10 @@ const Details = ({ children, node, open, ...props }: any) => {
   // on its trigger and indicator, so there is no mirrored `isOpen` state.
   // `<details open>` maps to `defaultOpen`; left in `props`, the attribute
   // would land on the trigger and match `_open` while the content is closed.
+  //
+  // The heading wraps the button, not the reverse (the WAI-ARIA accordion
+  // pattern): a button only allows phrasing content, and its children are
+  // presentational, so an `h2` inside it can drop out of the heading outline.
   return (
     <Collapsible.Root
       defaultOpen={!!open}
@@ -42,38 +47,40 @@ const Details = ({ children, node, open, ...props }: any) => {
       borderColor='gray.100'
       my={0.5}
     >
-      <Collapsible.Trigger
-        display='flex'
-        w='100%'
-        borderLeft='4px solid'
-        borderLeftColor='secondary.500'
-        p={4}
-        alignItems='center'
-        cursor='pointer'
-        bg='white'
-        _hover={{ boxShadow: 'sm', bg: 'secondary.50' }}
-        _open={{
-          bg: 'secondary.50',
-          borderLeftColor: 'secondary.600',
-          boxShadow: 'sm',
-        }}
-        {...props}
-      >
-        <Heading as='h2' fontSize='xl' flex={1} textAlign='left'>
-          {summaryContent}
-        </Heading>
-        <Collapsible.Indicator
-          color='secondary.500'
-          transition='transform 250ms ease'
-          transform='rotate(-90deg)'
-          _open={{ color: 'secondary.600', transform: 'rotate(0deg)' }}
-          asChild
+      <Heading as='h2' fontSize='xl'>
+        <Collapsible.Trigger
+          display='flex'
+          w='100%'
+          borderLeft='4px solid'
+          borderLeftColor='secondary.500'
+          p={4}
+          alignItems='center'
+          cursor='pointer'
+          bg='white'
+          _hover={{ boxShadow: 'sm', bg: 'secondary.50' }}
+          _open={{
+            bg: 'secondary.50',
+            borderLeftColor: 'secondary.600',
+            boxShadow: 'sm',
+          }}
+          {...props}
         >
-          <Icon boxSize={4}>
-            <FaAngleDown />
-          </Icon>
-        </Collapsible.Indicator>
-      </Collapsible.Trigger>
+          <chakra.span flex={1} textAlign='left'>
+            {summaryContent}
+          </chakra.span>
+          <Collapsible.Indicator
+            color='secondary.500'
+            transition='transform 250ms ease'
+            transform='rotate(-90deg)'
+            _open={{ color: 'secondary.600', transform: 'rotate(0deg)' }}
+            asChild
+          >
+            <Icon boxSize={4}>
+              <FaAngleDown />
+            </Icon>
+          </Collapsible.Indicator>
+        </Collapsible.Trigger>
+      </Heading>
       <Collapsible.Content>
         <Box
           px={6}
@@ -136,27 +143,81 @@ const ImageLayout = ({
   </HStack>
 );
 
+/*
+Editors paste full production URLs (`https://data.niaid.nih.gov/search?q=…`).
+Reduced to a path, a link stays on whichever site is being viewed, so a
+staging preview doesn't jump to production. Files Strapi serves under
+`/strapi/` are left absolute: they aren't portal pages.
+Returns the path, or `undefined` for any other URL.
+*/
+export const getPortalPath = (href: string) => {
+  const origins = [
+    process.env.NEXT_PUBLIC_BASE_URL,
+    'https://data.niaid.nih.gov',
+  ];
+  for (const origin of origins) {
+    if (!origin || !href.startsWith(origin)) {
+      continue;
+    }
+    const path = href.slice(origin.length);
+    if (path && !/^[/?#]/.test(path)) {
+      // A longer host that merely starts with the origin.
+      continue;
+    }
+    return path.startsWith('/strapi/') ? undefined : path || '/';
+  }
+};
+
+const CALLOUT_THEMES = {
+  info: { bg: 'info.subtle', color: 'info' },
+  warning: { bg: 'warning.subtle', color: 'warning' },
+  error: { bg: 'error.subtle', color: 'error' },
+};
+
+/*
+A blockquote's colour comes from the first emoji in its opening text: 🚧 or ⚠️
+for a warning, 🚨 for an error, anything else (📘, 💡, none) for info.
+`Extended_Pictographic` rather than `Emoji_Presentation`, which misses
+text-style emoji like ⚠️. The match drops ⚠️'s trailing variation selector,
+hence comparing against '⚠'.
+*/
+export const getCalloutTheme = (text?: string) => {
+  const emoji = text?.match(/\p{Extended_Pictographic}/u)?.[0];
+  if (emoji === '🚧' || emoji === '⚠') {
+    return CALLOUT_THEMES.warning;
+  }
+  if (emoji === '🚨') {
+    return CALLOUT_THEMES.error;
+  }
+  return CALLOUT_THEMES.info;
+};
+
 export const MDXComponents = {
   // Links to uploaded videos never reach this: `useMDXComponents` renders them
   // through `img`, so an `img` override styles every video, however inserted.
   a: (props: any) => {
-    let { href, ...rest } = props;
+    const { href: rawHref, ...rest } = props;
     const parsedProps = normalizeResponsiveProps(rest);
 
     // A raw-HTML `<a>` with no `href` (e.g. `<a id="filters"></a>`) is a jump
     // target, not a link, so there is nothing to classify as internal/external.
-    if (!href) {
+    if (!rawHref) {
       return <chakra.a {...parsedProps} />;
     }
 
-    // Check if the link is a relative link, a same-page `#anchor`, or starts
-    // with portal domain
-    const isPortalLink =
-      href.startsWith('/') ||
-      href.startsWith('#') ||
-      href.startsWith(process.env.NEXT_PUBLIC_BASE_URL);
-
+    const href = getPortalPath(rawHref) ?? rawHref;
+    // A portal page or a same-page `#anchor`.
+    const isPortalLink = href.startsWith('/') || href.startsWith('#');
     const isExternal = props?.target === '_blank' || !isPortalLink;
+
+    // Portal pages navigate client-side rather than reloading the app.
+    if (!isExternal && href.startsWith('/')) {
+      return (
+        <Link asChild {...parsedProps}>
+          <NextLink href={href}>{props.children}</NextLink>
+        </Link>
+      );
+    }
 
     return (
       <Link href={href} isExternal={isExternal} {...parsedProps}>
@@ -165,44 +226,10 @@ export const MDXComponents = {
     );
   },
   blockquote: (props: any) => {
-    const getThemeByTitle = (node: any) => {
-      const text = node?.children[0]?.value;
-      if (!text) {
-        return {
-          bg: 'info.subtle',
-          color: 'info',
-        };
-      }
-
-      // Find emojis in text.
-      const emojis = text.match(/\p{Emoji_Presentation}/gu);
-      if (!emojis) {
-        return {
-          bg: 'info.subtle',
-          color: 'info',
-        };
-      } else if (emojis[0] === '🚧') {
-        return {
-          bg: 'warning.subtle',
-          color: 'warning',
-        };
-      } else if (emojis[0] === '🚨') {
-        return {
-          bg: 'error.subtle',
-          color: 'error',
-        };
-      } else {
-        return {
-          bg: 'info.subtle',
-          color: 'info',
-        };
-      }
-    };
-
     const titleEl = props?.node?.children.find(
       (child: any) => child.type === 'element',
     );
-    const theme = getThemeByTitle(titleEl);
+    const theme = getCalloutTheme(titleEl?.children[0]?.value);
     const childrenEl = props.children.filter(
       (el: any) => typeof el === 'object',
     );
@@ -233,11 +260,9 @@ export const MDXComponents = {
       />
     );
   },
-  br: (props: any) => (
-    <Box className='break' as='span' margin='10px 0 10px 0' {...props}>
-      {props.children}
-    </Box>
-  ),
+  // A real `<br>`: the empty inline span this used to render had no height, so
+  // every line break and `<br/>` spacer in the content silently vanished.
+  br: () => <br />,
   code: (props: any) => (
     <Text
       as='code'
