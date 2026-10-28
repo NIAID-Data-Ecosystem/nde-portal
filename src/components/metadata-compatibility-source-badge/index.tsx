@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import { ParentSize } from '@visx/responsive';
 import { MetadataSource } from 'src/hooks/api/types';
 
@@ -13,7 +13,7 @@ export const MetadataCompatibilitySourceBadge: React.FC<{
   }
 
   return (
-    <>
+    <Flex flexDirection='column'>
       <InfoLabel
         href='/knowledge-center/metadata-compatibility-badge'
         tooltipProps={{
@@ -30,6 +30,6 @@ export const MetadataCompatibilitySourceBadge: React.FC<{
           {({ width }) => <CompatibilityBadge width={width} data={data} />}
         </ParentSize>
       </Box>
-    </>
+    </Flex>
   );
 };
