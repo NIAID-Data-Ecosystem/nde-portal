@@ -238,11 +238,9 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
 
                 {/* Source Compatibility */}
                 {metadataCompatibilityData && (
-                  <Box my={2}>
-                    <MetadataCompatibilitySourceBadge
-                      data={metadataCompatibilityData}
-                    />
-                  </Box>
+                  <MetadataCompatibilitySourceBadge
+                    data={metadataCompatibilityData}
+                  />
                 )}
 
                 {/* Property transformations table */}

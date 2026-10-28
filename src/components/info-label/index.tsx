@@ -1,12 +1,14 @@
-import { Icon, Text, TextProps } from '@chakra-ui/react';
+import { Icon, Link, Text, TextProps } from '@chakra-ui/react';
 import React from 'react';
 import { FaInfo } from 'react-icons/fa6';
 import type { TooltipProps } from 'src/components/tooltip';
 import Tooltip from 'src/components/tooltip';
 
 export interface InfoLabelProps extends TextProps {
-  children?: string | React.ReactNode;
+  children?: string;
   label?: string;
+  /** Renders the label text as a link. */
+  href?: string;
   tooltipProps?: Omit<TooltipProps, 'children'>;
   iconProps?: Omit<React.ComponentProps<typeof Icon>, 'children'>;
 }
@@ -34,12 +36,14 @@ export const InfoIcon = (
 export const InfoLabel: React.FC<InfoLabelProps> = ({
   children,
   label,
+  href,
   tooltipProps,
   iconProps,
   ...textProps
 }) => {
   const content = tooltipProps?.content ?? '';
   const disabled = !tooltipProps || !content || tooltipProps.disabled;
+  const text = label || children;
   return (
     <Tooltip {...tooltipProps} content={content} disabled={disabled}>
       <Text
@@ -57,7 +61,14 @@ export const InfoLabel: React.FC<InfoLabelProps> = ({
         }}
         {...textProps}
       >
-        {label || children}
+        {/* [chakra-to-do]: might want to replace with interactive option */}
+        {href ? (
+          <Link href={href} color='gray.700'>
+            {text}
+          </Link>
+        ) : (
+          text
+        )}
         {tooltipProps && content && (
           <InfoIcon disabled={tooltipProps?.disabled} {...iconProps} />
         )}

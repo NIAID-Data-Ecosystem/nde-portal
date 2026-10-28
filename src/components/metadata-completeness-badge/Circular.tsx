@@ -12,7 +12,6 @@ import { Group } from '@visx/group';
 import Pie, { PieArcDatum, ProvidedProps } from '@visx/shape/lib/shapes/Pie';
 import { uniqueId } from 'lodash';
 import React, { useMemo } from 'react';
-import { FaInfo } from 'react-icons/fa6';
 import Tooltip from 'src/components/tooltip';
 import { FormattedResource } from 'src/utils/api/types';
 
@@ -291,6 +290,7 @@ export const CompletenessBadgeCircle = ({
       </Box>
 
       <InfoLabel
+        href='/knowledge-center/metadata-compatibility-score'
         tooltipProps={{
           interactive: true,
           content: (
@@ -300,15 +300,7 @@ export const CompletenessBadgeCircle = ({
           ),
         }}
       >
-        <Link
-          href='/knowledge-center/metadata-compatibility-score'
-          color='gray.700'
-          fontSize='sm'
-          textAlign='center'
-          _hover={{ textDecoration: 'none' }}
-        >
-          Metadata Compatibility
-        </Link>
+        Metadata Compatibility
       </InfoLabel>
     </Flex>
   );
