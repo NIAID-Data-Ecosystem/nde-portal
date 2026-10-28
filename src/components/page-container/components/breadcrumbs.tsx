@@ -2,6 +2,7 @@ import { Breadcrumb } from '@chakra-ui/react';
 import React from 'react';
 import { FaHouse } from 'react-icons/fa6';
 
+import { getSafeInternalPath } from '../helpers';
 import { BreadcrumbSegment } from '../hooks/useBreadcrumbs';
 
 interface BreadcrumbsProps {
@@ -9,7 +10,14 @@ interface BreadcrumbsProps {
 }
 
 export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ segments }) => {
-  if (!segments.length) return null;
+  // Drop any segment whose route isn't a path on this site, so an unvalidated
+  // value (e.g. a `javascript:` URI) can never reach a link's href.
+  const safeSegments = segments.flatMap(segment => {
+    const route = getSafeInternalPath(segment.route);
+    return route ? [{ ...segment, route }] : [];
+  });
+
+  if (!safeSegments.length) return null;
 
   return (
     <Breadcrumb.Root>
@@ -21,7 +29,7 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ segments }) => {
             Home
           </Breadcrumb.Link>
         </Breadcrumb.Item>
-        {segments.map(({ name, route, isCurrentPage }, idx) => {
+        {safeSegments.map(({ name, route, isCurrentPage }, idx) => {
           return (
             <React.Fragment key={name + idx}>
               <Breadcrumb.Separator />

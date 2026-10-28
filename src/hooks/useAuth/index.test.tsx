@@ -25,7 +25,7 @@ jest.mock('src/utils/feature-flags', () => ({
   },
 }));
 
-jest.mock('src/utils/auth/config', () => ({
+jest.mock('src/utils/auth/helpers', () => ({
   getAuthConfig: () => ({
     apiBaseUrl: 'https://api.example.org',
     loginProviders: [

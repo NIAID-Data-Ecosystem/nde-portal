@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   Button,
@@ -6,6 +5,7 @@ import {
   Heading,
   HStack,
   Icon,
+  IconProps,
   Image,
   Link,
   List,
@@ -13,16 +13,12 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
-import {
-  FaCheck,
-  FaGithub,
-  FaGoogle,
-  FaMicrosoft,
-  FaOrcid,
-} from 'react-icons/fa6';
 import { useRouter } from 'next/router';
+import React from 'react';
+import { FaCheck } from 'react-icons/fa6';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { useAuth } from 'src/hooks/useAuth';
+import { KNOWN_PROVIDERS } from 'src/utils/auth/config';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
 const ListItemContent = ({ children }: { children: React.ReactNode }) => (
@@ -35,48 +31,25 @@ const ListItemContent = ({ children }: { children: React.ReactNode }) => (
   </HStack>
 );
 
-const ProviderIcon = ({ providerId }: { providerId: string }) => {
-  if (providerId.toLowerCase() === 'orcid') {
+const ProviderIcon = ({
+  providerId,
+  ...props
+}: IconProps & { providerId: string }) => {
+  const icon = KNOWN_PROVIDERS[providerId.toLowerCase()]?.icon;
+
+  if (icon) {
     return (
-      <Icon color='#A6CE39' boxSize={5} aria-hidden='true'>
-        <FaOrcid />
-      </Icon>
+      <Icon
+        as={icon.as}
+        color={icon.color}
+        boxSize={5}
+        aria-hidden='true'
+        {...props}
+      />
     );
   }
 
-  if (providerId.toLowerCase() === 'github') {
-    return (
-      <Icon color='#24292e ' boxSize={5} aria-hidden='true'>
-        <FaGithub />
-      </Icon>
-    );
-  }
-
-  if (providerId.toLowerCase() === 'google') {
-    return (
-      <Icon color='#4285F4' boxSize={5} aria-hidden='true'>
-        <FaGoogle />
-      </Icon>
-    );
-  }
-
-  if (providerId.toLowerCase() === 'microsoft') {
-    return (
-      <Icon color='#00A4EF' boxSize={5} aria-hidden='true'>
-        <FaMicrosoft />
-      </Icon>
-    );
-  }
-
-  return (
-    <Box
-      aria-hidden='true'
-      boxSize='16px'
-      borderRadius='full'
-      bg='gray.400'
-      display='inline-block'
-    />
-  );
+  return <></>;
 };
 
 function LoginPage() {
@@ -182,27 +155,12 @@ function LoginPage() {
                     }}
                     onClick={() => login(provider.id)}
                   >
-                    <HStack gap={2} justify='flex-start'>
-                      <ProviderIcon providerId={provider.id} />
-                      <Text fontSize='inherit'>
-                        Log In With {provider.label}
-                      </Text>
-                    </HStack>
+                    <ProviderIcon providerId={provider.id} />
+                    Log In With {provider.label}
                   </Button>
                 ))}
               </Stack>
             )}
-            {/*
-            <Text mt={5} fontSize='sm' color='gray.700'>
-              Don&apos;t have an account?{' '}
-              <Link
-                href='/register'
-                color='niaid.700'
-                textDecoration='underline'
-              >
-                Register
-              </Link>
-            </Text> */}
           </Box>
         </Flex>
 

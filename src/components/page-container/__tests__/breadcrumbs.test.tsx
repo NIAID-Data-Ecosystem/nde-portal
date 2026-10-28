@@ -85,31 +85,32 @@ describe('Breadcrumbs', () => {
       '/diseases/HIV-AIDS',
     );
   });
-
-  it('renders every segment as a link when none is flagged as current', () => {
-    render(
-      <Breadcrumbs
-        segments={segments.map(s => ({ ...s, isCurrentPage: false }))}
-      />,
-    );
-    expect(
-      screen.queryByRole('link', { current: 'page' }),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.getAllByRole('link').every(link => link.hasAttribute('href')),
-    ).toBe(true);
-  });
-
-  it('renders segments whose name repeats without collapsing them', () => {
+  it('does not render links for routes outside the site', () => {
     render(
       <Breadcrumbs
         segments={[
-          { name: 'Search', route: '/search', isCurrentPage: false },
-          { name: 'Search', route: '/resources/search', isCurrentPage: true },
+          {
+            name: 'Search',
+            route: 'javascript:alert(document.domain)//search',
+            isCurrentPage: false,
+          },
+          {
+            name: 'Elsewhere',
+            route: 'https://example.com/search',
+            isCurrentPage: false,
+          },
+          { name: 'Resources', route: '/resources', isCurrentPage: true },
         ]}
       />,
     );
-    expect(screen.getAllByText('Search')).toHaveLength(2);
-    expect(screen.getAllByRole('listitem')).toHaveLength(3);
+    expect(screen.queryByText('Search')).not.toBeInTheDocument();
+    expect(screen.queryByText('Elsewhere')).not.toBeInTheDocument();
+    expect(screen.getByText('Resources')).toBeInTheDocument();
+    // Only the home link remains, since the current page is not a link.
+    expect(screen.getAllByRole('link')).toHaveLength(1);
+  });
+  it('renders null when there are no path segments', () => {
+    const { container } = render(<Breadcrumbs segments={[]} />);
+    expect(container).toBeEmptyDOMElement();
   });
 });
