@@ -58,7 +58,10 @@ export const StepCard = ({
         </Text>
       </Flex>
       {tabItems.length > 0 ? (
-        <Tabs.Root colorPalette='primary'>
+        <Tabs.Root
+          colorPalette='primary'
+          defaultValue={tabItems[0].id.toString()}
+        >
           <Tabs.List px={4}>
             {tabItems.map(({ id, name }) => (
               <Tabs.Trigger
@@ -68,11 +71,9 @@ export const StepCard = ({
                 fontSize='inherit'
                 color='blackAlpha.500'
                 _selected={{
-                  borderBottomColor: 'primary.400',
                   color: 'primary.500',
-                  '& .tag': {
-                    opacity: 1,
-                  },
+                  // v3 draws the underline as an indicator layer, not a border.
+                  '--indicator-color': 'colors.primary.400',
                 }}
               >
                 {name}

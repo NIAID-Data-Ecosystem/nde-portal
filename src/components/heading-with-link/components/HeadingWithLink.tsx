@@ -44,7 +44,8 @@ export const HeadingWithLink = ({
         {...rest}
       >
         {children}&nbsp;
-        <span>#</span>
+        {/* Hidden from assistive tech, or every heading's name ends in "#". */}
+        <span aria-hidden='true'>#</span>
       </Heading>
     </a>
   );

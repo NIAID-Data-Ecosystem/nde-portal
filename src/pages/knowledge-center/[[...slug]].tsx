@@ -151,8 +151,7 @@ const Docs: NextPage<{
       ) : (
         <Flex
           justifyContent='center'
-          bg='whiteAlpha.900'
-          p={0}
+          bg='white'
           flexDirection={{ base: 'column', md: 'row' }}
         >
           {/* Documentation Pages Navigation */}
@@ -187,7 +186,7 @@ const Docs: NextPage<{
               {/* CONTENT */}
               <PageContent
                 id='docs-content'
-                bg='#fff'
+                bg='white'
                 maxW={{ base: 'unset', lg: '1600px' }}
                 margin='0 auto'
                 px={4}
@@ -246,39 +245,22 @@ const Docs: NextPage<{
                         >
                           {doc.name}
                         </Heading>
-                        <List.Root as='ul' ml={0}>
+                        <List.Root ps={0} gap={2}>
                           {doc.items.map(item => (
-                            <List.Item key={item.id} my={2}>
+                            <List.Item key={item.id}>
                               <SkeletonText
                                 loading={isLoading}
                                 width={isLoading ? '75%' : '100%'}
                               >
                                 <Link
+                                  display='flex'
                                   w='100%'
                                   fontSize='sm'
-                                  color='text.body!important'
-                                  bg='transparent'
                                   lineHeight='tall'
-                                  _selected={{
-                                    color: 'niaid.600!important',
-                                    bg: 'niaid.100',
-                                  }}
-                                  _hover={{
-                                    [`&[aria-selected=false]`]: {
-                                      bg: 'blackAlpha.50',
-                                      borderRadius: 'base',
-                                      transition: 'fast',
-                                    },
-                                  }}
+                                  color='text.body'
                                   asChild
                                 >
-                                  <NextLink
-                                    style={{
-                                      display: 'flex',
-                                      width: '100%',
-                                    }}
-                                    href={item.href}
-                                  >
+                                  <NextLink href={item.href}>
                                     {item.name}
                                   </NextLink>
                                 </Link>

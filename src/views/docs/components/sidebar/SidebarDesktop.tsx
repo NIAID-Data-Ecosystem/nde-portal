@@ -7,7 +7,7 @@ import {
   SkeletonText,
   Text,
 } from '@chakra-ui/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FaAngleDown, FaAngleRight } from 'react-icons/fa6';
 
 import { DEFAULT_COLOR_SCHEME } from '../../constants';
@@ -20,65 +20,55 @@ export const SidebarDesktop = ({
   selectedSlug,
   colorPalette = DEFAULT_COLOR_SCHEME,
 }: SidebarDesktopProps) => {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  const categories = (
-    loading
-      ? [...Array(5)].map((_, i) => ({
-          id: i,
-          name: 'Loading...',
-          items: [
-            {
-              id: i,
-              name: 'Loading...',
-              slug: 'loading',
-              href: { pathname: '/', query: { q: 'loading' } },
-            },
-          ],
-        }))
-      : sections
-  ) as SidebarContent[];
-
-  // Find which category contains the selected page
-  const getExpandedIndices = useCallback(() => {
-    if (!selectedSlug || !categories) return [];
-
-    const expandedIndices: string[] = [];
-    categories.forEach(category => {
-      const hasSelectedPage = category.items.some(
-        item => item.slug === selectedSlug,
-      );
-      if (hasSelectedPage) {
-        expandedIndices.push(`item-${category.id}`);
-      }
-    });
-    return expandedIndices;
-  }, [categories, selectedSlug]);
-
-  const [expandedIndices, setExpandedIndices] = useState<string[]>(
-    getExpandedIndices(),
+  // Memoised so the effect below only fires when the inputs change. Built
+  // inline, the placeholder list is a new array every render, which re-ran the
+  // effect, set a new `[]`, and re-rendered in a loop for as long as the
+  // sidebar was loading.
+  const categories = useMemo(
+    () =>
+      (loading
+        ? [...Array(5)].map((_, i) => ({
+            id: i,
+            name: 'Loading...',
+            items: [
+              {
+                id: i,
+                name: 'Loading...',
+                slug: 'loading',
+                href: { pathname: '/', query: { q: 'loading' } },
+              },
+            ],
+          }))
+        : sections) as SidebarContent[],
+    [loading, sections],
   );
 
-  // Update expanded indices when selectedSlug changes
-  useEffect(() => {
-    const newExpandedIndices = getExpandedIndices();
-    setExpandedIndices(newExpandedIndices);
+  // Find which category contains the selected page
+  const selectedCategoryValues = useMemo(() => {
+    if (!selectedSlug || !categories) return [];
 
-    // Scroll sidebar to top when navigation occurs
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTop = 0;
-    }
-  }, [selectedSlug, getExpandedIndices]);
+    return categories
+      .filter(category =>
+        category.items.some(item => item.slug === selectedSlug),
+      )
+      .map(category => `item-${category.id}`);
+  }, [categories, selectedSlug]);
+
+  const [expandedValues, setExpandedValues] = useState<string[]>(
+    selectedCategoryValues,
+  );
+
+  // Re-expand the selected page's category on navigation, and once the
+  // categories have loaded.
+  useEffect(() => {
+    setExpandedValues(selectedCategoryValues);
+  }, [selectedCategoryValues]);
 
   return (
     <Accordion.Root
-      value={expandedIndices}
-      onValueChange={({ value: value }) =>
-        (indices => {
-          // Allow manual toggling of categories
-          setExpandedIndices(Array.isArray(indices) ? indices : [indices]);
-        })(value)
-      }
+      value={expandedValues}
+      // Allow manual toggling of categories
+      onValueChange={({ value }) => setExpandedValues(value)}
       multiple
       minW='350px'
     >
@@ -105,10 +95,7 @@ export const SidebarDesktop = ({
                       loading={loading}
                       width={loading ? '80%' : '100%'}
                       noOfLines={1}
-                      height={4}
-                      display='flex'
-                      alignItems='center'
-                      flex={1}
+                      rootProps={{ flex: 1 }}
                     >
                       <Flex alignItems='center' flex={1} pl={6}>
                         <Text
@@ -131,21 +118,16 @@ export const SidebarDesktop = ({
                       alignItems='center'
                       mr={2}
                     >
-                      {expanded ? (
-                        <Icon boxSize={4}>
-                          <FaAngleDown />
-                        </Icon>
-                      ) : (
-                        <Icon boxSize={4}>
-                          <FaAngleRight />
-                        </Icon>
-                      )}
+                      <Icon boxSize={4}>
+                        {expanded ? <FaAngleDown /> : <FaAngleRight />}
+                      </Icon>
                     </Box>
                   </Accordion.ItemTrigger>
                 </h2>
-                <Accordion.ItemContent p={0}>
-                  <Accordion.ItemBody>
-                    <List.Root as='ul' ml={0}>
+                <Accordion.ItemContent>
+                  {/* v2's AccordionPanel had no padding; v3's body pads by default. */}
+                  <Accordion.ItemBody p={0}>
+                    <List.Root ps={0}>
                       {category.items.map(item => {
                         if (!item?.slug) return null;
                         return (

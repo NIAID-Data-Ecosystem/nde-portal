@@ -33,9 +33,10 @@ export const SidebarContainer = ({
           borderRight='1px solid'
           borderColor='gray.200'
           borderRadius='none'
-          px={4}
+          p={4}
           display='flex'
           alignItems='flex-start'
+          height='auto'
         >
           <Icon position='sticky' top={4}>
             <FaAnglesRight />
@@ -80,8 +81,6 @@ export const SidebarContainer = ({
             </Button>
             <ScrollContainer
               as='aside'
-              overflowX='hidden'
-              overflowY='auto'
               h='100%'
               borderY='1px solid'
               borderColor='gray.200'

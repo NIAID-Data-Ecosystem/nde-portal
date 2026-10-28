@@ -11,6 +11,21 @@ import { transformString2Hash } from '../utils/markdown';
 import { useDocumentation } from '../hooks/useDocumentation';
 import type { DocumentationProps } from '../types';
 
+/*
+Borders every image and video unless it has the `unstyled` class. Defined once
+here rather than inline, so the components stay stable across renders and a
+playing video isn't remounted.
+*/
+const mdxOverrides = {
+  img: (props: any) =>
+    DefaultMDXComponents.img({
+      ...props,
+      className: props?.className?.includes('unstyled')
+        ? props.className
+        : [props?.className, 'border'].filter(Boolean).join(' '),
+    }),
+};
+
 interface MainContentProps {
   id: number;
   slug: string[];
@@ -37,17 +52,7 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
     }
   }, [data?.updatedAt]);
 
-  const MDXComponents = useMDXComponents({
-    img: (props: any) => {
-      // Add a border to images unless they have the 'unstyled' class
-      return DefaultMDXComponents.img({
-        ...props,
-        className: props?.className?.includes('unstyled')
-          ? props.className
-          : `${props.className} border`,
-      });
-    },
-  });
+  const MDXComponents = useMDXComponents(mdxOverrides);
 
   if (error) {
     return (
