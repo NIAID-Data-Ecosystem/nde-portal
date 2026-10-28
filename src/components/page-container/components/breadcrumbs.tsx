@@ -10,6 +10,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { BreadcrumbSegment } from '../hooks/useBreadcrumbs';
+import { getSafeInternalPath } from '../helpers';
 
 interface BreadcrumbItemProps {
   path: { name: string; icon?: IconType };
@@ -57,7 +58,14 @@ interface BreadcrumbsProps {
 }
 
 export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ segments }) => {
-  if (!segments.length) return null;
+  // Drop any segment whose route isn't a path on this site, so an unvalidated
+  // value (e.g. a `javascript:` URI) can never reach a link's href.
+  const safeSegments = segments.flatMap(segment => {
+    const route = getSafeInternalPath(segment.route);
+    return route ? [{ ...segment, route }] : [];
+  });
+
+  if (!safeSegments.length) return null;
 
   return (
     <Flex px={6} py={2}>
@@ -83,8 +91,8 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ segments }) => {
           </BreadcrumbLink>
         </ChakraBreadcrumbItem>
 
-        {segments.map((path, idx) => {
-          const isCurrentPage = idx === segments.length - 1;
+        {safeSegments.map((path, idx) => {
+          const isCurrentPage = idx === safeSegments.length - 1;
           return (
             <ChakraBreadcrumbItem
               key={path.name + idx}
