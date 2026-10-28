@@ -74,7 +74,7 @@ describe('useBreadcrumbs', () => {
   it('prepends "Search" + links to referrer path if route starts with /resources', () => {
     (usePathname as jest.Mock).mockReturnValue('/resources/datasets');
     (useRouter as jest.Mock).mockReturnValue({
-      query: { referrerPath: '/search/advanced' },
+      query: { referrerPath: '/search?q=covid&filters=x#results' },
     });
 
     const { result } = renderHook(() => useBreadcrumbs());
@@ -82,7 +82,7 @@ describe('useBreadcrumbs', () => {
     expect(result.current).toEqual([
       {
         name: 'Search',
-        route: '/search/advanced',
+        route: '/search?q=covid&filters=x#results',
         isCurrentPage: false,
       },
       {
@@ -103,6 +103,27 @@ describe('useBreadcrumbs', () => {
     (useRouter as jest.Mock).mockReturnValue({
       query: {},
     });
+    const { result } = renderHook(() => useBreadcrumbs());
+
+    expect(result.current[0]).toEqual({
+      name: 'Search',
+      route: '/search',
+      isCurrentPage: false,
+    });
+  });
+
+  it.each([
+    ['a javascript: URI', 'javascript:alert(document.domain)//search'],
+    ['an absolute external URL', 'https://example.com/search'],
+    ['a protocol-relative URL', '//example.com/search'],
+    ['a backslash host', '/\\example.com/search'],
+    ['a dot segment that normalizes to //', '/search/..//example.com'],
+    ['a non-search path', '/resources?id=x&search=1'],
+    ['an array', ['/search', '/search']],
+  ])('defaults to /search if referrerPath is %s', (_, referrerPath) => {
+    (usePathname as jest.Mock).mockReturnValue('/resources');
+    (useRouter as jest.Mock).mockReturnValue({ query: { referrerPath } });
+
     const { result } = renderHook(() => useBreadcrumbs());
 
     expect(result.current[0]).toEqual({
