@@ -74,7 +74,7 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
           <SkeletonText loading={loading} noOfLines={1} height={5}>
             <Flex alignItems='center'>
               <Text
-                fontSize='xs'
+                fontSize='sm'
                 lineHeight='moderate'
                 fontWeight='semibold'
                 color='text.body'
@@ -95,7 +95,7 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
           </SkeletonText>
           <SkeletonText loading={loading} noOfLines={1} height={5}>
             {metadata?.date && (
-              <Text fontSize='xs' lineHeight='moderate' fontWeight='semibold'>
+              <Text fontSize='sm' lineHeight='moderate' fontWeight='semibold'>
                 Data last harvested:
                 <Text as='span' fontWeight='normal'>
                   {' '}
@@ -207,7 +207,7 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
                 {/* Release dates */}
                 <HStack>
                   {sourceObj.latestRelease && (
-                    <Text fontSize='xs' fontWeight='semibold' color='text.body'>
+                    <Text fontSize='sm' fontWeight='semibold' color='text.body'>
                       Latest Release:{' '}
                       <Text as='span' fontWeight='normal'>
                         {sourceObj.latestRelease
@@ -217,7 +217,7 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
                     </Text>
                   )}
                   {sourceObj.lastCurated && (
-                    <Text fontSize='xs' fontWeight='semibold' color='text.body'>
+                    <Text fontSize='sm' fontWeight='semibold' color='text.body'>
                       Last Curated:{' '}
                       <Text as='span' fontWeight='normal'>
                         {sourceObj.lastCurated ? sourceObj.lastCurated : 'N/A'}
@@ -225,7 +225,7 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
                     </Text>
                   )}
                   {sourceObj.firstReleased && (
-                    <Text fontSize='xs' fontWeight='semibold' color='text.body'>
+                    <Text fontSize='sm' fontWeight='semibold' color='text.body'>
                       First Released:{' '}
                       <Text as='span' fontWeight='normal'>
                         {sourceObj.firstReleased
@@ -284,7 +284,7 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
                         Ecosystem Properties
                       </Text>
                       <Flex alignItems='center'>
-                        <Text mx={2} fontSize='xs' color='gray.800'>
+                        <Text mx={2} fontSize='sm' color='gray.800'>
                           {schemaText.includes(sourceObj.name)
                             ? 'Hide'
                             : 'Show'}

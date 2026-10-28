@@ -343,7 +343,7 @@ export const CompatibilityBadge = ({
                 {tooltipData.type.charAt(0).toUpperCase() +
                   tooltipData.type.slice(1)}
               </Text>
-              <Stack p={2} gap={1} fontSize='xs'>
+              <Stack p={2} gap={1} fontSize='sm'>
                 {tooltipData.count ? (
                   <>
                     <Text lineHeight='shorter'>
