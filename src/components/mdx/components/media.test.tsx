@@ -6,8 +6,9 @@ import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 
 import {
   getAspectRatio,
+  getObjectFit,
   getUploadedVideoType,
-  parseAspectRatio,
+  parseMediaTitle,
 } from './media';
 
 const STRAPI = 'https://strapi.example.org';
@@ -30,7 +31,7 @@ const Markdown = ({
 const getVideo = (name: string) =>
   document.querySelector(`video[aria-label="${name}"]`) as HTMLVideoElement;
 
-describe('parseAspectRatio', () => {
+describe('parseMediaTitle', () => {
   it.each([
     ['wide', '16 / 9'],
     ['Square', '1 / 1'],
@@ -40,19 +41,39 @@ describe('parseAspectRatio', () => {
     ['4:3', '4 / 3'],
     ['21/9', '21 / 9'],
     ['2.35 : 1', '2.35 / 1'],
-  ])('reads %p as %p', (title, expected) => {
-    expect(parseAspectRatio(title)).toBe(expected);
+  ])('reads %p as the ratio %p', (title, aspectRatio) => {
+    expect(parseMediaTitle(title)).toEqual({ aspectRatio });
+  });
+
+  it.each(['contain', 'Cover', 'fill', 'none', 'scale-down'])(
+    'reads %p as a fit',
+    title => {
+      expect(parseMediaTitle(title)).toEqual({
+        objectFit: title.toLowerCase(),
+      });
+    },
+  );
+
+  it.each([
+    ['square cover', { aspectRatio: '1 / 1', objectFit: 'cover' }],
+    ['cover 4:3', { aspectRatio: '4 / 3', objectFit: 'cover' }],
+    ['2.35 : 1, fill', { aspectRatio: '2.35 / 1', objectFit: 'fill' }],
+  ])('reads %p as a ratio and a fit', (title, expected) => {
+    expect(parseMediaTitle(title)).toEqual(expected);
   });
 
   it.each([
     undefined,
     '',
     'Hover text for the screenshot',
+    'Cover of the report',
     'constructor',
     '0:1',
     '16:9:1',
-  ])('treats %p as a tooltip, not a ratio', title => {
-    expect(parseAspectRatio(title)).toBeUndefined();
+    'square 4:3',
+    'cover contain',
+  ])('treats %p as a tooltip', title => {
+    expect(parseMediaTitle(title)).toBeUndefined();
   });
 });
 
@@ -81,10 +102,25 @@ describe('getAspectRatio', () => {
     expect(getAspectRatio('/uploads/a.webm', 'auto')).toBe('auto');
     expect(getAspectRatio('/uploads/a.webm', 'Filters panel')).toBe('16 / 9');
   });
+
+  it('reads the ratio from a title that also names a fit', () => {
+    expect(getAspectRatio('/uploads/a.png', 'square cover')).toBe('1 / 1');
+    expect(getAspectRatio('/uploads/a.webm', 'cover')).toBe('16 / 9');
+  });
+});
+
+describe('getObjectFit', () => {
+  it('shows the whole file unless the title names a fit', () => {
+    expect(getObjectFit()).toBe('contain');
+    expect(getObjectFit('square')).toBe('contain');
+    expect(getObjectFit('Cover of the report')).toBe('contain');
+    expect(getObjectFit('square cover')).toBe('cover');
+  });
 });
 
 // jsdom can't parse `aspect-ratio`/`object-fit`, so the rendered frame is
-// checked through `getAspectRatio` above; these cover what reaches the DOM.
+// checked through `getAspectRatio` and `getObjectFit` above; these cover what
+// reaches the DOM.
 describe('MDX media', () => {
   const originalUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL;
   beforeAll(() => {
@@ -101,16 +137,19 @@ describe('MDX media', () => {
     ).toHaveAttribute('src', `${STRAPI}/uploads/a.png`);
   });
 
-  it('drops a title that names a ratio', () => {
-    render(
-      <Markdown>
-        {'![Screenshot of filters](/uploads/a.png "square")'}
-      </Markdown>,
-    );
-    expect(
-      screen.getByRole('img', { name: 'Screenshot of filters' }),
-    ).not.toHaveAttribute('title');
-  });
+  it.each(['square', 'square cover'])(
+    'drops a title that names a ratio or fit (%p)',
+    title => {
+      render(
+        <Markdown>
+          {`![Screenshot of filters](/uploads/a.png "${title}")`}
+        </Markdown>,
+      );
+      expect(
+        screen.getByRole('img', { name: 'Screenshot of filters' }),
+      ).not.toHaveAttribute('title');
+    },
+  );
 
   it('keeps a title that is not a ratio as a tooltip', () => {
     render(

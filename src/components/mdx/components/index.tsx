@@ -361,8 +361,8 @@ export const MDXComponents = {
     />
   ),
   hr: (props: any) => <chakra.hr my={4} borderColor='gray.100' {...props} />,
-  // Images and uploaded videos, with a shared aspect-ratio convention. See
-  // `./media.tsx` for the syntax editors use in Strapi.
+  // Images and uploaded videos, with a shared aspect-ratio and fit
+  // convention. See `./media.tsx` for the syntax editors use in Strapi.
   img: (props: any) => <MDXMedia {...props} />,
   li: (props: any) => {
     const { ordered, ...rest } = props;

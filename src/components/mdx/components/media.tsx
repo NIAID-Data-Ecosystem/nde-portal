@@ -2,7 +2,7 @@ import { chakra, Image, SystemStyleObject } from '@chakra-ui/react';
 import React from 'react';
 
 /*
-Aspect ratios for images and videos uploaded to Strapi.
+Aspect ratios and fits for images and videos uploaded to Strapi.
 
 By default a video sits in a 16:9 frame and an image keeps its own shape. An
 editor picks a different ratio by putting it in quotes after the URL (the
@@ -11,9 +11,13 @@ markdown title):
   ![Screenshot of filters](/uploads/filters.png "square")
   [Video showing filters](/uploads/filters.webm "4:3")
 
-The title takes one of the keywords below or any `W:H`. A title that is
-neither stays an ordinary tooltip. Add a keyword here to offer editors a new
-preset, and list it in the editor guide, `docs/strapi/media-aspect-ratios.md`.
+The ratio is one of the keywords below or any `W:H`. A framed file is shown
+whole (`contain`) unless the title also names a fit, in either order:
+
+  ![Screenshot of filters](/uploads/filters.png "square cover")
+
+A title that is anything else stays an ordinary tooltip. Add a keyword here to
+offer editors a new preset, and list it in the strapi github wiki.
 */
 export const MEDIA_ASPECT_RATIOS: Record<string, string> = {
   wide: '16 / 9',
@@ -29,37 +33,78 @@ export const DEFAULT_ASPECT_RATIO = {
   video: MEDIA_ASPECT_RATIOS.wide,
 };
 
+/*
+How a file fills its frame, named by its CSS `object-fit` value. An image
+keeps its own shape unless the title names a ratio, so on an image a fit only
+has an effect alongside one (`"square cover"`).
+*/
+export const MEDIA_OBJECT_FITS = [
+  'contain',
+  'cover',
+  'fill',
+  'none',
+  'scale-down',
+];
+
+export const DEFAULT_OBJECT_FIT = 'contain';
+
 const VIDEO_TYPES: Record<string, string> = {
   webm: 'video/webm',
   mp4: 'video/mp4',
 };
 
-/*
-Returns the CSS aspect ratio a media title asks for, or `undefined` when the
-title is an ordinary tooltip. Keywords are case-insensitive, and `W/H` is
-accepted alongside `W:H`.
-*/
-export const parseAspectRatio = (title?: string) => {
-  const value = title?.trim().toLowerCase();
-  if (!value) {
-    return;
-  }
+// The CSS aspect ratio for one word of a title, e.g. `square` or `4:3`.
+const parseAspectRatio = (value: string) => {
   if (Object.prototype.hasOwnProperty.call(MEDIA_ASPECT_RATIOS, value)) {
     return MEDIA_ASPECT_RATIOS[value];
   }
-  const match = value.match(/^(\d*\.?\d+)\s*[:/]\s*(\d*\.?\d+)$/);
+  const match = value.match(/^(\d*\.?\d+)[:/](\d*\.?\d+)$/);
   if (match && Number(match[1]) > 0 && Number(match[2]) > 0) {
     return `${match[1]} / ${match[2]}`;
   }
 };
 
+/*
+Returns the ratio and fit a media title asks for, or `undefined` when the
+title is an ordinary tooltip: anything but at most one of each. Keywords are
+case-insensitive, and `W/H` is accepted alongside `W:H`.
+*/
+export const parseMediaTitle = (title?: string) => {
+  const words = title
+    ?.toLowerCase()
+    // Close up `16 : 9`, so a ratio stays one word.
+    .replace(/\s*([:/])\s*/g, '$1')
+    .split(/[\s,]+/)
+    .filter(Boolean);
+  if (!words?.length) {
+    return;
+  }
+  const options: { aspectRatio?: string; objectFit?: string } = {};
+  for (const word of words) {
+    const aspectRatio = parseAspectRatio(word);
+    if (aspectRatio && !options.aspectRatio) {
+      options.aspectRatio = aspectRatio;
+    } else if (MEDIA_OBJECT_FITS.includes(word) && !options.objectFit) {
+      options.objectFit = word;
+    } else {
+      return;
+    }
+  }
+  return options;
+};
+
 // The ratio a media item renders at: the one its title names, otherwise the
 // default for its kind.
 export const getAspectRatio = (src: string, title?: string) =>
-  parseAspectRatio(title) ??
+  parseMediaTitle(title)?.aspectRatio ??
   (getUploadedVideoType(src)
     ? DEFAULT_ASPECT_RATIO.video
     : DEFAULT_ASPECT_RATIO.image);
+
+// How a framed media item fills its frame: the fit its title names, otherwise
+// the whole file.
+export const getObjectFit = (title?: string) =>
+  parseMediaTitle(title)?.objectFit ?? DEFAULT_OBJECT_FIT;
 
 // Relative upload paths (`/uploads/x.png`) are served by Strapi, not the portal.
 export const resolveMediaSrc = (src: string) =>
@@ -113,11 +158,12 @@ A framed image takes the file's own width (preflight caps it at the column),
 and `aspectRatio` sets its height from that, so a small image is never
 stretched.
 */
-const frameStyles = (aspectRatio: string): SystemStyleObject => ({
+const frameStyles = (
+  aspectRatio: string,
+  objectFit: string,
+): SystemStyleObject => ({
   aspectRatio,
-  objectFit: 'contain',
-  // Letterbox bands read as part of the frame rather than stray whitespace.
-  bg: 'bg.subtle',
+  objectFit,
 });
 
 /*
@@ -149,12 +195,12 @@ export const MDXMedia = ({ node, src, alt, title, ...props }: any) => {
 
   // Spread before `props`, so a consumer's own style props still win.
   const styles: SystemStyleObject = {
-    ...(isFramed ? frameStyles(aspectRatio) : {}),
+    ...(isFramed ? frameStyles(aspectRatio, getObjectFit(title)) : {}),
     ...(isFramed && videoType ? videoFrameStyles : {}),
     ...(props.className?.split(' ').includes('border') ? borderStyles : {}),
   };
-  // A title that set the ratio is consumed; any other title is a tooltip.
-  const tooltip = parseAspectRatio(title) ? undefined : title;
+  // A title that set the ratio or fit is consumed; any other is a tooltip.
+  const tooltip = parseMediaTitle(title) ? undefined : title;
 
   if (videoType) {
     return (
