@@ -72,7 +72,7 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
           {current_total_score} / {max_total_score}
         </Text>
       </Flex>
-      <Separator></Separator>
+      <Separator />
       {/* Rows of included and augmented fields */}
       <Stack direction='row' flexWrap='wrap'>
         {data.map(item => (
