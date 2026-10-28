@@ -61,6 +61,30 @@ describe('Breadcrumbs Component', () => {
     // but only 2 are links (since the current page is not a link)
     expect(screen.getAllByRole('link')).toHaveLength(2);
   });
+  it('does not render links for routes outside the site', () => {
+    render(
+      <Breadcrumbs
+        segments={[
+          {
+            name: 'Search',
+            route: 'javascript:alert(document.domain)//search',
+            isCurrentPage: false,
+          },
+          {
+            name: 'Elsewhere',
+            route: 'https://example.com/search',
+            isCurrentPage: false,
+          },
+          { name: 'Resources', route: '/resources', isCurrentPage: true },
+        ]}
+      />,
+    );
+    expect(screen.queryByText('Search')).not.toBeInTheDocument();
+    expect(screen.queryByText('Elsewhere')).not.toBeInTheDocument();
+    expect(screen.getByText('Resources')).toBeInTheDocument();
+    // Only the home link remains, since the current page is not a link.
+    expect(screen.getAllByRole('link')).toHaveLength(1);
+  });
   it('renders null when there are no path segments', () => {
     const { container } = render(<Breadcrumbs segments={[]} />);
     expect(container).toBeEmptyDOMElement();
