@@ -73,20 +73,16 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
         <VStack minW='250px' alignItems='flex-start' m={0.5} flex={1}>
           <SkeletonText loading={loading} noOfLines={1} height={5}>
             <Flex alignItems='center'>
-              <Text
-                fontSize='sm'
-                lineHeight='moderate'
-                fontWeight='semibold'
-                color='text.body'
-              >
+              <Text fontSize='sm' fontWeight='semibold'>
                 API Version:
               </Text>
               {metadata?.version && (
                 <TagWithUrl
-                  bg='info.subtle'
                   href={`${process.env.NEXT_PUBLIC_API_URL}/metadata`}
                   isExternal
                   mx={1}
+                  variant='surface'
+                  colorPalette='niaid'
                 >
                   V.{metadata.version}
                 </TagWithUrl>
@@ -239,15 +235,13 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
                 {/* Description, with the link to the source's website
                 inlined at the end of the text. */}
                 {sourceObj?.description && (
-                  <Box fontSize='sm' lineHeight='moderate' color='text.body'>
-                    <StyledCardDescription>
-                      {sourceObj.url
-                        ? `${sourceObj.description.trimEnd()} [Visit ${
-                            sourceObj.name
-                          } website](<${sourceObj.url}>)`
-                        : sourceObj.description}
-                    </StyledCardDescription>
-                  </Box>
+                  <StyledCardDescription>
+                    {sourceObj.url
+                      ? `${sourceObj.description.trimEnd()} [Visit ${
+                          sourceObj.name
+                        } website](<${sourceObj.url}>)`
+                      : sourceObj.description}
+                  </StyledCardDescription>
                 )}
 
                 {/* Source Compatibility */}
@@ -275,8 +269,10 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
                       py={2}
                     >
                       <Text
+                        fontFamily='heading'
                         fontWeight='semibold'
-                        color='gray.800'
+                        fontSize='md'
+                        color='text.heading'
                         textAlign='left'
                         lineHeight='moderate'
                       >

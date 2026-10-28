@@ -47,7 +47,7 @@ export const StyledCard: React.FC<StyledCardProps> = ({
 }) => {
   return (
     <StyledCardWrapper id={id} loading={loading}>
-      <VStack alignItems='flex-start' lineHeight='moderate'>
+      <VStack alignItems='flex-start' gap={4}>
         <Stack
           flexDirection='row'
           alignItems='unset'
@@ -174,7 +174,13 @@ export const StyledCardDescription: React.FC<{ children: string }> = ({
   children,
 }) => {
   const MDXComponents = useMDXComponents({
-    p: props => DefaultMDXComponents.p({ ...props, fontSize: 'sm', mt: 0 }),
+    p: props =>
+      DefaultMDXComponents.p({
+        ...props,
+        fontSize: 'sm',
+        lineHeight: 'tall',
+        mt: 0,
+      }),
   });
 
   return (
