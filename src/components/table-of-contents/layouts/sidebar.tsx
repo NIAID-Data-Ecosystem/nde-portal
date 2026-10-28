@@ -29,7 +29,7 @@ export const Sidebar: React.FC<FlexProps & { ['aria-label']: string }> = ({
       height='100%'
       {...props}
     >
-      <List.Root as='ul' top={0} ml={0}>
+      <List.Root as='ul' top={0} pl={0}>
         {children}
       </List.Root>
     </Flex>
@@ -49,11 +49,11 @@ export const SidebarItem: React.FC<{
   const isHashLink = typeof href === 'string' && href.startsWith('#');
   return (
     <List.Item
-      _hover={{ bg: 'gray.50' }}
+      _hover={{ bg: 'whiteAlpha.800' }}
       cursor='pointer'
       borderTop='1px solid'
       borderRight='1px solid'
-      borderColor='gray.100'
+      borderColor='gray.200'
     >
       <Box display='block' px={[2, 4, 6]} py={4} asChild>
         <NextLink href={href}>
