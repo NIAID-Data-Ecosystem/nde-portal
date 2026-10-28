@@ -19,10 +19,26 @@ export const accordionSlotRecipe = defineSlotRecipe({
   slots: accordionAnatomy.keys(),
   base: {
     itemTrigger: {
+      bg: 'white',
       cursor: 'pointer',
       _hover: {
+        bg: 'bg.alt',
         '& [data-accordion-control]': {
           textDecoration: 'underline',
+        },
+      },
+    },
+  },
+  variants: {
+    variant: {
+      ruled: {
+        itemTrigger: {
+          borderY: '1px solid',
+          borderColor: 'border',
+          _open: {
+            bg: 'bg.alt',
+            '--bg-currentcolor': 'currentColor',
+          },
         },
       },
     },

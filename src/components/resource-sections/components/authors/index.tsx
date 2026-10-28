@@ -1,5 +1,4 @@
 import {
-  Accordion,
   Box,
   Heading,
   HStack,
@@ -13,7 +12,8 @@ import {
   Text,
 } from '@chakra-ui/react';
 import React from 'react';
-import { FaGlobe, FaMinus, FaPlus, FaRegEnvelope } from 'react-icons/fa6';
+import { FaGlobe, FaRegEnvelope } from 'react-icons/fa6';
+import { DetailsAccordion } from 'src/components/details-accordion';
 import { Link } from 'src/components/link';
 import Tooltip from 'src/components/tooltip';
 import { Author, FormattedResource } from 'src/utils/api/types';
@@ -133,7 +133,6 @@ const ResourceAuthors = ({
 
   const summary = (
     <Heading
-      flex='1'
       fontSize='sm'
       color='text.heading'
       fontWeight='light'
@@ -159,88 +158,53 @@ const ResourceAuthors = ({
   }
 
   return (
-    <Accordion.Root
-      collapsible
-      lazyMount
-      unmountOnExit
-      variant='plain'
+    <DetailsAccordion
+      summary={summary}
       fontSize='sm'
-      size='sm'
+      borderBottom='1px solid'
+      borderColor='gray.200'
     >
-      <Accordion.Item
-        value='authors'
-        borderBottom='1px solid'
-        borderColor='gray.200'
+      <List.Root
+        flexDirection={showAsList ? 'column' : 'row'}
+        flexWrap='wrap'
+        lineHeight='moderate'
       >
-        <Accordion.ItemTrigger
-          px={[4, 6]}
-          flexDirection={['column', null, 'row']}
-          alignItems={['flex-start', null, 'flex-end']}
-          gap={[0, null, 6]}
-          bg='white'
-          borderRadius='none'
-          _hover={{ bg: 'bg.alt' }}
-        >
-          {summary}
-          <Accordion.ItemContext>
-            {({ expanded }) => (
-              <HStack gap={1} fontSize='xs' fontWeight='light'>
-                <Text data-accordion-control>
-                  {expanded ? 'hide' : 'show details'}
-                </Text>
-
-                <Icon>{expanded ? <FaMinus /> : <FaPlus />}</Icon>
-              </HStack>
-            )}
-          </Accordion.ItemContext>
-        </Accordion.ItemTrigger>
-
-        <Accordion.ItemContent>
-          <Accordion.ItemBody>
-            <List.Root
-              flexDirection={showAsList ? 'column' : 'row'}
+        {authors.map((author, i) => {
+          const { affiliation, role } = author;
+          const isLast = i === authors.length - 1;
+          return (
+            <List.Item
+              key={i}
+              display='flex'
+              alignItems='center'
               flexWrap='wrap'
-              lineHeight='moderate'
+              mr={1}
             >
-              {authors.map((author, i) => {
-                const { affiliation, role } = author;
-                const isLast = i === authors.length - 1;
-                return (
-                  <List.Item
-                    key={i}
-                    display='flex'
-                    alignItems='center'
-                    flexWrap='wrap'
-                    mr={1}
-                  >
-                    <Text fontWeight='medium'>
-                      {!showAsList && isLast && 'and '}
-                      {formatAuthorName(author)}
-                    </Text>
-                    {role && <Text>{role}</Text>}
+              <Text fontWeight='medium'>
+                {!showAsList && isLast && 'and '}
+                {formatAuthorName(author)}
+              </Text>
+              {role && <Text>{role}</Text>}
 
-                    <AuthorContacts {...author} />
-                    {affiliation?.name && (
-                      <>
-                        ,&nbsp;
-                        {affiliation.sameAs ? (
-                          <Link href={affiliation.sameAs} isExternal ml={1}>
-                            {affiliation.name}
-                          </Link>
-                        ) : (
-                          <Text>{affiliation.name}</Text>
-                        )}
-                      </>
-                    )}
-                    {!showAsList && (isLast ? '.' : ',')}
-                  </List.Item>
-                );
-              })}
-            </List.Root>
-          </Accordion.ItemBody>
-        </Accordion.ItemContent>
-      </Accordion.Item>
-    </Accordion.Root>
+              <AuthorContacts {...author} />
+              {affiliation?.name && (
+                <>
+                  ,&nbsp;
+                  {affiliation.sameAs ? (
+                    <Link href={affiliation.sameAs} isExternal ml={1}>
+                      {affiliation.name}
+                    </Link>
+                  ) : (
+                    <Text>{affiliation.name}</Text>
+                  )}
+                </>
+              )}
+              {!showAsList && (isLast ? '.' : ',')}
+            </List.Item>
+          );
+        })}
+      </List.Root>
+    </DetailsAccordion>
   );
 };
 

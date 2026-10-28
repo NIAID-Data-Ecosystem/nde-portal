@@ -1,19 +1,11 @@
-import {
-  Accordion,
-  Flex,
-  Icon,
-  SimpleGrid,
-  Stack,
-  Tag,
-  Text,
-} from '@chakra-ui/react';
+import { Flex, SimpleGrid, Stack, Tag, Text } from '@chakra-ui/react';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import dynamic from 'next/dynamic';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
-import { FaMinus, FaPlus } from 'react-icons/fa6';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import { DetailsAccordion } from 'src/components/details-accordion';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 import { Link } from 'src/components/link';
 import { SORT_ORDER, SORT_ORDER_COMPTOOL } from 'src/components/metadata';
@@ -104,178 +96,127 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
   const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
   const router = useRouter();
   const referrerPath = router.query.referrerPath || '/search';
+
+  // A pill per metadata property, greyed out when the resource has no data for it.
+  const summary = (
+    <Flex flexWrap='wrap' alignItems='center'>
+      {sortedMetadataContent.map(({ label, property, disabled }) => {
+        const colorPalette = disabled ? 'gray' : getMetadataTheme(property);
+        const schemaProperty = schema[property];
+        // Get the description for the specific type, if available. Otherwise, use the abstract. If neither, use the dataset description.
+        const description =
+          schemaProperty?.description?.[type] ||
+          schemaProperty?.abstract?.[type] ||
+          schemaProperty?.description?.['Dataset'] ||
+          '';
+        return (
+          <Tag.Root
+            key={`tag-${id}-${label}`}
+            size='md'
+            variant='subtle'
+            borderRadius='full'
+            colorPalette={colorPalette}
+            // darker for variableMeasured
+            color={`${colorPalette}.${
+              property === 'variableMeasured' ? '900' : '700'
+            }`}
+            m={0.5}
+            aria-disabled={disabled}
+            opacity={disabled ? 0.65 : 1}
+          >
+            <Tooltip
+              content={
+                disabled ? `No ${label.toLocaleLowerCase()} data.` : description
+              }
+            >
+              <Flex alignItems='center'>
+                <Tag.Label>
+                  <Text color='inherit'>{label}</Text>
+                </Tag.Label>
+              </Flex>
+            </Tooltip>
+          </Tag.Root>
+        );
+      })}
+    </Flex>
+  );
+
   return (
-    <>
-      {/* Details expandable drawer */}
-      <Accordion.Root collapsible p={0} my={0} border='none'>
-        <Accordion.Item value='item-0' border='none'>
-          <Accordion.ItemContext>
-            {({ expanded }) => (
-              <>
-                <h2>
-                  <Accordion.ItemTrigger
-                    _hover={{ bg: 'bg.alt' }}
-                    flexDirection={{ base: 'column', md: 'row' }}
-                    px='var(--card-padding)'
-                  >
-                    <Flex
-                      flex='1'
-                      textAlign='left'
-                      flexWrap='wrap'
-                      alignItems='center'
-                    >
-                      {sortedMetadataContent.map(
-                        ({ label, property, disabled }) => {
-                          const colorPalette = disabled
-                            ? 'gray'
-                            : getMetadataTheme(property);
-                          const schemaProperty = schema[property];
-                          // Get the description for the specific type, if available. Otherwise, use the abstract. If neither, use the dataset description.
-                          const description =
-                            schemaProperty?.description?.[type] ||
-                            schemaProperty?.abstract?.[type] ||
-                            schemaProperty?.description?.['Dataset'] ||
-                            '';
-                          return (
-                            <Tag.Root
-                              key={`tag-${id}-${label}`}
-                              size='md'
-                              variant='subtle'
-                              borderRadius='full'
-                              colorPalette={colorPalette}
-                              // darker for variableMeasured
-                              color={`${colorPalette}.${
-                                property === 'variableMeasured' ? '900' : '700'
-                              }`}
-                              m={0.5}
-                              aria-disabled={disabled}
-                              opacity={disabled ? 0.65 : 1}
-                            >
-                              <Tooltip
-                                content={
-                                  disabled
-                                    ? `No ${label.toLocaleLowerCase()} data.`
-                                    : description
-                                }
-                              >
-                                <Flex alignItems='center'>
-                                  <Tag.Label>
-                                    <Text color='inherit'>{label}</Text>
-                                  </Tag.Label>
-                                </Flex>
-                              </Tooltip>
-                            </Tag.Root>
-                          );
-                        },
-                      )}
-                    </Flex>
-                    <Flex alignItems='center' mt={[2, 2, 0]}>
-                      <Text mx={2} fontSize='xs'>
-                        Show metadata
-                      </Text>
-                      <Icon
-                        as={expanded ? FaMinus : FaPlus}
-                        color='gray.600'
-                        boxSize={3}
-                      />
-                    </Flex>
-                  </Accordion.ItemTrigger>
-                </h2>
-                <Accordion.ItemContent w='100%'>
-                  <Accordion.ItemBody>
-                    {expanded ? (
-                      <SimpleGrid
-                        minChildWidth={{
-                          base: 'unset',
-                          sm: '280px',
-                          xl: '300px',
-                        }}
-                        rowGap={20}
-                        columnGap={10}
-                        px='calc(var(--card-padding)/2)'
-                      >
-                        {sortedMetadataContent.map(
-                          ({ img, items, url, ...props }) => {
-                            const maxItemsCount = 3;
-                            return (
-                              <MetadataBlock
-                                key={`property-${props.id}`}
-                                glyph={props.property}
-                                {...props}
-                              >
-                                {items && items.length > 0 && (
-                                  <Stack gap={1}>
-                                    <MetadataList>
-                                      {items
-                                        .slice(0, maxItemsCount)
-                                        .map(({ key, ...item }) => {
-                                          return (
-                                            <MetadataListItem
-                                              key={key}
-                                              property={props.property}
-                                            >
-                                              <MetadataContent
-                                                includeOntology
-                                                colorPalette={getMetadataTheme(
-                                                  props.property,
-                                                )}
-                                                {...item}
-                                              />
-                                            </MetadataListItem>
-                                          );
-                                        })}
-                                    </MetadataList>
-                                    {/* For the sample property, render a bullet-free
-                                      "Show more details" link below the list using
-                                      the top-level url set by createSampleContent. */}
-                                    {props.property === 'sample' && url && (
-                                      <Link asChild>
-                                        <NextLink href={url}>
-                                          Show more details
-                                        </NextLink>
-                                      </Link>
-                                    )}
-                                    {items.length > 3 && (
-                                      <Link asChild>
-                                        <NextLink
-                                          href={{
-                                            pathname: '/resources',
-                                            query: {
-                                              id,
-                                              referrerPath,
-                                            },
-                                            hash:
-                                              props.property === 'funding'
-                                                ? 'funding'
-                                                : 'overview',
-                                          }}
-                                        >
-                                          Show {items.length - maxItemsCount}{' '}
-                                          more item
-                                          {items.length - maxItemsCount > 1
-                                            ? 's'
-                                            : ''}
-                                        </NextLink>
-                                      </Link>
-                                    )}
-                                  </Stack>
-                                )}
-                              </MetadataBlock>
-                            );
+    <DetailsAccordion
+      summary={summary}
+      headingLevel='h2'
+      showLabel='show metadata'
+      hideLabel='hide metadata'
+      triggerProps={{ px: 'var(--card-padding)' }}
+    >
+      <SimpleGrid
+        minChildWidth={{
+          base: 'unset',
+          sm: '280px',
+          xl: '300px',
+        }}
+        rowGap={20}
+        columnGap={10}
+        px='calc(var(--card-padding))'
+      >
+        {sortedMetadataContent.map(({ img, items, url, ...props }) => {
+          const maxItemsCount = 3;
+          return (
+            <MetadataBlock
+              key={`property-${props.id}`}
+              glyph={props.property}
+              {...props}
+            >
+              {items && items.length > 0 && (
+                <Stack gap={1}>
+                  <MetadataList>
+                    {items.slice(0, maxItemsCount).map(({ key, ...item }) => {
+                      return (
+                        <MetadataListItem key={key} property={props.property}>
+                          <MetadataContent
+                            includeOntology
+                            colorPalette={getMetadataTheme(props.property)}
+                            {...item}
+                          />
+                        </MetadataListItem>
+                      );
+                    })}
+                  </MetadataList>
+                  {/* For the sample property, render a bullet-free
+                      "Show more details" link below the list using
+                      the top-level url set by createSampleContent. */}
+                  {props.property === 'sample' && url && (
+                    <Link asChild>
+                      <NextLink href={url}>Show more details</NextLink>
+                    </Link>
+                  )}
+                  {items.length > 3 && (
+                    <Link asChild>
+                      <NextLink
+                        href={{
+                          pathname: '/resources',
+                          query: {
+                            id,
+                            referrerPath,
                           },
-                        )}
-                      </SimpleGrid>
-                    ) : (
-                      <></>
-                    )}
-                  </Accordion.ItemBody>
-                </Accordion.ItemContent>
-              </>
-            )}
-          </Accordion.ItemContext>
-        </Accordion.Item>
-      </Accordion.Root>
-    </>
+                          hash:
+                            props.property === 'funding'
+                              ? 'funding'
+                              : 'overview',
+                        }}
+                      >
+                        Show {items.length - maxItemsCount} more item
+                        {items.length - maxItemsCount > 1 ? 's' : ''}
+                      </NextLink>
+                    </Link>
+                  )}
+                </Stack>
+              )}
+            </MetadataBlock>
+          );
+        })}
+      </SimpleGrid>
+    </DetailsAccordion>
   );
 };
 

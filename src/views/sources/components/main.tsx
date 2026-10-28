@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Collapsible,
   Flex,
   HStack,
   Icon,
@@ -11,8 +10,9 @@ import {
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import React, { useState } from 'react';
-import { FaMinus, FaPlus, FaUpRightFromSquare } from 'react-icons/fa6';
+import { FaUpRightFromSquare } from 'react-icons/fa6';
 import { BadgeWithTooltip } from 'src/components/badges';
+import { DetailsAccordion } from 'src/components/details-accordion';
 import { MetadataCompatibilitySourceBadge } from 'src/components/metadata-compatibility-source-badge';
 import {
   StyledCard,
@@ -37,18 +37,7 @@ interface Main {
 }
 
 const Main: React.FC<Main> = ({ data, loading, metadata }) => {
-  const [schemaId, setSchemaId] = useState<string[]>([]);
-  const [schemaText, setSchemaText] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState('');
-
-  function schemaIdFunc(sourceName: string) {
-    if (schemaId.includes(sourceName) || schemaText.includes(sourceName)) {
-      setSchemaText(schemaText.filter(schemaText => schemaText !== sourceName));
-      return setSchemaId(schemaId.filter(schemaId => schemaId !== sourceName));
-    }
-    setSchemaText([...schemaText, sourceName]);
-    return setSchemaId([...schemaId, sourceName]);
-  }
 
   const sources =
     data?.filter((source: { name: string }) =>
@@ -111,7 +100,7 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
         />
       </Flex>
       <StyledCardStack>
-        {sources.map((sourceObj: SourceDisplayItem, index: number) => {
+        {sources.map((sourceObj: SourceDisplayItem) => {
           // Metadata compatibility badge. `Source` is flattened, so
           // `parentCollection`/`metadata_completeness` sit at the top level.
           // The parent is matched by `identifier` (the hook's `key` is a
@@ -132,7 +121,10 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
 
           return (
             <StyledCard
-              key={index}
+              // Keyed by source rather than position: each card holds its
+              // mapping accordion's open state, which would otherwise move to
+              // a different source when the search filter shifts the list.
+              key={sourceObj.slug || sourceObj.name}
               id={sourceObj.slug}
               loading={loading}
               title={sourceObj.name}
@@ -255,116 +247,78 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
 
                 {/* Property transformations table */}
                 {sourceObj?.schema && (
-                  <Box w='100%' py={2}>
-                    <Flex
-                      w='100%'
-                      as='button'
-                      flexDirection={{ base: 'column', sm: 'row' }}
-                      alignItems='center'
-                      justifyContent='space-between'
-                      onClick={() => schemaIdFunc(sourceObj.name)}
-                      borderY='1px solid'
-                      borderColor='gray.100'
-                      px={0}
-                      py={2}
-                    >
+                  <DetailsAccordion
+                    variant='ruled'
+                    summary={
                       <Text
                         fontFamily='heading'
                         fontWeight='semibold'
                         fontSize='md'
                         color='text.heading'
-                        textAlign='left'
                         lineHeight='moderate'
                       >
                         Mapping of {sourceObj.name} Properties to NIAID Data
                         Ecosystem Properties
                       </Text>
-                      <Flex alignItems='center'>
-                        <Text mx={2} fontSize='sm' color='gray.800'>
-                          {schemaText.includes(sourceObj.name)
-                            ? 'Hide'
-                            : 'Show'}
-                        </Text>
-                        <Icon
-                          as={
-                            schemaText.includes(sourceObj.name)
-                              ? FaMinus
-                              : FaPlus
-                          }
-                          color='gray.800'
-                          boxSize={3}
-                        />
-                      </Flex>
-                    </Flex>
-                    <Collapsible.Root open={schemaId.includes(sourceObj.name)}>
-                      <Collapsible.Content>
-                        {schemaId.includes(sourceObj.name) && (
-                          <Box
-                            mt={4}
-                            position='relative'
-                            overflowX='auto'
-                            boxShadow='low'
-                            borderRadius='semi'
-                          >
-                            <Box
-                              as='table'
-                              w='100%'
-                              bg='#374151'
-                              color='whiteAlpha.800'
-                              textAlign='left'
-                              fontSize='sm'
-                            >
-                              <Box
-                                as='thead'
-                                textTransform='uppercase'
-                                color='#fff'
-                              >
-                                <tr>
-                                  <Box as='th' px={6} py={3}>
-                                    {sourceObj.name} Property
-                                  </Box>
-                                  <Box as='th' px={6} py={3}>
-                                    NIAID Data Ecosystem Property
-                                  </Box>
-                                </tr>
-                              </Box>
-
-                              <Box as='tbody' bg='#1F2937' border='gray.100'>
-                                {Object.entries(sourceObj.schema).map(
-                                  (item, i) => {
-                                    return (
-                                      <Box
-                                        as='tr'
-                                        key={item[0]}
-                                        borderBottom='1px solid'
-                                        borderColor='gray.700'
-                                      >
-                                        {Object.entries(item).map(field => {
-                                          return (
-                                            <Box
-                                              as='td'
-                                              key={`${field[0]}-${field[1]}`}
-                                              px={6}
-                                              py={2}
-                                              fontWeight='medium'
-                                              color='#fff'
-                                              whiteSpace='nowrap'
-                                            >
-                                              {field[1]}
-                                            </Box>
-                                          );
-                                        })}
-                                      </Box>
-                                    );
-                                  },
-                                )}
-                              </Box>
+                    }
+                  >
+                    <Box
+                      mt={2}
+                      position='relative'
+                      overflowX='auto'
+                      boxShadow='low'
+                      borderRadius='semi'
+                    >
+                      <Box
+                        as='table'
+                        w='100%'
+                        bg='#374151'
+                        color='whiteAlpha.800'
+                        textAlign='left'
+                        fontSize='sm'
+                      >
+                        <Box as='thead' textTransform='uppercase' color='#fff'>
+                          <tr>
+                            <Box as='th' px={6} py={3}>
+                              {sourceObj.name} Property
                             </Box>
-                          </Box>
-                        )}
-                      </Collapsible.Content>
-                    </Collapsible.Root>
-                  </Box>
+                            <Box as='th' px={6} py={3}>
+                              NIAID Data Ecosystem Property
+                            </Box>
+                          </tr>
+                        </Box>
+
+                        <Box as='tbody' bg='#1F2937' border='gray.100'>
+                          {Object.entries(sourceObj.schema).map((item, i) => {
+                            return (
+                              <Box
+                                as='tr'
+                                key={item[0]}
+                                borderBottom='1px solid'
+                                borderColor='gray.700'
+                              >
+                                {Object.entries(item).map(field => {
+                                  return (
+                                    <Box
+                                      as='td'
+                                      key={`${field[0]}-${field[1]}`}
+                                      px={6}
+                                      py={2}
+                                      fontWeight='medium'
+                                      color='#fff'
+                                      whiteSpace='nowrap'
+                                    >
+                                      {field[1]}
+                                    </Box>
+                                  );
+                                })}
+                              </Box>
+                            );
+                          })}
+                        </Box>
+                      </Box>
+                    </Box>
+                  </DetailsAccordion>
                 )}
               </>
             </StyledCard>
