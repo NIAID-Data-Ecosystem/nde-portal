@@ -1,19 +1,21 @@
-import { Box, Flex } from '@chakra-ui/react';
+import { Box, Flex, FlexProps } from '@chakra-ui/react';
 import { ParentSize } from '@visx/responsive';
 import { MetadataSource } from 'src/hooks/api/types';
 
 import { InfoLabel } from '../info-label';
 import { CompatibilityBadge } from './components/badge';
 
-export const MetadataCompatibilitySourceBadge: React.FC<{
-  data: MetadataSource['sourceInfo']['metadata_completeness'] | null;
-}> = ({ data }) => {
+export const MetadataCompatibilitySourceBadge: React.FC<
+  FlexProps & {
+    data: MetadataSource['sourceInfo']['metadata_completeness'] | null;
+  }
+> = ({ data, ...flexProps }) => {
   if (!data) {
     return <></>;
   }
 
   return (
-    <Flex flexDirection='column'>
+    <Flex flexDirection='column' {...flexProps}>
       <InfoLabel
         href='/knowledge-center/metadata-compatibility-badge'
         tooltipProps={{

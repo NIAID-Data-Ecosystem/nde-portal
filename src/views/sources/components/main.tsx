@@ -13,6 +13,7 @@ import React, { useState } from 'react';
 import { FaUpRightFromSquare } from 'react-icons/fa6';
 import { BadgeWithTooltip } from 'src/components/badges';
 import { DetailsAccordion } from 'src/components/details-accordion';
+import { Link } from 'src/components/link';
 import { MetadataCompatibilitySourceBadge } from 'src/components/metadata-compatibility-source-badge';
 import {
   StyledCard,
@@ -61,32 +62,26 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
       <Flex justifyContent='space-between' flexWrap='wrap-reverse'>
         <VStack minW='250px' alignItems='flex-start' m={0.5} flex={1}>
           <SkeletonText loading={loading} noOfLines={1} height={5}>
-            <Flex alignItems='center'>
-              <Text fontSize='sm' fontWeight='semibold'>
-                API Version:
-              </Text>
+            <HStack alignItems='center' fontSize='sm' gap={1}>
+              <Text fontWeight='semibold'>API Version:</Text>
               {metadata?.version && (
-                <TagWithUrl
+                <Link
                   href={`${process.env.NEXT_PUBLIC_API_URL}/metadata`}
                   isExternal
-                  mx={1}
-                  variant='surface'
-                  colorPalette='niaid'
                 >
                   V.{metadata.version}
-                </TagWithUrl>
+                </Link>
               )}
-            </Flex>
+            </HStack>
           </SkeletonText>
           <SkeletonText loading={loading} noOfLines={1} height={5}>
             {metadata?.date && (
-              <Text fontSize='sm' lineHeight='moderate' fontWeight='semibold'>
-                Data last harvested:
-                <Text as='span' fontWeight='normal'>
-                  {' '}
-                  {formatDate(metadata?.date)}
+              <HStack fontSize='sm' gap={1}>
+                <Text lineHeight='moderate' fontWeight='semibold'>
+                  Data last harvested:
                 </Text>
-              </Text>
+                <Text>{formatDate(metadata?.date)}</Text>
+              </HStack>
             )}
           </SkeletonText>
         </VStack>
@@ -240,6 +235,7 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
                 {metadataCompatibilityData && (
                   <MetadataCompatibilitySourceBadge
                     data={metadataCompatibilityData}
+                    py={2}
                   />
                 )}
 
