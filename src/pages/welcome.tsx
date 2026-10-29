@@ -11,11 +11,12 @@ import {
   Heading,
   Icon,
   ListItem,
+  ListIcon,
   Text,
   UnorderedList,
   VStack,
 } from '@chakra-ui/react';
-import { FaRegBookmark } from 'react-icons/fa6';
+import { FaCircle, FaRegBookmark } from 'react-icons/fa6';
 import { useAuth } from 'src/hooks/useAuth';
 import { useUserData } from 'src/hooks/useUserData';
 import { UserPreferences } from 'src/hooks/useUserData/types';
@@ -150,6 +151,13 @@ function WelcomePage() {
           </Heading>
           <UnorderedList spacing={2} color='gray.800'>
             <ListItem>
+              <ListIcon
+                as={FaCircle}
+                aria-hidden='true'
+                m={1.5}
+                mr={2}
+                boxSize={1}
+              />
               To save a search, use the bookmark icon{' '}
               <Icon
                 as={FaRegBookmark}
@@ -159,6 +167,13 @@ function WelcomePage() {
               on any search results page.
             </ListItem>
             <ListItem>
+              <ListIcon
+                as={FaCircle}
+                aria-hidden='true'
+                m={1.5}
+                mr={2}
+                boxSize={1}
+              />
               To save a resource, use the{' '}
               <Icon
                 as={FaRegBookmark}
@@ -167,7 +182,16 @@ function WelcomePage() {
               />{' '}
               Save button.
             </ListItem>
-            <ListItem>Find saved items in Saved Searches.</ListItem>
+            <ListItem>
+              <ListIcon
+                as={FaCircle}
+                aria-hidden='true'
+                m={1.5}
+                mr={2}
+                boxSize={1}
+              />
+              Find saved items in Saved Searches.
+            </ListItem>
           </UnorderedList>
         </VStack>
 
