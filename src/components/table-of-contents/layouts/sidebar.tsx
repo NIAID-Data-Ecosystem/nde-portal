@@ -45,8 +45,18 @@ export const SidebarItem: React.FC<{
   // browser. Routing them through `next/link` invokes the Next router, which
   // throws "Cancel rendering route" when navigations overlap (e.g. clicking
   // several items in quick succession) — so use a plain anchor for those.
-  // [chakra-to-do]: check if this is necessary in v3
+
   const isHashLink = typeof href === 'string' && href.startsWith('#');
+  const content = (
+    <>
+      {typeof label === 'string' ? <Label>{label}</Label> : label}
+      {subLabel && (
+        <Text fontSize='sm' lineHeight='moderate'>
+          {subLabel}
+        </Text>
+      )}
+    </>
+  );
   return (
     <List.Item
       _hover={{ bg: 'whiteAlpha.800' }}
@@ -56,14 +66,11 @@ export const SidebarItem: React.FC<{
       borderColor='gray.200'
     >
       <Box display='block' px={[2, 4, 6]} py={4} asChild>
-        <NextLink href={href}>
-          {typeof label === 'string' ? <Label>{label}</Label> : label}
-          {subLabel && (
-            <Text fontSize='sm' lineHeight='moderate'>
-              {subLabel}
-            </Text>
-          )}
-        </NextLink>
+        {isHashLink ? (
+          <a href={href}>{content}</a>
+        ) : (
+          <NextLink href={href}>{content}</NextLink>
+        )}
       </Box>
     </List.Item>
   );
