@@ -27,7 +27,9 @@ export const MetadataCompatibilitySourceBadge: React.FC<
         Metadata Compatibility
       </InfoLabel>
 
-      <Box w='350px'>
+      {/* Fluid up to 350px so ParentSize reports the real available width and
+      the badge wraps its bins onto extra rows on narrow screens. */}
+      <Box w='100%' maxW='350px'>
         <ParentSize>
           {({ width }) => <CompatibilityBadge width={width} data={data} />}
         </ParentSize>
