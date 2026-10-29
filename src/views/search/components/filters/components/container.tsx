@@ -99,7 +99,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   const content = (
     <>
       {/* Popover for customizing visible filters */}
-      <Stack gap={2}>
+      <Stack gap={2} p={2}>
         <Flex>
           <CustomizeFiltersPopover
             filtersList={filtersList}
@@ -109,7 +109,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         <Flex justifyContent='flex-end'>
           <Button
             colorPalette={colorPalette}
-            variant='plain'
+            variant='unstyled'
             underline
             size='xs'
             onClick={removeAllFilters}
