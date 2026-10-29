@@ -130,14 +130,7 @@ function WelcomePage() {
           {providerId && (
             <Text color='gray.800' fontSize='md'>
               {WELCOME_COPY.provider.loggedInWith}{' '}
-              <Box
-                as='span'
-                display='inline-flex'
-                alignItems='center'
-                verticalAlign='middle'
-              >
-                <ProviderIcon providerId={providerId} />
-              </Box>{' '}
+              <ProviderIcon providerId={providerId} verticalAlign='-0.25em' />{' '}
               {providerLabel}.{' '}
               {WELCOME_COPY.provider.useEveryTime(providerLabel)}
             </Text>
