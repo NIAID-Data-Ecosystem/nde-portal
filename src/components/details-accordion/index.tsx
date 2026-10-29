@@ -54,10 +54,15 @@ export const DetailsAccordion = ({
 }: DetailsAccordionProps) => {
   const trigger = (
     <Accordion.ItemTrigger
-      px={[4, 6]}
+      // Reads the root's padding variable, so variants that pad the content too (`ruled`, `enclosed`) line it up with the trigger.
+      px='var(--accordion-padding-x)'
       flexDirection={{ base: 'column', md: 'row' }}
       alignItems={{ base: 'flex-start', md: 'flex-end' }}
       gap={{ base: 0, md: 6 }}
+      bg='white'
+      _hover={{
+        bg: 'bg.alt',
+      }}
       borderRadius='none'
       {...triggerProps}
     >
@@ -73,6 +78,7 @@ export const DetailsAccordion = ({
       unmountOnExit
       variant='plain'
       size='sm'
+      css={{ '--accordion-padding-x': { base: 'spacing.4', sm: 'spacing.6' } }}
       {...props}
     >
       <Accordion.Item value={ITEM_VALUE}>

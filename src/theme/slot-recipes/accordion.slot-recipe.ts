@@ -19,10 +19,8 @@ export const accordionSlotRecipe = defineSlotRecipe({
   slots: accordionAnatomy.keys(),
   base: {
     itemTrigger: {
-      bg: 'white',
       cursor: 'pointer',
       _hover: {
-        bg: 'bg.alt',
         '& [data-accordion-control]': {
           textDecoration: 'underline',
         },
@@ -31,13 +29,24 @@ export const accordionSlotRecipe = defineSlotRecipe({
   },
   variants: {
     variant: {
+      // Chakra's `enclosed` without the side borders. Square corners, since a
+      // radius with no side borders tapers the top and bottom rules into hooks.
       ruled: {
+        root: {
+          '--accordion-radius': 'radii.none',
+          borderYWidth: '1px',
+          divideY: '1px',
+          overflow: 'hidden',
+        },
         itemTrigger: {
-          borderY: '1px solid',
-          borderColor: 'border',
+          px: 'var(--accordion-padding-x)',
+        },
+        itemContent: {
+          px: 'var(--accordion-padding-x)',
+        },
+        item: {
           _open: {
-            bg: 'bg.alt',
-            '--bg-currentcolor': 'currentColor',
+            bg: 'bg.subtle',
           },
         },
       },
