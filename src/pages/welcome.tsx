@@ -47,7 +47,8 @@ const WELCOME_COPY = {
     updates: {
       title:
         "Choose the updates you'd like to receive from the NIAID Data Ecosystem.",
-      subtitle: 'You can change your preferences at any time.',
+      subtitle:
+        'You can change your preferences at any time in Account Settings.',
     },
   },
   saveButton: 'Save Settings',
