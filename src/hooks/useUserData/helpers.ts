@@ -1,4 +1,22 @@
-import { SavedQuery } from './types';
+import { SavedQuery, UserAccount } from './types';
+
+// How long after creation an account still counts as "new" for the sign-up
+// welcome page.
+export const NEW_ACCOUNT_WINDOW_MS = 10 * 60 * 1000;
+
+/**
+ * Treat an account as new when it was created within NEW_ACCOUNT_WINDOW_MS and
+ * hasn't been updated since (no preferences saved yet).
+ */
+export const isNewAccount = (
+  account: Pick<UserAccount, 'created' | 'updated'> | null,
+  now = Date.now(),
+): boolean => {
+  if (!account?.created || account.created !== account.updated) return false;
+  const created = Date.parse(account.created);
+  if (Number.isNaN(created)) return false;
+  return now - created <= NEW_ACCOUNT_WINDOW_MS;
+};
 
 // Filter value objects encode existence checks, e.g. { '-_exists_': ['date'] }.
 const EXISTS_KEYS = ['_exists_', '-_exists_'] as const;

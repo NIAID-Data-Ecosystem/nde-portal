@@ -308,6 +308,13 @@
         "description": "View and manage your saved searches within the NIAID Data Ecosystem."
       },
       "env": ["dev", "staging"]
+    },
+    "/welcome": {
+      "seo": {
+        "title": "Welcome",
+        "description": "Welcome to your NIAID Data Ecosystem account."
+      },
+      "env": ["dev", "staging"]
     }
   },
   "navigation": {

@@ -14,14 +14,9 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
-import {
-  FaCheck,
-  FaGithub,
-  FaGoogle,
-  FaMicrosoft,
-  FaOrcid,
-} from 'react-icons/fa6';
+import { FaCheck } from 'react-icons/fa6';
 import { useRouter } from 'next/router';
+import { ProviderIcon } from 'src/components/auth/provider-icon';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { useAuth } from 'src/hooks/useAuth';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
@@ -33,40 +28,6 @@ const ListItemContent = ({ children }: { children: React.ReactNode }) => (
     <Text fontSize='inherit'>{children}</Text>
   </HStack>
 );
-
-const ProviderIcon = ({ providerId }: { providerId: string }) => {
-  if (providerId.toLowerCase() === 'orcid') {
-    return <Icon as={FaOrcid} color='#A6CE39' boxSize={5} aria-hidden='true' />;
-  }
-
-  if (providerId.toLowerCase() === 'github') {
-    return (
-      <Icon as={FaGithub} color='#24292e ' boxSize={5} aria-hidden='true' />
-    );
-  }
-
-  if (providerId.toLowerCase() === 'google') {
-    return (
-      <Icon as={FaGoogle} color='#4285F4' boxSize={5} aria-hidden='true' />
-    );
-  }
-
-  if (providerId.toLowerCase() === 'microsoft') {
-    return (
-      <Icon as={FaMicrosoft} color='#00A4EF' boxSize={5} aria-hidden='true' />
-    );
-  }
-
-  return (
-    <Box
-      aria-hidden='true'
-      boxSize='16px'
-      borderRadius='full'
-      bg='gray.400'
-      display='inline-block'
-    />
-  );
-};
 
 function LoginPage() {
   const router = useRouter();
