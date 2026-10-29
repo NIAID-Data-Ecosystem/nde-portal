@@ -63,7 +63,7 @@ export const Footer = () => {
         >
           {label}
         </LinksHeading>
-        <List.Root as='ul' ml={0} {...listProps}>
+        <List.Root as='ul' pl={0} {...listProps}>
           {routes &&
             routes.map(route => {
               if (route.routes) {
@@ -111,7 +111,7 @@ export const Footer = () => {
   return (
     <Box
       as='footer'
-      bg='gray.900'
+      bg='gray.700'
       color='white'
       borderTop='0.25rem solid'
       borderColor='accent.400'
@@ -137,7 +137,7 @@ export const Footer = () => {
                   {section.label && (
                     <LinksHeading mt={8}>{section.label}</LinksHeading>
                   )}
-                  <List.Root as='ul' ml={0} my={4}>
+                  <List.Root as='ul' pl={0} my={4}>
                     {section.routes &&
                       section.routes.map(({ href, label, isExternal }) => {
                         return (
@@ -175,7 +175,7 @@ export const Footer = () => {
         borderTopWidth={1}
         borderStyle='solid'
         bg='text.heading'
-        borderColor='gray.700'
+        borderColor='gray.900'
       >
         <Flex
           px={{ base: 0, sm: 4 }}

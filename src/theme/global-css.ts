@@ -35,6 +35,15 @@ export const globalCss = defineGlobalStyles({
   '*::placeholder, *[data-placeholder]': {
     color: 'text.placeholder',
   },
+  /* Chakra's own rule here is `colorPalette.emphasized/80`. With `colorPalette:
+     'none'` on `html` that variable is empty, so the highlight resolves to
+     transparent and selected text looks unselectable. v2 had no rule, so
+     `revert` hands selection back to the browser's native highlight (and its
+     contrasting text colour). Not `Highlight`: that keeps our text colour,
+     which is low-contrast against it. */
+  '*::selection': {
+    bg: 'revert',
+  },
   // [chakra-todo] unsure if needed, but keeping for now to match v2's `styles.global`
   // strong: {
   //   lineHeight: 'inherit',

@@ -30,22 +30,18 @@ const AccessResourceButton: React.FC<
   const isInternalLink = url.startsWith('/');
 
   return (
-    <NextLink
-      href={url}
-      target={isInternalLink ? undefined : '_blank'}
-      style={{ width: '100%' }}
-      passHref
+    <Button
+      asChild
+      colorPalette={colorPalette}
+      size='sm'
+      width='100%'
+      {...buttonProps}
     >
-      <Button
-        colorPalette={colorPalette}
-        size='sm'
-        width='100%'
-        {...buttonProps}
-      >
-        {showIcon ? <FaArrowRight /> : undefined}
+      <NextLink href={url} target={isInternalLink ? undefined : '_blank'}>
         {label}
-      </Button>
-    </NextLink>
+        {showIcon ? <FaArrowRight /> : undefined}
+      </NextLink>
+    </Button>
   );
 };
 
@@ -70,14 +66,14 @@ export const DataAccess: React.FC<DataAccessProps> = ({
       : [];
 
   return (
-    <Stack mt={4} flexDirection='column' alignItems='flex-start' gap={4}>
+    <Stack mt={4} flexDirection='row' flexWrap='wrap' gap={6}>
       {sources.map(source => (
-        <React.Fragment key={source.name}>
+        <Flex key={source.name} flexDirection='column'>
           <SourceLogo.Component
             imageProps={{
               width: 'auto',
               height: 'unset',
-              maxHeight: '80px',
+              maxHeight: '150px',
               mb: 1,
             }}
             source={source}
@@ -108,7 +104,7 @@ export const DataAccess: React.FC<DataAccessProps> = ({
               </VStack>
             </Flex>
           )}
-        </React.Fragment>
+        </Flex>
       ))}
     </Stack>
   );

@@ -207,14 +207,14 @@ const Sources: NextPage<SourcesProps> = ({ data }) => {
                 })}
             </Sidebar>
             <PageContent
+              width='100%'
               bg='#fff'
-              maxW={{ base: 'unset', lg: '1200px' }}
-              margin='0 auto'
-              px={4}
-              py={4}
-              justifyContent='flex-start'
-              mb={32}
               flex={3}
+              justifyContent='flex-start'
+              margin='0 auto'
+              maxW={{ base: 'unset', lg: '1200px' }}
+              mb={32}
+              p={4}
             >
               <Main data={sourceItems} loading={isLoading} metadata={meta} />
             </PageContent>

@@ -172,6 +172,7 @@ export const CheckboxMenu = <T extends Option>({
                         asChild
                         key={option.value}
                         value={option.value}
+                        cursor='pointer'
                         _highlighted={{ bg: highlightBg }}
                       >
                         <Checkbox.Root

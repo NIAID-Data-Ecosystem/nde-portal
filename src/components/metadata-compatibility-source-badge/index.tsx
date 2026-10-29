@@ -1,30 +1,39 @@
-import { Box } from '@chakra-ui/react';
+import { Box, Flex, FlexProps } from '@chakra-ui/react';
 import { ParentSize } from '@visx/responsive';
 import { MetadataSource } from 'src/hooks/api/types';
 
-import TooltipWithLink from '../tooltip-with-link';
+import { InfoLabel } from '../info-label';
 import { CompatibilityBadge } from './components/badge';
 
-export const MetadataCompatibilitySourceBadge: React.FC<{
-  data: MetadataSource['sourceInfo']['metadata_completeness'] | null;
-}> = ({ data }) => {
+export const MetadataCompatibilitySourceBadge: React.FC<
+  FlexProps & {
+    data: MetadataSource['sourceInfo']['metadata_completeness'] | null;
+  }
+> = ({ data, ...flexProps }) => {
   if (!data) {
     return <></>;
   }
 
   return (
-    <>
-      <TooltipWithLink
-        content='The metadata compatibility badge is a quantitative measure that represents how well a repository aligns with the metadata standards of the NIAID Data Ecosystem.'
-        url='/knowledge-center/metadata-compatibility-badge'
+    <Flex flexDirection='column' {...flexProps}>
+      <InfoLabel
+        href='/knowledge-center/metadata-compatibility-badge'
+        tooltipProps={{
+          interactive: true,
+          content:
+            'The metadata compatibility badge is a quantitative measure that represents how well a repository aligns with the metadata standards of the NIAID Data Ecosystem.',
+        }}
       >
         Metadata Compatibility
-      </TooltipWithLink>
-      <Box w='350px'>
+      </InfoLabel>
+
+      {/* Fluid up to 350px so ParentSize reports the real available width and
+      the badge wraps its bins onto extra rows on narrow screens. */}
+      <Box w='100%' maxW='350px'>
         <ParentSize>
           {({ width }) => <CompatibilityBadge width={width} data={data} />}
         </ParentSize>
       </Box>
-    </>
+    </Flex>
   );
 };

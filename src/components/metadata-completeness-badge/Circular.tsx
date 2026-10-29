@@ -12,10 +12,10 @@ import { Group } from '@visx/group';
 import Pie, { PieArcDatum, ProvidedProps } from '@visx/shape/lib/shapes/Pie';
 import { uniqueId } from 'lodash';
 import React, { useMemo } from 'react';
-import { FaInfo } from 'react-icons/fa6';
 import Tooltip from 'src/components/tooltip';
 import { FormattedResource } from 'src/utils/api/types';
 
+import { InfoLabel } from '../info-label';
 import { getMetadataListByType, getTooltipDetails } from './helpers';
 import { TooltipContent } from './TooltipContent';
 
@@ -160,6 +160,7 @@ export const CompletenessBadgeCircle = ({
   return (
     <Flex
       p={2}
+      gap={2}
       justifyContent='center'
       alignItems='center'
       flexDirection='column'
@@ -167,6 +168,7 @@ export const CompletenessBadgeCircle = ({
     >
       <Box position='relative' cursor='default'>
         <Tooltip
+          contentProps={{ maxWidth: 'unset' }}
           content={
             <TooltipContent
               type={type}
@@ -286,36 +288,20 @@ export const CompletenessBadgeCircle = ({
           </span>
         </Tooltip>
       </Box>
-      <Tooltip
-        interactive
-        content={
-          <Link href='/knowledge-center/metadata-compatibility-score'>
-            See metadata compatibility documentation.
-          </Link>
-        }
+
+      <InfoLabel
+        href='/knowledge-center/metadata-compatibility-score'
+        tooltipProps={{
+          interactive: true,
+          content: (
+            <Link href='/knowledge-center/metadata-compatibility-score'>
+              See metadata compatibility documentation.
+            </Link>
+          ),
+        }}
       >
-        <Link
-          href='/knowledge-center/metadata-compatibility-score'
-          mt={2}
-          textDecoration='underline'
-          lineHeight='shorter'
-          color='gray.800!important'
-          fontSize='sm'
-          textAlign='center'
-          _hover={{ textDecoration: 'none' }}
-        >
-          Metadata Compatibility{' '}
-          <Icon
-            boxSize={3.5}
-            border='1px solid'
-            borderRadius='full'
-            p={0.5}
-            color='gray.800!important'
-          >
-            <FaInfo />
-          </Icon>
-        </Link>
-      </Tooltip>
+        Metadata Compatibility
+      </InfoLabel>
     </Flex>
   );
 };

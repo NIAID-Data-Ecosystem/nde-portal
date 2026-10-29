@@ -55,6 +55,7 @@ const BIN_GAP = 2;
 const LABEL_HEIGHT = 18;
 const CATEGORY_GAP = 10;
 const RADIUS = 2;
+const ICON_SIZE = 10;
 
 let tooltipTimeout: number;
 
@@ -174,54 +175,48 @@ export const CompatibilityBadge = ({
       const fieldIsCompatible = bin.count > 0;
       const fill = fieldIsCompatible ? color(bin.count) : `url(#${patternId})`;
 
+      // Geometry stays as SVG attributes on the raw elements: Chakra v3 treats
+      // `x`/`y`/`rx`/`ry` as CSS style props and would swallow them.
       return (
-        <Box
+        <g
           key={`heatmap-rect-${bin.type}-${idx}`}
           className='visx-heatmap-rect'
-          rx={RADIUS}
-          ry={RADIUS}
-          asChild
+          onMouseMove={(e: React.MouseEvent | React.TouchEvent) =>
+            handleMouseMove(e, {
+              x: margin.left + x + BIN_SIZE / 2,
+              y: groupTop + y + BIN_SIZE,
+              data: bin,
+            })
+          }
+          onTouchMove={(e: React.MouseEvent | React.TouchEvent) =>
+            handleMouseMove(e, {
+              x: margin.left + x + BIN_SIZE / 2,
+              y: groupTop + y + BIN_SIZE,
+              data: bin,
+            })
+          }
+          onMouseLeave={handleMouseLeave}
         >
-          <g
-            onMouseMove={(e: React.MouseEvent | React.TouchEvent) =>
-              handleMouseMove(e, {
-                x: margin.left + x + BIN_SIZE / 2,
-                y: groupTop + y + BIN_SIZE,
-                data: bin,
-              })
-            }
-            onTouchMove={(e: React.MouseEvent | React.TouchEvent) =>
-              handleMouseMove(e, {
-                x: margin.left + x + BIN_SIZE / 2,
-                y: groupTop + y + BIN_SIZE,
-                data: bin,
-              })
-            }
-            onMouseLeave={handleMouseLeave}
-          >
-            <rect
-              width={BIN_SIZE}
-              height={BIN_SIZE}
-              x={x}
-              y={y}
-              rx={RADIUS}
-              ry={RADIUS}
-              fill={fill}
-              fillOpacity={1}
-            />
-            {bin.augmented && (
-              <Icon
-                color={fieldIsCompatible ? 'white' : color(0)}
-                x={x + BIN_SIZE / 2}
-                y={y + BIN_SIZE / 2}
-                style={{ transform: 'translate(-5px, -5px)' }}
-                boxSize={10}
-              >
-                <FaRegCircleUp />
-              </Icon>
-            )}
-          </g>
-        </Box>
+          <rect
+            width={BIN_SIZE}
+            height={BIN_SIZE}
+            x={x}
+            y={y}
+            rx={RADIUS}
+            ry={RADIUS}
+            fill={fill}
+            fillOpacity={1}
+          />
+          {bin.augmented && (
+            <Icon color={fieldIsCompatible ? 'white' : color(0)}>
+              <FaRegCircleUp
+                x={x + (BIN_SIZE - ICON_SIZE) / 2}
+                y={y + (BIN_SIZE - ICON_SIZE) / 2}
+                size={ICON_SIZE}
+              />
+            </Icon>
+          )}
+        </g>
       );
     });
 
@@ -265,14 +260,8 @@ export const CompatibilityBadge = ({
             content='Recommended fields coverage.'
             positioning={{ placement: 'top-start' }}
           >
-            <Box
-              x={0}
-              y={LABEL_HEIGHT - 4}
-              fontSize='12px'
-              fill='gray.800'
-              asChild
-            >
-              <text>
+            <Box fontSize='12px' fill='gray.800' asChild>
+              <text x={0} y={LABEL_HEIGHT - 4}>
                 Recommended{' | '}
                 {Math.round(data.percent_recommended_fields * 100)}%
               </text>
@@ -291,14 +280,8 @@ export const CompatibilityBadge = ({
             content='Fundamental fields coverage.'
             positioning={{ placement: 'top-start' }}
           >
-            <Box
-              x={0}
-              y={LABEL_HEIGHT - 4}
-              fontSize='12px'
-              fill='gray.800'
-              asChild
-            >
-              <text>
+            <Box fontSize='12px' fill='gray.800' asChild>
+              <text x={0} y={LABEL_HEIGHT - 4}>
                 Fundamental{' | '}
                 {Math.round(data.percent_required_fields * 100)}%
               </text>
@@ -343,7 +326,7 @@ export const CompatibilityBadge = ({
                 {tooltipData.type.charAt(0).toUpperCase() +
                   tooltipData.type.slice(1)}
               </Text>
-              <Stack p={2} gap={1} fontSize='xs'>
+              <Stack p={2} gap={1} fontSize='sm'>
                 {tooltipData.count ? (
                   <>
                     <Text lineHeight='shorter'>

@@ -47,7 +47,7 @@ export const StyledCard: React.FC<StyledCardProps> = ({
 }) => {
   return (
     <StyledCardWrapper id={id} loading={loading}>
-      <VStack alignItems='flex-start' lineHeight='moderate'>
+      <VStack alignItems='flex-start' gap={4}>
         <Stack
           flexDirection='row'
           alignItems='unset'
@@ -174,7 +174,13 @@ export const StyledCardDescription: React.FC<{ children: string }> = ({
   children,
 }) => {
   const MDXComponents = useMDXComponents({
-    p: props => DefaultMDXComponents.p({ ...props, fontSize: 'sm', mt: 0 }),
+    p: props =>
+      DefaultMDXComponents.p({
+        ...props,
+        fontSize: 'sm',
+        lineHeight: 'tall',
+        mt: 0,
+      }),
   });
 
   return (
@@ -197,23 +203,7 @@ export const StyledCardButton: React.FC<StyledCardButtonProps> = ({
   ...props
 }) => {
   return (
-    <Button
-      size='sm'
-      wordBreak='break-word'
-      whiteSpace='normal'
-      textAlign='center'
-      height='unset'
-      width={{ base: '100%', md: 'unset' }}
-      colorPalette='primary'
-      asChild
-      _hover={{
-        '& svg': {
-          transform: 'translateX(0)',
-          transition: 'all .3s ease',
-        },
-      }}
-      {...props}
-    >
+    <Button size='sm' width={{ base: '100%', sm: 'unset' }} asChild {...props}>
       <NextLink href={href}>{children}</NextLink>
     </Button>
   );
