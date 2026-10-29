@@ -60,6 +60,7 @@ export const TableOfContents = () => {
       <PageContent
         id='diseases-index-page'
         bg='#fff'
+        width='100%'
         maxW={{ base: 'unset', lg: '1200px' }}
         justifyContent='center'
         margin='0 auto'
@@ -164,7 +165,7 @@ export const TableOfContents = () => {
                             alignItems='flex-start'
                           >
                             <Image
-                              borderRadius='base'
+                              borderRadius='sm'
                               width='100%'
                               height='auto'
                               src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${page.image.url}`}

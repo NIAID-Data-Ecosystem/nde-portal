@@ -142,6 +142,8 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
           <RadioGroup.Root
             onValueChange={({ value }) => setListView(value === 'list')}
             value={`${listView ? 'list' : 'treemap'}`}
+            // v2's default colorScheme; v3 leaves the control fill empty without a palette.
+            colorPalette='blue'
           >
             <Stack direction='row'>
               <RadioGroup.Item value='list'>

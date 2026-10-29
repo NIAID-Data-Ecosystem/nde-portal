@@ -176,7 +176,6 @@ const ProgramCollections: NextPage<{
                         renderCTA={() =>
                           collection.sourceOrganization?.name ? (
                             <StyledCardButton
-                              maxWidth='500px'
                               href={{
                                 pathname: `/search`,
                                 query: {

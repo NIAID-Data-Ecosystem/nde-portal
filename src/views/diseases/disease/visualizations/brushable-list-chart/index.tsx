@@ -64,41 +64,46 @@ export const BrushableListChart = ({
         </Flex>
         {/* List of terms and associated counts */}
         <ScrollContainer
-          as={'ul'}
+          // The scroll-area recipe is `width: 100%`, which `ml` would push past the column.
+          width='auto'
           ml={1}
           mt={1}
           maxHeight={`${SCROLL_HEIGHT}px`}
           minHeight={`${SCROLL_HEIGHT}px`}
         >
-          {selectedData.map(item => (
-            <List.Item
-              key={item.term}
-              fontSize='sm'
-              color='gray.500'
-              display='flex'
-              justifyContent='space-between'
-              pr={4}
-              pl={1}
-              py={1}
-              borderBottom='1px solid'
-              borderBottomColor='#ededed'
-              lineHeight='moderate'
-              asChild
-            >
-              {/* Term: Links to search results */}
-              <NextLink
-                onClick={() =>
-                  handleGATracking({ label: item.term, count: item.count })
-                }
-                href={getSearchRoute(item.term)}
+          {/* ScrollContainer is a ScrollArea, so the list sits inside its viewport rather than being rendered `as` a ul. */}
+          <List.Root ps={0}>
+            {selectedData.map(item => (
+              <List.Item
+                key={item.term}
+                fontSize='sm'
+                color='gray.500'
+                display='flex'
+                justifyContent='space-between'
+                pr={4}
+                pl={1}
+                py={1}
+                borderBottom='1px solid'
+                borderBottomColor='#ededed'
+                lineHeight='moderate'
               >
-                {item.term}
-              </NextLink>
+                {/* Term: Links to search results */}
+                <Link asChild>
+                  <NextLink
+                    onClick={() =>
+                      handleGATracking({ label: item.term, count: item.count })
+                    }
+                    href={getSearchRoute(item.term)}
+                  >
+                    {item.term}
+                  </NextLink>
+                </Link>
 
-              {/* Count */}
-              <Text>{item.count.toLocaleString()}</Text>
-            </List.Item>
-          ))}
+                {/* Count */}
+                <Text>{item.count.toLocaleString()}</Text>
+              </List.Item>
+            ))}
+          </List.Root>
         </ScrollContainer>
       </Box>
     </>

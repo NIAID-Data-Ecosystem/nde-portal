@@ -1,7 +1,9 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { DonutChart, DonutChartProps } from './donut-chart';
 import '@testing-library/jest-dom';
+
+import React from 'react';
+import { fireEvent, render, screen } from 'src/__tests__/utils/render';
+
+import { DonutChart, DonutChartProps } from './donut-chart';
 
 const mockData = [
   { term: 'Dataset', count: 100 },

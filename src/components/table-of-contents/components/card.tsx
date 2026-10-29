@@ -4,6 +4,7 @@ import {
   ButtonProps,
   Flex,
   HStack,
+  Icon,
   Image,
   Skeleton,
   Stack,
@@ -13,6 +14,7 @@ import {
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import React from 'react';
+import { FaChevronRight } from 'react-icons/fa6';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
@@ -204,19 +206,32 @@ export const StyledCardButton: React.FC<StyledCardButtonProps> = ({
 }) => {
   return (
     // Wrap long labels: the button recipe is `nowrap` with a fixed height, so a
-    // long CTA would widen its card past the viewport on mobile.
+    // long CTA would widen its card past the viewport on mobile. The recipe is
+    // also `flexShrink: 0`, so cap the width or it overflows a narrow card.
     <Button
       size='sm'
       width={{ base: '100%', sm: 'unset' }}
+      maxW='min(100%, 500px)'
       whiteSpace='normal'
       textAlign='center'
       h='auto'
       minH={9}
       py={1.5}
+      _hover={{ '& svg': { transform: 'translateX(0)' } }}
       asChild
       {...props}
     >
-      <NextLink href={href}>{children}</NextLink>
+      <NextLink href={href}>
+        {children}
+        <Icon
+          boxSize={3}
+          ml={1}
+          transform='translateX(-5px)'
+          transition='transform .3s ease'
+        >
+          <FaChevronRight />
+        </Icon>
+      </NextLink>
     </Button>
   );
 };

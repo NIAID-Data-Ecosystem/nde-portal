@@ -191,6 +191,8 @@ export const BarChart = ({
           onCheckedChange={() => setApplyLogScale(!applyLogScale)}
           alignSelf='flex-end'
           checked={applyLogScale}
+          // v2's default colorScheme; v3 leaves the control fill empty without a palette.
+          colorPalette='blue'
         >
           <Checkbox.HiddenInput />
           <Checkbox.Control>

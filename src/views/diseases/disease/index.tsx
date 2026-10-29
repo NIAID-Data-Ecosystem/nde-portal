@@ -34,6 +34,8 @@ export const DiseaseContent: React.FC<DiseaseContentProps> = ({
     <PageContent
       id='disease-page-content'
       bg='#fff'
+      // The page body is a flex column, where `margin: auto` alone stops this stretching and lets the charts widen it past the viewport.
+      width='100%'
       maxW={{ base: 'unset', lg: '1600px' }}
       justifyContent='center'
       margin='0 auto'
