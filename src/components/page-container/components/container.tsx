@@ -9,6 +9,7 @@ import remarkGfm from 'remark-gfm';
 import { Alert } from 'src/components/alert';
 import { toAlertStatus } from 'src/components/alert/utils';
 import { Footer } from 'src/components/footer';
+import { MDXComponents as DefaultMDXComponents } from 'src/components/mdx/components';
 import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import { Navigation } from 'src/components/navigation-bar';
 import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
@@ -36,6 +37,11 @@ export interface NoticeProps {
   isActive: boolean;
 }
 
+// Gray rather than the link blue, which fails contrast on the info alert's background.
+// Module-level so the link keeps a stable component identity across renders.
+const EnvironmentBannerLink = (props: any) =>
+  DefaultMDXComponents.a({ ...props, color: 'gray.800' });
+
 interface PageContainerProps extends FlexProps {
   meta: SeoMetaFieldsProps;
   includeSearchBar?: boolean;
@@ -50,6 +56,9 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   ...props
 }) => {
   const MDXComponents = useMDXComponents();
+  const EnvironmentBannerMDXComponents = useMDXComponents({
+    a: EnvironmentBannerLink,
+  });
 
   const breadcrumbs = useBreadcrumbs(breadcrumbsTitle);
   // Fetch Notices from STRAPI API.
@@ -114,7 +123,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
               >
                 <ReactMarkdown
                   rehypePlugins={[rehypeRaw, remarkGfm]}
-                  components={MDXComponents}
+                  components={EnvironmentBannerMDXComponents}
                 >
                   {`Currently using the: <a href="${process.env.NEXT_PUBLIC_API_URL}/metadata" target="_blank">${apiEnvironment} API</a>`}
                 </ReactMarkdown>

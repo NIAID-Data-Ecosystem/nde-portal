@@ -203,7 +203,19 @@ export const StyledCardButton: React.FC<StyledCardButtonProps> = ({
   ...props
 }) => {
   return (
-    <Button size='sm' width={{ base: '100%', sm: 'unset' }} asChild {...props}>
+    // Wrap long labels: the button recipe is `nowrap` with a fixed height, so a
+    // long CTA would widen its card past the viewport on mobile.
+    <Button
+      size='sm'
+      width={{ base: '100%', sm: 'unset' }}
+      whiteSpace='normal'
+      textAlign='center'
+      h='auto'
+      minH={9}
+      py={1.5}
+      asChild
+      {...props}
+    >
       <NextLink href={href}>{children}</NextLink>
     </Button>
   );
