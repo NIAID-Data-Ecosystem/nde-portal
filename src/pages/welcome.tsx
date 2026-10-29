@@ -162,7 +162,7 @@ function WelcomePage() {
               <Icon
                 as={FaRegBookmark}
                 aria-hidden='true'
-                verticalAlign='middle'
+                verticalAlign='-0.15em'
               />{' '}
               on any search results page.
             </ListItem>
@@ -178,7 +178,7 @@ function WelcomePage() {
               <Icon
                 as={FaRegBookmark}
                 aria-hidden='true'
-                verticalAlign='middle'
+                verticalAlign='-0.15em'
               />{' '}
               Save button.
             </ListItem>
