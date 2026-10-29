@@ -78,7 +78,6 @@ export const DetailsAccordion = ({
       unmountOnExit
       variant='plain'
       size='sm'
-      css={{ '--accordion-padding-x': { base: 'spacing.4', sm: 'spacing.6' } }}
       {...props}
     >
       <Accordion.Item value={ITEM_VALUE}>

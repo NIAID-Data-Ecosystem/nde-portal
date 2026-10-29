@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  ButtonGroup,
   Flex,
   HStack,
   Icon,
@@ -23,10 +24,8 @@ import {
 } from 'src/components/table-of-contents/components/card';
 import { SectionHeader } from 'src/components/table-of-contents/layouts/section-header';
 import { SectionSearch } from 'src/components/table-of-contents/layouts/section-search';
-import { TagWithUrl } from 'src/components/tag-with-url';
 import type { SourceDisplayItem } from 'src/pages/sources';
 import { formatDate } from 'src/utils/api/helpers';
-import { USE_MERGED_SOURCES_AND_CATALOGS } from 'src/utils/feature-flags';
 
 interface Main {
   data?: SourceDisplayItem[];
@@ -59,7 +58,7 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
           </NextLink>
         </Button>
       </SectionHeader>
-      <Flex justifyContent='space-between' flexWrap='wrap-reverse'>
+      <Flex justifyContent='space-between' flexWrap='wrap-reverse' mb={4}>
         <VStack minW='250px' alignItems='flex-start' m={0.5} flex={1}>
           <SkeletonText loading={loading} noOfLines={1} height={5}>
             <HStack alignItems='center' fontSize='sm' gap={1}>
@@ -140,47 +139,31 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
               }
               renderCTA={() =>
                 sourceObj.searchURL ? (
-                  <Flex
-                    justifyContent={{ base: 'center', md: 'space-between' }}
-                    flexWrap='wrap'
-                    gap={2}
+                  <ButtonGroup
                     w='100%'
+                    justifyContent={{ base: 'center', sm: 'space-between' }}
+                    flexWrap='wrap'
                   >
-                    <Flex
-                      flex={1}
+                    <StyledCardButton
+                      href={{
+                        pathname: '/resources',
+                        query: {
+                          id: sourceObj.resourceCatalogIdentifier,
+                        },
+                      }}
+                      variant='outline'
                       visibility={
-                        USE_MERGED_SOURCES_AND_CATALOGS &&
                         sourceObj.resourceCatalogIdentifier
                           ? 'visible'
                           : 'hidden'
                       }
                     >
-                      <Button
-                        size='sm'
-                        variant='outline'
-                        width={{ base: '100%', md: 'unset' }}
-                        maxWidth='500px'
-                        asChild
-                      >
-                        <NextLink
-                          href={{
-                            pathname: '/resources',
-                            query: {
-                              id: sourceObj.resourceCatalogIdentifier,
-                            },
-                          }}
-                        >
-                          Learn about source
-                        </NextLink>
-                      </Button>
-                    </Flex>
-                    <StyledCardButton
-                      maxWidth='500px'
-                      href={sourceObj.searchURL}
-                    >
+                      Learn about source
+                    </StyledCardButton>
+                    <StyledCardButton href={sourceObj.searchURL}>
                       See search results
                     </StyledCardButton>
-                  </Flex>
+                  </ButtonGroup>
                 ) : (
                   <></>
                 )

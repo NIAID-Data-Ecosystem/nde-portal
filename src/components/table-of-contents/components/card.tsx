@@ -203,23 +203,7 @@ export const StyledCardButton: React.FC<StyledCardButtonProps> = ({
   ...props
 }) => {
   return (
-    <Button
-      size='sm'
-      wordBreak='break-word'
-      whiteSpace='normal'
-      textAlign='center'
-      height='unset'
-      width={{ base: '100%', md: 'unset' }}
-      colorPalette='primary'
-      asChild
-      _hover={{
-        '& svg': {
-          transform: 'translateX(0)',
-          transition: 'all .3s ease',
-        },
-      }}
-      {...props}
-    >
+    <Button size='sm' width={{ base: '100%', sm: 'unset' }} asChild {...props}>
       <NextLink href={href}>{children}</NextLink>
     </Button>
   );
