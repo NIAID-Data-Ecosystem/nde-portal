@@ -48,8 +48,15 @@ const WELCOME_COPY = {
     updates: {
       title:
         "Choose the updates you'd like to receive from the NIAID Data Ecosystem.",
-      subtitle:
-        'You can change your preferences at any time in Account Settings.',
+      subtitle: (
+        <>
+          You can change your preferences at any time in{' '}
+          <Text as='span' fontWeight='semibold'>
+            Account Settings
+          </Text>
+          .
+        </>
+      ),
     },
   },
   saveButton: 'Save Settings',
@@ -183,7 +190,11 @@ function WelcomePage() {
                 mr={2}
                 boxSize={1}
               />
-              Find saved items in Saved Searches.
+              Find saved items in{' '}
+              <Text as='span' fontWeight='semibold'>
+                Saved Searches
+              </Text>
+              .
             </ListItem>
           </UnorderedList>
         </VStack>
