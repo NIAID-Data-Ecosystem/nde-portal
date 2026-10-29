@@ -1,19 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import remarkGfm from 'remark-gfm';
 import {
   Flex,
   Heading,
   HStack,
+  Separator,
   Skeleton,
   SkeletonText,
   Tag,
   Text,
-  Separator,
 } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
 import Empty from 'src/components/empty';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
+
 import { FeaturedPageProps } from '../types';
 
 interface MainContentProps {
@@ -51,12 +52,23 @@ const Main = ({ data, loading }: MainContentProps) => {
       >
         {loading || data ? (
           <>
-            <SkeletonText loading={loading} mb={2} noOfLines={1} height={10}>
+            {/* v3 spreads `height` onto the loaded content too, so only pass it while loading (v2's `skeletonHeight`). */}
+            <SkeletonText
+              loading={loading}
+              noOfLines={1}
+              height={loading ? 10 : undefined}
+              rootProps={{ mb: 2 }}
+            >
               <Heading as='h1' size='xl'>
                 {data?.title || ''}
               </Heading>
             </SkeletonText>
-            <SkeletonText loading={loading} mb={4} noOfLines={1} height={6}>
+            <SkeletonText
+              loading={loading}
+              noOfLines={1}
+              height={loading ? 6 : undefined}
+              rootProps={{ mb: 4 }}
+            >
               <Text color='gray.700' lineHeight='moderate'>
                 {data?.subtitle || ''}
               </Text>
@@ -79,11 +91,11 @@ const Main = ({ data, loading }: MainContentProps) => {
                   {data.categories.map(({ id, name }) => (
                     <Tag.Root
                       key={id}
-                      variant='outline'
+                      variant='surface'
                       size='sm'
                       colorPalette='accent'
                     >
-                      {name}
+                      <Tag.Label>{name}</Tag.Label>
                     </Tag.Root>
                   ))}
                 </HStack>
@@ -91,7 +103,7 @@ const Main = ({ data, loading }: MainContentProps) => {
             </Skeleton>
 
             <Separator orientation='horizontal' my={4} />
-            <SkeletonText loading={loading} noOfLines={1} height={4}>
+            <SkeletonText loading={loading} noOfLines={1}>
               <Text
                 fontStyle='italic'
                 fontSize='xs'

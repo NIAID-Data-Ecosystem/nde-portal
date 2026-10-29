@@ -41,13 +41,22 @@ export const LegendContainer = ({
         {tableHeader}
       </LegendTableHeader>
       {orientation === 'vertical' ? (
-        <Stack flexDirection='column' gap={1.5} my={2} {...props}>
+        <Stack
+          flexDirection='column'
+          separator={<Separator borderColor='gray.200' />}
+          gap={1.5}
+          my={2}
+          {...props}
+        >
           {children}
         </Stack>
       ) : (
         <Stack
-          flexDirection={{ base: 'column', md: 'row' }}
-          gap={{ base: 1.5, md: 8 }}
+          // A wrapping grid rather than a row: as a single row the last items
+          // overflowed the column, and at lg ran into the Sources chart beside it.
+          display={{ base: 'flex', md: 'grid' }}
+          gridTemplateColumns='repeat(auto-fit, minmax(8rem, 1fr))'
+          gap={{ base: 1.5, md: 6 }}
           my={2}
           {...props}
         >
@@ -126,7 +135,9 @@ export const LegendItem = ({
         gap={1.5}
         width='100%'
       >
-        {swatchBg && <Box width={4} height={4} bg={swatchBg} m={0.5} />}
+        {swatchBg && (
+          <Box width={4} height={4} flexShrink={0} bg={swatchBg} m={0.5} />
+        )}
         <Flex flex={1}>{children}</Flex>
         {count && (
           <Text textAlign='end' fontSize='inherit'>

@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
-import { Image, Stack } from '@chakra-ui/react';
-import { Link } from 'src/components/link';
-import { SectionTitle } from '../layouts/section';
-import { DiseasePageProps } from '../../types';
+import { Box, Image, Stack } from '@chakra-ui/react';
 import { sendGTMEvent } from '@next/third-parties/google';
+import React, { useMemo } from 'react';
+import { Link } from 'src/components/link';
+
+import { DiseasePageProps } from '../../types';
+import { SectionTitle } from '../layouts/section';
 
 type TopicPageExternalLink = NonNullable<
   DiseasePageProps['externalLinks']
@@ -58,26 +59,28 @@ export const ExternalLinksSection: React.FC<{
   }, [externalLinks]);
 
   return (
-    <Stack gap={6} mt={4}>
+    <Stack mt={4} gap={6}>
       {Object.entries(externalLinksGroupedByCategory).map(
         ([category, links]) => (
-          <Stack key={category} gap={1}>
+          <Box key={category}>
             {category && <SectionTitle as='h4'>{category}</SectionTitle>}
-            {links.map((link, index) => (
-              <ExternalLinkItem
-                key={index}
-                handleGATracking={({ label, url }) =>
-                  sendGTMEvent({
-                    event: 'disease_to_external',
-                    label,
-                    category: topic + ' ' + category, // link topic + category
-                    value: url,
-                  })
-                }
-                {...link}
-              />
-            ))}
-          </Stack>
+            <Stack key={category} gap={2}>
+              {links.map((link, index) => (
+                <ExternalLinkItem
+                  key={index}
+                  handleGATracking={({ label, url }) =>
+                    sendGTMEvent({
+                      event: 'disease_to_external',
+                      label,
+                      category: topic + ' ' + category, // link topic + category
+                      value: url,
+                    })
+                  }
+                  {...link}
+                />
+              ))}
+            </Stack>
+          </Box>
         ),
       )}
     </Stack>

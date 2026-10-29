@@ -68,12 +68,12 @@ export const SectionTitle = ({
 
     return (
       <>
+        {/* v3 defaults `loading` to true and spreads `height` onto the loaded content too, so coerce one and only pass the other while loading. */}
         <SkeletonText
-          loading={loading}
+          loading={!!loading}
           noOfLines={1}
-          height={skeletonHeight}
-          width='100%'
-          mb={mb}
+          height={loading ? skeletonHeight : undefined}
+          rootProps={{ mb }}
         >
           {slug ? (
             <SectionTitleWithLink slug={slug}>{heading}</SectionTitleWithLink>
@@ -87,7 +87,7 @@ export const SectionTitle = ({
   }
 
   return (
-    <SkeletonText loading={loading} noOfLines={4} height={4} width='100%'>
+    <SkeletonText loading={!!loading} noOfLines={4}>
       <Text as={as} {...props}>
         {children}
       </Text>

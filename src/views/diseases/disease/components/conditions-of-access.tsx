@@ -52,7 +52,7 @@ export const ConditionsOfAccess = ({ query, topic }: TopicQueryProps) => {
             label: label || '',
             description: getConditionsOfAccessTooltip(label),
             colorPalette,
-            fill: system.token(`colors.${colorPalette}.300`) as string,
+            fill: system.token(`colors.${colorPalette}.400`) as string,
           };
         }) || [];
       return {
