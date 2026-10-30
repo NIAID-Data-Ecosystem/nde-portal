@@ -65,7 +65,7 @@ const FiltersAccordion: React.FC<
         >
           <FiltersList
             config={config}
-            colorPalette='primary'
+            colorPalette='secondary'
             searchPlaceholder={`Search ${name.toLowerCase()} filters`}
             terms={termsByColumnId[col.id] ?? []}
             selectedFilters={selected[col.id] ?? []}

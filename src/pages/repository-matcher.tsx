@@ -326,8 +326,10 @@ const RepositoryMatcher: NextPage = () => {
               isResponsive={false}
               alignItems='flex-end'
               onClose={() => setSearchTerm('')}
-              width='100%'
               colorPalette='primary'
+              flexProps={{
+                width: '100%',
+              }}
             />
           </Stack>
           <Box display={{ base: 'block', md: 'none' }} mb={3}>

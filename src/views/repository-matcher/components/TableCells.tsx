@@ -99,16 +99,11 @@ export const TagCell = ({
   }
   return (
     <Tooltip content={label} disabled={!value || !isTruncated}>
-      <Box>
-        <Tag.Root
-          variant='subtle'
-          lineClamp={lineClamp}
-          borderRadius='full'
-          {...props}
-        >
-          <Tag.Label ref={labelRef}>{label}</Tag.Label>
-        </Tag.Root>
-      </Box>
+      <Tag.Root variant='subtle' size='sm' rounded='full' {...props}>
+        <Tag.Label ref={labelRef} lineClamp={lineClamp}>
+          {label}
+        </Tag.Label>
+      </Tag.Root>
     </Tooltip>
   );
 };
@@ -152,17 +147,17 @@ export const TextCell = ({
         lineClamp={clampLines}
         fontStyle={value ? 'normal' : 'italic'}
         lineHeight='shorter'
-        fontSize='xs'
+        fontSize='sm'
         {...props}
       >
         {children || value || 'not available'}
       </Text>
       {expandable && (isTruncated || expanded) && (
         <Button
-          variant='plain'
+          variant='unstyled'
+          underline
           size='xs'
           colorPalette='primary'
-          fontWeight='medium'
           mt='1'
           onClick={() => setExpanded(prev => !prev)}
         >
@@ -185,7 +180,7 @@ export const TextCellWithLink = ({
   isExternal?: boolean;
 }) => {
   return (
-    <SkeletonText loading={loading} lineClamp={2} fontSize='xs' w='100%'>
+    <SkeletonText loading={loading} lineClamp={2} fontSize='sm' w='100%'>
       {url ? (
         <Link asChild isExternal={isExternal}>
           <NextLink href={url} prefetch={false}>
