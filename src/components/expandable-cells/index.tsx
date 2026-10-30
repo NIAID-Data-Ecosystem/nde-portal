@@ -1,4 +1,4 @@
-import { Button, Flex, FlexProps, Text, TextProps } from '@chakra-ui/react';
+import { Flex, FlexProps, Text, TextProps } from '@chakra-ui/react';
 import React, {
   useId,
   useLayoutEffect,
@@ -6,19 +6,13 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { CollapsibleTextTrigger } from 'src/components/collapsible-text';
 
 /**
- * Per-cell "Show more / Show less" expansion for the search results tables
- * with aria-expanded / aria-controls for accessibility.
+ * Per-cell "Show More / Show Less" expansion for table cells (search results,
+ * repository matcher). The toggle is CollapsibleText's trigger, which carries
+ * aria-expanded; each cell adds aria-controls for accessibility.
  */
-const toggleButtonProps = {
-  variant: 'ghost' as const,
-  underline: true,
-  size: 'xs' as const,
-  fontSize: 'sm' as const,
-  colorPalette: 'primary' as const,
-  fontWeight: 'medium' as const,
-};
 
 /**
  * Long-text cell. Clamps to `noOfLines` and reveals the full
@@ -69,15 +63,14 @@ export const ExpandableText = ({
         {text}
       </Text>
       {(isTruncated || expanded) && (
-        <Button
-          {...toggleButtonProps}
+        <CollapsibleTextTrigger
+          isOpen={expanded}
           mt={1}
-          aria-expanded={expanded}
           aria-controls={contentId}
           onClick={() => setExpanded(prev => !prev)}
         >
-          {expanded ? 'Show less' : 'Show more'}
-        </Button>
+          {expanded ? 'Show Less' : 'Show More'}
+        </CollapsibleTextTrigger>
       )}
     </Flex>
   );
@@ -85,7 +78,7 @@ export const ExpandableText = ({
 
 /**
  * Multi-value stacked cell. Renders the first `maxVisible` already-built item
- * nodes and reveals the rest with a "Show N more" / "Show less" toggle. Passing
+ * nodes and reveals the rest with a "Show N More" / "Show Less" toggle. Passing
  * pre-rendered children keeps each field's existing rendering (links vs text).
  */
 export const ExpandableList = ({
@@ -115,15 +108,14 @@ export const ExpandableList = ({
         {visibleItems}
       </Flex>
       {shouldTruncate && (
-        <Button
-          {...toggleButtonProps}
+        <CollapsibleTextTrigger
+          isOpen={expanded}
           my={2}
-          aria-expanded={expanded}
           aria-controls={contentId}
           onClick={() => setExpanded(prev => !prev)}
         >
-          {expanded ? 'Show less' : `Show ${hiddenCount} more`}
-        </Button>
+          {expanded ? 'Show Less' : `Show ${hiddenCount} More`}
+        </CollapsibleTextTrigger>
       )}
     </Flex>
   );

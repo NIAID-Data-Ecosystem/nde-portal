@@ -1,9 +1,19 @@
-import React, { useMemo } from 'react';
 import { Text } from '@chakra-ui/react';
+import React, { useMemo } from 'react';
+import { ExpandableText } from 'src/components/expandable-cells';
 import { Column } from 'src/components/table';
 import { FormattedResource } from 'src/utils/api/types';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
+
 import { ResultsTable } from '../results-table';
+import { renderCellData } from '../results-table/components/Cells';
+import {
+  LinkEntry,
+  LinkListCell,
+  LinkOrTextCell,
+  ResourceNameCell,
+} from '../results-table/components/SharedCells';
+import { COMPUTATIONAL_TOOL_FALLBACK_COLUMN_IDS } from '../results-table/constants';
 import { BaseColumn } from '../results-table/types';
 import {
   CatalogEntry,
@@ -16,15 +26,6 @@ import {
   toLicenseEntry,
   withWidth,
 } from '../results-table/utils';
-import { renderCellData } from '../results-table/components/Cells';
-import { ExpandableText } from '../results-table/components/ExpandableCells';
-import {
-  LinkEntry,
-  LinkListCell,
-  LinkOrTextCell,
-  ResourceNameCell,
-} from '../results-table/components/SharedCells';
-import { COMPUTATIONAL_TOOL_FALLBACK_COLUMN_IDS } from '../results-table/constants';
 
 export interface ComputationalToolColumn extends BaseColumn {}
 
@@ -254,7 +255,7 @@ export const createGetCells =
       return <ExpandableText text={authors} noOfLines={3} loading={loading} />;
     }
 
-    // Description: clamped to a few lines with a "Show more" / "Show less" toggle.
+    // Description: clamped to a few lines with a "Show More" / "Show Less" toggle.
     if (column.property === 'description') {
       return (
         <ExpandableText

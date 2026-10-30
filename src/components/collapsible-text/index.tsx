@@ -30,6 +30,39 @@ export interface CollapsibleTextProps extends Omit<BoxProps, 'children'> {
 }
 
 /**
+ * The Show More / Show Less button: a text button with a chevron that flips
+ * while open. Exported so other expandable content shares the same trigger.
+ */
+export const CollapsibleTextTrigger = ({
+  isOpen,
+  children,
+  ...props
+}: HTMLChakraProps<'button'> & { isOpen: boolean }) => (
+  <chakra.button
+    type='button'
+    aria-expanded={isOpen}
+    display='inline-flex'
+    alignItems='center'
+    gap={2}
+    py={1}
+    fontSize='xs'
+    cursor='pointer'
+    focusVisibleRing='outside'
+    _hover={{ textDecoration: 'underline' }}
+    {...props}
+  >
+    {children}
+    <Icon
+      transform={isOpen ? 'rotate(180deg)' : undefined}
+      boxSize='3'
+      transition='transform 0.2s'
+    >
+      <FaChevronDown />
+    </Icon>
+  </chakra.button>
+);
+
+/**
  * Text that is clipped to a short peek and expands from a Show More button.
  *
  * Only the button toggles, so links in the text stay clickable. It is only
@@ -134,30 +167,14 @@ export const CollapsibleText: React.FC<CollapsibleTextProps> = ({
         )}
       </Box>
       {isClipped && (
-        <chakra.button
-          type='button'
-          aria-expanded={isOpen}
+        <CollapsibleTextTrigger
+          isOpen={isOpen}
           aria-controls={contentId}
           onClick={() => setIsOpen(open => !open)}
-          display='inline-flex'
-          alignItems='center'
-          gap={2}
-          py={1}
-          fontSize='xs'
-          cursor='pointer'
-          focusVisibleRing='outside'
-          _hover={{ textDecoration: 'underline' }}
           {...triggerProps}
         >
           {isOpen ? collapseLabel : expandLabel}
-          <Icon
-            transform={isOpen ? 'rotate(180deg)' : undefined}
-            boxSize='3'
-            transition='transform 0.2s'
-          >
-            <FaChevronDown />
-          </Icon>
-        </chakra.button>
+        </CollapsibleTextTrigger>
       )}
     </Box>
   );

@@ -1,5 +1,9 @@
 import { Text } from '@chakra-ui/react';
 import React, { useMemo } from 'react';
+import {
+  ExpandableList,
+  ExpandableText,
+} from 'src/components/expandable-cells';
 import { Link } from 'src/components/link';
 import { Column } from 'src/components/table';
 import { FormattedResource, IncludedInDataCatalog } from 'src/utils/api/types';
@@ -11,10 +15,6 @@ import {
 } from '../../utils/content-type';
 import { ResultsTable } from '../results-table';
 import { renderCellData } from '../results-table/components/Cells';
-import {
-  ExpandableList,
-  ExpandableText,
-} from '../results-table/components/ExpandableCells';
 import {
   LinkOrTextCell,
   ResourceNameCell,
@@ -216,7 +216,7 @@ export const createGetCells =
       return value ? <Text fontSize='sm'>{String(value)}</Text> : null;
     }
 
-    // Description: clamped to a few lines with a "Show more" / "Show less" toggle.
+    // Description: clamped to a few lines with a "Show More" / "Show Less" toggle.
     if (column.property === 'description') {
       return (
         <ExpandableText

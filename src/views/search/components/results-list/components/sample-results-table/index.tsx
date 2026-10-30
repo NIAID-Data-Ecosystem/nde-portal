@@ -1,5 +1,9 @@
-import React from 'react';
 import { Text } from '@chakra-ui/react';
+import React from 'react';
+import {
+  ExpandableList,
+  ExpandableText,
+} from 'src/components/expandable-cells';
 import { Link } from 'src/components/link';
 import { Column } from 'src/components/table';
 import {
@@ -8,15 +12,12 @@ import {
   Funding,
   IncludedInDataCatalog,
 } from 'src/utils/api/types';
+
 import { ResultsTable } from '../results-table';
+import { renderCellData } from '../results-table/components/Cells';
+import { SAMPLE_REQUIRED_COLUMN_IDS } from '../results-table/constants';
 import { BaseColumn } from '../results-table/types';
 import { withWidth } from '../results-table/utils';
-import { renderCellData } from '../results-table/components/Cells';
-import {
-  ExpandableList,
-  ExpandableText,
-} from '../results-table/components/ExpandableCells';
-import { SAMPLE_REQUIRED_COLUMN_IDS } from '../results-table/constants';
 
 export interface SampleColumn extends BaseColumn {}
 
@@ -458,7 +459,7 @@ export const getCells = ({
     );
   }
 
-  // Description: clamped to a few lines with a "Show more" / "Show less" toggle.
+  // Description: clamped to a few lines with a "Show More" / "Show Less" toggle.
   if (column.property === 'description') {
     return (
       <ExpandableText

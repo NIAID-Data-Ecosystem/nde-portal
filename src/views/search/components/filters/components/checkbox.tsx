@@ -160,13 +160,25 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
         px={3}
         pr={2}
         py={1.5}
-        alignItems='flex-start'
+        // Line the checkbox up with the first line of the label. Where that line
+        // sits depends on the layout: a one-line label is centred against the
+        // count tag, while a label that wraps or has a sublabel starts at the
+        // top. A fixed margin can't cover both, so align on the baseline instead.
+        alignItems='baseline'
+        colorPalette={colorPalette}
         _hover={{
           bg: `${colorPalette}.50`,
         }}
         css={{
-          '& .chakra-checkbox__control': {
-            mt: 0.5, // to keep checkbox in line with top of text for options with multiple lines
+          // The control has no text, so the baseline it would otherwise report
+          // is its bottom edge (or the check icon's once checked). This
+          // zero-width character gives it a real text baseline, centred in the
+          // box. It must use the label's font size and line height so the
+          // control lands centred on the label's first line.
+          '& .chakra-checkbox__control::before': {
+            content: '"\\200B"',
+            fontSize: 'xs',
+            lineHeight: 'shorter',
           },
         }}
       >
@@ -187,9 +199,10 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
                 wordBreak='break-word'
                 color='text.heading'
                 fontSize='xs'
-                lineHeight='short'
+                lineHeight='shorter'
                 mr={0.5}
                 display='flex'
+                justifyContent='center'
                 flexDirection='column'
                 fontWeight={subLabel ? 'semibold' : 'normal'}
               >
