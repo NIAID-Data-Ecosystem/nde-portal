@@ -163,6 +163,7 @@ function WelcomePage() {
                 as={FaRegBookmark}
                 aria-hidden='true'
                 verticalAlign='-0.15em'
+                strokeWidth='20'
               />{' '}
               on any search results page.
             </ListItem>
@@ -175,12 +176,17 @@ function WelcomePage() {
                 boxSize={1}
               />
               To save a resource, use the{' '}
-              <Icon
-                as={FaRegBookmark}
-                aria-hidden='true'
-                verticalAlign='-0.15em'
-              />{' '}
-              Save button.
+              <Text as='span' fontWeight='semibold' whiteSpace='nowrap'>
+                <Icon
+                  as={FaRegBookmark}
+                  aria-hidden='true'
+                  verticalAlign='-0.15em'
+                  stroke='currentColor'
+                  strokeWidth='20'
+                />{' '}
+                Save
+              </Text>{' '}
+              button.
             </ListItem>
             <ListItem>
               <ListIcon
