@@ -28,7 +28,6 @@ export const DropdownListItem = React.memo(
         cursor='pointer'
         px={2}
         mx={2}
-        my={1}
         {...getListItemProps({
           index,
           id: `ontology-browser-search-${id}`,
@@ -54,16 +53,19 @@ export const DropdownListItem = React.memo(
             </Text>
           )}
 
+          {/* No fontSize: v2 passed `size='sm'`, which the Text theme had no
+              sizes for, so the label rendered at the inherited 16px. */}
           <Text
             color='text.body'
-            fontSize='sm'
             fontWeight='normal'
             lineHeight='moderate'
             textAlign='left'
             wordBreak='break-word'
           >
+            {/* v2 matched case-insensitively; v3 needs `ignoreCase`. */}
             <Highlight
               query={highlight}
+              ignoreCase
               styles={{
                 fontWeight: 'bold',
                 textDecoration: 'underline',

@@ -55,7 +55,9 @@ export const OntologySearchList = ({
           toggleOpen={open ? onClose : onOpen}
           label='Expand list of selected search terms'
         />
-        {/* List of terms to search */}
+        {/* List of terms to search. Below `lg` it overlays the top of the
+            viewport, so it is capped and scrolls rather than growing with
+            every term until "Search resources" is pushed off-screen. */}
         <Box
           className='onto-search-list-content'
           minWidth={300}
@@ -72,6 +74,9 @@ export const OntologySearchList = ({
           left={0}
           right={0}
           zIndex='modal'
+          maxH={{ base: '60vh', lg: 'none' }}
+          overflowY={{ base: 'auto', lg: 'visible' }}
+          boxShadow={{ base: 'lg', lg: 'none' }}
         >
           <Flex
             h='100%'
@@ -86,6 +91,12 @@ export const OntologySearchList = ({
               borderRadius='none'
               alignItems='center'
               justifyContent='space-between'
+              // Keeps the collapse control in reach while the capped list
+              // scrolls beneath it.
+              position={{ base: 'sticky', lg: 'static' }}
+              top={0}
+              zIndex={1}
+              bg={{ base: 'white', lg: undefined }}
             >
               <Icon>
                 <FaMagnifyingGlass />
@@ -112,22 +123,29 @@ export const OntologySearchList = ({
               {/* Search Options */}
               <Flex justifyContent='space-between' w='100%' px={4} py={2}>
                 <Flex fontSize='sm'>
+                  {/* v2 defaulted radios to `colorScheme='blue'`; v3 has no
+                      default palette, so a checked radio would be transparent. */}
                   <RadioGroup.Root
                     onValueChange={e => e.value && setUnion(e.value)}
                     value={union}
                     size='sm'
+                    colorPalette='blue'
                     disabled={searchList.length <= 1}
                   >
                     <HStack fontSize='sm'>
                       <RadioGroup.Item value='OR'>
                         <RadioGroup.ItemHiddenInput />
                         <RadioGroup.ItemIndicator />
-                        <RadioGroup.ItemText>Match Any</RadioGroup.ItemText>
+                        <RadioGroup.ItemText _disabled={{ opacity: 0.4 }}>
+                          Match Any
+                        </RadioGroup.ItemText>
                       </RadioGroup.Item>
                       <RadioGroup.Item value='AND'>
                         <RadioGroup.ItemHiddenInput />
                         <RadioGroup.ItemIndicator />
-                        <RadioGroup.ItemText>Match All</RadioGroup.ItemText>
+                        <RadioGroup.ItemText _disabled={{ opacity: 0.4 }}>
+                          Match All
+                        </RadioGroup.ItemText>
                       </RadioGroup.Item>
                     </HStack>
                   </RadioGroup.Root>
@@ -136,7 +154,8 @@ export const OntologySearchList = ({
                 <Button
                   size='sm'
                   onClick={() => setSearchList([])}
-                  variant='plain'
+                  variant='unstyled'
+                  underline
                 >
                   Clear all
                 </Button>
@@ -146,74 +165,73 @@ export const OntologySearchList = ({
               <Box as='ul' flex={1} w='100%' flexDirection='column' bg='white'>
                 {open &&
                   searchList.map(({ taxonId, ontologyName, label }, index) => (
-                    <>
-                      <Flex
-                        as='li'
-                        key={`${ontologyName}-${taxonId}`}
-                        px={2}
-                        pl={8}
-                        py={4}
-                        bg={index % 2 ? 'niaid.50' : 'transparent'}
-                        alignItems='center'
-                        position='relative'
-                      >
-                        {index !== 0 && (
-                          <Tag.Root
-                            position='absolute'
-                            top={0}
-                            left={2}
-                            transform={'translateY(-50%)'}
-                            size='sm'
-                            colorPalette='niaid'
-                            variant='subtle'
-                          >
-                            <Tag.Label fontSize='12px'>{union}</Tag.Label>
-                          </Tag.Root>
-                        )}
-                        <Flex
-                          flex={1}
-                          fontWeight='normal'
-                          lineHeight='shorter'
-                          textAlign='left'
-                          wordBreak='break-word'
-                          justifyContent='space-between'
-                          flexDirection='column'
+                    <Flex
+                      as='li'
+                      key={`${ontologyName}-${taxonId}`}
+                      px={2}
+                      pl={8}
+                      py={4}
+                      bg={index % 2 ? 'niaid.50' : 'transparent'}
+                      alignItems='center'
+                      position='relative'
+                    >
+                      {index !== 0 && (
+                        <Tag.Root
+                          position='absolute'
+                          top={0}
+                          left={2}
+                          transform={'translateY(-50%)'}
+                          size='xs'
+                          fontWeight='medium'
+                          colorPalette='niaid'
+                          variant='surface'
                         >
-                          <Text color='gray.800' fontSize='12px'>
-                            {ontologyName} | {taxonId}
-                          </Text>
-                          <Text
-                            color='text.body'
-                            fontWeight='medium'
-                            lineHeight='inherit'
-                            fontSize='sm'
-                          >
-                            {label}
-                          </Text>
-                        </Flex>
-                        <Flex alignItems='center'>
-                          <IconButton
-                            ml={4}
-                            aria-label={`remove ${label} from search`}
-                            variant='ghost'
-                            colorPalette='gray'
-                            size='sm'
-                            p={1}
-                            boxSize={6}
-                            minWidth={6}
-                            onClick={() => {
-                              setSearchList(prev =>
-                                prev.filter(item => item.label !== label),
-                              );
-                            }}
-                          >
-                            <Icon boxSize={2.5}>
-                              <FaX />
-                            </Icon>
-                          </IconButton>
-                        </Flex>
+                          <Tag.Label>{union}</Tag.Label>
+                        </Tag.Root>
+                      )}
+                      <Flex
+                        flex={1}
+                        fontWeight='normal'
+                        lineHeight='shorter'
+                        textAlign='left'
+                        wordBreak='break-word'
+                        justifyContent='space-between'
+                        flexDirection='column'
+                      >
+                        <Text color='gray.800' fontSize='xs'>
+                          {ontologyName} | {taxonId}
+                        </Text>
+                        <Text
+                          color='text.body'
+                          fontWeight='medium'
+                          lineHeight='inherit'
+                          fontSize='sm'
+                        >
+                          {label}
+                        </Text>
                       </Flex>
-                    </>
+                      <Flex alignItems='center'>
+                        <IconButton
+                          ml={4}
+                          aria-label={`remove ${label} from search`}
+                          variant='ghost'
+                          colorPalette='gray'
+                          size='sm'
+                          p={1}
+                          boxSize={6}
+                          minWidth={6}
+                          onClick={() => {
+                            setSearchList(prev =>
+                              prev.filter(item => item.label !== label),
+                            );
+                          }}
+                        >
+                          <Icon boxSize={2.5}>
+                            <FaX />
+                          </Icon>
+                        </IconButton>
+                      </Flex>
+                    </Flex>
                   ))}
               </Box>
 

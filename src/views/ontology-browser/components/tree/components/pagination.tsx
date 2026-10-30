@@ -1,5 +1,5 @@
-import React from 'react';
 import { Button, Flex, Text } from '@chakra-ui/react';
+import React from 'react';
 import { OntologyLineageItemWithCounts } from 'src/views/ontology-browser/types';
 
 interface PaginationProps {
@@ -45,10 +45,14 @@ export const Pagination = ({
       </Text>
       {hasMore && (
         <Button
+          // While loading, v3 hides the label with `visibility: hidden`, which
+          // drops it from the accessible name (v2 only faded it).
+          aria-label='Show more'
           disabled={disabled}
           loading={loading}
           size='sm'
-          variant='plain'
+          variant='unstyled'
+          underline
           onClick={onShowMore}
           fontSize='inherit'
           mx={2}

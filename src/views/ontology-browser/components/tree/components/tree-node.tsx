@@ -5,7 +5,6 @@ import {
   Icon,
   IconButton,
   List,
-  Stack,
   StackSeparator,
   Text,
 } from '@chakra-ui/react';
@@ -37,7 +36,7 @@ import {
 } from '../../ontology-browser-count-tag';
 import { DEFAULT_ONTOLOGY_BROWSER_SETTINGS } from '../../settings';
 import { transformSettingsToLocalStorageConfig } from '../../settings/helpers';
-import { MARGIN, SIZE, TreeProps } from '..';
+import { getIndent, SIZE, TreeProps } from '..';
 import { Pagination } from '../components/pagination';
 import { Warning } from '../components/warning';
 
@@ -238,19 +237,19 @@ export const TreeNode = (props: {
   }
   return (
     <List.Item>
+      {/* Below `md` the row stacks: term on one line, counts right-aligned
+          on the next, in line with the header's columns. */}
       <Flex
-        alignItems='center'
+        flexDirection={{ base: 'column', md: 'row' }}
+        alignItems={{ base: 'stretch', md: 'center' }}
         borderTop={depth !== 0 ? '0.25px solid' : 'none'}
         borderColor='gray.200'
-        css={{
-          '& >*': { px: 4, py: 2 },
-        }}
-        pl={`${(depth + 1) * MARGIN}px`}
+        pl={getIndent(depth + 1)}
         _hover={{
           bg: 'blackAlpha.50',
         }}
       >
-        <Flex alignItems='center' flex={1}>
+        <Flex alignItems='center' flex={1} px={{ base: 2, md: 4 }} py={2}>
           {sortedChildrenList.length > 0 || node.hasChildren ? (
             // The chevron is the real toggle control. Keeping the toggle as a
             // dedicated <button> (rather than wrapping the whole row, term link
@@ -261,10 +260,16 @@ export const TreeNode = (props: {
               aria-expanded={isToggled}
               variant='ghost'
               colorPalette='gray'
-              size='sm'
+              // v3's `xs` is v2's `sm` (32px).
+              size='xs'
               cursor='pointer'
               transform={isToggled ? 'rotate(90deg)' : ''}
               color='currentColor'
+              // v3's ghost variant fills `[aria-expanded=true]`; v2 didn't.
+              _expanded={{
+                bg: 'transparent',
+                _hover: { bg: 'colorPalette.subtle' },
+              }}
               onClick={toggleNode}
             >
               <FaAngleRight />
@@ -299,8 +304,11 @@ export const TreeNode = (props: {
                 <Icon mr={1.5} boxSize={3}>
                   <FaMagnifyingGlass />
                 </Icon>
+                {/* A span, not the default <p>: the link is inline, so a block
+                    child would drop the label onto its own line. */}
                 <Text
-                  color={node.state.selected ? 'primary.500' : 'currentColor'}
+                  as='span'
+                  color='currentColor'
                   fontWeight={node.state.selected ? 'semibold' : 'medium'}
                   lineHeight='inherit'
                   textAlign='left'
@@ -312,15 +320,25 @@ export const TreeNode = (props: {
             </Tooltip>
           </Box>
         </Flex>
-        <Flex alignItems='center'>
-          <HStack flex={1} alignItems='unset' gap={3}>
+        <Flex
+          alignItems='center'
+          px={{ base: 2, md: 4 }}
+          pt={{ base: 0, md: 2 }}
+          pb={2}
+        >
+          <HStack
+            flex={1}
+            alignItems='unset'
+            justifyContent='flex-end'
+            gap={3}
+            separator={<StackSeparator borderColor='gray.100' />}
+          >
             <OntologyBrowserCountTag
               loading={isLoading}
               tooltipLabel={getTooltipContentByCountType('termCount')}
             >
               {node?.counts?.termCount?.toLocaleString() || 0}
             </OntologyBrowserCountTag>
-            <StackSeparator borderColor='gray.100' />
             <OntologyBrowserCountTag
               loading={isLoading}
               tooltipLabel={getTooltipContentByCountType(
@@ -338,9 +356,9 @@ export const TreeNode = (props: {
                 ? `Remove ${node.label} from search list`
                 : `Search portal for resources related to ${node.label}`
             }
-            size='xs'
+            // v3's `2xs` is v2's `xs` (24px).
+            size='2xs'
             variant='outline'
-            fontSize='xs'
             onClick={e => {
               e.stopPropagation();
               addToSearch({
@@ -356,7 +374,7 @@ export const TreeNode = (props: {
         </Flex>
       </Flex>
       {isToggled && sortedChildrenList.length > 0 ? (
-        <List.Root as='ul' id='children-list' ml={0}>
+        <List.Root id='children-list' ps={0}>
           {sortedChildrenList.map(child => (
             <TreeNode
               key={child.id}
@@ -377,7 +395,7 @@ export const TreeNode = (props: {
               fontSize='xs'
               px={4}
               py={2}
-              pl={`${(depth + 2) * MARGIN}px`}
+              pl={getIndent(depth + 2)}
             >
               <Warning
                 node={node}
@@ -400,7 +418,7 @@ export const TreeNode = (props: {
               borderColor='gray.200'
               px={4}
               py={2}
-              pl={`${(depth + 2) * MARGIN}px`}
+              pl={getIndent(depth + 2)}
               bg='niaid.50'
             >
               <Pagination

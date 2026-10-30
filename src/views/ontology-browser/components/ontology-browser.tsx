@@ -4,10 +4,10 @@ import {
   Flex,
   HStack,
   Spinner,
-  Stack,
   StackSeparator,
+  VisuallyHidden,
 } from '@chakra-ui/react';
-import { useQueries, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
@@ -21,7 +21,10 @@ import {
   fetchPortalCounts,
 } from '../utils/api-helpers';
 import { mergePreviousLineageWithChildrenData } from '../utils/ontology-helpers';
-import { getTooltipContentByCountType } from './ontology-browser-count-tag';
+import {
+  COUNT_COLUMN_WIDTH,
+  getTooltipContentByCountType,
+} from './ontology-browser-count-tag';
 import { OntologyBrowserHeader } from './ontology-browser-header';
 import {
   DEFAULT_ONTOLOGY_BROWSER_SETTINGS,
@@ -198,13 +201,17 @@ export const OntologyBrowser = ({
       flexWrap='wrap'
       flex={1}
     >
-      <Box flex={2} minWidth={{ base: 'unset', md: '500px' }}>
+      {/* `minWidth: 0` at base lets the tree shrink to the viewport; `auto`
+          would size it to its min-content and push it off-screen. */}
+      <Box flex={2} minWidth={{ base: 0, md: '500px' }}>
         <Flex
           w='100%'
-          justifyContent='space-between'
-          alignItems='flex-end'
-          mb={1}
+          alignItems={{ base: 'flex-start', md: 'flex-end' }}
+          flexDirection={{ base: 'column', md: 'row' }}
           flexWrap='wrap'
+          gap={2}
+          justifyContent='space-between'
+          mb={1}
         >
           <OntologyBrowserHeader selectedNode={selectedOntologyNode} />
           <OntologyBrowserSettings
@@ -222,7 +229,10 @@ export const OntologyBrowser = ({
           overflow='hidden'
         >
           {loading || !router.isReady ? (
-            <Spinner size='md' color='primary.500' m={4} />
+            // v3's Spinner has no `label`; v2 rendered this text visually hidden.
+            <Spinner size='md' color='primary.500' m={4}>
+              <VisuallyHidden>Loading...</VisuallyHidden>
+            </Spinner>
           ) : (
             lineage && (
               <>
@@ -236,14 +246,22 @@ export const OntologyBrowser = ({
 
                 <OntologyTreeHeaders>
                   <OntologyTreeHeaderItem label='Term name' />
-                  <HStack justifyContent='flex-end' flex={1} gap={3}>
+                  <HStack
+                    justifyContent='flex-end'
+                    flex={1}
+                    gap={3}
+                    separator={<StackSeparator borderColor='gray.100' />}
+                  >
                     <OntologyTreeHeaderItem
                       label='Exact Matches'
                       tooltipContent={getTooltipContentByCountType('termCount')}
+                      w={COUNT_COLUMN_WIDTH}
+                      maxW={{ md: 130 }}
                     />
-                    <StackSeparator borderColor='gray.100' />
                     <OntologyTreeHeaderItem
                       label='Matches including sub-terms'
+                      w={COUNT_COLUMN_WIDTH}
+                      maxW={{ md: 130 }}
                       tooltipContent={getTooltipContentByCountType(
                         'termAndChildrenCount',
                       )}

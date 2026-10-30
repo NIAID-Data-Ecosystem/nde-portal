@@ -140,7 +140,8 @@ export const OntologyBrowserPopup = ({
   return (
     <Button
       size='sm'
-      variant='plain'
+      variant='unstyled'
+      underline
       colorPalette='blue'
       py={1}
       px={2}
