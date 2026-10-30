@@ -76,12 +76,19 @@ const TabLabel = ({ types }: { types: TabWithCounts['types'] }) => {
   return (
     // `color: inherit` lets the trigger's selected color win over the Text
     // recipe's `text.body`; `lineClamp` keeps long labels on the trigger's
-    // single fixed-height row.
+    // single fixed-height row. The Tag recipe sets `verticalAlign: top`, so
+    // reset it to `baseline` to line the count up with the label text.
     <Text as='span' color='inherit' lineClamp={1} textAlign='left'>
       {segments.map(({ label, count }) => (
         <React.Fragment key={label}>
           {label}
-          <Tag.Root mx={1} size='sm' variant='surface' rounded='full'>
+          <Tag.Root
+            mx={1}
+            size='sm'
+            variant='surface'
+            rounded='full'
+            verticalAlign='baseline'
+          >
             <Tag.Label>{count.toLocaleString()}</Tag.Label>
           </Tag.Root>
         </React.Fragment>
