@@ -1,8 +1,9 @@
+import { Button, Flex, Icon, Presence, Text } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-import { Button, Flex, Icon, Text, Presence } from '@chakra-ui/react';
-import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
-import { useLocalStorage } from 'usehooks-ts';
 import { FaTriangleExclamation } from 'react-icons/fa6';
+import { useLocalStorage } from 'usehooks-ts';
+
+import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 
 export const Disclaimer = () => {
   const { selectedSearchType } = useAdvancedSearchContext();

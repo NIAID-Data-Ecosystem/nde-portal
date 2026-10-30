@@ -57,7 +57,10 @@ export const Search = ({
         <SearchTypePicker />
       </Flex>
       <Flex w='100%' alignItems='flex-end'>
-        <Field.Root invalid={errors.length > 0}>
+        {/* v3's Field.Root is a flex column that aligns its children to the
+        start, so without `stretch` the input row shrinks to its content
+        instead of filling the width the way v2's block FormControl did. */}
+        <Field.Root invalid={errors.length > 0} alignItems='stretch'>
           <Flex
             flexDirection={['column', 'column', 'row']}
             alignItems='flex-end'

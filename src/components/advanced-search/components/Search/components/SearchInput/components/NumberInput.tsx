@@ -1,12 +1,12 @@
-import { useState } from 'react';
 import {
   Flex,
   NativeSelect,
   NumberInput as ChakraNumberInput,
 } from '@chakra-ui/react';
+import { useState } from 'react';
+import { formatNumber } from 'src/utils/helpers';
 
 import { AdvancedSearchInputProps } from '../types';
-import { formatNumber } from 'src/utils/helpers';
 
 interface NumberInputProps extends AdvancedSearchInputProps {
   options?: {
@@ -18,7 +18,6 @@ interface NumberInputProps extends AdvancedSearchInputProps {
 export const NumberInput: React.FC<NumberInputProps> = ({
   disabled,
   colorPalette,
-  size = 'lg',
   handleSubmit,
   renderSubmitButton,
 }) => {
@@ -46,8 +45,9 @@ export const NumberInput: React.FC<NumberInputProps> = ({
           });
         }}
       >
+        {/* Both controls are pinned to `lg`, as in v2, so they line up. */}
         <NativeSelect.Root
-          size={size}
+          size='lg'
           mr={2}
           variant='outline'
           disabled={disabled}

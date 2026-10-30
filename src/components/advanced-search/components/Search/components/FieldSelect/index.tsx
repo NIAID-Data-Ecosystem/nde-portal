@@ -22,6 +22,7 @@ import Select, { components, ControlProps, OptionProps } from 'react-select';
 import { SchemaDefinition } from 'scripts/generate-schema-definitions/types';
 import { QueryValue } from 'src/components/advanced-search/types';
 import { system } from 'src/theme';
+import { INPUT_HEIGHTS } from 'src/theme/recipes/input.recipe';
 import {
   HIDDEN_SAMPLE_FIELDS,
   SHOULD_HIDE_SAMPLE_FIELDS,
@@ -139,7 +140,7 @@ const Option = (props: OptionProps<any>) => {
               <Text
                 as='span'
                 fontStyle='italic'
-                fontSize='xs'
+                fontSize='sm'
                 fontWeight='light'
                 color='inherit'
               >
@@ -148,7 +149,7 @@ const Option = (props: OptionProps<any>) => {
             )}
             {description && (
               <Text
-                fontSize='xs'
+                fontSize='sm'
                 lineHeight='shorter'
                 fontWeight='normal'
                 color={props.isSelected ? 'inherit' : 'gray.800'}
@@ -202,31 +203,38 @@ export const selectColors = {
   optionText: system.token('colors.text.body'),
 };
 
+/*
+Control heights that line the select up with the "Search for resources" field
+beside it. DropdownInput's group rests at `--input-height` plus, top and
+bottom, a 1px border and the 2px (`my={0.5}`) margin around its end element.
+*/
+const getControlHeight = (size: 'sm' | 'md') =>
+  `calc(${system.token(INPUT_HEIGHTS[size])} + 6px)`;
+
 export const customStyles: any = {
   sm: {
     control: {
       background: '#fff',
       borderColor: '#9e9e9e',
-      minHeight: '30px',
-      height: '30px',
+      minHeight: getControlHeight('sm'),
+      height: getControlHeight('sm'),
     },
     valueContainer: {
-      height: '30px',
       padding: '0 6px',
     },
     singleValue: { height: '100%' },
     input: {
       margin: '0px',
-      height: '30px',
     },
     indicatorSeparator: {
       display: 'none',
     },
-    indicatorsContainer: {
-      height: '30px',
+  },
+  md: {
+    control: {
+      minHeight: getControlHeight('md'),
     },
   },
-  md: {},
 };
 
 export const FieldSelect: React.FC<FieldSelectProps> = ({

@@ -171,6 +171,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
               my={[2, 2, 0]}
               mx={1}
               colorPalette='gray'
+              variant='subtle'
               color='text.body'
               size='sm'
               onClick={() => setItems(buildTree(query.items))}
@@ -242,6 +243,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             disabled={items.length === 0}
             onClick={toggleShowRawQuery}
             colorPalette='gray'
+            variant='subtle'
             color='text.body'
             size='sm'
             mt={2}
@@ -255,7 +257,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                 <FaEye />
               </Icon>
             )}
-            {showRawQuery ? 'hide' : 'view'}raw query
+            {showRawQuery ? 'hide' : 'view'} raw query
             {showRawQuery ? <FaAngleUp /> : <FaAngleDown />}
           </Button>
         </Box>
@@ -302,10 +304,12 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             </h2>
             <Accordion.ItemContent px={[1, 4]}>
               <Accordion.ItemBody>
-                <List.Root as='ul' ml={0}>
+                <List.Root ps={0} gap={0.5}>
                   {isMounted &&
                     searchHistory.length > 0 &&
-                    searchHistory.reverse().map((query, index) => {
+                    // Newest first. Copy before reversing: `reverse` mutates, and
+                    // reversing the stored array flipped the order every render.
+                    [...searchHistory].reverse().map((query, index) => {
                       return (
                         <List.Item
                           key={`li-${index}`}
@@ -316,13 +320,12 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                           }}
                           _hover={{
                             cursor: 'pointer',
-                            '&.hist-querystring': {
+                            '& .hist-querystring': {
                               textDecoration: 'underline',
                             },
                           }}
                           bg='info'
                           borderRadius='semi'
-                          my={0.5}
                         >
                           <Flex
                             className='hist-row'
@@ -365,7 +368,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                             <Box>
                               <Text
                                 className='hist-querystring'
-                                fontSize='xs'
+                                fontSize='sm'
                                 fontWeight='medium'
                                 lineClamp={3}
                               >

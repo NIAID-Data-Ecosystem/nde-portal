@@ -3,8 +3,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { useAdvancedSearchContext } from 'src/components/advanced-search/components/Search';
 import { SearchTypesConfigProps } from 'src/components/advanced-search/components/Search/search-types-config';
 import { QueryValue } from 'src/components/advanced-search/types';
-import { ItemContentProps } from '.';
+
 import { getSearchOptionsForField, getSearchType } from '../../helpers';
+import { ItemContentProps } from '.';
 
 export const SearchLabel = ({
   value,
@@ -42,12 +43,12 @@ export const SearchLabel = ({
       <VisuallyHidden>
         <label id='field-select-label'>Select field</label>
       </VisuallyHidden>
-      <NativeSelect.Root size='sm' variant='outline'>
+      {/* The width goes on the root: it is `width: 100%` by default, which
+      leaves the indicator at the far edge of the row, away from the field. */}
+      <NativeSelect.Root size='sm' variant='outline' w='170px' mb={2}>
         <NativeSelect.Field
           aria-labelledby='field-select-label'
-          w='170px'
           borderRadius='semi'
-          mb={2}
           _focus={{ borderColor: 'text.placeholder' }}
           _hover={{ bg: 'bg.alt' }}
           value={selectedSearchType.id}

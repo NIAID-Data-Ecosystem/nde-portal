@@ -1,6 +1,6 @@
-import React from 'react';
 import { Icon, IconButton, IconButtonProps } from '@chakra-ui/react';
 import { UniqueIdentifier } from '@dnd-kit/core';
+import React from 'react';
 import { FaXmark } from 'react-icons/fa6';
 
 interface RemoveProps extends Omit<IconButtonProps, 'id'> {
@@ -19,6 +19,8 @@ export const Remove: React.FC<RemoveProps> = React.memo(props => {
       pl={[2, 1]}
       pr={[2, 1]}
       mx={0.5}
+      minW='auto'
+      h='auto'
       onClick={() => props.handleClick && props.handleClick(props.id)}
       _focus={{ boxShadow: 'none' }}
     >

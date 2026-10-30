@@ -1,5 +1,5 @@
-import React, { forwardRef } from 'react';
 import { IconButton } from '@chakra-ui/react';
+import React, { forwardRef } from 'react';
 
 export const Handle = React.memo(
   forwardRef<HTMLButtonElement, any>((props, ref) => {
@@ -13,6 +13,8 @@ export const Handle = React.memo(
         pl={[2, 1]}
         pr={[2, 1]}
         mx={0.5}
+        minW='auto'
+        h='auto'
         _focus={{ boxShadow: 'none' }}
         {...props}
       >

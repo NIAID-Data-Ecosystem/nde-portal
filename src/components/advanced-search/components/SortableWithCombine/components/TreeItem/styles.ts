@@ -20,7 +20,7 @@ export const getStyles = ({
         px: 0.5,
         py: 1,
         boxSizing: 'border-box',
-        borderRadius: 'base',
+        borderRadius: 'sm',
       },
     },
   } as ListItemProps;
@@ -75,7 +75,7 @@ export const getStyles = ({
               bg: '#ffffff',
             },
 
-            '> *': {
+            '& > *': {
               /* Items are hidden using height and opacity to retain focus */
               opacity: 0,
               height: 0,
@@ -89,7 +89,7 @@ export const getStyles = ({
       opacity: !indicator ? 0.5 : 1,
       css: {
         '& .tree-item': {
-          '> *': {
+          '& > *': {
             bg: 'transparent',
           },
         },

@@ -68,7 +68,9 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
             disabled={props.disabled}
           />
         </Box>
-        <Flex mt={8} alignItems='center'>
+        {/* Bottom-aligned rather than offset by the label height, which is
+        shorter under v3's line heights. */}
+        <Flex alignSelf='flex-end' alignItems='center'>
           {renderSubmitButton &&
             renderSubmitButton({
               type: 'submit',

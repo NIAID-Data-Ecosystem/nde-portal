@@ -10,12 +10,13 @@ import {
   checkBalancedPunctuation,
   removeDuplicateErrors,
 } from 'src/components/advanced-search/utils/validation-checks';
+import { QueryStringError } from 'src/components/error/types';
+
 import { FlattenedItem, Value } from '../../../../types';
 import { getSearchType, stripSearchTerm } from '../../helpers';
 import { FieldTag } from './Field';
 import { SearchLabel } from './SearchLabel';
 import { TermLabel } from './Term';
-import { QueryStringError } from 'src/components/error/types';
 
 export interface ItemContentProps {
   id: FlattenedItem['id'];
@@ -100,7 +101,7 @@ const ItemContent = ({
       <Collapsible.Root open={errors.length > 0}>
         <Collapsible.Content>
           {errors.map(error => (
-            <Text key={error.id} color='error' fontSize='xs' fontStyle='italic'>
+            <Text key={error.id} color='error' fontSize='sm' fontStyle='italic'>
               {error.message}
             </Text>
           ))}

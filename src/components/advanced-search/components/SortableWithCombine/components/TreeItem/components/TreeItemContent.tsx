@@ -1,13 +1,14 @@
-import React, { useCallback, useMemo } from 'react';
 import { Box, Flex, Tag, Text } from '@chakra-ui/react';
+import React, { useCallback, useMemo } from 'react';
+import { SearchTypesConfigProps } from 'src/components/advanced-search/components/Search/search-types-config';
+import { getUnionTheme } from 'src/components/advanced-search/utils/query-helpers';
+
+import { Value } from '../../../types';
 import {
   getFieldDetails,
   getSearchOptionsForField,
   getSearchType,
 } from '../helpers';
-import { SearchTypesConfigProps } from 'src/components/advanced-search/components/Search/search-types-config';
-import { Value } from '../../../types';
-import { getUnionTheme } from 'src/components/advanced-search/utils/query-helpers';
 
 interface TreeItemContentProps extends Value {
   childCount?: number;
