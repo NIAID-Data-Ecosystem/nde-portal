@@ -72,19 +72,9 @@ const ItemContent = ({
           mt={1}
           flex={1}
           flexDirection={['column', 'column', 'row']}
+          gap={4}
         >
-          <Box
-            w='100%'
-            flex={1}
-            mr={[
-              0,
-              0,
-              selectedFieldDetails?.type === 'keyword' ||
-              selectedFieldDetails?.type === 'text'
-                ? 4
-                : 0,
-            ]}
-          >
+          <Box w='100%' flex={1}>
             {/* Term string */}
             <TermLabel
               term={value.term}

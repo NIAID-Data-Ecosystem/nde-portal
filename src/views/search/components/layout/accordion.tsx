@@ -26,10 +26,11 @@ export const AccordionContent = ({
                   {title}
                 </Heading>
                 <Icon
-                  as={expanded ? FaMinus : FaPlus}
                   fontSize='xs'
                   aria-label={expanded ? 'Collapse' : 'Expand'}
-                />
+                >
+                  {expanded ? <FaMinus /> : <FaPlus />}
+                </Icon>
               </Accordion.ItemTrigger>
             </h2>
             <Accordion.ItemContent>

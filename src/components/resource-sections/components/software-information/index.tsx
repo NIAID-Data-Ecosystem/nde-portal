@@ -175,7 +175,7 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
                       return (
                         <InputOutput
                           key={i}
-                          icon={FaFileImport}
+                          icon={<FaFileImport />}
                           {...data}
                         ></InputOutput>
                       );
@@ -194,7 +194,7 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
                       return (
                         <InputOutput
                           key={i}
-                          icon={FaFileExport}
+                          icon={<FaFileExport />}
                           {...data}
                         ></InputOutput>
                       );

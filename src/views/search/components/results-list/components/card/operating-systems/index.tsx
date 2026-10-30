@@ -19,7 +19,7 @@ const OperatingSystems: React.FC<OperatingSystemProps> = ({ data }) => {
             key={`${item}`}
             content={`Operating system supported: ${item}`}
           >
-            <Icon as={osIcon || FaComputer} mr={2} />
+            <Icon mr={2}>{osIcon ? osIcon : <FaComputer />}</Icon>
           </Tooltip>
         );
       })}

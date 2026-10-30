@@ -4,6 +4,7 @@
  */
 
 import { FaGithub, FaGoogle, FaMicrosoft, FaOrcid } from 'react-icons/fa6';
+
 import { KnownProvider } from './types';
 
 /**
@@ -15,12 +16,18 @@ import { KnownProvider } from './types';
  * icon and no error messages.
  */
 export const KNOWN_PROVIDERS: Record<string, KnownProvider> = {
-  github: { label: 'GitHub', icon: { as: FaGithub, color: '#24292e' } },
-  orcid: { label: 'ORCID', icon: { as: FaOrcid, color: '#A6CE39' } },
-  google: { label: 'Google', icon: { as: FaGoogle, color: '#4285F4' } },
+  github: {
+    label: 'GitHub',
+    icon: { component: <FaGithub />, color: '#24292e' },
+  },
+  orcid: { label: 'ORCID', icon: { component: <FaOrcid />, color: '#A6CE39' } },
+  google: {
+    label: 'Google',
+    icon: { component: <FaGoogle />, color: '#4285F4' },
+  },
   microsoft: {
     label: 'Microsoft',
-    icon: { as: FaMicrosoft, color: '#00A4EF' },
+    icon: { component: <FaMicrosoft />, color: '#00A4EF' },
   },
   okta: { label: 'NIH Login' },
 };

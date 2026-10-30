@@ -99,7 +99,7 @@ export const AboutResource = ({
                   key={`${item}-${idx}`}
                   colorPalette='primary'
                   m={0.5}
-                  leftIcon={FaMagnifyingGlass}
+                  leftIcon={<FaMagnifyingGlass />}
                   href={{
                     pathname: '/search',
                     query: {
@@ -151,7 +151,7 @@ export const AboutResource = ({
                 key={`${item.name}-${idx}`}
                 colorPalette='primary'
                 m={0.5}
-                leftIcon={FaMagnifyingGlass}
+                leftIcon={<FaMagnifyingGlass />}
                 href={item.url || undefined}
               >
                 {item.name}

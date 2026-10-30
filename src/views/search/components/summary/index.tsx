@@ -119,10 +119,11 @@ const SummaryGrid = (props: SummaryGridProps) => {
                         <FiltersDisclaimer />
                       </VStack>
                       <Icon
-                        as={expanded ? FaMinus : FaPlus}
                         fontSize='xs'
                         aria-label={expanded ? 'Collapse' : 'Expand'}
-                      />
+                      >
+                        {expanded ? <FaMinus /> : <FaPlus />}
+                      </Icon>
                     </Accordion.ItemTrigger>
                   </h2>
 

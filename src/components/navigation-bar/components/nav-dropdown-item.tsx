@@ -50,7 +50,9 @@ const DropdownItemContent = ({
   <Box flex={1}>
     <Flex alignItems='center' gap={2}>
       {icon && (
-        <Icon as={icon} w={5} h={5} color='niaid.700' aria-hidden='true' />
+        <Icon w={5} h={5} color='niaid.700' aria-hidden='true'>
+          {icon}
+        </Icon>
       )}
       <Text
         className='label'

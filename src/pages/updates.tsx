@@ -438,13 +438,13 @@ const Updates: NextPage<UpdatesProps> = props => {
                           {Object.entries(NDESOCIALS['socials']).map(
                             ([platform, href]) => {
                               let icon =
-                                platform === 'twitter'
-                                  ? FaTwitter
-                                  : platform === 'linkedin'
-                                  ? FaLinkedinIn
-                                  : platform === 'facebook'
-                                  ? FaSquareFacebook
-                                  : undefined;
+                                platform === 'twitter' ? (
+                                  <FaTwitter />
+                                ) : platform === 'linkedin' ? (
+                                  <FaLinkedinIn />
+                                ) : platform === 'facebook' ? (
+                                  <FaSquareFacebook />
+                                ) : undefined;
 
                               return (
                                 <Link key={platform} href={href}>
@@ -452,11 +452,12 @@ const Updates: NextPage<UpdatesProps> = props => {
                                     {platform} link
                                   </VisuallyHidden>
                                   <Icon
-                                    as={icon}
                                     boxSize={6}
                                     fill='text.placeholder'
                                     _hover={{ fill: `${platform}.500` }}
-                                  />
+                                  >
+                                    {icon}
+                                  </Icon>
                                 </Link>
                               );
                             },

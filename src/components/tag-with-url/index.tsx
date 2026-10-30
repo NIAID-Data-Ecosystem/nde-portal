@@ -1,7 +1,6 @@
 import { Span, Tag, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import React from 'react';
-import { IconType } from 'react-icons';
 import { FaSquareArrowUpRight } from 'react-icons/fa6';
 import type { UrlObject } from 'url';
 
@@ -12,7 +11,7 @@ interface TagWithUrlProps extends Tag.RootProps {
   label?: string;
   /** Opens `href` in a new tab and appends an external-link icon. */
   isExternal?: boolean;
-  leftIcon?: IconType;
+  leftIcon?: React.ReactNode;
 }
 
 /**
@@ -62,7 +61,7 @@ export const TagWithUrl = ({
       {...props}
     >
       <NextLink href={href} target={isExternal ? '_blank' : undefined}>
-        {leftIcon && <Tag.StartElement as={leftIcon} />}
+        {leftIcon && <Tag.StartElement>{leftIcon}</Tag.StartElement>}
         {/* `display: inline` lets the prefix and value wrap as one run of text,
           overriding the single-line clamp the recipe puts on this slot. */}
         <Tag.Label display='inline'>

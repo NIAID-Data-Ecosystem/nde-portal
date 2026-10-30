@@ -3,6 +3,7 @@ import {
   Combobox,
   createListCollection,
   Flex,
+  HStack,
   Icon,
   InputGroup,
   Portal,
@@ -147,18 +148,18 @@ type FieldOption = SchemaDefinition & {
 
 const getFieldTypeIcon = ({ type, enum: enumValues }: FieldOption) => {
   if (type === 'text' || type === 'keyword') {
-    return { icon: enumValues ? FaListUl : FaFont, label: type };
+    return { icon: enumValues ? <FaListUl /> : <FaFont />, label: type };
   } else if (type === 'date') {
-    return { icon: FaRegCalendarDays, label: type };
+    return { icon: <FaRegCalendarDays />, label: type };
   } else if (
     type === 'unsigned_long' ||
     type === 'integer' ||
     type === 'double' ||
     type === 'float'
   ) {
-    return { icon: FaHashtag, label: 'number' };
+    return { icon: <FaHashtag />, label: 'number' };
   } else if (type === 'boolean') {
-    return { icon: FaRegCircleCheck, label: type };
+    return { icon: <FaRegCircleCheck />, label: type };
   }
   return { icon: undefined, label: type };
 };
@@ -202,19 +203,16 @@ const FieldSelectOption = ({ item }: { item: FieldOption }) => {
         },
       ]}
     >
-      <Flex alignItems='center' color='inherit'>
+      <HStack alignItems='flex-start' color='inherit' gap={3}>
         <Tooltip
           content={tooltipLabel.charAt(0).toUpperCase() + tooltipLabel.slice(1)}
           positioning={{ placement: 'top-start' }}
         >
-          {/* icon displaying the type of field. */}
-          <Box
-            as='span'
-            mt={label === 'All Fields' ? 0 : -1}
-            alignSelf='flex-start'
-          >
-            {icon && <Icon as={icon} mr={2} boxSize={4} />}
-          </Box>
+          {icon && (
+            <Icon boxSize={3} m={0.5} mt={1}>
+              {icon}
+            </Icon>
+          )}
         </Tooltip>
 
         {/* Name of field. */}
@@ -256,7 +254,7 @@ const FieldSelectOption = ({ item }: { item: FieldOption }) => {
             </Text>
           )}
         </Box>
-      </Flex>
+      </HStack>
     </Combobox.Item>
   );
 };

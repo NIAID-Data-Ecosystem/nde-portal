@@ -39,13 +39,9 @@ const ProviderIcon = ({
 
   if (icon) {
     return (
-      <Icon
-        as={icon.as}
-        color={icon.color}
-        boxSize={5}
-        aria-hidden='true'
-        {...props}
-      />
+      <Icon color={icon.color} boxSize={5} aria-hidden='true' {...props}>
+        {icon.component}
+      </Icon>
     );
   }
 

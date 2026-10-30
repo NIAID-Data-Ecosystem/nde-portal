@@ -314,9 +314,9 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   //     return (
   //       <HStack gap={1} color={color} opacity={isNotAccepting ? 0.8 : 1}>
   //         {isNotAccepting ? (
-  //           <Icon as={FaXmark}></Icon>
+  //           <Icon ><FaXmark /></Icon>
   //         ) : value ? (
-  //           <Icon as={FaCheck}></Icon>
+  //           <Icon ><FaCheck /></Icon>
   //         ) : null}
   //         <TextCell
   //           value={value || ''}
