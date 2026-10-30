@@ -337,6 +337,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                             alignItems={{ base: 'flex-start', md: 'center' }}
                             justifyContent={{ base: 'space-between' }}
                             px={2}
+                            py={1}
                           >
                             <Flex
                               bg='info'
