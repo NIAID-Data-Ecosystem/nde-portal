@@ -62,8 +62,16 @@ describe('OntologyBrowserPopup', () => {
     mockedSearchOntologyAPI.mockResolvedValue([HUMAN_SUGGESTION]);
   });
 
-  it('renders nothing and skips the search without filters', async () => {
+  it('renders nothing and skips the search without filters or a query', async () => {
     renderPopup({});
+    await act(async () => {});
+
+    expect(popupLink()).not.toBeInTheDocument();
+    expect(mockedSearchOntologyAPI).not.toHaveBeenCalled();
+  });
+
+  it('renders nothing for a query unrelated to the taxonomy', async () => {
+    renderPopup({}, 'covid');
     await act(async () => {});
 
     expect(popupLink()).not.toBeInTheDocument();
@@ -99,11 +107,30 @@ describe('OntologyBrowserPopup', () => {
   });
 
   it('searches for a taxon name in the querystring', async () => {
-    renderPopup({ '@type': ['Dataset'] }, 'species.name:"Mus musculus"');
+    renderPopup({}, 'species.name:"Mus musculus"');
+
+    expect(await screen.findByRole('link')).toBeInTheDocument();
+    expect(mockedSearchOntologyAPI).toHaveBeenCalledWith(
+      expect.objectContaining({ q: 'Mus musculus', ontology: ['ncbitaxon'] }),
+    );
+  });
+
+  it('searches for a bare taxon id from the querystring', async () => {
+    // BioThings finds no match for a prefixed id such as "ncbitaxon_9606".
+    renderPopup({}, 'species.identifier:"9606"');
+
+    expect(await screen.findByRole('link')).toBeInTheDocument();
+    expect(mockedSearchOntologyAPI).toHaveBeenCalledWith(
+      expect.objectContaining({ q: '9606', ontology: ['ncbitaxon'] }),
+    );
+  });
+
+  it('searches for a taxon id alongside unrelated filters', async () => {
+    renderPopup({ '@type': ['Dataset'] }, 'infectiousAgent.identifier:"562"');
 
     await waitFor(() =>
       expect(mockedSearchOntologyAPI).toHaveBeenCalledWith(
-        expect.objectContaining({ q: 'Mus musculus', ontology: ['ncbitaxon'] }),
+        expect.objectContaining({ q: '562' }),
       ),
     );
   });

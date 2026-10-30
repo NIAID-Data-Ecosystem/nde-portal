@@ -157,6 +157,22 @@ describe('OntologySearchList', () => {
     expect(searchQuery()).toBe('_meta.lineage.taxon:10090');
   });
 
+  it('removes only the chosen one of two terms with the same label', async () => {
+    // NCBI Taxonomy has a bacterial and a stick-insect genus named Bacillus.
+    const { user } = await setup([
+      { ontologyName: 'ncbitaxon', taxonId: '1386', label: 'Bacillus' },
+      { ontologyName: 'ncbitaxon', taxonId: '55087', label: 'Bacillus' },
+    ]);
+
+    await user.click(
+      screen.getAllByRole('button', { name: 'remove Bacillus from search' })[0],
+    );
+
+    expect(screen.queryByText('ncbitaxon | 1386')).not.toBeInTheDocument();
+    expect(screen.getByText('ncbitaxon | 55087')).toBeInTheDocument();
+    expect(searchQuery()).toBe('_meta.lineage.taxon:55087');
+  });
+
   it('clears every term', async () => {
     const { user } = await setup([HUMAN, MOUSE]);
 

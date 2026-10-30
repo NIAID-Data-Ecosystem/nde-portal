@@ -221,8 +221,10 @@ export const OntologySearchList = ({
                           boxSize={6}
                           minWidth={6}
                           onClick={() => {
+                            // By taxon id, as the browser adds them: two taxa
+                            // can share a label.
                             setSearchList(prev =>
-                              prev.filter(item => item.label !== label),
+                              prev.filter(item => item.taxonId !== taxonId),
                             );
                           }}
                         >

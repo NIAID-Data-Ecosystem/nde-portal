@@ -49,8 +49,8 @@ const findRelatedOntology = (
 ) => {
   const selectedFilterKeys = Object.keys(filters);
 
-  // If there are no filters selected, return early
-  if (selectedFilterKeys.length === 0) {
+  // If there are no filters selected and no querystring, return early
+  if (selectedFilterKeys.length === 0 && !querystring) {
     return {
       hasOntology: false,
     };
@@ -76,12 +76,10 @@ const findRelatedOntology = (
       // Check if the querystring contains the property
       if (querystring && querystring.includes(property)) {
         let term = extractSubstringFromQueryString(querystring, property);
-        if (property.includes('identifier')) {
-          if (ontology.value === 'ncbitaxon') {
-            term = `${ontology.value}_${term}`;
-          } else if (ontology.value === 'edam') {
-            term = `${term?.replace('topic', 'EDAM')}`;
-          }
+        // NCBI Taxonomy identifiers are already the bare taxon id ("9606")
+        // that the BioThings search takes.
+        if (property.includes('identifier') && ontology.value === 'edam') {
+          term = `${term?.replace('topic', 'EDAM')}`;
         }
 
         return {
