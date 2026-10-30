@@ -32,7 +32,8 @@
  * Endpoints mocked (all client-side):
  *   - `**\/query*`  the NDE /query API (result count + predictive suggestions)
  */
-import { test, expect, type Page, type TestInfo } from '@playwright/test';
+import { expect, type Page, test, type TestInfo } from '@playwright/test';
+
 import { runAxeScans } from '../utils/axe';
 
 // --- Per-route configuration -------------------------------------------------
@@ -231,7 +232,7 @@ test.describe('a11y: Advanced Search — field select menu', () => {
     }
     await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
 
-    // Open the react-select field combobox and type to narrow the (large)
+    // Open the field combobox and type to narrow the (large)
     // option list to a handful, then wait for an option to prove the listbox
     // is open before scanning it.
     const fieldSelect = page.getByRole('combobox', { name: /select field/i });

@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
 import { Flex, Icon } from '@chakra-ui/react';
-import { FaAngleDown, FaRegPenToSquare } from 'react-icons/fa6';
-import { Action, Handle, Remove } from './Actions';
-import { TreeItemComponentProps } from '..';
 import { UniqueIdentifier } from '@dnd-kit/core';
+import React, { useMemo } from 'react';
+import { FaAngleDown, FaRegPenToSquare } from 'react-icons/fa6';
+
+import { TreeItemComponentProps } from '..';
+import { Action, Handle, Remove } from './Actions';
 
 interface TreeItemActionsProps
   extends Pick<
@@ -65,7 +66,7 @@ export const TreeItemActions = React.memo(
         {!clone && onUpdate && (
           <Action
             id={id}
-            aria-label='collapse items'
+            aria-label='edit item'
             handleClick={onUpdate}
             colorPalette='gray'
             variant='ghost'

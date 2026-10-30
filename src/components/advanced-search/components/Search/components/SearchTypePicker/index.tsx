@@ -35,6 +35,9 @@ export const SearchTypePicker: React.FC = () => {
   return (
     <RadioGroup.Root
       mb={4}
+      // v2 radios defaulted to blue. Without a palette v3 resolves to
+      // `colorPalette: 'none'` and the checked control renders transparent.
+      colorPalette='blue'
       value={checkedOption?.id ?? null}
       onValueChange={({ value }) => {
         const option = options.find(({ id }) => id === value);

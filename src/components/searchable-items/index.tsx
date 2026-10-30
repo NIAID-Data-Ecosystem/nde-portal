@@ -147,7 +147,7 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
             colorPalette={colorPalette}
             color={tagColor}
             href={{ pathname: '/search', query: getItemQuery(item) }}
-            leftIcon={FaMagnifyingGlass}
+            leftIcon={<FaMagnifyingGlass />}
           >
             {item.name}
           </TagWithUrl>

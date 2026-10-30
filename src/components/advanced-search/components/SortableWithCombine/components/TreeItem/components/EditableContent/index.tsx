@@ -10,12 +10,13 @@ import {
   checkBalancedPunctuation,
   removeDuplicateErrors,
 } from 'src/components/advanced-search/utils/validation-checks';
+import { QueryStringError } from 'src/components/error/types';
+
 import { FlattenedItem, Value } from '../../../../types';
 import { getSearchType, stripSearchTerm } from '../../helpers';
 import { FieldTag } from './Field';
 import { SearchLabel } from './SearchLabel';
 import { TermLabel } from './Term';
-import { QueryStringError } from 'src/components/error/types';
 
 export interface ItemContentProps {
   id: FlattenedItem['id'];
@@ -71,19 +72,9 @@ const ItemContent = ({
           mt={1}
           flex={1}
           flexDirection={['column', 'column', 'row']}
+          gap={4}
         >
-          <Box
-            w='100%'
-            flex={1}
-            mr={[
-              0,
-              0,
-              selectedFieldDetails?.type === 'keyword' ||
-              selectedFieldDetails?.type === 'text'
-                ? 4
-                : 0,
-            ]}
-          >
+          <Box w='100%' flex={1}>
             {/* Term string */}
             <TermLabel
               term={value.term}
@@ -100,7 +91,7 @@ const ItemContent = ({
       <Collapsible.Root open={errors.length > 0}>
         <Collapsible.Content>
           {errors.map(error => (
-            <Text key={error.id} color='error' fontSize='xs' fontStyle='italic'>
+            <Text key={error.id} color='error' fontSize='sm' fontStyle='italic'>
               {error.message}
             </Text>
           ))}

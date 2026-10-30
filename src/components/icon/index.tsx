@@ -1,21 +1,22 @@
-import React from 'react';
 import {
   Flex,
   Icon,
   IconProps as ChakraIconProps,
   VisuallyHidden,
 } from '@chakra-ui/react';
-import {
-  FaFingerprint,
-  FaQuoteLeft,
-  FaInfo,
-  FaCalendarDays,
-  FaLaptopCode,
-  FaCode,
-} from 'react-icons/fa6';
+import React from 'react';
 import { IconType } from 'react-icons';
-import Glyph from './components/glyph';
+import {
+  FaCalendarDays,
+  FaCode,
+  FaFingerprint,
+  FaInfo,
+  FaLaptopCode,
+  FaQuoteLeft,
+} from 'react-icons/fa6';
 import { FaLanguage } from 'react-icons/fa6';
+
+import Glyph from './components/glyph';
 
 // Metadata icon svg.
 export interface IconProps extends ChakraIconProps {

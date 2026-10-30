@@ -309,13 +309,6 @@ const SearchBar = ({
                   ? 'Previous searches'
                   : 'No previous searches.'}
               </Text>
-              {/* <IconButton
-                aria-label='Close search history.'
-                icon={<Icon as={FaXmark} />}
-                variant='ghost'
-                size='sm'
-                onClick={() => setIsOpen(false)}
-              /> */}
             </List.Item>
             {historyList.map((str, index) => {
               return (

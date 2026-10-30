@@ -8,16 +8,18 @@ import {
   Text,
   useEditableContext,
 } from '@chakra-ui/react';
-import Tooltip from '../../../tooltip';
-import { system } from 'src/theme';
+import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { FaCheck, FaRegPenToSquare, FaXmark } from 'react-icons/fa6';
-import { useQuery } from '@tanstack/react-query';
+import { QueryStringError } from 'src/components/error/types';
 import { getQueryStatusError } from 'src/components/error/utils';
+import { system } from 'src/theme';
 import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { formatNumber } from 'src/utils/helpers';
 import { useDebounceValue } from 'usehooks-ts';
+
+import Tooltip from '../../../tooltip';
 import {
   convertObject2QueryString,
   convertQueryString2Object,
@@ -30,7 +32,6 @@ import {
   removeUnnecessaryParentheses,
   validateQueryString,
 } from './utils';
-import { QueryStringError } from 'src/components/error/types';
 
 interface EditableQueryControlsProps {
   /** Shakes the submit button once after a failed validation attempt. */
@@ -64,7 +65,7 @@ const EditableQueryControls = ({
             <IconButton
               aria-label='Edit'
               size='sm'
-              variant='solid'
+              variant='subtle'
               colorPalette='gray'
               color='text.body'
             >
@@ -83,7 +84,7 @@ const EditableQueryControls = ({
       <Editable.CancelTrigger asChild>
         <IconButton
           aria-label='Cancel'
-          variant='solid'
+          variant='subtle'
           colorPalette='gray'
           color='text.body'
         >

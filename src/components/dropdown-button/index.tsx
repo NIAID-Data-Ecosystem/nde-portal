@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-import { FaAngleDown } from 'react-icons/fa6';
 import {
   Box,
   Button,
@@ -9,9 +7,11 @@ import {
   Icon,
   IconButton,
   IconButtonProps,
-  ListItemProps,
   List,
+  ListItemProps,
 } from '@chakra-ui/react';
+import React, { useState } from 'react';
+import { FaAngleDown } from 'react-icons/fa6';
 import { UnionTypes } from 'src/components/advanced-search/types';
 
 export interface DropdownButtonProps extends ButtonGroupProps {
@@ -98,7 +98,7 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
             bg='white'
             w='100%'
           >
-            <List.Root as='ul' ml={0}>
+            <List.Root ps={0}>
               {options.map(option => {
                 return (
                   <List.Item

@@ -1,15 +1,23 @@
 import {
   Box,
+  Combobox,
+  createListCollection,
   Flex,
+  HStack,
   Icon,
+  InputGroup,
+  Portal,
+  Separator,
+  Span,
   Text,
-  useDisclosure,
-  VisuallyHidden,
+  useCombobox,
+  UseComboboxProps,
+  UseComboboxReturn,
 } from '@chakra-ui/react';
 import ADVANCED_SEARCH from 'configs/advanced-search-fields.json';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import Fuse from 'fuse.js';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
   FaFont,
   FaHashtag,
@@ -18,10 +26,9 @@ import {
   FaRegCalendarDays,
   FaRegCircleCheck,
 } from 'react-icons/fa6';
-import Select, { components, ControlProps, OptionProps } from 'react-select';
 import { SchemaDefinition } from 'scripts/generate-schema-definitions/types';
 import { QueryValue } from 'src/components/advanced-search/types';
-import { system } from 'src/theme';
+import { INPUT_HEIGHTS } from 'src/theme/recipes/input.recipe';
 import {
   HIDDEN_SAMPLE_FIELDS,
   SHOULD_HIDE_SAMPLE_FIELDS,
@@ -48,42 +55,125 @@ export const filterFields = (field: SchemaDefinition) => {
   );
 };
 
-const Option = (props: OptionProps<any>) => {
-  const { open: showDescription, onClose, onOpen } = useDisclosure();
-  const { data } = props;
-  const { label, type, count, property } = data;
+type ComboboxSize = 'sm' | 'md' | 'lg';
 
-  const { icon, tooltipLabel } = useMemo(() => {
-    let icon;
-    let tooltipLabel = type;
-    if (type === 'text' || type === 'keyword') {
-      icon = FaFont;
-      if (data.enum) {
-        icon = FaListUl;
+/*
+Combobox styles shared with ../SearchInput/components/EnumInput, which sits in
+the same row and has to look the same.
+*/
+export const comboboxStyles = {
+  /*
+  Rest at the height of the "Search for resources" field beside it.
+  DropdownInput's group is `--input-height` plus, top and bottom, a 1px border
+  and the 2px (`my={0.5}`) margin around its end element.
+  */
+  root: (size: ComboboxSize): Combobox.RootProps['css'] => ({
+    '--combobox-input-height': `calc({${INPUT_HEIGHTS[size]}} + 6px)`,
+  }),
+  // The `outline` variant's transparent field and focus outline, swapped for a
+  // white field with a primary border and ring.
+  input: (size: ComboboxSize): Combobox.InputProps => ({
+    bg: 'white',
+    color: 'text.heading',
+    fontSize: 'md',
+    borderColor: size === 'sm' ? '#9e9e9e' : 'gray.200',
+    borderRadius: 'sm',
+    focusVisibleRing: 'none',
+    _focus: {
+      borderColor: 'primary.500',
+      boxShadow: '0 0 0 1px {colors.primary.600}',
+    },
+  }),
+  content: { maxH: '300px', p: 0, py: 1, borderRadius: 'sm' },
+  item: {
+    px: 3,
+    py: 2,
+    borderRadius: 0,
+    color: 'text.body',
+    // Option text at the page's 16px; the content's `textStyle: sm` is 14px.
+    fontSize: 'md',
+    cursor: 'pointer',
+    css: {
+      // Selection wins over highlight, so a highlighted selected row stays filled.
+      '&[data-highlighted]:not([data-state=checked])': { bg: 'primary.100' },
+      '&[data-state=checked]': { bg: 'primary.500', color: 'white' },
+    },
+  } satisfies Partial<Combobox.ItemProps>,
+  empty: { color: 'gray.500', textAlign: 'center' },
+} as const;
+
+/** Divider between the clear and open buttons, at the larger size only. */
+export const IndicatorSeparator = ({ size }: { size: ComboboxSize }) =>
+  size === 'sm' ? null : (
+    <Separator orientation='vertical' h={5} borderColor='gray.300' />
+  );
+
+/*
+A combobox whose input shows the selected option while closed. Opening the list
+by click, trigger or arrow key empties the input so typing starts a new search;
+callers keep the selection on show as the placeholder, and zag writes it back
+when the list closes (on select, Escape, or leaving the field). Opening by
+typing keeps what was typed.
+
+Emptying it through zag is deterministic where selecting the text is not: the
+open state's entry action refocuses the input and moves the caret to the end a
+frame later, undoing a selection made in a click or focus handler.
+*/
+export const useSearchCombobox = <T,>(
+  props: UseComboboxProps<T>,
+): UseComboboxReturn<T> => {
+  const comboboxRef = useRef<UseComboboxReturn<T>>();
+  const combobox = useCombobox<T>({
+    inputBehavior: 'autohighlight',
+    openOnClick: true,
+    ...props,
+    onOpenChange: details => {
+      if (details.open && details.reason !== 'input-change') {
+        comboboxRef.current?.setInputValue('');
       }
-    } else if (type === 'date') {
-      icon = FaRegCalendarDays;
-    } else if (
-      type === 'unsigned_long' ||
-      type === 'integer' ||
-      type === 'double' ||
-      type === 'float'
-    ) {
-      icon = FaHashtag;
-      tooltipLabel = 'number';
-    } else if (type === 'boolean') {
-      icon = FaRegCircleCheck;
-    }
+      props.onOpenChange?.(details);
+    },
+  });
+  comboboxRef.current = combobox;
+  return combobox;
+};
 
-    return { icon, tooltipLabel };
-  }, [type, data.enum]);
+// Value for the "All Fields" option, whose dotfield is the empty string.
+const ALL_FIELDS = '_all_fields_';
+
+type FieldOption = SchemaDefinition & {
+  label: string;
+  value: string;
+  property: string;
+};
+
+const getFieldTypeIcon = ({ type, enum: enumValues }: FieldOption) => {
+  if (type === 'text' || type === 'keyword') {
+    return { icon: enumValues ? <FaListUl /> : <FaFont />, label: type };
+  } else if (type === 'date') {
+    return { icon: <FaRegCalendarDays />, label: type };
+  } else if (
+    type === 'unsigned_long' ||
+    type === 'integer' ||
+    type === 'double' ||
+    type === 'float'
+  ) {
+    return { icon: <FaHashtag />, label: 'number' };
+  } else if (type === 'boolean') {
+    return { icon: <FaRegCircleCheck />, label: type };
+  }
+  return { icon: undefined, label: type };
+};
+
+const FieldSelectOption = ({ item }: { item: FieldOption }) => {
+  const { label, count, property } = item;
+  const { icon, label: tooltipLabel } = getFieldTypeIcon(item);
 
   // Description is the abstract or description field from the metadata fields config.
-  const field_details = SCHEMA_DEFINITIONS?.[
-    property as keyof typeof SCHEMA_DEFINITIONS
-  ] as SchemaDefinition;
-
-  let description = useMemo(() => {
+  const description = useMemo(() => {
+    const field_details = SCHEMA_DEFINITIONS?.[
+      property as keyof typeof SCHEMA_DEFINITIONS
+    ] as SchemaDefinition;
     const abstract = field_details?.['abstract']
       ? Object.values(field_details['abstract'])[0]
       : '';
@@ -91,91 +181,86 @@ const Option = (props: OptionProps<any>) => {
       ? Object.values(field_details['description'])[0]
       : '';
     return abstract || description || '';
-  }, [field_details]);
+  }, [property]);
 
   return (
-    <components.Option {...props}>
-      <Box
-        key={label}
-        onMouseOver={onOpen}
-        onMouseLeave={onClose}
-        cursor='pointer'
-      >
-        <Flex
-          alignItems='center'
-          color={
-            props.isFocused && !props.isSelected
-              ? 'primary.600'
-              : props.isSelected
-              ? 'white'
-              : 'text.body'
-          }
+    <Combobox.Item
+      item={item}
+      {...comboboxStyles.item}
+      justifyContent='flex-start'
+      borderBottom='1px solid'
+      borderBottomColor='primary.100'
+      css={[
+        comboboxStyles.item.css,
+        {
+          '&[data-highlighted]:not([data-state=checked])': {
+            color: 'primary.600',
+          },
+          // Clamped to one line until highlighted, by pointer or keyboard.
+          '&[data-highlighted] [data-description]': {
+            WebkitLineClamp: 'unset',
+          },
+          '&[data-state=checked] [data-description]': { color: 'inherit' },
+        },
+      ]}
+    >
+      <HStack alignItems='flex-start' color='inherit' gap={3}>
+        <Tooltip
+          content={tooltipLabel.charAt(0).toUpperCase() + tooltipLabel.slice(1)}
+          positioning={{ placement: 'top-start' }}
         >
-          <Tooltip
-            content={
-              tooltipLabel.charAt(0).toUpperCase() + tooltipLabel.slice(1)
-            }
-            positioning={{
-              placement: 'top-start',
-            }}
+          {/* The trigger is `asChild`, so it must be an element even for a
+          field type with no icon, or the tooltip has nothing to attach to. */}
+          <Span display='flex'>
+            {icon && (
+              <Icon boxSize={3} m={0.5} mt={1}>
+                {icon}
+              </Icon>
+            )}
+          </Span>
+        </Tooltip>
+
+        {/* Name of field. */}
+        <Box>
+          {/* A span by default; block keeps the count on the next line. */}
+          <Combobox.ItemText
+            display='block'
+            fontWeight='medium'
+            color='inherit'
+            lineHeight='none'
           >
-            {/* icon displaying the type of field. */}
-            <Box
+            {label}
+          </Combobox.ItemText>
+          {/* don't show count for items with no property (ex. "all fields") */}
+          {property && count && (
+            <Text
               as='span'
-              mt={label === 'All Fields' ? 0 : -1}
-              alignSelf='flex-start'
+              fontStyle='italic'
+              fontSize='sm'
+              fontWeight='light'
+              color='inherit'
             >
-              {icon && <Icon as={icon} mr={2} boxSize={4} />}
-            </Box>
-          </Tooltip>
-
-          {/* Name of field. */}
-          <Box>
-            <Text fontWeight='medium' color='inherit' lineHeight='none'>
-              {label}
+              {formatNumber(count)} records
             </Text>
-            {/* don't show count for items with no property (ex. "all fields") */}
-            {data.property && count && (
-              <Text
-                as='span'
-                fontStyle='italic'
-                fontSize='xs'
-                fontWeight='light'
-                color='inherit'
-              >
-                {formatNumber(count)} records
-              </Text>
-            )}
-            {description && (
-              <Text
-                fontSize='xs'
-                lineHeight='shorter'
-                fontWeight='normal'
-                color={props.isSelected ? 'inherit' : 'gray.800'}
-                transition='0.2s linear'
-                maxW={350}
-                lineClamp={!showDescription ? 1 : undefined}
-              >
-                {description.charAt(0).toUpperCase() +
-                  description.toLowerCase().slice(1)}
-                {description.charAt(description.length - 1) === '.' ? '' : '.'}
-              </Text>
-            )}
-          </Box>
-        </Flex>
-      </Box>
-    </components.Option>
-  );
-};
-
-const Control = (props: ControlProps<any>) => {
-  return (
-    <components.Control {...props}>
-      <Icon ml={2} color='gray.300'>
-        <FaMagnifyingGlass />
-      </Icon>
-      {props.children}
-    </components.Control>
+          )}
+          {description && (
+            <Text
+              data-description
+              fontSize='sm'
+              lineHeight='shorter'
+              fontWeight='normal'
+              color='gray.800'
+              maxW={350}
+              lineClamp={1}
+            >
+              {description.charAt(0).toUpperCase() +
+                description.toLowerCase().slice(1)}
+              {description.charAt(description.length - 1) === '.' ? '' : '.'}
+            </Text>
+          )}
+        </Box>
+      </HStack>
+    </Combobox.Item>
   );
 };
 
@@ -185,49 +270,8 @@ interface FieldSelectProps {
   setSelectedField: (field: QueryValue['field']) => void;
   defaultMenuIsOpen?: boolean;
   fields: SchemaDefinition[];
-  size?: 'sm' | 'md' | 'lg';
+  size?: ComboboxSize;
 }
-
-/*
-react-select builds plain CSS-in-JS objects, so it needs literal colours rather
-than the `var()` a token reference resolves to. Read once here instead of on
-every render. Shared with ../SearchInput/components/EnumInput.
-*/
-export const selectColors = {
-  border: system.token('colors.gray.200'),
-  focusBorder: system.token('colors.primary.500'),
-  focusRing: system.token('colors.primary.600'),
-  optionHoverBg: system.token('colors.primary.100'),
-  optionSelectedBg: system.token('colors.primary.500'),
-  optionText: system.token('colors.text.body'),
-};
-
-export const customStyles: any = {
-  sm: {
-    control: {
-      background: '#fff',
-      borderColor: '#9e9e9e',
-      minHeight: '30px',
-      height: '30px',
-    },
-    valueContainer: {
-      height: '30px',
-      padding: '0 6px',
-    },
-    singleValue: { height: '100%' },
-    input: {
-      margin: '0px',
-      height: '30px',
-    },
-    indicatorSeparator: {
-      display: 'none',
-    },
-    indicatorsContainer: {
-      height: '30px',
-    },
-  },
-  md: {},
-};
 
 export const FieldSelect: React.FC<FieldSelectProps> = ({
   size = 'md',
@@ -237,135 +281,126 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
   defaultMenuIsOpen = false,
   fields: allFields,
 }) => {
-  const [inputValue, setInputValue] = useState('');
-  const fields = useMemo(
+  const options = useMemo(
     () =>
-      allFields
-        .filter(filterFields)
-        .map(field => {
-          return {
-            ...field,
-            label: field.name,
-            value: field.dotfield,
-            property: field.dotfield,
-          };
-        })
-        .sort((a, b) => {
-          if (!inputValue) {
-            return b.count - a.count;
-          }
-          return a.label.localeCompare(b.label);
+      allFields.filter(filterFields).map(
+        (field): FieldOption => ({
+          ...field,
+          label: field.name,
+          value: field.dotfield || ALL_FIELDS,
+          property: field.dotfield,
         }),
-    [allFields, inputValue],
+      ),
+    [allFields],
   );
 
-  const fuse = new Fuse(fields, { keys: ['label'] });
-  const fuzzy_fields = fuse.search(inputValue).map(({ item }) => item);
+  // Before anything is typed, the fields with the most records come first.
+  const optionsByCount = useMemo(
+    () => [...options].sort((a, b) => b.count - a.count),
+    [options],
+  );
+  // Typing ranks fuzzy matches by score; alphabetical order breaks ties.
+  const fuse = useMemo(
+    () =>
+      new Fuse(
+        [...options].sort((a, b) => a.label.localeCompare(b.label)),
+        { keys: ['label'] },
+      ),
+    [options],
+  );
+
+  /*
+  What has been typed, tracked only to filter the options. As in PageCombobox,
+  the input's own text is left to zag, which reverts it to the selected field
+  on close.
+  */
+  const [query, setQuery] = useState('');
+
+  const collection = useMemo(
+    () =>
+      createListCollection({
+        items: query
+          ? fuse.search(query).map(({ item }) => item)
+          : optionsByCount,
+      }),
+    [fuse, optionsByCount, query],
+  );
+
+  const selectedOption = selectedField
+    ? options.find(
+        field =>
+          field.property === selectedField || field.label === selectedField,
+      )
+    : options.find(field => field.value === ALL_FIELDS);
+
+  // "All Fields" (an empty field) is the default, so there is nothing to clear.
+  const clearable = !!selectedField;
+
+  const combobox = useSearchCombobox({
+    /*
+    Opt out of the enclosing Field.Root in ../../index.tsx, which belongs to
+    the term input beside this one. Ark otherwise gives the combobox that
+    field's control id (so two inputs share an id and both labels point at the
+    first) and its invalid state, which is about the term.
+    */
+    ids: {},
+    invalid: false,
+    collection,
+    value: selectedOption ? [selectedOption.value] : [],
+    onValueChange: ({ value: [value] }) =>
+      setSelectedField(
+        !value || value === ALL_FIELDS ? '' : (value as QueryValue['field']),
+      ),
+    onInputValueChange: ({ inputValue, reason }) =>
+      // Only the user's own typing filters; zag's rewrites reset the list.
+      setQuery(reason === 'input-change' ? inputValue : ''),
+    disabled,
+    defaultOpen: defaultMenuIsOpen,
+  });
 
   return (
     <Box minW='300px' w={{ base: '100%', md: 'unset' }} ml={0} mr={2}>
-      {fields ? (
-        <>
-          <VisuallyHidden>
-            <Text id='field-select-label' fontWeight='medium' color='gray.600'>
-              Select field
-            </Text>
-          </VisuallyHidden>
-          <Select
-            aria-labelledby='field-select-label'
-            instanceId='field-select'
-            components={{ Control, Option }}
-            value={
-              selectedField
-                ? fields.filter(
-                    field =>
-                      field?.property === selectedField ||
-                      field?.label === selectedField,
-                  )[0]
-                : fields[0]
+      <Combobox.RootProvider
+        value={combobox}
+        size={size}
+        css={comboboxStyles.root(size)}
+      >
+        <Combobox.Label srOnly>Select field</Combobox.Label>
+        <Combobox.Control>
+          <InputGroup
+            startElement={
+              <Icon color='gray.300'>
+                <FaMagnifyingGlass />
+              </Icon>
             }
-            isDisabled={disabled}
-            defaultMenuIsOpen={defaultMenuIsOpen}
-            // is clearable when not the default "all fields" selection.
-            isClearable={selectedField !== ''}
-            isSearchable={true}
-            placeholder='All Fields'
-            name='Field'
-            options={inputValue ? fuzzy_fields : fields}
-            onChange={(option: any) =>
-              setSelectedField(!option ? '' : option.value)
-            }
-            inputValue={inputValue}
-            onInputChange={setInputValue}
-            getOptionValue={option => `${option['label']}`}
-            styles={{
-              valueContainer: base => ({
-                ...base,
-                ...customStyles[size]?.valueContainer,
-              }),
-
-              singleValue: base => ({
-                ...base,
-                ...customStyles[size]?.singleValue,
-              }),
-              input: base => ({
-                ...base,
-                ...customStyles[size]?.input,
-              }),
-              indicatorSeparator: base => ({
-                ...base,
-                ...customStyles[size]?.indicatorSeparator,
-              }),
-              indicatorsContainer: base => ({
-                ...base,
-                ...customStyles[size]?.indicatorsContainer,
-              }),
-              control: base => {
-                return {
-                  ...base,
-                  borderColor: selectColors.border,
-                  boxShadow: 'none',
-                  ':hover': {
-                    borderColor: selectColors.border,
-                  },
-                  ':focus': {
-                    borderColor: selectColors.focusBorder,
-                    boxShadow: `0 0 0 1px ${selectColors.focusRing}`,
-                  },
-                  ':focus-within': {
-                    borderColor: selectColors.focusBorder,
-                    boxShadow: `0 0 0 1px ${selectColors.focusRing}`,
-                  },
-                  ...customStyles[size]?.control,
-                };
-              },
-
-              option: (base, { isFocused, isSelected }) => {
-                return {
-                  ...base,
-                  backgroundColor: isSelected
-                    ? selectColors.optionSelectedBg
-                    : isFocused
-                    ? selectColors.optionHoverBg
-                    : 'transparent',
-                  color: isSelected ? 'white' : selectColors.optionText,
-                  borderBottom: '1px solid',
-                  borderBottomColor: selectColors.optionHoverBg,
-                  ':hover': {
-                    background: isSelected
-                      ? selectColors.optionSelectedBg
-                      : selectColors.optionHoverBg,
-                  },
-
-                  ...customStyles[size]?.option,
-                };
-              },
-            }}
-          />
-        </>
-      ) : (
-        <></>
-      )}
+          >
+            <Combobox.Input
+              placeholder={selectedOption?.label ?? 'All Fields'}
+              {...comboboxStyles.input(size)}
+              // Focus by keyboard selects the text, so typing replaces it.
+              onFocus={e => e.currentTarget.select()}
+            />
+          </InputGroup>
+          <Combobox.IndicatorGroup>
+            {clearable && <Combobox.ClearTrigger />}
+            <IndicatorSeparator size={size} />
+            <Combobox.Trigger color='gray.400' />
+          </Combobox.IndicatorGroup>
+        </Combobox.Control>
+        {/* Portalled so the query builder's tree items cannot clip it. */}
+        <Portal>
+          <Combobox.Positioner>
+            <Combobox.Content {...comboboxStyles.content}>
+              <Combobox.Empty {...comboboxStyles.empty}>
+                No options
+              </Combobox.Empty>
+              {collection.items.map(item => (
+                <FieldSelectOption key={item.value} item={item} />
+              ))}
+            </Combobox.Content>
+          </Combobox.Positioner>
+        </Portal>
+      </Combobox.RootProvider>
     </Box>
   );
 };

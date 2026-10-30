@@ -85,10 +85,9 @@ export const Section: React.FC<SectionProps> = ({
                               {name}
                             </StyledSectionHeading>
                           )}
-                          <Icon
-                            as={expanded ? FaMinus : FaPlus}
-                            fontSize='xs'
-                          />
+                          <Icon fontSize='xs'>
+                            {expanded ? <FaMinus /> : <FaPlus />}
+                          </Icon>
                         </Accordion.ItemTrigger>
                       </h2>
                     )}
