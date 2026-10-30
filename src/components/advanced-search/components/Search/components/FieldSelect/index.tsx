@@ -8,6 +8,7 @@ import {
   InputGroup,
   Portal,
   Separator,
+  Span,
   Text,
   useCombobox,
   UseComboboxProps,
@@ -208,11 +209,15 @@ const FieldSelectOption = ({ item }: { item: FieldOption }) => {
           content={tooltipLabel.charAt(0).toUpperCase() + tooltipLabel.slice(1)}
           positioning={{ placement: 'top-start' }}
         >
-          {icon && (
-            <Icon boxSize={3} m={0.5} mt={1}>
-              {icon}
-            </Icon>
-          )}
+          {/* The trigger is `asChild`, so it must be an element even for a
+          field type with no icon, or the tooltip has nothing to attach to. */}
+          <Span display='flex'>
+            {icon && (
+              <Icon boxSize={3} m={0.5} mt={1}>
+                {icon}
+              </Icon>
+            )}
+          </Span>
         </Tooltip>
 
         {/* Name of field. */}

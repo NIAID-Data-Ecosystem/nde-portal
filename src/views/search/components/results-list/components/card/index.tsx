@@ -341,10 +341,12 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 >
                   {date && (
                     <Tooltip content='Corresponds to the most recent of date modified, date published and date created.'>
-                      <>
+                      {/* An element, not a Fragment: the tooltip trigger is
+                      `asChild`, and a Fragment has no node to attach to. */}
+                      <HStack gap={2}>
                         <FaRegClock />
                         <Text>{date}</Text>
-                      </>
+                      </HStack>
                     </Tooltip>
                   )}
                 </HStack>

@@ -73,7 +73,11 @@ export const TagWithUrl = ({
             {children}
           </Span>
         </Tag.Label>
-        {isExternal && <Tag.EndElement as={FaSquareArrowUpRight} />}
+        {isExternal && (
+          <Tag.EndElement>
+            <FaSquareArrowUpRight />
+          </Tag.EndElement>
+        )}
       </NextLink>
     </Tag.Root>
   );

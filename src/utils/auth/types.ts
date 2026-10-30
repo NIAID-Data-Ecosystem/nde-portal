@@ -3,8 +3,6 @@
  * OAuth flow is managed by the API backend (provider OAuth -> API session cookie)
  */
 
-import { IconType } from 'react-icons';
-
 export interface AuthLoginProvider {
   id: string;
   label: string;
