@@ -1,8 +1,8 @@
 import { Text, TextProps } from '@chakra-ui/react';
+import { ExpandableList } from 'src/components/expandable-cells';
 import { Link } from 'src/components/link';
-import { DefinedTerm, QuantitativeValue } from 'src/utils/api/types';
 import { Column } from 'src/components/table';
-import { ExpandableList } from './ExpandableCells';
+import { DefinedTerm, QuantitativeValue } from 'src/utils/api/types';
 
 const formatTerm = (term: string): string => {
   if (!term || typeof term !== 'string') return '';

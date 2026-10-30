@@ -26,10 +26,8 @@ const stubOverflow = () => {
 describe('TagCellList', () => {
   it('renders skeleton tags while loading', () => {
     const { container } = renderWithClient(<TagCellList loading />);
-    // Three loading TagCells render as custom skeletons, no placeholder text.
-    expect(container.querySelectorAll('.custom-skeleton-loading').length).toBe(
-      3,
-    );
+    // Three loading TagCells render as skeletons, no placeholder text.
+    expect(container.querySelectorAll('.chakra-skeleton').length).toBe(3);
     expect(screen.queryByText('not available')).not.toBeInTheDocument();
   });
 
@@ -74,9 +72,7 @@ describe('TagCellList', () => {
 describe('TagCell', () => {
   it('renders a skeleton while loading', () => {
     const { container } = renderWithClient(<TagCell value='x' loading />);
-    expect(
-      container.querySelector('.custom-skeleton-loading'),
-    ).toBeInTheDocument();
+    expect(container.querySelector('.chakra-skeleton')).toBeInTheDocument();
     expect(screen.queryByText('x')).not.toBeInTheDocument();
   });
 

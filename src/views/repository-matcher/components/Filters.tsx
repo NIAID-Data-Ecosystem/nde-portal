@@ -49,9 +49,8 @@ const FiltersAccordion: React.FC<
 > = ({ termsByColumnId, selected, onChange, loading }) => (
   <Accordion.Root
     multiple
-    defaultValue={FILTERABLE_REPOSITORY_MATCHER_COLUMNS.map(
-      ({ id }) => `item-${id}`,
-    )}
+    // FiltersSection uses its `id` as the accordion item value.
+    defaultValue={FILTERABLE_REPOSITORY_MATCHER_COLUMNS.map(({ id }) => id)}
   >
     {FILTERABLE_REPOSITORY_MATCHER_COLUMNS.map(col => {
       const config = toFilterConfig(col);

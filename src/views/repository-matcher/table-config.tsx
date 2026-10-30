@@ -527,7 +527,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       const formatted = value.map(tc => {
         if (!tc.startDate && !tc.endDate && tc.name) {
           return (
-            <Text key={tc.name} as='span' fontSize='xs'>
+            <Text key={tc.name} as='span' fontSize='sm'>
               {tc.name}
             </Text>
           );
@@ -542,7 +542,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
           <VStack
             key={`${tc.startDate}-${tc.endDate}`}
             alignItems='flex-start'
-            fontSize='xs'
+            fontSize='sm'
           >
             <Text as='span' fontSize='inherit'>
               {start}

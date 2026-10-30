@@ -1,9 +1,8 @@
 import { Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import React from 'react';
+import { ExpandableList } from 'src/components/expandable-cells';
 import { Link } from 'src/components/link';
-
-import { ExpandableList } from './ExpandableCells';
 
 /**
  * Cell renderers shared by the search-result tables, alongside the value-shaped
