@@ -3,13 +3,14 @@
  * requiring authentication.
  */
 
-import { useEffect, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import {
   Box,
   Button,
   Heading,
   Icon,
+  IconProps,
   ListItem,
   ListIcon,
   Text,
@@ -34,6 +35,25 @@ import {
 import { getProviderLabel } from 'src/utils/auth/config';
 import { ENABLE_AUTH, SHOW_WELCOME_PAGE } from 'src/utils/feature-flags';
 
+const IS_WELCOME_ENABLED = SHOW_WELCOME_PAGE && ENABLE_AUTH;
+const AUTH_RETURN_TO_KEY = 'auth_return_to';
+
+const SemiBold = ({ children }: { children: ReactNode }) => (
+  <Text as='span' fontWeight='semibold'>
+    {children}
+  </Text>
+);
+
+const BookmarkIcon = (props: IconProps) => (
+  <Icon
+    as={FaRegBookmark}
+    aria-hidden='true'
+    verticalAlign='-0.15em'
+    strokeWidth='20'
+    {...props}
+  />
+);
+
 const WELCOME_COPY = {
   page: {
     title: 'Welcome to your NIAID Data Ecosystem account',
@@ -44,17 +64,32 @@ const WELCOME_COPY = {
       `Use your ${label} account every time to see saved items.`,
   },
   sections: {
-    manage: { title: 'Manage your searches' },
+    manage: {
+      title: 'Manage your searches',
+      items: [
+        <>
+          To save a search, use the bookmark icon <BookmarkIcon /> on any search
+          results page.
+        </>,
+        <>
+          To save a resource, use the{' '}
+          <Text as='span' fontWeight='semibold' whiteSpace='nowrap'>
+            <BookmarkIcon stroke='currentColor' /> Save
+          </Text>{' '}
+          button.
+        </>,
+        <>
+          Find saved items in <SemiBold>Saved Searches</SemiBold>.
+        </>,
+      ] as ReactNode[],
+    },
     updates: {
       title:
         "Choose the updates you'd like to receive from the NIAID Data Ecosystem.",
       subtitle: (
         <>
           You can change your preferences at any time in{' '}
-          <Text as='span' fontWeight='semibold'>
-            Account Settings
-          </Text>
-          .
+          <SemiBold>Account Settings</SemiBold>.
         </>
       ),
     },
@@ -75,7 +110,41 @@ const DEFAULT_WELCOME_PREFERENCES: Partial<UserPreferences> = {
   beta: false,
 };
 
-function WelcomePage() {
+const BulletItem = ({ children }: { children: ReactNode }) => (
+  <ListItem>
+    <ListIcon as={FaCircle} aria-hidden='true' m={1.5} mr={2} boxSize={1} />
+    {children}
+  </ListItem>
+);
+
+interface SectionProps {
+  title: ReactNode;
+  subtitle?: ReactNode;
+  gap?: number;
+  children: ReactNode;
+}
+
+/** Heading + optional subtitle + content, with consistent spacing. */
+const Section = ({ title, subtitle, gap = 2, children }: SectionProps) => (
+  <VStack alignItems='start' gap={gap} w='full' mb={8}>
+    <Heading
+      as='h2'
+      size='md'
+      fontWeight='semibold'
+      mb={subtitle ? 1 : undefined}
+    >
+      {title}
+    </Heading>
+    {subtitle && (
+      <Text color='gray.800' fontSize='sm' mb={2}>
+        {subtitle}
+      </Text>
+    )}
+    {children}
+  </VStack>
+);
+
+const WelcomePage = () => {
   const router = useRouter();
   const { user } = useAuth();
   const { account, error, savePreferences } = useUserData();
@@ -86,21 +155,22 @@ function WelcomePage() {
 
   // If the page is disabled via feature flag, redirect to home page
   useEffect(() => {
-    if (!SHOW_WELCOME_PAGE || !ENABLE_AUTH) {
-      router.replace('/');
-    }
+    if (!IS_WELCOME_ENABLED) router.replace('/');
   }, [router]);
 
   const providerId = user?.oauth_provider || account?.oauth_provider || '';
   const providerLabel = getProviderLabel(providerId.toLowerCase());
-
   const emailToggle = getEmailToggleState(account);
 
-  const isChecked = (key: ToggleKey) => {
+  const handleToggle = useCallback((key: ToggleKey, checked: boolean) => {
+    setSelected(prev => ({ ...prev, [TOGGLE_TO_PREF[key]]: checked }));
+  }, []);
+
+  const isChecked = (key: ToggleKey) =>
     // Email updates can't be on without an email on the record.
-    if (key === 'emailUpdates' && emailToggle.isDisabled) return false;
-    return Boolean(selected[TOGGLE_TO_PREF[key]]);
-  };
+    key === 'emailUpdates' && emailToggle.isDisabled
+      ? false
+      : Boolean(selected[TOGGLE_TO_PREF[key]]);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -114,12 +184,14 @@ function WelcomePage() {
     if (!result?.ok) return;
 
     // Return the user to where they started the sign-up flow.
-    const returnTo = sessionStorage.getItem('auth_return_to');
-    sessionStorage.removeItem('auth_return_to');
+    const returnTo = sessionStorage.getItem(AUTH_RETURN_TO_KEY);
+    sessionStorage.removeItem(AUTH_RETURN_TO_KEY);
     router.replace(returnTo && returnTo !== WELCOME_PATH ? returnTo : '/');
   };
 
-  if (!SHOW_WELCOME_PAGE || !ENABLE_AUTH) return null;
+  if (!IS_WELCOME_ENABLED) return null;
+
+  const { manage, updates } = WELCOME_COPY.sections;
 
   return (
     <PageContainer meta={getPageSeoConfig('/welcome')} px={0} py={0}>
@@ -145,95 +217,32 @@ function WelcomePage() {
         </VStack>
 
         {/* Saved items guidance */}
-        <VStack alignItems='start' gap={2} w='full' mb={8}>
-          <Heading as='h2' size='md' fontWeight='semibold'>
-            {WELCOME_COPY.sections.manage.title}
-          </Heading>
+        <Section title={manage.title}>
           <UnorderedList spacing={2} color='gray.800'>
-            <ListItem>
-              <ListIcon
-                as={FaCircle}
-                aria-hidden='true'
-                m={1.5}
-                mr={2}
-                boxSize={1}
-              />
-              To save a search, use the bookmark icon{' '}
-              <Icon
-                as={FaRegBookmark}
-                aria-hidden='true'
-                verticalAlign='-0.15em'
-                strokeWidth='20'
-              />{' '}
-              on any search results page.
-            </ListItem>
-            <ListItem>
-              <ListIcon
-                as={FaCircle}
-                aria-hidden='true'
-                m={1.5}
-                mr={2}
-                boxSize={1}
-              />
-              To save a resource, use the{' '}
-              <Text as='span' fontWeight='semibold' whiteSpace='nowrap'>
-                <Icon
-                  as={FaRegBookmark}
-                  aria-hidden='true'
-                  verticalAlign='-0.15em'
-                  stroke='currentColor'
-                  strokeWidth='20'
-                />{' '}
-                Save
-              </Text>{' '}
-              button.
-            </ListItem>
-            <ListItem>
-              <ListIcon
-                as={FaCircle}
-                aria-hidden='true'
-                m={1.5}
-                mr={2}
-                boxSize={1}
-              />
-              Find saved items in{' '}
-              <Text as='span' fontWeight='semibold'>
-                Saved Searches
-              </Text>
-              .
-            </ListItem>
+            {manage.items.map((item, i) => (
+              <BulletItem key={i}>{item}</BulletItem>
+            ))}
           </UnorderedList>
-        </VStack>
+        </Section>
 
         {/* Communication preferences */}
-        <VStack alignItems='start' gap={0} w='full' mb={8}>
-          <Heading as='h2' size='md' fontWeight='semibold' mb={1}>
-            {WELCOME_COPY.sections.updates.title}
-          </Heading>
-          <Text color='gray.800' fontSize='sm' mb={2}>
-            {WELCOME_COPY.sections.updates.subtitle}
-          </Text>
+        <Section title={updates.title} subtitle={updates.subtitle} gap={0}>
           <VStack alignItems='start' gap={0} w='full'>
             {TOGGLE_KEYS.map((key, index) => (
               <SettingToggle
                 key={key}
                 {...TOGGLES_COPY[key]}
                 isChecked={isChecked(key)}
-                onChange={checked =>
-                  setSelected(prev => ({
-                    ...prev,
-                    [TOGGLE_TO_PREF[key]]: checked,
-                  }))
-                }
+                onChange={checked => handleToggle(key, checked)}
                 showBorder={index < TOGGLE_KEYS.length - 1}
-                alert={key === 'emailUpdates' ? emailToggle.alert : undefined}
-                isDisabled={
-                  key === 'emailUpdates' ? emailToggle.isDisabled : undefined
-                }
+                {...(key === 'emailUpdates' && {
+                  alert: emailToggle.alert,
+                  isDisabled: emailToggle.isDisabled,
+                })}
               />
             ))}
           </VStack>
-        </VStack>
+        </Section>
 
         {error && (
           <Text color='red.600' fontSize='sm' mb={4} role='alert'>
@@ -252,7 +261,7 @@ function WelcomePage() {
       </Box>
     </PageContainer>
   );
-}
+};
 
 // Wrap with auth protection - shows login prompt if not authenticated
 export default withAuth(WelcomePage);
