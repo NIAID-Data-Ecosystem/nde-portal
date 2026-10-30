@@ -1,9 +1,18 @@
-import { useEffect, useState } from 'react';
-import Select from 'react-select';
-import { Flex } from '@chakra-ui/react';
+import {
+  Combobox,
+  createListCollection,
+  Flex,
+  Portal,
+  useFilter,
+} from '@chakra-ui/react';
+import { useEffect, useMemo, useState } from 'react';
+
+import {
+  comboboxStyles,
+  IndicatorSeparator,
+  useSearchCombobox,
+} from '../../FieldSelect';
 import { AdvancedSearchInputProps } from '../types';
-import { customStyles, selectColors } from '../../FieldSelect';
-import { system } from 'src/theme';
 
 interface EnumInputProps extends AdvancedSearchInputProps {
   options?: {
@@ -37,6 +46,29 @@ export const EnumInput: React.FC<EnumInputProps> = ({
     });
   }, [handleChange, selectedOption]);
 
+  // What has been typed, tracked only to filter the options (see FieldSelect).
+  const [query, setQuery] = useState('');
+  const { contains } = useFilter({ sensitivity: 'base' });
+
+  const collection = useMemo(
+    () =>
+      createListCollection({
+        items: query
+          ? options.filter(option => contains(option.label, query))
+          : options,
+      }),
+    [contains, options, query],
+  );
+
+  const combobox = useSearchCombobox({
+    collection,
+    value: selectedOption ? [selectedOption.value] : [],
+    onValueChange: ({ items: [item] }) => item && setSelectedOption(item),
+    onInputValueChange: ({ inputValue, reason }) =>
+      setQuery(reason === 'input-change' ? inputValue : ''),
+    disabled,
+  });
+
   return (
     <Flex w='100%' alignItems='center' asChild>
       <form
@@ -49,75 +81,45 @@ export const EnumInput: React.FC<EnumInputProps> = ({
           setSelectedOption(defaultOption);
         }}
       >
-        <Select
-          defaultValue={defaultOption}
-          isDisabled={disabled}
-          isSearchable={true}
-          name='Field options'
-          value={selectedOption}
-          options={options}
-          onChange={(option: any) => {
-            setSelectedOption(option);
-          }}
-          styles={{
-            valueContainer: base => ({
-              ...base,
-              ...customStyles[size]?.valueContainer,
-            }),
-            input: base => ({
-              ...base,
-              ...customStyles[size]?.input,
-            }),
-            indicatorSeparator: base => ({
-              ...base,
-              ...customStyles[size]?.indicatorSeparator,
-            }),
-            indicatorsContainer: base => ({
-              ...base,
-              ...customStyles[size]?.indicatorsContainer,
-            }),
-            container: base => ({ ...base, flex: 1 }),
-            control: base => ({
-              ...base,
-              ...customStyles[size]?.control,
-              borderColor: selectColors.border,
-              boxShadow: 'none',
-              ':hover': {
-                borderColor: selectColors.border,
-              },
-              ':focus': {
-                borderColor: selectColors.focusBorder,
-                boxShadow: `0 0 0 1px ${selectColors.focusRing}`,
-              },
-              ':focus-within': {
-                borderColor: selectColors.focusBorder,
-                boxShadow: `0 0 0 1px ${selectColors.focusRing}`,
-              },
-            }),
-            option: (base, { isFocused, isSelected }) => ({
-              ...base,
-              ...customStyles[size]?.option,
-              cursor: 'pointer',
-              backgroundColor: isSelected
-                ? selectColors.optionSelectedBg
-                : isFocused
-                ? selectColors.optionHoverBg
-                : 'transparent',
-              color: isSelected ? 'white' : selectColors.optionText,
-              ':hover': {
-                background: isSelected
-                  ? selectColors.optionSelectedBg
-                  : selectColors.optionHoverBg,
-              },
-            }),
-            singleValue: base => ({
-              ...base,
-              ...customStyles[size]?.singleValue,
-
-              fontWeight: system.token('fontWeights.medium'),
-            }),
-          }}
-        />
+        <Combobox.RootProvider
+          value={combobox}
+          flex={1}
+          size={size}
+          css={comboboxStyles.root(size)}
+        >
+          <Combobox.Label srOnly>Select value</Combobox.Label>
+          <Combobox.Control>
+            <Combobox.Input
+              placeholder={selectedOption?.label}
+              {...comboboxStyles.input(size)}
+              fontWeight='medium'
+              // Focus by keyboard selects the text, so typing replaces it.
+              onFocus={e => e.currentTarget.select()}
+            />
+            <Combobox.IndicatorGroup>
+              <IndicatorSeparator size={size} />
+              <Combobox.Trigger color='gray.400' />
+            </Combobox.IndicatorGroup>
+          </Combobox.Control>
+          <Portal>
+            <Combobox.Positioner>
+              <Combobox.Content {...comboboxStyles.content}>
+                <Combobox.Empty {...comboboxStyles.empty}>
+                  No options
+                </Combobox.Empty>
+                {collection.items.map(item => (
+                  <Combobox.Item
+                    key={item.value}
+                    item={item}
+                    {...comboboxStyles.item}
+                  >
+                    <Combobox.ItemText>{item.label}</Combobox.ItemText>
+                  </Combobox.Item>
+                ))}
+              </Combobox.Content>
+            </Combobox.Positioner>
+          </Portal>
+        </Combobox.RootProvider>
         <Flex mx={2}>
           {renderSubmitButton &&
             renderSubmitButton({

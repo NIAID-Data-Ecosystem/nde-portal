@@ -5,10 +5,10 @@ import { config } from './config';
 /**
  * The Chakra v3 design system. Pass to `ChakraProvider` as `value={system}`.
  *
- * This is also the only source of raw theme values. Roughly 18 modules cannot
- * accept a CSS `var()` — visx/SVG `fill` and `stroke`, react-select `styles`
- * objects, the media query strings in src/components/carousel/hooks — and they
- * read literals straight off the system:
+ * This is also the only source of raw theme values. Roughly 14 modules cannot
+ * accept a CSS `var()` — visx/SVG `fill` and `stroke`, the media query strings
+ * in src/components/carousel/hooks — and they read literals straight off the
+ * system:
  *
  *     system.token('colors.primary.500')  // '#0B8484'
  *     system.token('zIndex.popover')      // 1500

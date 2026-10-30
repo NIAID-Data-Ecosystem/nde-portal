@@ -1,5 +1,5 @@
 import { NativeSelect, VisuallyHidden } from '@chakra-ui/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useId, useState } from 'react';
 import { useAdvancedSearchContext } from 'src/components/advanced-search/components/Search';
 import { SearchTypesConfigProps } from 'src/components/advanced-search/components/Search/search-types-config';
 import { QueryValue } from 'src/components/advanced-search/types';
@@ -14,6 +14,8 @@ export const SearchLabel = ({
   value: ItemContentProps['value'];
   options: SearchTypesConfigProps[];
 }) => {
+  // Several items can be in edit mode at once, so the label id must be unique.
+  const labelId = useId();
   const { queryValue, selectedSearchType, setSelectedSearchType } =
     useAdvancedSearchContext();
 
@@ -41,13 +43,13 @@ export const SearchLabel = ({
   return (
     <>
       <VisuallyHidden>
-        <label id='field-select-label'>Select field</label>
+        <label id={labelId}>Select search type</label>
       </VisuallyHidden>
       {/* The width goes on the root: it is `width: 100%` by default, which
       leaves the indicator at the far edge of the row, away from the field. */}
       <NativeSelect.Root size='sm' variant='outline' w='170px' mb={2}>
         <NativeSelect.Field
-          aria-labelledby='field-select-label'
+          aria-labelledby={labelId}
           borderRadius='semi'
           _focus={{ borderColor: 'text.placeholder' }}
           _hover={{ bg: 'bg.alt' }}
