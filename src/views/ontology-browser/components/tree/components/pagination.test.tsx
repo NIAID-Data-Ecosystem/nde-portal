@@ -1,8 +1,10 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { Pagination } from './pagination';
+
+import React from 'react';
+import { fireEvent, render, screen } from 'src/__tests__/utils/render';
 import { OntologyLineageItemWithCounts } from 'src/views/ontology-browser/types';
+
+import { Pagination } from './pagination';
 
 const mockNode: OntologyLineageItemWithCounts = {
   id: '10239',

@@ -189,8 +189,10 @@ export const OntologyBrowserSearch = ({
               Search taxonomy browser
             </label>
           </Text>
+          {/* The live term, not `debouncedTerm`: InputWithDropdown resets the
+              field to this value, so a lagging one overwrote fresh keystrokes. */}
           <InputWithDropdown
-            inputValue={debouncedTerm}
+            inputValue={searchTerm}
             cursorMax={suggestions?.length || 0}
             colorPalette={colorPalette}
           >
@@ -229,7 +231,9 @@ export const OntologyBrowserSearch = ({
             />
 
             <DropdownContent>
-              <List.Root as='ul' ml={0}>
+              {/* `gap`, not item margins: List.Root is a flex column in v3,
+                  so v2's collapsing `my` on each item would double up. */}
+              <List.Root ps={0} py={1} gap={1}>
                 {suggestions?.map((suggestion, index) => (
                   <DropdownListItem
                     key={`${suggestion.definingOntology}-${suggestion._id}`}
@@ -255,40 +259,28 @@ export const OntologyBrowserSearch = ({
         {/* <!-- Select Ontology --> */}
         <CheckboxMenu
           id='explore-ontology'
-          flex={1}
-          fontSize='sm'
+          bg='white'
           width={{ base: '100%', md: 'unset' }}
           buttonProps={{
-            width: '250px',
-            overflow: 'hidden',
+            size: 'lg',
+            fontSize: 'sm',
           }}
-          zIndex={9}
           label={
-            <Text
-              as='span'
-              truncate
-              color='inherit'
-              display='flex'
-              alignItems='flex-end'
-              w='100%'
-            >
-              Selected ontologies
+            <HStack alignItems='center'>
+              <Text fontWeight='inherit'>Selected ontologies</Text>
               <Tag.Root
-                variant='outline'
-                color='inherit'
+                variant='surface'
                 borderRadius='full'
-                fontSize='xs'
-                alignSelf='flex-start'
-                lineHeight={1.2}
+                colorPalette='primary'
                 size='sm'
                 px={3}
-                ml={2}
               >
                 <Tag.Label>{selectedOntologies.length}</Tag.Label>
               </Tag.Root>
-            </Text>
+            </HStack>
           }
-          size='lg'
+          size='md'
+          colorPalette='primary'
           description=''
           options={ontologyMenuOptions}
           selectedOptions={selectedOntologies}

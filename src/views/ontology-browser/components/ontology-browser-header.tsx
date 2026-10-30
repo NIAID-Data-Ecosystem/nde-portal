@@ -1,5 +1,6 @@
-import { HStack, VStack, Text, Stack, StackSeparator } from '@chakra-ui/react';
+import { HStack, StackSeparator, Text, VStack } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
+
 import { OntologyLineageItemWithCounts } from '../types';
 
 /**
@@ -25,13 +26,11 @@ export const OntologyBrowserHeader = ({
       {selectedNode && (
         <>
           <Text fontWeight='normal'>Selected taxonomy term:</Text>
-          <HStack gap={2}>
+          <HStack gap={2} separator={<StackSeparator borderColor='gray.200' />}>
             <Text as='span' fontWeight='medium'>
               {selectedNode.label}
             </Text>
-            <StackSeparator borderColor='gray.200' />
             {/* <!--  Link to the external page for the selected taxonomy node. --> */}
-            <StackSeparator borderColor='gray.200' />
             <Link
               href={`https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=${selectedNode.taxonId}`}
               isExternal

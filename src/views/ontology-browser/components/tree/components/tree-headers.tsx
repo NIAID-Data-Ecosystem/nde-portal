@@ -5,12 +5,13 @@ import type { TooltipProps } from 'src/components/tooltip';
 export const OntologyTreeHeaderItem = ({
   label,
   tooltipContent,
-}: {
+  ...rest
+}: FlexProps & {
   label: string;
   tooltipContent?: TooltipProps['content'];
 }) => {
   return (
-    <Flex maxW={130}>
+    <Flex maxW={130} {...rest}>
       <InfoLabel
         tooltipProps={{ content: tooltipContent }}
         lineHeight='shorter'
@@ -27,9 +28,9 @@ export const OntologyTreeHeaders = ({ children, ...rest }: FlexProps) => {
       alignItems='center'
       borderBottom='0.25px solid'
       borderColor='gray.200'
-      px={4}
+      gap={2}
       py={2}
-      pl={10}
+      pl={{ base: 4, md: 10 }}
       pr={10}
       {...rest}
     >

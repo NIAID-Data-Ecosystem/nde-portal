@@ -1,4 +1,4 @@
-import { Field, Switch, VStack } from '@chakra-ui/react';
+import { Switch, VStack } from '@chakra-ui/react';
 import React from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
@@ -31,38 +31,32 @@ export const OntologyViewSettings = ({
   );
 
   return (
-    <VStack lineHeight='shorter' gap={4}>
+    <VStack lineHeight='shorter' gap={4} alignItems='stretch' p={1}>
+      {/* Switch.Root is itself the <label>, so the text sits in Switch.Label
+          (ahead of the control, as v2's FormLabel did) rather than in a
+          separate Field.Label pointing at the wrong id. */}
       {Object.entries(defaultSettings).map(([key, setting]) => (
-        <Field.Root
+        <Switch.Root
           key={key}
-          display='flex'
-          alignItems='center'
+          colorPalette='primary'
           justifyContent='space-between'
           mt={1}
-          cursor='pointer'
+          checked={viewSettings[key as keyof LocalStorageConfig]}
+          onCheckedChange={() =>
+            setViewSettings({
+              ...viewSettings,
+              [key]: !viewSettings[key as keyof LocalStorageConfig],
+            })
+          }
         >
-          <Field.Label htmlFor={`switch-${key}`} mb='0' fontSize='sm'>
+          <Switch.HiddenInput />
+          <Switch.Label fontSize='sm' fontWeight='medium'>
             {setting.label}
-          </Field.Label>
-
-          <Switch.Root
-            id={`switch-${key}`}
-            colorPalette='primary'
-            checked={viewSettings[key as keyof LocalStorageConfig]}
-            onCheckedChange={() =>
-              setViewSettings({
-                ...viewSettings,
-                [key]: !viewSettings[key as keyof LocalStorageConfig],
-              })
-            }
-          >
-            <Switch.HiddenInput />
-            <Switch.Control>
-              <Switch.Thumb />
-            </Switch.Control>
-            <Switch.Label />
-          </Switch.Root>
-        </Field.Root>
+          </Switch.Label>
+          <Switch.Control>
+            <Switch.Thumb />
+          </Switch.Control>
+        </Switch.Root>
       ))}
     </VStack>
   );

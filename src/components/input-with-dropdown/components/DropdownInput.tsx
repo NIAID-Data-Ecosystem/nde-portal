@@ -194,6 +194,15 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
               }
             },
             onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+              /*
+              `autoresize` patches the textarea's `value` setter and dispatches
+              an `input` event after every programmatic change, which React
+              reports as onChange. Arrowing through suggestions (and the cursor
+              reset to the searched term) sets the value that way, so without
+              this guard each highlighted label was sent back as a new search
+              term. Only forward changes that differ from what we last set.
+              */
+              if (e.currentTarget.value === inputValue) return;
               onChange ? onChange(e.currentTarget.value) : void 0;
             },
           })}

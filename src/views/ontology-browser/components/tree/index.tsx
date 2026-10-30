@@ -1,5 +1,6 @@
-import React from 'react';
 import { List } from '@chakra-ui/react';
+import React from 'react';
+
 import {
   OntologyLineageItemWithCounts,
   OntologyLineageRequestParams,
@@ -8,6 +9,17 @@ import { TreeNode } from './components/tree-node';
 
 export const MARGIN = 16; // Base margin for indenting tree levels
 export const SIZE = 20; // Number of items to fetch per page
+
+/*
+Left padding for a row `level` steps into the tree. Below `md` the step is
+halved and capped at a quarter of the tree's width (padding percentages resolve
+against it), so a deep lineage on a phone still leaves room for the term and
+its counts rather than indenting them off-screen.
+*/
+export const getIndent = (level: number) => ({
+  base: `min(${(level * MARGIN) / 2}px, 25%)`,
+  md: `${level * MARGIN}px`,
+});
 
 /**
  * Tree Component
@@ -48,7 +60,7 @@ export const Tree = ({
   return (
     <>
       {/* Breadcrumbs for collapsed portion of the tree */}
-      <List.Root as='ul' ml={0}>
+      <List.Root ps={0}>
         {rootNodes.map(node => (
           <TreeNode
             key={node.id}
