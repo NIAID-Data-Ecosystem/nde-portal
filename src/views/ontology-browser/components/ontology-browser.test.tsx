@@ -293,6 +293,159 @@ describe('OntologyBrowser', () => {
 
     expect(result).toEqual([]);
   });
+
+  describe('condensed view', () => {
+    /*
+    Seven terms, more than the five the browser shows before condensing the
+    lineage to its last three.
+    */
+    const TERMS = [
+      ['1', 'root'],
+      ['131567', 'cellular organisms'],
+      ['2759', 'Eukaryota'],
+      ['33154', 'Opisthokonta'],
+      ['33208', 'Metazoa'],
+      ['6072', 'Eumetazoa'],
+      ['33213', 'Bilateria'],
+    ];
+
+    const buildLineage = (terms: string[][]) =>
+      terms.map(([taxonId, label], index) => ({
+        id: taxonId,
+        commonName: '',
+        hasChildren: true,
+        iri: `http://purl.obolibrary.org/obo/NCBITaxon_${taxonId}`,
+        label,
+        ontologyName: 'ncbitaxon',
+        parentTaxonId: index === 0 ? null : terms[index - 1][0],
+        state: {
+          opened: index < terms.length - 1,
+          selected: index === terms.length - 1,
+        },
+        taxonId,
+      }));
+
+    const mockViewSettings = (isCondensed: boolean) =>
+      (useLocalStorage as jest.Mock).mockReturnValue([
+        transformSettingsToLocalStorageConfig({
+          isCondensed: { label: '', value: isCondensed },
+          hideEmptyCounts: { label: '', value: false },
+        }),
+        jest.fn(),
+      ]);
+
+    const labels = (nodes: { label: string }[]) => nodes.map(n => n.label);
+
+    beforeEach(() => {
+      (fetchLineageFromBioThingsAPI as jest.Mock).mockResolvedValue({
+        lineage: buildLineage(TERMS),
+      });
+      (fetchPortalCounts as jest.Mock).mockImplementation(async nodes =>
+        nodes.map((node: object) => ({
+          ...node,
+          counts: { termCount: 1, termAndChildrenCount: 10 },
+        })),
+      );
+    });
+
+    it('shows the last three terms, with breadcrumbs for the rest', async () => {
+      mockViewSettings(true);
+      renderComponent();
+
+      await screen.findByRole('link', { name: 'Metazoa' });
+      ['Metazoa', 'Eumetazoa', 'Bilateria'].forEach(label =>
+        expect(screen.getByRole('link', { name: label })).toBeInTheDocument(),
+      );
+      ['root', 'cellular organisms', 'Eukaryota', 'Opisthokonta'].forEach(
+        label => {
+          expect(
+            screen.getByRole('button', { name: label }),
+          ).toBeInTheDocument();
+          expect(
+            screen.queryByRole('link', { name: label }),
+          ).not.toBeInTheDocument();
+        },
+      );
+    });
+
+    it('fetches counts for the visible terms before the hidden ones', async () => {
+      mockViewSettings(true);
+      renderComponent();
+
+      await waitFor(() => expect(fetchPortalCounts).toHaveBeenCalledTimes(2));
+      const [[visible], [hidden]] = (fetchPortalCounts as jest.Mock).mock.calls;
+      expect(labels(visible)).toEqual(['Metazoa', 'Eumetazoa', 'Bilateria']);
+      expect(labels(hidden)).toEqual([
+        'root',
+        'cellular organisms',
+        'Eukaryota',
+        'Opisthokonta',
+      ]);
+    });
+
+    it('selects the deepest term once all counts have merged', async () => {
+      mockViewSettings(true);
+      renderComponent();
+
+      await waitFor(() => expect(fetchPortalCounts).toHaveBeenCalledTimes(2));
+      expect(
+        screen.getByRole('link', { name: /view ncbi classification/i }),
+      ).toHaveAttribute('href', expect.stringMatching(/id=33213$/));
+    });
+
+    it('expands the tree from a breadcrumb', async () => {
+      const user = userEvent.setup();
+      mockViewSettings(true);
+      renderComponent();
+
+      await screen.findByRole('link', { name: 'Metazoa' });
+      await user.click(screen.getByRole('button', { name: 'Eukaryota' }));
+
+      expect(
+        screen.getByRole('link', { name: 'Eukaryota' }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('link', { name: 'Opisthokonta' }),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: 'Eukaryota' }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'cellular organisms' }),
+      ).toBeInTheDocument();
+    });
+
+    it('shows the whole lineage when the condensed view is off', async () => {
+      mockViewSettings(false);
+      renderComponent();
+
+      expect(
+        await screen.findByRole('link', { name: 'root' }),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: 'show parent node' }),
+      ).not.toBeInTheDocument();
+      expect(fetchPortalCounts).toHaveBeenCalledTimes(1);
+      expect(labels((fetchPortalCounts as jest.Mock).mock.calls[0][0])).toEqual(
+        labels(buildLineage(TERMS)),
+      );
+    });
+
+    it('does not condense a lineage of five terms', async () => {
+      (fetchLineageFromBioThingsAPI as jest.Mock).mockResolvedValue({
+        lineage: buildLineage(TERMS.slice(0, 5)),
+      });
+      mockViewSettings(true);
+      renderComponent();
+
+      expect(
+        await screen.findByRole('link', { name: 'root' }),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: 'show parent node' }),
+      ).not.toBeInTheDocument();
+    });
+  });
 });
 
 describe('transformSettingsToLocalStorageConfig', () => {
