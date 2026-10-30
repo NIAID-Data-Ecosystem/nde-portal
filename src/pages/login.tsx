@@ -131,28 +131,13 @@ function LoginPage() {
                       borderColor: 'niaid.300',
                     }}
                     onClick={() => login(provider.id)}
+                    leftIcon={<ProviderIcon providerId={provider.id} />}
                   >
-                    <HStack spacing={2} justify='flex-start'>
-                      <ProviderIcon providerId={provider.id} />
-                      <Text fontSize='inherit'>
-                        Log In With {provider.label}
-                      </Text>
-                    </HStack>
+                    Log In With {provider.label}
                   </Button>
                 ))}
               </Stack>
             )}
-            {/*
-            <Text mt={5} fontSize='sm' color='gray.700'>
-              Don&apos;t have an account?{' '}
-              <Link
-                href='/register'
-                color='niaid.700'
-                textDecoration='underline'
-              >
-                Register
-              </Link>
-            </Text> */}
           </Box>
         </Flex>
 

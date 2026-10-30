@@ -32,7 +32,7 @@ import {
   TOGGLES_COPY,
   ToggleKey,
 } from 'src/components/settings';
-import { getProviderLabel } from 'src/utils/auth/config';
+import { getProviderLabel } from 'src/utils/auth/helpers';
 import { ENABLE_AUTH, SHOW_WELCOME_PAGE } from 'src/utils/feature-flags';
 
 const IS_WELCOME_ENABLED = SHOW_WELCOME_PAGE && ENABLE_AUTH;

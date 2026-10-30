@@ -13,7 +13,7 @@ import React, {
   ReactNode,
 } from 'react';
 import { AuthState, AuthContextValue, User } from 'src/utils/auth/types';
-import { getAuthConfig } from 'src/utils/auth/config';
+import { getAuthConfig } from 'src/utils/auth/helpers';
 import { fetchWithXsrf } from 'src/utils/auth/xsrf';
 import { devMockAuth } from './mock';
 import { ENABLE_AUTH, SHOW_WELCOME_PAGE } from 'src/utils/feature-flags';
