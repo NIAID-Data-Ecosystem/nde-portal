@@ -4,7 +4,6 @@ import {
   Card,
   Flex,
   Heading,
-  HStack,
   Icon,
   Image,
   Link,
@@ -22,13 +21,14 @@ import { useAuth } from 'src/hooks/useAuth';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
 const ListItemContent = ({ children }: { children: React.ReactNode }) => (
-  <HStack alignItems='center' gap={4} lineHeight='moderate'>
-    <Icon boxSize={4} aria-hidden='true' color='niaid.500'>
-      <FaCheck />
-    </Icon>
-
-    <Text fontSize='inherit'>{children}</Text>
-  </HStack>
+  <List.Item lineHeight='tall'>
+    <List.Indicator>
+      <Icon boxSize={4} mb={1} aria-hidden='true' color='niaid.500'>
+        <FaCheck />
+      </Icon>
+    </List.Indicator>
+    {children}
+  </List.Item>
 );
 
 function LoginPage() {
@@ -119,8 +119,7 @@ function LoginPage() {
                       key={provider.id}
                       colorPalette='niaid'
                       variant='outline'
-                      size='md'
-                      py={1}
+                      size='lg'
                       borderColor='gray.100'
                       _hover={{
                         bg: 'niaid.50',
@@ -190,22 +189,14 @@ function LoginPage() {
               Why create a user account?
             </Heading>
 
-            <List.Root gap={3} color='gray.700' fontSize='inherit'>
-              <List.Item>
-                <ListItemContent>
-                  Save and re-visit selected datasets
-                </ListItemContent>
-              </List.Item>
-              <List.Item>
-                <ListItemContent>
-                  Personalize your sitewide preferences
-                </ListItemContent>
-              </List.Item>
-              <List.Item>
-                <ListItemContent>
-                  Opt in to experimental features
-                </ListItemContent>
-              </List.Item>
+            <List.Root gap={3} pl={0} fontSize='inherit'>
+              <ListItemContent>
+                Save and re-visit selected datasets
+              </ListItemContent>
+              <ListItemContent>
+                Personalize your sitewide preferences
+              </ListItemContent>
+              <ListItemContent>Opt in to experimental features</ListItemContent>
             </List.Root>
 
             <Link
