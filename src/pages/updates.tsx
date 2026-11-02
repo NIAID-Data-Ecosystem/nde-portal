@@ -398,7 +398,9 @@ const Updates: NextPage<UpdatesProps> = props => {
                       },
                       _after: {
                         content: "''",
-                        bgGradient: 'linear(to-r, primary.200, accent.400)',
+                        bgGradient: 'to-r',
+                        gradientFrom: 'primary.200',
+                        gradientTo: 'accent.400',
                         position: 'absolute',
                         top: 0,
                         left: 0,
@@ -409,8 +411,9 @@ const Updates: NextPage<UpdatesProps> = props => {
                   }}
                 >
                   {/* Email */}
+                  {/* pt/gap stand in for v2's CardBody theme, which gave every child `mt: 4`. */}
                   <Card.Root>
-                    <Card.Body p={0} px={4} py={1}>
+                    <Card.Body>
                       <Text
                         lineHeight='moderate'
                         color='gray.800'
@@ -426,7 +429,8 @@ const Updates: NextPage<UpdatesProps> = props => {
                   {/* Socials */}
                   {NDESOCIALS && NDESOCIALS['socials'] && (
                     <Card.Root>
-                      <Card.Body px={4} py={1}>
+                      {/* pb also makes up the v2 icon links' taller (lineHeight 2) line box. */}
+                      <Card.Body>
                         <Text
                           lineHeight='moderate'
                           color='gray.800'
