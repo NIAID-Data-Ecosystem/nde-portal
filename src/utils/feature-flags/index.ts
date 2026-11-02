@@ -100,6 +100,11 @@ export const SHOW_SEARCH_VIEW_MODES = true;
 // `true`.
 export const SHOW_DATA_COLLECTIONS_VIEW_MODES = true;
 
+// Show the "Welcome to your NIAID Data Ecosystem account" page at the end of
+// the sign-up flow (first login) in non-production environments for
+// testing/review. To enable in production, set this flag to `true`.
+export const SHOW_WELCOME_PAGE = !isProd;
+
 // Make the "Dataset", "Sample" and "Software" Content Type values also match
 // records of @type Dataset, Sample and ComputationalTool respectively, in the
 // Content Type UI pills, the Content Type filter query, and the Content Type

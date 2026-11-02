@@ -6,18 +6,23 @@ import {
   Box,
   Button,
   Heading,
-  HStack,
-  Link,
-  Switch,
+  StackProps,
+  StackSeparator,
   Text,
   VStack,
 } from '@chakra-ui/react';
 import { ReactNode } from 'react';
 import { withAuth } from 'src/components/auth/withAuth';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
+import {
+  getEmailToggleState,
+  SettingToggle,
+  TOGGLE_TO_PREF,
+  ToggleKey,
+  TOGGLES_COPY,
+} from 'src/components/settings';
 import { useAuth } from 'src/hooks/useAuth';
 import { useUserData } from 'src/hooks/useUserData';
-import { UserPreferencesKeys } from 'src/hooks/useUserData/types';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
 const SETTINGS_COPY = {
@@ -29,70 +34,8 @@ const SETTINGS_COPY = {
     communication: { title: 'Communication preferences' },
     search: { title: 'Search preferences' },
   },
-  toggles: {
-    emailUpdates: {
-      label: 'Email Updates',
-      description:
-        'Receive emails about new features and updates to the Discovery Portal.',
-
-      alerts: {
-        missingEmail: (
-          <>
-            Email updates are unavailable because your account does not have an
-            email address on record. Please add an email to your account to
-            enable this setting.
-          </>
-        ),
-        missingOrcidEmail: (
-          <>
-            We couldn’t access a public email address from your ORCID record. To
-            enable email updates, your ORCID record must include a verified
-            email address with visibility set to{' '}
-            <Text as='span' fontWeight='bold' color='inherit'>
-              Everyone
-            </Text>
-            . You can update this in{' '}
-            <Link href={'https://orcid.org/account'} textDecoration='underline'>
-              the email notification settings of your ORCID account
-            </Link>
-            .
-          </>
-        ),
-      },
-    },
-    feedbackTesting: {
-      label: 'Feedback and Testing',
-      description:
-        'Help improve the NIAID Data Ecosystem by participating in feedback and usability testing.',
-    },
-    betaFeatures: {
-      label: 'Beta features',
-      description: 'Get early access to experimental features.',
-    },
-    aiSearch: {
-      label: 'AI-assisted search',
-      description: (
-        <>
-          Turn on AI-assisted search by default.{' '}
-          <Link
-            color='blue.600'
-            textDecoration='underline'
-            href='/knowledge-center/ai-assisted-search'
-          >
-            Learn about AI-assisted search
-          </Link>
-          .
-        </>
-      ),
-    },
-  },
+  toggles: TOGGLES_COPY,
 };
-
-type ToggleKey =
-  | 'emailUpdates'
-  | 'feedbackTesting'
-  | 'betaFeatures'
-  | 'aiSearch';
 
 const TOGGLE_SECTIONS: Array<{
   title: string;
@@ -110,127 +53,53 @@ const TOGGLE_SECTIONS: Array<{
   },
 ];
 
-function SettingsSection({
+/** Heading + optional subtitle + content, with consistent spacing. */
+export const SettingsSection = ({
   title,
+  subtitle,
   children,
-  mb = 8,
-}: {
-  title: string;
+  ...stackProps
+}: StackProps & {
+  title: ReactNode;
+  subtitle?: ReactNode;
   children: ReactNode;
-  mb?: number;
-}) {
+}) => {
   return (
-    <VStack alignItems='start' gap={0} w='full' mb={mb}>
-      <Heading as='h2' size='md' fontWeight='semibold' mb={2}>
+    <VStack alignItems='start' w='full' py={4} gap={4} {...stackProps}>
+      <Heading as='h2' size='md' fontWeight='semibold'>
         {title}
       </Heading>
-      <VStack alignItems='start' gap={0} w='full'>
-        {children}
-      </VStack>
+      {subtitle && <Text fontSize='sm'>{subtitle}</Text>}
+      {children && (
+        <VStack
+          alignItems='start'
+          w='full'
+          gap={4}
+          separator={<StackSeparator />}
+        >
+          {children}
+        </VStack>
+      )}
     </VStack>
   );
-}
-
-function SettingToggle({
-  label,
-  description,
-  checked,
-  onChange,
-  showBorder,
-  alert,
-  disabled,
-}: {
-  label: string;
-  description: ReactNode;
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-  showBorder?: boolean;
-  alert?: ReactNode;
-  disabled?: boolean;
-}) {
-  return (
-    <HStack
-      justifyContent='space-between'
-      alignItems='start'
-      py={4}
-      w='full'
-      {...(showBorder && { borderBottom: '1px', borderColor: 'gray.200' })}
-    >
-      <VStack alignItems='start' gap={1} flex={1}>
-        <Text fontWeight='medium'>{label}</Text>
-
-        <Text fontSize='sm' color='gray.800'>
-          {description}
-        </Text>
-
-        {/* If alert is provided, render it */}
-
-        {alert && (
-          <Box
-            bg='orange.50'
-            border='1px'
-            borderColor='orange.200'
-            borderRadius='md'
-            px={3}
-            py={2}
-          >
-            <Text fontSize='sm' color='orange.800' lineHeight='moderate'>
-              {alert}
-            </Text>
-          </Box>
-        )}
-      </VStack>
-      <Switch.Root
-        colorPalette='primary'
-        aria-label={label}
-        checked={checked}
-        disabled={disabled}
-        onCheckedChange={e => onChange(e.checked)}
-      >
-        <Switch.HiddenInput />
-        <Switch.Control>
-          <Switch.Thumb />
-        </Switch.Control>
-        <Switch.Label />
-      </Switch.Root>
-    </HStack>
-  );
-}
+};
 
 function UserSettingsPage() {
   const { logout } = useAuth();
   const { preferences, updatePreferenceField, account } = useUserData();
 
-  // Email updates require an email on the record. When one is missing the toggle
-  // is disabled and an explanatory alert is shown — ORCID accounts get a variant
-  // pointing them to their ORCID email visibility settings.
-  const hasEmail = Boolean(account?.email);
-  const isOrcid = account?.oauth_provider?.toUpperCase() === 'ORCID';
-
-  const emailUpdatesAlert = hasEmail
-    ? undefined
-    : isOrcid
-    ? SETTINGS_COPY.toggles.emailUpdates.alerts.missingOrcidEmail
-    : SETTINGS_COPY.toggles.emailUpdates.alerts.missingEmail;
+  const emailToggle = getEmailToggleState(account);
 
   // Per-toggle alerts to render, keyed by toggle. Keeps the render loop generic
   // rather than special-casing individual toggles inline.
   const toggleAlerts: Partial<Record<ToggleKey, ReactNode>> = {
-    emailUpdates: emailUpdatesAlert,
+    emailUpdates: emailToggle.alert,
   };
 
   // Toggles that can't be enabled given the account state. Email updates require
   // an email on the record.
   const toggleDisabled: Partial<Record<ToggleKey, boolean>> = {
-    emailUpdates: !hasEmail,
-  };
-
-  // Map UI toggle keys to API preference fields
-  const TOGGLE_TO_PREF: Record<ToggleKey, UserPreferencesKeys> = {
-    emailUpdates: 'contact_preference',
-    feedbackTesting: 'feedback_preference',
-    betaFeatures: 'beta',
-    aiSearch: 'ai_toggle_preference',
+    emailUpdates: emailToggle.isDisabled,
   };
 
   const getChecked = (key: ToggleKey) => preferences[TOGGLE_TO_PREF[key]];
@@ -250,7 +119,7 @@ function UserSettingsPage() {
         px={{ base: 4, md: 0 }}
       >
         {/* Header */}
-        <VStack alignItems='start' gap={2} mb={8}>
+        <VStack alignItems='start' gap={2} mb={4}>
           <Heading as='h1' size='xl' fontWeight='bold'>
             {SETTINGS_COPY.page.title}
           </Heading>
@@ -259,25 +128,23 @@ function UserSettingsPage() {
           </Text>
         </VStack>
 
-        {TOGGLE_SECTIONS.map(section => (
-          <SettingsSection
-            key={section.title}
-            title={section.title}
-            mb={section.mb ?? 8}
-          >
-            {section.toggleKeys.map((key, index) => (
-              <SettingToggle
-                key={key}
-                {...SETTINGS_COPY.toggles[key]}
-                checked={getChecked(key)}
-                onChange={() => updateSetting(key)}
-                showBorder={index < section.toggleKeys.length - 1}
-                alert={toggleAlerts[key]}
-                disabled={toggleDisabled[key]}
-              />
-            ))}
-          </SettingsSection>
-        ))}
+        <VStack alignItems='start' gap={0} py={2}>
+          {TOGGLE_SECTIONS.map(section => (
+            <SettingsSection key={section.title} title={section.title}>
+              {section.toggleKeys.map((key, index) => (
+                <SettingToggle
+                  key={key}
+                  {...SETTINGS_COPY.toggles[key]}
+                  checked={getChecked(key)}
+                  onCheckedChange={() => updateSetting(key)}
+                  showBorder={index < section.toggleKeys.length - 1}
+                  alert={toggleAlerts[key]}
+                  disabled={toggleDisabled[key]}
+                />
+              ))}
+            </SettingsSection>
+          ))}
+        </VStack>
 
         {/* Log Out Button */}
         <Button

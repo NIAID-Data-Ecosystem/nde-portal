@@ -16,7 +16,7 @@ import { AuthState, AuthContextValue, User } from 'src/utils/auth/types';
 import { getAuthConfig } from 'src/utils/auth/helpers';
 import { fetchWithXsrf } from 'src/utils/auth/xsrf';
 import { devMockAuth } from './mock';
-import { ENABLE_AUTH } from 'src/utils/feature-flags';
+import { ENABLE_AUTH, SHOW_WELCOME_PAGE } from 'src/utils/feature-flags';
 
 const initialState: AuthState = {
   user: null,
@@ -26,6 +26,10 @@ const initialState: AuthState = {
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+
+// Set right before handing off to a login provider, so the sign-up welcome
+// check only runs on the page load that completes a login.
+export const AUTH_LOGIN_PENDING_KEY = 'auth_login_pending';
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -150,6 +154,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (!providerId) {
         window.location.href = '/login';
         return;
+      }
+
+      if (SHOW_WELCOME_PAGE) {
+        sessionStorage.setItem(AUTH_LOGIN_PENDING_KEY, 'true');
       }
 
       // Mock auth only when provider is explicitly selected

@@ -7,6 +7,7 @@ import { fonts } from 'lib/fonts';
 import { ChakraProvider } from '@chakra-ui/react';
 import { AuthProvider } from 'src/hooks/useAuth';
 import { UserDataProvider } from 'src/hooks/useUserData';
+import { WelcomeRedirect } from 'src/hooks/useUserData/useWelcomeRedirect';
 
 // Creates an instance of react-query for the app.
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ function App({ Component, pageProps }: AppProps) {
           <AuthProvider>
             <UserDataProvider>
               <Component {...pageProps} />
+              <WelcomeRedirect />
             </UserDataProvider>
           </AuthProvider>
         </ChakraProvider>

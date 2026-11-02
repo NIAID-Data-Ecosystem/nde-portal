@@ -5,7 +5,6 @@ import {
   Heading,
   HStack,
   Icon,
-  IconProps,
   Image,
   Link,
   List,
@@ -16,9 +15,9 @@ import {
 import { useRouter } from 'next/router';
 import React from 'react';
 import { FaCheck } from 'react-icons/fa6';
+import { ProviderIcon } from 'src/components/auth/provider-icon';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { useAuth } from 'src/hooks/useAuth';
-import { KNOWN_PROVIDERS } from 'src/utils/auth/config';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
 const ListItemContent = ({ children }: { children: React.ReactNode }) => (
@@ -30,23 +29,6 @@ const ListItemContent = ({ children }: { children: React.ReactNode }) => (
     <Text fontSize='inherit'>{children}</Text>
   </HStack>
 );
-
-const ProviderIcon = ({
-  providerId,
-  ...props
-}: IconProps & { providerId: string }) => {
-  const icon = KNOWN_PROVIDERS[providerId.toLowerCase()]?.icon;
-
-  if (icon) {
-    return (
-      <Icon color={icon.color} boxSize={5} aria-hidden='true' {...props}>
-        {icon.component}
-      </Icon>
-    );
-  }
-
-  return <></>;
-};
 
 function LoginPage() {
   const router = useRouter();

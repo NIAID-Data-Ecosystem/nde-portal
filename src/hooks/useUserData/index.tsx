@@ -31,6 +31,13 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   feedback_preference: false,
 };
 
+// Set NEXT_PUBLIC_MOCK_AUTH_NEW_ACCOUNT=true to make the mock profile look
+// freshly created, so first login routes to the sign-up welcome page.
+const MOCK_CREATED_AT =
+  process.env.NEXT_PUBLIC_MOCK_AUTH_NEW_ACCOUNT === 'true'
+    ? new Date().toISOString()
+    : undefined;
+
 const DEFAULT_MOCK_PROFILE: UserProfile = {
   username: process.env.NEXT_PUBLIC_MOCK_AUTH_USERNAME || 'mockuser',
   oauth_provider: process.env.NEXT_PUBLIC_MOCK_AUTH_PROVIDER || 'github',
@@ -43,8 +50,8 @@ const DEFAULT_MOCK_PROFILE: UserProfile = {
   beta: true,
   contact_preference: false,
   feedback_preference: false,
-  created: '2026-03-11T19:36:34+00:00',
-  updated: '2026-03-11T20:24:13+00:00',
+  created: MOCK_CREATED_AT ?? '2026-03-11T19:36:34+00:00',
+  updated: MOCK_CREATED_AT ?? '2026-03-11T20:24:13+00:00',
 };
 
 type ApiResult = { status: number; ok: boolean; body: unknown };
@@ -363,6 +370,27 @@ function useUserDataState() {
     [callUserDataApi, preferences],
   );
 
+  // Persist several preferences in a single request (e.g., the welcome page's
+  // "Save Settings"), rather than one PUT per toggle.
+  const savePreferences = useCallback(
+    async (updates: Partial<UserPreferences>) => {
+      const nextPreferences = { ...preferences, ...updates };
+      const result = await callUserDataApi(
+        'PUT',
+        '/user/data',
+        nextPreferences,
+      );
+      if (result && 'body' in result && result.ok) {
+        setError(null);
+        setPreferences(nextPreferences);
+      } else {
+        setError("Couldn't save your preferences. Please try again.");
+      }
+      return result;
+    },
+    [callUserDataApi, preferences],
+  );
+
   const addSavedQuery = useCallback(
     async (search: Omit<SavedQuery, 'total'>) => {
       const result = await callUserDataApi(
@@ -489,6 +517,7 @@ function useUserDataState() {
     clearError,
     getProfile,
     updatePreferenceField,
+    savePreferences,
     addSavedQuery,
     removeSavedQuery,
     addSavedDataset,
