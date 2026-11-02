@@ -173,7 +173,7 @@ const Updates: NextPage<UpdatesProps> = props => {
     <PageContainer meta={getPageSeoConfig('/updates')} px={0} py={0}>
       <HeroBannerContainer
         justifyContent={{ base: 'flex-start', md: 'center' }}
-        bgImg='/assets/news-01.jpg'
+        bgImg='url(/assets/news-01.jpg)'
         backgroundSize='cover'
         px='0px'
         minHeight='unset'
