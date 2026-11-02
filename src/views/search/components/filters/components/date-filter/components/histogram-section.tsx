@@ -46,7 +46,7 @@ export const HistogramSection: React.FC<HistogramSectionProps> = ({
         hasLoadedOnce &&
         !loading &&
         !isUpdating && (
-          <Text fontStyle='italic' color='gray.800' mt={1}>
+          <Text fontStyle='italic' color='gray.600' mt={1}>
             No results with date information.
           </Text>
         )

@@ -245,7 +245,7 @@ const FieldSelectOption = ({ item }: { item: FieldOption }) => {
               fontSize='sm'
               lineHeight='shorter'
               fontWeight='normal'
-              color='gray.800'
+              color='gray.600'
               maxW={350}
               lineClamp={1}
             >

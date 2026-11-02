@@ -51,7 +51,7 @@ export const OntologyButton = ({
         variant='outline'
         colorPalette='gray'
         fontWeight='medium'
-        color='gray.800'
+        color='gray.600'
         {...props}
         asChild
       >

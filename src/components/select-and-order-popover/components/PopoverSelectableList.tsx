@@ -180,7 +180,7 @@ export const PopoverSelectableList = ({
           py={1}
         >
           {group.groupKey && (
-            <Text fontSize='xs' fontWeight='semibold' color='gray.800' px={1}>
+            <Text fontSize='xs' fontWeight='semibold' color='gray.600' px={1}>
               {group.groupKey}
             </Text>
           )}

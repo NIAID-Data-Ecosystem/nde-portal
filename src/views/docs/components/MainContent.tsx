@@ -58,7 +58,7 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
     return (
       <Error>
         <Flex flexDirection='column' alignItems='center'>
-          <Text fontWeight='light' color='gray.800' fontSize='lg'>
+          <Text fontWeight='light' color='gray.600' fontSize='lg'>
             API Request:{' '}
             {error?.message ||
               "It's possible that the server is experiencing some issues."}{' '}
@@ -94,7 +94,7 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
         {data.description}
       </ReactMarkdown>
       <Separator orientation='horizontal' mt={8} mb={4} />
-      <Text fontStyle='italic' fontSize='xs' color='gray.800' textAlign='end'>
+      <Text fontStyle='italic' fontSize='xs' color='gray.600' textAlign='end'>
         Last updated on{' '}
         <Text as='span' fontWeight='semibold'>
           {updatedAt}

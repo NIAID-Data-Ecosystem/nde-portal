@@ -231,7 +231,7 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
           {/* Geographic information of dataset */}
           {spatialInformation && (
             <>
-              <Text fontWeight='medium' color='gray.800'>
+              <Text fontWeight='medium' color='gray.600'>
                 Spatial Coverage
               </Text>
               <MetadataContent name={spatialInformation.join(', ')} />
@@ -247,7 +247,7 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
               }
               return (
                 <React.Fragment key={'temporal' + idx}>
-                  <Text fontWeight='medium' color='gray.800'>
+                  <Text fontWeight='medium' color='gray.600'>
                     Temporal Coverage
                   </Text>
                   {/* Start */}
@@ -286,7 +286,7 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
           {/* Language of dataset */}
           {inLanguage?.name && (
             <>
-              <Text fontWeight='medium' color='gray.800'>
+              <Text fontWeight='medium' color='gray.600'>
                 Language
               </Text>
               <MetadataContent name={getLanguageDisplayName(inLanguage.name)} />

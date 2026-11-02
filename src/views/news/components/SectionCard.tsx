@@ -37,7 +37,7 @@ const SectionCard = (attributes: SectionCardProps) => {
             fontWeight='medium'
             fontSize='sm'
             whiteSpace='nowrap'
-            color='gray.800'
+            color='gray.600'
           >
             {formatDate(attributes.publishedAt || attributes.updatedAt)}
           </Text>

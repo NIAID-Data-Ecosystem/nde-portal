@@ -29,7 +29,7 @@ const CELL_FONT_SIZE = {
 export const Label = React.memo(({ children, ...props }: TextProps) => {
   return (
     <Text
-      color='gray.800'
+      color='gray.600'
       textTransform='uppercase'
       lineHeight='moderate'
       textAlign='start'
@@ -94,7 +94,7 @@ export const Cell = React.memo(
 // Inherits its font size from the enclosing cell.
 export const EmptyCell = React.memo(({ label }: { label?: string }) => {
   return (
-    <Text as='span' fontStyle='italic' color='gray.800'>
+    <Text as='span' fontStyle='italic' color='gray.600'>
       {label || 'No data'}
     </Text>
   );

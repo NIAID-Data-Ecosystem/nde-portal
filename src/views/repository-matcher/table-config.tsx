@@ -309,7 +309,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   //       'maintenance',
   //       'not accepting data',
   //     ].includes(value?.toLowerCase() || '');
-  //     const color = isNotAccepting || !value ? 'gray.800' : 'primary.500';
+  //     const color = isNotAccepting || !value ? 'gray.600' : 'primary.500';
 
   //     return (
   //       <HStack gap={1} color={color} opacity={isNotAccepting ? 0.8 : 1}>

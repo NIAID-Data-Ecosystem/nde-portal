@@ -5,7 +5,7 @@ export const switchSlotRecipe = defineSlotRecipe({
   slots: switchAnatomy.keys(),
   base: {
     label: {
-      color: 'gray.800',
+      color: 'gray.600',
     },
   },
 });

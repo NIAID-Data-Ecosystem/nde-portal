@@ -86,7 +86,7 @@ export const getTypeColor = (
   // Retired ResourceCatalogs use a gray treatment instead of the usual
   // per-type colors.
   if (isRetired) {
-    return { lt: 'gray.800', dk: 'gray.300' };
+    return { lt: 'gray.600', dk: 'gray.300' };
   }
 
   // Program Resource and Program Info and Resource use a distinct

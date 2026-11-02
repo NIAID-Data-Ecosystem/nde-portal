@@ -184,7 +184,7 @@ export const OntologyBrowserSearch = ({
           minWidth={{ base: 'unset', md: '450px' }}
           zIndex='docked'
         >
-          <Text fontSize='sm' color='gray.800' px={1} asChild>
+          <Text fontSize='sm' color='gray.600' px={1} asChild>
             <label htmlFor='ontology-browser-search-bar'>
               Search taxonomy browser
             </label>

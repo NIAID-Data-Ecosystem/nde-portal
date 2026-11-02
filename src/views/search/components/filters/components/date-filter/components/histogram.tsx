@@ -349,7 +349,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
                         y={height / 2}
                         dy='1rem'
                         textAnchor='middle'
-                        fill={system.token('colors.gray.800')}
+                        fill={system.token('colors.gray.600')}
                         fontSize='14'
                       >
                         No data available. Please use a different date range.

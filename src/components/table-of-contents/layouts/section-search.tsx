@@ -29,7 +29,7 @@ export const SectionSearch: React.FC<SectionSearchProps> = ({
           fontSize='sm'
           fontWeight='light'
           mt={1}
-          color='gray.800'
+          color='gray.600'
           textAlign='right'
         >
           <Text as='span' fontWeight='medium'>

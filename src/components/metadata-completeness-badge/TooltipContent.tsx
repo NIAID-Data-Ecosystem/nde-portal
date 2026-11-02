@@ -68,7 +68,7 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
         <Text fontWeight='semibold' flex={1}>
           Total Score
         </Text>
-        <Text mx={1} color='gray.800' fontWeight='bold'>
+        <Text mx={1} color='gray.600' fontWeight='bold'>
           {current_total_score} / {max_total_score}
         </Text>
       </Flex>
@@ -96,7 +96,7 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
                         py={0.5}
                         colSpan={3}
                         fontWeight='medium'
-                        color='gray.800'
+                        color='gray.600'
                       >
                         <Text>
                           {field.label}{' '}

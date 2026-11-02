@@ -21,7 +21,7 @@ const TooltipWithLink: React.FC<TooltipProps> = ({
         mt={2}
         textDecoration='underline'
         lineHeight='shorter'
-        color='gray.800!important'
+        color='gray.600!important'
         fontSize='xs'
         textAlign='center'
         _hover={{ textDecoration: 'none' }}
@@ -34,7 +34,7 @@ const TooltipWithLink: React.FC<TooltipProps> = ({
           borderRadius='full'
           p={0.5}
           ml={1}
-          color='gray.800!important'
+          color='gray.600!important'
         />
       </Link>
     </Tooltip>

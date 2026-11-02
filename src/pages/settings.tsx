@@ -123,7 +123,7 @@ function UserSettingsPage() {
           <Heading as='h1' size='xl' fontWeight='bold'>
             {SETTINGS_COPY.page.title}
           </Heading>
-          <Text color='gray.800' fontSize='md'>
+          <Text color='gray.600' fontSize='md'>
             {SETTINGS_COPY.page.subtitle}
           </Text>
         </VStack>

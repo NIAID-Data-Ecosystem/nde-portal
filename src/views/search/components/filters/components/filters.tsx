@@ -290,7 +290,7 @@ export const Filters = React.memo(
                       <Text
                         fontSize='sm'
                         fontWeight='semibold'
-                        color='gray.800'
+                        color='gray.600'
                       >
                         {category}
                       </Text>

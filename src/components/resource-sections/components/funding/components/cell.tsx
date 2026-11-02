@@ -15,7 +15,7 @@ export const Label = React.memo(({ children, ...props }: HeadingProps) => {
     <Heading
       as='h4'
       fontSize='13px'
-      color='gray.800'
+      color='gray.600'
       textTransform='uppercase'
       {...props}
     >
@@ -67,7 +67,7 @@ export const Cell = React.memo(({ label, children, ...props }: CellProps) => {
 
 export const EmptyCell = React.memo(({ label }: { label?: string }) => {
   return (
-    <Text as='span' fontSize='xs' fontStyle='italic' color='gray.800'>
+    <Text as='span' fontSize='xs' fontStyle='italic' color='gray.600'>
       {label || 'No data'}
     </Text>
   );

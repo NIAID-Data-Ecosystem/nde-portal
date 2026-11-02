@@ -309,7 +309,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                           {/* Upcoming events */}
                           {upcomingEvents && upcomingEvents?.length > 0 && (
                             <>
-                              <Heading as='h3' size='sm' color='gray.800'>
+                              <Heading as='h3' size='sm' color='gray.600'>
                                 Upcoming
                               </Heading>
                               {upcomingEvents
@@ -416,7 +416,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                     <Card.Body>
                       <Text
                         lineHeight='moderate'
-                        color='gray.800'
+                        color='gray.600'
                         fontWeight='medium'
                       >
                         Share your discovery Portal story with us by{' '}
@@ -433,7 +433,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                       <Card.Body>
                         <Text
                           lineHeight='moderate'
-                          color='gray.800'
+                          color='gray.600'
                           fontWeight='medium'
                         >
                           Join us on

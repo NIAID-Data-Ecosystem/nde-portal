@@ -107,7 +107,7 @@ const Main = ({ data, loading }: MainContentProps) => {
               <Text
                 fontStyle='italic'
                 fontSize='xs'
-                color='gray.800'
+                color='gray.600'
                 textAlign='end'
               >
                 Last updated on{' '}

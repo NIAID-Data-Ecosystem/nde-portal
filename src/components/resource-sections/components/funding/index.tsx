@@ -387,7 +387,7 @@ const FundingDrawerContent = React.memo(
                             <Content fontWeight='semibold' my={0}>
                               {funder.name}
                               {alternateNames && (
-                                <Text color='gray.800' fontWeight='normal'>
+                                <Text color='gray.600' fontWeight='normal'>
                                   Alternate Name:{' '}
                                   {alternateNames.join(', ') || '-'}
                                 </Text>

@@ -76,12 +76,14 @@ export const semanticColors = defineSemanticTokens.colors({
   It also needs re-declaring so `colorPalette='gray'` lands on the NIAID greys
   rather than Chakra's, since every default semantic token (bg.subtle,
   fg.muted, border) references {colors.gray.*}.
+  The hover is now .600 because v2's .800 was NIAID #5A5959, which is v3's
+  stock .600, not its near-black .800 (see ../tokens/colors.ts).
   */
   gray: {
     ...palette('gray'),
     outlineFg: { value: '{colors.gray.900}' },
     outlineBorder: { value: '{colors.gray.200}' },
-    outlineHoverBg: { value: '{colors.gray.800}' },
+    outlineHoverBg: { value: '{colors.gray.600}' },
     badgeSolidBg: { value: '{colors.gray.700}' },
   },
 
