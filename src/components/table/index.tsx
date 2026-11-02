@@ -15,7 +15,11 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { ListChildComponentProps, VariableSizeList } from 'react-window';
+import {
+  areEqual,
+  ListChildComponentProps,
+  VariableSizeList,
+} from 'react-window';
 import { Cell, Th } from 'src/components/table/components/cell';
 import {
   TablePagination,
@@ -256,6 +260,37 @@ const VirtualizedRowItem = React.memo(
 );
 VirtualizedRowItem.displayName = 'VirtualizedRowItem';
 
+interface VirtualizedListRowData
+  extends Omit<VirtualizedRowItemProps, 'row' | 'index' | 'rowProps'> {
+  rows: any[];
+  getTableRowProps?: (row: any, idx: number) => any;
+}
+
+// The row component handed to VariableSizeList. This must stay a stable,
+// module-level component: react-window renders its `children` with
+// createElement, so an inline row function is a new component type on every
+// render and React remounts every row - replaying each cell's Skeleton
+// fade-in, which made the whole table flicker on any parent re-render (e.g.
+// toggling a bookmark on the saved page).
+const VirtualizedListRow = React.memo(
+  ({ data, index, style }: ListChildComponentProps<VirtualizedListRowData>) => {
+    const { rows, getTableRowProps, ...rowItemProps } = data;
+    const row = rows[index];
+    return (
+      <div style={style}>
+        <VirtualizedRowItem
+          {...rowItemProps}
+          row={row}
+          index={index}
+          rowProps={getTableRowProps?.(row, index)}
+        />
+      </div>
+    );
+  },
+  areEqual,
+);
+VirtualizedListRow.displayName = 'VirtualizedListRow';
+
 // Custom outer element for VariableSizeList. The default outer owns scroll
 // (overflow: auto, height = viewport). We want scroll to live on the parent
 // instead, so the outer is collapsed to the inner's natural size and content
@@ -339,6 +374,29 @@ const VirtualizedBody: React.FC<VirtualizedBodyProps> = ({
     [rows],
   );
 
+  const itemData = useMemo<VirtualizedListRowData>(
+    () => ({
+      rows,
+      columns,
+      getCells,
+      getTableRowProps,
+      loading,
+      onResize: handleResize,
+      stickyFirstColumn,
+      colorPalette,
+    }),
+    [
+      rows,
+      columns,
+      getCells,
+      getTableRowProps,
+      loading,
+      handleResize,
+      stickyFirstColumn,
+      colorPalette,
+    ],
+  );
+
   return (
     <Box role='rowgroup' {...tableBodyProps}>
       <VariableSizeList
@@ -349,28 +407,11 @@ const VirtualizedBody: React.FC<VirtualizedBodyProps> = ({
         itemSize={getItemSize}
         estimatedItemSize={ESTIMATED_ROW_HEIGHT}
         itemKey={itemKey}
+        itemData={itemData}
         overscanCount={4}
         outerElementType={NonScrollingOuter}
       >
-        {({ index, style }: ListChildComponentProps) => {
-          const row = rows[index];
-          const rowProps = getTableRowProps?.(row, index);
-          return (
-            <div style={style}>
-              <VirtualizedRowItem
-                row={row}
-                index={index}
-                columns={columns}
-                getCells={getCells}
-                loading={loading}
-                rowProps={rowProps}
-                onResize={handleResize}
-                stickyFirstColumn={stickyFirstColumn}
-                colorPalette={colorPalette}
-              />
-            </div>
-          );
-        }}
+        {VirtualizedListRow}
       </VariableSizeList>
     </Box>
   );
