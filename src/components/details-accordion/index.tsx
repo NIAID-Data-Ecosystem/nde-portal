@@ -36,7 +36,7 @@ const DetailsAccordionControl = ({
     <HStack gap={1} flexShrink={0} fontSize='xs' fontWeight='light'>
       <Text data-accordion-control>{expanded ? hideLabel : showLabel}</Text>
       {/* `as` rather than a child: react-icons don't forward refs, and Icon's asChild path hands the child one. */}
-      <Icon>{expanded ? <FaMinus /> : <FaPlus />}</Icon>
+      <Icon as={expanded ? FaMinus : FaPlus} />
     </HStack>
   );
 };

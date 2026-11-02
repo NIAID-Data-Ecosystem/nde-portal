@@ -54,9 +54,7 @@ export const CopyIconButton = ({
         size='sm'
         {...buttonProps}
       >
-        <Icon>
-          <FaRegCopy />
-        </Icon>
+        <Icon as={FaRegCopy} />
         {copied ? copiedText : ''}
       </Button>
     </Tooltip>

@@ -98,16 +98,12 @@ export const OntologySearchList = ({
               zIndex={1}
               bg={{ base: 'white', lg: undefined }}
             >
-              <Icon>
-                <FaMagnifyingGlass />
-              </Icon>
+              <Icon as={FaMagnifyingGlass} />
 
               <Text fontSize='sm' fontWeight='medium'>
                 List of selected search terms
               </Text>
-              <Icon ml={4} fill='gray.600'>
-                <FaAnglesRight />
-              </Icon>
+              <Icon as={FaAnglesRight} ml={4} fill='gray.600' />
             </Button>
 
             <ScrollContainer
@@ -228,9 +224,7 @@ export const OntologySearchList = ({
                             );
                           }}
                         >
-                          <Icon boxSize={2.5}>
-                            <FaX />
-                          </Icon>
+                          <Icon as={FaX} boxSize={2.5} />
                         </IconButton>
                       </Flex>
                     </Flex>

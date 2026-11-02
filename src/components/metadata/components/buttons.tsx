@@ -98,9 +98,7 @@ export const SearchButton = ({
           <VisuallyHidden>
             {ariaLabel || `Search the NDE for this property value`}
           </VisuallyHidden>
-          <Icon fontSize='xs'>
-            <FaMagnifyingGlass />
-          </Icon>
+          <Icon as={FaMagnifyingGlass} fontSize='xs' />
         </NextLink>
       </Button>
     </Tooltip>

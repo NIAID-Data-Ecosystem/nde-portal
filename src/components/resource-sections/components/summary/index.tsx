@@ -1,8 +1,8 @@
-import { FormattedResource } from 'src/utils/api/types';
 import { Button, Flex, Icon, Tag, Text, useDisclosure } from '@chakra-ui/react';
 import { FaInfo, FaWandMagicSparkles } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
 import Tooltip from 'src/components/tooltip';
+import { FormattedResource } from 'src/utils/api/types';
 
 export const Summary = ({
   description,
@@ -41,14 +41,13 @@ export const Summary = ({
         >
           SUMMARY{' '}
           <Icon
+            as={FaInfo}
             boxSize={3.5}
             border='1px solid'
             borderRadius='full'
             p={0.5}
             color='gray.800!important'
-          >
-            <FaInfo />
-          </Icon>
+          />
         </Link>
       </Tooltip>
       <Text
@@ -66,9 +65,7 @@ export const Summary = ({
           colorPalette='niaid'
           bg='info'
         >
-          <Tag.StartElement asChild>
-            <FaWandMagicSparkles />
-          </Tag.StartElement>
+          <Tag.StartElement as={FaWandMagicSparkles} />
           <Tag.Label>{tagLabel}</Tag.Label>
         </Tag.Root>
         {description}

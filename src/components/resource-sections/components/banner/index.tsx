@@ -26,9 +26,7 @@ export const DateTag: React.FC<DateTagProps> = ({ type, date, ...props }) => {
       borderRadius='semi'
       {...props}
     >
-      <Icon mr={2}>
-        <FaRegClock />
-      </Icon>
+      <Icon as={FaRegClock} mr={2} />
       <Text fontSize='xs'>
         {type && <strong>{type}</strong>} {date}
       </Text>
@@ -105,9 +103,12 @@ const ResourceBanner: React.FC<ResourceBannerProps> = ({ data }) => {
                 obj => obj.os === os,
               )?.icon;
               return (
-                <Icon key={i} ml={i === 0 ? 2 : 0} mr={2}>
-                  {osIcon || <FaComputer />}
-                </Icon>
+                <Icon
+                  key={i}
+                  as={osIcon ?? FaComputer}
+                  ml={i === 0 ? 2 : 0}
+                  mr={2}
+                />
               );
             })}
         </Flex>

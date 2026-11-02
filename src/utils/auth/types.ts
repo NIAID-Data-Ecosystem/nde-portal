@@ -3,6 +3,8 @@
  * OAuth flow is managed by the API backend (provider OAuth -> API session cookie)
  */
 
+import { IconType } from 'react-icons';
+
 export interface AuthLoginProvider {
   id: string;
   label: string;
@@ -12,7 +14,7 @@ export interface KnownProvider {
   /** Display name, e.g. used in "Log In With <label>" */
   label: string;
   /** Brand icon on the login button. Providers without one show no icon. */
-  icon?: { component: React.ReactNode; color: string };
+  icon?: { component: IconType; color: string };
   /**
    * Extra `login_error` code -> message pairs for this provider, e.g.
    * `{ okta_access_denied: '...' }`. Overrides a generated message for the

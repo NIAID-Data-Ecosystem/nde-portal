@@ -29,9 +29,7 @@ export const SidebarMobile = ({
             <Text as='span' fontSize='sm' flex={1} color='inherit'>
               {menuTitle || 'Documentation Menu'}
             </Text>
-            <Icon>
-              <FaArrowsUpDown />
-            </Icon>
+            <Icon as={FaArrowsUpDown} />
           </Flex>
         </Menu.Trigger>
       </Flex>

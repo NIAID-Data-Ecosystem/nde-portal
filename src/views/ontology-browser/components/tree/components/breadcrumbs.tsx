@@ -63,9 +63,7 @@ export const OntologyTreeBreadcrumbs = ({
             {/* Rendered by hand rather than via HStack's `separator`, which
                 would give the icon a separator's border. */}
             {index < lineageNodes.length - 1 && (
-              <Icon color='gray.400' boxSize={3}>
-                <FaAngleRight />
-              </Icon>
+              <Icon as={FaAngleRight} color='gray.400' boxSize={3} />
             )}
           </Flex>
         ))}

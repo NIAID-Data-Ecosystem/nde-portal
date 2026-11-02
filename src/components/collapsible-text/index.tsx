@@ -53,12 +53,11 @@ export const CollapsibleTextTrigger = ({
   >
     {children}
     <Icon
+      as={FaChevronDown}
       transform={isOpen ? 'rotate(180deg)' : undefined}
       boxSize='3'
       transition='transform 0.2s'
-    >
-      <FaChevronDown />
-    </Icon>
+    />
   </chakra.button>
 );
 

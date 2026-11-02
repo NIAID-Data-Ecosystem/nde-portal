@@ -50,11 +50,9 @@ export const NavDropdownTrigger = ({
                 gap={1.5}
                 {...buttonProps}
               >
-                {icon && <Icon boxSize={4}>{icon}</Icon>}
+                {icon && <Icon as={icon} boxSize={4} />}
                 {label}
-                <Icon w={4} h={4}>
-                  <FaCaretDown />
-                </Icon>
+                <Icon as={FaCaretDown} w={4} h={4} />
               </Button>
             </Popover.Trigger>
 

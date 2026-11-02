@@ -23,9 +23,11 @@ export const BookmarkIconButton: React.FC<
         rounded='full'
         {...props}
       >
-        <Icon fill={isFavorited ? 'link' : 'text.placeholder'} p={0.25}>
-          {isFavorited ? <FaBookmark /> : <FaRegBookmark />}
-        </Icon>
+        <Icon
+          as={isFavorited ? FaBookmark : FaRegBookmark}
+          fill={isFavorited ? 'link' : 'text.placeholder'}
+          p={0.25}
+        />
       </IconButton>
     </Tooltip>
   );

@@ -1,9 +1,10 @@
 import { Box, Flex, Icon, Text, TextProps } from '@chakra-ui/react';
 import React from 'react';
+import { IconType } from 'react-icons';
 import { InputProperties, OutputProperties } from 'src/utils/api/types';
 
 interface InputOutputProps extends InputProperties, OutputProperties {
-  icon: React.ReactNode;
+  icon: IconType;
 }
 
 const InputOutput: React.FC<InputOutputProps> = ({
@@ -14,9 +15,7 @@ const InputOutput: React.FC<InputOutputProps> = ({
 }) => {
   return (
     <Flex>
-      <Icon color='primary.400' m={1} ml={0}>
-        {icon}
-      </Icon>
+      <Icon as={icon} color='primary.400' m={1} ml={0} />
       <Box>
         {name && <StyledText>{name}</StyledText>}
         {description && <StyledText>{description}</StyledText>}

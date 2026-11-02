@@ -4,6 +4,7 @@
 // Used for __tests__/testing-library.js
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom/extend-expect';
+
 import { trackFocusVisible } from '@zag-js/focus-visible';
 import { setupServer } from 'msw/node';
 import { handlers } from 'src/__tests__/mocks/utils';
@@ -21,14 +22,24 @@ trackFocusVisible(() => {});
 jest.mock('next/router', () => require('next-router-mock'));
 
 // Prevent Next <Link> from running intersection logic (fixes act warnings)
-jest.mock('next/link', () => ({
-  __esModule: true,
-  default: ({ href, children, passHref, prefetch, ...rest }) => (
-    <a href={typeof href === 'string' ? href : href?.pathname ?? ''} {...rest}>
-      {children}
-    </a>
-  ),
-}));
+// forwardRef like the real Link, since Chakra's `asChild` attaches a ref to it.
+jest.mock('next/link', () => {
+  const { forwardRef } = jest.requireActual('react');
+  return {
+    __esModule: true,
+    default: forwardRef(
+      ({ href, children, passHref, prefetch, ...rest }, ref) => (
+        <a
+          ref={ref}
+          href={typeof href === 'string' ? href : href?.pathname ?? ''}
+          {...rest}
+        >
+          {children}
+        </a>
+      ),
+    ),
+  };
+});
 
 // Prevent IntersectionObserver-related async updates in jsdom
 class MockIntersectionObserver {

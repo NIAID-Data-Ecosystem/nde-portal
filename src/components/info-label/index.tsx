@@ -19,6 +19,7 @@ export const InfoIcon = (
   },
 ) => (
   <Icon
+    as={FaInfo}
     className='tooltip-icon'
     boxSize={3.5}
     border='1px solid'
@@ -28,9 +29,7 @@ export const InfoIcon = (
     mt='-0.5rem'
     p={0.5}
     {...props}
-  >
-    <FaInfo />
-  </Icon>
+  />
 );
 
 export const InfoLabel: React.FC<InfoLabelProps> = ({

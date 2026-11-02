@@ -248,15 +248,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             size='sm'
             mt={2}
           >
-            {showRawQuery ? (
-              <Icon>
-                <FaEyeSlash />
-              </Icon>
-            ) : (
-              <Icon>
-                <FaEye />
-              </Icon>
-            )}
+            {showRawQuery ? <Icon as={FaEyeSlash} /> : <Icon as={FaEye} />}
             {showRawQuery ? 'hide' : 'view'} raw query
             {showRawQuery ? <FaAngleUp /> : <FaAngleDown />}
           </Button>
@@ -294,9 +286,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                   alignItems='center'
                   flex={1}
                 >
-                  <Icon mx={2} color='info'>
-                    <FaClockRotateLeft />
-                  </Icon>
+                  <Icon as={FaClockRotateLeft} mx={2} color='info' />
                   Search History
                 </Text>
                 <Accordion.ItemIndicator />

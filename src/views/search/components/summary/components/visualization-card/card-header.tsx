@@ -71,11 +71,7 @@ export const CardHeader = ({
           <VisualizationCardIconButton
             ariaLabel='Expand chart to modal view'
             tooltipContent='Expand chart to modal view.'
-            icon={
-              <Icon>
-                <FaExpand />
-              </Icon>
-            }
+            icon={<Icon as={FaExpand} />}
             onClick={onExpand}
             disabled={!isActive}
           />
@@ -83,11 +79,7 @@ export const CardHeader = ({
         <VisualizationCardIconButton
           ariaLabel='Remove chart from display.'
           tooltipContent='Remove chart from display.'
-          icon={
-            <Icon>
-              <FaXmark />
-            </Icon>
-          }
+          icon={<Icon as={FaXmark} />}
           onClick={onRemove}
           disabled={!isActive}
         />

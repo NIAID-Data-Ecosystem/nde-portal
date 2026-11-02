@@ -23,9 +23,13 @@ import { ENABLE_AUTH } from 'src/utils/feature-flags';
 const ListItemContent = ({ children }: { children: React.ReactNode }) => (
   <List.Item lineHeight='tall'>
     <List.Indicator>
-      <Icon boxSize={4} mb={1} aria-hidden='true' color='niaid.500'>
-        <FaCheck />
-      </Icon>
+      <Icon
+        as={FaCheck}
+        boxSize={4}
+        mb={1}
+        aria-hidden='true'
+        color='niaid.500'
+      />
     </List.Indicator>
     {children}
   </List.Item>

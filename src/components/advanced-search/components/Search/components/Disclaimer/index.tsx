@@ -43,9 +43,7 @@ export const Disclaimer = () => {
             _focus={{ boxShadow: 'none' }}
           >
             <Flex mx={1}>
-              <Icon color='inherit'>
-                <FaTriangleExclamation />
-              </Icon>
+              <Icon as={FaTriangleExclamation} color='inherit' />
             </Flex>
             {isMinimized && (
               <Text fontSize='sm' color='inherit'>

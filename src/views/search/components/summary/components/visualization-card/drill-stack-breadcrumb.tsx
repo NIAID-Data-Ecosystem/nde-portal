@@ -21,9 +21,7 @@ export const DrillStackBreadcrumb = ({
       textDecoration='underline'
       mr={1}
     >
-      <Icon boxSize={3} mr={1}>
-        <FaArrowLeft />
-      </Icon>
+      <Icon as={FaArrowLeft} boxSize={3} mr={1} />
       Back
     </Button>
     <Text lineClamp={1}>

@@ -43,7 +43,7 @@ describe('NavDropdownItem', () => {
         href='https://example.org/docs'
         isExternal={true}
         description='Read docs'
-        icon={<FaCircleUser />}
+        icon={FaCircleUser}
       />,
     );
 

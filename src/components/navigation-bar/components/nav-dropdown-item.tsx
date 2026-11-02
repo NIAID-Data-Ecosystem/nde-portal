@@ -50,9 +50,7 @@ const DropdownItemContent = ({
   <Box flex={1}>
     <Flex alignItems='center' gap={2}>
       {icon && (
-        <Icon w={5} h={5} color='niaid.700' aria-hidden='true'>
-          {icon}
-        </Icon>
+        <Icon as={icon} w={5} h={5} color='niaid.700' aria-hidden='true' />
       )}
       <Text
         className='label'
@@ -63,9 +61,13 @@ const DropdownItemContent = ({
         {label}
       </Text>
       {isExternal && (
-        <Icon w={3} h={3} color='inherit' aria-label='Opens in new tab'>
-          <FaArrowUpRightFromSquare />
-        </Icon>
+        <Icon
+          as={FaArrowUpRightFromSquare}
+          w={3}
+          h={3}
+          color='inherit'
+          aria-label='Opens in new tab'
+        />
       )}
     </Flex>
     {description && (
@@ -93,9 +95,7 @@ const DropdownItemArrowIcon = (): JSX.Element => (
     justify='flex-end'
     align='center'
   >
-    <Icon css={ICON_COLOR} w={3} h={3}>
-      <FaAngleRight />
-    </Icon>
+    <Icon as={FaAngleRight} css={ICON_COLOR} w={3} h={3} />
   </Flex>
 );
 
@@ -106,6 +106,7 @@ const DropdownItemToggleIcon = ({
   isOpen?: boolean;
 }): JSX.Element => (
   <Icon
+    as={FaAngleDown}
     css={ICON_COLOR}
     transition='all .25s ease-in-out'
     transform={
@@ -113,9 +114,7 @@ const DropdownItemToggleIcon = ({
     }
     w={3}
     h={3}
-  >
-    <FaAngleDown />
-  </Icon>
+  />
 );
 
 export const NavDropdownItem = ({

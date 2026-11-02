@@ -1,4 +1,4 @@
-import { VStack, Alert, Text, Button, Icon } from '@chakra-ui/react';
+import { Alert, Button, Icon, Text, VStack } from '@chakra-ui/react';
 import { FaRotateRight } from 'react-icons/fa6';
 
 interface ErrorStateProps {
@@ -18,9 +18,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({ onRetry }) => {
         <Text fontSize='sm'>Failed to load chart data.</Text>
       </Alert.Root>
       <Button size='sm' onClick={onRetry} variant='outline' colorPalette='gray'>
-        <Icon>
-          <FaRotateRight />
-        </Icon>
+        <Icon as={FaRotateRight} />
         Retry
       </Button>
     </VStack>

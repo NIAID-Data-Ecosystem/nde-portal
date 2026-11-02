@@ -25,60 +25,70 @@ interface TagWithUrlProps extends Tag.RootProps {
  * Without an `href` the tag degrades to plain text instead of rendering a dead
  * link — see https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/245.
  */
-export const TagWithUrl = ({
-  children,
-  label,
-  href,
-  isExternal,
-  leftIcon,
-  size = 'sm',
-  colorPalette = 'primary',
-  ...props
-}: TagWithUrlProps) => {
-  const prefix = label && (
-    <Span mr={1} fontWeight='semibold'>
-      {label}
-    </Span>
-  );
-
-  if (!href) {
-    return (
-      <Text textStyle={size} {...props}>
-        {prefix}
-        {children}
-      </Text>
+export const TagWithUrl = React.forwardRef<HTMLElement, TagWithUrlProps>(
+  function TagWithUrl(
+    {
+      children,
+      label,
+      href,
+      isExternal,
+      leftIcon,
+      size = 'sm',
+      colorPalette = 'primary',
+      ...props
+    },
+    ref,
+  ) {
+    const prefix = label && (
+      <Span mr={1} fontWeight='semibold'>
+        {label}
+      </Span>
     );
-  }
 
-  return (
-    <Tag.Root
-      asChild
-      className='group'
-      size={size}
-      variant='subtle'
-      colorPalette={colorPalette}
-      lineHeight='shorter'
-      {...props}
-    >
-      <NextLink href={href} target={isExternal ? '_blank' : undefined}>
-        {leftIcon && <Tag.StartElement>{leftIcon}</Tag.StartElement>}
-        {/* `display: inline` lets the prefix and value wrap as one run of text,
-          overriding the single-line clamp the recipe puts on this slot. */}
-        <Tag.Label display='inline'>
+    if (!href) {
+      return (
+        <Text
+          ref={ref as React.Ref<HTMLParagraphElement>}
+          textStyle={size}
+          {...props}
+        >
           {prefix}
-          <Span
-            textDecoration='underline'
-            _groupHover={{ textDecorationColor: 'transparent' }}
-          >
-            {children}
-          </Span>
-        </Tag.Label>
-        {isExternal && (
-          <Tag.EndElement>
-            <FaSquareArrowUpRight />
-          </Tag.EndElement>
-        )}
-      </NextLink>
-    </Tag.Root>
-  );
-};
+          {children}
+        </Text>
+      );
+    }
+
+    return (
+      <Tag.Root
+        ref={ref as React.Ref<HTMLSpanElement>}
+        asChild
+        className='group'
+        size={size}
+        variant='subtle'
+        colorPalette={colorPalette}
+        lineHeight='shorter'
+        {...props}
+      >
+        <NextLink href={href} target={isExternal ? '_blank' : undefined}>
+          {leftIcon && <Tag.StartElement>{leftIcon}</Tag.StartElement>}
+          {/* `display: inline` lets the prefix and value wrap as one run of text,
+          overriding the single-line clamp the recipe puts on this slot. */}
+          <Tag.Label display='inline'>
+            {prefix}
+            <Span
+              textDecoration='underline'
+              _groupHover={{ textDecorationColor: 'transparent' }}
+            >
+              {children}
+            </Span>
+          </Tag.Label>
+          {isExternal && (
+            <Tag.EndElement>
+              <FaSquareArrowUpRight />
+            </Tag.EndElement>
+          )}
+        </NextLink>
+      </Tag.Root>
+    );
+  },
+);

@@ -55,9 +55,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   const [showInput, setShowInput] = useState(false);
 
   const startElement = (
-    <Icon color='text.placeholder' boxSize={4}>
-      <FaMagnifyingGlass />
-    </Icon>
+    <Icon as={FaMagnifyingGlass} color='text.placeholder' boxSize={4} />
   );
 
   const endElement = (onClose || handleSubmit) && (

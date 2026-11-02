@@ -242,9 +242,7 @@ export const NewsCarousel = ({
             prefetch={false}
           >
             All updates
-            <Icon>
-              <FaAngleRight />
-            </Icon>
+            <Icon as={FaAngleRight} />
           </NextLink>
         </Button>
       </Flex>

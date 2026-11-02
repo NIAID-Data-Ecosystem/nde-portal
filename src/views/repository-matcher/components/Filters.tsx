@@ -100,9 +100,7 @@ export const Filters: React.FC<FiltersProps> = ({
           colorPalette='gray'
           fontWeight='medium'
         >
-          <Icon boxSize={3}>
-            <FaFilter />
-          </Icon>
+          <Icon as={FaFilter} boxSize={3} />
           Filters
         </Button>
         <Drawer.Root

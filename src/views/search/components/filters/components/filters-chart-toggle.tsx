@@ -10,13 +10,9 @@ export const FiltersDisclaimer = () => {
       _icon={{ verticalAlign: 'baseline', mx: 1.5 }}
     >
       Click the icon
-      <Icon color='gray.500'>
-        <FaChartPie />
-      </Icon>
+      <Icon as={FaChartPie} color='gray.500' />
       next to a filter to show or hide the display of its chart. A filled icon
-      <Icon color='secondary.500'>
-        <FaChartPie />
-      </Icon>
+      <Icon as={FaChartPie} color='secondary.500' />
       indicates the chart is visible.
     </Text>
   );

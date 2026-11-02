@@ -301,9 +301,7 @@ export const TreeNode = (props: {
                 } OR infectiousAgent.identifier:${node.taxonId})`}
                 fontSize='xs'
               >
-                <Icon mr={1.5} boxSize={3}>
-                  <FaMagnifyingGlass />
-                </Icon>
+                <Icon as={FaMagnifyingGlass} mr={1.5} boxSize={3} />
                 {/* A span, not the default <p>: the link is inline, so a block
                     child would drop the label onto its own line. */}
                 <Text

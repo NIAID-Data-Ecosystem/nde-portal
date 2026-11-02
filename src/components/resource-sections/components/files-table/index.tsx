@@ -135,9 +135,11 @@ export const DistributionCells = ({
                   <Text key={format.name} mb={1}>
                     {format.name}
                     {format?.icon && format?.icon?.icon && (
-                      <Icon color={format.icon.color || undefined} ml={2}>
-                        <format.icon.icon />
-                      </Icon>
+                      <Icon
+                        as={format.icon.icon}
+                        color={format.icon.color || undefined}
+                        ml={2}
+                      />
                     )}
                   </Text>
                 );

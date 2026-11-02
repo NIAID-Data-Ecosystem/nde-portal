@@ -1,5 +1,5 @@
-import React from 'react';
 import { Box, Button, Icon, Text } from '@chakra-ui/react';
+import React from 'react';
 import { FaAnglesLeft, FaMagnifyingGlass } from 'react-icons/fa6';
 import Tooltip from 'src/components/tooltip';
 
@@ -31,16 +31,13 @@ export const ListToggle = ({
               Toggle Search List
             </Text>
             <Box>
-              <Icon>
-                <FaMagnifyingGlass />
-              </Icon>
+              <Icon as={FaMagnifyingGlass} />
               <Icon
+                as={FaAnglesLeft}
                 display={{ base: 'none', lg: 'block' }}
                 fill='gray.600'
                 mt={4}
-              >
-                <FaAnglesLeft />
-              </Icon>
+              />
             </Box>
           </Button>
         </Tooltip>
