@@ -10,7 +10,7 @@ import { useAuth } from 'src/hooks/useAuth';
 import { useUserData } from 'src/hooks/useUserData';
 import { SavedQuery } from 'src/hooks/useUserData/types';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
-import { SavedDataErrorBanner } from 'src/views/saved/components/saved-data-error-banner';
+import { SavedDataErrorAlert } from 'src/views/saved/components/saved-data-error-banner';
 import { SavedEmptyState } from 'src/views/saved/components/saved-empty-state';
 import { SavedTableSection } from 'src/views/saved/components/saved-table-section';
 import { useBatchResourcesData } from 'src/views/saved/hooks/useBatchResourcesData';
@@ -109,7 +109,7 @@ const SavedPage = () => {
             </Text>
           </Box>
         )}
-        <SavedDataErrorBanner />
+        <SavedDataErrorAlert />
       </Flex>
       <Separator />
       <SavedTableSection
