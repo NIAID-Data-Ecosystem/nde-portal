@@ -1,15 +1,7 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
-import { MobileNavItem } from '../nav-mobile-item';
+import { fireEvent, render, screen, waitFor } from 'src/__tests__/utils/render';
 
-jest.mock('@chakra-ui/react', () => {
-  const actual = jest.requireActual('@chakra-ui/react');
-  return {
-    ...actual,
-    Collapse: ({ in: isOpen, children }: any) =>
-      isOpen ? <div data-testid='collapse'>{children}</div> : null,
-  };
-});
+import { MobileNavItem } from '../nav-mobile-item';
 
 const mockNavDropdownItem = jest.fn((props: any) => {
   if (props.onClick) {
@@ -40,7 +32,7 @@ describe('MobileNavItem', () => {
     );
   });
 
-  it('renders collapsible nested routes and toggles them open', () => {
+  it('renders collapsible nested routes and toggles them open', async () => {
     render(
       <MobileNavItem
         label='Resources'
@@ -51,18 +43,25 @@ describe('MobileNavItem', () => {
       />,
     );
 
-    expect(screen.queryByText('link:Datasets')).not.toBeInTheDocument();
+    // Collapsible keeps closed content mounted but hidden.
+    expect(screen.getByText('link:Datasets')).not.toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: 'Resources' }));
-    expect(screen.getByText('link:Datasets')).toBeInTheDocument();
-    expect(screen.getByText('link:Tools')).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByText('link:Datasets')).toBeVisible(),
+    );
+    expect(screen.getByText('link:Tools')).toBeVisible();
   });
 
   it('does not render nested collapse for empty routes array', () => {
-    render(<MobileNavItem label='EmptyGroup' routes={[]} />);
+    const { container } = render(
+      <MobileNavItem label='EmptyGroup' routes={[]} />,
+    );
 
     expect(
       screen.getByRole('button', { name: 'EmptyGroup' }),
     ).toBeInTheDocument();
-    expect(screen.queryByTestId('collapse')).not.toBeInTheDocument();
+    expect(
+      container.querySelector('[data-scope="collapsible"]'),
+    ).not.toBeInTheDocument();
   });
 });

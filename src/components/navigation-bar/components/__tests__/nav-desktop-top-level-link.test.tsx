@@ -1,16 +1,11 @@
 import React from 'react';
-import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen } from '@testing-library/react';
-import { system } from 'src/theme';
+import { render, screen } from 'src/__tests__/utils/render';
+
 import { NavTopLevelLink } from '../nav-desktop-top-level-link';
 
 describe('NavTopLevelLink', () => {
-  const renderWithChakra = (ui: React.ReactElement) => {
-    return render(<ChakraProvider value={system}>{ui}</ChakraProvider>);
-  };
-
   it('renders external link attributes and active indicator', () => {
-    renderWithChakra(
+    render(
       <NavTopLevelLink
         label='Docs'
         href='https://example.org'
@@ -28,7 +23,7 @@ describe('NavTopLevelLink', () => {
   });
 
   it('renders default internal fallback href', () => {
-    renderWithChakra(<NavTopLevelLink label='Home' />);
+    render(<NavTopLevelLink label='Home' />);
 
     const link = screen.getByRole('link', { name: 'Home' });
     expect(link).toHaveAttribute('target', '_self');

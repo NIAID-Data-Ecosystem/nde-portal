@@ -1,6 +1,6 @@
-import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
 import mockRouter from 'next-router-mock';
+import React from 'react';
+import { fireEvent, render, screen } from 'src/__tests__/utils/render';
 
 const mockBuildNavigationFromConfig = jest.fn();
 const mockFilterRoutesByEnv = jest.fn();
