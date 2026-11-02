@@ -173,7 +173,7 @@ const Updates: NextPage<UpdatesProps> = props => {
     <PageContainer meta={getPageSeoConfig('/updates')} px={0} py={0}>
       <HeroBannerContainer
         justifyContent={{ base: 'flex-start', md: 'center' }}
-        bgImg='/assets/news-01.jpg'
+        bgImg='url(/assets/news-01.jpg)'
         backgroundSize='cover'
         px='0px'
         minHeight='unset'
@@ -309,7 +309,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                           {/* Upcoming events */}
                           {upcomingEvents && upcomingEvents?.length > 0 && (
                             <>
-                              <Heading as='h3' size='sm' color='gray.800'>
+                              <Heading as='h3' size='sm' color='gray.600'>
                                 Upcoming
                               </Heading>
                               {upcomingEvents
@@ -398,7 +398,9 @@ const Updates: NextPage<UpdatesProps> = props => {
                       },
                       _after: {
                         content: "''",
-                        bgGradient: 'linear(to-r, primary.200, accent.400)',
+                        bgGradient: 'to-r',
+                        gradientFrom: 'primary.200',
+                        gradientTo: 'accent.400',
                         position: 'absolute',
                         top: 0,
                         left: 0,
@@ -409,11 +411,12 @@ const Updates: NextPage<UpdatesProps> = props => {
                   }}
                 >
                   {/* Email */}
+                  {/* pt/gap stand in for v2's CardBody theme, which gave every child `mt: 4`. */}
                   <Card.Root>
-                    <Card.Body p={0} px={4} py={1}>
+                    <Card.Body>
                       <Text
                         lineHeight='moderate'
-                        color='gray.800'
+                        color='gray.600'
                         fontWeight='medium'
                       >
                         Share your discovery Portal story with us by{' '}
@@ -426,10 +429,11 @@ const Updates: NextPage<UpdatesProps> = props => {
                   {/* Socials */}
                   {NDESOCIALS && NDESOCIALS['socials'] && (
                     <Card.Root>
-                      <Card.Body px={4} py={1}>
+                      {/* pb also makes up the v2 icon links' taller (lineHeight 2) line box. */}
+                      <Card.Body>
                         <Text
                           lineHeight='moderate'
-                          color='gray.800'
+                          color='gray.600'
                           fontWeight='medium'
                         >
                           Join us on

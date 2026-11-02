@@ -60,7 +60,7 @@ export const DataDictionary: React.FC<DataDictionaryProps> = ({
                     {label}
                   </Text>
                 )}
-                {description && <Text color='gray.800'>{description}</Text>}
+                {description && <Text color='gray.600'>{description}</Text>}
               </Box>
               {visibleTerms && visibleTerms.length > 0 && (
                 <VStack mx={6} my={4} alignItems='flex-start'>

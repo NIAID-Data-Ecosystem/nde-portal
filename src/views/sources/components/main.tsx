@@ -272,7 +272,7 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
                                 as='tr'
                                 key={item[0]}
                                 borderBottom='1px solid'
-                                borderColor='gray.700'
+                                borderColor='gray.500'
                               >
                                 {Object.entries(item).map(field => {
                                   return (

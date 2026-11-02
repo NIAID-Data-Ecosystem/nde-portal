@@ -64,6 +64,15 @@ export const colors = defineTokens.colors({
 
   /**
    * This is our custom gray palette but can cause issues with accessibility when paired with certain background colors in chakra ui components theming. Uncomment and see how it affects subtle variant tags for example.
+   *
+   * While it stays commented out, `gray.*` resolves to Chakra v3's stock greys,
+   * which are much darker at the same step from 500 up. Anything that used an
+   * old NIAID grey should use its closest stock match, not the same number:
+   *   old gray.700 (#6D6D6D) -> gray.500 (#71717a)
+   *   old gray.800 (#5A5959) -> gray.600 (#52525b)
+   *   old gray.900 (#414141) -> gray.700 (#3f3f46)
+   * In particular, do NOT carry old gray.800 over as the current `gray.800`
+   * (#27272a), which is near-black.
    */
 
   // gray: {

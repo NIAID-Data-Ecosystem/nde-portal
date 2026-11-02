@@ -114,7 +114,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
             size='xs'
             onClick={removeAllFilters}
             disabled={disabled}
-            _disabled={{ opacity: 1, color: 'gray.700' }}
+            _disabled={{ opacity: 1, color: 'gray.500' }}
           >
             Clear All
           </Button>

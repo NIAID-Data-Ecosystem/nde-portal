@@ -73,7 +73,7 @@ export function withAuth<P extends object>(
             minHeight='50vh'
           >
             <Spinner size='lg' color='blue.500' />
-            <Text mt={4} color='gray.800'>
+            <Text mt={4} color='gray.600'>
               Loading...
             </Text>
           </Box>

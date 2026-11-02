@@ -259,7 +259,7 @@ export const CompatibilityBadge = ({
             content='Recommended fields coverage.'
             positioning={{ placement: 'top-start' }}
           >
-            <Box fontSize='12px' fill='gray.800' asChild>
+            <Box fontSize='12px' fill='gray.600' asChild>
               <text x={0} y={LABEL_HEIGHT - 4}>
                 Recommended{' | '}
                 {Math.round(data.percent_recommended_fields * 100)}%
@@ -279,7 +279,7 @@ export const CompatibilityBadge = ({
             content='Fundamental fields coverage.'
             positioning={{ placement: 'top-start' }}
           >
-            <Box fontSize='12px' fill='gray.800' asChild>
+            <Box fontSize='12px' fill='gray.600' asChild>
               <text x={0} y={LABEL_HEIGHT - 4}>
                 Fundamental{' | '}
                 {Math.round(data.percent_required_fields * 100)}%

@@ -141,7 +141,7 @@ const Docs: NextPage<{
       {error ? (
         <Error>
           <Flex flexDirection='column' justifyContent='center'>
-            <Text fontWeight='light' color='gray.800' fontSize='lg'>
+            <Text fontWeight='light' color='gray.600' fontSize='lg'>
               API Request:{' '}
               {error?.statusText ||
                 "It's possible that the server is experiencing some issues."}{' '}
@@ -219,7 +219,7 @@ const Docs: NextPage<{
                     color='gray.500'
                     headingProps={{
                       fontSize: 'lg',
-                      color: 'gray.700',
+                      color: 'gray.500',
                     }}
                   />
                 ) : (

@@ -28,7 +28,7 @@ export const SearchTypeRadio = ({
       <RadioGroup.ItemText
         fontSize='sm'
         fontWeight='medium'
-        color='gray.800'
+        color='gray.600'
         _disabled={{ opacity: 0.4 }}
       >
         {label}

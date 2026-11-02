@@ -100,7 +100,7 @@ const About: NextPage<AboutProps> = props => {
               {content.name || ''}
             </Heading>
             {content?.subtitle && (
-              <Text color='gray.700'>{content.subtitle}</Text>
+              <Text color='gray.500'>{content.subtitle}</Text>
             )}
 
             <ReactMarkdown

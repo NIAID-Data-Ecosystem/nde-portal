@@ -70,7 +70,7 @@ export const getFileIcon = (value: string) => {
     color = 'red.500';
   } else if (value.toLowerCase().includes('txt')) {
     icon = FaFileLines;
-    color = 'gray.800';
+    color = 'gray.600';
   }
   return { icon, color };
 };

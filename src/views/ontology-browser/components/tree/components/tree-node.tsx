@@ -286,7 +286,7 @@ export const TreeNode = (props: {
             textAlign='left'
             wordBreak='break-word'
           >
-            <Text color='gray.800' fontSize='12px'>
+            <Text color='gray.600' fontSize='12px'>
               {node.ontologyName} | {node.taxonId}
             </Text>
             <Tooltip

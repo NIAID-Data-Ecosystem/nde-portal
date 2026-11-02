@@ -162,7 +162,7 @@ export function SavedTableSection<TItem>({
         <VStack align='start' gap={0.5} fontSize='sm' fontWeight='normal'>
           <Text fontWeight='semibold'>
             {title}
-            <Text as='span' color='gray.700' fontWeight='medium' ml={2}>
+            <Text as='span' color='gray.500' fontWeight='medium' ml={2}>
               {data.length} {data.length === 1 ? unit.singular : unit.plural}
             </Text>
           </Text>

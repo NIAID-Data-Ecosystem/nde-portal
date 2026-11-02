@@ -194,7 +194,7 @@ export const OntologySearchList = ({
                         justifyContent='space-between'
                         flexDirection='column'
                       >
-                        <Text color='gray.800' fontSize='xs'>
+                        <Text color='gray.600' fontSize='xs'>
                           {ontologyName} | {taxonId}
                         </Text>
                         <Text

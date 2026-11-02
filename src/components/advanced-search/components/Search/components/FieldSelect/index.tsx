@@ -95,7 +95,7 @@ export const comboboxStyles = {
     cursor: 'pointer',
     css: {
       // Selection wins over highlight, so a highlighted selected row stays filled.
-      '&[data-highlighted]:not([data-state=checked])': { bg: 'primary.100' },
+      '&[data-highlighted]:not([data-state=checked])': { bg: 'primary.50' },
       '&[data-state=checked]': { bg: 'primary.500', color: 'white' },
     },
   } satisfies Partial<Combobox.ItemProps>,
@@ -245,7 +245,7 @@ const FieldSelectOption = ({ item }: { item: FieldOption }) => {
               fontSize='sm'
               lineHeight='shorter'
               fontWeight='normal'
-              color='gray.800'
+              color='gray.600'
               maxW={350}
               lineClamp={1}
             >

@@ -53,7 +53,7 @@ const OntologyBrowserPage: NextPage = () => {
               </Heading>
               <Heading
                 as='h2'
-                color='gray.800'
+                color='gray.600'
                 fontSize='sm'
                 fontWeight='medium'
                 lineHeight='moderate'

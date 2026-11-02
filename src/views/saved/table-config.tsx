@@ -70,7 +70,7 @@ const SavedResourceNameCell = ({
           loading={loading}
           isExternal={false}
         />
-        <Text color='gray.700'>ID: {value?.dataset_id || ''}</Text>
+        <Text color='gray.500'>ID: {value?.dataset_id || ''}</Text>
       </VStack>
     </HStack>
   );

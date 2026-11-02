@@ -443,7 +443,7 @@ const RepositoryMatcher: NextPage = () => {
             emptyState={
               <Flex direction='column' align='center' py={10}>
                 <Text fontWeight='bold'>No repositories match</Text>
-                <Text color='gray.700'>
+                <Text color='gray.500'>
                   Try clearing some filters or broadening your search.
                 </Text>
               </Flex>

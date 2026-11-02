@@ -112,7 +112,7 @@ function LoginPage() {
               {loading ? (
                 <Stack align='center' py={4}>
                   <Spinner color='niaid.500' />
-                  <Text color='gray.700'>
+                  <Text color='gray.500'>
                     Checking authentication status...
                   </Text>
                 </Stack>
@@ -158,7 +158,7 @@ function LoginPage() {
             maxWidth='540px'
             mx={{ base: 'auto', lg: 0 }}
             p={{ base: 6, md: 8 }}
-            color='gray.700'
+            color='gray.600'
           >
             <Image
               src='/assets/logos/niaid-nde-desktop-color.svg'

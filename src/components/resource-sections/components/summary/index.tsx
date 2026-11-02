@@ -36,7 +36,7 @@ export const Summary = ({
           whiteSpace={['unset', 'nowrap']}
           lineHeight='inherit'
           textDecoration='underline'
-          color='gray.800!important'
+          color='gray.600!important'
           _hover={{ textDecoration: 'none' }}
         >
           SUMMARY{' '}
@@ -46,7 +46,7 @@ export const Summary = ({
             border='1px solid'
             borderRadius='full'
             p={0.5}
-            color='gray.800!important'
+            color='gray.600!important'
           />
         </Link>
       </Tooltip>

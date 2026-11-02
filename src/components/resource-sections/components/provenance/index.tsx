@@ -144,7 +144,7 @@ const Field = ({
       {children ? (
         children
       ) : (
-        <Text as='span' fontStyle='italic' color='gray.800'>
+        <Text as='span' fontStyle='italic' color='gray.600'>
           No data
         </Text>
       )}

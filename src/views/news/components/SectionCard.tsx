@@ -1,7 +1,7 @@
 import { Box, Card, Flex, Heading, Tag, Text } from '@chakra-ui/react';
-import { NewsOrEventsObject } from 'src/pages/updates';
 import ReactMarkdown from 'react-markdown';
 import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
+import { NewsOrEventsObject } from 'src/pages/updates';
 import { formatDate } from 'src/utils/api/helpers';
 
 interface SectionCardProps extends NewsOrEventsObject {}
@@ -37,7 +37,7 @@ const SectionCard = (attributes: SectionCardProps) => {
             fontWeight='medium'
             fontSize='sm'
             whiteSpace='nowrap'
-            color='gray.800'
+            color='gray.600'
           >
             {formatDate(attributes.publishedAt || attributes.updatedAt)}
           </Text>
@@ -51,7 +51,7 @@ const SectionCard = (attributes: SectionCardProps) => {
               as='h4'
               fontWeight='semibold'
               size='sm'
-              color='gray.700'
+              color='gray.500'
               my={0}
               mt={1}
               lineHeight='moderate'
@@ -74,14 +74,13 @@ const SectionCard = (attributes: SectionCardProps) => {
                 return (
                   <Tag.Root
                     key={category.id}
-                    m={1}
                     colorPalette={
                       categoryColors[category.id % categoryColors.length]
                     }
-                    variant='subtle'
+                    variant='surface'
                     size='sm'
                   >
-                    {name}
+                    <Tag.Label>{name}</Tag.Label>
                   </Tag.Root>
                 );
               })}
