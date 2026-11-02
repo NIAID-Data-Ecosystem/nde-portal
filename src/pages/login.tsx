@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Card,
   Flex,
   Heading,
   HStack,
@@ -96,50 +97,49 @@ function LoginPage() {
           >
             Log in to your account
           </Heading>
-          <Box
+          <Card.Root
+            variant='elevated'
+            size='lg'
             w='100%'
             maxW={{ base: '500px', lg: '350px' }}
-            textAlign='center'
-            bg='whiteAlpha.800'
-            border='1px'
-            borderColor='gray.100'
-            borderRadius='6px'
-            boxShadow='sm'
             p={{ base: 6, md: 8 }}
-            zIndex={1}
           >
-            {loading ? (
-              <Stack align='center' py={4}>
-                <Spinner color='niaid.500' />
-                <Text color='gray.700'>Checking authentication status...</Text>
-              </Stack>
-            ) : (
-              <Stack gap={3} maxW='260px' mx='auto'>
-                {loginProviders.map(provider => (
-                  <Button
-                    key={provider.id}
-                    colorPalette='gray'
-                    variant='outline'
-                    size='md'
-                    py={1}
-                    borderColor='gray.100'
-                    _hover={{
-                      bg: 'niaid.50',
-                      borderColor: 'niaid.300',
-                    }}
-                    _active={{
-                      bg: 'niaid.50',
-                      borderColor: 'niaid.300',
-                    }}
-                    onClick={() => login(provider.id)}
-                  >
-                    <ProviderIcon providerId={provider.id} />
-                    Log In With {provider.label}
-                  </Button>
-                ))}
-              </Stack>
-            )}
-          </Box>
+            <Card.Body>
+              {loading ? (
+                <Stack align='center' py={4}>
+                  <Spinner color='niaid.500' />
+                  <Text color='gray.700'>
+                    Checking authentication status...
+                  </Text>
+                </Stack>
+              ) : (
+                <Stack gap={3} maxW='260px' mx='auto'>
+                  {loginProviders.map(provider => (
+                    <Button
+                      key={provider.id}
+                      colorPalette='niaid'
+                      variant='outline'
+                      size='md'
+                      py={1}
+                      borderColor='gray.100'
+                      _hover={{
+                        bg: 'niaid.50',
+                        borderColor: 'niaid.300',
+                      }}
+                      _active={{
+                        bg: 'niaid.50',
+                        borderColor: 'niaid.300',
+                      }}
+                      onClick={() => login(provider.id)}
+                    >
+                      <ProviderIcon providerId={provider.id} />
+                      Log In With {provider.label}
+                    </Button>
+                  ))}
+                </Stack>
+              )}
+            </Card.Body>
+          </Card.Root>
         </Flex>
 
         <Flex
