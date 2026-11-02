@@ -55,7 +55,7 @@ const DesktopLoginAction = ({
     <Button
       loading={loading}
       variant='outline'
-      colorPalette='white'
+      colorPalette='niaid'
       bg='transparent'
       alignSelf='center'
       _hover={{ bg: 'whiteAlpha.300' }}
