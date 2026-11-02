@@ -1,6 +1,7 @@
 import { List } from '@chakra-ui/react';
 import React from 'react';
-import { getMetadataTheme } from 'src/components/icon/helpers';
+
+import { getMetadataColorPalette } from '../helpers';
 
 export const MetadataList = ({ children, ...props }: List.RootProps) => {
   return (
@@ -20,7 +21,7 @@ export const MetadataListItem = ({
   return (
     <List.Item
       w='100%'
-      _marker={{ color: `${getMetadataTheme(property)}.400` }}
+      _marker={{ color: `${getMetadataColorPalette(property)}.400` }}
     >
       {children}
     </List.Item>

@@ -1,9 +1,11 @@
 import { Box, Flex, HStack, RadioGroup, Stack, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
-import { getMetadataTheme } from 'src/components/icon/helpers';
 import { InfoLabel } from 'src/components/info-label';
-import { getMetadataDescription } from 'src/components/metadata';
+import {
+  getMetadataColorPalette,
+  getMetadataDescription,
+} from 'src/components/metadata';
 import { palette, system } from 'src/theme';
 import { fetchSearchResults } from 'src/utils/api';
 import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
@@ -25,27 +27,27 @@ const facets = [
     label: 'Health Condition',
     value: 'healthCondition.name',
     fill: system.token(
-      `colors.${getMetadataTheme('healthCondition')}.300`,
+      `colors.${getMetadataColorPalette('healthCondition')}.300`,
     ) as string,
-    colorPalette: palette(getMetadataTheme('healthCondition')),
+    colorPalette: palette(getMetadataColorPalette('healthCondition')),
     tooltip: getMetadataDescription('healthCondition', 'Dataset'),
   },
   {
     label: 'Measurement Technique',
     value: 'measurementTechnique.name',
     fill: system.token(
-      `colors.${getMetadataTheme('measurementTechnique')}.300`,
+      `colors.${getMetadataColorPalette('measurementTechnique')}.300`,
     ) as string,
-    colorPalette: palette(getMetadataTheme('measurementTechnique')),
+    colorPalette: palette(getMetadataColorPalette('measurementTechnique')),
     tooltip: getMetadataDescription('measurementTechnique', 'Dataset'),
   },
   {
     label: 'Pathogen',
     value: 'infectiousAgent.name',
     fill: system.token(
-      `colors.${getMetadataTheme('infectiousAgent')}.300`,
+      `colors.${getMetadataColorPalette('infectiousAgent')}.300`,
     ) as string,
-    colorPalette: palette(getMetadataTheme('infectiousAgent')),
+    colorPalette: palette(getMetadataColorPalette('infectiousAgent')),
     tooltip: getMetadataDescription('infectiousAgent', 'Dataset'),
   },
 ] as FacetProps[];

@@ -1035,3 +1035,28 @@ export const getMetadataDescription = (
     }
   }
 };
+
+// Chakra color palette for each metadata property. Keys are lowercase so the
+// lookup is case-insensitive.
+const METADATA_COLOR_PALETTES = new Map<string, string>([
+  ['availableondevice', 'blue'],
+  ['license', 'blue'],
+  ['usageinfo', 'blue'],
+  ['featurelist', 'cyan'],
+  ['variablemeasured', 'cyan'],
+  ['sample', 'purple'],
+  ['measurementtechnique', 'purple'],
+  ['softwarehelp', 'purple'],
+  ['infectiousagent', 'pink'],
+  ['output', 'pink'],
+  ['softwareversion', 'red'],
+  ['healthcondition', 'red'],
+  ['funding', 'orange'],
+  ['softwarerequirements', 'orange'],
+  ['input', 'green'],
+  ['species', 'green'],
+  ['topiccategory', 'teal'],
+]);
+
+export const getMetadataColorPalette = (property?: string) =>
+  (property && METADATA_COLOR_PALETTES.get(property.toLowerCase())) || 'gray';

@@ -1,7 +1,8 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
 import React from 'react';
-import { getMetadataTheme } from 'src/components/icon/helpers';
 import { InfoLabel, InfoLabelProps } from 'src/components/info-label';
+
+import { getMetadataColorPalette } from '../helpers';
 
 interface MetadataBlockProps {
   label: string;
@@ -39,7 +40,11 @@ export const MetadataBlock = ({
       <Box
         mb={2}
         py={0.5}
-        bg={disabled ? 'gray.300' : bg || `${getMetadataTheme(property)}.300`}
+        bg={
+          disabled
+            ? 'gray.300'
+            : bg || `${getMetadataColorPalette(property)}.300`
+        }
         borderRadius='semi'
       />
 
