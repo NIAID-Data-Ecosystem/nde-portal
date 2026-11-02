@@ -40,9 +40,6 @@ const Bar: React.FC<FlexProps> = ({ children }) => {
       color='white'
       minH='60px'
       px={4}
-      borderBottom={1}
-      borderStyle='solid'
-      borderColor='gray.200'
       alignItems={{ base: 'center', md: 'center' }}
     >
       <Logo href='/' />

@@ -30,7 +30,7 @@ export const NavBarItem = ({
   }
 
   return (
-    <NavDropdownTrigger label={label}>
+    <NavDropdownTrigger label={label} size='2xl'>
       <NavDropdownMenu routes={routes} />
     </NavDropdownTrigger>
   );
