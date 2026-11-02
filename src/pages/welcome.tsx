@@ -1,6 +1,7 @@
 /**
- * Welcome Page, shown after a new account's first login. Protected route
- * requiring authentication.
+ * Welcome Page, shown to signed-in users until they complete onboarding
+ * (`onboarding_complete` on their profile). Protected route requiring
+ * authentication.
  */
 
 import {
@@ -154,11 +155,14 @@ const WelcomePage = () => {
 
   const handleSave = async () => {
     setIsSaving(true);
-    const result = await savePreferences({
-      ...selected,
-      contact_preference:
-        !emailToggle.isDisabled && Boolean(selected.contact_preference),
-    });
+    const result = await savePreferences(
+      {
+        ...selected,
+        contact_preference:
+          !emailToggle.isDisabled && Boolean(selected.contact_preference),
+      },
+      { completeOnboarding: true },
+    );
     setIsSaving(false);
 
     if (!result?.ok) return;

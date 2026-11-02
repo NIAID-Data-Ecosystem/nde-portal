@@ -100,9 +100,10 @@ export const SHOW_SEARCH_VIEW_MODES = true;
 // `true`.
 export const SHOW_DATA_COLLECTIONS_VIEW_MODES = true;
 
-// Show the "Welcome to your NIAID Data Ecosystem account" page at the end of
-// the sign-up flow (first login) in non-production environments for
-// testing/review. To enable in production, set this flag to `true`.
+// Show the "Welcome to your NIAID Data Ecosystem account" page (once per
+// session) to signed-in users whose profile has `onboarding_complete: false`,
+// until they save their settings there. Enabled in non-production environments
+// for testing/review. To enable in production, set this flag to `true`.
 export const SHOW_WELCOME_PAGE = !isProd;
 
 // Make the "Dataset", "Sample" and "Software" Content Type values also match
