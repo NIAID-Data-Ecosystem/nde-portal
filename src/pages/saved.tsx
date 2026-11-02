@@ -94,7 +94,7 @@ const SavedPage = () => {
         {isDevMode && (
           <Box
             bg='orange.50'
-            border='1px'
+            borderWidth='1px'
             borderColor='orange.200'
             borderRadius='md'
             px={3}

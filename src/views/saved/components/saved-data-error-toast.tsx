@@ -17,15 +17,16 @@ export const SavedDataErrorToast = () => {
 
   useEffect(() => {
     if (!error) return;
-    if (error) {
-      toaster.create({
-        title: error,
-        type: 'error',
-        description:
-          'An error occurred while saving your data. Please try again.',
-        closable: true,
-      });
-    }
+    // The toaster updates an existing toast in place when the id matches,
+    // rather than stacking a duplicate.
+    toaster.create({
+      id: error,
+      title: error,
+      type: 'error',
+      description:
+        'An error occurred while saving your data. Please try again.',
+      closable: true,
+    });
     clearError();
   }, [error, clearError]);
 
