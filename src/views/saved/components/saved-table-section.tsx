@@ -1,8 +1,9 @@
-import { useCallback, useMemo, useState } from 'react';
 import { Flex, Stack, Text, VStack } from '@chakra-ui/react';
-import { Table } from 'src/components/table';
+import { useCallback, useMemo, useState } from 'react';
 import { SearchInput } from 'src/components/search-input';
+import { Table } from 'src/components/table';
 import { useSearchedData } from 'src/views/repository-matcher/hooks/useSearchedData';
+
 import { formatTableData } from '../table-config';
 import { SavedColumn } from '../types';
 import { SavedEmptyState } from './saved-empty-state';
@@ -165,9 +166,7 @@ export function SavedTableSection<TItem>({
               {data.length} {data.length === 1 ? unit.singular : unit.plural}
             </Text>
           </Text>
-          <Text lineHeight='moderate' width='400px'>
-            {description}
-          </Text>
+          <Text lineHeight='moderate'>{description}</Text>
         </VStack>
         <Flex
           maxWidth={{ base: 'unset', xl: '350px' }}
@@ -184,8 +183,8 @@ export function SavedTableSection<TItem>({
             isResponsive={false}
             alignItems='flex-end'
             onClose={() => setSearchTerm('')}
-            width='100%'
             colorPalette='primary'
+            flexProps={{ flex: 1 }}
           />
         </Flex>
       </Stack>

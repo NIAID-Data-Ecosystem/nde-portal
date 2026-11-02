@@ -2,21 +2,21 @@
  * User Favorites Page - Protected route requiring authentication
  */
 
+import { Box, Flex, Heading, Separator, Text } from '@chakra-ui/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Box, Heading, Text, Flex, Separator } from '@chakra-ui/react';
-import { useAuth } from 'src/hooks/useAuth';
 import { withAuth } from 'src/components/auth/withAuth';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
+import { useAuth } from 'src/hooks/useAuth';
+import { useUserData } from 'src/hooks/useUserData';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
+import { SavedDataErrorBanner } from 'src/views/saved/components/saved-data-error-banner';
+import { SavedEmptyState } from 'src/views/saved/components/saved-empty-state';
+import { SavedTableSection } from 'src/views/saved/components/saved-table-section';
+import { useBatchResourcesData } from 'src/views/saved/hooks/useBatchResourcesData';
 import {
   SAVED_QUERY_COLUMNS,
   SAVED_RESOURCE_COLUMNS,
 } from 'src/views/saved/table-config';
-import { SavedTableSection } from 'src/views/saved/components/saved-table-section';
-import { SavedEmptyState } from 'src/views/saved/components/saved-empty-state';
-import { SavedDataErrorBanner } from 'src/views/saved/components/saved-data-error-banner';
-import { useUserData } from 'src/hooks/useUserData';
-import { useBatchResourcesData } from 'src/views/saved/hooks/useBatchResourcesData';
 import { SavedResourceItem } from 'src/views/saved/types';
 
 const SAVED_PAGE_COPY = {
