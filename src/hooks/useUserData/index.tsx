@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { MOCK_SAVED_DATASETS } from './mocks/saved_datasets';
 import {
+  SavePreferencesOptions,
   SavedDataset,
   SavedQuery,
   UserAccount,
@@ -31,13 +32,6 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   feedback_preference: false,
 };
 
-// Set NEXT_PUBLIC_MOCK_AUTH_NEW_ACCOUNT=true to make the mock profile look
-// freshly created, so first login routes to the sign-up welcome page.
-const MOCK_CREATED_AT =
-  process.env.NEXT_PUBLIC_MOCK_AUTH_NEW_ACCOUNT === 'true'
-    ? new Date().toISOString()
-    : undefined;
-
 const DEFAULT_MOCK_PROFILE: UserProfile = {
   username: process.env.NEXT_PUBLIC_MOCK_AUTH_USERNAME || 'mockuser',
   oauth_provider: process.env.NEXT_PUBLIC_MOCK_AUTH_PROVIDER || 'github',
@@ -50,8 +44,11 @@ const DEFAULT_MOCK_PROFILE: UserProfile = {
   beta: true,
   contact_preference: false,
   feedback_preference: false,
-  created: MOCK_CREATED_AT ?? '2026-03-11T19:36:34+00:00',
-  updated: MOCK_CREATED_AT ?? '2026-03-11T20:24:13+00:00',
+  created: '2026-03-11T19:36:34+00:00',
+  updated: '2026-03-11T20:24:13+00:00',
+  // Set NEXT_PUBLIC_MOCK_AUTH_NEW_ACCOUNT=true to make the mock profile report
+  // onboarding as incomplete, so it routes to the welcome page.
+  onboarding_complete: process.env.NEXT_PUBLIC_MOCK_AUTH_NEW_ACCOUNT !== 'true',
 };
 
 type ApiResult = { status: number; ok: boolean; body: unknown };
@@ -79,6 +76,12 @@ function useUserDataState() {
   // display, e.g. deciding whether email-dependent settings (email updates)
   // can be enabled.
   const [account, setAccount] = useState<UserAccount | null>(null);
+
+  // Whether the user has been through the welcome page. null until the
+  // /user/data profile loads.
+  const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(
+    null,
+  );
 
   // Last failed saved-items mutation, surfaced to the UI as an error banner.
   // Cleared whenever a subsequent mutation succeeds (or on manual dismiss).
@@ -334,6 +337,9 @@ function useUserDataState() {
         username: profile.username ?? '',
       });
 
+      // A missing field counts as not onboarded, matching the API.
+      setOnboardingComplete(profile.onboarding_complete === true);
+
       if (Array.isArray(profile.favorite_searches)) {
         setSavedQueries(parseSavedQueries(profile.favorite_searches));
       }
@@ -373,16 +379,22 @@ function useUserDataState() {
   // Persist several preferences in a single request (e.g., the welcome page's
   // "Save Settings"), rather than one PUT per toggle.
   const savePreferences = useCallback(
-    async (updates: Partial<UserPreferences>) => {
+    async (
+      updates: Partial<UserPreferences>,
+      { completeOnboarding = false }: SavePreferencesOptions = {},
+    ) => {
       const nextPreferences = { ...preferences, ...updates };
       const result = await callUserDataApi(
         'PUT',
         '/user/data',
-        nextPreferences,
+        completeOnboarding
+          ? { ...nextPreferences, onboarding_complete: true }
+          : nextPreferences,
       );
       if (result && 'body' in result && result.ok) {
         setError(null);
         setPreferences(nextPreferences);
+        if (completeOnboarding) setOnboardingComplete(true);
       } else {
         setError("Couldn't save your preferences. Please try again.");
       }
@@ -510,6 +522,7 @@ function useUserDataState() {
   return {
     preferences,
     account,
+    onboardingComplete,
     savedQueries,
     savedDatasets,
     isDevMode,
