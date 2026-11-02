@@ -360,7 +360,6 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                               <Text
                                 className='hist-querystring'
                                 fontSize='sm'
-                                fontWeight='medium'
                                 lineClamp={3}
                               >
                                 {query.querystring}
