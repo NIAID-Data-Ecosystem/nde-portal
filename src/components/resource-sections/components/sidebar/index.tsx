@@ -120,15 +120,14 @@ export const Sidebar = ({
                     {searchHistory.slice(0, 3).map((search, idx) => (
                       <List.Item key={idx} lineHeight='moderate' display='flex'>
                         <Icon
+                          as={FaMagnifyingGlass}
                           color='link'
                           boxSize={3}
                           m={1}
                           mr={1.5}
                           mt={1.5}
                           lineHeight='moderate'
-                        >
-                          <FaMagnifyingGlass />
-                        </Icon>
+                        />
                         <Link as='span' fontSize='sm' asChild>
                           <NextLink
                             href={{

@@ -6,12 +6,13 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { DetailsAccordion } from 'src/components/details-accordion';
-import { getMetadataTheme } from 'src/components/icon/helpers';
 import { Link } from 'src/components/link';
-import { SORT_ORDER, SORT_ORDER_COMPTOOL } from 'src/components/metadata';
 import {
   generateMetadataContent,
   generateMetadataContentforCompToolCard,
+  getMetadataColorPalette,
+  SORT_ORDER,
+  SORT_ORDER_COMPTOOL,
   sortMetadataArray,
 } from 'src/components/metadata';
 import Tooltip from 'src/components/tooltip';
@@ -101,7 +102,9 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
   const summary = (
     <Flex flexWrap='wrap' alignItems='center'>
       {sortedMetadataContent.map(({ label, property, disabled }) => {
-        const colorPalette = disabled ? 'gray' : getMetadataTheme(property);
+        const colorPalette = disabled
+          ? 'gray'
+          : getMetadataColorPalette(property);
         const schemaProperty = schema[property];
         // Get the description for the specific type, if available. Otherwise, use the abstract. If neither, use the dataset description.
         const description =
@@ -175,7 +178,9 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                         <MetadataListItem key={key} property={props.property}>
                           <MetadataContent
                             includeOntology
-                            colorPalette={getMetadataTheme(props.property)}
+                            colorPalette={getMetadataColorPalette(
+                              props.property,
+                            )}
                             {...item}
                           />
                         </MetadataListItem>

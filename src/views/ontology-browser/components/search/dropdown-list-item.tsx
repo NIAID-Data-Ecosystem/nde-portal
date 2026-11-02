@@ -36,9 +36,13 @@ export const DropdownListItem = React.memo(
           onClick: () => handleSubmit(),
         })}
       >
-        <Icon mr={2} mt={1.5} color='primary.400' boxSize={3}>
-          <FaMagnifyingGlass />
-        </Icon>
+        <Icon
+          as={FaMagnifyingGlass}
+          mr={2}
+          mt={1.5}
+          color='primary.400'
+          boxSize={3}
+        />
         <Box>
           {/* Ontology label */}
           {ontology && (

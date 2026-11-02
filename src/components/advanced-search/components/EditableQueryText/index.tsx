@@ -69,9 +69,7 @@ const EditableQueryControls = ({
               colorPalette='gray'
               color='text.body'
             >
-              <Icon boxSize={4}>
-                <FaRegPenToSquare />
-              </Icon>
+              <Icon as={FaRegPenToSquare} boxSize={4} />
             </IconButton>
           </Editable.EditTrigger>
         </Tooltip>
@@ -88,9 +86,7 @@ const EditableQueryControls = ({
           colorPalette='gray'
           color='text.body'
         >
-          <Icon boxSize={6}>
-            <FaXmark />
-          </Icon>
+          <Icon as={FaXmark} boxSize={6} />
         </IconButton>
       </Editable.CancelTrigger>
       {/* Must be a real SubmitTrigger, not a plain button with an onClick: zag
@@ -111,9 +107,7 @@ const EditableQueryControls = ({
           aria-label='Accept Edit.'
           animation={shouldShakeSubmit ? 'shake 0.2s ease-in-out' : undefined}
         >
-          <Icon>
-            <FaCheck />
-          </Icon>
+          <Icon as={FaCheck} />
         </IconButton>
       </Editable.SubmitTrigger>
     </ButtonGroup>

@@ -149,18 +149,18 @@ type FieldOption = SchemaDefinition & {
 
 const getFieldTypeIcon = ({ type, enum: enumValues }: FieldOption) => {
   if (type === 'text' || type === 'keyword') {
-    return { icon: enumValues ? <FaListUl /> : <FaFont />, label: type };
+    return { icon: enumValues ? FaListUl : FaFont, label: type };
   } else if (type === 'date') {
-    return { icon: <FaRegCalendarDays />, label: type };
+    return { icon: FaRegCalendarDays, label: type };
   } else if (
     type === 'unsigned_long' ||
     type === 'integer' ||
     type === 'double' ||
     type === 'float'
   ) {
-    return { icon: <FaHashtag />, label: 'number' };
+    return { icon: FaHashtag, label: 'number' };
   } else if (type === 'boolean') {
-    return { icon: <FaRegCircleCheck />, label: type };
+    return { icon: FaRegCircleCheck, label: type };
   }
   return { icon: undefined, label: type };
 };
@@ -212,11 +212,7 @@ const FieldSelectOption = ({ item }: { item: FieldOption }) => {
           {/* The trigger is `asChild`, so it must be an element even for a
           field type with no icon, or the tooltip has nothing to attach to. */}
           <Span display='flex'>
-            {icon && (
-              <Icon boxSize={3} m={0.5} mt={1}>
-                {icon}
-              </Icon>
-            )}
+            {icon && <Icon as={icon} boxSize={3} m={0.5} mt={1} />}
           </Span>
         </Tooltip>
 
@@ -368,11 +364,7 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
         <Combobox.Label srOnly>Select field</Combobox.Label>
         <Combobox.Control>
           <InputGroup
-            startElement={
-              <Icon color='gray.300'>
-                <FaMagnifyingGlass />
-              </Icon>
-            }
+            startElement={<Icon as={FaMagnifyingGlass} color='gray.300' />}
           >
             <Combobox.Input
               placeholder={selectedOption?.label ?? 'All Fields'}

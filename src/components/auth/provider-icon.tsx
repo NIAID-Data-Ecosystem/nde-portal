@@ -13,9 +13,13 @@ export const ProviderIcon = ({
 
   if (icon) {
     return (
-      <Icon color={icon.color} boxSize={5} aria-hidden='true' {...props}>
-        {icon.component}
-      </Icon>
+      <Icon
+        as={icon.component}
+        color={icon.color}
+        boxSize={5}
+        aria-hidden='true'
+        {...props}
+      />
     );
   }
 

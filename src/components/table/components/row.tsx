@@ -39,9 +39,11 @@ export const RowWithDrawer = React.memo(({ children, ...props }: FlexProps) => {
                         <Text fontSize='xs'>
                           {expanded ? 'Less Information' : 'More Information'}
                         </Text>
-                        <Icon boxSize={2} mx={1}>
-                          {expanded ? <FaMinus /> : <FaPlus />}
-                        </Icon>
+                        <Icon
+                          as={expanded ? FaMinus : FaPlus}
+                          boxSize={2}
+                          mx={1}
+                        />
                       </Flex>
                     </Accordion.ItemTrigger>
                   </h2>

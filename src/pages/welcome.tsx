@@ -112,9 +112,7 @@ const DEFAULT_WELCOME_PREFERENCES: Partial<UserPreferences> = {
 
 const BulletItem = ({ children }: { children: ReactNode }) => (
   <List.Item>
-    <List.Indicator asChild boxSize={1}>
-      <Icon as={FaCircle} aria-hidden='true' />
-    </List.Indicator>
+    <List.Indicator as={FaCircle} boxSize={1} aria-hidden='true' />
     {children}
   </List.Item>
 );

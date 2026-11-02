@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
-import { useRouter } from 'next/router';
 import { CloseButton, Flex, HStack, Icon, Text } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
+import React, { useMemo } from 'react';
 import { FaCircleXmark } from 'react-icons/fa6';
 import { getLoginErrorMessage } from 'src/utils/auth/helpers';
 
@@ -36,9 +36,7 @@ export const LoginErrorBanner = () => {
     >
       <HStack gap={4} flex={1} alignItems='center'>
         <HStack flex={1} gap={{ base: 2, sm: 4 }} alignItems='center'>
-          <Icon boxSize={6} fill='error'>
-            <FaCircleXmark />
-          </Icon>
+          <Icon as={FaCircleXmark} boxSize={6} fill='error' />
           <Text fontSize='md' fontWeight='medium' lineHeight='moderate'>
             {message}
           </Text>

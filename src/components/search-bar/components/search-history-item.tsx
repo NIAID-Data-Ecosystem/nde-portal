@@ -42,9 +42,13 @@ export const SearchHistoryItem = React.memo(
           },
         })}
       >
-        <Icon mr={2} mt={1.5} color='primary.400' boxSize={3}>
-          <FaMagnifyingGlass />
-        </Icon>
+        <Icon
+          as={FaMagnifyingGlass}
+          mr={2}
+          mt={1.5}
+          color='primary.400'
+          boxSize={3}
+        />
         <Text
           fontSize='sm'
           lineHeight='moderate'

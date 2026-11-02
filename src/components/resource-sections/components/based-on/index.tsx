@@ -430,7 +430,7 @@ export const BasedOnActionProcess = ({
                           {expanded ? 'hide' : 'show details'}
                         </Text>
 
-                        <Icon>{expanded ? <FaMinus /> : <FaPlus />}</Icon>
+                        <Icon as={expanded ? FaMinus : FaPlus} />
                       </HStack>
                     </Accordion.ItemTrigger>
                   )}

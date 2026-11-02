@@ -1,4 +1,3 @@
-import { IconProps } from '@chakra-ui/react';
 import {
   FaFileCode,
   FaFileCsv,
@@ -10,7 +9,6 @@ import {
   FaFileWord,
   FaFileZipper,
 } from 'react-icons/fa6';
-import { MetadataIcon } from '../icon';
 
 export const getFileIcon = (value: string) => {
   if (!value) {
@@ -27,28 +25,6 @@ export const getFileIcon = (value: string) => {
   ) {
     // Code file extensions
     icon = FaFileCode;
-  } else if (value.toLowerCase().includes('bam')) {
-    // Archived file extensions
-    icon = ({ id, ...props }: IconProps) => (
-      <MetadataIcon
-        id={id!}
-        glyph='bam'
-        title='bam file type'
-        stroke='currentColor'
-        {...props}
-      />
-    );
-  } else if (value.toLowerCase().includes('fasta')) {
-    // Archived file extensions
-    icon = ({ id, ...props }: IconProps) => (
-      <MetadataIcon
-        id={id!}
-        glyph='fasta'
-        title='fasta file type'
-        stroke='currentColor'
-        {...props}
-      />
-    );
   } else if (
     value.toLowerCase().includes('zip') ||
     value.toLowerCase().includes('tar') ||

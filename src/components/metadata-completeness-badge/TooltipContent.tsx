@@ -112,14 +112,18 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
                         borderLeftColor='gray.100'
                       >
                         {item.included.includes(field.property) && (
-                          <Icon color='green.500' boxSize={4}>
-                            <FaCircleCheck />
-                          </Icon>
+                          <Icon
+                            as={FaCircleCheck}
+                            color='green.500'
+                            boxSize={4}
+                          />
                         )}
                         {item.augmented.includes(field.property) && (
-                          <Icon color='green.500' boxSize={4}>
-                            <FaRegCircleUp />
-                          </Icon>
+                          <Icon
+                            as={FaRegCircleUp}
+                            color='green.500'
+                            boxSize={4}
+                          />
                         )}
                       </GridItem>
                     </Grid>
@@ -130,9 +134,7 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
         ))}
       </Stack>
       <Text fontStyle='italic' textAlign='end' mt={1}>
-        <Icon color='green.500' boxSize={4} mr={1}>
-          <FaRegCircleUp />
-        </Icon>
+        <Icon as={FaRegCircleUp} color='green.500' boxSize={4} mr={1} />
         Indicates a field has been augmented and does not count towards the
         score.
       </Text>

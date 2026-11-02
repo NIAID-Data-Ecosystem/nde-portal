@@ -76,9 +76,7 @@ const SearchInput = ({
               display={{ base: 'flex', sm: 'none' }}
               alignSelf='flex-start'
             >
-              <Icon>
-                <FaMagnifyingGlass />
-              </Icon>
+              <Icon as={FaMagnifyingGlass} />
             </Button>
             <Button
               colorPalette={inputProps.colorPalette}
@@ -99,9 +97,7 @@ const SearchInput = ({
                   display={{ base: 'none', md: 'flex' }}
                 >
                   <Flex px={2}>
-                    <Icon>
-                      <FaClockRotateLeft />
-                    </Icon>
+                    <Icon as={FaClockRotateLeft} />
                   </Flex>
                 </IconButton>
               </Tooltip>
@@ -280,9 +276,7 @@ const SearchBar = ({
                 aria-label='View search history.'
                 onClick={() => setIsOpen(!isOpen)}
               >
-                <Icon>
-                  <FaClockRotateLeft />
-                </Icon>
+                <Icon as={FaClockRotateLeft} />
               </IconButton>
             </Tooltip>
           )}

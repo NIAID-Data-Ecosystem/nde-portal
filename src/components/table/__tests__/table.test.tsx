@@ -165,6 +165,37 @@ describe('Table', () => {
     expect(await screen.findByText('Person 6')).toBeInTheDocument();
   });
 
+  // A remounted row replays every cell's Skeleton fade-in, so the table
+  // flickers whenever its parent re-renders (e.g. toggling a bookmark).
+  test('virtualized rows survive a parent re-render without remounting', async () => {
+    const columns = [{ title: 'Name', property: 'name' }];
+    const makeData = () => [
+      { _id: 'a', name: 'Alpha' },
+      { _id: 'b', name: 'Beta' },
+    ];
+    const getCells = ({ column, data }: any) => (
+      <span>{data[column.property]}</span>
+    );
+    const renderTable = (data: any[]) => (
+      <Table
+        ariaLabel='Virtualized Table'
+        caption='Virtualized Test'
+        columns={columns}
+        data={data}
+        getCells={getCells}
+        virtualized
+      />
+    );
+
+    const { rerender } = render(renderTable(makeData()));
+    const before = await screen.findByText('Alpha');
+
+    // Fresh row objects with the same ids, as a parent re-render produces.
+    rerender(renderTable(makeData()));
+
+    expect(screen.getByText('Alpha')).toBe(before);
+  });
+
   /*** Table expandable row ***/
   describe('Table Row', () => {
     test('renders without crashing', () => {

@@ -12,7 +12,8 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { ReactNode } from 'react';
+import NextLink from 'next/link';
+import { ReactNode, useId } from 'react';
 import { UserAccount, UserPreferencesKeys } from 'src/hooks/useUserData/types';
 
 export const TOGGLES_COPY = {
@@ -60,12 +61,10 @@ export const TOGGLES_COPY = {
     description: (
       <>
         Turn on AI-assisted search by default.{' '}
-        <Link
-          color='blue.600'
-          textDecoration='underline'
-          href='/knowledge-center/ai-assisted-search'
-        >
-          Learn about AI-assisted search
+        <Link asChild color='blue.600' textDecoration='underline'>
+          <NextLink href='/knowledge-center/ai-assisted-search'>
+            Learn about AI-assisted search
+          </NextLink>
         </Link>
         .
       </>
@@ -118,6 +117,10 @@ export function SettingToggle({
   showBorder?: boolean;
   alert?: ReactNode;
 }) {
+  const id = useId();
+  const descriptionId = `${id}-description`;
+  const alertId = `${id}-alert`;
+
   return (
     <HStack justifyContent='space-between' alignItems='start' w='full'>
       <VStack alignItems='start' gap={1} flex={1}>
@@ -125,12 +128,15 @@ export function SettingToggle({
           {label}
         </Heading>
 
-        <Text fontSize='sm'>{description}</Text>
+        <Text id={descriptionId} fontSize='sm'>
+          {description}
+        </Text>
 
         {/* If alert is provided, render it */}
 
         {alert && (
           <Box
+            id={alertId}
             bg='orange.50'
             borderWidth='1px'
             borderColor='orange.200'
@@ -151,8 +157,15 @@ export function SettingToggle({
         onCheckedChange={onCheckedChange}
       >
         {/* The visible label sits outside Switch.Root (the row also holds
-            links), so name the input directly as v2's `aria-label` did. */}
-        <Switch.HiddenInput aria-label={label} />
+            links), so name the input directly as v2's `aria-label` did, and
+            describe it with the description plus the alert explaining why it
+            is disabled. */}
+        <Switch.HiddenInput
+          aria-label={label}
+          aria-describedby={
+            alert ? `${descriptionId} ${alertId}` : descriptionId
+          }
+        />
         <Switch.Control>
           <Switch.Thumb />
         </Switch.Control>

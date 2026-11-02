@@ -100,9 +100,12 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
       size={size as SpinnerProps['size']}
     />
   ) : (
-    <Icon color='gray.300' pl={1} size={size as IconProps['size']}>
-      <FaMagnifyingGlass />
-    </Icon>
+    <Icon
+      as={FaMagnifyingGlass}
+      color='gray.300'
+      pl={1}
+      size={size as IconProps['size']}
+    />
   );
   // Render the end element (close button and/or submit button) if either is provided
   const endElement = (renderSubmitButton || onClose) && (

@@ -103,9 +103,7 @@ export const PopoverListItem = ({
             px={0.5}
             flexShrink={0}
           >
-            <Icon boxSize={3}>
-              <FaGripVertical />
-            </Icon>
+            <Icon as={FaGripVertical} boxSize={3} />
           </Flex>
         </Tooltip>
       )}

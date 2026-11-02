@@ -73,9 +73,7 @@ export const OntologyBrowserSettings: React.FC<OntologyPopoverProps> = ({
             bg='white'
             {...buttonProps}
           >
-            <Icon color='inherit'>
-              <FaGear />
-            </Icon>
+            <Icon as={FaGear} color='inherit' />
             {buttonProps?.children || label}
             <FaCaretDown />
           </Button>

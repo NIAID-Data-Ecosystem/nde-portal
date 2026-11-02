@@ -208,13 +208,12 @@ export const CompatibilityBadge = ({
             fillOpacity={1}
           />
           {bin.augmented && (
-            <Icon color={fieldIsCompatible ? 'white' : color(0)}>
-              <FaRegCircleUp
-                x={x + (BIN_SIZE - ICON_SIZE) / 2}
-                y={y + (BIN_SIZE - ICON_SIZE) / 2}
-                size={ICON_SIZE}
-              />
-            </Icon>
+            <FaRegCircleUp
+              x={x + (BIN_SIZE - ICON_SIZE) / 2}
+              y={y + (BIN_SIZE - ICON_SIZE) / 2}
+              size={ICON_SIZE}
+              color={fieldIsCompatible ? 'white' : color(0)}
+            />
           )}
         </g>
       );
@@ -330,17 +329,23 @@ export const CompatibilityBadge = ({
                 {tooltipData.count ? (
                   <>
                     <Text lineHeight='shorter'>
-                      <Icon color='green.500' boxSize={3} mr={0.5}>
-                        <FaCircleCheck />
-                      </Icon>
+                      <Icon
+                        as={FaCircleCheck}
+                        color='green.500'
+                        boxSize={3}
+                        mr={0.5}
+                      />
                       <strong>{tooltipData.label} </strong>
                       metadata is collected and available for this source.
                     </Text>
                     {tooltipData.augmented ? (
                       <Text mt={1} lineHeight='shorter'>
-                        <Icon color='green.500' boxSize={3} mr={0.5}>
-                          <FaRegCircleUp />
-                        </Icon>
+                        <Icon
+                          as={FaRegCircleUp}
+                          color='green.500'
+                          boxSize={3}
+                          mr={0.5}
+                        />
                         <strong>{tooltipData.label} </strong>
                         was also augmented for this source.
                       </Text>
@@ -352,9 +357,12 @@ export const CompatibilityBadge = ({
                   <Text lineHeight='moderate'>
                     {tooltipData.augmented ? (
                       <Text as='span' mt={1}>
-                        <Icon color='green.500' boxSize={3} mr={0.5}>
-                          <FaRegCircleUp />
-                        </Icon>
+                        <Icon
+                          as={FaRegCircleUp}
+                          color='green.500'
+                          boxSize={3}
+                          mr={0.5}
+                        />
                         <strong>{tooltipData.label} </strong> metadata was not
                         found for this source, but was augmented for this
                         source.

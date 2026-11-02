@@ -1,6 +1,7 @@
-import React from 'react';
 import { Box, Button, Flex, Icon, Progress, Skeleton } from '@chakra-ui/react';
+import React from 'react';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa6';
+
 import { CarouselControlsProps } from '../types';
 
 export const CarouselControls = ({
@@ -46,9 +47,7 @@ export const CarouselControls = ({
         size='sm'
         flexShrink={0}
       >
-        <Icon boxSize={4}>
-          <FaAngleLeft />
-        </Icon>
+        <Icon as={FaAngleLeft} boxSize={4} />
       </Button>
       {showProgressBar ? (
         <Box
@@ -134,9 +133,7 @@ export const CarouselControls = ({
         size='sm'
         flexShrink={0}
       >
-        <Icon boxSize={4}>
-          <FaAngleRight />
-        </Icon>
+        <Icon as={FaAngleRight} boxSize={4} />
       </Button>
     </Skeleton>
   );

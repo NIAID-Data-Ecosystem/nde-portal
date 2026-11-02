@@ -55,8 +55,7 @@ const DesktopLoginAction = ({
     <Button
       loading={loading}
       variant='outline'
-      colorPalette='white'
-      bg='transparent'
+      colorPalette='niaid'
       alignSelf='center'
       _hover={{ bg: 'whiteAlpha.300' }}
       onClick={() => onLogin()}
@@ -101,7 +100,7 @@ const DesktopAccountAction = ({
   return (
     <NavDropdownTrigger
       label={loading ? ACCOUNTS_CONFIG.default : displayName}
-      icon={<FaCircleUser />}
+      icon={FaCircleUser}
       loading={loading}
       disabled={loading}
     >
@@ -150,7 +149,7 @@ const MobileAccountAction = ({
     <>
       <MobileNavItem
         label={displayName}
-        icon={<FaCircleUser />}
+        icon={FaCircleUser}
         routes={ACCOUNTS_CONFIG['routes']}
       />
 

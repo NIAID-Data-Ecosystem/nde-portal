@@ -1,6 +1,6 @@
-import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import { FaCircleUser } from 'react-icons/fa6';
+import { fireEvent, render, screen } from 'src/__tests__/utils/render';
 
 import { NavDropdownItem } from '../nav-dropdown-item';
 
@@ -43,7 +43,7 @@ describe('NavDropdownItem', () => {
         href='https://example.org/docs'
         isExternal={true}
         description='Read docs'
-        icon={<FaCircleUser />}
+        icon={FaCircleUser}
       />,
     );
 

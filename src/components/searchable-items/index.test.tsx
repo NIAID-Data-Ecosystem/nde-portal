@@ -4,11 +4,12 @@ import { render, screen } from 'src/__tests__/utils/render';
 import { SearchableItem, SearchableItems } from './index';
 
 jest.mock('next/link', () => {
-  const Link = ({ children, href }: any) => (
-    <a href={typeof href === 'string' ? href : JSON.stringify(href)}>
+  const { forwardRef } = jest.requireActual('react');
+  const Link = forwardRef(({ children, href }: any, ref: any) => (
+    <a ref={ref} href={typeof href === 'string' ? href : JSON.stringify(href)}>
       {children}
     </a>
-  );
+  ));
   Link.displayName = 'Link';
   return Link;
 });

@@ -11,8 +11,8 @@ import {
 } from '@chakra-ui/react';
 import { uniqueId } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { getMetadataTheme } from 'src/components/icon/helpers';
 import { Link } from 'src/components/link';
+import { getMetadataColorPalette } from 'src/components/metadata';
 import {
   Cell,
   Content,
@@ -150,7 +150,9 @@ export const Funding: React.FC<FundingProps> = ({
                       key={`table-col-th-${column.key}`}
                       label={column.title}
                       isSelected={column.key === orderBy}
-                      borderBottomColor={`${getMetadataTheme('funding')}.200`}
+                      borderBottomColor={`${getMetadataColorPalette(
+                        'funding',
+                      )}.200`}
                       isSortable={true}
                       tableSortToggleProps={{
                         isSelected: column.key === orderBy,

@@ -29,12 +29,11 @@ export const TreeItemActions = React.memo(
     const collapseIcon = useMemo(
       () => (
         <Icon
+          as={FaAngleDown}
           boxSize={3}
           transition='transform 250ms ease'
           transform={collapsed ? `rotate(-90deg)` : `rotate(0deg)`}
-        >
-          <FaAngleDown />
-        </Icon>
+        />
       ),
       [collapsed],
     );

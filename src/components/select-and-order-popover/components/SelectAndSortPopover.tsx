@@ -218,9 +218,7 @@ export const SelectAndSortPopover = ({
           }
           {...triggerProps}
         >
-          <Icon boxSize={3.5}>
-            <FaSliders />
-          </Icon>
+          <Icon as={FaSliders} boxSize={3.5} />
           <Text
             as='span'
             color='inherit'

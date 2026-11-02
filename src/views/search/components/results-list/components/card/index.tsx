@@ -252,14 +252,13 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               highlightProps={highlightProps}
             />
             <Icon
+              as={FaAngleRight}
               boxSize={4}
               ml={4}
               opacity={0.6}
               transform='translate(-5px)'
               transition='0.2s ease-in-out'
-            >
-              <FaAngleRight />
-            </Icon>
+            />
           </NextLink>
         </Skeleton>
       </Card.Header>

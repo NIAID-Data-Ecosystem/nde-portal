@@ -40,7 +40,7 @@ export interface NoticeProps {
 // Gray rather than the link blue, which fails contrast on the info alert's background.
 // Module-level so the link keeps a stable component identity across renders.
 const EnvironmentBannerLink = (props: any) =>
-  DefaultMDXComponents.a({ ...props, color: 'gray.800' });
+  DefaultMDXComponents.a({ ...props, color: 'inherit' });
 
 interface PageContainerProps extends FlexProps {
   meta: SeoMetaFieldsProps;

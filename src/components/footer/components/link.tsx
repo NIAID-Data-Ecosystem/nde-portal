@@ -36,14 +36,13 @@ export const FooterLink: React.FC<FooterLinkProps> = ({
       </StyledLink>
       {!isExternal && (
         <Icon
+          as={FaAngleRight}
           boxSize={3}
           ml={2}
           color='accent.400'
           transform='translate(-5px)'
           transition='all .3s ease'
-        >
-          <FaAngleRight />
-        </Icon>
+        />
       )}
     </>
   );
@@ -72,14 +71,10 @@ export const FooterSocialLinks = ({ routes }: { routes: FooterRoute[] }) => {
               mb={{ base: 3, md: 0 }}
             >
               {type?.toLowerCase().includes('email') && (
-                <Icon boxSize={4} mx={2}>
-                  <FaRegEnvelope />
-                </Icon>
+                <Icon as={FaRegEnvelope} boxSize={4} mx={2} />
               )}
               {type?.toLowerCase().includes('github') && (
-                <Icon boxSize={4} mx={2}>
-                  <FaGithub />
-                </Icon>
+                <Icon as={FaGithub} boxSize={4} mx={2} />
               )}
               <StyledLink
                 href={href}

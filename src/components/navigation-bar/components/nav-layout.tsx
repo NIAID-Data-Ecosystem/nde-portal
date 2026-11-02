@@ -40,9 +40,6 @@ const Bar: React.FC<FlexProps> = ({ children }) => {
       color='white'
       minH='60px'
       px={4}
-      borderBottom={1}
-      borderStyle='solid'
-      borderColor='gray.200'
       alignItems={{ base: 'center', md: 'center' }}
     >
       <Logo href='/' />
@@ -68,13 +65,9 @@ const Toggle: React.FC<{
       size='md'
     >
       {isOpen ? (
-        <Icon w={5} h={5}>
-          <FaXmark />
-        </Icon>
+        <Icon as={FaXmark} w={5} h={5} />
       ) : (
-        <Icon w={4} h={4}>
-          <FaBars />
-        </Icon>
+        <Icon as={FaBars} w={4} h={4} />
       )}
     </IconButton>
   );

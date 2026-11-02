@@ -95,10 +95,11 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
                   gap={1}
                 >
                   {(isGithubRepo(repo) || isBitbucketRepo(repo)) && (
-                    <Icon boxSize={4} mt={1}>
-                      {isGithubRepo(repo) && <FaGithub />}
-                      {isBitbucketRepo(repo) && <FaBitbucket />}
-                    </Icon>
+                    <Icon
+                      as={isGithubRepo(repo) ? FaGithub : FaBitbucket}
+                      boxSize={4}
+                      mt={1}
+                    />
                   )}
 
                   {repo.includes('http') ? (

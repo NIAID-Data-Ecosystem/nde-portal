@@ -30,9 +30,13 @@ export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
         {children}
 
         {isExternal && (
-          <Icon boxSize={3} ml={1} mr={0.5} color='inherit'>
-            <FaArrowUpRightFromSquare />
-          </Icon>
+          <Icon
+            as={FaArrowUpRightFromSquare}
+            boxSize={3}
+            ml={1}
+            mr={0.5}
+            color='inherit'
+          />
         )}
       </ChakraLink>
     );

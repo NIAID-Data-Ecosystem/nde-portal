@@ -4,7 +4,6 @@ import {
   Collapsible,
   Heading,
   HStack,
-  Icon,
   List,
   Text,
 } from '@chakra-ui/react';
@@ -69,16 +68,13 @@ const Details = ({ children, node, open, ...props }: any) => {
             {summaryContent}
           </chakra.span>
           <Collapsible.Indicator
+            as={FaAngleDown}
+            boxSize={4}
             color='secondary.500'
             transition='transform 250ms ease'
             transform='rotate(-90deg)'
             _open={{ color: 'secondary.600', transform: 'rotate(0deg)' }}
-            asChild
-          >
-            <Icon boxSize={4}>
-              <FaAngleDown />
-            </Icon>
-          </Collapsible.Indicator>
+          />
         </Collapsible.Trigger>
       </Heading>
       <Collapsible.Content>

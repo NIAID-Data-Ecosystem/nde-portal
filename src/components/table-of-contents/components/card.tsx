@@ -224,13 +224,12 @@ export const StyledCardButton: React.FC<StyledCardButtonProps> = ({
       <NextLink href={href}>
         {children}
         <Icon
+          as={FaChevronRight}
           boxSize={3}
           ml={1}
           transform='translateX(-5px)'
           transition='transform .3s ease'
-        >
-          <FaChevronRight />
-        </Icon>
+        />
       </NextLink>
     </Button>
   );

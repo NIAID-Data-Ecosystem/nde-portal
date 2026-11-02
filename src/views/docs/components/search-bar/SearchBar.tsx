@@ -291,9 +291,7 @@ export const SearchBar = ({
                   onClick={toggleHistory}
                 >
                   <Flex px={2}>
-                    <Icon>
-                      <FaClockRotateLeft />
-                    </Icon>
+                    <Icon as={FaClockRotateLeft} />
                   </Flex>
                 </IconButton>
               </Tooltip>
@@ -342,9 +340,12 @@ export const SearchBar = ({
           <Box py={6}>
             {!searchTerm && (
               <Flex flexDirection='column' alignItems='center' margin='0 auto'>
-                <Icon boxSize={5} color='primary.400' mb={4}>
-                  <FaMagnifyingGlass />
-                </Icon>
+                <Icon
+                  as={FaMagnifyingGlass}
+                  boxSize={5}
+                  color='primary.400'
+                  mb={4}
+                />
                 <Text fontWeight='medium' color='gray.600'>
                   Start typing to search…
                 </Text>

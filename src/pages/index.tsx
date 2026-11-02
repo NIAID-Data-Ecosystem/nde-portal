@@ -309,11 +309,9 @@ const Home: NextPage<{
                       },
                       index,
                     ) => {
-                      const icon = route.title.includes('question') ? (
-                        <FaRegEnvelope />
-                      ) : (
-                        <FaGithub />
-                      );
+                      const icon = route.title.includes('question')
+                        ? FaRegEnvelope
+                        : FaGithub;
                       return (
                         <Box key={route.title} w={['100%', 'unset']}>
                           <Button
@@ -329,7 +327,7 @@ const Home: NextPage<{
                               href={route.path}
                               target={route.isExternal ? '_blank' : '_self'}
                             >
-                              <Icon>{icon}</Icon>
+                              <Icon as={icon} />
                               {route.title}
                             </NextLink>
                           </Button>

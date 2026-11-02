@@ -101,9 +101,7 @@ export const TocItem = ({
               variant='ghost'
               onClick={() => setIsExpanded(!isExpanded)}
             >
-              <Icon boxSize={4}>
-                {isExpanded ? <FaAngleDown /> : <FaAngleRight />}
-              </Icon>
+              <Icon as={isExpanded ? FaAngleDown : FaAngleRight} boxSize={4} />
             </IconButton>
           )}
         </Box>

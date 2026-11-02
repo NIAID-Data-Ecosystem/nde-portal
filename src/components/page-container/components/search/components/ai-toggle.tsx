@@ -136,12 +136,11 @@ export const AIToggle: React.FC<AIToggleProps> = ({
             <HStack gap={1} cursor='help' alignItems='flex-start' my={1}>
               <Text>AI-assisted search</Text>
               <Icon
+                as={FaRegCircleQuestion}
                 color='text.placeholder'
                 lineHeight='1em'
                 display='inline-block'
-              >
-                <FaRegCircleQuestion />
-              </Icon>
+              />
             </HStack>
           </Switch.Label>
         </Tooltip>

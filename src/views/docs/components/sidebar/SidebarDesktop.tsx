@@ -118,9 +118,10 @@ export const SidebarDesktop = ({
                       alignItems='center'
                       mr={2}
                     >
-                      <Icon boxSize={4}>
-                        {expanded ? <FaAngleDown /> : <FaAngleRight />}
-                      </Icon>
+                      <Icon
+                        as={expanded ? FaAngleDown : FaAngleRight}
+                        boxSize={4}
+                      />
                     </Box>
                   </Accordion.ItemTrigger>
                 </h2>

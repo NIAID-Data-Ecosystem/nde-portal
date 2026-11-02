@@ -109,15 +109,14 @@ export const ToggleContainer: React.FC<ToggleContainerProps> = ({
           justifyContent={alignIcon}
         >
           <Icon
+            as={FaAngleDown}
             w={3}
             h={3}
             color='gray.700'
             transform={open ? 'rotate(-180deg)' : undefined}
             transformOrigin='center'
             transition='transform 0.2s'
-          >
-            <FaAngleDown />
-          </Icon>
+          />
         </Flex>
       )}
     </Button>

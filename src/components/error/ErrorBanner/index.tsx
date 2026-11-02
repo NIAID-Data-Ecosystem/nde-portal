@@ -30,23 +30,11 @@ export const StatusIcon = ({
   props: IconProps;
 }) => {
   if (status === 'error') {
-    return (
-      <Icon color={status} {...props}>
-        <FaCircleXmark />
-      </Icon>
-    );
+    return <Icon as={FaCircleXmark} color={status} {...props} />;
   } else if (status === 'warning') {
-    return (
-      <Icon color={status} {...props}>
-        <FaCircleExclamation />
-      </Icon>
-    );
+    return <Icon as={FaCircleExclamation} color={status} {...props} />;
   } else if (status === 'info') {
-    return (
-      <Icon color={status} {...props}>
-        <FaCircleInfo />
-      </Icon>
-    );
+    return <Icon as={FaCircleInfo} color={status} {...props} />;
   }
   return <></>;
 };
@@ -83,9 +71,7 @@ export const MessageBlock = ({
           {statusItems.map((statusItem, index) => {
             return (
               <List.Item key={index} display='flex' p={1}>
-                <List.Indicator color={status} asChild>
-                  <FaCircleXmark />
-                </List.Indicator>
+                <List.Indicator as={FaCircleXmark} color={status} />
                 <Box>
                   {statusItem.title && (
                     <Heading

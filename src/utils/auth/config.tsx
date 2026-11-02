@@ -18,16 +18,16 @@ import { KnownProvider } from './types';
 export const KNOWN_PROVIDERS: Record<string, KnownProvider> = {
   github: {
     label: 'GitHub',
-    icon: { component: <FaGithub />, color: '#24292e' },
+    icon: { component: FaGithub, color: '#24292e' },
   },
-  orcid: { label: 'ORCID', icon: { component: <FaOrcid />, color: '#A6CE39' } },
+  orcid: { label: 'ORCID', icon: { component: FaOrcid, color: '#A6CE39' } },
   google: {
     label: 'Google',
-    icon: { component: <FaGoogle />, color: '#4285F4' },
+    icon: { component: FaGoogle, color: '#4285F4' },
   },
   microsoft: {
     label: 'Microsoft',
-    icon: { component: <FaMicrosoft />, color: '#00A4EF' },
+    icon: { component: FaMicrosoft, color: '#00A4EF' },
   },
   okta: { label: 'NIH Login' },
 };

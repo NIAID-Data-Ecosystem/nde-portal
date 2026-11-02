@@ -1,5 +1,4 @@
-import { CloseButton, Flex, HStack, Icon, Text } from '@chakra-ui/react';
-import { FaCircleXmark } from 'react-icons/fa6';
+import { Alert } from 'src/components/alert';
 import { useUserData } from 'src/hooks/useUserData';
 
 /**
@@ -9,36 +8,9 @@ import { useUserData } from 'src/hooks/useUserData';
  * so it reflects failures from any consumer and clears on the next success.
  * Mirrors the `LoginErrorBanner` styling for consistency.
  */
-export const SavedDataErrorBanner = () => {
+export const SavedDataErrorAlert = () => {
   const { error, clearError } = useUserData();
 
   if (!error) return null;
-
-  return (
-    <Flex
-      role='alert'
-      width='100%'
-      px={2}
-      py={2}
-      borderLeft='0.5rem solid'
-      borderColor='error'
-      bg='error.subtle'
-    >
-      <HStack gap={4} flex={1} justifyContent='space-between'>
-        <HStack flex={1} gap={{ base: 2, sm: 4 }} alignItems='flex-start'>
-          <Icon boxSize={6} fill='error'>
-            <FaCircleXmark />
-          </Icon>
-          <Text fontSize='md' fontWeight='medium' lineHeight='moderate'>
-            {error}
-          </Text>
-        </HStack>
-        <CloseButton
-          aria-label='Dismiss error'
-          size='sm'
-          onClick={clearError}
-        />
-      </HStack>
-    </Flex>
-  );
+  return <Alert status='error' title={error} size='sm' onClose={clearError} />;
 };

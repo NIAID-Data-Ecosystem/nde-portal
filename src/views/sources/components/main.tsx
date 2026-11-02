@@ -54,9 +54,7 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
             rel='noopener noreferrer'
           >
             Suggest a new source
-            <Icon boxSize={3}>
-              <FaUpRightFromSquare />
-            </Icon>
+            <Icon as={FaUpRightFromSquare} boxSize={3} />
           </NextLink>
         </Button>
       </SectionHeader>

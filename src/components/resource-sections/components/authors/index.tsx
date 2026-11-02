@@ -84,16 +84,12 @@ const AuthorContacts = ({ url, email, identifier }: Author) => {
 
       {website && (
         <ContactLink label='Website' href={website} isExternal>
-          <Icon>
-            <FaGlobe />
-          </Icon>
+          <Icon as={FaGlobe} />
         </ContactLink>
       )}
       {email && (
         <ContactLink label='Email' href={`mailto:${email}`}>
-          <Icon>
-            <FaRegEnvelope />
-          </Icon>
+          <Icon as={FaRegEnvelope} />
         </ContactLink>
       )}
       {orcid && (

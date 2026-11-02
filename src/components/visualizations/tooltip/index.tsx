@@ -1,14 +1,14 @@
-import React from 'react';
-import { FaMagnifyingGlass } from 'react-icons/fa6';
 import {
   Icon,
+  Separator,
   StackProps,
   Text,
   TextProps,
   VStack,
-  Separator,
 } from '@chakra-ui/react';
 import { defaultStyles } from '@visx/tooltip';
+import React from 'react';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
 
 export interface TooltipWrapperProps extends StackProps {
   showsSearchHint?: boolean;
@@ -52,9 +52,12 @@ export const TooltipWrapper = ({
             width='100%'
             fontSize='xs'
           >
-            <Icon color='gray.500' mr={0.5} boxSize={3}>
-              <FaMagnifyingGlass />
-            </Icon>{' '}
+            <Icon
+              as={FaMagnifyingGlass}
+              color='gray.500'
+              mr={0.5}
+              boxSize={3}
+            />{' '}
             {searchHintText}
           </Text>
         </>

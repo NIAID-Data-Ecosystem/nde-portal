@@ -2,21 +2,22 @@
  * User Favorites Page - Protected route requiring authentication
  */
 
+import { Box, Flex, Heading, Separator, Text } from '@chakra-ui/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Box, Heading, Text, Flex, Separator } from '@chakra-ui/react';
-import { useAuth } from 'src/hooks/useAuth';
 import { withAuth } from 'src/components/auth/withAuth';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
+import { useAuth } from 'src/hooks/useAuth';
+import { useUserData } from 'src/hooks/useUserData';
+import { SavedQuery } from 'src/hooks/useUserData/types';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
+import { SavedDataErrorAlert } from 'src/views/saved/components/saved-data-error-banner';
+import { SavedEmptyState } from 'src/views/saved/components/saved-empty-state';
+import { SavedTableSection } from 'src/views/saved/components/saved-table-section';
+import { useBatchResourcesData } from 'src/views/saved/hooks/useBatchResourcesData';
 import {
   SAVED_QUERY_COLUMNS,
   SAVED_RESOURCE_COLUMNS,
 } from 'src/views/saved/table-config';
-import { SavedTableSection } from 'src/views/saved/components/saved-table-section';
-import { SavedEmptyState } from 'src/views/saved/components/saved-empty-state';
-import { SavedDataErrorBanner } from 'src/views/saved/components/saved-data-error-banner';
-import { useUserData } from 'src/hooks/useUserData';
-import { useBatchResourcesData } from 'src/views/saved/hooks/useBatchResourcesData';
 import { SavedResourceItem } from 'src/views/saved/types';
 
 const SAVED_PAGE_COPY = {
@@ -28,6 +29,14 @@ const SAVED_PAGE_COPY = {
       'In development mode, the page uses mock data to simulate saved queries and resources. This allows you to see how the page will look and function without needing real user data. In production, you will see your actual saved queries and resources.',
   },
 };
+
+// Module-level so their identities are stable: each table rebuilds all of its
+// rows whenever `getRowId` changes, which an inline function would do on every
+// render (e.g. every bookmark toggle).
+const getSavedQueryRowId = (item: SavedQuery, idx: number) =>
+  item.query + JSON.stringify(item.filters) || `__no-id-${idx}`;
+const getSavedResourceRowId = (item: SavedResourceItem, idx: number) =>
+  item.dataset_id || `__no-id-${idx}`;
 
 const SavedPage = () => {
   const { user } = useAuth();
@@ -85,7 +94,7 @@ const SavedPage = () => {
         {isDevMode && (
           <Box
             bg='orange.50'
-            border='1px'
+            borderWidth='1px'
             borderColor='orange.200'
             borderRadius='md'
             px={3}
@@ -100,7 +109,7 @@ const SavedPage = () => {
             </Text>
           </Box>
         )}
-        <SavedDataErrorBanner />
+        <SavedDataErrorAlert />
       </Flex>
       <Separator />
       <SavedTableSection
@@ -108,9 +117,7 @@ const SavedPage = () => {
         description='A saved collection of frequently used queries.'
         columns={SAVED_QUERY_COLUMNS}
         data={displayQueries}
-        getRowId={(item, idx) =>
-          item.query + JSON.stringify(item.filters) || `__no-id-${idx}`
-        }
+        getRowId={getSavedQueryRowId}
         unit={{ singular: 'item', plural: 'items' }}
         searchPlaceholder='Search saved queries'
         searchAriaLabel='Search saved queries'
@@ -138,7 +145,7 @@ const SavedPage = () => {
         description='A saved collection of datasets, computational tools, and other records.'
         columns={SAVED_RESOURCE_COLUMNS}
         data={enrichedDatasets}
-        getRowId={(item, idx) => item.dataset_id || `__no-id-${idx}`}
+        getRowId={getSavedResourceRowId}
         unit={{ singular: 'item', plural: 'items' }}
         searchPlaceholder='Search saved resources'
         searchAriaLabel='Search saved resources'
