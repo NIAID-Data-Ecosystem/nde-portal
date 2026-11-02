@@ -120,7 +120,7 @@ export const ResourceCatalogCard = ({
                     size='sm'
                     {...(isRetired && {
                       colorPalette: 'gray',
-                      color: 'gray.900',
+                      color: 'gray.700',
                     })}
                   />
                   {hasAPI && (
@@ -131,7 +131,7 @@ export const ResourceCatalogCard = ({
                       size='sm'
                       {...(isRetired && {
                         colorPalette: 'gray',
-                        color: 'gray.900',
+                        color: 'gray.700',
                       })}
                     />
                   )}
@@ -164,8 +164,8 @@ export const ResourceCatalogCard = ({
                 items={aboutItems}
                 itemLimit={2}
                 colorPalette={isRetired ? 'gray' : 'primary'}
-                tagColor={isRetired ? 'gray.900' : undefined}
-                linkColor={isRetired ? 'gray.900' : undefined}
+                tagColor={isRetired ? 'gray.700' : undefined}
+                linkColor={isRetired ? 'gray.700' : undefined}
                 isExpanded={showAllTypes}
                 onToggle={handleTypesToggle}
                 generateButtonLabel={(limit, length) =>
@@ -194,7 +194,7 @@ export const ResourceCatalogCard = ({
                   size='xs'
                   onClick={handleShowDescription}
                   alignSelf='flex-start'
-                  {...(isRetired && { color: 'gray.900' })}
+                  {...(isRetired && { color: 'gray.700' })}
                 >
                   See description
                 </Button>

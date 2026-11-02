@@ -133,8 +133,8 @@ export const NavDropdownItem = ({
         aria-expanded={isOpen}
         aria-label={`${isOpen ? 'Close' : 'Open'} ${label} dropdown`}
         {...SHARED_DROPDOWN_ITEM_STYLES}
-        color='gray.900'
-        _hover={{ bg: 'niaid.50', color: 'gray.900' }}
+        color='gray.700'
+        _hover={{ bg: 'niaid.50', color: 'gray.700' }}
         as='button'
         onClick={onClick}
       >

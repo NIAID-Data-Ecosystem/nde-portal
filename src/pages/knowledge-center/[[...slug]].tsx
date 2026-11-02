@@ -219,7 +219,7 @@ const Docs: NextPage<{
                     color='gray.500'
                     headingProps={{
                       fontSize: 'lg',
-                      color: 'gray.700',
+                      color: 'gray.500',
                     }}
                   />
                 ) : (

@@ -85,7 +85,7 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
         <Heading id={transformString2Hash(data.name)} as='h1' size='xl' mb={2}>
           {data.name}
         </Heading>
-        <Text color='gray.700'>{data.subtitle}</Text>
+        <Text color='gray.500'>{data.subtitle}</Text>
       </Box>
       <ReactMarkdown
         rehypePlugins={[rehypeRaw, remarkGfm]}

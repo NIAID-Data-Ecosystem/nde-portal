@@ -210,7 +210,7 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
         label='Spatiotemporal Coverage'
         property='spatialCoverage'
         disabled={disabled}
-        bg='gray.900'
+        bg='gray.700'
         tooltipProps={{
           content: (
             <>

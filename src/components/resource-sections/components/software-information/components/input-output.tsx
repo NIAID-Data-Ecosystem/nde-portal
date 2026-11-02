@@ -40,7 +40,7 @@ const StyledText = ({ title, children, ...props }: StyledText) => {
   return (
     <Text fontSize='sm' lineHeight='moderate' wordBreak='break-all' {...props}>
       {title && (
-        <Text as='span' fontSize='xs' fontWeight='semibold' color='gray.700'>
+        <Text as='span' fontSize='xs' fontWeight='semibold' color='gray.500'>
           {title}
         </Text>
       )}{' '}

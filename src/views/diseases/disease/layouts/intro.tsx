@@ -64,7 +64,7 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
             noOfLines={2}
             height={loading ? 5 : undefined}
           >
-            <Text color='gray.700' lineHeight='moderate'>
+            <Text color='gray.500' lineHeight='moderate'>
               {subtitle}
             </Text>
           </SkeletonText>

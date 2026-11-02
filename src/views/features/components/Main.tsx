@@ -69,7 +69,7 @@ const Main = ({ data, loading }: MainContentProps) => {
               height={loading ? 6 : undefined}
               rootProps={{ mb: 4 }}
             >
-              <Text color='gray.700' lineHeight='moderate'>
+              <Text color='gray.500' lineHeight='moderate'>
                 {data?.subtitle || ''}
               </Text>
             </SkeletonText>

@@ -72,19 +72,20 @@ export const semanticColors = defineSemanticTokens.colors({
   /*
   gray is the one palette whose v2 Button `outline` entry broke the shared
   pattern: text .900 (not .700), border .200 (not .500), hover .800 (not .600).
-  Still true in v3 — gray.700 (#6D6D6D) is too light to read as a button label.
+  v2's .700 (#6D6D6D) was too light to read as a button label.
   It also needs re-declaring so `colorPalette='gray'` lands on the NIAID greys
   rather than Chakra's, since every default semantic token (bg.subtle,
   fg.muted, border) references {colors.gray.*}.
-  The hover is now .600 because v2's .800 was NIAID #5A5959, which is v3's
-  stock .600, not its near-black .800 (see ../tokens/colors.ts).
+  The v2 steps are shifted onto their closest v3 stock grey (.900 -> .700,
+  .800 -> .600, .700 -> .500); v3's same-numbered greys are much darker (see
+  ../tokens/colors.ts).
   */
   gray: {
     ...palette('gray'),
-    outlineFg: { value: '{colors.gray.900}' },
+    outlineFg: { value: '{colors.gray.700}' },
     outlineBorder: { value: '{colors.gray.200}' },
     outlineHoverBg: { value: '{colors.gray.600}' },
-    badgeSolidBg: { value: '{colors.gray.700}' },
+    badgeSolidBg: { value: '{colors.gray.500}' },
   },
 
   /*

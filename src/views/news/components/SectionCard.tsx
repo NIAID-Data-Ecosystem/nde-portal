@@ -51,7 +51,7 @@ const SectionCard = (attributes: SectionCardProps) => {
               as='h4'
               fontWeight='semibold'
               size='sm'
-              color='gray.700'
+              color='gray.500'
               my={0}
               mt={1}
               lineHeight='moderate'
