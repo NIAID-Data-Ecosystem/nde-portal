@@ -32,8 +32,9 @@ jest.mock('src/components/source-logo', () => ({
     Component: () => null,
   },
 }));
-jest.mock('src/components/resource-sections/components', () => ({
-  TypeBanner: () => null,
+jest.mock('src/components/type-banner', () => ({
+  __esModule: true,
+  default: () => null,
 }));
 jest.mock('./operating-systems', () => ({
   __esModule: true,

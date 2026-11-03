@@ -2,8 +2,8 @@ import { BoxProps, Card, Skeleton, TextProps } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import React, { ReactNode } from 'react';
 import { Link } from 'src/components/link';
-import { TypeBanner } from 'src/components/resource-sections/components';
-import { TypeBannerProps } from 'src/components/resource-sections/components/type-banner';
+import TypeBanner from 'src/components/type-banner';
+import { TypeBannerProps } from 'src/components/type-banner/types';
 
 const CARD_HEIGHTS = {
   base: '310px',

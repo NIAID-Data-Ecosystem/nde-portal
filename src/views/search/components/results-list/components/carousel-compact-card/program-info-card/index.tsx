@@ -1,6 +1,6 @@
 import { Skeleton, Text } from '@chakra-ui/react';
 import React from 'react';
-import { PROGRAM_VARIANT_LABELS } from 'src/components/resource-sections/components/type-banner';
+import { PROGRAM_VARIANT_LABELS } from 'src/components/type-banner/helpers';
 import { ProgramCollection } from 'src/views/program-collections/helpers';
 
 import { CompactCard } from '../compact-card';

@@ -5,8 +5,8 @@ import {
   CreativeWorkStatus,
   HasAPI,
 } from 'src/components/badges';
-import { getProgramResourceVariant } from 'src/components/resource-sections/components/type-banner';
 import { SearchableItems } from 'src/components/searchable-items';
+import { getProgramResourceVariant } from 'src/components/type-banner/helpers';
 import { FormattedResource } from 'src/utils/api/types';
 import { SHOW_RETIRED_RESOURCE_CATALOG_UI } from 'src/utils/feature-flags';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';

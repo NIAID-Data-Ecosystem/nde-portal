@@ -24,7 +24,6 @@ import { CollapsibleText } from 'src/components/collapsible-text';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import { InfoLabel } from 'src/components/info-label';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
-import { TypeBanner } from 'src/components/resource-sections/components';
 import {
   SearchableItem,
   SearchableItems,
@@ -36,6 +35,7 @@ import {
 } from 'src/components/source-logo/helpers';
 import { ToggleContainer } from 'src/components/toggle-container';
 import Tooltip from 'src/components/tooltip';
+import TypeBanner from 'src/components/type-banner';
 import { useBookmarkDataset } from 'src/hooks/useBookmarkDataset';
 import { FormattedResource } from 'src/utils/api/types';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';

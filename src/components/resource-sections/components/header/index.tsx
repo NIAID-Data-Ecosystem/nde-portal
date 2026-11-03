@@ -40,6 +40,7 @@ const Header = ({ loading, name, alternateName, id, authors }: HeaderProps) => {
             fontSize='xl'
             fontWeight='bold'
             lineHeight='moderate'
+            wordBreak='break-word'
           >
             <DisplayHTMLString>{name}</DisplayHTMLString>
             {alternateName && (
