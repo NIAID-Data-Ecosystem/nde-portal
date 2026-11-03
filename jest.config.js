@@ -51,6 +51,11 @@ const customJestConfig = {
   coverageProvider: 'v8',
   setupFilesAfterEnv: ['./jest.setup.js'],
   testEnvironment: 'jest-environment-jsdom',
+  // One worker per core grows to ~6 GB of jsdom workers, which pushes a dev box
+  // into swap; stalled workers then time out even trivial tests. Half the cores,
+  // with workers recycled once bloated, peaks under ~3 GB for ~20% more time.
+  maxWorkers: '50%',
+  workerIdleMemoryLimit: '512MB',
   moduleDirectories: ['node_modules', '<rootDir>/'],
   testPathIgnorePatterns: [
     '<rootDir>/.next/',
