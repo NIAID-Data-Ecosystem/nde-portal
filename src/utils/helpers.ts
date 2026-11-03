@@ -5,16 +5,16 @@ export const getFundedByNIAID = (name: string) => {
     return false;
   }
   const FUNDED_REPOS = [
-    'accessclinicaldata@NIAID',
-    'BEI Resources',
-    'ClinEpiDB',
-    'ImmPort',
+    'accessclinicaldata@NIAID (ACD@NIAID)',
+    'Biological and Emerging Infections Research Resources (BEIResources)',
+    'Clinical Epidemiology Database (ClinEpiDB)',
+    'Immunology Database and Analysis Portal (ImmPort)',
     'ImmuneSpace',
     'MicrobiomeDB',
-    'Protein Data Bank',
-    'SAGE ARK Portal',
+    'Protein Data Bank (PDB)',
+    'SAGE Arthritis and Autoimmune and Related Diseases Knowledge Portal (SAGE ARK Portal)',
     'VDJServer',
-    'VEuPathDB',
+    'Eukaryotic Pathogen, Vector and Host Informatics Resource (VEuPathDB)',
   ];
   return FUNDED_REPOS.includes(name);
 };

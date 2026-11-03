@@ -1,12 +1,4 @@
-import {
-  chakra,
-  Flex,
-  Icon,
-  Separator,
-  Stack,
-  StackSeparator,
-  Text,
-} from '@chakra-ui/react';
+import { chakra, Flex, Icon, Stack, Text } from '@chakra-ui/react';
 import React from 'react';
 import { FaComputer, FaRegClock } from 'react-icons/fa6';
 import Tooltip from 'src/components/tooltip';
