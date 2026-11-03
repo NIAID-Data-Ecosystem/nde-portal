@@ -64,6 +64,9 @@ const USER_DATA_FIXTURE = {
   beta: false,
   contact_preference: true,
   feedback_preference: false,
+  // Without this, useWelcomeRedirect treats the user as not onboarded and
+  // replaces the route with /welcome before the scan.
+  onboarding_complete: true,
   created: '2026-03-11T19:36:34+00:00',
   updated: '2026-03-11T20:24:13+00:00',
 };
