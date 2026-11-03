@@ -1,7 +1,8 @@
-import { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 import { useAuth } from 'src/hooks/useAuth';
 import { ENABLE_AUTH, SHOW_WELCOME_PAGE } from 'src/utils/feature-flags';
+
 import { useUserData } from './index';
 
 export const WELCOME_PATH = '/welcome';
@@ -19,11 +20,11 @@ const AUTH_RETURN_TO_KEY = 'auth_return_to';
  */
 export function useWelcomeRedirect() {
   const router = useRouter();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const { onboardingComplete } = useUserData();
 
   useEffect(() => {
-    if (!SHOW_WELCOME_PAGE || !ENABLE_AUTH || isLoading) return;
+    if (!SHOW_WELCOME_PAGE || !ENABLE_AUTH || loading) return;
     if (typeof window === 'undefined') return;
     // Wait for the /user/data profile (null) and skip onboarded users (true).
     if (!isAuthenticated || onboardingComplete !== false) return;
@@ -34,7 +35,7 @@ export function useWelcomeRedirect() {
       sessionStorage.setItem(AUTH_RETURN_TO_KEY, router.asPath);
       router.replace(WELCOME_PATH);
     }
-  }, [isAuthenticated, isLoading, onboardingComplete, router]);
+  }, [isAuthenticated, loading, onboardingComplete, router]);
 }
 
 // Renderless wrapper so the hook can be mounted inside the providers in `_app`.

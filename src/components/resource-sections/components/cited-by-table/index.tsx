@@ -18,7 +18,7 @@ import { useTableSort } from 'src/components/table/hooks/useTableSort';
 import { TagWithUrl } from 'src/components/tag-with-url';
 import { CitedBy as CitedByType } from 'src/utils/api/types';
 
-import { SectionHeader } from '../section';
+import { SectionHeader, SectionHeaderProps } from '../section';
 
 // Constants for table configuration.
 // [ROW_SIZES]: num of rows per page

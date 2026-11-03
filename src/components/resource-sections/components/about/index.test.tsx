@@ -273,7 +273,7 @@ describe('AboutResource', () => {
               { displayName: 'Clinical', name: 'clinical' },
             ] as any
           }
-          isLoading={false}
+          loading={false}
         />,
       );
 
@@ -292,7 +292,7 @@ describe('AboutResource', () => {
           exampleOfWork={
             { about: { displayName: 'Proteomic', name: 'proteomic' } } as any
           }
-          isLoading={false}
+          loading={false}
         />,
       );
 
