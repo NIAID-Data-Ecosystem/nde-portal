@@ -66,7 +66,11 @@ describe('ResourceBanner', () => {
   it('marks resources from NIAID-funded sources', () => {
     render(
       <ResourceBanner
-        data={makeResource({ includedInDataCatalog: [{ name: 'ImmPort' }] })}
+        data={makeResource({
+          includedInDataCatalog: [
+            { name: 'Immunology Database and Analysis Portal (ImmPort)' },
+          ],
+        })}
       />,
     );
 

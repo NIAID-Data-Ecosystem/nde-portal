@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from 'src/__tests__/utils/render';
+
 import { withAuth } from './withAuth';
 
 const mockReplace = jest.fn();

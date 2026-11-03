@@ -17,7 +17,7 @@ describe('BasedOnActionProcess', () => {
 
     expect(screen.getByText('No details provided.')).toBeInTheDocument();
     expect(
-      screen.queryByRole('button', { name: /Show/ }),
+      screen.queryByRole('button', { name: /show details/i }),
     ).not.toBeInTheDocument();
   });
 
@@ -63,7 +63,9 @@ describe('BasedOnActionProcess', () => {
       />,
     );
 
-    expect(screen.getByRole('button', { name: /Show/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /show details/i }),
+    ).toBeInTheDocument();
     expect(screen.getByText('How the collection was built.')).not.toBeVisible();
     expect(screen.getByText('Search the source')).not.toBeVisible();
   });
@@ -81,8 +83,8 @@ describe('BasedOnActionProcess', () => {
       />,
     );
 
-    await user.click(screen.getByRole('button', { name: /Show/ }));
-    expect(screen.getByRole('button', { name: /Hide/ })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /show details/i }));
+    expect(screen.getByRole('button', { name: /hide/i })).toBeInTheDocument();
 
     // AccordionPanel animates open, so it stays `hidden` for a frame or two
     // after the click. Wait for the panel before asserting on its contents.
@@ -103,7 +105,7 @@ describe('BasedOnActionProcess', () => {
       />,
     );
 
-    await user.click(screen.getByRole('button', { name: /Show/ }));
+    await user.click(screen.getByRole('button', { name: /show details/i }));
 
     await waitFor(() => expect(screen.getByText('Only step')).toBeVisible());
   });

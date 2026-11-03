@@ -105,9 +105,16 @@ describe('Breadcrumbs', () => {
     );
     expect(screen.queryByText('Search')).not.toBeInTheDocument();
     expect(screen.queryByText('Elsewhere')).not.toBeInTheDocument();
-    expect(screen.getByText('Resources')).toBeInTheDocument();
-    // Only the home link remains, since the current page is not a link.
-    expect(screen.getAllByRole('link')).toHaveLength(1);
+    // Only the home link remains navigable; the current crumb has no href.
+    const hrefs = screen
+      .getAllByRole('link')
+      .map(link => link.getAttribute('href'))
+      .filter(Boolean);
+    expect(hrefs).toEqual(['/']);
+    expect(screen.getByRole('link', { name: 'Resources' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
   });
   it('renders null when there are no path segments', () => {
     const { container } = render(<Breadcrumbs segments={[]} />);

@@ -1,4 +1,6 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { act, render, screen } from 'src/__tests__/utils/render';
+
 import { CustomizeColumnsPopover } from '../CustomizeColumnsPopover';
 
 describe('CustomizeColumnsPopover', () => {
@@ -11,7 +13,16 @@ describe('CustomizeColumnsPopover', () => {
     window.localStorage.clear();
   });
 
-  it('labels a clearAllFallbackIds column as "shown by default" and keeps it toggleable', () => {
+  // The popover is `lazyMount`, so its content only exists once opened. zag
+  // drops a click dispatched before its machine has started, hence the tick.
+  const openPopover = async () => {
+    await act(async () => {});
+    await userEvent.click(
+      screen.getByRole('button', { name: /customize columns/i }),
+    );
+  };
+
+  it('labels a clearAllFallbackIds column as "shown by default" and keeps it toggleable', async () => {
     render(
       <CustomizeColumnsPopover
         columnsList={columns}
@@ -23,16 +34,16 @@ describe('CustomizeColumnsPopover', () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole('button', { name: /customize columns/i }));
+    await openPopover();
 
-    expect(screen.getByText('(shown by default)')).toBeInTheDocument();
+    expect(await screen.findByText('(shown by default)')).toBeInTheDocument();
 
     const nameCheckbox = screen.getByRole('checkbox', { name: /^name/i });
     expect(nameCheckbox).toBeEnabled();
     expect(nameCheckbox).toBeChecked();
   });
 
-  it('does not label a required column as "shown by default"', () => {
+  it('does not label a required column as "shown by default"', async () => {
     render(
       <CustomizeColumnsPopover
         columnsList={columns}
@@ -43,11 +54,12 @@ describe('CustomizeColumnsPopover', () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole('button', { name: /customize columns/i }));
+    await openPopover();
 
-    expect(screen.queryByText('(shown by default)')).not.toBeInTheDocument();
-
-    const nameCheckbox = screen.getByRole('checkbox', { name: /^name/i });
+    const nameCheckbox = await screen.findByRole('checkbox', {
+      name: /^name/i,
+    });
     expect(nameCheckbox).toBeDisabled();
+    expect(screen.queryByText('(shown by default)')).not.toBeInTheDocument();
   });
 });

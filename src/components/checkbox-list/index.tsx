@@ -115,8 +115,11 @@ export const CheckboxMenu = <T extends Option>({
             maxWidth='300px'
             variant='always'
           >
+            {/* The viewport's `role="presentation"` would otherwise replace the
+                menu's role, orphaning every `menuitem`. With `asChild` the
+                child's own props win, so restate it here. */}
             <ScrollArea.Viewport asChild>
-              <Menu.Content>
+              <Menu.Content role='menu'>
                 <Menu.Arrow />
                 <Menu.ItemGroup>
                   <Menu.ItemGroupLabel>

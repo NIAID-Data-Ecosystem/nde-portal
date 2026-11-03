@@ -138,7 +138,10 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
                 >
                   <Tag.Label>Clear all</Tag.Label>
                   <Tag.EndElement>
-                    <Tag.CloseTrigger onClick={() => setFilters([])} />
+                    <Tag.CloseTrigger
+                      aria-label='close'
+                      onClick={() => setFilters([])}
+                    />
                   </Tag.EndElement>
                 </Tag.Root>
               )}
@@ -155,6 +158,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
                     <Tag.Label fontWeight='medium'>{name}</Tag.Label>
                     <Tag.EndElement>
                       <Tag.CloseTrigger
+                        aria-label='close'
                         onClick={() => removeSingleFilter(filter)}
                       />
                     </Tag.EndElement>

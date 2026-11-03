@@ -371,7 +371,10 @@ const RepositoryMatcher: NextPage = () => {
               >
                 <Tag.Label>Clear all</Tag.Label>
                 <Tag.EndElement>
-                  <Tag.CloseTrigger onClick={() => setSelectedFilters({})} />
+                  <Tag.CloseTrigger
+                    aria-label='close'
+                    onClick={() => setSelectedFilters({})}
+                  />
                 </Tag.EndElement>
               </Tag.Root>
             )}
@@ -388,6 +391,7 @@ const RepositoryMatcher: NextPage = () => {
                   <Tag.Label fontWeight='medium'>{value}</Tag.Label>
                   <Tag.EndElement>
                     <Tag.CloseTrigger
+                      aria-label='close'
                       onClick={() => removeSingleFilter(property, value)}
                     />
                   </Tag.EndElement>

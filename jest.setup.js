@@ -120,4 +120,10 @@ if (window && window.Element) {
     unobserve: jest.fn(),
     disconnect: jest.fn(),
   }));
+
+  // jsdom has no PointerEvent, but zag's press tracking (checkboxes, etc.)
+  // constructs one on blur. Same shape user-event already falls back to.
+  if (typeof window.PointerEvent !== 'function') {
+    window.PointerEvent = class PointerEvent extends MouseEvent {};
+  }
 }

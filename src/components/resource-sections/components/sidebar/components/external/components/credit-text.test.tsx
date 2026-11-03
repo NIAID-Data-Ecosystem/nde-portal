@@ -29,7 +29,7 @@ describe('CreditText', () => {
     jest.restoreAllMocks();
   });
 
-  it('renders the optional heading label', () => {
+  it('renders the optional label', () => {
     renderWithChakra(
       <CreditText
         label='Citation'
@@ -38,9 +38,8 @@ describe('CreditText', () => {
       />,
     );
 
-    expect(
-      screen.getByRole('heading', { name: 'Citation' }),
-    ).toBeInTheDocument();
+    // A plain `InfoLabel`, not a heading: the sidebar section supplies those.
+    expect(screen.getByText('Citation')).toBeInTheDocument();
   });
 
   it('renders the credit text', () => {
