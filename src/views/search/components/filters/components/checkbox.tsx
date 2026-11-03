@@ -139,7 +139,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
       return (
         <Text
           px={3}
-          fontSize='xs'
+          fontSize='sm'
           fontWeight='semibold'
           lineHeight='shorter'
           pt={2}
@@ -177,7 +177,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
           // control lands centred on the label's first line.
           '& .chakra-checkbox__control::before': {
             content: '"\\200B"',
-            fontSize: 'xs',
+            fontSize: 'sm',
             lineHeight: 'shorter',
           },
         }}
@@ -198,7 +198,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
                 flex={1}
                 wordBreak='break-word'
                 color='text.heading'
-                fontSize='xs'
+                fontSize='sm'
                 lineHeight='shorter'
                 mr={0.5}
                 display='flex'

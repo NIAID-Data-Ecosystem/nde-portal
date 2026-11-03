@@ -126,7 +126,7 @@ export const DatePicker = ({
           </Button>
           <Button
             size='sm'
-            variant='outline'
+            variant='surface'
             colorPalette={colorPalette}
             onClick={resetFilter}
             disabled={disabled || !selectedDates.length}
