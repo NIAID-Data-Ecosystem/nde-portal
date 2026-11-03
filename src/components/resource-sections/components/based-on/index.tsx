@@ -248,7 +248,11 @@ export const BasedOnTable = ({
                                       {(item.identifier ||
                                         item.pmid ||
                                         item.doi) && (
-                                        <Stack gap={1} mt={1}>
+                                        <Stack
+                                          gap={1}
+                                          mt={1}
+                                          alignItems='flex-start'
+                                        >
                                           {item.identifier && (
                                             <TagWithUrl
                                               // only add url here if there is no name (name field is default used for the link)
