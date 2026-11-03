@@ -235,7 +235,17 @@ export const SelectAndSortPopover = ({
       */}
       <Portal>
         <Popover.Positioner>
-          <Popover.Content minW='280px' maxW='320px' {...popoverContentProps}>
+          {/*
+            Named explicitly: zag only looks for Popover.Title when the machine
+            starts, and under `lazyMount` the title isn't mounted yet, so it
+            never sets `aria-labelledby`.
+          */}
+          <Popover.Content
+            minW='280px'
+            maxW='320px'
+            aria-label={copy.header}
+            {...popoverContentProps}
+          >
             <Popover.Arrow />
 
             {/*

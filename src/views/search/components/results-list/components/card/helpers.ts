@@ -7,6 +7,7 @@ import {
   CONTENT_TYPE_EXAMPLE_OF_WORK_FIELD,
   getResourceTypeForContentType,
 } from 'src/views/search/config/content-type';
+
 import {
   getContentTypeLabel,
   getContentTypeTerms,

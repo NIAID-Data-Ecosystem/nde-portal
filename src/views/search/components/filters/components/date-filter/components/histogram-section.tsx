@@ -1,6 +1,7 @@
-import React from 'react';
-import dynamic from 'next/dynamic';
 import { Flex, Text } from '@chakra-ui/react';
+import dynamic from 'next/dynamic';
+import React from 'react';
+
 import { FilterTermType } from '../../../types';
 
 const Histogram = dynamic(() => import('./histogram'), {

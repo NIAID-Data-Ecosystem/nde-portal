@@ -2,6 +2,7 @@ import {
   Accordion,
   Box,
   Button,
+  CloseButton,
   Drawer,
   Flex,
   Heading,
@@ -116,7 +117,11 @@ export const Filters: React.FC<FiltersProps> = ({
           <Portal>
             <Drawer.Backdrop />
             <Drawer.Positioner>
-              <Drawer.Content>
+              {/*
+                Named explicitly: v2's DrawerHeader labelled the drawer, but
+                v3's Drawer.Header is a plain div; only Drawer.Title would.
+              */}
+              <Drawer.Content aria-label='Filters'>
                 <Drawer.Header
                   borderBottomWidth='1px'
                   borderBottomColor='gray.100'
@@ -143,7 +148,14 @@ export const Filters: React.FC<FiltersProps> = ({
                     <Box w='3.5rem' />
                   </Flex>
                 </Drawer.Header>
-                <Drawer.CloseTrigger top={3} />
+                {/*
+                  A bare v3 CloseTrigger renders an empty, unnamed button: it
+                  supplies behaviour only. CloseButton provides the visible X
+                  and its accessible name, matching v2's DrawerCloseButton.
+                */}
+                <Drawer.CloseTrigger asChild top={3}>
+                  <CloseButton size='sm' />
+                </Drawer.CloseTrigger>
                 <Drawer.Body px={2} py={2} bg='blackAlpha.50'>
                   <FiltersAccordion
                     termsByColumnId={termsByColumnId}

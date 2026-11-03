@@ -1,11 +1,11 @@
-import { useState } from 'react';
 import { Box } from '@chakra-ui/react';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { useState } from 'react';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import {
   FieldSelect,
   useAdvancedSearchContext,
 } from 'src/components/advanced-search/components/Search';
-import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 

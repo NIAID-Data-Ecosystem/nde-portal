@@ -21,8 +21,9 @@ export const MetadataBlock = ({
   bg,
   tooltipProps,
 }: MetadataBlockProps) => {
+  // Disabled text is gray.500, the lightest grey that passes AA on white (4.83:1; gray.400 is 2.56:1).
   return (
-    <Box flexDirection='column' color={disabled ? 'gray.400' : 'text.body'}>
+    <Box flexDirection='column' color={disabled ? 'gray.500' : 'text.body'}>
       <Flex alignItems='baseline'>
         <MetadataLabel
           tooltipProps={

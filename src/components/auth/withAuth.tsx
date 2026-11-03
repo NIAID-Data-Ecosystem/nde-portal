@@ -3,10 +3,10 @@
  * Use this to wrap pages that should only be accessible to logged-in users
  */
 
-import { ComponentType, useEffect } from 'react';
+import { Box, Spinner, Text } from '@chakra-ui/react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { Box, Spinner, Text } from '@chakra-ui/react';
+import { ComponentType, useEffect } from 'react';
 import { useAuth } from 'src/hooks/useAuth';
 
 interface WithAuthOptions {
@@ -50,7 +50,7 @@ export function withAuth<P extends object>(
         sessionStorage.setItem('auth_return_to', router.asPath);
         router.replace(redirectTo);
       }
-    }, [loading, isAuthenticated, redirectTo, router]);
+    }, [loading, isAuthenticated, router]);
 
     // Show loading state
     if (loading) {

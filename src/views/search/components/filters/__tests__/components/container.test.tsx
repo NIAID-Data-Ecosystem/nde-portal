@@ -44,9 +44,15 @@ describe('filters/components/container', () => {
   it('renders error state', () => {
     useBreakpointValue.mockReturnValue('desktop');
     render(<FiltersContainer {...props} error={new Error('x')} />);
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      /something went wrong, unable to load filters/i,
+    );
     expect(
-      screen.getByText(/something went wrong, unable to load filters/i),
+      screen.getByRole('button', { name: /reloading the page/i }),
     ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: /read (more|less)/i }),
+    ).not.toBeInTheDocument();
   });
 
   it('renders mobile drawer trigger and opens content', async () => {
@@ -56,5 +62,7 @@ describe('filters/components/container', () => {
     // v3's Drawer mounts its portalled content through zag's presence machine,
     // so the footer is not in the DOM synchronously after the click.
     expect(await screen.findByText('Done')).toBeInTheDocument();
+    // One labelled close button, not a CloseButton nested in the trigger.
+    expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
   });
 });

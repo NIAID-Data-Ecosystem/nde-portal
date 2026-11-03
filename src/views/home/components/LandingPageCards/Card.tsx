@@ -1,8 +1,9 @@
+import { Box, Flex, Heading, Image, VStack } from '@chakra-ui/react';
 import React from 'react';
-import { Box, Flex, Image, VStack, Heading } from '@chakra-ui/react';
-import { CardData } from './types';
-import { CardText } from './CardText';
 import { Link } from 'src/components/link';
+
+import { CardText } from './CardText';
+import { CardData } from './types';
 
 interface CardProps {
   card: CardData;

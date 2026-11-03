@@ -1,9 +1,21 @@
-import { ScrollArea } from '@chakra-ui/react';
+import { ScrollArea, useScrollAreaContext } from '@chakra-ui/react';
 
 export interface ScrollContainerProps
   extends React.ComponentProps<typeof ScrollArea.Root> {
   showScrollShadow?: boolean;
 }
+
+// zag only puts the viewport in the tab order when it overflows on *both* axes, so a region that scrolls one way can't be reached by keyboard. Focusable whenever it scrolls at all. The ring is inset because the root's `overflow: hidden` clips an outside one.
+const Viewport = (props: ScrollArea.ViewportProps) => {
+  const { hasOverflowX, hasOverflowY } = useScrollAreaContext();
+  return (
+    <ScrollArea.Viewport
+      tabIndex={hasOverflowX || hasOverflowY ? 0 : undefined}
+      focusVisibleRing='inside'
+      {...props}
+    />
+  );
+};
 
 export const ScrollContainer = ({
   children,
@@ -13,7 +25,7 @@ export const ScrollContainer = ({
 }: ScrollContainerProps) => {
   return (
     <ScrollArea.Root variant={variant} {...props}>
-      <ScrollArea.Viewport
+      <Viewport
         css={
           showScrollShadow && {
             '--scroll-shadow-size': '4rem',
@@ -34,7 +46,7 @@ export const ScrollContainer = ({
         }
       >
         <ScrollArea.Content>{children}</ScrollArea.Content>
-      </ScrollArea.Viewport>
+      </Viewport>
       <ScrollArea.Scrollbar>
         <ScrollArea.Thumb />
       </ScrollArea.Scrollbar>

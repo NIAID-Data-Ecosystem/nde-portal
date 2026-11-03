@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   act,
   fireEvent,
@@ -6,6 +5,8 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import React from 'react';
+
 import { AuthProvider, useAuth, useIsAuthenticated } from './index';
 
 const mockResolveUserInfo = jest.fn();

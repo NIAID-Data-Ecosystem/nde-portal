@@ -12,14 +12,12 @@ export const ChartTypePicker = (props: {
 }) => {
   return (
     <Flex justifyContent='flex-end'>
-      <NativeSelect.Root
-        size='xs'
-        disabled={props.disabled}
-        aria-label={
-          props.label ? `Chart type for ${props.label}` : 'Chart type'
-        }
-      >
+      <NativeSelect.Root size='xs' disabled={props.disabled}>
+        {/* On the Field, not the Root: the Root is a plain div, so a label there names nothing. */}
         <NativeSelect.Field
+          aria-label={
+            props.label ? `Chart type for ${props.label}` : 'Chart type'
+          }
           width='unset'
           value={props.value}
           onChange={e => props.onChange(e.target.value as ChartType)}

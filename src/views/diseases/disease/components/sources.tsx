@@ -8,11 +8,12 @@ import {
   getSearchResultsRoute,
   trackDiseasesEvent,
 } from 'src/views/diseases/helpers';
+
 import { TopicQueryProps } from '../../types';
-import { ChartWrapper } from '../layouts/chart-wrapper';
-import { BarChart, SourceFacet } from '../visualizations/bar-chart';
-import { MarkdownContent } from '../layouts/markdown-content';
 import DISEASE_PAGE_COPY from '../disease-page.json';
+import { ChartWrapper } from '../layouts/chart-wrapper';
+import { MarkdownContent } from '../layouts/markdown-content';
+import { BarChart, SourceFacet } from '../visualizations/bar-chart';
 
 export const Sources = ({
   id,

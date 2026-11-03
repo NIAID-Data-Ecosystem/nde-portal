@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { FaFilter } from 'react-icons/fa6';
+import { Alert } from 'src/components/alert';
 import { ScrollContainer } from 'src/components/scroll-container';
 
 import { FilterConfig } from '../types';
@@ -37,7 +38,11 @@ const DrawerContentMemo: React.FC<{
   colorPalette: ConditionalValue<ColorPalette>;
 }> = React.memo(({ content, onClose, innerHeight, title, colorPalette }) => (
   <Drawer.Positioner>
-    <Drawer.Content height={`${innerHeight}px`}>
+    {/*
+      Named explicitly: v2's DrawerHeader labelled the drawer, but v3's
+      Drawer.Header is a plain div; only Drawer.Title would.
+    */}
+    <Drawer.Content height={`${innerHeight}px`} aria-label={title}>
       <Drawer.Header borderBottomWidth='1px' py={3} px={4}>
         <Text>{title}</Text>
       </Drawer.Header>
@@ -56,7 +61,7 @@ const DrawerContentMemo: React.FC<{
           Done
         </Button>
       </Drawer.Footer>
-      <Drawer.CloseTrigger>
+      <Drawer.CloseTrigger asChild>
         <CloseButton size='2xs' colorPalette={colorPalette} />
       </Drawer.CloseTrigger>
     </Drawer.Content>
@@ -121,12 +126,25 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         </Flex>
       </Stack>
       {error ? (
-        <Flex p={4} bg='error.subtle' role='alert'>
-          <Text fontSize='md' lineHeight='taller' color='red.600'>
-            Something went wrong, unable to load filters. <br />
-            Try reloading the page.
-          </Text>
-        </Flex>
+        <Alert
+          title='Something went wrong, unable to load filters.'
+          status='error'
+          role='alert'
+          collapsible={false}
+        >
+          <Flex justifyContent='center' mt={2}>
+            <Button
+              colorPalette='red'
+              size='xs'
+              onClick={e => {
+                e.preventDefault();
+                window.location.reload();
+              }}
+            >
+              Try reloading the page
+            </Button>
+          </Flex>
+        </Alert>
       ) : (
         <Box bg='white'>{children}</Box>
       )}

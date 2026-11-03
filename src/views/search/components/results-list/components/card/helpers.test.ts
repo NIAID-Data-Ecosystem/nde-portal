@@ -1,4 +1,5 @@
 import { FormattedResource } from 'src/utils/api/types';
+
 import {
   formatCollectionSize,
   getContentTypeItems,

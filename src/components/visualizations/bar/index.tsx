@@ -163,7 +163,7 @@ export const BarChart = ({
         paddingOuter: 0,
         round: true,
       }),
-    [plotHeight, data, isExpanded],
+    [plotHeight, data],
   );
   const barHeight = Math.min(barHeightMax, yScale.bandwidth());
 

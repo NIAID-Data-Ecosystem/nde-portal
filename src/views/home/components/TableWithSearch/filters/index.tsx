@@ -80,6 +80,7 @@ export const Filters = ({ data, filters, setFilters }: TableFiltersProps) => {
           }
           handleChange={newFilters => handleFilterChange('type', newFilters)}
           showSelectAll
+          flex={{ base: 1, sm: 'unset' }}
         />
       )}
 
@@ -95,6 +96,7 @@ export const Filters = ({ data, filters, setFilters }: TableFiltersProps) => {
           }
           handleChange={newFilters => handleFilterChange('domain', newFilters)}
           showSelectAll
+          flex={{ base: 1, sm: 'unset' }}
         />
       )}
 
@@ -122,6 +124,7 @@ export const Filters = ({ data, filters, setFilters }: TableFiltersProps) => {
             handleFilterChange('conditionsOfAccess', newFilters)
           }
           showSelectAll
+          flex={{ base: 1, sm: 'unset' }}
         />
       )}
     </>

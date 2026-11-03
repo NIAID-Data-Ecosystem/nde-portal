@@ -1,11 +1,12 @@
+import SchemaDefinitions from 'configs/schema-definitions.json';
 import { uniqueId } from 'lodash';
+import { encodeString } from 'src/utils/querystring-helpers';
+
 import {
   collapseTree,
   FlattenedItem,
   TreeItem,
 } from '../components/SortableWithCombine';
-import SchemaDefinitions from 'configs/schema-definitions.json';
-import { encodeString } from 'src/utils/querystring-helpers';
 import { QueryValue, UnionTypes } from '../types';
 
 export const unionOptions = ['AND', 'OR', 'NOT'] as UnionTypes[];

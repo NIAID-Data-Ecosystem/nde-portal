@@ -1,5 +1,6 @@
-import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
+import { SHOW_PROGRAM_RESOURCE_UI } from 'src/utils/feature-flags';
 import {
   fetchProgramCollections,
   isProgramInfoCollection,
@@ -7,7 +8,7 @@ import {
   ProgramCollection,
 } from 'src/views/program-collections/helpers';
 import { SelectedFilterType } from 'src/views/search/components/filters/types';
-import { SHOW_PROGRAM_RESOURCE_UI } from 'src/utils/feature-flags';
+
 import {
   APPLY_DEFAULT_DATE_FILTER_KEY,
   defaultQuery,

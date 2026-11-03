@@ -1,13 +1,14 @@
 import { Skeleton } from '@chakra-ui/react';
-import { SampleTable } from '../SampleTable';
-import { Cell } from '../SampleTable/Cells';
-import { useSampleCollectionItems } from '../../hooks/useSampleCollectionItems';
+import { SampleCollection } from 'src/utils/api/types';
+
 import { SAMPLE_COLLECTION_TABLE_CONFIG } from '../../config';
 import {
   getSampleCollectionItemsColumns,
   getSampleCollectionItemsRows,
 } from '../../helpers';
-import { SampleCollection } from 'src/utils/api/types';
+import { useSampleCollectionItems } from '../../hooks/useSampleCollectionItems';
+import { SampleTable } from '../SampleTable';
+import { Cell } from '../SampleTable/Cells';
 
 interface SampleCollectionItemsTableProps {
   /** The identifier of the parent Dataset/SampleCollection used for the API query. */

@@ -1,5 +1,5 @@
-import React from 'react';
 import { Table, TableScrollAreaProps } from '@chakra-ui/react';
+import React from 'react';
 
 /**
  * Chakra v3 replaced `TableContainer` with `Table.ScrollArea`. Re-exported here

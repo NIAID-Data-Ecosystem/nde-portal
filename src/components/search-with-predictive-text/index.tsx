@@ -1,8 +1,9 @@
-import React, { ReactElement } from 'react';
 import { InputProps } from '@chakra-ui/react';
+import React, { ReactElement } from 'react';
 import { FormattedResource } from 'src/utils/api/types';
-import { usePredictiveSearch } from './hooks/usePredictiveSearch';
+
 import { PredictiveSearch } from './components/PredictiveSearch';
+import { usePredictiveSearch } from './hooks/usePredictiveSearch';
 
 interface SearchWithPredictiveTextProps {
   ariaLabel: string; // input label for accessibility

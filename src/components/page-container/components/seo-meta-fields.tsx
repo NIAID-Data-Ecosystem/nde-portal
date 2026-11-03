@@ -1,5 +1,6 @@
-import Head from 'next/head';
 import SITE_CONFIG from 'configs/site.config.json';
+import Head from 'next/head';
+
 import { SiteConfig } from '../types';
 
 export interface SeoMetaFieldsProps {

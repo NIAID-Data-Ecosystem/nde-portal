@@ -1,6 +1,7 @@
-import React from 'react';
 import { screen } from '@testing-library/react';
+import React from 'react';
 import { renderWithClient } from 'src/__tests__/mocks/utils';
+
 import {
   FILTERABLE_REPOSITORY_MATCHER_COLUMNS,
   REPOSITORY_MATCHER_COLUMNS,

@@ -1,20 +1,20 @@
-import React from 'react';
-import { GetStaticProps, NextPage } from 'next';
 import { Flex, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
+import SITE_CONFIG from 'configs/site.config.json';
+import { GetStaticProps, NextPage } from 'next';
+import React from 'react';
 import { Error } from 'src/components/error';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
+import { SiteConfig } from 'src/components/page-container/types';
 import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
+import { DiseaseContent } from 'src/views/diseases/disease';
 import {
-  fetchDiseaseBySlug,
   fetchAllDiseasePages,
+  fetchDiseaseBySlug,
 } from 'src/views/diseases/helpers';
 import { TableOfContents } from 'src/views/diseases/toc';
 import { DiseasePageProps } from 'src/views/diseases/types';
-import { DiseaseContent } from 'src/views/diseases/disease';
-import SITE_CONFIG from 'configs/site.config.json';
-import { SiteConfig } from 'src/components/page-container/types';
 
 const siteConfig = SITE_CONFIG as SiteConfig;
 /**

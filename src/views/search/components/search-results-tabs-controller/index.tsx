@@ -443,8 +443,9 @@ export const SearchResultsController = ({
     [facetData?.facets, matchingDiseases.length, bioSampleTotal],
   );
 
-  // Labels of the sections that should start expanded — these match the `value`
-  // given to each accordion item. Primary result types stay open even with no
+  // Types of the sections that should start expanded — these match the `value`
+  // given to each accordion item. Types rather than labels: zag builds element
+  // ids from the value, and a label's space splits `aria-controls` in two. Primary result types stay open even with no
   // results so their empty state is visible; every other type only opens when
   // it has results (ResourceCatalog also opens when there are matching diseases
   // to show in its carousel).
@@ -459,7 +460,7 @@ export const SearchResultsController = ({
             section.count > 0 ||
             (section.type === 'ResourceCatalog' && hasMatchingDiseases)),
       )
-      .map(section => section.label);
+      .map(section => section.type);
 
   return (
     <>
@@ -486,7 +487,7 @@ export const SearchResultsController = ({
                       return (
                         <AccordionContent
                           key={section.label}
-                          value={section.label}
+                          value={section.type}
                           title={generateOtherResourcesTitle(
                             sections,
                             programInfoCount,
@@ -550,7 +551,7 @@ export const SearchResultsController = ({
                     return (
                       <AccordionContent
                         key={section.label}
-                        value={section.label}
+                        value={section.type}
                         title={`${
                           section.accordionLabel ?? section.label
                         } (${sectionCount.toLocaleString()})`}

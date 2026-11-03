@@ -1,4 +1,5 @@
-import React from 'react';
+import { ChakraProvider } from '@chakra-ui/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   act,
   fireEvent,
@@ -6,10 +7,10 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
-import { ChakraProvider } from '@chakra-ui/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { system } from 'src/theme';
+import React from 'react';
 import { QueryStringError } from 'src/components/error/types';
+import { system } from 'src/theme';
+
 import { TreeItem } from '../SortableWithCombine';
 import { EditableQueryText } from '.';
 

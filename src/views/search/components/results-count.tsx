@@ -1,5 +1,5 @@
-import React from 'react';
 import { Flex, Spinner, Text, TextProps } from '@chakra-ui/react';
+import React from 'react';
 
 // [COMPONENT INFO]: Displays total results count
 

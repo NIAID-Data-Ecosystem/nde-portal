@@ -1,13 +1,13 @@
+import { ChakraProvider } from '@chakra-ui/react';
+import { GoogleTagManager } from '@next/third-parties/google';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { fonts } from 'lib/fonts';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { system } from 'src/theme';
-import { GoogleTagManager } from '@next/third-parties/google';
-import { fonts } from 'lib/fonts';
-import { ChakraProvider } from '@chakra-ui/react';
 import { AuthProvider } from 'src/hooks/useAuth';
 import { UserDataProvider } from 'src/hooks/useUserData';
 import { WelcomeRedirect } from 'src/hooks/useUserData/useWelcomeRedirect';
+import { system } from 'src/theme';
 
 // Creates an instance of react-query for the app.
 const queryClient = new QueryClient();

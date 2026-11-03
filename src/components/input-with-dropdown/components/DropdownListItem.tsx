@@ -1,4 +1,3 @@
-import React, { useMemo } from 'react';
 import {
   Heading,
   Highlight,
@@ -6,7 +5,9 @@ import {
   ListItemProps as ChakraListItemProps,
   Text,
 } from '@chakra-ui/react';
+import React, { useMemo } from 'react';
 import { FormattedResource } from 'src/utils/api/types';
+
 import { useDropdownContext } from '..';
 
 interface DropdownListItemProps extends ChakraListItemProps {

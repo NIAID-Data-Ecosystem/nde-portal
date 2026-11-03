@@ -1,10 +1,11 @@
-import { useMemo } from 'react';
-import { FetchSearchResultsResponse } from 'src/utils/api/types';
-import { SearchQueryParams } from '../types';
 import { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import { Params } from 'src/utils/api';
-import { useSearchResultsQuery } from './useSearchResultsQuery';
+import { FetchSearchResultsResponse } from 'src/utils/api/types';
+
 import { queryFilterObject2String } from '../components/filters/utils/query-string';
+import { SearchQueryParams } from '../types';
+import { useSearchResultsQuery } from './useSearchResultsQuery';
 
 export const useSearchResultsData = (
   queryParams: SearchQueryParams,

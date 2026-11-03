@@ -1,8 +1,9 @@
 import { renderHook } from '@testing-library/react';
+
 import {
+  useWelcomeRedirect,
   WELCOME_PATH,
   WELCOME_SHOWN_KEY,
-  useWelcomeRedirect,
 } from './useWelcomeRedirect';
 
 const mockReplace = jest.fn();

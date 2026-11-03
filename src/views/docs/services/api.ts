@@ -1,5 +1,6 @@
 import axios from 'axios';
-import type { DocumentationProps, DocumentationByCategories } from '../types';
+
+import type { DocumentationByCategories, DocumentationProps } from '../types';
 
 const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
 const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL;

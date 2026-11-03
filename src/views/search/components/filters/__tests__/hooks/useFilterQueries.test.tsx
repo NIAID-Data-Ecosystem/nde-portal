@@ -1,8 +1,9 @@
-import React from 'react';
-import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useFilterQueries } from '../../hooks/useFilterQueries';
+import { renderHook, waitFor } from '@testing-library/react';
 import router from 'next-router-mock';
+import React from 'react';
+
+import { useFilterQueries } from '../../hooks/useFilterQueries';
 
 // Mock only the fetchSearchResults function so fetchAggregation works correctly
 jest.mock('src/utils/api', () => {

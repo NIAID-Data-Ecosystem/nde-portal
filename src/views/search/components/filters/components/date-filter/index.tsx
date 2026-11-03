@@ -1,6 +1,7 @@
-import { Box, Flex, Text } from '@chakra-ui/react';
+import { Box, Button, Flex } from '@chakra-ui/react';
 import { omit } from 'lodash';
 import React, { useMemo } from 'react';
+import { Alert } from 'src/components/alert';
 import { SearchQueryParams } from 'src/views/search/types';
 
 import { FILTER_CONFIGS } from '../../config';
@@ -84,17 +85,25 @@ const DateFilterContent: React.FC<
 
   if (error) {
     return (
-      <Flex p={4} bg='error' role='alert'>
-        <Text
-          fontSize='md'
-          lineHeight='taller'
-          fontWeight='semibold'
-          color='white'
-        >
-          Something went wrong, unable to load filters. <br />
-          Try reloading the page.
-        </Text>
-      </Flex>
+      <Alert
+        title='Something went wrong, unable to load filters.'
+        status='error'
+        role='alert'
+        collapsible={false}
+      >
+        <Flex justifyContent='center' mt={2}>
+          <Button
+            colorPalette='red'
+            size='xs'
+            onClick={e => {
+              e.preventDefault();
+              window.location.reload();
+            }}
+          >
+            Try reloading the page
+          </Button>
+        </Flex>
+      </Alert>
     );
   }
 

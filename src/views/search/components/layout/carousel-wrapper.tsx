@@ -1,5 +1,5 @@
-import React from 'react';
 import { Box, BoxProps } from '@chakra-ui/react';
+import React from 'react';
 
 interface CarouselWrapperProps extends BoxProps {
   children: React.ReactNode;

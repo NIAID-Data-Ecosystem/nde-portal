@@ -23,7 +23,11 @@ export const ModalViewer: React.FC<ModalViewerProps> = ({
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
-          <Dialog.Content>
+          {/*
+            Named explicitly: v2's ModalHeader labelled the modal, but v3's
+            Dialog.Header is a plain div; only Dialog.Title would.
+          */}
+          <Dialog.Content aria-label={label}>
             <Dialog.Header>
               <VisualizationCardHeading label={label} />
             </Dialog.Header>

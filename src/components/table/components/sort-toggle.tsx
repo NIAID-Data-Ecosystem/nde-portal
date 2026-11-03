@@ -1,5 +1,5 @@
-import React from 'react';
 import { Flex, IconButton } from '@chakra-ui/react';
+import React from 'react';
 import { FaCaretDown, FaCaretUp } from 'react-icons/fa6';
 
 // Based on NIAID's Table Styles

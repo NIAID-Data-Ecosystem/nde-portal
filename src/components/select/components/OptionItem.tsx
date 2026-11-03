@@ -1,9 +1,9 @@
 import {
   Heading,
+  List,
   ListItemProps,
   Text,
   useDisclosure,
-  List,
 } from '@chakra-ui/react';
 
 interface OptionProps extends ListItemProps {

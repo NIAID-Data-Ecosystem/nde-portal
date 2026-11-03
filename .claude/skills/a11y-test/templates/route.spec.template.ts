@@ -13,8 +13,10 @@
  * should cover. Delete a state only if it genuinely cannot occur — and think
  * twice before dropping the error state.
  */
-import { test, expect, type Page, type TestInfo } from '@playwright/test';
+import { expect, type Page, test, type TestInfo } from '@playwright/test';
+
 import { runAxeScans } from '../../../../e2e/utils/axe';
+import { expectSkeletonsLoading } from '../../../../e2e/utils/skeleton';
 
 // --- Per-route configuration -------------------------------------------------
 
@@ -64,13 +66,9 @@ test.describe('a11y: <route or feature> — loading', () => {
     }
     await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
 
-    // Wait for proof of the loading state. This project's skeletons render
-    // through src/components/skeleton with the `.custom-skeleton-loading`
-    // class — a CSS selector is acceptable here only because skeletons have no
-    // accessible surface to target.
-    await expect(
-      page.locator('.custom-skeleton-loading').first(),
-    ).toBeVisible();
+    // Wait for proof of the loading state. Skeletons have no accessible
+    // surface to target, so e2e/utils/skeleton.ts detects them by their styles.
+    await expectSkeletonsLoading(page);
 
     await runSharedChecks(page, testInfo, 'loading');
   });

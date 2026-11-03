@@ -27,11 +27,12 @@
  * HeroBanner + search bar with the content section removed. We assert the
  * content section is gone, then scan what remains.
  */
-import { test, expect, type Page, type TestInfo } from '@playwright/test';
+import { expect, type Page, test, type TestInfo } from '@playwright/test';
+
 import { runAxeScans } from '../utils/axe';
 import {
-  expectKeyboardOpens,
   expectEscapeReturnsFocus,
+  expectKeyboardOpens,
 } from '../utils/keyboard';
 
 // --- Per-route configuration -------------------------------------------------

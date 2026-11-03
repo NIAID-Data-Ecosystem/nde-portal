@@ -1,5 +1,5 @@
-import { TabType } from '../types';
 import { DEFAULT_TAB_ID } from '../context/search-tabs-context';
+import { TabType } from '../types';
 
 interface TypeCount {
   type: string;

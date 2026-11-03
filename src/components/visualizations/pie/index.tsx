@@ -1,29 +1,30 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Box, Flex } from '@chakra-ui/react';
-import { animated, useSpring, useTransition, to } from '@react-spring/web';
+import { animated, to, useSpring, useTransition } from '@react-spring/web';
 import {
   Annotation,
   CircleSubject,
   Connector,
   HtmlLabel,
 } from '@visx/annotation';
+import { localPoint } from '@visx/event';
 import { Group } from '@visx/group';
 import { useParentSize } from '@visx/responsive';
 import { scaleOrdinal } from '@visx/scale';
-import Pie, { ProvidedProps, PieArcDatum } from '@visx/shape/lib/shapes/Pie';
-import { arc as d3Arc } from 'd3-shape';
-import { schemeObservable10 } from 'd3-scale-chromatic';
-import { ChartDatum } from 'src/views/search/components/summary/types';
-import { isMoreSlice } from 'src/views/search/components/summary/helpers';
-import { system } from 'src/theme';
-import { getMaxLabelWidthPx } from './helpers';
+import Pie, { PieArcDatum, ProvidedProps } from '@visx/shape/lib/shapes/Pie';
 import {
   TooltipWithBounds,
   useTooltip,
   useTooltipInPortal,
 } from '@visx/tooltip';
-import { localPoint } from '@visx/event';
+import { schemeObservable10 } from 'd3-scale-chromatic';
+import { arc as d3Arc } from 'd3-shape';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { system } from 'src/theme';
+import { isMoreSlice } from 'src/views/search/components/summary/helpers';
+import { ChartDatum } from 'src/views/search/components/summary/types';
+
 import { TooltipTitle, TooltipWrapper } from '../tooltip';
+import { getMaxLabelWidthPx } from './helpers';
 
 const defaultMargin = { top: 50, right: 50, bottom: 50, left: 50 };
 

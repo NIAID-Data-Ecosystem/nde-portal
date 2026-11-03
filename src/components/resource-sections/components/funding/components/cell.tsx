@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   BoxProps,
@@ -8,6 +7,7 @@ import {
   HeadingProps,
   Text,
 } from '@chakra-ui/react';
+import React from 'react';
 
 // Label component - displays text in a specific style.
 export const Label = React.memo(({ children, ...props }: HeadingProps) => {

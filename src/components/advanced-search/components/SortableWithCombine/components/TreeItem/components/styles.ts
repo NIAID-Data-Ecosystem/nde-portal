@@ -1,6 +1,7 @@
 import { getUnionTheme } from 'src/components/advanced-search/utils/query-helpers';
-import { WrapperProps } from './TreeItemWrapper';
+
 import { FlattenedItem } from '../../../types';
+import { WrapperProps } from './TreeItemWrapper';
 
 export interface ItemProps
   extends Omit<

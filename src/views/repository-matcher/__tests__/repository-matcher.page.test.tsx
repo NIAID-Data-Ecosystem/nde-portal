@@ -1,6 +1,6 @@
-import React from 'react';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import React from 'react';
 import { renderWithClient } from 'src/__tests__/mocks/utils';
 import RepositoryMatcher from 'src/pages/repository-matcher';
 import { useRepositoryMatcherData } from 'src/views/repository-matcher/hooks/useRepositoryMatcherData';

@@ -1,5 +1,5 @@
-import React from 'react';
 import { ButtonProps, InputProps } from '@chakra-ui/react';
+import React from 'react';
 import { QueryValue } from 'src/components/advanced-search/types';
 import { QueryStringError } from 'src/components/error/types';
 

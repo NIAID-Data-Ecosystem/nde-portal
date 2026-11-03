@@ -1,29 +1,30 @@
 import {
-  ReactNode,
   createContext,
+  ReactNode,
   useCallback,
   useContext,
   useEffect,
   useRef,
   useState,
 } from 'react';
-import { MOCK_SAVED_DATASETS } from './mocks/saved_datasets';
-import {
-  SavePreferencesOptions,
-  SavedDataset,
-  SavedQuery,
-  UserAccount,
-  UserPreferences,
-  UserPreferencesKeys,
-  UserProfile,
-} from './types';
-import { MOCK_SAVED_QUERIES } from './mocks/saved_queries';
+import { fetchWithXsrf } from 'src/utils/auth/xsrf';
+
 import {
   findSavedQueryIndex,
   formatSavedQueryFilters,
   parseSavedQueries,
 } from './helpers';
-import { fetchWithXsrf } from 'src/utils/auth/xsrf';
+import { MOCK_SAVED_DATASETS } from './mocks/saved_datasets';
+import { MOCK_SAVED_QUERIES } from './mocks/saved_queries';
+import {
+  SavedDataset,
+  SavedQuery,
+  SavePreferencesOptions,
+  UserAccount,
+  UserPreferences,
+  UserPreferencesKeys,
+  UserProfile,
+} from './types';
 
 const DEFAULT_PREFERENCES: UserPreferences = {
   ai_toggle_preference: false,

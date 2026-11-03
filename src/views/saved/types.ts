@@ -1,4 +1,5 @@
 import { SavedDataset, SavedQuery } from 'src/hooks/useUserData/types';
+
 import { SavedResourceAdditionalMetadata } from './hooks/useBatchResourcesData';
 
 /** Items the saved page can render in a table. */

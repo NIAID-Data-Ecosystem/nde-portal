@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from 'react';
 import { InputProps } from '@chakra-ui/react';
-import {
-  DropdownButton,
-  DropdownButtonProps,
-} from 'src/components/dropdown-button';
+import React, { useEffect, useState } from 'react';
 import { TreeItem } from 'src/components/advanced-search/components/SortableWithCombine';
 import {
   getUnionTheme,
   unionOptions,
 } from 'src/components/advanced-search/utils/query-helpers';
+import {
+  DropdownButton,
+  DropdownButtonProps,
+} from 'src/components/dropdown-button';
+
 import { useAdvancedSearchContext } from '../../AdvancedSearchFormContext';
 
 export interface InputSubmitButtonProps {

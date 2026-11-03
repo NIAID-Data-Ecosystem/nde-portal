@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+
 import { fetchMetadata } from './helpers';
 import { Metadata, MetadataSource } from './types';
 

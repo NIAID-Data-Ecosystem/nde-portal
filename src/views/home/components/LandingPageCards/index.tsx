@@ -1,8 +1,8 @@
-import React from 'react';
 import { Flex } from '@chakra-ui/react';
-import { CARDS_DATA } from './data';
+import React from 'react';
 
 import { Card } from './Card';
+import { CARDS_DATA } from './data';
 
 export const LandingPageCards: React.FC = () => {
   return (

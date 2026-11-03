@@ -1,8 +1,9 @@
 import { Flex, Text, TextProps } from '@chakra-ui/react';
-import { formatTerm, formatUnitText, formatNumericValue } from '../../helpers';
 import { Link } from 'src/components/link';
-import { DefinedTerm, QuantitativeValue } from 'src/utils/api/types';
 import { Column } from 'src/components/table';
+import { DefinedTerm, QuantitativeValue } from 'src/utils/api/types';
+
+import { formatNumericValue, formatTerm, formatUnitText } from '../../helpers';
 
 const TextCell = ({ children, ...rest }: TextProps) => {
   return <Text {...rest}>{children}</Text>;

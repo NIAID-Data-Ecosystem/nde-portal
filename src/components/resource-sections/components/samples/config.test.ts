@@ -1,4 +1,4 @@
-import { SAMPLE_TABLE_CONFIG, SAMPLE_COLLECTION_TABLE_CONFIG } from './config';
+import { SAMPLE_COLLECTION_TABLE_CONFIG, SAMPLE_TABLE_CONFIG } from './config';
 
 jest.mock('src/utils/formatting/formatSample', () => ({
   formatSampleLabelFromProperty: jest.fn(() => 'CAPTION(itemListElement)'),

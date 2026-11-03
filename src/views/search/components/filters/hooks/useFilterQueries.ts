@@ -1,16 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/router';
 import { useMemo, useRef } from 'react';
 import { fetchMetadata } from 'src/hooks/api/helpers';
-import { FilterConfig, FilterTermType, FilterResults } from '../types';
-import { SearchQueryParams } from 'src/views/search/types';
-import { useRouter } from 'next/router';
-import {
-  useAggregation,
-  AggregationQueryParams,
-} from 'src/views/search/hooks/useAggregation';
-import { ALL_FACET_PROPERTIES } from '../config';
-import { mergeFacets } from '../utils/merge-facets';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
+import {
+  AggregationQueryParams,
+  useAggregation,
+} from 'src/views/search/hooks/useAggregation';
+import { SearchQueryParams } from 'src/views/search/types';
+
+import { ALL_FACET_PROPERTIES } from '../config';
+import { FilterConfig, FilterResults, FilterTermType } from '../types';
+import { mergeFacets } from '../utils/merge-facets';
 
 /**
  * Defines the subset of a React Query result that this hook consumes from a

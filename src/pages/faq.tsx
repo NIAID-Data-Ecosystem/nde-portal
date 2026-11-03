@@ -1,19 +1,19 @@
 import { Flex, Heading, Text } from '@chakra-ui/react';
+import axios from 'axios';
 import type { NextPage } from 'next';
+import { MDXRemoteSerializeResult } from 'next-mdx-remote';
+import { serialize } from 'next-mdx-remote/serialize';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
+import Empty from 'src/components/empty';
+import { Error } from 'src/components/error';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import {
   getPageSeoConfig,
   PageContainer,
   PageContent,
 } from 'src/components/page-container';
-import { serialize } from 'next-mdx-remote/serialize';
-import { MDXRemoteSerializeResult } from 'next-mdx-remote';
-import { Error } from 'src/components/error';
-import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import remarkGfm from 'remark-gfm';
-import axios from 'axios';
-import Empty from 'src/components/empty';
 
 interface FrequentlyAskedProps {
   data: {

@@ -1,4 +1,5 @@
 import { defineConfig } from '@chakra-ui/react';
+
 import { globalCss } from './global-css';
 import { recipes } from './recipes';
 import { semanticTokens } from './semantic-tokens';

@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import type { DocumentationProps, SearchResult } from '../types';
+
 import { searchDocumentation } from '../services/api';
+import type { DocumentationProps, SearchResult } from '../types';
 import { searchInMDX } from '../utils/markdown';
 
 // Search documentation

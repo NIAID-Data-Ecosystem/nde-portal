@@ -1,7 +1,8 @@
-import React from 'react';
 import { Skeleton, SkeletonProps } from '@chakra-ui/react';
+import React from 'react';
 import { ErrorMessage } from 'src/components/error';
-import { SectionTitle, SectionDescription } from '../layouts/section';
+
+import { SectionDescription, SectionTitle } from '../layouts/section';
 
 interface ChartWrapperProps {
   children?: React.ReactNode;

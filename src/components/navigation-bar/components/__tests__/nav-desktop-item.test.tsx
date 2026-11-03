@@ -1,5 +1,6 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
+import React from 'react';
+
 import { NavBarItem } from '../nav-desktop-item';
 
 const mockNavTopLevelLink = jest.fn((_props: unknown) => (

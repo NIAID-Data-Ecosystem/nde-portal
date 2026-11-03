@@ -15,6 +15,11 @@ import { useLocalStorage } from 'usehooks-ts';
 
 export interface AlertProps extends Omit<AlertRootProps, 'size'> {
   size?: AlertSize;
+  /**
+   * Hides `children` behind a Read More / Read Less toggle, remembering its
+   * state in localStorage under `id`. When false, `children` always show.
+   */
+  collapsible?: boolean;
   onClose?: () => void;
 }
 
@@ -23,11 +28,15 @@ export const Alert = ({
   title,
   status,
   size = 'md',
+  role,
+  collapsible = true,
   onClose,
   children,
 }: AlertProps) => {
   const [isOpen, setOpen] = useLocalStorage(`${id}`, true);
   const [isMounted, setIsMounted] = useState(false); // for SSR
+  // Only the stored toggle state can differ from the server render.
+  const isExpanded = !collapsible || (isMounted && isOpen);
 
   const toggleWarning = () => {
     setOpen(!isOpen);
@@ -41,6 +50,7 @@ export const Alert = ({
     <ChakraAlert.Root
       status={status}
       size={size}
+      role={role}
       flexDirection={{ base: 'column', sm: 'row' }}
       alignItems={{ base: 'flex-start', sm: 'center' }}
       pe={onClose ? ALERT_CLOSE_TRIGGER_OFFSET[size].rootPe : undefined}
@@ -49,12 +59,12 @@ export const Alert = ({
         <ChakraAlert.Indicator />
         <ChakraAlert.Content>
           {title && <ChakraAlert.Title>{title} </ChakraAlert.Title>}
-          {isMounted && isOpen && children && (
+          {isExpanded && children && (
             <ChakraAlert.Description>{children}</ChakraAlert.Description>
           )}
         </ChakraAlert.Content>
       </HStack>
-      {children && (
+      {collapsible && children && (
         <Button
           onClick={toggleWarning}
           status={status}
@@ -63,7 +73,7 @@ export const Alert = ({
           color='inherit'
           underline
         >
-          {isMounted && isOpen ? 'Read Less' : 'Read More'}
+          {isExpanded ? 'Read Less' : 'Read More'}
         </Button>
       )}
 

@@ -49,7 +49,8 @@
  * The raw "JSON Metadata" section is excluded from the scan for the same reason
  * as in `resources.spec.ts` — see JSON_VIEWER_EXCLUDE.
  */
-import { test, expect, type Page, type TestInfo } from '@playwright/test';
+import { expect, type Page, test, type TestInfo } from '@playwright/test';
+
 import { runAxeScans } from '../utils/axe';
 
 // --- Per-route configuration -------------------------------------------------
@@ -75,6 +76,10 @@ const NAME = 'BV-BRC uncultured Pseudoalteromonas sp. genomes (a11y fixture)';
 const DESCRIPTION_SNIPPET = 'publicly available from the BV-BRC API version';
 const ACTION_NAME =
   'DataCollection Generation Process in the NIAID Data Ecosystem';
+// The action's header row is its accordion trigger, so its accessible name is
+// the action name plus the show/hide label.
+const ACTION_SHOW = `${ACTION_NAME} show details`;
+const ACTION_HIDE = `${ACTION_NAME} hide`;
 
 // A representative raw NDE /query hit. `getResourceById` reads `hits[0]` and
 // runs it through `formatAPIResource` (which spreads the record, so `about` and
@@ -429,12 +434,13 @@ test.describe('a11y: DataCollection resource — populated', () => {
     ).toBeVisible();
     await expect(page.getByText(DESCRIPTION_SNIPPET).first()).toBeVisible();
 
-    // Generation-process card, collapsed at rest. Its toggle is labelled just
-    // "Show"/"Hide", so match exactly — a loose /show/i also picks up the six
-    // `show more details about …` collapsible-Section accordion buttons.
+    // Generation-process card, collapsed at rest. The whole header row is its
+    // toggle, named "<action> show details", so match exactly — a loose /show/i
+    // also picks up the six `show more details about …` collapsible-Section
+    // accordion buttons.
     await expect(page.getByText(ACTION_NAME).first()).toBeVisible();
     await expect(
-      page.getByRole('button', { name: 'Show', exact: true }),
+      page.getByRole('button', { name: ACTION_SHOW, exact: true }),
     ).toBeVisible();
 
     // `AboutResource` blocks above the overview.
@@ -470,7 +476,7 @@ test.describe('a11y: DataCollection resource — populated', () => {
 //
 // The resting scan above sees the page as it first paints. The one surface it
 // cannot see is the generation-process detail panel: `BasedOnActionProcess`
-// wraps it in a Chakra `Accordion allowToggle` with no `defaultIndex`, so the
+// wraps it in a collapsible Chakra `Accordion` with no `defaultValue`, so the
 // panel — the action's description and its numbered steps — is not expanded on
 // first paint. That markup is scanned below.
 //
@@ -486,15 +492,15 @@ test.describe('a11y: DataCollection resource — action process details', () => 
     await gotoDataCollection(page);
 
     // Expand the action's details, then wait for the panel's own accessible
-    // proof — the toggle flips from "Show" to "Hide" — before scanning, so we
-    // scan the expanded DOM and not the frame before it. Both names are matched
-    // exactly: the collapsible Sections expose `show more details about …`
-    // buttons that a loose /show/i would also resolve to.
-    await page.getByRole('button', { name: 'Show', exact: true }).click();
+    // proof — the toggle flips from "show details" to "hide" — before scanning,
+    // so we scan the expanded DOM and not the frame before it. Both names are
+    // matched exactly: the collapsible Sections expose `show more details
+    // about …` buttons that a loose /show/i would also resolve to.
+    await page.getByRole('button', { name: ACTION_SHOW, exact: true }).click();
 
     await expect(
-      page.getByRole('button', { name: 'Hide', exact: true }),
-    ).toBeVisible();
+      page.getByRole('button', { name: ACTION_HIDE, exact: true }),
+    ).toHaveAttribute('aria-expanded', 'true');
 
     await runAxeScans(page, testInfo, 'action-process-expanded', {
       exclude: JSON_VIEWER_EXCLUDE,

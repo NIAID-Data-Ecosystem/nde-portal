@@ -1,7 +1,8 @@
-import { act } from 'react';
 import { renderHook } from '@testing-library/react';
-import { usePopoverSearch } from '../usePopoverSearch';
+import { act } from 'react';
+
 import { PopoverItem } from '../../types';
+import { usePopoverSearch } from '../usePopoverSearch';
 
 const ITEMS: PopoverItem[] = [
   { id: '1', title: 'Alpha' },

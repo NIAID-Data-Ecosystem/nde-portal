@@ -39,7 +39,8 @@
  *   - `**\/query*`   NDE portal counts; also BioThings predictive search,
  *                    branched on the `t.biothings.io` host
  */
-import { test, expect, type Page, type TestInfo } from '@playwright/test';
+import { expect, type Page, test, type TestInfo } from '@playwright/test';
+
 import { runAxeScans } from '../utils/axe';
 
 // --- Per-route configuration -------------------------------------------------

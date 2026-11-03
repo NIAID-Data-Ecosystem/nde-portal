@@ -1,5 +1,5 @@
-import React from 'react';
 import { Stack, StackProps } from '@chakra-ui/react';
+import React from 'react';
 
 export const CardWrapper: React.FC<
   { children: React.ReactNode } & StackProps

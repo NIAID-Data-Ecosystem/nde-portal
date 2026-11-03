@@ -1,14 +1,15 @@
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
+import { encodeString } from 'src/utils/querystring-helpers';
+
+import { FILTER_CONFIGS } from '../components/filters/config';
+import { queryFilterString2Object } from '../components/filters/utils/query-string';
 import {
   defaultQuery,
   DefaultSearchQueryParams,
   defaultSelectedFilters,
   shouldApplyDefaultDate,
 } from '../config/defaultQuery';
-import { encodeString } from 'src/utils/querystring-helpers';
-import { FILTER_CONFIGS } from '../components/filters/config';
-import { queryFilterString2Object } from '../components/filters/utils/query-string';
 
 const parseNumberQueryParam = (
   param: string | string[] | undefined,

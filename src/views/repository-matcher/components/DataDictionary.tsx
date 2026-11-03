@@ -1,5 +1,6 @@
-import React from 'react';
 import { Box, Heading, Text, VStack } from '@chakra-ui/react';
+import React from 'react';
+
 import { RepositoryMatcherColumn } from '../types';
 
 interface DataDictionaryProps {

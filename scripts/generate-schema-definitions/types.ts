@@ -1,5 +1,5 @@
-import { APIResourceType } from 'src/utils/formatting/formatResourceType';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { APIResourceType } from 'src/utils/formatting/formatResourceType';
 
 export interface SchemaDefinition {
   name: string;

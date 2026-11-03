@@ -1,5 +1,6 @@
-import { Route, showSection } from '../helpers';
 import { FormattedResource } from 'src/utils/api/types';
+
+import { Route, showSection } from '../helpers';
 
 const makeRoute = (overrides: Partial<Route> = {}): Route =>
   ({

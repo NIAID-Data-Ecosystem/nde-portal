@@ -1,5 +1,5 @@
-import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
+import React from 'react';
 import { renderWithClient } from 'src/__tests__/mocks/utils';
 import ResourcePage from 'src/pages/resources';
 import { getResourceById } from 'src/utils/api';

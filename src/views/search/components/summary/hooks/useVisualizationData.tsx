@@ -1,21 +1,22 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ChartDatum, ChartType, SearchState } from '../types';
+import { FetchSearchResultsResponse } from 'src/utils/api/types';
+import { useBioSampleAggregation } from 'src/views/search/hooks/useBioSampleAggregation';
+import { useComputationalToolAggregation } from 'src/views/search/hooks/useComputationalToolAggregation';
+import { useDataCollectionAggregation } from 'src/views/search/hooks/useDataCollectionAggregation';
+import { useSharedDatasetAggregation } from 'src/views/search/hooks/useSharedDatasetAggregation';
+
 import { FilterConfig } from '../../filters';
-import { usePreferredChartType } from './usePreferredChartType';
+import { SelectedFilterValueType } from '../../filters/types';
+import { mergeFacets } from '../../filters/utils/merge-facets';
+import { queryFilterObject2String } from '../../filters/utils/query-string';
 import {
   bucketSmallValues,
   chartRegistry,
   DEFAULT_MORE_PARAMS,
   isMoreSlice,
 } from '../helpers';
-import { SelectedFilterValueType } from '../../filters/types';
-import { queryFilterObject2String } from '../../filters/utils/query-string';
-import { mergeFacets } from '../../filters/utils/merge-facets';
-import { FetchSearchResultsResponse } from 'src/utils/api/types';
-import { useBioSampleAggregation } from 'src/views/search/hooks/useBioSampleAggregation';
-import { useComputationalToolAggregation } from 'src/views/search/hooks/useComputationalToolAggregation';
-import { useSharedDatasetAggregation } from 'src/views/search/hooks/useSharedDatasetAggregation';
-import { useDataCollectionAggregation } from 'src/views/search/hooks/useDataCollectionAggregation';
+import { ChartDatum, ChartType, SearchState } from '../types';
+import { usePreferredChartType } from './usePreferredChartType';
 
 interface UseVisualizationDataParams {
   config: FilterConfig;

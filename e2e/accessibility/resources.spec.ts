@@ -33,7 +33,8 @@
  * raw "JSON Metadata" section is excluded from the scan — see
  * JSON_VIEWER_EXCLUDE for why.
  */
-import { test, expect, type Page, type TestInfo } from '@playwright/test';
+import { expect, type Page, test, type TestInfo } from '@playwright/test';
+
 import { runAxeScans } from '../utils/axe';
 
 // --- Per-route configuration -------------------------------------------------

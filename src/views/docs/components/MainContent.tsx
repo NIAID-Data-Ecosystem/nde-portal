@@ -1,15 +1,16 @@
+import { Box, Flex, Heading, Separator, Text } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-import { Box, Flex, Heading, Text, Separator } from '@chakra-ui/react';
-import { Error } from 'src/components/error';
 import Empty from 'src/components/empty';
+import { Error } from 'src/components/error';
 import { MDXComponents as DefaultMDXComponents } from 'src/components/mdx/components';
-import { transformString2Hash } from '../utils/markdown';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
+
 import { useDocumentation } from '../hooks/useDocumentation';
 import type { DocumentationProps } from '../types';
+import { transformString2Hash } from '../utils/markdown';
 
 /*
 Borders every image and video unless it has the `unstyled` class. Defined once

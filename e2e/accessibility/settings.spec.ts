@@ -32,7 +32,8 @@
  *     failed `/user/data` leaves the page on its default preferences with no
  *     error surface — there is no error UI on this page to scan.
  */
-import { test, expect, type Page, type TestInfo } from '@playwright/test';
+import { expect, type Page, test, type TestInfo } from '@playwright/test';
+
 import { runAxeScans } from '../utils/axe';
 
 // --- Per-route configuration -------------------------------------------------

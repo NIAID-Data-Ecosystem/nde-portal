@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
+
+import { FilterItem, FilterTermType } from '../../../types';
 import { addMissingYears, getYear } from '../helpers';
-import { FilterTermType, FilterItem } from '../../../types';
 
 export interface ContextProps {
   colorPalette: string;

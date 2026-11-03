@@ -5,18 +5,19 @@
 
 import React, {
   createContext,
+  ReactNode,
+  useCallback,
   useContext,
   useEffect,
-  useState,
-  useCallback,
   useMemo,
-  ReactNode,
+  useState,
 } from 'react';
-import { AuthState, AuthContextValue, User } from 'src/utils/auth/types';
 import { getAuthConfig } from 'src/utils/auth/helpers';
+import { AuthContextValue, AuthState, User } from 'src/utils/auth/types';
 import { fetchWithXsrf } from 'src/utils/auth/xsrf';
-import { devMockAuth } from './mock';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
+
+import { devMockAuth } from './mock';
 
 const initialState: AuthState = {
   user: null,

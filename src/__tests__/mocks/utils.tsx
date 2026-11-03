@@ -1,10 +1,11 @@
-import * as React from 'react';
+import { ChakraProvider } from '@chakra-ui/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render } from '@testing-library/react';
 import { rest } from 'msw';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { mockRepositoriesMetadata } from './data';
-import { ChakraProvider } from '@chakra-ui/react';
+import * as React from 'react';
 import { system } from 'src/theme';
+
+import { mockRepositoriesMetadata } from './data';
 
 export const handlers = [
   rest.get('*/metadata', (_, res, ctx) => {

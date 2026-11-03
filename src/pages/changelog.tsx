@@ -1,17 +1,18 @@
 import { Badge, Box, Flex, Heading, Text } from '@chakra-ui/react';
 import type { NextPage } from 'next';
+import React from 'react';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import {
   getPageSeoConfig,
   PageContainer,
   PageContent,
 } from 'src/components/page-container';
+
 import ChangelogData from '../../CHANGELOG.md';
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import remarkGfm from 'remark-gfm';
-import React from 'react';
 import packageJsonData from '../../package.json';
-import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 
 interface ChangelogProps {}
 

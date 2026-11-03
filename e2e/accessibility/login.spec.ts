@@ -31,7 +31,8 @@
  *   - AUTHENTICATED: not a scannable state — a resolved user triggers a
  *     `router.replace()` redirect away from `/login`.
  */
-import { test, expect, type Page, type TestInfo } from '@playwright/test';
+import { expect, type Page, test, type TestInfo } from '@playwright/test';
+
 import { runAxeScans } from '../utils/axe';
 
 // --- Per-route configuration -------------------------------------------------
