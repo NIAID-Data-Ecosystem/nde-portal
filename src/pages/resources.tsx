@@ -193,11 +193,7 @@ const ResourcePage: NextPage = () => {
 
                   <Box mt={4}>
                     <ErrorCTA>
-                      <Button
-                        onClick={() => router.reload()}
-                        variant='outline'
-                        size='md'
-                      >
+                      <Button onClick={() => router.reload()} size='md'>
                         Retry
                       </Button>
                     </ErrorCTA>

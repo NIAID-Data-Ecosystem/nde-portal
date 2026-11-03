@@ -54,18 +54,9 @@ export const ErrorCTA: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   return (
-    <Stack
-      w='100%'
-      flexWrap='wrap'
-      flexDirection='row'
-      justifyContent='center'
-      gap={2}
-      css={{
-        '& >*': { minWidth: '150px', maxWidth: '310px', flex: 1 },
-      }}
-    >
+    <Stack w='100%' flexWrap='wrap' flexDirection='row' gap={2}>
       {children}
-      <Button w='100%' size='md' asChild>
+      <Button size='md' variant='outline' asChild>
         <NextLink href='/'>Back to Home</NextLink>
       </Button>
     </Stack>
