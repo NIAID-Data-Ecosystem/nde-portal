@@ -8,11 +8,12 @@
  * about.spec.ts / repository-matcher.spec.ts.
  *
  * Data model for this route (src/pages/index.tsx):
- *   - The "Explore All Included Resources" table is fed by two CLIENT-SIDE
- *     TanStack Query hooks, both interceptable with `page.route`:
+ *   - The "Explore All Included Resources" table is fed by `useSourcesList`,
+ *     which runs two CLIENT-SIDE TanStack queries, both interceptable with
+ *     `page.route`:
  *       * useResourceCatalogs -> NDE `/query`    (glob `**​/query*`)
- *       * useRepoData         -> NDE `/metadata` (glob `**​/metadata*`)
- *     The table's `loading` is the OR of both hooks.
+ *       * fetchMetadata       -> NDE `/metadata` (glob `**​/metadata*`)
+ *     The table's `loading` is the OR of both queries.
  *   - News/events/features come from `getStaticProps` (server-side), served by
  *     the mock Strapi server (e2e/mock-strapi-server.js) via the
  *     NEXT_PUBLIC_STRAPI_API_URL override in playwright.config.ts. The
@@ -20,9 +21,9 @@
  *     those refetches are intercepted by `page.route` (see mockStrapiRoutes).
  *
  * State coverage note — ERROR state is deliberately scanned as the hero-only
- * fallback, NOT a four-state alert UI: when either hook errors, the page hides
- * the ENTIRE content section (`!(repositoriesError || resourceCatalogsError)`)
- * rather than rendering an `alert`/retry control. So the error state has no
+ * fallback, NOT a four-state alert UI: when either query errors, `useSourcesList`
+ * surfaces it as `error` and the page hides the ENTIRE content section
+ * (`!repositoriesError`) rather than rendering an `alert`/retry control. So the error state has no
  * dedicated accessible error surface — the deterministic, reachable DOM is the
  * HeroBanner + search bar with the content section removed. We assert the
  * content section is gone, then scan what remains.
@@ -39,7 +40,7 @@ import {
 
 const ROUTE = '/';
 const QUERY_GLOB = '**/query*'; // useResourceCatalogs (NDE /query)
-const METADATA_GLOB = '**/metadata*'; // useRepoData (NDE /metadata)
+const METADATA_GLOB = '**/metadata*'; // fetchMetadata (NDE /metadata)
 const NEWS_API_GLOB = '**/api/news-reports*'; // NewsCarousel client refetch
 const EVENTS_API_GLOB = '**/api/events*'; // NewsCarousel client refetch
 const FEATURES_API_GLOB = '**/api/features*'; // NewsCarousel client refetch
@@ -65,8 +66,8 @@ const QUERY_FIXTURE = {
   ],
 };
 
-// Raw `/metadata` response (fetchMetadata reads `data.src`; useRepoData keeps
-// sources whose `sourceInfo.identifier` is truthy). One repository row.
+// Raw `/metadata` response (useSourcesList reads `data.src` and keeps sources
+// whose `sourceInfo.name` is truthy). One repository row.
 const METADATA_FIXTURE = {
   src: {
     fixtureRepo: {
@@ -75,7 +76,7 @@ const METADATA_FIXTURE = {
         identifier: 'fixture-repo',
         name: 'Fixture Dataset Repository',
         abstract: 'A deterministic repository fixture for a11y scanning.',
-        type: 'Dataset Repository',
+        collectionType: 'Dataset Repository',
         conditionsOfAccess: 'Open',
         genre: ['IID'],
         url: 'https://example.org/repo',

@@ -36,15 +36,10 @@ jest.mock('./components', () => ({
   ),
 }));
 
-jest.mock('./components/summary', () => ({ Summary: () => null }));
 jest.mock('./components/sidebar/components/external', () => ({
   ExternalAccess: () => null,
   UsageInfo: () => null,
 }));
-jest.mock(
-  './components/sidebar/components/external/components/credit-text',
-  () => ({ CreditText: () => null }),
-);
 jest.mock('./components/samples', () => ({ SamplesDisplay: () => null }));
 jest.mock('./components/files-table', () => ({
   __esModule: true,

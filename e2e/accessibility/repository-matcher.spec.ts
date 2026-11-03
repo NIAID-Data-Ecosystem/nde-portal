@@ -6,10 +6,10 @@
  * build on `serious` or `critical` impact, so minor/moderate noise doesn't block
  * CI. See e2e/utils/axe.ts and the canonical about.spec.ts.
  *
- * The route reads two client-side endpoints, both mocked per state so the page
- * is deterministic and never touches the live network:
+ * The route reads two client-side endpoints (both via `useSourcesList`), mocked
+ * per state so the page is deterministic and never touches the live network:
  *   - `**​/query*`    — ResourceCatalog search (useResourceCatalogs)
- *   - `**​/metadata*` — repository metadata (useRepoData)
+ *   - `**​/metadata*` — repository metadata (fetchMetadata)
  *
  * State coverage note — this route covers loading / empty / populated but NOT a
  * distinct error state. `src/pages/repository-matcher.tsx` destructures only
@@ -71,7 +71,7 @@ const METADATA_FIXTURE = {
           'A deterministic repository fixture that exercises the metadata-enriched table state.',
         url: '/resources/fixture-repository',
         creativeWorkStatus: 'Accepting Data',
-        type: ['Resource Catalog'],
+        collectionType: ['Resource Catalog'],
         genre: ['Generalist'],
         conditionsOfAccess: 'Registered',
         healthCondition: [{ name: 'COVID-19' }],

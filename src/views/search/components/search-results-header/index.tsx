@@ -88,7 +88,7 @@ export const SearchResultsHeader = ({
       <Stack
         // Use row layout for "All Results" and column layout for other queries
         flexDirection={querystring === '__all__' ? 'row' : 'column'}
-        alignItems='flex-start'
+        alignItems={querystring === '__all__' ? 'center' : 'flex-start'}
         gap={1}
       >
         <SearchResultsHeading
