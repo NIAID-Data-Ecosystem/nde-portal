@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 import { formatAPIResource, formatISOString } from './helpers';
 import { FetchSearchResultsResponse, FormattedResource } from './types';
 
@@ -49,12 +50,12 @@ export const getResourceById = async (
       return undefined;
     }
 
-    const formattedData = await formatAPIResource(data.hits[0]);
+    const formattedData = formatAPIResource(data.hits[0]);
     if (!formattedData) {
       return undefined;
     }
 
-    return { ...formattedData, rawData: data.hits[0] } as FormattedResource;
+    return { ...formattedData, rawData: data.hits[0] };
   } catch (error: any) {
     throw error.response ?? error;
   }
