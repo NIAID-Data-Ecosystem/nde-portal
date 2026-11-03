@@ -97,12 +97,16 @@ const DesktopAccountAction = ({
   loading: boolean;
   onLogout: () => void;
 }) => {
+  const label = loading ? ACCOUNTS_CONFIG.default : displayName;
   return (
     <NavDropdownTrigger
-      label={loading ? ACCOUNTS_CONFIG.default : displayName}
+      label={label}
       icon={FaCircleUser}
       loading={loading}
       disabled={loading}
+      // Cap long display names so they don't squeeze the logo in the nav bar.
+      maxW='12rem'
+      title={label}
     >
       {!loading && (
         <NavDropdown>

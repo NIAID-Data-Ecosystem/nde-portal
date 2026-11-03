@@ -4,6 +4,7 @@ import {
   Icon,
   Popover,
   Portal,
+  Span,
   Stack,
 } from '@chakra-ui/react';
 import React from 'react';
@@ -51,7 +52,8 @@ export const NavDropdownTrigger = ({
                 {...buttonProps}
               >
                 {icon && <Icon as={icon} boxSize={4} />}
-                {label}
+                {/* Truncates the label when the button is given a maxW */}
+                <Span truncate>{label}</Span>
                 <Icon as={FaCaretDown} w={4} h={4} />
               </Button>
             </Popover.Trigger>
