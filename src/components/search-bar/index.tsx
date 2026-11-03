@@ -284,7 +284,7 @@ const SearchBar = ({
       )}
       {isOpen && showSearchHistory && historyList && (
         <DropdownContent>
-          <List.Root as='ul' ml={0}>
+          <List.Root as='ul' pl={0}>
             <List.Item
               px={2}
               mx={2}

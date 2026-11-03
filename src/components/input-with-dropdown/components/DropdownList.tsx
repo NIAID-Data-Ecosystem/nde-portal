@@ -1,5 +1,6 @@
-import React from 'react';
 import { List } from '@chakra-ui/react';
+import React from 'react';
+
 import { useDropdownContext } from '..';
 
 interface DropdownListProps extends List.RootProps {}
@@ -15,7 +16,7 @@ export const DropdownList: React.FC<DropdownListProps> = ({
   }
 
   return (
-    <List.Root as='ul' ml={0} {...props}>
+    <List.Root as='ul' pl={0} {...props}>
       {children}
     </List.Root>
   );

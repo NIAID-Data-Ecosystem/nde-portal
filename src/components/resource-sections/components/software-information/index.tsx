@@ -126,7 +126,7 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
             <Stat.Root>
               <Stat.Label>Software Help</Stat.Label>
               <dd>
-                <List.Root as='ul' ml={0}>
+                <List.Root as='ul' pl={0}>
                   {softwareHelp.map(help => {
                     if (!help.url) {
                       return <></>;
@@ -149,7 +149,7 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
             <Stat.Root>
               <Stat.Label>Discussion and Issues</Stat.Label>
               <dd>
-                <List.Root as='ul' ml={0}>
+                <List.Root as='ul' pl={0}>
                   {discussionUrl.map(url => {
                     return (
                       <List.Item key={url}>

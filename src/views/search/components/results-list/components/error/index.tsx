@@ -1,10 +1,10 @@
+import { Box, Button, Flex, List, Text } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 import React from 'react';
-import { Box, Button, Flex, Text, List } from '@chakra-ui/react';
+import { validateQueryString } from 'src/components/advanced-search/components/EditableQueryText/utils';
 import { ErrorCTA } from 'src/components/error';
 import { Error } from 'src/components/error';
 import { getQueryStatusError } from 'src/components/error/utils';
-import { validateQueryString } from 'src/components/advanced-search/components/EditableQueryText/utils';
-import { useRouter } from 'next/router';
 import { Link } from 'src/components/link';
 
 interface ErrorMessageProps {
@@ -75,6 +75,7 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
                 onClick={() => router.reload()}
                 variant='outline'
                 size='md'
+                colorPalette='primary'
               >
                 Retry
               </Button>

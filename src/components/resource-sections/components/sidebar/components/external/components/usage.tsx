@@ -1,4 +1,4 @@
-import { VStack } from '@chakra-ui/react';
+import { Text, VStack } from '@chakra-ui/react';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import React from 'react';
 import { InfoLabel } from 'src/components/info-label';
@@ -40,9 +40,9 @@ export const DataUsage: React.FC<DataUsageProps> = ({
       {usageAgreement.map((usageInfo, idx) => {
         if (!usageInfo?.url)
           return (
-            <React.Fragment key={'ua' + idx}>
+            <Text key={'ua' + idx}>
               {usageInfo?.name || 'View usage agreement'}
-            </React.Fragment>
+            </Text>
           );
         return (
           <Link key={'ua' + idx} href={usageInfo?.url} isExternal>

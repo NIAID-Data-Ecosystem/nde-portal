@@ -134,7 +134,7 @@ export const Search = ({
             </Box>
           </Flex>
           <Field.ErrorText justifyContent='flex-end' color='error'>
-            <List.Root as='ul'>
+            <List.Root as='ul' pl={0}>
               {/* This is my error message */}
               {errors.map((error, index) => (
                 <List.Item key={index}>

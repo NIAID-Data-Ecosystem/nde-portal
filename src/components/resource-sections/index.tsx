@@ -292,7 +292,7 @@ const Sections = ({
               <>
                 {/* Downloads for computational tools is a list of links. */}
                 {data?.downloadUrl && (
-                  <List.Root as='ul'>
+                  <List.Root as='ul' pl={0} fontSize='sm'>
                     {data.downloadUrl.map(({ name }) => {
                       return (
                         <List.Item key={name}>

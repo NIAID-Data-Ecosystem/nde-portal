@@ -50,6 +50,7 @@ export const DetailsAccordion = ({
   headingLevel: HeadingTag,
   triggerProps,
   bodyProps,
+  size = 'sm',
   ...props
 }: DetailsAccordionProps) => {
   const trigger = (
@@ -77,14 +78,16 @@ export const DetailsAccordion = ({
       lazyMount
       unmountOnExit
       variant='plain'
-      size='sm'
+      size={size}
       {...props}
     >
       <Accordion.Item value={ITEM_VALUE}>
         {HeadingTag ? <HeadingTag>{trigger}</HeadingTag> : trigger}
 
         <Accordion.ItemContent>
-          <Accordion.ItemBody {...bodyProps}>{children}</Accordion.ItemBody>
+          <Accordion.ItemBody px='var(--accordion-padding-x)' {...bodyProps}>
+            {children}
+          </Accordion.ItemBody>
         </Accordion.ItemContent>
       </Accordion.Item>
     </Accordion.Root>

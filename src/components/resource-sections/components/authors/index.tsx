@@ -156,14 +156,19 @@ const ResourceAuthors = ({
   return (
     <DetailsAccordion
       summary={summary}
-      fontSize='sm'
       borderBottom='1px solid'
       borderColor='gray.200'
+      fontSize='sm'
+      bodyProps={{ bg: 'gray.50' }}
+      css={{
+        '--accordion-padding-x': 'var(--chakra-spacing-6)',
+      }}
     >
       <List.Root
         flexDirection={showAsList ? 'column' : 'row'}
         flexWrap='wrap'
         lineHeight='moderate'
+        pl={0}
       >
         {authors.map((author, i) => {
           const { affiliation, role } = author;
