@@ -113,32 +113,24 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
           schemaProperty?.description?.['Dataset'] ||
           '';
         return (
-          <Tag.Root
+          <Tooltip
             key={`tag-${id}-${label}`}
-            size='md'
-            variant='subtle'
-            borderRadius='full'
-            colorPalette={colorPalette}
-            // darker for variableMeasured
-            color={`${colorPalette}.${
-              property === 'variableMeasured' ? '900' : '700'
-            }`}
-            m={0.5}
-            aria-disabled={disabled}
-            opacity={disabled ? 0.65 : 1}
+            content={
+              disabled ? `No ${label.toLocaleLowerCase()} data.` : description
+            }
           >
-            <Tooltip
-              content={
-                disabled ? `No ${label.toLocaleLowerCase()} data.` : description
-              }
+            <Tag.Root
+              size='md'
+              variant='subtle'
+              borderRadius='full'
+              colorPalette={colorPalette}
+              m={0.5}
+              aria-disabled={disabled}
+              opacity={disabled ? 0.65 : 1}
             >
-              <Flex alignItems='center'>
-                <Tag.Label>
-                  <Text color='inherit'>{label}</Text>
-                </Tag.Label>
-              </Flex>
-            </Tooltip>
-          </Tag.Root>
+              <Tag.Label>{label}</Tag.Label>
+            </Tag.Root>
+          </Tooltip>
         );
       })}
     </Flex>

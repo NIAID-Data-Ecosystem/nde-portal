@@ -134,7 +134,7 @@ export const RelatedResourceBlock = ({
                       variant='subtle'
                       whiteSpace='nowrap'
                     >
-                      {type}
+                      <Tag.Label>{type}</Tag.Label>
                     </Tag.Root>
                   )}
 
@@ -147,7 +147,7 @@ export const RelatedResourceBlock = ({
                       variant='subtle'
                       whiteSpace='nowrap'
                     >
-                      {additionalType}
+                      <Tag.Label>{additionalType}</Tag.Label>
                     </Tag.Root>
                   )}
                 </HStack>

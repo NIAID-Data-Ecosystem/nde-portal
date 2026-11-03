@@ -226,7 +226,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
                 colorPalette={colorPalette}
                 rounded='full'
               >
-                {count?.toLocaleString('en-US')}
+                <Tag.Label>{count?.toLocaleString('en-US')}</Tag.Label>
               </Tag.Root>
             )}
           </LabelSkeleton>

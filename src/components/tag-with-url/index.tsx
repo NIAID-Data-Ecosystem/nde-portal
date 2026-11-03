@@ -4,7 +4,7 @@ import React from 'react';
 import { FaSquareArrowUpRight } from 'react-icons/fa6';
 import type { UrlObject } from 'url';
 
-interface TagWithUrlProps extends Tag.RootProps {
+export interface TagWithUrlProps extends Tag.RootProps {
   /** Where the tag links to. Without one it renders as plain text. */
   href?: string | UrlObject | null;
   /** Optional prefix shown before `children`, e.g. `'DOI |'`. Never underlined. */

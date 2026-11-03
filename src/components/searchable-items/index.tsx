@@ -2,7 +2,6 @@ import {
   Button,
   ButtonProps,
   Flex,
-  Tag,
   useControllableState,
 } from '@chakra-ui/react';
 import type { ParsedUrlQueryInput } from 'querystring';
@@ -12,6 +11,7 @@ import {
   ScrollContainer,
   ScrollContainerProps,
 } from 'src/components/scroll-container';
+import type { TagWithUrlProps } from 'src/components/tag-with-url';
 import { TagWithUrl } from 'src/components/tag-with-url';
 
 export interface SearchableItem {
@@ -49,8 +49,8 @@ export interface SearchableItemsProps
    */
   generateButtonLabel?: (limit: number, length: number) => string;
 
-  colorPalette?: Tag.RootProps['colorPalette'];
-  tagColor?: Tag.RootProps['color'];
+  colorPalette?: TagWithUrlProps['colorPalette'];
+  tagColor?: TagWithUrlProps['color'];
   linkColor?: ButtonProps['color'];
 
   /** Expanded state for controlled mode. Omit it to let the component own it. */
