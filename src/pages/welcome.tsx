@@ -57,7 +57,7 @@ const BookmarkIcon = (props: IconProps) => (
 
 const WELCOME_COPY = {
   page: {
-    title: 'Welcome to your NIAID Data Ecosystem account',
+    title: 'Welcome',
   },
   provider: {
     loggedInWith: 'You logged in with',
@@ -85,8 +85,7 @@ const WELCOME_COPY = {
       ] as ReactNode[],
     },
     updates: {
-      title:
-        "Choose the updates you'd like to receive from the NIAID Data Ecosystem.",
+      title: 'Set your preferences',
       subtitle: (
         <>
           You can change your preferences at any time in{' '}
