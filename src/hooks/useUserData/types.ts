@@ -31,6 +31,14 @@ export type UserProfile = UserPreferences & {
   updated: string;
   name: string;
   email?: string;
+  // Set to true once the user saves settings on the welcome page. Kept out of
+  // UserPreferences so Settings page toggles never re-send (and overwrite) it.
+  onboarding_complete?: boolean;
+};
+
+export type SavePreferencesOptions = {
+  // Also mark onboarding complete (welcome page's "Save Settings").
+  completeOnboarding?: boolean;
 };
 
 // Account-level profile fields from the /user/data route (not preferences or

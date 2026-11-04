@@ -23,6 +23,7 @@ import {
 import { SearchHistoryItem } from './components/search-history-item';
 import { CheckboxList, CheckboxListProps } from '../checkbox-list';
 import { getTabIdFromResourceType } from 'src/views/search/config/tabs';
+import { sortTypesByPriority } from 'src/views/search/utils/get-default-tab';
 import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-string';
 import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
 import { APIResourceType } from 'src/utils/formatting/formatResourceType';
@@ -176,7 +177,12 @@ const SearchBar = ({
       .filter(item => item.property === '@type')
       ?.map(filter => filter.value);
 
-    const tab = getTabIdFromResourceType(filters[0] as APIResourceType);
+    // Open the tab of the highest priority selected type. The search page
+    // picks the same tab when that type has results, so it doesn't switch tabs
+    // once the counts load.
+    const tab = getTabIdFromResourceType(
+      sortTypesByPriority(filters)[0] as APIResourceType,
+    );
 
     router.push({
       pathname: `/search`,

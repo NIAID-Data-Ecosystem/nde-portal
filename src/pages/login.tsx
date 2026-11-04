@@ -6,7 +6,6 @@ import {
   Heading,
   HStack,
   Icon,
-  IconProps,
   Image,
   Link,
   List,
@@ -17,9 +16,9 @@ import {
 } from '@chakra-ui/react';
 import { FaCheck } from 'react-icons/fa6';
 import { useRouter } from 'next/router';
+import { ProviderIcon } from 'src/components/auth/provider-icon';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { useAuth } from 'src/hooks/useAuth';
-import { KNOWN_PROVIDERS } from 'src/utils/auth/config';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
 const ListItemContent = ({ children }: { children: React.ReactNode }) => (
@@ -29,27 +28,6 @@ const ListItemContent = ({ children }: { children: React.ReactNode }) => (
     <Text fontSize='inherit'>{children}</Text>
   </HStack>
 );
-
-const ProviderIcon = ({
-  providerId,
-  ...props
-}: IconProps & { providerId: string }) => {
-  const icon = KNOWN_PROVIDERS[providerId.toLowerCase()]?.icon;
-
-  if (icon) {
-    return (
-      <Icon
-        as={icon.as}
-        color={icon.color}
-        boxSize={5}
-        aria-hidden='true'
-        {...props}
-      />
-    );
-  }
-
-  return <></>;
-};
 
 function LoginPage() {
   const router = useRouter();

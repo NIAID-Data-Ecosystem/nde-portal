@@ -365,6 +365,89 @@ describe('useUserData', () => {
   });
 });
 
+describe('useUserData onboarding', () => {
+  // Profile GET returns `profile`; PUT bodies are recorded and echoed back.
+  const createProfileFetch = (profile: Record<string, unknown>) => {
+    const putBodies: Record<string, unknown>[] = [];
+    const fetchMock = jest.fn((url: string, init?: RequestInit) => {
+      const path = url.replace(/^https?:\/\/[^/]+/, '');
+      const method = init?.method ?? 'GET';
+      let status = 404;
+      let body: unknown = { error: 'not found' };
+      if (path === '/user/data' && method === 'GET') {
+        status = 200;
+        body = profile;
+      } else if (path === '/user/data' && method === 'PUT') {
+        const parsed = JSON.parse(String(init?.body));
+        putBodies.push(parsed);
+        status = 200;
+        body = parsed;
+      }
+      return Promise.resolve({
+        status,
+        ok: status === 200,
+        text: async () => JSON.stringify(body),
+      } as Response);
+    });
+    return { fetchMock, putBodies };
+  };
+
+  beforeEach(() => {
+    jest.spyOn(console, 'group').mockImplementation(() => {});
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.spyOn(console, 'groupEnd').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('is null until the profile loads, then reflects onboarding_complete', async () => {
+    const { fetchMock } = createProfileFetch({ onboarding_complete: true });
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    const { result } = renderHook(() => useUserData(), { wrapper });
+    expect(result.current.onboardingComplete).toBeNull();
+    await waitFor(() => expect(result.current.onboardingComplete).toBe(true));
+  });
+
+  it('treats a profile without onboarding_complete as not onboarded', async () => {
+    const { fetchMock } = createProfileFetch({});
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    const { result } = renderHook(() => useUserData(), { wrapper });
+    await waitFor(() => expect(result.current.onboardingComplete).toBe(false));
+  });
+
+  it('sends onboarding_complete: true only when completing onboarding', async () => {
+    const { fetchMock, putBodies } = createProfileFetch({
+      onboarding_complete: false,
+    });
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    const { result } = renderHook(() => useUserData(), { wrapper });
+    await waitFor(() => expect(result.current.onboardingComplete).toBe(false));
+
+    await act(async () => {
+      await result.current.savePreferences({ beta: true });
+    });
+    expect(putBodies[0]).not.toHaveProperty('onboarding_complete');
+    expect(result.current.onboardingComplete).toBe(false);
+
+    await act(async () => {
+      await result.current.savePreferences(
+        { beta: true },
+        { completeOnboarding: true },
+      );
+    });
+    expect(putBodies[1]).toMatchObject({
+      beta: true,
+      onboarding_complete: true,
+    });
+    expect(result.current.onboardingComplete).toBe(true);
+  });
+});
+
 describe('findSavedQueryIndex', () => {
   const a = makeQuery('a', 1);
   const b: SavedQuery = {
