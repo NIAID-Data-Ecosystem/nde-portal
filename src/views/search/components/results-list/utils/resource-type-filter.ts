@@ -1,17 +1,15 @@
-import { SelectedFilterValueType } from '../../filters/types';
+import {
+  SelectedFilterType,
+  SelectedFilterValueType,
+} from '../../filters/types';
 
 /*
  * Returns the `@type` values a results section queries with.
  *
- * A section only lists records of its own `sectionTypes`, so the selected
- * `@type` filter narrows those types rather than replacing them. Querying with
- * every selected type (e.g. after "Select all" in the search bar) returns a
- * page of mixed types that the section then trims to its own, often leaving
- * nothing to show.
+ * When loading a specific tab type, only consider this section's types for the `@type` filter.
+ * example:
+ * getSectionTypeFilter(['Sample'], ['Dataset', 'Sample']) returns ['Sample'] when on the Sample page
  *
- * When the selected types exclude all of the section's types, they are
- * returned unchanged: the query then matches none of the section's records, so
- * the section is correctly empty.
  */
 export const getSectionTypeFilter = (
   sectionTypes: string[],
@@ -25,3 +23,19 @@ export const getSectionTypeFilter = (
 
   return matchingTypes.length > 0 ? matchingTypes : selectedTypes;
 };
+
+/*
+ * Returns the filters a results section queries with: the selected filters,
+ * with `@type` scoped by `getSectionTypeFilter`.
+ *
+ * Anything that prefetches a section's results must build its filters here
+ * too. The serialized filters are part of the query key, so building them any
+ * other way gives a key the section never reads.
+ */
+export const getSectionFilters = (
+  sectionTypes: string[],
+  selectedFilters: SelectedFilterType = {},
+): SelectedFilterType => ({
+  ...selectedFilters,
+  '@type': getSectionTypeFilter(sectionTypes, selectedFilters['@type']),
+});

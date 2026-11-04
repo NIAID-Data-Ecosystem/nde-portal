@@ -15,6 +15,18 @@ const PRIORITY_ORDER = {
   DataCollection: 4,
 };
 
+// Helper function to get priority (lower number = higher priority)
+const getPriority = (type: string): number => {
+  return PRIORITY_ORDER[type as keyof typeof PRIORITY_ORDER] || 999;
+};
+
+/**
+ * Sorts resource types by tab priority, highest first. Types with the same
+ * priority keep their order.
+ */
+export const sortTypesByPriority = (types: string[]): string[] =>
+  [...types].sort((a, b) => getPriority(a) - getPriority(b));
+
 /**
  * Determines which tab should be active based on search results and user-selected filters
  *
@@ -31,11 +43,6 @@ export const getDefaultTabId = (
   facetCounts: TypeCount[],
   selectedTypes: string[] = [],
 ): TabType['id'] => {
-  // Helper function to get priority (lower number = higher priority)
-  const getPriority = (type: string): number => {
-    return PRIORITY_ORDER[type as keyof typeof PRIORITY_ORDER] || 999;
-  };
-
   // Helper function to get count for a type
   const getCount = (type: string): number => {
     const count = facetCounts.find(f => f.type === type)?.count || 0;
@@ -57,9 +64,7 @@ export const getDefaultTabId = (
 
     // Case 1b: Multiple types selected
     // Sort selected types by priority
-    const sortedSelectedTypes = [...selectedTypes].sort(
-      (a, b) => getPriority(a) - getPriority(b),
-    );
+    const sortedSelectedTypes = sortTypesByPriority(selectedTypes);
     // Check if any selected type has results
     const hasAnyResults = sortedSelectedTypes.some(type => getCount(type) > 0);
 
@@ -81,9 +86,9 @@ export const getDefaultTabId = (
 
   // Case 2: No type filters -> show highest priority tab with results
   // Get all unique types across all tabs, sorted by priority
-  const allTypes = Array.from(
-    new Set(tabs.flatMap(tab => tab.types.map(t => t.type))),
-  ).sort((a, b) => getPriority(a) - getPriority(b));
+  const allTypes = sortTypesByPriority(
+    Array.from(new Set(tabs.flatMap(tab => tab.types.map(t => t.type)))),
+  );
 
   // Find the highest priority type with results
   for (const type of allTypes) {
