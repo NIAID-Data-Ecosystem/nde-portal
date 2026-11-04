@@ -34,6 +34,7 @@ import { queryFilterObject2String } from '../filters/utils/query-string';
 import { fetchSearchResults, Params } from 'src/utils/api';
 import { defaultQuery, getDefaultSizeForTab } from '../../config/defaultQuery';
 import { SAMPLE_FIELDS, DATA_COLLECTION_FIELDS } from '../../config/fields';
+import { getSectionFilters } from '../results-list/utils/resource-type-filter';
 
 const CAROUSEL_RESULTS_FIELDS = [
   '_meta',
@@ -137,12 +138,22 @@ export const SearchResultsController = ({
 
   const bioSampleTotal = bioSampleAgg.data?.total ?? 0;
 
+  // The Sample and DataCollection prefetches below only help if their params
+  // match the first page the tab's results section requests (see
+  // `SearchResults`), since both share the query key. That means the same
+  // type-scoped filters, and the URL's `use_metadata_score` and
+  // `use_ai_search` as they are, without defaults.
+
   // Prefetch the Sample table query in the background.
   useEffect(() => {
     if (!router.isReady || !SHOW_SAMPLES_TAB) return;
 
-    const sampleExtraFilter = serializedFilters
-      ? `${serializedFilters} AND ${BIOSAMPLE_EXTRA_FILTER}`
+    const sampleFilters =
+      queryFilterObject2String(
+        getSectionFilters(['Sample'], queryParams.filters),
+      ) || '';
+    const sampleExtraFilter = sampleFilters
+      ? `${sampleFilters} AND ${BIOSAMPLE_EXTRA_FILTER}`
       : BIOSAMPLE_EXTRA_FILTER;
 
     const sampleParams: Params = {
@@ -153,8 +164,8 @@ export const SearchResultsController = ({
       sort: defaultQuery.sort,
       size: `${getDefaultSizeForTab('s')}`,
       from: '0',
-      use_metadata_score: 'false',
-      use_ai_search: queryParams.use_ai_search ?? 'false',
+      use_metadata_score: queryParams.shouldUseMetadataScore ? 'true' : 'false',
+      use_ai_search: queryParams.use_ai_search,
     };
 
     queryClient.prefetchQuery({
@@ -165,7 +176,8 @@ export const SearchResultsController = ({
   }, [
     router.isReady,
     queryParams.q,
-    serializedFilters,
+    queryParams.filters,
+    queryParams.shouldUseMetadataScore,
     queryParams.use_ai_search,
     queryClient,
   ]);
@@ -176,14 +188,17 @@ export const SearchResultsController = ({
 
     const dcParams: Params = {
       q: queryParams.q,
-      extra_filter: serializedFilters,
+      extra_filter:
+        queryFilterObject2String(
+          getSectionFilters(['DataCollection'], queryParams.filters),
+        ) || '',
       facets: '',
       fields: DATA_COLLECTION_FIELDS,
       sort: defaultQuery.sort,
       size: `${getDefaultSizeForTab('dc')}`,
       from: '0',
-      use_metadata_score: 'false',
-      use_ai_search: queryParams.use_ai_search ?? 'false',
+      use_metadata_score: queryParams.shouldUseMetadataScore ? 'true' : 'false',
+      use_ai_search: queryParams.use_ai_search,
     };
 
     queryClient.prefetchQuery({
@@ -194,7 +209,8 @@ export const SearchResultsController = ({
   }, [
     router.isReady,
     queryParams.q,
-    serializedFilters,
+    queryParams.filters,
+    queryParams.shouldUseMetadataScore,
     queryParams.use_ai_search,
     queryClient,
   ]);

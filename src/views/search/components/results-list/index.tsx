@@ -76,6 +76,7 @@ import {
 import { TABS_WITH_VIEW_MODE } from '../../config/view-mode';
 import { useViewMode } from '../../hooks/useViewMode';
 import { ViewModeRadio } from './components/toolbar/components/view-mode-radio';
+import { getSectionFilters } from './utils/resource-type-filter';
 
 const readFromStorage = (key: string, fallback: string[]): string[] => {
   if (typeof window === 'undefined') return fallback;
@@ -316,6 +317,11 @@ export const SearchResults = ({
     isComputationalToolTable ? getInitialCTColumnOrder() : ALL_CT_COLUMN_IDS,
   );
 
+  // Drops results that aren't one of this section's types. Most queries are
+  // already scoped to them, but when the selected `@type` filter excludes
+  // every one of them, the section queries the selected types instead (see
+  // `getSectionTypeFilter`). Dropping those results is what leaves the
+  // section empty, so this is still needed.
   const selectByType = useCallback(
     (data: FetchSearchResultsResponse | undefined) => {
       if (types && types.length > 0 && data) {
@@ -341,10 +347,7 @@ export const SearchResults = ({
       from,
       size,
       sort,
-      filters: {
-        ...urlQueryParams.filters,
-        '@type': [...(urlQueryParams?.filters?.['@type'] || types || [])],
-      },
+      filters: getSectionFilters(types, urlQueryParams.filters),
       // For the Samples tab, append the BioSample constraint via additionalFilter.
       additionalFilter: isSamplesTab ? BIOSAMPLE_EXTRA_FILTER : undefined,
       fields,
