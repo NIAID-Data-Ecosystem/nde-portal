@@ -1,6 +1,6 @@
 import { tabs } from '../config/tabs';
 import { DEFAULT_TAB_ID } from '../context/search-tabs-context';
-import { getDefaultTabId } from './get-default-tab';
+import { getDefaultTabId, sortTypesByPriority } from './get-default-tab';
 
 const counts = (entries: Record<string, number>) =>
   Object.entries(entries).map(([type, count]) => ({ type, count }));
@@ -70,5 +70,32 @@ describe('getDefaultTabId', () => {
         ]),
       ).toBe('s');
     });
+  });
+});
+
+describe('sortTypesByPriority', () => {
+  it('sorts the search bar\'s "Select all" types so Dataset comes first', () => {
+    // The order the search bar's Type menu lists them in.
+    expect(
+      sortTypesByPriority([
+        'ComputationalTool',
+        'DataCollection',
+        'Dataset',
+        'ResourceCatalog',
+        'Sample',
+      ]),
+    ).toEqual([
+      'Dataset',
+      'ResourceCatalog',
+      'ComputationalTool',
+      'Sample',
+      'DataCollection',
+    ]);
+  });
+
+  it('does not mutate the input', () => {
+    const types = ['Sample', 'Dataset'];
+    sortTypesByPriority(types);
+    expect(types).toEqual(['Sample', 'Dataset']);
   });
 });
