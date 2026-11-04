@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [7.4.1](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v7.4.0...v7.4.1) (2026-11-04)
+
+### 🐛 Bugfixes
+
+* **search:** type menu selection and align default tab with filters [#587](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/587) ([#588](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/588)) ([e3ffed6](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/e3ffed6b2ac0c8e559a4834183a34184e68e53b3))
+
 ## [7.4.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v7.3.1...v7.4.0) (2026-10-20)
 
 
