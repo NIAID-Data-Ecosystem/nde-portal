@@ -76,6 +76,7 @@ import {
 import { TABS_WITH_VIEW_MODE } from '../../config/view-mode';
 import { useViewMode } from '../../hooks/useViewMode';
 import { ViewModeRadio } from './components/toolbar/components/view-mode-radio';
+import { getSectionTypeFilter } from './utils/resource-type-filter';
 
 const readFromStorage = (key: string, fallback: string[]): string[] => {
   if (typeof window === 'undefined') return fallback;
@@ -343,7 +344,10 @@ export const SearchResults = ({
       sort,
       filters: {
         ...urlQueryParams.filters,
-        '@type': [...(urlQueryParams?.filters?.['@type'] || types || [])],
+        '@type': getSectionTypeFilter(
+          types,
+          urlQueryParams?.filters?.['@type'],
+        ),
       },
       // For the Samples tab, append the BioSample constraint via additionalFilter.
       additionalFilter: isSamplesTab ? BIOSAMPLE_EXTRA_FILTER : undefined,
