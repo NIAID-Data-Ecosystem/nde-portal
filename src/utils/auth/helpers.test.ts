@@ -23,8 +23,7 @@ describe('auth config', () => {
     expect(getProviderLabel('orcid')).toBe('ORCID');
     expect(getProviderLabel('google')).toBe('Google');
     expect(getProviderLabel('microsoft')).toBe('Microsoft');
-    expect(getProviderLabel('nih-login_provider')).toBe('Nih Login Provider');
-    expect(getProviderLabel('okta')).toBe('NIH Login');
+    expect(getProviderLabel('okta')).toBe('Okta');
   });
 
   it('builds login error messages for each known provider', () => {
@@ -35,7 +34,7 @@ describe('auth config', () => {
       'Signing in with Microsoft could not be completed. Please try signing in again.',
     );
     expect(LOGIN_ERROR_MESSAGES.okta_unavailable).toBe(
-      'NIH Login is temporarily unavailable. Please try again in a moment.',
+      'Okta is temporarily unavailable. Please try again in a moment.',
     );
     expect(Object.keys(LOGIN_ERROR_MESSAGES)).toEqual(
       expect.arrayContaining([
@@ -52,7 +51,7 @@ describe('auth config', () => {
     expect(
       buildLoginErrorMessages({
         okta: {
-          label: 'NIH Login',
+          label: 'Okta',
           errorMessages: {
             okta_access_denied: 'No access.',
             okta_unavailable: 'Custom unavailable.',
@@ -62,7 +61,7 @@ describe('auth config', () => {
     ).toEqual({
       okta_unavailable: 'Custom unavailable.',
       okta_login_failed:
-        'Signing in with NIH Login could not be completed. Please try signing in again.',
+        'Signing in with Okta could not be completed. Please try signing in again.',
       okta_access_denied: 'No access.',
     });
   });
@@ -91,7 +90,8 @@ describe('auth config', () => {
   it('normalizes configured providers and builds urls from custom env', () => {
     process.env.NEXT_PUBLIC_API_URL = 'https://api.example.org/v1';
     process.env.NEXT_PUBLIC_BASE_URL = 'https://portal.example.org';
-    process.env.NEXT_PUBLIC_AUTH_PROVIDERS = ' github, , ORCID , custom-id ';
+    process.env.NEXT_PUBLIC_AUTH_PROVIDERS =
+      ' github, , ORCID , Okta, custom-id ';
 
     const config = getAuthConfig();
 
@@ -99,6 +99,12 @@ describe('auth config', () => {
     expect(config.loginProviders).toEqual([
       { id: 'github', label: 'GitHub' },
       { id: 'orcid', label: 'ORCID' },
+      {
+        id: 'okta',
+        label: 'Okta',
+        loginText: 'Use another sign-in method',
+        methodIcons: ['google', 'microsoft', 'orcid'],
+      },
       { id: 'custom-id', label: 'Custom Id' },
     ]);
     expect(config.logoutUrl).toBe(
