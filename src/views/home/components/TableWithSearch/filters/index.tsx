@@ -15,7 +15,7 @@ interface TableFiltersProps {
 }
 
 const SHARED_PROPS = {
-  buttonProps: { colorPalette: 'gray' },
+  buttonProps: { colorPalette: 'gray', flex: 1 },
   colorPalette: 'primary',
   flex: { base: 1, sm: 'unset' },
 };

@@ -6,11 +6,8 @@ Ported from the v2 `Card` multi-part style config. The v2 `container` slot is
 called `root` in v3's card anatomy; the rest map across unchanged.
 
 Chakra v3's card base drives all its padding through a `--card-padding` custom
-property, which will compete with the explicit `pt`/`pb`/`mb` rules below.
-Those are kept because they are more specific and they are what the app's
-layouts are built around.
+property.
 */
-// [TO DO]: See if custom styles (commented) from previous implementation are necessary
 
 export const cardSlotRecipe = defineSlotRecipe({
   slots: cardAnatomy.keys(),
