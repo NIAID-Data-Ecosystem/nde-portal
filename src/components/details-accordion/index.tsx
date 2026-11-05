@@ -27,14 +27,16 @@ export interface DetailsAccordionProps
 }
 
 // The show/hide label and +/- icon. `data-accordion-control` lets the accordion slot recipe underline the label while the trigger is hovered.
-const DetailsAccordionControl = ({
+export const DetailsAccordionControl = ({
   showLabel,
   hideLabel,
 }: Pick<DetailsAccordionProps, 'showLabel' | 'hideLabel'>) => {
   const { expanded } = useAccordionItemContext();
   return (
     <HStack gap={1} flexShrink={0} fontSize='xs' fontWeight='light'>
-      <Text data-accordion-control>{expanded ? hideLabel : showLabel}</Text>
+      {showLabel && hideLabel && (
+        <Text data-accordion-control>{expanded ? hideLabel : showLabel}</Text>
+      )}
       {/* `as` rather than a child: react-icons don't forward refs, and Icon's asChild path hands the child one. */}
       <Icon as={expanded ? FaMinus : FaPlus} />
     </HStack>
