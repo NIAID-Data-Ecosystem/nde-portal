@@ -128,7 +128,7 @@ export const Sidebar = ({
                           mt={1.5}
                           lineHeight='moderate'
                         />
-                        <Link as='span' fontSize='sm' asChild>
+                        <Link asChild fontSize='sm' wordBreak='break-all'>
                           <NextLink
                             href={{
                               pathname: '/search',
