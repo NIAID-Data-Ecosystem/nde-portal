@@ -4,6 +4,7 @@ import {
   Card,
   Flex,
   Heading,
+  HStack,
   Icon,
   Image,
   Link,
@@ -18,6 +19,7 @@ import { FaCheck } from 'react-icons/fa6';
 import { ProviderIcon } from 'src/components/auth/provider-icon';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { useAuth } from 'src/hooks/useAuth';
+import { getProviderLabel } from 'src/utils/auth/helpers';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
 const ListItemContent = ({ children }: { children: React.ReactNode }) => (
@@ -121,9 +123,12 @@ function LoginPage() {
                   {loginProviders.map(provider => (
                     <Button
                       key={provider.id}
-                      colorPalette='niaid'
+                      colorScheme='gray'
                       variant='outline'
-                      size='lg'
+                      size='md'
+                      h='auto'
+                      minH={10}
+                      py={2}
                       borderColor='gray.100'
                       _hover={{
                         bg: 'niaid.50',
@@ -135,8 +140,27 @@ function LoginPage() {
                       }}
                       onClick={() => login(provider.id)}
                     >
-                      <ProviderIcon providerId={provider.id} />
-                      Log In With {provider.label}
+                      <Stack as='span' gap={2} alignItems='center'>
+                        <span>
+                          {provider.loginText ??
+                            `Log In with ${provider.label}`}
+                        </span>
+                        {provider.methodIcons && (
+                          <HStack as='span' gap={2}>
+                            {provider.methodIcons.map(methodId => (
+                              // Labelled so the button's accessible name lists
+                              // the sign-in methods shown.
+                              <ProviderIcon
+                                key={methodId}
+                                providerId={methodId}
+                                role='img'
+                                aria-hidden={false}
+                                aria-label={getProviderLabel(methodId)}
+                              />
+                            ))}
+                          </HStack>
+                        )}
+                      </Stack>
                     </Button>
                   ))}
                 </Stack>

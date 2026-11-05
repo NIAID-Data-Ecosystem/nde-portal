@@ -8,13 +8,23 @@ import { IconType } from 'react-icons';
 export interface AuthLoginProvider {
   id: string;
   label: string;
+  loginText?: string;
+  methodIcons?: string[];
 }
 
 export interface KnownProvider {
-  /** Display name, e.g. used in "Log In With <label>" */
+  /** Display name, e.g. used in "Log In with <label>" */
   label: string;
   /** Brand icon on the login button. Providers without one show no icon. */
   icon?: { component: IconType; color: string };
+  /** Login button text. Defaults to "Log In with <label>". */
+  loginText?: string;
+  /**
+   * Ids of other known providers whose icons are shown in a row below the
+   * login button text, e.g. the sign-in methods Okta offers. Ids without a
+   * known icon are skipped.
+   */
+  methodIcons?: string[];
   /**
    * Extra `login_error` code -> message pairs for this provider, e.g.
    * `{ okta_access_denied: '...' }`. Overrides a generated message for the

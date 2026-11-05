@@ -100,7 +100,7 @@ test.describe('a11y: Login — logged out (provider buttons)', () => {
       page.getByRole('button', { name: /log in with github/i }),
     ).toBeVisible();
     await expect(
-      page.getByRole('button', { name: /log in with orcid/i }),
+      page.getByRole('button', { name: /use another sign-in method/i }),
     ).toBeVisible();
 
     await runSharedChecks(page, testInfo, 'logged-out');

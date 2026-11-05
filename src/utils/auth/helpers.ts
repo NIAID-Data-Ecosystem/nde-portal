@@ -86,6 +86,8 @@ export function getAuthConfig(): AuthConfig {
   const loginProviders = configuredProviders.map(providerId => ({
     id: providerId,
     label: getProviderLabel(providerId),
+    loginText: KNOWN_PROVIDERS[providerId]?.loginText,
+    methodIcons: KNOWN_PROVIDERS[providerId]?.methodIcons,
   }));
 
   const getLoginUrl = (providerId: string, nextPath = '/') => {
