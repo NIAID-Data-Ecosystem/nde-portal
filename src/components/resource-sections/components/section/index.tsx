@@ -1,27 +1,21 @@
 import {
-  Accordion,
   Box,
   BoxProps,
   FlexProps,
   Heading,
   HeadingProps,
-  Icon,
   Skeleton,
   Text,
   TextProps,
 } from '@chakra-ui/react';
 import React from 'react';
-import { FaMinus, FaPlus } from 'react-icons/fa6';
-
-import { StyledSectionHead, StyledSectionHeading } from './styles';
+import { DetailsAccordion } from 'src/components/details-accordion';
 
 interface SectionProps extends BoxProps {
   id: string;
   name?: string;
   color?: string;
   bg?: string;
-  isCollapsible?: boolean;
-  isDefaultOpen?: boolean;
   loading?: boolean;
 }
 
@@ -32,8 +26,6 @@ export const Section: React.FC<SectionProps> = ({
   children,
   color,
   bg,
-  isCollapsible = false,
-  isDefaultOpen = true,
   ...props
 }) => {
   const Content = () => {
@@ -51,74 +43,33 @@ export const Section: React.FC<SectionProps> = ({
 
   return (
     <Box as='section' id={id}>
-      {/* if collapsible, the section is an accordion with the section name as the button. */}
-      {isCollapsible ? (
-        <>
-          <Accordion.Root
-            collapsible
-            variant='enclosed'
-            borderRadius='none'
-            borderX={'none'}
-            defaultValue={isDefaultOpen ? ['section-0'] : undefined}
-          >
-            <Accordion.Item
-              borderColor='transparent'
-              border='none'
-              value='section-0'
+      <DetailsAccordion
+        variant='ruled'
+        css={{
+          '--bg-currentcolor': 'white',
+        }}
+        summary={
+          name && (
+            <Text
+              fontFamily='heading'
+              fontWeight='semibold'
+              fontSize='md'
+              color='text.heading'
+              lineHeight='moderate'
             >
-              <Accordion.ItemContext>
-                {({ expanded }) => (
-                  <>
-                    {name && (
-                      <h2>
-                        <Accordion.ItemTrigger
-                          aria-label={`show more details about ${name}`}
-                          bg={bg || expanded ? 'bg.alt' : 'white'}
-                          color={color}
-                          _hover={{ bg: props?._hover?.bg || 'bg.alt' }}
-                          _expanded={{
-                            borderColor: 'bg.alt',
-                          }}
-                        >
-                          {name && (
-                            <StyledSectionHeading flex={1} textAlign='left'>
-                              {name}
-                            </StyledSectionHeading>
-                          )}
-                          <Icon
-                            as={expanded ? FaMinus : FaPlus}
-                            fontSize='xs'
-                          />
-                        </Accordion.ItemTrigger>
-                      </h2>
-                    )}
-                    <Accordion.ItemContent bg='white'>
-                      <Accordion.ItemBody>
-                        <Content />
-                      </Accordion.ItemBody>
-                    </Accordion.ItemContent>
-                  </>
-                )}
-              </Accordion.ItemContext>
-            </Accordion.Item>
-          </Accordion.Root>
-        </>
-      ) : (
-        <>
-          {name && (
-            <StyledSectionHead color={color} px={4}>
-              <StyledSectionHeading>{name}</StyledSectionHeading>
-            </StyledSectionHead>
-          )}
-
-          <Content />
-        </>
-      )}
+              {name}
+            </Text>
+          )
+        }
+        defaultValue={['details']}
+      >
+        <Content />
+      </DetailsAccordion>
     </Box>
   );
 };
 
-export interface SectionHeaderProps extends FlexProps {
+export interface ContentHeaderProps extends FlexProps {
   title: string;
   subtitle?: string;
   titleProps?: HeadingProps;
@@ -128,12 +79,12 @@ export interface SectionHeaderProps extends FlexProps {
 /**
  * A header for content within the section, which includes a title and subtitle.
  */
-export const SectionHeader = ({
+export const ContentHeader = ({
   title,
   subtitle,
   titleProps,
   subtitleProps,
-}: SectionHeaderProps) => {
+}: ContentHeaderProps) => {
   return (
     <Box>
       {title && (

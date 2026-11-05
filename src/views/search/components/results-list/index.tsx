@@ -441,7 +441,7 @@ export const SearchResults = ({
 
   return (
     <>
-      <VStack borderRadius='semi' bg='white' px={4} py={2}>
+      <VStack borderRadius='semi' px={4} py={2}>
         {/* Toolbar controls: Sort, size, download metadata, and optional extra actions. Whenever a table is being rendered (Samples, and Datasets/Computational Tools/Data Collections in table view) the "Customize Columns" button is injected via the extraActions prop so it appears to the left of Download Metadata. */}
         <SearchResultsToolbar
           id={id}

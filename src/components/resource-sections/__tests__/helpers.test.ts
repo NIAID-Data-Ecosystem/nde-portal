@@ -49,7 +49,6 @@ describe('showSection', () => {
           ui: {
             showInNavigation: true,
             showEmptyState: true,
-            isCollapsible: true,
           },
         }),
         { description: '' } as FormattedResource,
@@ -67,7 +66,6 @@ describe('showSection', () => {
           ui: {
             showInNavigation: false,
             showEmptyState: false,
-            isCollapsible: true,
           },
         }),
         { description: 'value' } as FormattedResource,

@@ -481,8 +481,8 @@ test.describe('a11y: DataCollection resource — populated', () => {
 // first paint. That markup is scanned below.
 //
 // The collapsible `Section` accordions (Overview, Description, Based On,
-// Example of Work, …) are NOT scanned as interaction states: they default to
-// `isDefaultOpen`, so their expanded panels are already covered by the resting
+// Example of Work, …) are NOT scanned as interaction states: they are always
+// open by default, so their expanded panels are already covered by the resting
 // scan, and toggling them only removes markup.
 
 test.describe('a11y: DataCollection resource — action process details', () => {

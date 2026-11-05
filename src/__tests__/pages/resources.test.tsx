@@ -70,7 +70,6 @@ jest.mock('src/components/resource-sections/resource-sections', () => ({
         hash: 'overview',
         properties: ['about'],
         ui: {
-          isCollapsible: true,
           showInNavigation: true,
           showEmptyState: true,
         },
@@ -80,7 +79,6 @@ jest.mock('src/components/resource-sections/resource-sections', () => ({
         hash: 'description',
         properties: ['description'],
         ui: {
-          isCollapsible: true,
           showInNavigation: true,
           showEmptyState: false,
         },
@@ -90,7 +88,6 @@ jest.mock('src/components/resource-sections/resource-sections', () => ({
         hash: 'exampleOfWork',
         properties: ['exampleOfWork.schemaVersion'],
         ui: {
-          isCollapsible: true,
           showInNavigation: false,
           showEmptyState: false,
         },
@@ -100,7 +97,6 @@ jest.mock('src/components/resource-sections/resource-sections', () => ({
         hash: 'samples',
         properties: ['sample'],
         ui: {
-          isCollapsible: true,
           showInNavigation: true,
           showEmptyState: false,
         },

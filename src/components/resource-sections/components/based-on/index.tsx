@@ -29,7 +29,7 @@ import { TagWithUrl } from 'src/components/tag-with-url';
 import Tooltip from 'src/components/tooltip';
 import { IsBasedOn, IsBasisFor } from 'src/utils/api/types';
 
-import { SectionHeader, SectionHeaderProps } from '../section';
+import { ContentHeader, ContentHeaderProps } from '../section';
 
 // TruncatedDescription: Component for displaying truncated text with 'read more/less' option
 const TruncatedDescription = React.memo(
@@ -102,8 +102,8 @@ export const BasedOnTable = ({
   id: string;
   loading: boolean;
   caption: string;
-  title?: SectionHeaderProps['title'];
-  subtitle?: SectionHeaderProps['subtitle'];
+  title?: ContentHeaderProps['title'];
+  subtitle?: ContentHeaderProps['subtitle'];
   items: Items;
   columns?: { key: string; title: string; props?: any }[];
 }) => {
@@ -164,7 +164,7 @@ export const BasedOnTable = ({
     <Skeleton loading={!!loading} overflow='auto'>
       <Stack gap={4}>
         {title && (
-          <SectionHeader
+          <ContentHeader
             title={title}
             subtitle={subtitle}
             titleProps={{ as: 'h4' }}
