@@ -14,11 +14,11 @@ import React, { useState } from 'react';
 import { FaUpRightFromSquare } from 'react-icons/fa6';
 import { BadgeWithTooltip } from 'src/components/badges';
 import { DetailsAccordion } from 'src/components/details-accordion';
+import { InternalLinkButton } from 'src/components/internal-link-button';
 import { Link } from 'src/components/link';
 import { MetadataCompatibilitySourceBadge } from 'src/components/metadata-compatibility-source-badge';
 import {
   StyledCard,
-  StyledCardButton,
   StyledCardDescription,
   StyledCardStack,
 } from 'src/components/table-of-contents/components/card';
@@ -144,7 +144,7 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
                     justifyContent={{ base: 'center', sm: 'space-between' }}
                     flexWrap='wrap'
                   >
-                    <StyledCardButton
+                    <InternalLinkButton
                       href={{
                         pathname: '/resources',
                         query: {
@@ -159,10 +159,10 @@ const Main: React.FC<Main> = ({ data, loading, metadata }) => {
                       }
                     >
                       Learn about source
-                    </StyledCardButton>
-                    <StyledCardButton href={sourceObj.searchURL}>
+                    </InternalLinkButton>
+                    <InternalLinkButton href={sourceObj.searchURL}>
                       See search results
-                    </StyledCardButton>
+                    </InternalLinkButton>
                   </ButtonGroup>
                 ) : (
                   <></>

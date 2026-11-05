@@ -1,12 +1,10 @@
 import {
   Badge,
   Box,
-  Button,
   Card,
   Flex,
   Heading,
   HStack,
-  Icon,
   Image,
   Span,
   Text,
@@ -15,8 +13,8 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import NextLink from 'next/link';
 import React from 'react';
-import { FaAngleRight } from 'react-icons/fa6';
 import { Carousel } from 'src/components/carousel';
+import { InternalLinkButton } from 'src/components/internal-link-button';
 import { Link } from 'src/components/link';
 import { fetchEvents, NewsOrEventsObject } from 'src/pages/updates';
 import { formatDate } from 'src/utils/api/helpers';
@@ -204,17 +202,9 @@ export const NewsCarousel = ({
         })}
       </Carousel>
       <Flex flex={1} justifyContent='center' mt={4}>
-        <Button as='span' size='sm' asChild>
-          <NextLink
-            href={{
-              pathname: `/updates`,
-            }}
-            prefetch={false}
-          >
-            All updates
-            <Icon as={FaAngleRight} />
-          </NextLink>
-        </Button>
+        <InternalLinkButton href={{ pathname: `/updates` }}>
+          All updates
+        </InternalLinkButton>
       </Flex>
     </Box>
   ) : (

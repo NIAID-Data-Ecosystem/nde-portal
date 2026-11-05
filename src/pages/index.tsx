@@ -18,6 +18,7 @@ import type { NextPage } from 'next';
 import NextLink from 'next/link';
 import React, { useMemo } from 'react';
 import { FaGithub, FaMagnifyingGlass, FaRegEnvelope } from 'react-icons/fa6';
+import { InternalLinkButton } from 'src/components/internal-link-button';
 import {
   getPageSeoConfig,
   PageContainer,
@@ -214,16 +215,12 @@ const Home: NextPage<{
                       repositories, discover how best to filter results, and
                       more...
                     </Text>
-                    <Button
+                    <InternalLinkButton
                       size='md'
-                      width={{ base: '100%', sm: 'auto' }}
-                      asChild
-                      truncate
+                      href='/knowledge-center/getting-started-with-niaid-data-ecosystem-discovery-portal'
                     >
-                      <NextLink href='/knowledge-center/getting-started-with-niaid-data-ecosystem-discovery-portal'>
-                        Read more about getting started
-                      </NextLink>
-                    </Button>
+                      Read more about getting started
+                    </InternalLinkButton>
                   </VStack>
                 </Flex>
               </Flex>

@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { GetStaticProps, NextPage } from 'next';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Error } from 'src/components/error';
+import { InternalLinkButton } from 'src/components/internal-link-button';
 import { Link } from 'src/components/link';
 import {
   getPageSeoConfig,
@@ -11,7 +12,6 @@ import {
 } from 'src/components/page-container';
 import {
   StyledCard,
-  StyledCardButton,
   StyledCardDescription,
   StyledCardStack,
   StyledCardSubLabel,
@@ -175,7 +175,7 @@ const ProgramCollections: NextPage<{
                         subtitle={`${collection.count.toLocaleString()} resources available`}
                         renderCTA={() =>
                           collection.sourceOrganization?.name ? (
-                            <StyledCardButton
+                            <InternalLinkButton
                               href={{
                                 pathname: `/search`,
                                 query: {
@@ -189,7 +189,7 @@ const ProgramCollections: NextPage<{
                               }}
                             >
                               Search for resources related to {label}
-                            </StyledCardButton>
+                            </InternalLinkButton>
                           ) : (
                             <></>
                           )
