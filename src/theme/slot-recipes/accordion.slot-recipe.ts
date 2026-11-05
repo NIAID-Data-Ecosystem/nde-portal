@@ -34,20 +34,21 @@ export const accordionSlotRecipe = defineSlotRecipe({
       ruled: {
         root: {
           '--accordion-radius': 'radii.none',
+          '--bg-currentcolor': 'var(--chakra-colors-gray-subtle)',
           borderYWidth: '1px',
           divideY: '1px',
           overflow: 'hidden',
+        },
+        item: {
+          _open: {
+            background: 'var(--bg-currentcolor)',
+          },
         },
         itemTrigger: {
           px: 'var(--accordion-padding-x)',
         },
         itemContent: {
           px: 'var(--accordion-padding-x)',
-        },
-        item: {
-          _open: {
-            bg: 'bg.subtle',
-          },
         },
       },
     },

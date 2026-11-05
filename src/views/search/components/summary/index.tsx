@@ -70,8 +70,8 @@ const SummaryGrid = (props: SummaryGridProps) => {
   };
 
   return (
-    <Flex direction='column' width='100%' bg='white' p={4} gap={1}>
-      {props.activeVizIds.length > 0 && (
+    props.activeVizIds.length > 0 && (
+      <Flex direction='column' width='100%' bg='white' p={4} gap={1}>
         <Accordion.Root
           collapsible
           value={accordionIndex}
@@ -168,8 +168,8 @@ const SummaryGrid = (props: SummaryGridProps) => {
             </Accordion.ItemContext>
           </Accordion.Item>
         </Accordion.Root>
-      )}
-    </Flex>
+      </Flex>
+    )
   );
 };
 

@@ -120,13 +120,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
             </Box>
 
             {/* <!-- Filter Tags--> */}
-            <Stack
-              direction='row'
-              // gap={2}
-              // flex={1}
-              // flexWrap='wrap'
-              // minW='300px'
-            >
+            <Stack direction='row'>
               {filters.length > 0 && (
                 <Tag.Root
                   key='clear-all'

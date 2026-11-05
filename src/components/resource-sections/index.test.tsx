@@ -61,7 +61,7 @@ const makeSection = (overrides: Partial<Route>): Route =>
     title: 'Section',
     hash: 'overview',
     properties: [],
-    ui: { isCollapsible: true, showInNavigation: true, showEmptyState: true },
+    ui: { showInNavigation: true, showEmptyState: true },
     ...overrides,
   } as Route);
 

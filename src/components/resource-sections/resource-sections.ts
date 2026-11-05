@@ -32,7 +32,6 @@ export const RESOURCE_SECTIONS = {
         'variableMeasured',
       ],
       ui: {
-        isCollapsible: true,
         showInNavigation: true,
         showEmptyState: true,
       },
@@ -42,7 +41,6 @@ export const RESOURCE_SECTIONS = {
       hash: 'keywords',
       properties: ['keywords'],
       ui: {
-        isCollapsible: true,
         showInNavigation: true,
       },
     },
@@ -51,7 +49,6 @@ export const RESOURCE_SECTIONS = {
       hash: 'applicationCategory',
       properties: ['applicationCategory'],
       ui: {
-        isCollapsible: true,
         showInNavigation: true,
       },
     },
@@ -60,7 +57,6 @@ export const RESOURCE_SECTIONS = {
       hash: 'programmingLanguage',
       properties: ['programmingLanguage'],
       ui: {
-        isCollapsible: true,
         showInNavigation: true,
       },
     },
@@ -70,7 +66,6 @@ export const RESOURCE_SECTIONS = {
       hash: 'description',
       properties: ['description'],
       ui: {
-        isCollapsible: true,
         showInNavigation: true,
       },
     },
@@ -79,7 +74,6 @@ export const RESOURCE_SECTIONS = {
       hash: 'samples',
       properties: ['sample', 'sample.numberOfItems', 'sample.sampleQuantity'],
       ui: {
-        isCollapsible: true,
         showInNavigation: true,
         showEmptyState: false,
       },
@@ -89,7 +83,6 @@ export const RESOURCE_SECTIONS = {
       hash: 'provenance',
       properties: ['includedInDataCatalog', 'url', 'sdPublisher'],
       ui: {
-        isCollapsible: true,
         showInNavigation: true,
         showEmptyState: true,
       },
@@ -99,7 +92,6 @@ export const RESOURCE_SECTIONS = {
       hash: 'downloads',
       properties: ['distribution', 'downloadUrl'],
       ui: {
-        isCollapsible: true,
         showInNavigation: true,
       },
     },
@@ -108,7 +100,6 @@ export const RESOURCE_SECTIONS = {
       hash: 'funding',
       properties: ['funding'],
       ui: {
-        isCollapsible: true,
         showInNavigation: true,
         showEmptyState: true,
       },
@@ -118,7 +109,6 @@ export const RESOURCE_SECTIONS = {
       hash: 'isBasedOn',
       properties: ['isBasedOn'],
       ui: {
-        isCollapsible: true,
         showInNavigation: true,
       },
     },
@@ -131,7 +121,6 @@ export const RESOURCE_SECTIONS = {
         'exampleOfWork.additionalProperty',
       ],
       ui: {
-        isCollapsible: true,
         showInNavigation: true,
       },
     },
@@ -140,7 +129,6 @@ export const RESOURCE_SECTIONS = {
       hash: 'citedBy',
       properties: ['citedBy'],
       ui: {
-        isCollapsible: true,
         showInNavigation: true,
       },
     },
@@ -149,7 +137,6 @@ export const RESOURCE_SECTIONS = {
       hash: 'relatedResources',
       properties: ['hasPart', 'isBasisFor', 'isRelatedTo', 'isPartOf'],
       ui: {
-        isCollapsible: true,
         showInNavigation: true,
       },
     },
@@ -158,7 +145,6 @@ export const RESOURCE_SECTIONS = {
       hash: 'metadata',
       properties: ['rawData'],
       ui: {
-        isCollapsible: true,
         showInNavigation: true,
       },
     },

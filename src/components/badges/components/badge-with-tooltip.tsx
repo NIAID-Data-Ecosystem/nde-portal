@@ -30,12 +30,15 @@ export const BadgeWithTooltip = ({
   preset,
   tooltipProps,
   variant = 'subtle',
+
   ...rest
 }: BadgeWithTooltipProps) => {
+  const tooltipContent = tooltipProps?.content ?? preset?.tooltip;
   return (
     <Tooltip
+      disabled={!tooltipContent || tooltipProps?.disabled}
       {...tooltipProps}
-      content={tooltipProps?.content ?? preset?.tooltip}
+      content={tooltipContent}
     >
       <Badge variant={variant} colorPalette={preset?.colorPalette} {...rest}>
         {children ?? preset?.label}

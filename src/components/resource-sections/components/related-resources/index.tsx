@@ -5,7 +5,7 @@ import React from 'react';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import type { FormattedResource } from 'src/utils/api/types';
 
-import { SectionHeader } from '../section';
+import { ContentHeader } from '../section';
 import { RelatedResourceBlock } from './components/block';
 import { RelatedResourceSectionWrapper } from './components/section';
 
@@ -75,7 +75,7 @@ export const RelatedResources = ({
           {hasIsBasisFor && (
             <>
               <GridItem colSpan={1}>
-                <SectionHeader
+                <ContentHeader
                   title='Basis For'
                   subtitle={schema['isBasisFor']['description']?.[type]}
                 />
@@ -101,7 +101,7 @@ export const RelatedResources = ({
           {hasIsRelatedTo && (
             <>
               <GridItem colSpan={1}>
-                <SectionHeader
+                <ContentHeader
                   title='Related To'
                   subtitle={schema['isRelatedTo']['description']?.[type]}
                 />
@@ -142,7 +142,7 @@ export const RelatedResources = ({
           {hasIsPartOf && (
             <>
               <GridItem colSpan={1} width='100%'>
-                <SectionHeader
+                <ContentHeader
                   title='Part Of'
                   subtitle={schema['isPartOf']['description']?.[type]}
                 />
@@ -168,7 +168,7 @@ export const RelatedResources = ({
           {hasHasPart && (
             <>
               <GridItem colSpan={1}>
-                <SectionHeader
+                <ContentHeader
                   title='Has Part'
                   subtitle={schema['hasPart']['description']?.[type]}
                 />

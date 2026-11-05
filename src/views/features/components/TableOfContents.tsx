@@ -1,9 +1,9 @@
 import { Flex } from '@chakra-ui/react';
 import { useMemo, useState } from 'react';
+import { InternalLinkButton } from 'src/components/internal-link-button';
 import { PageContent } from 'src/components/page-container';
 import {
   StyledCard,
-  StyledCardButton,
   StyledCardDescription,
   StyledCardStack,
 } from 'src/components/table-of-contents/components/card';
@@ -103,13 +103,13 @@ export const TableOfContents = ({ data }: { data?: FeaturedPageProps[] }) => {
                   }
                   renderCTA={() =>
                     page.slug ? (
-                      <StyledCardButton
+                      <InternalLinkButton
                         href={{
                           pathname: `/features/${page.slug}`,
                         }}
                       >
                         {page.title}
-                      </StyledCardButton>
+                      </InternalLinkButton>
                     ) : (
                       <></>
                     )

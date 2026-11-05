@@ -18,7 +18,7 @@ import { useTableSort } from 'src/components/table/hooks/useTableSort';
 import { TagWithUrl } from 'src/components/tag-with-url';
 import { CitedBy as CitedByType } from 'src/utils/api/types';
 
-import { SectionHeader, SectionHeaderProps } from '../section';
+import { ContentHeader, ContentHeaderProps } from '../section';
 
 // Constants for table configuration.
 // [ROW_SIZES]: num of rows per page
@@ -42,8 +42,8 @@ interface Row extends CitedByType {
 interface CitedByTable {
   loading: boolean;
   data: CitedByType[];
-  title?: SectionHeaderProps['title'];
-  subtitle?: SectionHeaderProps['subtitle'];
+  title?: ContentHeaderProps['title'];
+  subtitle?: ContentHeaderProps['subtitle'];
 }
 
 // Renders a table with citedby data.
@@ -96,7 +96,7 @@ export const CitedByTable: React.FC<CitedByTable> = ({
     <Skeleton asChild loading={!!loading} overflow='auto'>
       <Stack gap={4}>
         {title && (
-          <SectionHeader
+          <ContentHeader
             title={title}
             subtitle={subtitle}
             titleProps={{ as: 'h4' }}

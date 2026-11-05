@@ -123,7 +123,6 @@ const Sections = ({
             key={section.hash}
             name={getSectionName()}
             loading={loading}
-            isCollapsible={section?.ui?.isCollapsible}
           >
             {/* for mobile viewing */}
             {section.hash === 'overview' && data && (

@@ -1,10 +1,10 @@
 import { Flex, Image, Stack } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
+import { InternalLinkButton } from 'src/components/internal-link-button';
 import { PageContent } from 'src/components/page-container';
 import {
   StyledCard,
-  StyledCardButton,
   StyledCardDescription,
   StyledCardLabel,
   StyledCardStack,
@@ -181,14 +181,14 @@ export const TableOfContents = () => {
                           justifyContent={{ base: 'center', md: 'flex-end' }}
                           width='100%'
                         >
-                          <StyledCardButton
+                          <InternalLinkButton
                             href={{
                               pathname: `/diseases/${page.slug}`,
                             }}
                           >
                             Learn about {label} resources in the NIAID Data
                             Ecosystem
-                          </StyledCardButton>
+                          </InternalLinkButton>
                         </Flex>
                       )}
                     </StyledCard>

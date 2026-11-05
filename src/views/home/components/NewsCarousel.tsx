@@ -1,20 +1,20 @@
 import {
   Badge,
   Box,
-  Button,
   Card,
   Flex,
   Heading,
-  Icon,
+  HStack,
   Image,
+  Span,
   Text,
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import NextLink from 'next/link';
 import React from 'react';
-import { FaAngleRight } from 'react-icons/fa6';
 import { Carousel } from 'src/components/carousel';
+import { InternalLinkButton } from 'src/components/internal-link-button';
 import { Link } from 'src/components/link';
 import { fetchEvents, NewsOrEventsObject } from 'src/pages/updates';
 import { formatDate } from 'src/utils/api/helpers';
@@ -145,106 +145,66 @@ export const NewsCarousel = ({
               ? `/features/${carouselCard.slug}`
               : `/updates/#${carouselCard.slug}`;
           return (
-            <Card.Root key={carouselCard.id + idx} overflow='hidden' flex={1}>
-              <Flex
-                w='100%'
-                p={0}
-                pt={`${(9 / 16) * 100}%`}
-                position='relative'
-                justifyContent='center'
-                overflow='hidden'
-              >
-                <Flex
-                  position='absolute'
-                  top={0}
-                  left={0}
+            <Card.Root
+              key={carouselCard.id + idx}
+              overflow='hidden'
+              size='sm'
+              flex={1}
+            >
+              {image && (
+                <Image
+                  objectFit='contain'
                   w='100%'
-                  height='100%'
-                  alignItems='flex-start'
-                  justifyContent='center'
-                >
-                  {image && (
-                    <Image
-                      objectFit='contain'
-                      w='100%'
-                      maxHeight='100%'
-                      src={image}
-                      alt={image_alt_text}
-                    />
-                  )}
-                </Flex>
-              </Flex>
-              <Box p={4}>
-                <Heading
-                  p={0}
-                  fontSize='lg'
-                  fontWeight='semibold'
-                  lineHeight='moderate'
-                  size='h5'
-                >
-                  {carouselCard.name}
+                  maxHeight='100%'
+                  src={image}
+                  alt={image_alt_text}
+                />
+              )}
+
+              <Card.Body gap={1}>
+                <HStack justifyContent='flex-start' gap={1}>
                   {carouselCard.eventDate && (
-                    <Badge
-                      colorPalette='primary'
-                      variant='solid'
-                      bg='info'
-                      size='xs'
-                      fontSize='12px'
-                      mx={1}
-                    >
+                    <Badge colorPalette='primary' variant='solid' size='sm'>
                       Event
                     </Badge>
                   )}
+
                   {carouselCard.type === 'feature' && (
-                    <Badge
-                      colorPalette='accent'
-                      variant='solid'
-                      size='xs'
-                      fontSize='12px'
-                      mx={1}
-                    >
+                    <Badge colorPalette='accent' variant='solid' size='sm'>
                       Feature
                     </Badge>
                   )}
-                </Heading>
-                <Card.Body p={0}>
-                  {
-                    <Text as='span' mt={2} fontSize='sm' lineHeight='moderate'>
-                      {formatDate(
-                        carouselCard.publishedAt || carouselCard.updatedAt,
-                      )}{' '}
-                      &mdash;
-                      {carouselCard.shortDescription}
-                      <Link
-                        as='span'
-                        fontSize='sm'
-                        bg='transparent'
-                        lineHeight='tall'
-                        mx={1}
-                        asChild
-                      >
-                        <NextLink href={card_url}>(view full release)</NextLink>
-                      </Link>
-                    </Text>
-                  }
-                </Card.Body>
-              </Box>
+                </HStack>
+                <Card.Title>{carouselCard.name}</Card.Title>
+
+                {
+                  <Text as='span' fontSize='sm' lineHeight='moderate'>
+                    {formatDate(
+                      carouselCard.publishedAt || carouselCard.updatedAt,
+                    )}{' '}
+                    &mdash;
+                    {carouselCard.shortDescription}
+                    <Link
+                      as='span'
+                      fontSize='sm'
+                      bg='transparent'
+                      lineHeight='tall'
+                      mx={1}
+                      asChild
+                    >
+                      <NextLink href={card_url}>(view full release)</NextLink>
+                    </Link>
+                  </Text>
+                }
+              </Card.Body>
             </Card.Root>
           );
         })}
       </Carousel>
       <Flex flex={1} justifyContent='center' mt={4}>
-        <Button as='span' size='sm' asChild>
-          <NextLink
-            href={{
-              pathname: `/updates`,
-            }}
-            prefetch={false}
-          >
-            All updates
-            <Icon as={FaAngleRight} />
-          </NextLink>
-        </Button>
+        <InternalLinkButton href={{ pathname: `/updates` }}>
+          All updates
+        </InternalLinkButton>
       </Flex>
     </Box>
   ) : (

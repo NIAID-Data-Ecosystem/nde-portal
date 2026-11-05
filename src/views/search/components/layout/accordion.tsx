@@ -16,7 +16,7 @@ export const AccordionContent = ({
   children: React.ReactNode;
 }) => {
   return (
-    <Accordion.Item {...rest}>
+    <Accordion.Item bg='white' {...rest}>
       <Accordion.ItemContext>
         {({ expanded }) => (
           <>
@@ -52,7 +52,6 @@ export const AccordionWrapper = ({
       defaultValue={defaultValue ?? []}
       collapsible
       multiple
-      bg='white'
       variant='enclosed'
       size='lg'
       lazyMount

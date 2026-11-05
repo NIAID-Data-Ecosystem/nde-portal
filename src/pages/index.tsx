@@ -6,8 +6,8 @@ import {
   Flex,
   Heading,
   Icon,
-  Image,
   Separator,
+  SimpleGrid,
   Stack,
   Text,
   VStack,
@@ -18,6 +18,7 @@ import type { NextPage } from 'next';
 import NextLink from 'next/link';
 import React, { useMemo } from 'react';
 import { FaGithub, FaMagnifyingGlass, FaRegEnvelope } from 'react-icons/fa6';
+import { InternalLinkButton } from 'src/components/internal-link-button';
 import {
   getPageSeoConfig,
   PageContainer,
@@ -35,13 +36,14 @@ import {
   transformFeaturedContentForCarousel,
 } from 'src/views/features/helpers';
 import { HeroBanner } from 'src/views/home/components/HeroBanner';
-import { LandingPageCards } from 'src/views/home/components/LandingPageCards/';
+import { ImageCard } from 'src/views/home/components/ImageCard';
 import {
   fetchNews,
   NewsCarousel,
 } from 'src/views/home/components/NewsCarousel';
 import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { formatDomainName } from 'src/views/home/components/TableWithSearch/helpers';
+import { TOPIC_CARDS } from 'src/views/home/config/topic-cards';
 import { useReadLocalStorage } from 'usehooks-ts';
 
 import { fetchEvents, NewsOrEventsObject } from './updates';
@@ -168,73 +170,59 @@ const Home: NextPage<{
             mb={20}
             alignItems='center'
           >
-            <Box maxW='1300px' width='100%'>
-              <Flex
+            <VStack
+              maxW='1300px'
+              width='100%'
+              px={{ base: 2, sm: 4 }}
+              lineHeight='tall'
+              gap={8}
+            >
+              <ImageCard
                 id='getting-started-card'
-                boxShadow='sm'
-                borderRadius='semi'
-                overflow='hidden'
-                border='1px solid'
-                borderColor='gray.100'
-                m={{ base: 0, sm: 4 }}
-                mb={{ base: 8, sm: 8 }}
-                flexWrap='wrap'
-              >
-                <Box flex={1}>
-                  <Image
-                    src='/assets/homepage/getting-started.png'
-                    alt='The image shows a healthcare professional, likely a doctor, wearing a white coat and stethoscope, interacting with a digital interface. The interface displays various health-related icons, such as a heart, a DNA helix, a medical cross, a microscope, a pill, an apple, and a syringe, representing different aspects of healthcare and medical research. The doctor is pointing at the heart icon, indicating a focus on heart health or medical diagnostics.'
-                    objectFit='cover'
-                    height='100%'
-                    minWidth='400px'
-                    minHeight={{ base: '200px', xl: '316px' }}
-                  />
-                </Box>
-                <Flex
-                  w='100%'
-                  px={{ base: 4, sm: 8 }}
-                  py={{ base: 4, sm: 6 }}
-                  flex={1}
-                  justifyContent={{ base: 'flex-start', sm: 'center' }}
-                >
-                  <VStack
-                    w='100%'
-                    alignItems='flex-start'
-                    gap={4}
-                    justifyContent='center'
-                    px={{ base: 0, xl: 8 }}
-                  >
-                    <Heading as='h2' fontSize='2xl' fontWeight='semibold'>
-                      Getting Started
-                    </Heading>
-                    <Text fontWeight='medium'>
-                      If you are new to the NIAID Data Ecosystem Discovery
-                      Portal you can find tips for searching infectious and
-                      immune disease datasets, learn about the different
-                      repositories, discover how best to filter results, and
-                      more...
-                    </Text>
-                    <Button
-                      size='md'
-                      width={{ base: '100%', sm: 'auto' }}
-                      asChild
-                      truncate
-                    >
-                      <NextLink href='/knowledge-center/getting-started-with-niaid-data-ecosystem-discovery-portal'>
-                        Read more about getting started
-                      </NextLink>
-                    </Button>
-                  </VStack>
-                </Flex>
-              </Flex>
-              <Box px={{ base: 2, sm: 4 }} mb={{ base: 8, sm: 8 }}>
-                <Heading as='h2' fontSize='2xl' fontWeight='semibold' mb={4}>
+                title='Getting Started'
+                titleAs='h2'
+                size='md'
+                description='If you are new to the NIAID Data Ecosystem Discovery Portal you can find tips for searching infectious and immune disease datasets, learn about the different repositories, discover how best to filter results, and more...'
+                imageProps={{
+                  src: '/assets/homepage/getting-started.png',
+                  alt: 'The image shows a healthcare professional, likely a doctor, wearing a white coat and stethoscope, interacting with a digital interface. The interface displays various health-related icons, such as a heart, a DNA helix, a medical cross, a microscope, a pill, an apple, and a syringe, representing different aspects of healthcare and medical research. The doctor is pointing at the heart icon, indicating a focus on heart health or medical diagnostics.',
+                }}
+                footer={
+                  <InternalLinkButton href='/knowledge-center/getting-started-with-niaid-data-ecosystem-discovery-portal'>
+                    Read more about getting started
+                  </InternalLinkButton>
+                }
+              />
+
+              <Box width='100%'>
+                <Heading as='h2' fontSize='xl' fontWeight='semibold' mb={4}>
                   Find Resources By Topic
                 </Heading>
-                <LandingPageCards />
+                <SimpleGrid
+                  columns={{ base: 1, md: 2 }}
+                  gap={{ base: 6, xl: 4 }}
+                >
+                  {TOPIC_CARDS.map(card => (
+                    <ImageCard
+                      key={card.title}
+                      size='sm'
+                      css={{
+                        '--card-padding': 'var(--chakra-spacing-4)',
+                      }}
+                      imageContainerProps={{
+                        minW: { base: '100%', sm: '250px' },
+                        width: { base: '100%', md: '33.33%' },
+                        aspectRatio: { base: '5/3', md: '4/3' },
+                        maxH: { base: '230px', lg: '250px' },
+                      }}
+                      {...card}
+                    />
+                  ))}
+                </SimpleGrid>
               </Box>
-              <Box px={{ base: 2, sm: 4 }}>
-                <Heading as='h2' fontSize='2xl' fontWeight='semibold' mb={4}>
+
+              <Box width='100%'>
+                <Heading as='h2' fontSize='xl' fontWeight='semibold' mb={4}>
                   Explore All Included Resources
                 </Heading>
                 <Text lineHeight='moderate'>
@@ -346,7 +334,7 @@ const Home: NextPage<{
                   features={props.data.features}
                 />
               )}
-            </Box>
+            </VStack>
           </PageContent>
         )}
       </>
