@@ -1,32 +1,11 @@
 import { useMemo } from 'react';
+import { toSearchValue } from 'src/components/table/data-table/utils/values';
 import { useSourcesList } from 'src/hooks/api/useSourcesList';
 import { REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
 
-import { RepositoryMatcherItem } from '../types';
+import { RepositoryMatcherRow } from '../types';
 
-export type RepositoryMatcherRow = {
-  _id: string;
-  _raw: RepositoryMatcherItem;
-  /** Lowercased concatenation of every column's searchable text. Built once
-   * at data-load so the search hook can do a single substring check per row
-   * instead of re-deriving search values on every keystroke. */
-  _search: string;
-} & Record<string, unknown>;
-
-export const defaultSearchValue = (
-  value: unknown,
-): string | string[] | null => {
-  if (value == null) return null;
-  if (typeof value === 'string') return value;
-  if (typeof value === 'number') return String(value);
-  if (
-    Array.isArray(value) &&
-    value.every(v => typeof v === 'string' || typeof v === 'number')
-  ) {
-    return value.map(String);
-  }
-  return null;
-};
+export type { RepositoryMatcherRow } from '../types';
 
 const isUnnamedDefinedTerm = (v: unknown): boolean =>
   typeof v === 'object' &&
@@ -79,7 +58,7 @@ export const useRepositoryMatcherData = (fields: string[] = ['@type']) => {
           row[col.id] = value;
           const searchValue = col.getSearchValue
             ? col.getSearchValue(value)
-            : defaultSearchValue(value);
+            : toSearchValue(value);
           if (searchValue == null) continue;
           searchParts.push(
             Array.isArray(searchValue) ? searchValue.join(' ') : searchValue,

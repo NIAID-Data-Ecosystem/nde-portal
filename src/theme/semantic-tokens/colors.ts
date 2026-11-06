@@ -115,6 +115,14 @@ export const semanticColors = defineSemanticTokens.colors({
     alt: { value: '#F5F6FA' },
   },
   /*
+  Data table row colours (src/components/table/data-table). The stripe is the
+  `#FAFBFD` the search, repository matcher and saved tables each hard-coded.
+  */
+  table: {
+    stripe: { value: '#FAFBFD' },
+    hover: { value: '{colors.primary.50}' },
+  },
+  /*
   NIAID Digital Policies link colours.
   */
   link: {

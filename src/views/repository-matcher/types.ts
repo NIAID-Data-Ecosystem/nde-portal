@@ -1,10 +1,20 @@
-import React from 'react';
+import type { ColumnDef } from 'src/components/table/data-table';
 import { Source } from 'src/hooks/api/useSourcesList';
 import { FormattedResource } from 'src/utils/api/types';
 
 export type RepositoryMatcherItem = Source | FormattedResource;
 
 export type NameValue = { label: string; url: string; _id: string };
+
+/** A table row: each column's transformed value keyed by column id. */
+export type RepositoryMatcherRow = {
+  _id: string;
+  _raw: RepositoryMatcherItem;
+  /** Lowercased concatenation of every column's searchable text. Built once
+   * at data-load so the search hook can do a single substring check per row
+   * instead of re-deriving search values on every keystroke. */
+  _search: string;
+} & Record<string, unknown>;
 
 export type RepositoryMatcherFilterConfig<TValue = unknown> = {
   /** Optional grouping passed through to FiltersList. */
@@ -18,31 +28,21 @@ export type RepositoryMatcherFilterConfig<TValue = unknown> = {
   getFilterValues: (value: TValue) => string[];
 };
 
-export type RepositoryMatcherColumn<TValue = unknown> = {
-  id: string;
-  label: string;
+/**
+ * A shared-table column (`header`, `type`, `cell`, `sort`, …) plus what only
+ * the repository matcher needs: which API fields to fetch, how to build the
+ * row value, and how the column feeds search, the filter sidebar and the
+ * data dictionary. The table ignores the extra keys.
+ *
+ * `description` doubles as the header tooltip, the filter's description and
+ * the dictionary entry.
+ */
+export type RepositoryMatcherColumn<TValue = any> = ColumnDef<
+  RepositoryMatcherRow,
+  TValue
+> & {
   fields: string[];
-  columns?: {
-    isSortable?: boolean;
-    isDefault?: boolean;
-    style?: React.CSSProperties;
-  };
-  /**
-   * When true, the column cannot be hidden by the customize-columns popover.
-   * Default: false.
-   */
-  required?: boolean;
   transform: (item: RepositoryMatcherItem) => TValue;
-  component: (props: {
-    value: TValue;
-    loading?: boolean;
-    data: RepositoryMatcherItem;
-  }) => React.ReactNode;
-  /**
-   * Reduce the column's display value to a sortable primitive. Omit for
-   * columns whose display value is already a string/number.
-   */
-  getSortValue?: (value: TValue) => string | number;
   /**
    * Reduce the column's display value to text the search bar can match
    * against. Return a string, an array of strings, or null to opt the column
@@ -55,11 +55,9 @@ export type RepositoryMatcherColumn<TValue = unknown> = {
    */
   filter?: RepositoryMatcherFilterConfig<TValue>;
   info?: {
-    description?: string;
-    tooltip?: string;
     /** Tooltip description for the filters section. */
     filterDescription?: string;
-    /** Tooltip description for any sub-terms. */
+    /** Definitions of the column's values, listed in the data dictionary. */
     terms?: {
       label?: string;
       description?: string;

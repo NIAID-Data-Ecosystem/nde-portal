@@ -2,12 +2,14 @@ import { useMemo } from 'react';
 import { useDebounceValue } from 'usehooks-ts';
 
 /**
- * Filters rows by a free-text search term against the prebuilt `_search`
- * blob on each row (see useRepositoryMatcherData). Every column contributes
- * to that blob regardless of whether it's currently displayed — toggling
- * column visibility is a render concern, not a data-presence one.
+ * Filters rows by a free-text search term against each row's prebuilt,
+ * lowercased `_search` text (built once when the rows are created, from every
+ * column, hidden or not). Debounced so typing doesn't re-filter per keystroke.
+ *
+ * Moved from the repository matcher (`useSearchedData`), which the saved page
+ * also used.
  */
-export function useSearchedData<T extends { _search: string }>(
+export function useTableSearch<T extends { _search: string }>(
   data: T[] | undefined,
   searchTerm: string,
   debounceMs: number = 150,

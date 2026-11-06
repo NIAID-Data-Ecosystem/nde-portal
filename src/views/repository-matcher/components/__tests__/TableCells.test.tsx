@@ -1,14 +1,9 @@
-import { screen, within } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { renderWithClient } from 'src/__tests__/mocks/utils';
 
-import {
-  TagCell,
-  TagCellList,
-  TextCell,
-  TextCellWithLink,
-} from '../TableCells';
+import { TagCell, TextCell, TextCellWithLink } from '../TableCells';
 
 // Force the truncation-detection branches (which rely on layout metrics that
 // jsdom reports as 0) by stubbing the relevant element getters.
@@ -22,52 +17,6 @@ const stubOverflow = () => {
   ];
   return () => spies.forEach(s => s.mockRestore());
 };
-
-describe('TagCellList', () => {
-  it('renders skeleton tags while loading', () => {
-    const { container } = renderWithClient(<TagCellList loading />);
-    // Three loading TagCells render as skeletons, no placeholder text.
-    expect(container.querySelectorAll('.chakra-skeleton').length).toBe(3);
-    expect(screen.queryByText('not available')).not.toBeInTheDocument();
-  });
-
-  it('renders a placeholder cell when there are no terms', () => {
-    renderWithClient(<TagCellList value={[]} />);
-    expect(screen.getByText('not available')).toBeInTheDocument();
-  });
-
-  it('falls back to an empty list when value is undefined', () => {
-    renderWithClient(<TagCellList value={undefined} />);
-    expect(screen.getByText('not available')).toBeInTheDocument();
-  });
-
-  it('renders a tag per defined term', () => {
-    renderWithClient(
-      <TagCellList value={[{ name: 'Malaria' }, { name: 'Flu' }]} />,
-    );
-    expect(screen.getByText('Malaria')).toBeInTheDocument();
-    expect(screen.getByText('Flu')).toBeInTheDocument();
-  });
-
-  it('truncates beyond maxVisible and toggles show more/less', async () => {
-    const user = userEvent.setup();
-    renderWithClient(
-      <TagCellList
-        value={[{ name: 'One' }, { name: 'Two' }, { name: 'Three' }]}
-        maxVisible={1}
-      />,
-    );
-    expect(screen.getByText('One')).toBeInTheDocument();
-    expect(screen.queryByText('Two')).not.toBeInTheDocument();
-
-    await user.click(screen.getByRole('button', { name: /show 2 more/i }));
-    expect(screen.getByText('Two')).toBeInTheDocument();
-    expect(screen.getByText('Three')).toBeInTheDocument();
-
-    await user.click(screen.getByRole('button', { name: /show less/i }));
-    expect(screen.queryByText('Two')).not.toBeInTheDocument();
-  });
-});
 
 describe('TagCell', () => {
   it('renders a skeleton while loading', () => {

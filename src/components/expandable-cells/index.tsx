@@ -1,5 +1,12 @@
-import { Flex, FlexProps, Text, TextProps } from '@chakra-ui/react';
+import {
+  Flex,
+  FlexProps,
+  Text,
+  TextProps,
+  VisuallyHidden,
+} from '@chakra-ui/react';
 import React, {
+  useEffect,
   useId,
   useLayoutEffect,
   useMemo,
@@ -14,6 +21,34 @@ import { CollapsibleTextTrigger } from 'src/components/collapsible-text';
  * aria-expanded; each cell adds aria-controls for accessibility.
  */
 
+/*
+One ResizeObserver for every observed element on the page, rather than one per
+cell: a table can hold hundreds of clamped cells.
+*/
+const resizeCallbacks = new WeakMap<Element, () => void>();
+let sharedObserver: ResizeObserver | null = null;
+
+const observeResize = (element: Element, callback: () => void) => {
+  if (typeof ResizeObserver === 'undefined') return () => {};
+  sharedObserver ??= new ResizeObserver(entries => {
+    for (const entry of entries) resizeCallbacks.get(entry.target)?.();
+  });
+  resizeCallbacks.set(element, callback);
+  sharedObserver.observe(element);
+  return () => {
+    resizeCallbacks.delete(element);
+    sharedObserver?.unobserve(element);
+  };
+};
+
+/**
+ * Visually hidden text appended to the toggle so a screen reader hears which
+ * content it expands ("Show More Description", "Show 3 More Species") rather
+ * than a column of identical "Show More" buttons.
+ */
+const ToggleContext = ({ children }: { children?: string }) =>
+  children ? <VisuallyHidden> {children}</VisuallyHidden> : null;
+
 /**
  * Long-text cell. Clamps to `noOfLines` and reveals the full
  * text with a toggle if the text overflows the clamp.
@@ -23,29 +58,37 @@ export const ExpandableText = ({
   text,
   noOfLines = 4,
   loading,
+  toggleContext,
   ...props
 }: TextProps & {
   text: string;
   noOfLines?: number;
   loading?: boolean;
+  /** What the text is (e.g. the column header), read after "Show More". */
+  toggleContext?: string;
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
   const textRef = useRef<HTMLParagraphElement>(null);
-  // Use React.useId instead (available in React 18+)
   const contentId = useId();
 
   // Detect whether the clamped text overflows so the toggle is only shown when
-  // there is hidden content to reveal.
+  // there is hidden content to reveal. Measured before paint on mount, then
+  // again whenever the text box resizes (a fluid column narrows or widens);
+  // not while expanded, when there is no clamp to overflow.
   useLayoutEffect(() => {
-    if (loading) {
-      return;
-    }
+    if (loading || expanded) return;
     const el = textRef.current;
-    if (el) {
-      setIsTruncated(el.scrollHeight > el.clientHeight);
-    }
-  }, [loading, text, noOfLines]);
+    if (el) setIsTruncated(el.scrollHeight > el.clientHeight);
+  }, [loading, text, noOfLines, expanded]);
+
+  useEffect(() => {
+    const el = textRef.current;
+    if (loading || expanded || !el) return;
+    return observeResize(el, () =>
+      setIsTruncated(el.scrollHeight > el.clientHeight),
+    );
+  }, [loading, expanded]);
 
   if (!text) {
     return null;
@@ -70,6 +113,7 @@ export const ExpandableText = ({
           onClick={() => setExpanded(prev => !prev)}
         >
           {expanded ? 'Show Less' : 'Show More'}
+          <ToggleContext>{toggleContext}</ToggleContext>
         </CollapsibleTextTrigger>
       )}
     </Flex>
@@ -85,11 +129,14 @@ export const ExpandableList = ({
   children,
   maxVisible = 5,
   gap = 2,
+  toggleContext,
   ...props
 }: Omit<FlexProps, 'children'> & {
   children: React.ReactNode;
   maxVisible?: number;
   gap?: FlexProps['gap'];
+  /** What the items are (e.g. the column header), read after "Show N More". */
+  toggleContext?: string;
 }) => {
   const [expanded, setExpanded] = useState(false);
   // Use React.useId instead (available in React 18+)
@@ -115,6 +162,7 @@ export const ExpandableList = ({
           onClick={() => setExpanded(prev => !prev)}
         >
           {expanded ? 'Show Less' : `Show ${hiddenCount} More`}
+          <ToggleContext>{toggleContext}</ToggleContext>
         </CollapsibleTextTrigger>
       )}
     </Flex>

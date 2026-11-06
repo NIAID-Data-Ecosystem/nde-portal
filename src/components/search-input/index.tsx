@@ -60,8 +60,17 @@ export const SearchInput: React.FC<SearchInputProps> = ({
 
   const endElement = (onClose || handleSubmit) && (
     <Flex py={1} alignItems='center' gap={1} height='100%'>
-      {onClose && props.value && (
+      {/*
+        Always rendered, `hidden` while the input is empty, so its styles are
+        inserted with the page. Mounting it on the first keystroke instead
+        inserted new cascade-layered CSS, which makes the browser restyle and
+        re-lay out the entire document: an input-delay cost that grows with
+        the page (e.g. a large table). `hidden` also keeps it out of the tab
+        order and the accessibility tree while empty.
+      */}
+      {onClose && (
         <CloseButton
+          hidden={!props.value}
           onClick={onClose}
           colorPalette={colorPalette}
           height='100%'

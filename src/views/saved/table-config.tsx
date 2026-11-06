@@ -2,6 +2,7 @@ import { Flex, HStack, Text, VStack } from '@chakra-ui/react';
 import React from 'react';
 import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
 import { getMetadataName } from 'src/components/metadata';
+import { toSearchValue } from 'src/components/table/data-table/utils/values';
 import { useUserData } from 'src/hooks/useUserData';
 import { findSavedQueryIndex } from 'src/hooks/useUserData/helpers';
 import { SavedDataset, SavedQuery } from 'src/hooks/useUserData/types';
@@ -12,7 +13,6 @@ import {
   TextCell,
   TextCellWithLink,
 } from '../repository-matcher/components/TableCells';
-import { defaultSearchValue } from '../repository-matcher/hooks/useRepositoryMatcherData';
 import {
   FILTER_CONFIGS,
   queryFilterObject2String,
@@ -465,7 +465,7 @@ export const formatTableData = <TItem,>(
       row[col.id] = value;
       const searchValue = col.getSearchValue
         ? col.getSearchValue(value)
-        : defaultSearchValue(value);
+        : toSearchValue(value);
       if (searchValue == null) continue;
       searchParts.push(
         Array.isArray(searchValue) ? searchValue.join(' ') : searchValue,

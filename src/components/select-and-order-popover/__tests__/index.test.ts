@@ -43,6 +43,10 @@ describe('popover barrel (index.ts)', () => {
     it('exports SelectAndSortPopover as a function (React component)', () => {
       expect(typeof PopoverBarrel.SelectAndSortPopover).toBe('function');
     });
+
+    it('exports SelectAndSortPopoverView as a function (React component)', () => {
+      expect(typeof PopoverBarrel.SelectAndSortPopoverView).toBe('function');
+    });
   });
 
   it('does not export unexpected names', () => {
@@ -57,6 +61,7 @@ describe('popover barrel (index.ts)', () => {
       'PopoverListItem',
       'PopoverSelectableList',
       'SelectAndSortPopover',
+      'SelectAndSortPopoverView',
     ]);
 
     const unexpected = Object.keys(PopoverBarrel).filter(

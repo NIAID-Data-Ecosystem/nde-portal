@@ -99,7 +99,10 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         w='100%'
         flexDirection='column'
         minW='300px'
-        overflow='hidden'
+        // `clip`, not `hidden`: still keeps wide content from widening the
+        // page, but without making <main> a scroll container, which captured
+        // every `position: sticky` descendant so none of them ever stuck.
+        overflowX='clip'
       >
         <Navigation />
 

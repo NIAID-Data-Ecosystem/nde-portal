@@ -2,7 +2,6 @@ import { renderHook } from '@testing-library/react';
 import { useSourcesList } from 'src/hooks/api/useSourcesList';
 
 import {
-  defaultSearchValue,
   removeUnnamedDefinedTerms,
   useRepositoryMatcherData,
 } from '../useRepositoryMatcherData';
@@ -26,27 +25,6 @@ const setSources = ({
 } = {}) => {
   mockUseSourcesList.mockReturnValue({ data: sources, isLoading, error });
 };
-
-describe('defaultSearchValue', () => {
-  it('returns null for nullish values', () => {
-    expect(defaultSearchValue(null)).toBeNull();
-    expect(defaultSearchValue(undefined)).toBeNull();
-  });
-
-  it('passes strings through and stringifies numbers', () => {
-    expect(defaultSearchValue('hello')).toBe('hello');
-    expect(defaultSearchValue(42)).toBe('42');
-  });
-
-  it('maps arrays of strings/numbers to string arrays', () => {
-    expect(defaultSearchValue(['a', 1, 'b'])).toEqual(['a', '1', 'b']);
-  });
-
-  it('returns null for objects and mixed arrays', () => {
-    expect(defaultSearchValue({ name: 'x' })).toBeNull();
-    expect(defaultSearchValue([{ a: 1 }])).toBeNull();
-  });
-});
 
 describe('removeUnnamedDefinedTerms', () => {
   it('drops DefinedTerm objects without a name', () => {

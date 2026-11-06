@@ -8,30 +8,27 @@ import { DataDictionary } from '../DataDictionary';
 const columns: RepositoryMatcherColumn[] = [
   {
     id: 'b',
-    label: 'Beta',
+    header: 'Beta',
+    description: 'Beta description',
     fields: [],
     transform: () => null,
-    component: () => null,
     info: {
-      description: 'Beta description',
       terms: [{ label: 'B-term', description: 'B-term description' }],
     },
   },
   {
     id: 'a',
-    label: 'Alpha',
+    header: 'Alpha',
+    description: 'Alpha description',
     fields: [],
     transform: () => null,
-    component: () => null,
-    info: { description: 'Alpha description' },
   },
-  // No info -> skipped entirely.
+  // No description or terms -> skipped entirely.
   {
     id: 'c',
-    label: 'Gamma',
+    header: 'Gamma',
     fields: [],
     transform: () => null,
-    component: () => null,
   },
 ];
 
@@ -46,14 +43,14 @@ describe('DataDictionary', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders a row per column with info, sorted by label', () => {
+  it('renders a row per described column, sorted by header', () => {
     renderWithClient(<DataDictionary columns={columns} />);
     expect(screen.getByText('Alpha')).toBeInTheDocument();
     expect(screen.getByText('Alpha description')).toBeInTheDocument();
     expect(screen.getByText('Beta')).toBeInTheDocument();
     expect(screen.getByText('Beta description')).toBeInTheDocument();
 
-    // Columns without info are skipped.
+    // Columns without a description or terms are skipped.
     expect(screen.queryByText('Gamma')).not.toBeInTheDocument();
   });
 

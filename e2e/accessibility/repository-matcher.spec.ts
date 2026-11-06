@@ -11,14 +11,11 @@
  *   - `**​/query*`    — ResourceCatalog search (useResourceCatalogs)
  *   - `**​/metadata*` — repository metadata (fetchMetadata)
  *
- * State coverage note — this route covers loading / empty / populated but NOT a
- * distinct error state. `src/pages/repository-matcher.tsx` destructures only
- * `{ data, loading }` from `useRepositoryMatcherData` and ignores the hook's
- * `error`. When a request fails, `data` resolves to `[]` and `loading`
- * becomes false, so the page renders the same "No repositories match" empty UI
- * — there is no error-specific surface (alert, retry) to scan. The empty-state
- * scan below already covers that DOM, so a separate error describe would only
- * re-scan the empty state (with added retry-backoff flakiness).
+ * State coverage: loading / empty / populated / error, plus the customize
+ * columns popover. The error state used to be indistinguishable from the empty
+ * one (the page ignored the hook's `error`); the shared DataTable now renders
+ * an alert in its place. The mocks answer 404, which the fetch helpers don't
+ * retry, so only React Query's own backoff (~7s) delays it.
  */
 import { expect, type Page, test, type TestInfo } from '@playwright/test';
 
@@ -263,6 +260,26 @@ test.describe('a11y: Repository Matcher — populated', () => {
 // same".
 
 // --- Customize Columns popover (SelectAndSortPopover) -------------------------
+
+test.describe('a11y: Repository Matcher — error', () => {
+  test('passes axe when the repositories fail to load', async ({
+    page,
+  }, testInfo) => {
+    for (const glob of API_GLOBS) {
+      await page.route(glob, route =>
+        route.fulfill({ status: 404, json: { message: 'Not found' } }),
+      );
+    }
+    await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
+
+    await expect(
+      page.getByRole('alert').filter({ hasText: /could not be loaded/i }),
+    ).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByText('No repositories match')).toHaveCount(0);
+
+    await runSharedChecks(page, testInfo, 'error');
+  });
+});
 
 test.describe('a11y: Repository Matcher — customize columns popover', () => {
   test('passes axe with the customize-columns popover open', async ({

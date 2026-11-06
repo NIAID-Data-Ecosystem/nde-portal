@@ -54,7 +54,7 @@ export const Sidebar = ({
       minW='350px'
       display={{ base: 'none', lg: 'block' }}
     >
-      <Box className='sidebar' position='sticky' top='0px'>
+      <Box className='sidebar'>
         <Card.Root
           flex={1}
           ml={[0, 0, 4]}

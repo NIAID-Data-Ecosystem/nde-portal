@@ -49,15 +49,16 @@ export const CollapsibleTextTrigger = ({
     cursor='pointer'
     focusVisibleRing='outside'
     _hover={{ textDecoration: 'underline' }}
+    // The chevron turns from the button's own `aria-expanded`, a style that
+    // exists from first render. A conditional `transform` prop on the Icon
+    // generated a new class on first open, which re-emits the Icon recipe in
+    // its cascade layer and makes the browser restyle and re-lay out the
+    // whole document.
+    css={{ '&[aria-expanded="true"] > svg': { transform: 'rotate(180deg)' } }}
     {...props}
   >
     {children}
-    <Icon
-      as={FaChevronDown}
-      transform={isOpen ? 'rotate(180deg)' : undefined}
-      boxSize='3'
-      transition='transform 0.2s'
-    />
+    <Icon as={FaChevronDown} boxSize='3' transition='transform 0.2s' />
   </chakra.button>
 );
 

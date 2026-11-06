@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { renderWithClient } from 'src/__tests__/mocks/utils';
+import { resolveColumn } from 'src/components/table/data-table/utils/columns';
 
 import {
   FILTERABLE_REPOSITORY_MATCHER_COLUMNS,
@@ -23,15 +24,36 @@ jest.mock('src/utils/feature-flags', () => ({
 const byId = REPOSITORY_MATCHER_COLUMNS.reduce((acc, col) => {
   acc[col.id] = col;
   return acc;
-}, {} as Record<string, RepositoryMatcherColumn<any>>);
+}, {} as Record<string, RepositoryMatcherColumn>);
 
-const renderCell = (node: React.ReactNode) =>
-  renderWithClient(<div data-testid='cell'>{node}</div>);
+/** Renders a column's cell for a value the way the table does. */
+const renderValue = (id: string, value: unknown) =>
+  renderWithClient(
+    <div data-testid='cell'>
+      {resolveColumn(byId[id]).renderCell({
+        _id: '1',
+        _search: '',
+        [id]: value,
+      } as any)}
+    </div>,
+  );
+const sortValue = (id: string, value: unknown) =>
+  resolveColumn(byId[id]).getSortValue({ [id]: value } as any);
+const cell = () => screen.getByTestId('cell');
 
 describe('table-config metadata', () => {
-  it('marks only the name column as required', () => {
-    expect(byId.name.required).toBe(true);
-    expect(byId.description.required).toBeUndefined();
+  it('makes only the name column non-hideable', () => {
+    expect(
+      REPOSITORY_MATCHER_COLUMNS.filter(c => c.hideable === false).map(
+        c => c.id,
+      ),
+    ).toEqual(['name']);
+  });
+
+  it('shows every column by default', () => {
+    expect(
+      REPOSITORY_MATCHER_COLUMNS.every(c => c.defaultVisible !== false),
+    ).toBe(true);
   });
 
   it('exposes the filterable columns subset', () => {
@@ -41,67 +63,76 @@ describe('table-config metadata', () => {
     expect(FILTERABLE_REPOSITORY_MATCHER_COLUMNS.map(c => c.id)).toEqual(
       expected,
     );
-    expect(expected).toContain('researchDomain');
-    expect(expected).toContain('coa');
+    expect(expected).toEqual(
+      expect.arrayContaining([
+        'researchDomain',
+        'coa',
+        'healthCondition',
+        'type',
+      ]),
+    );
+  });
+
+  it('gives the header-described columns a description', () => {
+    expect(byId.coa.description).toMatch(/^Access-level definitions/);
+    expect(byId.name.description).toBeUndefined();
   });
 });
 
 describe('name column', () => {
-  const col = () => byId.name;
-
   it('transforms name/url/_id with fallbacks', () => {
     expect(
-      col().transform({ name: 'NCBI', url: 'u', _id: 'x' } as any),
-    ).toEqual({ label: 'NCBI', url: 'u', _id: 'x' });
-    // Falls back to _id when name is missing and drops url when absent.
-    expect(col().transform({ _id: 'only-id' } as any)).toEqual({
+      byId.name.transform({ name: 'NCBI', url: 'u', _id: 'x' } as any),
+    ).toEqual({
+      label: 'NCBI',
+      url: 'u',
+      _id: 'x',
+    });
+    expect(byId.name.transform({ _id: 'only-id' } as any)).toEqual({
       label: 'only-id',
       url: '',
       _id: 'only-id',
     });
-    expect(col().transform({} as any)).toEqual({ label: '', url: '', _id: '' });
+    expect(byId.name.transform({} as any)).toEqual({
+      label: '',
+      url: '',
+      _id: '',
+    });
   });
 
-  it('derives sort/search values from the label', () => {
+  it('sorts and searches on the label', () => {
     const value = { label: 'NCBI', url: 'u', _id: 'x' };
-    expect(col().getSortValue!(value)).toBe('ncbi');
-    expect(col().getSearchValue!(value)).toBe('NCBI');
+    expect(sortValue('name', value)).toBe('NCBI');
+    expect(byId.name.getSearchValue!(value)).toBe('NCBI');
   });
 
   it('links to the raw source url when USE_MERGED_SOURCES_AND_CATALOGS is disabled', () => {
     mockUseMergedSourcesAndCatalogs = false;
-    renderCell(
-      col().component({
-        value: { label: 'NCBI', url: 'https://ncbi.gov', _id: 'x' },
-        data: {} as any,
-      }),
-    );
-    expect(screen.getByText('NCBI').closest('a')).toHaveAttribute(
+    renderValue('name', { label: 'NCBI', url: 'https://ncbi.gov', _id: 'x' });
+    // Still a client-side link, as before: no new tab.
+    expect(screen.getByRole('link', { name: 'NCBI' })).toHaveAttribute(
       'href',
       'https://ncbi.gov',
+    );
+    expect(screen.getByRole('link', { name: 'NCBI' })).not.toHaveAttribute(
+      'target',
     );
   });
 
   it('links to the /sources anchor by _id when USE_MERGED_SOURCES_AND_CATALOGS is enabled', () => {
     mockUseMergedSourcesAndCatalogs = true;
-    renderCell(
-      col().component({
-        value: { label: 'NCBI', url: 'https://ncbi.gov', _id: 'x' },
-        data: {} as any,
-      }),
-    );
-    expect(screen.getByText('NCBI').closest('a')).toHaveAttribute(
+    renderValue('name', { label: 'NCBI', url: 'https://ncbi.gov', _id: 'x' });
+    expect(screen.getByRole('link', { name: 'NCBI' })).toHaveAttribute(
       'href',
       '/sources#x',
     );
   });
 
-  it('renders a fallback when value is missing', () => {
-    // With the merged-sources link disabled the url is empty, so the cell
-    // falls back to the dash placeholder rather than an empty link.
+  it('renders the label as text when there is no link', () => {
     mockUseMergedSourcesAndCatalogs = false;
-    renderCell(col().component({ value: undefined as any, data: {} as any }));
-    expect(screen.getByText('-')).toBeInTheDocument();
+    renderValue('name', { label: 'NCBI', url: '', _id: 'x' });
+    expect(cell()).toHaveTextContent('NCBI');
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 });
 
@@ -111,88 +142,91 @@ describe('description column', () => {
       'desc',
     );
     expect(byId.description.transform({} as any)).toBe('');
-    renderCell(byId.description.component({ value: 'desc', data: {} as any }));
+    renderValue('description', 'desc');
     expect(screen.getByText('desc')).toBeInTheDocument();
+  });
+
+  it('shows the shared placeholder when there is no description', () => {
+    renderValue('description', '');
+    expect(cell()).toHaveTextContent('No data');
   });
 });
 
 describe('researchDomain column', () => {
-  const col = () => byId.researchDomain;
-
   it('normalizes genre into an array', () => {
-    expect(col().transform({ genre: ['IID', 'Generalist'] } as any)).toEqual([
+    expect(
+      byId.researchDomain.transform({ genre: ['IID', 'Generalist'] } as any),
+    ).toEqual(['IID', 'Generalist']);
+    expect(byId.researchDomain.transform({ genre: 'IID' } as any)).toEqual([
       'IID',
-      'Generalist',
     ]);
-    expect(col().transform({ genre: 'IID' } as any)).toEqual(['IID']);
-    expect(col().transform({} as any)).toEqual([]);
+    expect(byId.researchDomain.transform({} as any)).toEqual([]);
   });
 
   it('exposes filter values', () => {
-    expect(col().filter!.getFilterValues(['IID'])).toEqual(['IID']);
-    expect(col().filter!.getFilterValues(undefined as any)).toEqual([]);
+    expect(byId.researchDomain.filter!.getFilterValues(['IID'])).toEqual([
+      'IID',
+    ]);
+    expect(
+      byId.researchDomain.filter!.getFilterValues(undefined as any),
+    ).toEqual([]);
   });
 
-  it('renders loading, empty, undefined, and populated states', () => {
-    const loading = renderCell(
-      col().component({ value: [], loading: true, data: {} as any }),
-    );
-    loading.unmount();
-
-    // undefined value exercises the `value ?? []` fallback.
-    const undef = renderCell(
-      col().component({ value: undefined as any, data: {} as any }),
-    );
-    expect(screen.getByText('not available')).toBeInTheDocument();
-    undef.unmount();
-
-    renderCell(col().component({ value: [], data: {} as any }));
-    expect(screen.getByText('not available')).toBeInTheDocument();
-
-    renderCell(col().component({ value: ['IID'], data: {} as any }));
+  it('renders tags, or the placeholder when empty', () => {
+    const { unmount } = renderValue('researchDomain', ['IID']);
     expect(screen.getByText('IID')).toBeInTheDocument();
+    unmount();
+    renderValue('researchDomain', []);
+    expect(cell()).toHaveTextContent('No data');
   });
 });
 
 describe('coa column', () => {
-  const col = () => byId.coa;
-
   it('transforms conditions of access into a readable label', () => {
-    expect(col().transform({ conditionsOfAccess: 'Open' } as any)).toBe(
+    expect(byId.coa.transform({ conditionsOfAccess: 'Open' } as any)).toBe(
       'Open Access',
     );
-    expect(col().transform({} as any)).toBe('');
+    expect(byId.coa.transform({} as any)).toBe('');
   });
 
   it('exposes filter values', () => {
-    expect(col().filter!.getFilterValues('Open Access')).toEqual([
+    expect(byId.coa.filter!.getFilterValues('Open Access')).toEqual([
       'Open Access',
     ]);
-    expect(col().filter!.getFilterValues('')).toEqual([]);
+    expect(byId.coa.filter!.getFilterValues('')).toEqual([]);
   });
 
-  it('renders the access tag, defaulting empty values to a dash', () => {
-    renderCell(col().component({ value: 'Open Access', data: {} as any }));
+  it('renders the access tag, or the placeholder when empty', () => {
+    const { unmount } = renderValue('coa', 'Open Access');
     expect(screen.getByText('Open Access')).toBeInTheDocument();
-
-    renderCell(col().component({ value: '', data: {} as any }));
-    expect(screen.getByText('-')).toBeInTheDocument();
+    unmount();
+    renderValue('coa', '');
+    expect(cell()).toHaveTextContent('No data');
   });
 });
 
-describe.each([
-  'healthCondition',
-  'infectiousAgent',
-  'species',
-  'meas-technique',
-])('defined-term column: %s', id => {
+// Maps a defined-term column id to its source field on the raw item.
+const FIELDS: Record<string, string> = {
+  healthCondition: 'healthCondition',
+  infectiousAgent: 'infectiousAgent',
+  species: 'species',
+  'meas-technique': 'measurementTechnique',
+  topic: 'topicCategory',
+};
+
+describe.each(Object.keys(FIELDS))('defined-term column: %s', id => {
   const col = () => byId[id];
 
+  it('is a tag column fetching its field', () => {
+    expect(col().type).toBe('tags');
+    expect(col().fields).toEqual([FIELDS[id]]);
+  });
+
   it('normalizes the value into an array', () => {
-    expect(col().transform({ [field(id)]: [{ name: 'A' }] } as any)).toEqual([
+    expect(col().transform({ [FIELDS[id]]: [{ name: 'A' }] } as any)).toEqual([
       { name: 'A' },
     ]);
-    expect(col().transform({ [field(id)]: { name: 'A' } } as any)).toEqual([
+    expect(col().transform({ [FIELDS[id]]: { name: 'A' } } as any)).toEqual([
       { name: 'A' },
     ]);
     expect(col().transform({} as any)).toEqual([]);
@@ -206,178 +240,120 @@ describe.each([
     expect(col().filter!.getFilterValues(undefined as any)).toEqual([]);
   });
 
-  it('renders the term tags', () => {
-    renderCell(col().component({ value: [{ name: 'A' }], data: {} as any }));
+  it('renders the named terms as tags, or the placeholder when none is named', () => {
+    const { unmount } = renderValue(id, [{ name: 'A' }]);
     expect(screen.getByText('A')).toBeInTheDocument();
-  });
-});
-
-// Maps a defined-term column id to its source field on the raw item.
-function field(id: string): string {
-  return {
-    healthCondition: 'healthCondition',
-    infectiousAgent: 'infectiousAgent',
-    species: 'species',
-    'meas-technique': 'measurementTechnique',
-  }[id]!;
-}
-
-describe('topic column', () => {
-  const col = () => byId.topic;
-
-  it('normalizes topicCategory into an array', () => {
-    expect(col().transform({ topicCategory: [{ name: 'T' }] } as any)).toEqual([
-      { name: 'T' },
-    ]);
-    expect(col().transform({ topicCategory: { name: 'T' } } as any)).toEqual([
-      { name: 'T' },
-    ]);
-    expect(col().transform({} as any)).toEqual([]);
-  });
-
-  it('derives search values from term names', () => {
-    expect(
-      col().getSearchValue!([{ name: 'T' }, { name: undefined }] as any),
-    ).toEqual(['T']);
-    expect(col().getSearchValue!(undefined as any)).toEqual([]);
-  });
-
-  it('renders a placeholder when no term has a name', () => {
-    renderCell(
-      col().component({ value: [{ name: undefined }] as any, data: {} as any }),
-    );
-    expect(screen.getByText('not available')).toBeInTheDocument();
-  });
-
-  it('renders tags when terms are named', () => {
-    renderCell(col().component({ value: [{ name: 'T' }], data: {} as any }));
-    expect(screen.getByText('T')).toBeInTheDocument();
-  });
-
-  it('renders nothing extra while loading', () => {
-    const { container } = renderCell(
-      col().component({ value: [], loading: true, data: {} as any }),
-    );
-    expect(container).toBeInTheDocument();
+    unmount();
+    renderValue(id, [{ name: undefined }]);
+    expect(cell()).toHaveTextContent('No data');
   });
 });
 
 describe('temporalCoverage column', () => {
-  const col = () => byId.temporalCoverage;
-
   it('passes through the raw temporalCoverage', () => {
     const tc = [{ startDate: '2020', endDate: '2021' }];
-    expect(col().transform({ temporalCoverage: tc } as any)).toBe(tc);
+    expect(
+      byId.temporalCoverage.transform({ temporalCoverage: tc } as any),
+    ).toBe(tc);
   });
 
   it('derives search values from start/end dates', () => {
     expect(
-      col().getSearchValue!([{ startDate: '2020', endDate: '2021' }] as any),
+      byId.temporalCoverage.getSearchValue!([
+        { startDate: '2020', endDate: '2021' },
+      ] as any),
     ).toEqual(['2020,2021']);
-    expect(col().getSearchValue!(undefined as any)).toEqual([]);
+    expect(byId.temporalCoverage.getSearchValue!(undefined as any)).toEqual([]);
   });
 
-  it('renders loading, empty, and formatted ranges', () => {
-    const { unmount } = renderCell(
-      col().component({ value: undefined, loading: true, data: {} as any }),
+  it('sorts on the first start date, newest first', () => {
+    expect(resolveColumn(byId.temporalCoverage).descFirst).toBe(true);
+    expect(sortValue('temporalCoverage', [{ startDate: '2020-01-01' }])).toBe(
+      '2020-01-01',
     );
+    expect(sortValue('temporalCoverage', [{ name: 'Current' }])).toBe(
+      'Current',
+    );
+    expect(sortValue('temporalCoverage', undefined)).toBeUndefined();
+  });
+
+  it('renders ISO ranges, named periods, and the placeholder when empty', () => {
+    const { unmount } = renderValue('temporalCoverage', [
+      { startDate: '2020-01-01T00:00:00Z', endDate: '2021-06-30' },
+      { startDate: '2022-01-01', endDate: undefined },
+      { name: 'Current' },
+    ]);
+    const [range, openEnded, named] = Array.from(
+      cell().children,
+      el => (el as HTMLElement).innerHTML,
+    );
+    // One coverage per block: start, "to", end on their own lines.
+    expect(range).toBe('2020-01-01<br>to<br>2021-06-30');
+    expect(openEnded).toBe('2022-01-01<br>to<br>-');
+    expect(named).toBe('Current');
     unmount();
-
-    const empty = renderCell(col().component({ value: [], data: {} as any }));
-    empty.unmount();
-
-    renderCell(
-      col().component({
-        value: [
-          { startDate: '2020-01-01', endDate: '2021-01-01' },
-          { startDate: '2022-01-01', endDate: undefined as any },
-          { startDate: undefined as any, endDate: '2023-01-01' },
-        ],
-        data: {} as any,
-      }),
-    );
-    // The "to" separator renders for each range.
-    expect(screen.getAllByText('to').length).toBe(3);
-    // Missing start/end dates render as a dash.
-    expect(screen.getAllByText('-').length).toBeGreaterThanOrEqual(2);
+    renderValue('temporalCoverage', []);
+    expect(cell()).toHaveTextContent('No data');
   });
 });
 
 describe('license column', () => {
-  const col = () => byId.license;
-
   it('transforms with a fallback', () => {
-    expect(col().transform({ license: 'MIT' } as any)).toBe('MIT');
-    expect(col().transform({} as any)).toBe('');
+    expect(byId.license.transform({ license: 'MIT' } as any)).toBe('MIT');
+    expect(byId.license.transform({} as any)).toBe('');
   });
 
-  it('renders a link for url licenses and text otherwise', () => {
-    renderCell(
-      col().component({ value: 'https://license.org', data: {} as any }),
+  it('renders url licenses as external links and others as text', () => {
+    const { unmount } = renderValue('license', 'https://license.org');
+    const link = screen.getByRole('link', { name: /license\.org/ });
+    expect(link).toHaveAttribute('href', 'https://license.org');
+    expect(link).toHaveAttribute('target', '_blank');
+    unmount();
+    const www = renderValue('license', 'www.license.org');
+    expect(screen.getByRole('link', { name: /license\.org/ })).toHaveAttribute(
+      'href',
+      'https://www.license.org',
     );
-    expect(
-      screen.getByText('https://license.org').closest('a'),
-    ).toHaveAttribute('href', 'https://license.org');
+    www.unmount();
+    renderValue('license', 'MIT');
+    expect(cell()).toHaveTextContent(/^MIT$/);
+  });
 
-    renderCell(col().component({ value: 'MIT', data: {} as any }));
-    expect(screen.getByText('MIT')).toBeInTheDocument();
+  it('shows the placeholder when there is no license', () => {
+    renderValue('license', '');
+    expect(cell()).toHaveTextContent('No data');
   });
 });
 
 describe('type column', () => {
-  const col = () => byId.type;
-
   it('transforms via itemTypes', () => {
-    expect(col().transform({ type: ['Resource Catalog'] } as any)).toEqual([
+    expect(byId.type.transform({ type: ['Resource Catalog'] } as any)).toEqual([
       'Resource Catalog',
     ]);
-    expect(col().transform({} as any)).toEqual([]);
+    expect(byId.type.transform({} as any)).toEqual([]);
   });
 
-  it('derives sort and filter values', () => {
-    expect(col().getSortValue!(['Resource Catalog'])).toBe('resource catalog');
-    expect(col().getSortValue!([])).toBe('');
-    expect(col().filter!.getFilterValues(['Resource Catalog'])).toEqual([
+  it('sorts on the first type and exposes filter values', () => {
+    expect(sortValue('type', ['Resource Catalog', 'Dataset Repository'])).toBe(
       'Resource Catalog',
-    ]);
-    expect(col().filter!.getFilterValues(undefined as any)).toEqual([]);
-  });
-
-  it('joins multiple types and falls back to empty', () => {
-    renderCell(
-      col().component({
-        value: ['Resource Catalog', 'Dataset Repository'],
-        data: {} as any,
-      }),
     );
+    expect(sortValue('type', [])).toBeUndefined();
+    expect(byId.type.filter!.getFilterValues(['Resource Catalog'])).toEqual([
+      'Resource Catalog',
+    ]);
+    expect(byId.type.filter!.getFilterValues(undefined as any)).toEqual([]);
+  });
+
+  it('joins multiple types and falls back to the placeholder', () => {
+    const { unmount } = renderValue('type', [
+      'Resource Catalog',
+      'Dataset Repository',
+    ]);
     expect(
       screen.getByText('Resource Catalog, Dataset Repository'),
     ).toBeInTheDocument();
-
-    // Empty array and undefined both fall back to the placeholder.
-    const empty = renderCell(col().component({ value: [], data: {} as any }));
-    expect(screen.getByText('not available')).toBeInTheDocument();
-    empty.unmount();
-
-    renderCell(col().component({ value: undefined as any, data: {} as any }));
-    expect(screen.getByText('not available')).toBeInTheDocument();
-  });
-});
-
-describe('license column edge cases', () => {
-  it('renders text for an undefined value', () => {
-    renderCell(
-      byId.license.component({ value: undefined as any, data: {} as any }),
-    );
-    expect(screen.getByText('not available')).toBeInTheDocument();
-  });
-});
-
-describe('topic column edge cases', () => {
-  it('renders a placeholder for an undefined value', () => {
-    renderCell(
-      byId.topic.component({ value: undefined as any, data: {} as any }),
-    );
-    expect(screen.getByText('not available')).toBeInTheDocument();
+    unmount();
+    renderValue('type', []);
+    expect(cell()).toHaveTextContent('No data');
   });
 });

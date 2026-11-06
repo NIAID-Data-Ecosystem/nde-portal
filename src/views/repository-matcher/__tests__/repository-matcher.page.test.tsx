@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { renderWithClient } from 'src/__tests__/mocks/utils';
@@ -15,55 +15,6 @@ jest.mock('src/components/page-container', () => ({
     <div>{children}</div>
   ),
 }));
-
-// Replace the columns popover with a controllable seam: the real wrapper never
-// forwards onColumnOrderChange and only fires onVisibleColumnsChange on mount,
-// so we expose buttons that invoke both callbacks with crafted ids.
-jest.mock(
-  'src/views/repository-matcher/components/CustomizeColumnsPopover',
-  () => ({
-    CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY: 'repository-matcher-visible-columns',
-    CUSTOM_COLUMN_ORDER_STORAGE_KEY: 'repository-matcher-column-order',
-    CustomizeColumnsPopover: ({
-      onVisibleColumnsChange,
-      onColumnOrderChange,
-    }: {
-      onVisibleColumnsChange?: (ids: string[]) => void;
-      onColumnOrderChange?: (ids: string[]) => void;
-    }) => {
-      const {
-        REPOSITORY_MATCHER_COLUMNS,
-      } = require('src/views/repository-matcher/table-config');
-      const allIds = REPOSITORY_MATCHER_COLUMNS.map((c: any) => c.id);
-      return (
-        <div>
-          <button onClick={() => onVisibleColumnsChange?.(allIds)}>
-            vis-same
-          </button>
-          <button onClick={() => onVisibleColumnsChange?.(['type'])}>
-            vis-reduce
-          </button>
-          <button onClick={() => onVisibleColumnsChange?.([])}>
-            vis-empty
-          </button>
-          <button
-            onClick={() => onVisibleColumnsChange?.(['type', 'name', 'bogus'])}
-          >
-            vis-bogus
-          </button>
-          <button
-            onClick={() => onColumnOrderChange?.(['type', 'name', 'bogus'])}
-          >
-            order-a
-          </button>
-          <button onClick={() => onColumnOrderChange?.(['name', 'type'])}>
-            order-b
-          </button>
-        </div>
-      );
-    },
-  }),
-);
 
 const mockUseData = useRepositoryMatcherData as jest.Mock;
 
@@ -83,29 +34,57 @@ const makeRow = (overrides: Record<string, unknown>) => ({
 const rows = [
   makeRow({
     _id: '1',
-    _search: 'alpha repo open iid',
-    name: { label: 'Alpha Repo', url: '', _id: '1' },
-    description: 'Alpha description',
-    researchDomain: ['IID'],
-    coa: 'Open Access',
-    type: ['Resource Catalog'],
-  }),
-  makeRow({
-    _id: '2',
     _search: 'beta repo controlled generalist',
-    name: { label: 'Beta Repo', url: '', _id: '2' },
+    name: { label: 'Beta Repo', url: '', _id: '1' },
     description: 'Beta description',
     researchDomain: ['Generalist'],
     coa: 'Controlled Access',
     type: ['Dataset Repository'],
+  }),
+  makeRow({
+    _id: '2',
+    _search: 'alpha repo open iid',
+    name: { label: 'Alpha Repo', url: '', _id: '2' },
+    description: 'Alpha description',
+    researchDomain: ['IID'],
+    coa: 'Open Access',
+    type: ['Resource Catalog'],
   }),
 ];
 
 const setData = ({
   data = rows,
   loading = false,
-}: { data?: any[]; loading?: boolean } = {}) => {
-  mockUseData.mockReturnValue({ data, loading, error: null });
+  error = null,
+}: { data?: any[]; loading?: boolean; error?: unknown } = {}) => {
+  mockUseData.mockReturnValue({ data, loading, error });
+};
+
+const TABLE_NAME = /repositories and resource catalogs/i;
+
+const renderPage = async () => {
+  const user = userEvent.setup();
+  const result = renderWithClient(<RepositoryMatcher />);
+  // zag machines start in a microtask; let them before interacting.
+  await act(async () => {});
+  return { user, ...result };
+};
+
+const table = () => screen.getByRole('table', { name: TABLE_NAME });
+const rowNames = () =>
+  within(table())
+    .getAllByRole('row')
+    .slice(1)
+    .map(row => within(row).getAllByRole('cell')[0].textContent);
+// The visible label only (each header also holds its hidden description).
+const headers = () =>
+  within(table())
+    .getAllByRole('columnheader')
+    .map(th => th.querySelector('.nde-header-label')?.textContent);
+
+const openCustomizer = async (user: ReturnType<typeof userEvent.setup>) => {
+  await user.click(screen.getByRole('button', { name: /customize columns/i }));
+  return screen.findByRole('dialog', { name: 'Customize Columns' });
 };
 
 describe('RepositoryMatcher page', () => {
@@ -115,95 +94,154 @@ describe('RepositoryMatcher page', () => {
     setData();
   });
 
-  it('renders the heading, intro, and result count', () => {
-    renderWithClient(<RepositoryMatcher />);
+  it('renders the heading, intro, result count and a named table', async () => {
+    await renderPage();
     expect(
       screen.getByRole('heading', { name: 'Repository Matcher', level: 1 }),
     ).toBeInTheDocument();
     expect(screen.getByText(/Find a suitable repository/i)).toBeInTheDocument();
     expect(screen.getByText('2 results')).toBeInTheDocument();
+    expect(table()).toBeInTheDocument();
   });
 
-  it('toggles the pin-first-column checkbox', async () => {
-    const user = userEvent.setup();
-    renderWithClient(<RepositoryMatcher />);
-    const pin = screen.getByRole('checkbox', { name: /pin first column/i });
-    expect(pin).not.toBeChecked();
-    await user.click(pin);
-    expect(pin).toBeChecked();
-  });
-
-  it('sorts by a column header in both directions', async () => {
-    const user = userEvent.setup();
-    renderWithClient(<RepositoryMatcher />);
+  it('starts sorted by name, ascending, and toggles with one header button', async () => {
+    const { user } = await renderPage();
     const nameHeader = screen.getByRole('columnheader', { name: /^name/i });
-    const buttons = within(nameHeader).getAllByRole('button');
-    await user.click(buttons[0]);
-    await user.click(buttons[buttons.length - 1]);
-    // Rows still render after sorting.
-    expect(screen.getAllByText(/Repo/).length).toBeGreaterThan(0);
+    expect(nameHeader).toHaveAttribute('aria-sort', 'ascending');
+    expect(rowNames()).toEqual(['Alpha Repo', 'Beta Repo']);
+
+    const sortButton = within(nameHeader).getByRole('button');
+    expect(sortButton).toHaveAccessibleName(/^name$/i);
+    await user.click(sortButton);
+    expect(nameHeader).toHaveAttribute('aria-sort', 'descending');
+    expect(rowNames()).toEqual(['Beta Repo', 'Alpha Repo']);
+    expect(screen.getByText(/sorted by name, descending/i)).toBeInTheDocument();
+
+    // Another column starts at its own default and the old one clears.
+    const accessHeader = screen.getByRole('columnheader', { name: /access/i });
+    await user.click(
+      within(accessHeader).getByRole('button', { name: /^access$/i }),
+    );
+    expect(accessHeader).toHaveAttribute('aria-sort', 'ascending');
+    expect(nameHeader).not.toHaveAttribute('aria-sort');
+    expect(rowNames()).toEqual(['Beta Repo', 'Alpha Repo']);
   });
 
-  it('sorts numeric column values with numeric comparison', async () => {
-    // The description column has no getSortValue, so the raw (numeric) cell
-    // value flows into the comparator's number branch.
-    setData({
-      data: [
-        makeRow({
-          _id: '1',
-          _search: 'a',
-          name: { label: 'A', url: '', _id: '1' },
-          description: 3,
-          type: ['X'],
-        }),
-        makeRow({
-          _id: '2',
-          _search: 'b',
-          name: { label: 'B', url: '', _id: '2' },
-          description: 20,
-          type: ['Y'],
-        }),
-      ],
-    });
-    const user = userEvent.setup();
-    renderWithClient(<RepositoryMatcher />);
-    const header = screen.getByRole('columnheader', { name: /description/i });
-    const buttons = within(header).getAllByRole('button');
-    await user.click(buttons[0]);
-    await user.click(buttons[buttons.length - 1]);
-    expect(screen.getByText('2 results')).toBeInTheDocument();
-  });
-
-  it('responds to visibility and order changes from the columns popover', async () => {
-    const user = userEvent.setup();
-    renderWithClient(<RepositoryMatcher />);
-
-    // Same visible set -> handler bails (no-op), page stays rendered.
-    await user.click(screen.getByText('vis-same'));
-    // Reduce to a set that excludes the current sort column -> sort resets.
-    await user.click(screen.getByText('vis-reduce'));
-    // A visible id with no matching column is filtered out of tableColumns.
-    await user.click(screen.getByText('vis-bogus'));
-
-    // Order change, then a no-op repeat, then a different order.
-    await user.click(screen.getByText('order-a'));
-    await user.click(screen.getByText('order-a'));
-    await user.click(screen.getByText('order-b'));
-
+  it('describes headers from an info button, separate from sorting', async () => {
+    await renderPage();
+    const access = screen.getByRole('columnheader', { name: /access/i });
     expect(
-      screen.getByRole('heading', { name: 'Repository Matcher' }),
+      within(access).getByRole('button', { name: /^access$/i }),
     ).toBeInTheDocument();
+    expect(
+      within(access).getByRole('button', { name: 'About Access' }),
+    ).toHaveAccessibleDescription(/access-level definitions/i);
+    expect(access).not.toHaveAttribute('aria-sort');
   });
 
-  it('renders loading rows while data is loading', () => {
+  it('hides a column, persists it, and restores the defaults', async () => {
+    const { user } = await renderPage();
+    expect(headers()).toContain('Description');
+    const dialog = await openCustomizer(user);
+
+    await user.click(within(dialog).getByText('Description'));
+    await waitFor(() => expect(headers()).not.toContain('Description'));
+    expect(
+      JSON.parse(
+        window.localStorage.getItem('nde:table:repository-matcher:v1')!,
+      ).visible,
+    ).not.toContain('description');
+
+    await user.click(
+      within(dialog).getByRole('button', { name: /reset to defaults/i }),
+    );
+    await waitFor(() => expect(headers()).toContain('Description'));
+  });
+
+  it('keeps the name column visible and first', async () => {
+    const { user } = await renderPage();
+    const dialog = await openCustomizer(user);
+    // Clear All leaves the required name column.
+    await user.click(
+      within(dialog).getByRole('button', { name: /clear all/i }),
+    );
+    await waitFor(() => expect(headers()).toEqual(['Name']));
+  });
+
+  it('reorders columns from the customizer', async () => {
+    const { user } = await renderPage();
+    const dialog = await openCustomizer(user);
+    expect(headers().slice(0, 3)).toEqual([
+      'Name',
+      'Description',
+      'Research Domain',
+    ]);
+    await user.click(
+      within(dialog).getByRole('button', { name: 'Move Description down' }),
+    );
+    await waitFor(() =>
+      expect(headers().slice(0, 3)).toEqual([
+        'Name',
+        'Research Domain',
+        'Description',
+      ]),
+    );
+  });
+
+  it('pins the first column from the customizer and remembers it', async () => {
+    const { user, unmount } = await renderPage();
+    const root = () => table().closest('.nde-data-table')!;
+    expect(root()).not.toHaveAttribute('data-pinned');
+
+    const dialog = await openCustomizer(user);
+    await user.click(within(dialog).getByText('Pin first column'));
+    await waitFor(() => expect(root()).toHaveAttribute('data-pinned'));
+
+    unmount();
+    await renderPage();
+    expect(root()).toHaveAttribute('data-pinned');
+  });
+
+  it('migrates column choices saved by the old popover', async () => {
+    window.localStorage.setItem(
+      'repository-matcher-visible-columns',
+      JSON.stringify(['name', 'type']),
+    );
+    await renderPage();
+    expect(headers()).toEqual(['Name', 'Type']);
+  });
+
+  it('filters rows with the search box', async () => {
+    const { user } = await renderPage();
+    await user.type(
+      screen.getByRole('textbox', { name: /search repositories/i }),
+      'iid',
+    );
+    await waitFor(() =>
+      expect(screen.getByText('1 results')).toBeInTheDocument(),
+    );
+    expect(rowNames()).toEqual(['Alpha Repo']);
+  });
+
+  it('shows skeleton rows and marks the table busy while loading', async () => {
     setData({ data: [], loading: true });
-    renderWithClient(<RepositoryMatcher />);
+    await renderPage();
     expect(screen.getByText('0 results')).toBeInTheDocument();
+    expect(table()).toHaveAttribute('aria-busy', 'true');
+    // 10 skeleton rows under the header.
+    expect(within(table()).getAllByRole('row')).toHaveLength(11);
   });
 
-  it('shows the empty state when there are no matching rows', () => {
+  it('shows the empty state when there are no matching rows', async () => {
     setData({ data: [] });
-    renderWithClient(<RepositoryMatcher />);
+    await renderPage();
     expect(screen.getByText('No repositories match')).toBeInTheDocument();
+  });
+
+  it('shows an error instead of the empty state when loading fails', async () => {
+    setData({ data: [], error: new Error('boom') });
+    await renderPage();
+    expect(screen.getByRole('alert')).toHaveTextContent(/could not be loaded/i);
+    expect(screen.queryByText('No repositories match')).not.toBeInTheDocument();
   });
 });

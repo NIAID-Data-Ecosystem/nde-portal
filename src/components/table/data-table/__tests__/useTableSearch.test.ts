@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react';
 
-import { useSearchedData } from '../useSearchedData';
+import { useTableSearch } from '../hooks/useTableSearch';
 
 const rows = [
   { _id: '1', _search: 'alpha sequencing iid' },
@@ -8,10 +8,10 @@ const rows = [
   { _id: '3', _search: 'gamma sequencing generalist' },
 ];
 
-describe('useSearchedData', () => {
+describe('useTableSearch', () => {
   // Pass debounceMs=0 so the debounced value resolves to the term immediately.
   const run = (data: typeof rows | undefined, term: string) =>
-    renderHook(() => useSearchedData(data, term, 0));
+    renderHook(() => useTableSearch(data, term, 0));
 
   it('returns an empty array when data is undefined', () => {
     const { result } = run(undefined, '');

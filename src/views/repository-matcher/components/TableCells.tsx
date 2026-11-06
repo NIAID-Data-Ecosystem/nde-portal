@@ -1,6 +1,5 @@
 import {
   Box,
-  HStack,
   Skeleton,
   SkeletonText,
   Tag,
@@ -8,63 +7,16 @@ import {
   TextProps,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
-import React, { useId, useLayoutEffect, useRef, useState } from 'react';
-import { CollapsibleTextTrigger } from 'src/components/collapsible-text';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import { ExpandableText } from 'src/components/expandable-cells';
 import { Link } from 'src/components/link';
 import Tooltip from 'src/components/tooltip';
-import { DefinedTerm } from 'src/utils/api/types';
 
-const DEFAULT_MAX_VISIBLE_TAGS = 12;
-
-export const TagCellList = ({
-  value,
-  loading,
-  maxVisible = DEFAULT_MAX_VISIBLE_TAGS,
-  ...tagProps
-}: {
-  value?: DefinedTerm[];
-  loading?: boolean;
-  maxVisible?: number;
-}) => {
-  const [expanded, setExpanded] = useState(false);
-  const contentId = useId();
-  const items: (DefinedTerm | null)[] = loading
-    ? Array.from({ length: 3 }, () => null)
-    : value ?? [];
-
-  if (!loading && items.length === 0) {
-    return <TextCell value={''} loading={loading} lineClamp={1} />;
-  }
-
-  const hiddenCount = loading ? 0 : Math.max(0, items.length - maxVisible);
-  const shouldTruncate = hiddenCount > 0;
-  const visibleItems =
-    shouldTruncate && !expanded ? items.slice(0, maxVisible) : items;
-
-  return (
-    <HStack id={contentId} flexWrap='wrap'>
-      {visibleItems.map((v, i) => (
-        <TagCell
-          key={i}
-          value={v?.name || ''}
-          lineClamp={1}
-          loading={loading}
-          {...tagProps}
-        />
-      ))}
-      {shouldTruncate && (
-        <CollapsibleTextTrigger
-          isOpen={expanded}
-          aria-controls={contentId}
-          onClick={() => setExpanded(prev => !prev)}
-        >
-          {expanded ? 'Show Less' : `Show ${hiddenCount} More`}
-        </CollapsibleTextTrigger>
-      )}
-    </HStack>
-  );
-};
+/*
+Cell components still used by the saved page (src/views/saved/table-config.tsx).
+The repository matcher itself now uses the shared DataTable cells; these go
+when the saved page migrates too.
+*/
 
 export const TagCell = ({
   value,

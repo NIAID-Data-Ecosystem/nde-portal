@@ -2,7 +2,7 @@ import { Flex, Stack, Text, VStack } from '@chakra-ui/react';
 import { useCallback, useMemo, useState } from 'react';
 import { SearchInput } from 'src/components/search-input';
 import { Table } from 'src/components/table';
-import { useSearchedData } from 'src/views/repository-matcher/hooks/useSearchedData';
+import { useTableSearch } from 'src/components/table/data-table/hooks/useTableSearch';
 
 import { formatTableData } from '../table-config';
 import { SavedColumn } from '../types';
@@ -87,7 +87,7 @@ export function SavedTableSection<TItem>({
     () => formatTableData(data, columns, getRowId),
     [data, columns, getRowId],
   );
-  const searchedData = useSearchedData(rows, searchTerm);
+  const searchedData = useTableSearch(rows, searchTerm);
 
   /****** Sort *****/
   const [sortProperty, setSortProperty] = useState<string>(columns[0].id);
