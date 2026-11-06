@@ -330,6 +330,7 @@ function useUserDataState() {
       setAccount({
         created: profile.created ?? '',
         email: profile.email ?? '',
+        idp: profile.idp,
         linked_accounts: profile.linked_accounts ?? [],
         name: profile.name ?? '',
         oauth_provider: profile.oauth_provider ?? '',
