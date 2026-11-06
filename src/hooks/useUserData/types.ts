@@ -31,6 +31,9 @@ export type UserProfile = UserPreferences & {
   updated: string;
   name: string;
   email?: string;
+  // NIH Login only: the provider the user signed in through ('orcid',
+  // 'google', 'microsoft' or 'nih').
+  idp?: string;
   // Set to true once the user saves settings on the welcome page. Kept out of
   // UserPreferences so Settings page toggles never re-send (and overwrite) it.
   onboarding_complete?: boolean;
@@ -47,6 +50,7 @@ export type UserAccount = Pick<
   UserProfile,
   | 'created'
   | 'email'
+  | 'idp'
   | 'linked_accounts'
   | 'name'
   | 'oauth_provider'

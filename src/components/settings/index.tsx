@@ -83,7 +83,10 @@ export const TOGGLE_TO_PREF: Record<ToggleKey, UserPreferencesKeys> = {
 // pointing them to their ORCID email visibility settings.
 export const getEmailToggleState = (account: UserAccount | null) => {
   const hasEmail = Boolean(account?.email);
-  const isOrcid = account?.oauth_provider?.toUpperCase() === 'ORCID';
+  // NIH Login users who signed in through ORCID have idp 'orcid'.
+  const isOrcid =
+    account?.oauth_provider?.toUpperCase() === 'ORCID' ||
+    account?.idp === 'orcid';
 
   const alert: ReactNode = hasEmail
     ? undefined
