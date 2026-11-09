@@ -48,6 +48,27 @@ const toProviderLabel = (providerId: string) =>
 export const getProviderLabel = (providerId: string) =>
   KNOWN_PROVIDERS[providerId]?.label || toProviderLabel(providerId);
 
+// Okta `idp` values that are not login providers themselves. Kept out of
+// KNOWN_PROVIDERS so they don't become login options or error codes.
+const IDP_LABELS: Record<string, string> = { nih: 'NIH Login' };
+
+/**
+ * Provider id and label describing how the user signed in. Okta (NIH Login)
+ * users pick a sign-in method there, reported as `idp`, e.g., 'google', which
+ * is shown instead of Okta. Unknown or missing idps fall back to the provider.
+ */
+export const getSignInMethod = (providerId: string, idp?: string) => {
+  const provider = providerId.toLowerCase();
+  const method = idp?.toLowerCase();
+  const id =
+    provider === 'okta' &&
+    method &&
+    (KNOWN_PROVIDERS[method] || IDP_LABELS[method])
+      ? method
+      : provider;
+  return { id, label: IDP_LABELS[id] || getProviderLabel(id) };
+};
+
 const normalizeNextPath = (nextPath: string) => {
   if (!nextPath) return '/';
   if (nextPath.startsWith('http://') || nextPath.startsWith('https://')) {

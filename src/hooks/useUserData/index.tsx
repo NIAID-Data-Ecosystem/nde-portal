@@ -41,6 +41,7 @@ const DEFAULT_MOCK_PROFILE: UserProfile = {
   favorite_datasets: MOCK_SAVED_DATASETS,
   name: process.env.NEXT_PUBLIC_MOCK_AUTH_NAME || 'Mock User',
   email: process.env.NEXT_PUBLIC_MOCK_AUTH_EMAIL,
+  idp: process.env.NEXT_PUBLIC_MOCK_AUTH_IDP,
   beta: true,
   contact_preference: false,
   feedback_preference: false,
