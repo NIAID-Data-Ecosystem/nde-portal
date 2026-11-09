@@ -14,6 +14,7 @@ import { SearchState } from './types';
 import { FilterConfig } from '../filters';
 import { VisualizationCard } from './components/visualization-card';
 import { SelectedFilterType } from '../filters/types';
+import { getFacetSelection } from '../filters/utils/query-string';
 import { InfoLabel } from 'src/components/info-label';
 import { SelectedFilterValueType } from '../filters/types';
 import { FiltersDisclaimer } from 'src/views/search/components/filters/components/filters-chart-toggle';
@@ -149,9 +150,10 @@ const SummaryGrid = (props: SummaryGridProps) => {
                             isActive={props.activeVizIds.includes(config.id)}
                             removeActiveVizId={props.removeActiveVizId}
                             onFilterUpdate={props.onFilterUpdate}
-                            selectedFilters={
-                              props.selectedFilters[filterKey] || []
-                            }
+                            selectedFilters={getFacetSelection(
+                              props.selectedFilters,
+                              filterKey,
+                            )}
                           />
                         );
                       })}

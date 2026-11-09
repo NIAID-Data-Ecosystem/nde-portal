@@ -1,4 +1,16 @@
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { SearchableItem } from 'src/components/searchable-items';
+import { FormattedResource } from 'src/utils/api/types';
+import { SHOW_CONTENT_TYPE_RESOURCE_TYPE_MATCHING } from 'src/utils/feature-flags';
+import {
+  CONTENT_TYPE_ABOUT_FIELD,
+  CONTENT_TYPE_EXAMPLE_OF_WORK_FIELD,
+  getResourceTypeForContentType,
+} from 'src/views/search/config/content-type';
+import {
+  getContentTypeLabel,
+  getContentTypeTerms,
+} from '../../utils/content-type';
 
 const schemaProperties = Object.values(SCHEMA_DEFINITIONS).map(definition => {
   if (definition.dotfield === '@id') {
@@ -29,3 +41,93 @@ export const filterWords = (inputString: string) => {
     .sort((a, b) => b.length - a.length);
   return filteredWords;
 };
+
+export interface CollectionSizeText {
+  count: string;
+  unitText: string;
+}
+
+/*
+ * Formats a DataCollection's `collectionSize` into the count + unitText
+ * shown in the card's collection-size rectangle. Returns null when
+ * there's no entry, no unitText, or none of minValue/maxValue/value.
+ */
+export const formatCollectionSize = (
+  collectionSize?: FormattedResource['collectionSize'],
+): CollectionSizeText | null => {
+  const entry = collectionSize?.[0];
+  if (!entry?.unitText) return null;
+
+  const unitText = entry.unitText;
+  if (typeof entry.minValue === 'number') {
+    return { count: `${entry.minValue.toLocaleString()}+`, unitText };
+  }
+  if (typeof entry.maxValue === 'number') {
+    return { count: entry.maxValue.toLocaleString(), unitText };
+  }
+  if (typeof entry.value === 'number') {
+    return { count: entry.value.toLocaleString(), unitText };
+  }
+  return null;
+};
+
+/*
+ * Builds the "Content Types" pills for a Resource Catalog card from `about`
+ * alone, linking each pill to a search on `about.displayName`. When the
+ * value is a known resource type and SHOW_CONTENT_TYPE_RESOURCE_TYPE_MATCHING
+ * is enabled, the search also matches records of the corresponding `@type`.
+ */
+export const getResourceCatalogContentTypeItems = (
+  data?: FormattedResource | null,
+): SearchableItem[] => {
+  const about = data?.about;
+  if (!about) return [];
+  const aboutArray = Array.isArray(about) ? about : [about];
+
+  const itemsByValue = new Map<string, SearchableItem>();
+
+  aboutArray.forEach(a => {
+    const value = a.displayName;
+    const key = String(value).toLowerCase();
+    if (itemsByValue.has(key)) return;
+
+    const resourceType = SHOW_CONTENT_TYPE_RESOURCE_TYPE_MATCHING
+      ? getResourceTypeForContentType(value)
+      : undefined;
+
+    itemsByValue.set(key, {
+      name: value,
+      value,
+      field: 'about.displayName',
+      ...(resourceType && {
+        query: `(about.displayName:"${value}" OR @type:"${resourceType}")`,
+      }),
+    });
+  });
+
+  return Array.from(itemsByValue.values());
+};
+
+/*
+ * Builds the "Content Type" pills for a card from the record's merged `about`
+ * and `exampleOfWork.about` terms. Each pill's link searches both fields with
+ * OR, so the results are the same no matter which field supplied the value.
+ */
+export const getContentTypeItems = (
+  data?: FormattedResource | null,
+): SearchableItem[] =>
+  // Ordering is left to SearchableItems, which sorts by label.
+  getContentTypeTerms(data).map(term => {
+    // `name` is the only property indexed under both fields, so it is always
+    // the searched value.
+    const value = term.name as string;
+
+    return {
+      name: getContentTypeLabel(term),
+      value,
+      // Primary field, kept so the item still resolves to a sensible query if
+      // `query` is ever dropped.
+      field: CONTENT_TYPE_ABOUT_FIELD,
+      query: `(${CONTENT_TYPE_ABOUT_FIELD}:"${value}" OR ${CONTENT_TYPE_EXAMPLE_OF_WORK_FIELD}:"${value}")`,
+    };
+  });

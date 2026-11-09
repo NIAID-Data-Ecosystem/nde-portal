@@ -1,8 +1,5 @@
 // [Feature Flags]
 // This file contains feature flags to enable/disable certain features or sections of the application
-
-import { truncate } from 'fs';
-
 // based on the environment or other conditions.
 const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
 
@@ -14,13 +11,7 @@ export const SHOULD_HIDE_SAMPLES = (hash: string) => false;
 export const SHOW_SAMPLES_TAB = true;
 
 // Hide the data collections tab on the search results page in production builds until approved. To enable tab in production, set this flag to `true`.
-export const SHOW_DATA_COLLECTIONS_TAB = !isProd;
-
-// Show credit text section in non-production environments for testing/review. To enable section in production, set this flag to `true`.
-// Note that we currently have two separate sections where credit text appears:
-// - In the sidebar under "Resource Access": src/components/resource-sections/components/sidebar/components/external/index.tsx
-// - As a standalone section in the overview section: src/components/resource-sections/index.tsx
-export const SHOW_CREDIT_TEXT_SECTION = !isProd;
+export const SHOW_DATA_COLLECTIONS_TAB = true;
 
 // Show AI-assisted search toggle and related components (e.g. banner) in non-production environments for testing/review. To enable in production, set this flag to `true`.
 export const SHOW_AI_ASSISTED_SEARCH = true;
@@ -66,13 +57,11 @@ export const SHOW_SAMPLE_UI_PILL = true;
 // set this flag to `true`.
 export const SHOW_RETIRED_RESOURCE_CATALOG_UI = true;
 
-// Show the "Program Resource" treatment for ResourceCatalog resources that have
-// a sourceOrganization (cyan type banner + "Program Resource" label on cards and
-// resource pages, and sourceOrganization names in the Collection information
-// section linked to the /program-collections page) in non-production
-// environments for testing/review. To enable in production, set this flag to
-// `true`.
-export const SHOW_PROGRAM_RESOURCE_UI = true;
+// Show the program treatments for ResourceCatalog resources in
+// non-production environments for testing/review: a cyan type banner
+// on cards and resource pages labeled "Program Info and Resource"
+// or "Program Resource". To enable in production, set this flag to `true`.
+export const SHOW_PROGRAM_RESOURCE_UI = !isProd;
 
 // Show the mutual-exclusivity behavior for the "Any <filter>" (_exists_) and
 // "No <filter>" (-_exists_) filter checkboxes in the search filters panel in
@@ -89,4 +78,37 @@ export const SHOW_FILTER_ANY_NO_EXCLUSIVITY = true;
 // production, set this flag to `true`.
 export const SHOW_FILTER_SPECIFIED_UNSPECIFIED_LABELS = true;
 
-export const USE_MERGED_SOURCES_AND_CATALOGS = !isProd;
+// To enable in production, set to true to show merged sources and resource catalogs as a single list.
+// See: https://github.com/NIAID-Data-Ecosystem/niaid-feedback/issues/294
+export const USE_MERGED_SOURCES_AND_CATALOGS = true;
+
+// Show the search results "View mode" radio (Card / Table) and the
+// alternate views it switches between in non-production environments.
+// When disabled, the Datasets and Computational Tools tabs always render
+// cards and the Data Collections tab always renders the table. The Data
+// Collections tab is additionally gated by SHOW_DATA_COLLECTIONS_VIEW_MODES
+// below, so this flag alone is not enough to give that tab the radio.
+// To enable in production, set this flag to `true`.
+export const SHOW_SEARCH_VIEW_MODES = true;
+
+// Show the "View mode" radio (Card / Table) and the card view on the Data
+// Collections tab in non-production environments for testing/review. This is
+// gated separately from SHOW_SEARCH_VIEW_MODES because the Data Collections
+// card view is not yet approved for production. When disabled, that tab hides
+// the radio and always renders the table, regardless of any view mode the user
+// has persisted in localStorage. To enable in production, set this flag to
+// `true`.
+export const SHOW_DATA_COLLECTIONS_VIEW_MODES = true;
+
+// Show the "Welcome to your NIAID Data Ecosystem account" page (once per
+// session) to signed-in users whose profile has `onboarding_complete: false`,
+// until they save their settings there. Enabled in non-production environments
+// for testing/review. To enable in production, set this flag to `true`.
+export const SHOW_WELCOME_PAGE = !isProd;
+
+// Make the "Dataset", "Sample" and "Software" Content Type values also match
+// records of @type Dataset, Sample and ComputationalTool respectively, in the
+// Content Type UI pills, the Content Type filter query, and the Content Type
+// filter's facet counts, in non-production environments.
+// To enable in production, set this flag to `true`.
+export const SHOW_CONTENT_TYPE_RESOURCE_TYPE_MATCHING = !isProd;

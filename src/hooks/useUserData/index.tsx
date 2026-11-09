@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { MOCK_SAVED_DATASETS } from './mocks/saved_datasets';
 import {
+  SavePreferencesOptions,
   SavedDataset,
   SavedQuery,
   UserAccount,
@@ -22,6 +23,7 @@ import {
   formatSavedQueryFilters,
   parseSavedQueries,
 } from './helpers';
+import { fetchWithXsrf } from 'src/utils/auth/xsrf';
 
 const DEFAULT_PREFERENCES: UserPreferences = {
   ai_toggle_preference: false,
@@ -44,6 +46,9 @@ const DEFAULT_MOCK_PROFILE: UserProfile = {
   feedback_preference: false,
   created: '2026-03-11T19:36:34+00:00',
   updated: '2026-03-11T20:24:13+00:00',
+  // Set NEXT_PUBLIC_MOCK_AUTH_NEW_ACCOUNT=true to make the mock profile report
+  // onboarding as incomplete, so it routes to the welcome page.
+  onboarding_complete: process.env.NEXT_PUBLIC_MOCK_AUTH_NEW_ACCOUNT !== 'true',
 };
 
 type ApiResult = { status: number; ok: boolean; body: unknown };
@@ -71,6 +76,17 @@ function useUserDataState() {
   // display, e.g. deciding whether email-dependent settings (email updates)
   // can be enabled.
   const [account, setAccount] = useState<UserAccount | null>(null);
+
+  // Whether the user has been through the welcome page. null until the
+  // /user/data profile loads.
+  const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(
+    null,
+  );
+
+  // Whether the first /user/data request has settled (success or failure), so
+  // callers can tell "still loading" from "failed" when onboardingComplete is
+  // null.
+  const [hasLoadedProfile, setHasLoadedProfile] = useState(false);
 
   // Last failed saved-items mutation, surfaced to the UI as an error banner.
   // Cleared whenever a subsequent mutation succeeds (or on manual dismiss).
@@ -260,9 +276,8 @@ function useUserDataState() {
       const url = `${API_BASE_URL}${path}`;
 
       try {
-        const response = await fetch(url, {
+        const response = await fetchWithXsrf(API_BASE_URL, url, {
           method,
-          credentials: 'include',
           headers: body ? { 'Content-Type': 'application/json' } : undefined,
           body: body ? JSON.stringify(body) : undefined,
         });
@@ -320,12 +335,16 @@ function useUserDataState() {
       setAccount({
         created: profile.created ?? '',
         email: profile.email ?? '',
+        idp: profile.idp,
         linked_accounts: profile.linked_accounts ?? [],
         name: profile.name ?? '',
         oauth_provider: profile.oauth_provider ?? '',
         updated: profile.updated ?? '',
         username: profile.username ?? '',
       });
+
+      // A missing field counts as not onboarded, matching the API.
+      setOnboardingComplete(profile.onboarding_complete === true);
 
       if (Array.isArray(profile.favorite_searches)) {
         setSavedQueries(parseSavedQueries(profile.favorite_searches));
@@ -342,6 +361,7 @@ function useUserDataState() {
         'Unable to load your saved queries and resources. Please refresh to try again.',
       );
     }
+    setHasLoadedProfile(true);
     return result;
   }, [callUserDataApi]);
 
@@ -359,6 +379,33 @@ function useUserDataState() {
 
       setPreferences(nextPreferences);
       void callUserDataApi('PUT', '/user/data', nextPreferences);
+    },
+    [callUserDataApi, preferences],
+  );
+
+  // Persist several preferences in a single request (e.g., the welcome page's
+  // "Save Settings"), rather than one PUT per toggle.
+  const savePreferences = useCallback(
+    async (
+      updates: Partial<UserPreferences>,
+      { completeOnboarding = false }: SavePreferencesOptions = {},
+    ) => {
+      const nextPreferences = { ...preferences, ...updates };
+      const result = await callUserDataApi(
+        'PUT',
+        '/user/data',
+        completeOnboarding
+          ? { ...nextPreferences, onboarding_complete: true }
+          : nextPreferences,
+      );
+      if (result && 'body' in result && result.ok) {
+        setError(null);
+        setPreferences(nextPreferences);
+        if (completeOnboarding) setOnboardingComplete(true);
+      } else {
+        setError("Couldn't save your preferences. Please try again.");
+      }
+      return result;
     },
     [callUserDataApi, preferences],
   );
@@ -482,6 +529,8 @@ function useUserDataState() {
   return {
     preferences,
     account,
+    onboardingComplete,
+    hasLoadedProfile,
     savedQueries,
     savedDatasets,
     isDevMode,
@@ -489,6 +538,7 @@ function useUserDataState() {
     clearError,
     getProfile,
     updatePreferenceField,
+    savePreferences,
     addSavedQuery,
     removeSavedQuery,
     addSavedDataset,

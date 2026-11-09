@@ -4,8 +4,18 @@
 // Used for __tests__/testing-library.js
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom/extend-expect';
+import { trackFocusVisible } from '@zag-js/focus-visible';
 import { setupServer } from 'msw/node';
 import { handlers } from 'src/__tests__/mocks/utils';
+
+// @zag-js/focus-visible (pulled in by Chakra's Checkbox/Radio) installs its global
+// focus tracking with a plain `HTMLElement.prototype.focus = ...` assignment, while
+// user-event's setup() redefines that same property as a getter-only accessor.
+// Whichever runs first wins: a test that calls userEvent.setup() before the first
+// focus-visible consumer mounts makes zag's assignment throw "Cannot set property
+// focus of #<HTMLElement> which has only a getter". Run zag's setup once up front so
+// its internal `hasSetup` guard is already true regardless of test ordering.
+trackFocusVisible(() => {});
 
 // needed for next/router mock
 jest.mock('next/router', () => require('next-router-mock'));

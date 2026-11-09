@@ -1,4 +1,4 @@
-import { getProviderLabel } from 'src/utils/auth/config';
+import { getProviderLabel } from 'src/utils/auth/helpers';
 import { AuthState, User } from 'src/utils/auth/types';
 
 export const isDevMockAuthEnabled =

@@ -109,6 +109,9 @@ const USER_DATA_POPULATED = {
   beta: false,
   contact_preference: false,
   feedback_preference: false,
+  // Without this, useWelcomeRedirect treats the user as not onboarded and
+  // replaces the route with /welcome mid-test (USER_DATA_EMPTY inherits it).
+  onboarding_complete: true,
   created: '2026-03-11T19:36:34+00:00',
   updated: '2026-03-11T20:24:13+00:00',
 };
@@ -169,7 +172,14 @@ test.describe('a11y: Saved — loading (auth check in flight)', () => {
     // The withAuth loading UI is a bare spinner + text (no PageContainer chrome,
     // so no main/h1 to assert). "Loading..." appears twice — the Chakra Spinner's
     // visually-hidden label and the withAuth paragraph — so take the first match.
-    await expect(page.getByText(/^loading\.\.\.$/i).first()).toBeVisible();
+    // Scope to #__next: _document also renders a hidden static login-pending
+    // loader (#auth-pending-loader) with the same text, ahead of the React root.
+    await expect(
+      page
+        .locator('#__next')
+        .getByText(/^loading\.\.\.$/i)
+        .first(),
+    ).toBeVisible();
 
     await runAxeScans(page, testInfo, 'loading');
   });

@@ -493,7 +493,7 @@ export const Table: React.FC<TableProps<any>> = ({
   const [{ data: tableData, orderBy, sortBy }, updateSort] = useTableSort({
     data: isControlled ? [] : dataWithUniqueID,
     accessor,
-    orderBy: columns[0].property,
+    orderBy: columns[0]?.property,
     isSortAscending: true,
   });
   // [size]: num of rows per page

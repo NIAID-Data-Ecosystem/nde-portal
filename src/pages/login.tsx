@@ -14,16 +14,12 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
-import {
-  FaCheck,
-  FaGithub,
-  FaGoogle,
-  FaMicrosoft,
-  FaOrcid,
-} from 'react-icons/fa6';
+import { FaCheck } from 'react-icons/fa6';
 import { useRouter } from 'next/router';
+import { ProviderIcon } from 'src/components/auth/provider-icon';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { useAuth } from 'src/hooks/useAuth';
+import { getProviderLabel } from 'src/utils/auth/helpers';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
 const ListItemContent = ({ children }: { children: React.ReactNode }) => (
@@ -33,40 +29,6 @@ const ListItemContent = ({ children }: { children: React.ReactNode }) => (
     <Text fontSize='inherit'>{children}</Text>
   </HStack>
 );
-
-const ProviderIcon = ({ providerId }: { providerId: string }) => {
-  if (providerId.toLowerCase() === 'orcid') {
-    return <Icon as={FaOrcid} color='#A6CE39' boxSize={5} aria-hidden='true' />;
-  }
-
-  if (providerId.toLowerCase() === 'github') {
-    return (
-      <Icon as={FaGithub} color='#24292e ' boxSize={5} aria-hidden='true' />
-    );
-  }
-
-  if (providerId.toLowerCase() === 'google') {
-    return (
-      <Icon as={FaGoogle} color='#4285F4' boxSize={5} aria-hidden='true' />
-    );
-  }
-
-  if (providerId.toLowerCase() === 'microsoft') {
-    return (
-      <Icon as={FaMicrosoft} color='#00A4EF' boxSize={5} aria-hidden='true' />
-    );
-  }
-
-  return (
-    <Box
-      aria-hidden='true'
-      boxSize='16px'
-      borderRadius='full'
-      bg='gray.400'
-      display='inline-block'
-    />
-  );
-};
 
 function LoginPage() {
   const router = useRouter();
@@ -159,7 +121,9 @@ function LoginPage() {
                     colorScheme='gray'
                     variant='outline'
                     size='md'
-                    py={1}
+                    h='auto'
+                    minH={10}
+                    py={2}
                     borderColor='gray.100'
                     _hover={{
                       bg: 'niaid.50',
@@ -170,28 +134,32 @@ function LoginPage() {
                       borderColor: 'niaid.300',
                     }}
                     onClick={() => login(provider.id)}
+                    leftIcon={<ProviderIcon providerId={provider.id} />}
                   >
-                    <HStack spacing={2} justify='flex-start'>
-                      <ProviderIcon providerId={provider.id} />
-                      <Text fontSize='inherit'>
-                        Log In With {provider.label}
-                      </Text>
-                    </HStack>
+                    <Stack as='span' spacing={2} alignItems='center'>
+                      <span>
+                        {provider.loginText ?? `Log In with ${provider.label}`}
+                      </span>
+                      {provider.methodIcons && (
+                        <HStack as='span' spacing={2}>
+                          {provider.methodIcons.map(methodId => (
+                            // Labelled so the button's accessible name lists
+                            // the sign-in methods shown.
+                            <ProviderIcon
+                              key={methodId}
+                              providerId={methodId}
+                              role='img'
+                              aria-hidden={false}
+                              aria-label={getProviderLabel(methodId)}
+                            />
+                          ))}
+                        </HStack>
+                      )}
+                    </Stack>
                   </Button>
                 ))}
               </Stack>
             )}
-            {/*
-            <Text mt={5} fontSize='sm' color='gray.700'>
-              Don&apos;t have an account?{' '}
-              <Link
-                href='/register'
-                color='niaid.700'
-                textDecoration='underline'
-              >
-                Register
-              </Link>
-            </Text> */}
           </Box>
         </Flex>
 

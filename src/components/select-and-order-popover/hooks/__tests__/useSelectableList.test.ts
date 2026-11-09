@@ -154,6 +154,34 @@ describe('useSelectableList', () => {
       expect(result.current.selectedIds).toContain('a');
       expect(result.current.selectedIds).toContain('b');
     });
+
+    it('falls back to clearAllFallbackIds instead of requiredIds when provided', () => {
+      const { result } = renderBasic({
+        requiredIds: [],
+        clearAllFallbackIds: ['a'],
+      });
+      act(() => result.current.toggleAll()); // all => clear
+      expect(result.current.selectedIds).toEqual(['a']);
+    });
+
+    it('defaults clearAllFallbackIds to requiredIds when not provided', () => {
+      const { result } = renderBasic({ requiredIds: ['a', 'b'] });
+      act(() => result.current.toggleAll()); // all => clear
+      expect(result.current.selectedIds).toEqual(
+        expect.arrayContaining(['a', 'b']),
+      );
+      expect(result.current.selectedIds).toHaveLength(2);
+    });
+
+    it('does not disable individual toggling of a clearAllFallbackIds-only column', () => {
+      const { result } = renderBasic({
+        requiredIds: [],
+        clearAllFallbackIds: ['a'],
+      });
+      act(() => result.current.toggleAll()); // all => clear, leaves ['a']
+      act(() => result.current.toggle('a', false));
+      expect(result.current.selectedIds).not.toContain('a');
+    });
   });
 
   describe('localStorage persistence', () => {

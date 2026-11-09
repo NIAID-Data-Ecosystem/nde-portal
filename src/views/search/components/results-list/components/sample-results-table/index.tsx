@@ -110,7 +110,7 @@ export const ALL_SAMPLE_COLUMNS: SampleColumn[] = [
   },
   {
     id: 'infectiousAgent',
-    title: 'Infectious Agent',
+    title: 'Pathogen Species',
     property: 'infectiousAgent',
     isSortable: false,
     apiSortField: COLUMN_API_SORT_FIELDS['infectiousAgent'],

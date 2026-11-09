@@ -12,6 +12,7 @@ import { SearchTabs } from '../layout/tabs';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { ResourceCatalogCard } from '../results-list/components/carousel-compact-card/resource-catalog-card';
 import { DiseaseOverviewCard } from '../results-list/components/carousel-compact-card/disease-overview-card';
+import { ProgramInfoCard } from '../results-list/components/carousel-compact-card/program-info-card';
 import { Carousel } from 'src/components/carousel';
 import { CarouselWrapper } from '../layout/carousel-wrapper';
 import { EmptyState } from '../results-list/components/empty';
@@ -19,9 +20,11 @@ import { TabType } from '../../types';
 import { generateOtherResourcesTitle, tabs } from '../../config/tabs';
 import { getDefaultTabId } from '../../utils/get-default-tab';
 import { useDiseaseData } from '../../hooks/useDiseaseData';
+import { useProgramInfoCollections } from '../../hooks/useProgramInfoCollections';
 import {
   SHOW_SAMPLES_TAB,
   SHOW_DATA_COLLECTIONS_TAB,
+  SHOW_PROGRAM_RESOURCE_UI,
 } from 'src/utils/feature-flags';
 import {
   useBioSampleAggregation,
@@ -31,6 +34,7 @@ import { queryFilterObject2String } from '../filters/utils/query-string';
 import { fetchSearchResults, Params } from 'src/utils/api';
 import { defaultQuery, getDefaultSizeForTab } from '../../config/defaultQuery';
 import { SAMPLE_FIELDS, DATA_COLLECTION_FIELDS } from '../../config/fields';
+import { getSectionFilters } from '../results-list/utils/resource-type-filter';
 
 const CAROUSEL_RESULTS_FIELDS = [
   '_meta',
@@ -45,6 +49,7 @@ const CAROUSEL_RESULTS_FIELDS = [
   'hasAPI',
   'includedInDataCatalog',
   'name',
+  'sameAs',
   'sourceOrganization',
 ];
 
@@ -133,12 +138,22 @@ export const SearchResultsController = ({
 
   const bioSampleTotal = bioSampleAgg.data?.total ?? 0;
 
+  // The Sample and DataCollection prefetches below only help if their params
+  // match the first page the tab's results section requests (see
+  // `SearchResults`), since both share the query key. That means the same
+  // type-scoped filters, and the URL's `use_metadata_score` and
+  // `use_ai_search` as they are, without defaults.
+
   // Prefetch the Sample table query in the background.
   useEffect(() => {
     if (!router.isReady || !SHOW_SAMPLES_TAB) return;
 
-    const sampleExtraFilter = serializedFilters
-      ? `${serializedFilters} AND ${BIOSAMPLE_EXTRA_FILTER}`
+    const sampleFilters =
+      queryFilterObject2String(
+        getSectionFilters(['Sample'], queryParams.filters),
+      ) || '';
+    const sampleExtraFilter = sampleFilters
+      ? `${sampleFilters} AND ${BIOSAMPLE_EXTRA_FILTER}`
       : BIOSAMPLE_EXTRA_FILTER;
 
     const sampleParams: Params = {
@@ -149,8 +164,8 @@ export const SearchResultsController = ({
       sort: defaultQuery.sort,
       size: `${getDefaultSizeForTab('s')}`,
       from: '0',
-      use_metadata_score: 'false',
-      use_ai_search: queryParams.use_ai_search ?? 'false',
+      use_metadata_score: queryParams.shouldUseMetadataScore ? 'true' : 'false',
+      use_ai_search: queryParams.use_ai_search,
     };
 
     queryClient.prefetchQuery({
@@ -161,7 +176,8 @@ export const SearchResultsController = ({
   }, [
     router.isReady,
     queryParams.q,
-    serializedFilters,
+    queryParams.filters,
+    queryParams.shouldUseMetadataScore,
     queryParams.use_ai_search,
     queryClient,
   ]);
@@ -172,14 +188,17 @@ export const SearchResultsController = ({
 
     const dcParams: Params = {
       q: queryParams.q,
-      extra_filter: serializedFilters,
+      extra_filter:
+        queryFilterObject2String(
+          getSectionFilters(['DataCollection'], queryParams.filters),
+        ) || '',
       facets: '',
       fields: DATA_COLLECTION_FIELDS,
       sort: defaultQuery.sort,
       size: `${getDefaultSizeForTab('dc')}`,
       from: '0',
-      use_metadata_score: 'false',
-      use_ai_search: queryParams.use_ai_search ?? 'false',
+      use_metadata_score: queryParams.shouldUseMetadataScore ? 'true' : 'false',
+      use_ai_search: queryParams.use_ai_search,
     };
 
     queryClient.prefetchQuery({
@@ -190,7 +209,8 @@ export const SearchResultsController = ({
   }, [
     router.isReady,
     queryParams.q,
-    serializedFilters,
+    queryParams.filters,
+    queryParams.shouldUseMetadataScore,
     queryParams.use_ai_search,
     queryClient,
   ]);
@@ -282,7 +302,7 @@ export const SearchResultsController = ({
       filters: { ...queryParams.filters, ['@type']: ['ResourceCatalog'] },
       fields: CAROUSEL_RESULTS_FIELDS,
       // No facets: this query is only read for `results`.
-      size: 50,
+      size: 200,
       sort: 'name.raw',
       use_ai_search: queryParams.use_ai_search ?? 'false',
     },
@@ -317,21 +337,47 @@ export const SearchResultsController = ({
   const matchingDiseases =
     matchingDiseasesRaw.length === 0 ? EMPTY_DISEASES : matchingDiseasesRaw;
 
+  // Program collections without a resource catalog, shown as "Program Info"
+  // cards after the resource catalogs.
+  const { programCollections, hasProgramInfo } = useProgramInfoCollections({
+    q: queryParams.q,
+    filters: queryParams.filters,
+    enabled: router.isReady,
+  });
+  const programInfoCount = SHOW_PROGRAM_RESOURCE_UI
+    ? programCollections.length
+    : 0;
+
   const carouselItems = useMemo(() => {
-    const items: Array<{ type: 'resource' | 'disease'; data: any }> = [];
+    const items: Array<{
+      type: 'resource' | 'program-info' | 'disease';
+      data: any;
+    }> = [];
 
     resourceCatalogData.forEach(resource => {
       items.push({ type: 'resource', data: resource });
+    });
+
+    programCollections.forEach(collection => {
+      items.push({ type: 'program-info', data: collection });
     });
 
     matchingDiseases.forEach(disease => {
       items.push({ type: 'disease', data: disease });
     });
 
-    return items;
-  }, [resourceCatalogData, matchingDiseases]);
+    return items.sort((a, b) => {
+      // sort by name alphabetically
+      const nameA = a.data.name?.toLowerCase() || '';
+      const nameB = b.data.name?.toLowerCase() || '';
+      if (nameA < nameB) return -1;
+      if (nameA > nameB) return 1;
+      return 0;
+    });
+  }, [resourceCatalogData, programCollections, matchingDiseases]);
 
-  const shouldShowCarousel = hasResourceCatalogRecords || hasMatchingDiseases;
+  const shouldShowCarousel =
+    hasResourceCatalogRecords || hasMatchingDiseases || hasProgramInfo;
 
   const isCarouselLoading =
     (hasResourceCatalogRecords && (carouselIsLoading || carouselIsPending)) ||
@@ -393,7 +439,7 @@ export const SearchResultsController = ({
   ) =>
     sections.reduce((indices: number[], section, index) => {
       if (section.type === 'ResourceCatalog') {
-        if (section.count > 0 || hasMatchingDiseases) {
+        if (section.count > 0 || hasMatchingDiseases || hasProgramInfo) {
           indices.push(index);
         }
       } else if (section.type === 'Dataset') {
@@ -425,6 +471,7 @@ export const SearchResultsController = ({
         onChange={handleTabChange}
         colorScheme={colorScheme}
         tabs={tabsWithFacetCounts}
+        programInfoCount={programInfoCount}
         renderTabPanels={() =>
           tabsWithFacetCounts.map(tab => {
             const sections = tab.types;
@@ -451,7 +498,10 @@ export const SearchResultsController = ({
                       return (
                         <AccordionContent
                           key='resource-catalog'
-                          title={generateOtherResourcesTitle(sections)}
+                          title={generateOtherResourcesTitle(
+                            sections,
+                            programInfoCount,
+                          )}
                         >
                           {isCarouselLoading || shouldShowCarousel ? (
                             <CarouselWrapper>
@@ -465,7 +515,9 @@ export const SearchResultsController = ({
                                 ).map((carouselItem, idx) => (
                                   <div
                                     key={
-                                      carouselItem?.data?.id || `loading-${idx}`
+                                      carouselItem?.data?.id
+                                        ? `${carouselItem.type}-${carouselItem.data.id}`
+                                        : `loading-${idx}`
                                     }
                                   >
                                     {carouselItem.type === 'resource' ? (
@@ -473,6 +525,11 @@ export const SearchResultsController = ({
                                         data={carouselItem.data}
                                         isLoading={isCarouselLoading}
                                         referrerPath={router.asPath}
+                                      />
+                                    ) : carouselItem.type === 'program-info' ? (
+                                      <ProgramInfoCard
+                                        data={carouselItem.data}
+                                        isLoading={isCarouselLoading}
                                       />
                                     ) : (
                                       <DiseaseOverviewCard

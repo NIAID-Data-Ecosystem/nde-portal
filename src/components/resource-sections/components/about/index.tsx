@@ -1,0 +1,183 @@
+import { OverviewSectionWrapper } from '../overview-section-wrapper';
+import { FormattedResource } from 'src/utils/api/types';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { TagWithUrl } from 'src/components/tag-with-url';
+import { SearchableItems } from 'src/components/searchable-items';
+import {
+  getContentTypeItems,
+  getResourceCatalogContentTypeItems,
+} from 'src/views/search/components/results-list/components/card/helpers';
+import { ResourceCatalogCollection } from '../collection-information';
+import { Box, SimpleGrid, VStack } from '@chakra-ui/react';
+
+// Note: `about` and `exampleOfWork.about` are displayed under the umbrella term "Content Types" since they both generally describe the type of content associated with the resource. `genre` is displayed separately as "Research Domain" since it typically describes the broader domain or field of research that the resource is associated with, which is a different aspect than the specific content types described by `about` and `exampleOfWork.about`.
+
+export const AboutResource = ({
+  about,
+  collectionSize,
+  exampleOfWork,
+  genre,
+  isLoading,
+  type,
+}: {
+  about?: FormattedResource['about'];
+  collectionSize?: FormattedResource['collectionSize'];
+  exampleOfWork?: FormattedResource['exampleOfWork'];
+  genre?: FormattedResource['genre'];
+  isLoading: boolean;
+  type?: FormattedResource['@type'];
+}) => {
+  // If none of the relevant fields are present, don't render the section at all
+  if (!about && !collectionSize && !exampleOfWork?.about && !genre) {
+    return null;
+  }
+
+  // Resource Catalog and Data Collection resources link each Content Type tag
+  // to the same /search query as the corresponding search result card, using
+  // the same helpers those cards use.
+  const isResourceCatalogType = type === 'ResourceCatalog';
+  const isDataCollectionType = type === 'DataCollection';
+
+  const searchableContentTypeItems = isResourceCatalogType
+    ? getResourceCatalogContentTypeItems({ about } as FormattedResource)
+    : isDataCollectionType
+    ? getContentTypeItems({ about, exampleOfWork } as FormattedResource)
+    : [];
+
+  // Combine exampleOfWork.about into about for display purposesand filter for unique values (in case there's overlap between about and exampleOfWork.about)
+  const contentTypes =
+    isResourceCatalogType || isDataCollectionType
+      ? []
+      : [
+          ...(Array.isArray(about) ? about : about ? [about] : []),
+          ...(exampleOfWork?.about
+            ? Array.isArray(exampleOfWork.about)
+              ? exampleOfWork.about
+              : [exampleOfWork.about]
+            : []),
+        ]
+          // Normalize before deduplicating: some records nest the term one level
+          // deeper (`about[].about`), and those wrappers carry no displayName/name of
+          // their own — comparing them unnormalized makes every nested entry look
+          // like a duplicate of the first.
+          .map(item => {
+            const term = item.about || item;
+            return {
+              name: term.displayName || term.name || 'N/A',
+              url: term.url,
+            };
+          })
+          .filter(
+            (item, index, self) =>
+              index ===
+              self.findIndex(t => t.name === item.name && t.url === item.url), // consider name and url for uniqueness
+          );
+
+  return (
+    <SimpleGrid
+      minChildWidth={{ base: 'unset', sm: '280px', xl: '300px' }}
+      spacingX={14}
+      spacingY={10}
+      mt={4}
+      rowGap={0}
+      w='100%'
+    >
+      {/* Col 1: Genre & Content Types */}
+      <VStack>
+        {genre && (
+          <OverviewSectionWrapper
+            isLoading={isLoading}
+            label='Research Domain'
+            scrollContainerProps={{
+              border: 'none',
+              py: 0,
+            }}
+          >
+            {(Array.isArray(genre) ? genre : genre ? [genre] : []).map(
+              (item, idx) => (
+                <TagWithUrl
+                  key={`${item}-${idx}`}
+                  colorScheme='primary'
+                  m={0.5}
+                  leftIcon={FaMagnifyingGlass}
+                  href={{
+                    pathname: '/search',
+                    query: {
+                      q: `genre:"${item}"`,
+                    },
+                  }}
+                >
+                  {item}
+                </TagWithUrl>
+              ),
+            )}
+          </OverviewSectionWrapper>
+        )}
+        {/* `about` and `exampleOfWork.about` are displayed under the umbrella term "Content Types" */}
+        {searchableContentTypeItems.length > 0 && (
+          <OverviewSectionWrapper
+            isLoading={isLoading}
+            label='Content Types'
+            scrollContainerProps={{
+              border: 'none',
+              py: 0,
+              maxHeight: 'unset',
+            }}
+          >
+            {/* Resource Catalog and Data Collection resources link to the
+            same /search query as their search result card's Content Type
+            tags, via the same shared items + component the cards use. */}
+            <SearchableItems
+              items={searchableContentTypeItems}
+              itemLimit={Infinity}
+              maxHeight='unset'
+              searchParams={isDataCollectionType ? { tab: 'dc' } : undefined}
+            />
+          </OverviewSectionWrapper>
+        )}
+        {contentTypes.length > 0 && (
+          <OverviewSectionWrapper
+            isLoading={isLoading}
+            label='Content Types'
+            scrollContainerProps={{
+              border: 'none',
+              py: 0,
+              maxHeight: 'unset',
+            }}
+          >
+            {contentTypes.map((item, idx) => (
+              <TagWithUrl
+                // Resolved names are not unique on their own: distinct terms
+                // can share one, and unnamed terms all fall back to 'N/A'.
+                key={`${item.name}-${idx}`}
+                colorScheme='primary'
+                m={0.5}
+                leftIcon={FaMagnifyingGlass}
+                href={item.url || undefined}
+              >
+                {item.name}
+              </TagWithUrl>
+            ))}
+          </OverviewSectionWrapper>
+        )}
+      </VStack>
+
+      {/* Col 2: Size of collection */}
+      {collectionSize && (
+        <OverviewSectionWrapper
+          isLoading={isLoading}
+          label='Collection Size Details'
+          maxWidth={{ base: 'unset', xl: '500px' }}
+          scrollContainerProps={{
+            maxHeight: 'unset',
+            py: 0,
+          }}
+        >
+          <ResourceCatalogCollection collectionSize={collectionSize} />
+        </OverviewSectionWrapper>
+      )}
+      {/* Empty placeholder for third column at xl screens */}
+      <Box display={{ base: 'none', xl: 'block' }} aria-hidden />
+    </SimpleGrid>
+  );
+};

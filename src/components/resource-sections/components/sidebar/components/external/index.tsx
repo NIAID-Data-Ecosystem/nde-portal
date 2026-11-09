@@ -18,8 +18,8 @@ import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
 import { HasDownload } from 'src/components/badges/components/HasDownload';
 import { HasAPI } from 'src/components/badges/components/HasAPI';
 import { CreditText } from './components/credit-text';
-import { SHOW_CREDIT_TEXT_SECTION } from 'src/utils/feature-flags';
 import { Link, LinkProps } from 'src/components/link';
+import { getMetadataDescription } from 'src/components/metadata/helpers';
 
 interface ExternalProps extends Omit<WrapperProps, 'children'> {
   data?: FormattedResource;
@@ -42,18 +42,12 @@ export const LinkToSourcePage = ({
 export const ExternalAccess = ({
   data,
   isLoading,
-  hasDivider = true,
   ...props
 }: ExternalProps) => {
   return (
     <>
       {/* Source + data access info. */}
-      <Wrapper
-        isLoading={isLoading}
-        label='Resource Access'
-        hasDivider={hasDivider}
-        {...props}
-      >
+      <Wrapper isLoading={isLoading} label='Resource Access' {...props}>
         {(data?.isAccessibleForFree === true ||
           data?.isAccessibleForFree === false ||
           data?.conditionsOfAccess) && (
@@ -102,7 +96,7 @@ export const UsageInfo = ({
     <>
       <Box bg='secondary.50'>
         {/* License, usage agreement */}
-        {(data?.usageInfo || data?.license || SHOW_CREDIT_TEXT_SECTION) && (
+        {(data?.creditText || data?.usageInfo || data?.license) && (
           <Wrapper
             isLoading={isLoading}
             label='Usage and Licensing'
@@ -119,9 +113,14 @@ export const UsageInfo = ({
                 type={data?.['@type']}
                 license={data?.license}
               />
-              {SHOW_CREDIT_TEXT_SECTION && (
-                <CreditText label='Credit Text' data={data} />
-              )}
+              <CreditText
+                label='Credit Text'
+                data={data}
+                tooltipLabel={getMetadataDescription(
+                  'creditText',
+                  data?.['@type'],
+                )}
+              />
             </>
           </Wrapper>
         )}
@@ -146,7 +145,6 @@ interface WrapperProps extends SkeletonProps {
   isLoading: boolean;
   children: React.ReactNode;
   headingProps?: HeadingProps;
-  hasDivider?: boolean;
 }
 
 export const Wrapper = ({
@@ -154,11 +152,9 @@ export const Wrapper = ({
   isLoading,
   children,
   headingProps,
-  hasDivider = true,
   ...props
 }: WrapperProps) => (
   <Skeleton isLoaded={!isLoading} fontSize='xs' flex={1} {...props}>
-    {hasDivider && <Divider borderColor='page.placeholder' />}
     {label && (
       <Heading
         as='h2'

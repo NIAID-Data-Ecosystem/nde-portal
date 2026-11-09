@@ -1,14 +1,16 @@
 import { renderHook } from '@testing-library/react';
 import {
   defaultSearchValue,
+  removeUnnamedDefinedTerms,
   useRepositoryMatcherData,
 } from '../useRepositoryMatcherData';
 import { useSourcesList } from 'src/hooks/api/useSourcesList';
 
+// The hook now delegates fetching/merging to `useSourcesList` (which merges
+// resource catalogs into the metadata sources, de-duplicates them, and filters
+// out feature-flagged repository types). Its own job is to filter by
+// `creativeWorkStatus` and build the per-column table rows + search blob.
 jest.mock('src/hooks/api/useSourcesList');
-jest.mock('src/utils/feature-flags', () => ({
-  SHOW_DATA_COLLECTIONS_TAB: false,
-}));
 
 const mockUseSourcesList = useSourcesList as jest.Mock;
 
@@ -45,6 +47,29 @@ describe('defaultSearchValue', () => {
   });
 });
 
+describe('removeUnnamedDefinedTerms', () => {
+  it('drops DefinedTerm objects without a name', () => {
+    expect(
+      removeUnnamedDefinedTerms([
+        { '@type': 'DefinedTerm', name: 'Malaria' },
+        { '@type': 'DefinedTerm', identifier: '123' },
+        { '@type': 'DefinedTerm', name: '' },
+      ]),
+    ).toEqual([{ '@type': 'DefinedTerm', name: 'Malaria' }]);
+  });
+
+  it('keeps unnamed objects of other types and non-object entries', () => {
+    const value = [{ '@type': 'QuantitativeValue', minValue: 1 }, 'a', null];
+    expect(removeUnnamedDefinedTerms(value)).toEqual(value);
+  });
+
+  it('returns non-array values unchanged', () => {
+    const obj = { '@type': 'DefinedTerm' };
+    expect(removeUnnamedDefinedTerms(obj)).toBe(obj);
+    expect(removeUnnamedDefinedTerms('x')).toBe('x');
+  });
+});
+
 describe('useRepositoryMatcherData', () => {
   afterEach(() => jest.clearAllMocks());
 
@@ -72,14 +97,6 @@ describe('useRepositoryMatcherData', () => {
           type: ['Dataset Repository'],
           creativeWorkStatus: 'Retired',
         },
-        // excluded: data repositories are hidden while the data collections
-        // tab is off (SHOW_DATA_COLLECTIONS_TAB is mocked to false above).
-        {
-          _id: 'collection',
-          name: 'Data Collection Repo',
-          type: ['Data Repository'],
-          creativeWorkStatus: 'Accepting Data',
-        },
         {
           _id: 'r1',
           name: 'Repo One',
@@ -93,11 +110,33 @@ describe('useRepositoryMatcherData', () => {
     const { result } = renderHook(() => useRepositoryMatcherData());
     const { data } = result.current;
 
+    // Only the two "Accepting Data" sources become rows, in source order.
     expect(data.map(r => r._id)).toEqual(['c1', 'r1']);
     // Per-column transformed values are present and the search blob is built.
     expect((data[0].name as { label: string }).label).toBe('Catalog One');
     expect(data[0]._search).toContain('catalog one');
     expect(data[0]._search).toContain('iid');
+  });
+
+  it('removes unnamed DefinedTerms from column values', () => {
+    setSources({
+      sources: [
+        {
+          _id: 'r1',
+          name: 'Repo One',
+          type: ['Dataset Repository'],
+          creativeWorkStatus: 'Accepting Data',
+          healthCondition: [
+            { '@type': 'DefinedTerm', name: 'Malaria' },
+            { '@type': 'DefinedTerm', identifier: 'MONDO_123' },
+          ],
+        },
+      ],
+    });
+    const { result } = renderHook(() => useRepositoryMatcherData());
+    expect(result.current.data[0].healthCondition).toEqual([
+      { '@type': 'DefinedTerm', name: 'Malaria' },
+    ]);
   });
 
   it('falls back to an empty id for items without an _id', () => {

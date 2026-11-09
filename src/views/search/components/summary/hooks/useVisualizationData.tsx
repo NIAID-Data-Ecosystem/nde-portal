@@ -10,6 +10,7 @@ import {
 } from '../helpers';
 import { SelectedFilterValueType } from '../../filters/types';
 import { queryFilterObject2String } from '../../filters/utils/query-string';
+import { mergeFacets } from '../../filters/utils/merge-facets';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { useBioSampleAggregation } from 'src/views/search/hooks/useBioSampleAggregation';
 import { useComputationalToolAggregation } from 'src/views/search/hooks/useComputationalToolAggregation';
@@ -209,8 +210,15 @@ export const useVisualizationData = ({
     [sharedDatasetAgg.data],
   );
 
+  // Filters spanning several API fields have their terms merged, so the chart
+  // shows the same values as the sidebar list (see mergeFacets).
   const facetTerms = useMemo(
-    () => activeAggResponse?.facets?.[config.property]?.terms,
+    () =>
+      mergeFacets(
+        activeAggResponse?.facets,
+        config.property,
+        activeAggResponse?.total ?? 0,
+      )?.terms,
     [activeAggResponse, config.property],
   );
 

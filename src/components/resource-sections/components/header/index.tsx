@@ -168,7 +168,7 @@ const IdWithCopyButton = ({
           </Text>
         )}
         <HStack spacing={1} alignItems='baseline'>
-          <Text>{id}</Text>
+          <Text wordBreak='break-all'>{id}</Text>
           <CopyIconButton
             textToCopy={id}
             buttonText={buttonText || 'Copy ID'}

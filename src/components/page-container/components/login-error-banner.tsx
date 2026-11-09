@@ -2,22 +2,7 @@ import React, { useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { CloseButton, Flex, HStack, Icon, Text } from '@chakra-ui/react';
 import { FaCircleXmark } from 'react-icons/fa6';
-
-/**
- * Login error codes appended by the auth API as a `login_error` query param
- * when an OAuth login fails. The user is redirected back to their previous
- * page with one of these codes so we can surface a friendly message.
- */
-export const LOGIN_ERROR_MESSAGES: Record<string, string> = {
-  github_unavailable:
-    'GitHub login is temporarily unavailable. Please try again in a moment.',
-  orcid_unavailable:
-    'ORCID login is temporarily unavailable. Please try again in a moment.',
-  github_login_failed:
-    'GitHub login could not be completed. Please try signing in again.',
-  orcid_login_failed:
-    'ORCID login could not be completed. Please try signing in again.',
-};
+import { getLoginErrorMessage } from 'src/utils/auth/helpers';
 
 export const LoginErrorBanner = () => {
   const router = useRouter();
@@ -27,7 +12,7 @@ export const LoginErrorBanner = () => {
     return Array.isArray(param) ? param[0] : param;
   }, [router.query.login_error]);
 
-  const message = loginError ? LOGIN_ERROR_MESSAGES[loginError] : undefined;
+  const message = loginError ? getLoginErrorMessage(loginError) : undefined;
 
   // Remove the `login_error` query param so the banner doesn't reappear on
   // refresh or navigation, while preserving any other query params.

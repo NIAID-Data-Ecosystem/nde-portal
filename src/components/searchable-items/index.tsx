@@ -4,12 +4,23 @@ import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { TagWithUrl } from 'src/components/tag-with-url';
 
+export interface SearchableItem {
+  name: string;
+  value: string;
+  field: string;
+  /**
+   * Complete querystring for this item's search link, used verbatim instead of
+   * the default `field:"value"`. For pills that must search more than one field
+   * at once such as the Data Collection "Content Type" pills, which OR
+   * `about.name` with `exampleOfWork.about.name`.
+   */
+  query?: string;
+}
+
 interface SearchableItemsProps extends Omit<FlexProps, 'onToggle'> {
-  items: {
-    name: string;
-    value: string;
-    field: string;
-  }[];
+  items: SearchableItem[];
+  /** Extra params merged into every item's /search link, e.g. `{ tab: 'dc' }`. */
+  searchParams?: Record<string, string>;
   colorScheme?: TagProps['colorScheme'];
   linkColor?: string;
   tagColor?: TagProps['color'];
@@ -20,6 +31,9 @@ interface SearchableItemsProps extends Omit<FlexProps, 'onToggle'> {
   isExpanded?: boolean;
   onToggle?: (expanded: boolean) => void;
 }
+
+const getItemQuery = (item: SearchableItem) =>
+  item.query ?? `${item.field}:"${item.value}"`;
 
 const generateDefaultLabel = (limit: number, length: number) => {
   return limit === length
@@ -43,18 +57,25 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
   generateButtonLabel = generateDefaultLabel,
   itemLimit = 3,
   items,
+  searchParams,
   name,
   isExpanded,
   onToggle,
   ...props
 }) => {
-  const uniqueItems = useMemo(
-    () =>
-      Array.from(new Set(items ?? [])).sort((a, b) =>
-        a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
-      ),
-    [items],
-  );
+  const uniqueItems = useMemo(() => {
+    // Keyed by the item's search query, which is also its React key below, so
+    // two items can never collide there.
+    const itemsByQuery = new Map<string, SearchableItem>();
+    (items ?? []).forEach(item => {
+      const query = getItemQuery(item);
+      if (!itemsByQuery.has(query)) itemsByQuery.set(query, item);
+    });
+
+    return Array.from(itemsByQuery.values()).sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
+    );
+  }, [items]);
 
   // Internal state (used only when not controlled externally)
   const [internalLimit, setInternalLimit] = useState(itemLimit);
@@ -97,13 +118,14 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
       {name}
       {uniqueItems.slice(0, currentLimit).map(item => (
         <TagWithUrl
-          key={item.value}
+          key={getItemQuery(item)}
           colorScheme={colorScheme}
           color={tagColor}
           href={{
             pathname: '/search',
             query: {
-              q: `${item.field}:"${item.value}"`,
+              q: getItemQuery(item),
+              ...searchParams,
             },
           }}
           m={0.5}

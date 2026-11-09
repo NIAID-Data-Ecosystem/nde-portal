@@ -286,4 +286,77 @@ describe('useFilterQueries', () => {
       't1',
     ]);
   });
+
+  // The Content Type filter aggregates over about.name and
+  // exampleOfWork.about.name.raw.
+  it('merges the facets of a filter that spans several API fields', async () => {
+    fetchSearchResults.mockResolvedValueOnce({
+      total: 1000,
+      facets: {
+        'about.name': {
+          _type: 'terms',
+          terms: [
+            { term: 'Genome', count: 500 },
+            { term: 'Image', count: 20 },
+          ],
+          missing: 250,
+          other: 0,
+          total: 520,
+        },
+        'exampleOfWork.about.name.raw': {
+          _type: 'terms',
+          terms: [
+            { term: 'Genome', count: 300 },
+            { term: 'Tomogram', count: 100 },
+          ],
+          missing: 600,
+          other: 0,
+          total: 400,
+        },
+      },
+    });
+
+    const { result } = renderHook(
+      () =>
+        useFilterQueries({
+          configs: [
+            {
+              id: 'about.name',
+              name: 'Content Type',
+              property: 'about.name',
+              description: '',
+              category: 'Shared',
+              queryType: 'facet',
+              showMissing: false,
+            },
+          ] as any,
+          params: { q: 'term' } as any,
+        }),
+      { wrapper: createWrapper() },
+    );
+
+    await waitFor(() =>
+      expect(
+        result.current.results?.['about.name']?.data.length ?? 0,
+      ).toBeGreaterThan(0),
+    );
+    const results = result.current.results;
+    if (!results) {
+      throw new Error('Expected results to be defined');
+    }
+
+    const terms = results['about.name'].data;
+    expect(terms.map(d => d.term)).toEqual([
+      '_exists_',
+      'Genome',
+      'Tomogram',
+      'Image',
+    ]);
+    // Genome overlaps both fields: max(500, 300), never the sum.
+    expect(terms.find(d => d.term === 'Genome')?.count).toBe(500);
+    // Tomogram only exists on exampleOfWork.
+    expect(terms.find(d => d.term === 'Tomogram')?.count).toBe(100);
+    // "Any" comes from the field matching the most records: 1000 - 250.
+    expect(terms[0].count).toBe(750);
+  });
 });

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
-import { formatSlug, getLabelFromRoute } from '../helpers';
+import { formatSlug, getLabelFromRoute, getSafeInternalPath } from '../helpers';
 import { usePathname } from 'next/navigation';
 
 export interface BreadcrumbSegment {
@@ -42,13 +42,12 @@ export const useBreadcrumbs = (pageTitle?: string): BreadcrumbSegment[] => {
     });
 
     // If the pathname starts with /resources, prepend a Search segment
-    // based on the referrerPath query parameter
+    // based on the referrerPath query parameter. referrerPath is user
+    // controlled, so only accept a path to the search page.
     if (pathname.startsWith('/resources')) {
       const searchRoute =
-        typeof router.query.referrerPath === 'string' &&
-        router.query.referrerPath.includes('/search')
-          ? router.query.referrerPath
-          : '/search';
+        getSafeInternalPath(router.query.referrerPath, ['/search']) ??
+        '/search';
 
       mapped = [
         {

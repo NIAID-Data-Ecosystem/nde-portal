@@ -4,6 +4,8 @@ jest.mock('src/utils/formatting/formatResourceType', () => ({
 
 import {
   OR_FILTER_KEY,
+  getFacetSelection,
+  updateFacetSelection,
   queryFilterObject2String,
   queryFilterString2Object,
   normalizeFilterValues,
@@ -84,6 +86,29 @@ describe('filters/utils/query-string', () => {
     expect(queryFilterString2Object(str!)).toEqual(filters);
   });
 
+  it('serializes and round-trips an `_or` group with an AND-ed multi-field entry', () => {
+    const filters: SelectedFilterType = {
+      [OR_FILTER_KEY]: [
+        { 'includedInDataCatalog.name': ['acd@NIAID'] },
+        {
+          'includedInDataCatalog.name': ['Data Discovery Engine (DDE)'],
+          _id: ['dde_123'],
+        },
+      ],
+    };
+    const str = queryFilterObject2String(filters);
+
+    expect(str).toBe(
+      '(includedInDataCatalog.name:("acd@NIAID") OR ((includedInDataCatalog.name:("Data Discovery Engine (DDE)")) AND (_id:("dde_123"))))',
+    );
+    expect(queryFilterString2Object(str!)).toEqual(filters);
+    // Still round-trips when AND-combined with other filters.
+    const withTopic = { ...filters, topic: ['alpha'] };
+    expect(
+      queryFilterString2Object(queryFilterObject2String(withTopic)!),
+    ).toEqual(withTopic);
+  });
+
   it('keeps a single field multi-value OR distinct from an `_or` group', () => {
     // The inner OR sits inside the parens -> a single field, not an `_or` group.
     expect(queryFilterString2Object('(topic:("alpha" OR "beta"))')).toEqual({
@@ -143,5 +168,185 @@ describe('filters/utils/query-string', () => {
     expect(q).toBe('(date:2020-01-01)');
     expect(queryFilterString2Object(q!)).toEqual({ date: ['2020-01-01'] });
     expect(queryFilterString2Object('')).toBeNull();
+  });
+
+  // The Content Type filter maps to two API fields: about.name and
+  // exampleOfWork.about.name. The generated query must apply the selected
+  // values to both fields with OR, and parsing that query back must preserve
+  // the original filter so the selection is not lost after a page reload.
+  describe('merged multi-field filters', () => {
+    const ABOUT = 'about.name';
+    const EXAMPLE_OF_WORK = 'exampleOfWork.about.name';
+
+    it('emits one OR-joined clause per field', () => {
+      expect(queryFilterObject2String({ [ABOUT]: ['Genome'] })).toBe(
+        `((${ABOUT}:("Genome")) OR (${EXAMPLE_OF_WORK}:("Genome")))`,
+      );
+    });
+
+    it('repeats every selected value across both fields', () => {
+      expect(
+        queryFilterObject2String({ [ABOUT]: ['Genome', 'Tomogram'] }),
+      ).toBe(
+        `((${ABOUT}:("Genome" OR "Tomogram")) OR ` +
+          `(${EXAMPLE_OF_WORK}:("Genome" OR "Tomogram")))`,
+      );
+    });
+
+    it('retargets _exists_ values at the field of their own clause', () => {
+      expect(
+        queryFilterObject2String({ [ABOUT]: [{ _exists_: [ABOUT] }] }),
+      ).toBe(
+        `((${ABOUT}:(_exists_:("${ABOUT}"))) OR ` +
+          `(${EXAMPLE_OF_WORK}:(_exists_:("${EXAMPLE_OF_WORK}"))))`,
+      );
+    });
+
+    it.each([
+      ['a single value', { [ABOUT]: ['Genome'] }],
+      ['several values', { [ABOUT]: ['Genome', 'Tomogram'] }],
+      ['an _exists_ value', { [ABOUT]: [{ _exists_: [ABOUT] }] }],
+    ])('round-trips %s back to the filter object', (_label, filters) => {
+      const built = queryFilterObject2String(filters);
+      expect(queryFilterString2Object(built!)).toEqual(filters);
+    });
+
+    it('round-trips alongside other filters joined by AND', () => {
+      const filters = {
+        'topicCategory.name.raw': ['Genomics'],
+        [ABOUT]: ['Genome'],
+      };
+      const built = queryFilterObject2String(filters);
+
+      expect(built).toBe(
+        '(topicCategory.name.raw:("Genomics")) AND ' +
+          `((${ABOUT}:("Genome")) OR (${EXAMPLE_OF_WORK}:("Genome")))`,
+      );
+      expect(queryFilterString2Object(built!)).toEqual(filters);
+    });
+
+    it('still parses the pre-merge single-field form, so old URLs keep working', () => {
+      expect(queryFilterString2Object(`(${ABOUT}:("Genome"))`)).toEqual({
+        [ABOUT]: ['Genome'],
+      });
+    });
+
+    // Content Type values that name a resource type also match records of
+    // that type, so the filter returns the same results as the Content Types
+    // pills on cards and resource pages.
+    describe('resource type widening', () => {
+      it.each([
+        ['Dataset', 'Dataset'],
+        ['Sample', 'Sample'],
+        ['Software', 'ComputationalTool'],
+      ])('widens %s with @type:%s', (value, resourceType) => {
+        expect(queryFilterObject2String({ [ABOUT]: [value] })).toBe(
+          `((${ABOUT}:("${value}")) OR ` +
+            `(${EXAMPLE_OF_WORK}:("${value}")) OR ` +
+            `(@type:("${resourceType}")))`,
+        );
+      });
+
+      it('matches the value case-insensitively', () => {
+        expect(queryFilterObject2String({ [ABOUT]: ['dataset'] })).toContain(
+          '(@type:("Dataset"))',
+        );
+      });
+
+      it('leaves values that name no resource type alone', () => {
+        expect(queryFilterObject2String({ [ABOUT]: ['Genome'] })).toBe(
+          `((${ABOUT}:("Genome")) OR (${EXAMPLE_OF_WORK}:("Genome")))`,
+        );
+      });
+
+      it('lists only the mapped values when the selection is mixed', () => {
+        expect(
+          queryFilterObject2String({ [ABOUT]: ['Genome', 'Dataset'] }),
+        ).toBe(
+          `((${ABOUT}:("Genome" OR "Dataset")) OR ` +
+            `(${EXAMPLE_OF_WORK}:("Genome" OR "Dataset")) OR ` +
+            '(@type:("Dataset")))',
+        );
+      });
+
+      it('emits each resource type once when several values map to it', () => {
+        expect(
+          queryFilterObject2String({ [ABOUT]: ['Dataset', 'dataset'] }),
+        ).toContain('(@type:("Dataset")))');
+      });
+
+      // @type is on every record, so widening "Any" would match everything.
+      it('never widens an _exists_ selection', () => {
+        expect(
+          queryFilterObject2String({ [ABOUT]: [{ _exists_: [ABOUT] }] }),
+        ).not.toContain('@type');
+      });
+
+      it.each([
+        ['a widened value', { [ABOUT]: ['Dataset'] }],
+        ['a mixed selection', { [ABOUT]: ['Genome', 'Dataset'] }],
+      ])('round-trips %s back to the filter object', (_label, filters) => {
+        const built = queryFilterObject2String(filters);
+        expect(queryFilterString2Object(built!)).toEqual(filters);
+      });
+    });
+  });
+});
+
+describe('`_or` group facet selection', () => {
+  const NAME = 'includedInDataCatalog.name';
+  const DDE = 'Data Discovery Engine (DDE)';
+  const group: SelectedFilterType = {
+    [OR_FILTER_KEY]: [
+      { [NAME]: ['acd@NIAID'] },
+      { [NAME]: [DDE], _id: ['dde_123'] },
+    ],
+    topic: ['alpha'],
+  };
+
+  it('includes values held in the group in the facet selection', () => {
+    expect(getFacetSelection(group, NAME)).toEqual(['acd@NIAID', DDE]);
+    expect(getFacetSelection(group, 'topic')).toEqual(['alpha']);
+    expect(getFacetSelection(group, '_id')).toEqual(['dde_123']);
+    expect(getFacetSelection(undefined, NAME)).toEqual([]);
+  });
+
+  it('replaces facets that are not in a group', () => {
+    expect(updateFacetSelection(group, 'topic', ['beta'])).toEqual({
+      ...group,
+      topic: ['beta'],
+    });
+  });
+
+  it('deselecting DDE drops its entry (and `_id`) and flattens the group', () => {
+    expect(updateFacetSelection(group, NAME, ['acd@NIAID'])).toEqual({
+      topic: ['alpha'],
+      [NAME]: ['acd@NIAID'],
+    });
+  });
+
+  it('deselecting the source keeps the DDE record scoped by `_id`', () => {
+    expect(updateFacetSelection(group, NAME, [DDE])).toEqual({
+      topic: ['alpha'],
+      [NAME]: [DDE],
+      _id: ['dde_123'],
+    });
+  });
+
+  it('OR-s a newly selected value into the group', () => {
+    expect(
+      updateFacetSelection(group, NAME, ['acd@NIAID', DDE, 'other']),
+    ).toEqual({
+      ...group,
+      [NAME]: [],
+      [OR_FILTER_KEY]: [...group[OR_FILTER_KEY], { [NAME]: ['other'] }],
+    });
+  });
+
+  it('clearing the facet removes the whole group', () => {
+    expect(updateFacetSelection(group, NAME, [])).toEqual({
+      topic: ['alpha'],
+      [NAME]: [],
+    });
   });
 });
