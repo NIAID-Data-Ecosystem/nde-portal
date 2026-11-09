@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+import csp from '../../../configs/csp.json';
 import {
   AUTH_LOGIN_PENDING_KEY,
   AUTH_PENDING_ATTR,
@@ -62,6 +64,20 @@ describe('welcome-pending', () => {
       runScript();
       expect(isPageHidden()).toBe(false);
     });
+
+    // `_document` inlines this script and the CSP allows it by hash.
+    // On failure, replace the sha256 in configs/csp.json with "Expected value".
+    it.each(Object.keys(csp))(
+      'is allowed by the script-src hash in the %s CSP (configs/csp.json)',
+      env => {
+        const hash = `'sha256-${createHash('sha256')
+          .update(WELCOME_PENDING_SCRIPT, 'utf8')
+          .digest('base64')}'`;
+        const directives: string[] = csp[env as keyof typeof csp];
+        const scriptSrc = directives.find(d => d.startsWith('script-src '));
+        expect(scriptSrc?.split(' ')).toContain(hash);
+      },
+    );
 
     it('hides the page when a login is pending, then gives up after 10s', () => {
       jest.useFakeTimers();

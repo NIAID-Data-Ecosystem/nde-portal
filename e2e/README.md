@@ -1,7 +1,8 @@
 # End-to-end and accessibility tests
 
 This directory contains Playwright tests. The current suite focuses on
-accessibility checks powered by `@axe-core/playwright`.
+accessibility checks powered by `@axe-core/playwright`, plus a regression check
+for our Content Security Policy (see [CSP check](#csp-check)).
 
 ## Running tests
 
@@ -197,6 +198,27 @@ The mock server listens on port 1337 by default (configurable via
 test routes with client-side Strapi refetches should still add `page.route`
 interceptions to cover the browser-side `useQuery` calls, and dynamic-route
 specs depend on the fixture slugs (see the note under "Running tests").
+
+## CSP check
+
+`e2e/csp/csp.spec.ts` loads key routes under the staging policy from
+`configs/csp.json` and fails on any `securitypolicyviolation`. It also checks
+that GTM loads through `public/gtm-init.js`.
+
+```sh
+yarn build:a11y
+yarn test:a11y:nobuild e2e/csp/csp.spec.ts
+```
+
+- CloudFront applies the policy. `configs/csp.json` holds the text;
+  `yarn csp:print <production|staging|dev>` prints the header value.
+- A failure lists `directive` and `blockedURI`. Fix the code, or add the exact
+  source to `configs/csp.json` and state why in the PR.
+- The inline script in `_document` is allowed by hash. After editing
+  `WELCOME_PENDING_SCRIPT`, `welcome-pending.test.ts` prints the new hash.
+- Deployed site (uses its real header, including report-only):
+  `PLAYWRIGHT_BASE_URL=https://data-staging.niaid.nih.gov npx playwright test e2e/csp/csp.spec.ts --workers=1`.
+  Add `--grep-invert GTM` where no GTM container is configured (dev).
 
 ## Troubleshooting
 
