@@ -153,7 +153,7 @@ const RepositoryMatcher: NextPage = () => {
             table fills the rest of the window, wherever the toolbar wraps.
             Fewer rows shrink it; the dictionary follows below.
           */}
-          <Flex direction='column'>
+          <Flex direction='column' maxHeight={{ base: 'none', sm: '800px' }}>
             {/*
               Margins don't collapse in a flex column, so these are set to
               give the same gaps the block layout's collapsed margins did.
