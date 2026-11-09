@@ -1,11 +1,5 @@
 import { Box, CheckboxGroup, Text } from '@chakra-ui/react';
-import React, {
-  useCallback,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   areEqual,
   ListChildComponentProps,
@@ -13,7 +7,7 @@ import {
 } from 'react-window';
 import { SearchInput } from 'src/components/search-input';
 import { SHOW_FILTER_ANY_NO_EXCLUSIVITY } from 'src/utils/feature-flags';
-import { useDebounceValue } from 'usehooks-ts';
+import { useDebounceValue, useIsomorphicLayoutEffect } from 'usehooks-ts';
 
 import { FilterConfig, FilterItem, FilterTermType } from '../types';
 import { Checkbox } from './checkbox';
@@ -54,7 +48,7 @@ const Row = React.memo(
     // Measured in a layout effect so a row that has just mounted, or that now
     // shows a different term, is corrected before the browser paints it at a
     // stale height overlapping its neighbour.
-    useLayoutEffect(() => {
+    useIsomorphicLayoutEffect(() => {
       const el = ref.current;
       if (!el) return;
 
@@ -111,7 +105,7 @@ const VirtualizedList = React.memo(
     // react-window caches row offsets by index, so when the items change those
     // offsets belong to whichever terms used to be at each index. Recompute them
     // from the per-term sizes before the browser paints.
-    useLayoutEffect(() => {
+    useIsomorphicLayoutEffect(() => {
       listRef.current?.resetAfterIndex?.(0);
     }, [items]);
 

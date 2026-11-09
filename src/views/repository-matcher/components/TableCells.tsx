@@ -7,10 +7,11 @@ import {
   TextProps,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { ExpandableText } from 'src/components/expandable-cells';
 import { Link } from 'src/components/link';
 import Tooltip from 'src/components/tooltip';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 
 /*
 Cell components still used by the saved page (src/views/saved/table-config.tsx).
@@ -34,7 +35,7 @@ export const TagCell = ({
   const label = value || '';
 
   // Only show the tooltip when the label is actually clamped/overflowing.
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (loading) {
       return;
     }

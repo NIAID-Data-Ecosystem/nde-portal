@@ -5,15 +5,9 @@ import {
   TextProps,
   VisuallyHidden,
 } from '@chakra-ui/react';
-import React, {
-  useEffect,
-  useId,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { CollapsibleTextTrigger } from 'src/components/collapsible-text';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 
 /**
  * Per-cell "Show More / Show Less" expansion for table cells (search results,
@@ -76,7 +70,7 @@ export const ExpandableText = ({
   // there is hidden content to reveal. Measured before paint on mount, then
   // again whenever the text box resizes (a fluid column narrows or widens);
   // not while expanded, when there is no clamp to overflow.
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (loading || expanded) return;
     const el = textRef.current;
     if (el) setIsTruncated(el.scrollHeight > el.clientHeight);

@@ -10,7 +10,6 @@ import {
 import React, {
   useCallback,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -33,6 +32,7 @@ import {
 import { TableWrapper } from 'src/components/table/components/wrapper';
 import { TableSize } from 'src/components/table/hooks/useTableSize';
 import { useTableSort } from 'src/components/table/hooks/useTableSort';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 
 export interface Column {
   title: string;
@@ -224,7 +224,7 @@ const VirtualizedRowItem = React.memo(
     colorPalette,
   }: VirtualizedRowItemProps) => {
     const ref = useRef<HTMLDivElement>(null);
-    useLayoutEffect(() => {
+    useIsomorphicLayoutEffect(() => {
       const node = ref.current;
       if (!node) return;
       onResize(index, node.offsetHeight);
