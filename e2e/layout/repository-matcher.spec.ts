@@ -152,6 +152,36 @@ test.describe('DataTable layout: desktop', () => {
     expect(background).toBe('rgb(255, 255, 255)');
   });
 
+  test('a top scrollbar and the scrollbar marker keep their size in a bounded table', async ({
+    page,
+  }) => {
+    // The bounded root is a flex column, which shrinks its children in
+    // proportion to their size: next to a 20,000px viewport, the 12px top
+    // scrollbar shrank to under a pixel. The pilot page doesn't use
+    // `topScrollbar`, so this adds what it renders: the scrollbar slot (cloned
+    // from the floating bar, which shares it) as the root's first child.
+    await gotoPopulated(page);
+    const sizes = await root(page).evaluate(el => {
+      const top = el
+        .querySelector('.nde-floating-scrollbar')!
+        .cloneNode(true) as HTMLElement;
+      top.classList.remove('nde-floating-scrollbar');
+      top.removeAttribute('style');
+      el.prepend(top);
+      const view = el.querySelector('table')!.parentElement!;
+      return {
+        bounded: view.scrollHeight > view.clientHeight + 1,
+        topBar: top.getBoundingClientRect().height,
+        // The 1px marker below the viewport that the floating scrollbar
+        // watches.
+        marker: view.nextElementSibling!.getBoundingClientRect().height,
+      };
+    });
+    expect(sizes.bounded).toBe(true);
+    expect(sizes.topBar).toBe(12);
+    expect(sizes.marker).toBe(1);
+  });
+
   test('a pinned first column stays put while the rest scroll sideways', async ({
     page,
   }) => {

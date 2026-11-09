@@ -281,7 +281,9 @@ const DataTableView = <TRow,>({
       <div
         ref={sentinelRef}
         aria-hidden='true'
-        style={{ height: 1, marginTop: -1 }}
+        // `flexShrink: 0`: the bounded root (a flex column) would otherwise
+        // shrink it to almost nothing, as with the top scrollbar.
+        style={{ height: 1, marginTop: -1, flexShrink: 0 }}
       />
       <Box
         ref={floatingScrollbarRef}

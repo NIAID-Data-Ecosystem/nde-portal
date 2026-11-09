@@ -284,6 +284,10 @@ export const dataTableSlotRecipe = defineSlotRecipe({
     },
     scrollbar: {
       height: '12px',
+      // The root is a flex column: when it's bounded, its children shrink in
+      // proportion to their size, and a scroller's flex minimum is 0. Without
+      // this the top scrollbar shrank to under a pixel next to a tall viewport.
+      flexShrink: 0,
       overflowX: 'auto',
       overflowY: 'hidden',
       ...scrollbarStyles,
