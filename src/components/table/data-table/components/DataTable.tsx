@@ -6,6 +6,7 @@ import {
   useSlotRecipe,
   VisuallyHidden,
 } from '@chakra-ui/react';
+import dynamic from 'next/dynamic';
 import React, {
   useCallback,
   useDeferredValue,
@@ -25,6 +26,15 @@ import {
 import { useScrollViewport } from '../hooks/useScrollViewport';
 import type { ResolvedColumn } from '../types';
 import { HeaderCell } from './HeaderCell';
+
+// The shared pagination bar, loaded only by tables that paginate: it and its
+// page combobox are ~60 kB (18 kB gzipped) that every other table, the
+// Repository Matcher's included, would otherwise ship for nothing.
+const TablePagination = dynamic(() =>
+  import('src/components/table/components/pagination').then(
+    mod => mod.TablePagination,
+  ),
+);
 
 export interface DataTableStatus {
   /** Data is loading. With no rows yet, skeleton rows stand in for them. */
@@ -148,7 +158,7 @@ const DataTableView = <TRow,>({
   const floatingScrollbarRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const { columns, sort, toggleSort, pinFirstColumn } = table;
+  const { columns, sort, toggleSort, pinFirstColumn, pagination } = table;
   // A new set of rows (filtering, clearing a search, a page of results)
   // renders in a time-sliced background pass, so it never blocks input; the
   // previous rows stay up until it's ready. When there were no rows before
@@ -193,6 +203,21 @@ const DataTableView = <TRow,>({
     },
     [columns, sort, toggleSort],
   );
+
+  // A new page starts at its first row, not wherever the rows of the last one
+  // were scrolled to inside the viewport.
+  const setPageIndex = pagination?.setPageIndex;
+  const goToPage = useCallback(
+    (index: number) => {
+      if (viewportRef.current) viewportRef.current.scrollTop = 0;
+      setPageIndex?.(index);
+    },
+    [setPageIndex],
+  );
+  // Only while there are rows to page through: not over an error, a loading
+  // skeleton or an empty table.
+  const pager =
+    pagination && table.rowCount > 0 && !status?.error ? pagination : null;
 
   let body: React.ReactNode;
   if (status?.error) {
@@ -294,6 +319,19 @@ const DataTableView = <TRow,>({
       >
         <div style={{ height: 1 }} />
       </Box>
+      {/* Inside the root, so a bounded table keeps its pager in view. */}
+      {pager && (
+        <TablePagination
+          className='nde-table-pager'
+          total={table.rowCount}
+          size={pager.pageSize}
+          setSize={pager.setPageSize}
+          from={pager.pageIndex}
+          setFrom={goToPage}
+          numPages={pager.pageCount}
+          pageSizeOptions={pager.pageSizes}
+        />
+      )}
       <VisuallyHidden aria-live='polite'>{announcement}</VisuallyHidden>
     </Box>
   );

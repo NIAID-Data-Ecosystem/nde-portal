@@ -21,7 +21,7 @@ import {
 
 |                        | Responsibility                                                                                                               |
 | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `DataTable`            | Presentation: native `<table>`, sticky header, sort buttons, pinned first column, status rows, scroll viewport.              |
+| `DataTable`            | Presentation: native `<table>`, sticky header, sort buttons, pinned first column, status rows, scroll viewport, pager.       |
 | `useDataTable`         | Headless state: resolves columns, applies preferences, sorts (client) or reports sort requests (server), paginates (client). |
 | `useColumnPreferences` | A table's visible columns, order and pinning, persisted in localStorage per table.                                           |
 | `ColumnCustomizer`     | The "Customize Columns" popover for those preferences.                                                                       |
@@ -150,6 +150,24 @@ The table owns how it behaves; the parent owns how much space it takes.
   default).
 - `interactive`: row hover highlight.
 - Pinning (`allowPinning` on the customizer) applies from `md` up.
+
+## Pagination
+
+`pagination` (on `DataTable` or `useDataTable`) pages the rows in the browser.
+The table shows the current page with the shared pager below it, inside its
+border: rows per page, first/previous/next/last, a page picker and the totals
+(`src/components/table/components/pagination.tsx`). This works the same whether
+you pass `pagination` to `DataTable` directly or pass a `table` from
+`useDataTable`.
+
+- `pagination: { pageSizes: [10, 50] }` sets the rows-per-page choices; the
+  first is the starting size. The default is 5, 10, 50, 100.
+- The pager shows only while there are rows to page through, not over the
+  loading skeleton, an error or an empty table.
+- Changing page scrolls a bounded table's rows back to the top.
+- The pager is loaded on demand, so tables without pagination don't ship it.
+- Server-paginated tables (Search) page their own `data` and keep their
+  page-level pagination: don't pass `pagination` for them.
 
 ## Preferences
 

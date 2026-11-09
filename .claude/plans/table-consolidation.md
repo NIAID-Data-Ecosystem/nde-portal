@@ -328,6 +328,24 @@ first change, then removed.
 - **Resource page:** the sidebar is no longer sticky (as it was before the clip
   change).
 
+**Client pagination fix (2026-11-09; no effect on the pilot, which doesn't
+paginate):**
+
+- Bug: `pagination` showed only the first page, with no controls. The hook's
+  page state was unreachable from `<DataTable pagination />`.
+- `DataTable` now renders the shared `TablePagination` inside its root, below
+  the rows, whenever `table.pagination` is set (either path). It's hidden over
+  an error, the loading skeleton or an empty table. A page change resets the
+  viewport's `scrollTop`.
+- The bar is `next/dynamic`-loaded: it and its page combobox are ~60 kB raw / 18
+  kB gzipped that the Repository Matcher doesn't load today.
+- Styled by the `tableShell` recipe as-is (top border, `p: 2`), like funding,
+  rather than the legacy `Table`'s `css` override.
+- **Shared-component fix (also affects Saved, cited-by, based-on, funding):**
+  `TablePagination` declared `ArrowButton` inside its render, so all four arrow
+  buttons remounted on every page change and keyboard focus fell to `<body>`.
+  Hoisted to module level; visually unchanged.
+
 ## 7. Architecture (as built)
 
 `src/components/table/data-table/` (see its `README.md`):
@@ -338,7 +356,7 @@ first change, then removed.
   split).
 - `useDataTable`: resolves columns once (stable identities); client sort, or
   server mode (`{ mode: 'server', state, onChange }`); optional client
-  pagination.
+  pagination, whose pager (`TablePagination`, lazy-loaded) `DataTable` renders.
 - `useColumnPreferences`: a localStorage store via `useSyncExternalStore` whose
   server snapshot is the defaults; handles legacy migration.
 - `ColumnCustomizer`: wraps `SelectAndSortPopoverView`, the controlled view
@@ -742,3 +760,6 @@ weren't supported:
   pin rows by index.
 - `pkill -f "<pattern>"` inside a Bash command kills its own shell when the
   pattern appears in the command line.
+- A component declared inside another's render (`const X = () => …` used as
+  `<X />`) is a new type each render: React remounts it, and focus inside it is
+  lost. Found in `TablePagination`'s arrow buttons.

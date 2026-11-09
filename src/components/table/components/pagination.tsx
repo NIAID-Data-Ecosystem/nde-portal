@@ -96,6 +96,44 @@ const SELECT_SIZE = {
   lg: 'md',
 } as const satisfies Record<TableSize, 'xs' | 'sm' | 'md'>;
 
+/*
+Declared at module level, not inside TablePagination: a component defined
+during render is a new type on every render, so React remounted all four
+buttons on each page change and keyboard focus fell back to <body>.
+*/
+const ArrowButton = ({
+  ariaLabel,
+  icon,
+  disabled,
+  handleClick,
+  size,
+  colorPalette,
+}: {
+  ariaLabel: string;
+  icon: React.ReactElement;
+  disabled: boolean;
+  handleClick: () => void;
+  size?: IconButtonProps['size'];
+  colorPalette: ColorPalette;
+}) => {
+  return (
+    <IconButton
+      colorPalette={colorPalette}
+      size={size}
+      aria-label={ariaLabel}
+      variant='outline'
+      bg='white'
+      _hover={{ bg: 'colorPalette.subtle' }}
+      disabled={disabled}
+      onClick={handleClick}
+      mx={0.5}
+      display={['none', 'flex']}
+    >
+      {icon}
+    </IconButton>
+  );
+};
+
 export const TablePagination: React.FC<TablePaginationProps> = ({
   total,
   size,
@@ -122,37 +160,6 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
   // changes what is shown. Keyed to the smallest option rather than the
   // current `size`, so picking a larger size never locks out the smaller ones.
   const isPageSizeDisabled = total <= Math.min(...pageSizeOptions);
-
-  const ArrowButton = ({
-    ariaLabel,
-    icon,
-    disabled,
-    handleClick,
-    size,
-  }: {
-    ariaLabel: string;
-    icon: React.ReactElement;
-    disabled: boolean;
-    handleClick: () => void;
-    size?: IconButtonProps['size'];
-  }) => {
-    return (
-      <IconButton
-        colorPalette={colorPalette}
-        size={size}
-        aria-label={ariaLabel}
-        variant='outline'
-        bg='white'
-        _hover={{ bg: 'colorPalette.subtle' }}
-        disabled={disabled}
-        onClick={handleClick}
-        mx={0.5}
-        display={['none', 'flex']}
-      >
-        {icon}
-      </IconButton>
-    );
-  };
 
   return (
     <Stack
@@ -220,6 +227,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
             disabled={from === 0}
             handleClick={() => setFrom(0)}
             size={selectSize}
+            colorPalette={colorPalette}
           />
           <ArrowButton
             icon={<FaAngleLeft />}
@@ -227,6 +235,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
             disabled={from === 0}
             handleClick={() => setFrom(from - 1)}
             size={selectSize}
+            colorPalette={colorPalette}
           />
           {/*
           `from` is a 0-based page index here, while PageCombobox works in
@@ -249,6 +258,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
             disabled={from + 1 === numPages}
             handleClick={() => setFrom(from + 1)}
             size={selectSize}
+            colorPalette={colorPalette}
           />
           <ArrowButton
             icon={<FaAnglesRight />}
@@ -256,6 +266,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
             disabled={from + 1 === numPages}
             handleClick={() => setFrom(numPages - 1)}
             size={selectSize}
+            colorPalette={colorPalette}
           />
         </Flex>
       </Flex>

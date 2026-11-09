@@ -181,6 +181,81 @@ describe('DataTable', () => {
     );
   });
 
+  it('pages client rows with a pager that reaches every row', async () => {
+    const six: File[] = Array.from({ length: 6 }, (_, i) => ({
+      id: `f${i + 1}`,
+      name: `file-${i + 1}.csv`,
+    }));
+    const { user, container } = await setup(
+      <DataTable
+        label='Files'
+        data={six}
+        columns={COLUMNS}
+        getRowId={getRowId}
+        pagination
+      />,
+    );
+    // The pager is loaded on demand.
+    const next = await screen.findByLabelText(/go to next page/i);
+    expect(columnTexts(0)).toEqual([
+      'file-1.csv',
+      'file-2.csv',
+      'file-3.csv',
+      'file-4.csv',
+      'file-5.csv',
+    ]);
+    expect(screen.getByText('Page 1 of 2')).toBeInTheDocument();
+    expect(screen.getByText('6 items')).toBeInTheDocument();
+
+    // A new page starts at its first row. The button isn't remounted by the
+    // page change, so keyboard focus stays on it.
+    const viewport = table().parentElement!;
+    viewport.scrollTop = 120;
+    next.focus();
+    await user.keyboard('{Enter}');
+    expect(columnTexts(0)).toEqual(['file-6.csv']);
+    expect(screen.getByText('Page 2 of 2')).toBeInTheDocument();
+    expect(viewport.scrollTop).toBe(0);
+    expect(next).toBeDisabled();
+    await user.click(screen.getByLabelText(/go to previous page/i));
+    expect(screen.getByLabelText(/go to previous page/i)).toHaveFocus();
+    expect(columnTexts(0)).toHaveLength(5);
+
+    await user.selectOptions(
+      screen.getByLabelText(/select number of rows per page/i),
+      '10',
+    );
+    expect(columnTexts(0)).toHaveLength(6);
+    expect(screen.getByText('Page 1 of 1')).toBeInTheDocument();
+    // Inside the table's border, after the rows.
+    expect(
+      container.querySelector('.nde-data-table > .nde-table-pager'),
+    ).toBeInTheDocument();
+  });
+
+  it('pages a table from useDataTable the same way, with no pager when there is nothing to page', async () => {
+    const Paged = ({ data, error }: { data: File[]; error?: boolean }) => {
+      const table = useDataTable({
+        data,
+        columns: COLUMNS,
+        getRowId,
+        pagination: { pageSizes: [2, 4] },
+      });
+      return <DataTable table={table} label='Files' status={{ error }} />;
+    };
+    const { user, rerender } = await setup(<Paged data={FILES} />);
+    await user.click(await screen.findByLabelText(/go to next page/i));
+    expect(columnTexts(0)).toEqual(['gamma.csv']);
+
+    rerender(<Paged data={FILES} error />);
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+    expect(screen.queryByText(/rows per page/i)).not.toBeInTheDocument();
+
+    rerender(<Paged data={[]} />);
+    expect(screen.getByText('No results')).toBeInTheDocument();
+    expect(screen.queryByText(/rows per page/i)).not.toBeInTheDocument();
+  });
+
   it('keeps cell DOM nodes across unrelated parent re-renders', async () => {
     let bump: () => void = () => {};
     const Parent = () => {

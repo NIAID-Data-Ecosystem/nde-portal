@@ -222,6 +222,15 @@ export const dataTableSlotRecipe = defineSlotRecipe({
       },
       '&[data-floating] .nde-floating-scrollbar': { visibility: 'visible' },
 
+      /* Pager (client pagination): below the rows, inside the root. */
+      '& > .nde-table-pager': {
+        // Keeps its height when a bounded root shrinks the viewport.
+        flexShrink: 0,
+        // Above the right-edge fade, which spans the root's full height.
+        position: 'relative',
+        zIndex: 5,
+      },
+
       /* Tags (TagsCell): the repo's subtle, small, full-radius Tag look. */
       '& .nde-tags': {
         display: 'flex',

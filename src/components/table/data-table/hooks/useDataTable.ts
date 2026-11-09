@@ -35,7 +35,10 @@ export interface UseDataTableOptions<TRow> {
   /** A stable, unique id per row. Used as the React key, so rows survive re-sorts. */
   getRowId: (row: TRow, index: number) => string;
   sort?: DataTableSortOptions;
-  /** Client-side pagination. Server-paginated tables page their own `data`. */
+  /**
+   * Client-side pagination: `DataTable` shows only the current page and a
+   * pager below it. Server-paginated tables page their own `data` instead.
+   */
   pagination?: boolean | DataTablePaginationOptions;
   /** Visibility, order and pinning from `useColumnPreferences`. */
   preferences?: ColumnPreferences;

@@ -72,12 +72,12 @@ export const RepositoryMatcherTable = React.memo(
             allowPinning
           />
         </Flex>
+
         <DataTable
           table={table}
           label='Repositories and resource catalogs available for data deposit'
           interactive
           skeletonRows={10}
-          maxHeight='none'
           status={{
             loading,
             error: error ? true : undefined,

@@ -1,7 +1,8 @@
 /**
  * The shared data table. See README.md in this folder.
  *
- * - `DataTable`: presentation (native table, sticky header, sort, pinning).
+ * - `DataTable`: presentation (native table, sticky header, sort, pinning,
+ *   the pager for client pagination).
  * - `useDataTable`: headless state (columns, sort, pagination).
  * - `useColumnPreferences` + `ColumnCustomizer`: per-table column choices.
  * - `useTableSearch`: free-text filtering of prebuilt rows.
