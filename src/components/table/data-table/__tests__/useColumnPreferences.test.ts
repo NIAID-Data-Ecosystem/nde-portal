@@ -188,6 +188,91 @@ describe('useColumnPreferences', () => {
     ]);
   });
 
+  describe('when localStorage refuses writes', () => {
+    const originalSetItem = Storage.prototype.setItem;
+    let setItem: jest.SpyInstance;
+    beforeEach(() => {
+      // Only preference keys fail, so tests can still seed legacy keys.
+      setItem = jest
+        .spyOn(Storage.prototype, 'setItem')
+        .mockImplementation(function (this: Storage, key, value) {
+          if (key.startsWith('nde:table:')) {
+            throw new DOMException('Quota exceeded', 'QuotaExceededError');
+          }
+          originalSetItem.call(this, key, value);
+        });
+    });
+    afterEach(() => jest.restoreAllMocks());
+
+    // Unsaved values last for the session, so each test uses its own table.
+    const keyFor = (tableId: string) => `nde:table:${tableId}:v1`;
+
+    it('keeps customizing in memory, shared between hooks', () => {
+      const tableId = 'unsaved-shared';
+      const a = setup({ tableId });
+      const b = setup({ tableId });
+      act(() => a.result.current.setVisible('description', false));
+      act(() => a.result.current.setVisible('license', true));
+      act(() => a.result.current.moveDown('domain'));
+      act(() => a.result.current.setPinned(true));
+      expect(a.result.current.visibleIds).toEqual([
+        'name',
+        'license',
+        'domain',
+      ]);
+      expect(a.result.current.pinned).toBe(true);
+      expect(b.result.current.visibleIds).toEqual(a.result.current.visibleIds);
+      expect(window.localStorage.getItem(keyFor(tableId))).toBeNull();
+    });
+
+    it('keeps the legacy keys, since nothing replaced them', () => {
+      window.localStorage.setItem('old-visible', JSON.stringify(['domain']));
+      const { result } = setup({
+        tableId: 'unsaved-legacy',
+        legacyKeys: { visible: 'old-visible' },
+      });
+      act(() => result.current.setVisible('license', true));
+      expect(result.current.visibleIds).toEqual(['name', 'domain', 'license']);
+      expect(window.localStorage.getItem('old-visible')).toBe('["domain"]');
+    });
+
+    it('persists the in-memory state once writes succeed again', () => {
+      const tableId = 'unsaved-recovers';
+      const { result } = setup({ tableId });
+      act(() => result.current.setVisible('description', false));
+      setItem.mockRestore();
+      act(() => result.current.setPinned(true));
+      expect(
+        JSON.parse(window.localStorage.getItem(keyFor(tableId)) ?? 'null'),
+      ).toEqual({
+        v: 1,
+        visible: ['name', 'domain'],
+        order: ['name', 'description', 'domain', 'license'],
+        pinned: true,
+      });
+    });
+
+    it('lets a value another tab stored win over the unsaved one', () => {
+      const tableId = 'unsaved-other-tab';
+      const key = keyFor(tableId);
+      const { result } = setup({ tableId });
+      act(() => result.current.setVisible('description', false));
+      setItem.mockRestore();
+      act(() => {
+        window.localStorage.setItem(
+          key,
+          JSON.stringify({
+            v: 1,
+            visible: ['name', 'license'],
+            order: ['name', 'description', 'domain', 'license'],
+          }),
+        );
+        window.dispatchEvent(new StorageEvent('storage', { key }));
+      });
+      expect(result.current.visibleIds).toEqual(['name', 'license']);
+    });
+  });
+
   describe('legacy keys', () => {
     const legacyKeys = { visible: 'old-visible', order: 'old-order' };
 

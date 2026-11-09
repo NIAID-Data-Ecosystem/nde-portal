@@ -99,6 +99,14 @@ const parseArray = (raw: string | null) => {
 };
 
 /**
+ * Values localStorage refused (quota exceeded, storage disabled), so
+ * customization keeps working for the rest of the session. Each remembers the
+ * stored value it replaced: once storage holds anything else (another tab
+ * wrote, or a later write here succeeded), storage wins again.
+ */
+const unsaved = new Map<string, { value: string; replaced: string | null }>();
+
+/**
  * The stored preferences as a string, so `useSyncExternalStore` can compare
  * snapshots by value. Falls back to a value synthesized from the legacy keys.
  */
@@ -107,6 +115,11 @@ const readRaw = (
   legacyKeys?: UseColumnPreferencesOptions['legacyKeys'],
 ): string | null => {
   const current = getItem(key);
+  const pending = unsaved.get(key);
+  if (pending) {
+    if (pending.replaced === current) return pending.value;
+    unsaved.delete(key);
+  }
   if (current) return current;
   const visible = parseArray(getItem(legacyKeys?.visible));
   const order = parseArray(getItem(legacyKeys?.order));
@@ -119,12 +132,23 @@ const write = (
   value: { visible: string[]; order: string[]; pinned: boolean },
   legacyKeys?: UseColumnPreferencesOptions['legacyKeys'],
 ) => {
+  const raw = JSON.stringify({ v: 1, ...value });
+  const replaced = getItem(key);
   try {
-    window.localStorage.setItem(key, JSON.stringify({ v: 1, ...value }));
+    window.localStorage.setItem(key, raw);
+    unsaved.delete(key);
+  } catch {
+    // Quota exceeded or storage disabled: keep it in memory instead, and keep
+    // the legacy keys since nothing replaced them.
+    unsaved.set(key, { value: raw, replaced });
+    notify(key);
+    return;
+  }
+  try {
     if (legacyKeys?.visible) window.localStorage.removeItem(legacyKeys.visible);
     if (legacyKeys?.order) window.localStorage.removeItem(legacyKeys.order);
   } catch {
-    // Quota exceeded or storage disabled: keep the in-memory state only.
+    // The v1 key is written and takes precedence; stale legacy keys are inert.
   }
   notify(key);
 };
