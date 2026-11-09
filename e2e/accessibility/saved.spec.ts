@@ -172,7 +172,14 @@ test.describe('a11y: Saved — loading (auth check in flight)', () => {
     // The withAuth loading UI is a bare spinner + text (no PageContainer chrome,
     // so no main/h1 to assert). "Loading..." appears twice — the Chakra Spinner's
     // visually-hidden label and the withAuth paragraph — so take the first match.
-    await expect(page.getByText(/^loading\.\.\.$/i).first()).toBeVisible();
+    // Scope to #__next: _document also renders a hidden static login-pending
+    // loader (#auth-pending-loader) with the same text, ahead of the React root.
+    await expect(
+      page
+        .locator('#__next')
+        .getByText(/^loading\.\.\.$/i)
+        .first(),
+    ).toBeVisible();
 
     await runAxeScans(page, testInfo, 'loading');
   });

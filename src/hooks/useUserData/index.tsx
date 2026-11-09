@@ -83,6 +83,11 @@ function useUserDataState() {
     null,
   );
 
+  // Whether the first /user/data request has settled (success or failure), so
+  // callers can tell "still loading" from "failed" when onboardingComplete is
+  // null.
+  const [hasLoadedProfile, setHasLoadedProfile] = useState(false);
+
   // Last failed saved-items mutation, surfaced to the UI as an error banner.
   // Cleared whenever a subsequent mutation succeeds (or on manual dismiss).
   const [error, setError] = useState<string | null>(null);
@@ -356,6 +361,7 @@ function useUserDataState() {
         'Unable to load your saved queries and resources. Please refresh to try again.',
       );
     }
+    setHasLoadedProfile(true);
     return result;
   }, [callUserDataApi]);
 
@@ -524,6 +530,7 @@ function useUserDataState() {
     preferences,
     account,
     onboardingComplete,
+    hasLoadedProfile,
     savedQueries,
     savedDatasets,
     isDevMode,

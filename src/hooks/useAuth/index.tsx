@@ -17,6 +17,7 @@ import { getAuthConfig } from 'src/utils/auth/helpers';
 import { fetchWithXsrf } from 'src/utils/auth/xsrf';
 import { devMockAuth } from './mock';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
+import { setWelcomePending } from 'src/utils/auth/welcome-pending';
 
 const initialState: AuthState = {
   user: null,
@@ -151,6 +152,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         window.location.href = '/login';
         return;
       }
+
+      setWelcomePending();
 
       // Mock auth only when provider is explicitly selected
       const mockState = devMockAuth.loginState(providerId);
