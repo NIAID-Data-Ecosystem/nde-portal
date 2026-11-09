@@ -183,3 +183,50 @@ the previous native build, identical except for that bounded viewport.
   except expand (provisionally accepted). Unthrottled every INP is ≤ 160 ms. The
   latency misses (pin, warm search) are time to the final paint of a much larger
   painted area.
+
+### Round 3 (2026-11-09): bounded by default again
+
+The table is bounded by default (`max-height: 100dvh`, sticky header), with
+natural height as the `maxHeight='none'` override. Owner's requirement: the
+bounded default must perform as if natural height weren't supported, so it was
+benchmarked against r4. "Staged" is the round-3 build as first implemented;
+"fixed" adds one CSS property (below). The two were measured interleaved (one
+run of each, alternating, 5 rounds) so both saw the same machine state; r4 is
+its recorded `cmp-r4` run. Medians at 4×:
+
+| Scenario                        | r4 (recorded) | staged      | fixed       |
+| ------------------------------- | ------------- | ----------- | ----------- |
+| load latency / TBT              | 4650 / 3521   | 4758 / 3670 | 4758 / 3574 |
+| sort latency / INP              | 557 / 72      | 586 / 64    | 576 / 64    |
+| pin latency / INP               | 636 / 384     | 670 / 392   | 636 / 368   |
+| warm search latency / INP       | 1918 / 376    | 1975 / 392  | 1923 / 376  |
+| expand INP                      | 488           | 608         | 448         |
+| scrollY dropped ≥1 / jank / p95 | 9 / 0 / 33    | 31 / 2 / 50 | 14 / 0 / 33 |
+| scrollY long tasks (per run)    | 0–3           | 12–24       | 0–5         |
+| scrollX dropped ≥1 / jank / p95 | 0 / 0 / 17    | 4 / 0 / 33  | 0 / 0 / 17  |
+
+At 1× all three are equal: no dropped frames on either axis, every INP ≤ 120 ms,
+and load is 1266 / 1256 / 1217 ms. Results (local, gitignored) are in
+`results/ilv-r9-*` (staged) and `results/ilv-r10-*` (fixed).
+
+- **The regression, and its cause.** As staged, every 400 px wheel step was one
+  main-thread frame of about 20 ms of Paint plus 25 ms of Layerize at 4×
+  (traced; the page itself never scrolled, and no JavaScript was involved). At
+  1× pixel density Chrome only scrolls a scroller on the compositor when the
+  scroller's own background is opaque; otherwise it repaints to keep LCD text.
+  The white background was on the table root, not on the viewport that scrolls.
+  That most likely dates from round 2, which moved `maxHeight` to the root, and
+  it explains round 2's horizontal p95 of 33 ms too.
+- **Fix:** `bg: 'white'` on the viewport slot. It's pure CSS, the same in both
+  modes, and lets Chrome decide. `will-change: scroll-position` measured the
+  same, but it would force a GPU layer for the whole table in every mode, so it
+  wasn't used. A layout spec guards the opaque background.
+- **Ruled out by A/B:** row hover (turning it off took 30 dropped frames to 23,
+  with the long tasks unchanged), the tag-tooltip hover handler (no change; no
+  tooltip mounted during the scroll), and content height (the rows are tall
+  because of their tags and descriptions, the same as in r4).
+- **Noise worth knowing:** one non-interleaved run of the fixed build reported a
+  4× load of about 6,100 ms. Its per-run loads were bimodal (about 4,650 ms
+  twice, and 6,064–6,564 ms three times) while the machine was swapping after a
+  build. Interleaved, load is identical. 1× sort latency is bimodal for both r4
+  (128–174 ms) and the fixed build (130–184 ms); its INP stays 16–32 ms.

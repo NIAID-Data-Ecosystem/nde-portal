@@ -121,14 +121,29 @@ const table = useDataTable({ data, columns: COLUMNS, getRowId, preferences });
 
 The table owns how it behaves; the parent owns how much space it takes.
 
-- **Default: natural height.** The table grows with its rows and the page
-  scrolls. The table scrolls only sideways, so its header scrolls away with the
-  page. A table that scrolls sideways is its own scroll container, and
-  `position: sticky` can only stick inside that, never to the page.
-- **`maxHeight`** (any CSS max-height: `'400px'`, `'70vh'`, `'100%'` inside a
-  parent with a definite height, or a responsive object such as
-  `{ base: undefined, md: '600px' }`) caps the table. It then scrolls vertically
-  itself and its header sticks.
+- **Default: bounded.** The table is at most one screen tall (`100dvh`). Its
+  rows scroll inside it with the header stuck at the top, and a table with fewer
+  rows only takes the space it needs (it's a cap, not a height).
+- **`maxHeight`** sets the cap with any CSS max-height: fixed (`'400px'`),
+  responsive (`{ base: '60vh', md: '80vh' }`), or parent-relative (`'100%'`
+  inside a parent with a definite height). A responsive value replaces the
+  default at every breakpoint, so give it a `base`: `{ md: '600px' }` alone
+  leaves the table uncapped below `md`.
+- **Layout-driven sizing:** the table shrinks into a flex-column parent's
+  leftover space. To make a table fill the window below its toolbar, wrap the
+  toolbar and the table in `<Flex direction='column' maxH='100dvh'>`: the
+  toolbar keeps its height and the table takes the rest, however the toolbar
+  wraps. No offsets to maintain. See `src/pages/repository-matcher.tsx`.
+- **`maxHeight='none'`:** natural height. The table grows with its rows and the
+  page scrolls. Its header then scrolls away with the page: a table that scrolls
+  sideways is its own scroll container, and `position: sticky` can only stick
+  inside that. It's just a CSS value: the same DOM and code as the bounded
+  default.
+- **Rule: natural height must cost bounded tables nothing.** No JS, DOM,
+  listeners, observers or render work may exist only for `maxHeight='none'`,
+  whether it's behind a condition or runs in both modes. Handle the difference
+  in CSS or layout. A test checks that both modes render and wire up the same
+  way, but it can't catch work that runs unconditionally, so check in review.
 - A floating horizontal scrollbar is pinned to the bottom of the window whenever
   the table is on-screen but its own scrollbar is below the fold.
 - `topScrollbar`: an extra horizontal scrollbar above the table (off by

@@ -9,7 +9,6 @@ import {
 import React, {
   useCallback,
   useDeferredValue,
-  useEffect,
   useId,
   useMemo,
   useRef,
@@ -41,13 +40,15 @@ interface DataTableDisplayProps {
   label: string;
   status?: DataTableStatus;
   /**
-   * Caps the table's height, giving it its own vertical scrolling and a
-   * sticky header. Any CSS max-height the parent wants: fixed (`'400px'`),
-   * responsive (`{ base: undefined, md: '70vh' }`) or parent-relative
-   * (`'100%'` inside a parent with a definite height). Omit (the default)
-   * and the table grows with its rows and the page scrolls; its header then
-   * scrolls away with it, because a table that scrolls sideways is its own
-   * scroll container, and a sticky header can only stick inside that.
+   * The table's maximum height, as any CSS max-height: fixed (`'400px'`),
+   * responsive (`{ base: '60vh', md: '80vh' }`) or parent-relative (`'100%'`
+   * inside a parent with a definite height). Defaults to one screen
+   * (`100dvh`); the table scrolls inside it with its header stuck, and a
+   * table with fewer rows only takes the space it needs. A flex-column
+   * parent can also size it: the table shrinks into the space its siblings
+   * leave. `'none'` lets the table grow with its rows (the page scrolls; the
+   * header scrolls away with it). A responsive value replaces the default at
+   * every breakpoint, so include `base`.
    */
   maxHeight?: BoxProps['maxHeight'];
   /** A second horizontal scrollbar above the table. Off by default. */
@@ -174,43 +175,6 @@ const DataTableView = <TRow,>({
     [pinFirstColumn, topScrollbar],
   );
 
-  // Row hover highlights pause while rows move vertically under the cursor
-  // (the page scrolling, or the table's own vertical scroll when a parent
-  // caps its height): each row sliding under a stationary cursor would
-  // otherwise repaint, most of a tall table's scroll paint cost. Sideways
-  // scrolling keeps the same row under the cursor, so it doesn't pause, and
-  // doesn't pay for restyling every cell twice per gesture.
-  useEffect(() => {
-    const root = rootRef.current;
-    const viewport = viewportRef.current;
-    if (!interactive || !root || !viewport) return;
-    let timer: number | undefined;
-    let lastTop = viewport.scrollTop;
-    const pause = () => {
-      if (!root.hasAttribute('data-scrolling')) {
-        root.setAttribute('data-scrolling', '');
-      }
-      window.clearTimeout(timer);
-      timer = window.setTimeout(
-        () => root.removeAttribute('data-scrolling'),
-        150,
-      );
-    };
-    const onViewportScroll = () => {
-      if (viewport.scrollTop === lastTop) return;
-      lastTop = viewport.scrollTop;
-      pause();
-    };
-    // Without `capture`, a window listener only hears the document scroll.
-    window.addEventListener('scroll', pause, { passive: true });
-    viewport.addEventListener('scroll', onViewportScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', pause);
-      viewport.removeEventListener('scroll', onViewportScroll);
-      window.clearTimeout(timer);
-    };
-  }, [interactive]);
-
   // Announced after a header click: `aria-sort` alone isn't re-read by most
   // screen readers while focus stays on the button.
   const [announcement, setAnnouncement] = useState('');
@@ -276,7 +240,6 @@ const DataTableView = <TRow,>({
       css={styles.root}
       maxHeight={maxHeight}
       data-pinned={pinFirstColumn ? '' : undefined}
-      data-sticky-header={maxHeight ? '' : undefined}
       data-interactive={interactive ? '' : undefined}
     >
       {topScrollbar && (

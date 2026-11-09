@@ -77,7 +77,7 @@ export const RepositoryMatcherTable = React.memo(
           label='Repositories and resource catalogs available for data deposit'
           interactive
           skeletonRows={10}
-          maxHeight='750px'
+          maxHeight='800px'
           status={{
             loading,
             error: error ? true : undefined,

@@ -10,8 +10,7 @@ class on the root costs the same whatever the row count. State lives in data
 attributes the component sets on the root:
 
   data-pinned        first column pinned (only from `md` up)
-  data-sticky-header the parent passed a `maxHeight`, so the header sticks
-  data-interactive   rows highlight on hover (paused while data-scrolling)
+  data-interactive   rows highlight on hover
   data-overflow-x    content is wider than the viewport
   data-at-start/end  horizontal scroll position
   data-floating      the floating scrollbar is showing (native one off-screen)
@@ -45,10 +44,19 @@ export const dataTableSlotRecipe = defineSlotRecipe({
   base: {
     root: {
       position: 'relative',
-      // A column, so a `maxHeight` on the root (whatever the parent passes)
-      // bounds the viewport below, which then scrolls.
+      // A column, so whatever bounds the root (this default, a `maxHeight`
+      // from the parent, or a flex parent shrinking it) bounds the viewport
+      // below, which then scrolls with its header stuck at the top.
       display: 'flex',
       flexDirection: 'column',
+      // Bounded by default: never taller than one screen (a cap, so shorter
+      // tables keep their natural size). The `maxHeight` prop overrides it
+      // with any CSS value; `'none'` lets the table grow with its rows.
+      maxHeight: '100dvh',
+      // Lets a flex-column parent shrink the table into the space left by
+      // its other children (e.g. a toolbar), so the page's layout decides
+      // the height with no measuring.
+      minHeight: 0,
       maxWidth: '100%',
       minWidth: 0,
       bg: 'white',
@@ -71,7 +79,7 @@ export const dataTableSlotRecipe = defineSlotRecipe({
       },
       '& table td': { py: 2.5, bg: 'white' },
       '& table tbody tr:nth-of-type(even) > td': { bg: 'table.stripe' },
-      '&[data-interactive]:not([data-scrolling]) table tbody tr:hover > td': {
+      '&[data-interactive] table tbody tr:hover > td': {
         bg: 'table.hover',
       },
       '& table :is(th, td)[data-align="end"]': { textAlign: 'end' },
@@ -81,9 +89,12 @@ export const dataTableSlotRecipe = defineSlotRecipe({
 
       /* Header */
       '& table th': {
-        // Containing block for the sort button's full-cell hit area (sticky
-        // headers are positioned already).
-        position: 'relative',
+        // Sticks to the top of the viewport while rows scroll (a no-op when
+        // nothing scrolls vertically, e.g. `maxHeight='none'`). Also the
+        // containing block for the sort button's full-cell hit area.
+        position: 'sticky',
+        top: 0,
+        zIndex: 2,
         py: 2,
         bg: 'white',
         color: 'gray.600',
@@ -95,11 +106,6 @@ export const dataTableSlotRecipe = defineSlotRecipe({
         borderBottomColor: 'gray.200',
       },
       '& table th[aria-sort]': { bg: 'bg.alt' },
-      '&[data-sticky-header] table th': {
-        position: 'sticky',
-        top: 0,
-        zIndex: 2,
-      },
       // Title and info icon at the start, sort arrows pushed to the end.
       '& .nde-th': { display: 'flex', alignItems: 'center', gap: 2 },
       '& .nde-th-title': { display: 'flex', alignItems: 'center', minWidth: 0 },
@@ -179,10 +185,7 @@ export const dataTableSlotRecipe = defineSlotRecipe({
         borderInlineEndColor: 'gray.200',
       },
       '&[data-pinned] table td:first-child': { zIndex: { md: 1 } },
-      '&[data-pinned] table th:first-child': {
-        position: { base: undefined, md: 'sticky' },
-        zIndex: { md: 3 },
-      },
+      '&[data-pinned] table th:first-child': { zIndex: { md: 3 } },
       [`&[data-pinned][data-overflow-x]:not([data-at-start]) ${firstCells}`]: {
         boxShadow: { md: '4px 0 6px -4px rgba(0, 0, 0, 0.2)' },
       },
@@ -255,6 +258,13 @@ export const dataTableSlotRecipe = defineSlotRecipe({
       flex: '1 1 auto',
       minHeight: 0,
       overflow: 'auto',
+      // The scroller's own opaque background is what lets Chrome scroll it on
+      // the compositor at 1x pixel density (it won't otherwise, to keep LCD
+      // text). Without it (the root's white isn't enough) every scroll step
+      // repaints and re-layerizes the visible table on the main thread: 30
+      // dropped frames per vertical scroll at 4x CPU instead of 15, and
+      // horizontal p95 33 ms instead of 17. Measured 2026-11-09.
+      bg: 'white',
       // A sideways swipe shouldn't trigger the browser's back gesture.
       overscrollBehaviorX: 'contain',
       scrollPaddingTop: 'var(--nde-table-header-h, 0px)',

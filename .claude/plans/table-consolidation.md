@@ -7,9 +7,10 @@ rules stay in `.claude/CLAUDE.md`.
 
 - **Branch:** `chakra-v3-migration-table-reconciliation` (off the Chakra v3
   migration).
-- **Status (2026-11-06):** Phases 0–2 are done and uncommitted. The pilot is
-  **in evaluation**: the owner's feedback round 1 (§9) is being worked through.
-  Don't start Phase 3 until the owner signs off.
+- **Status (2026-11-09):** Phases 0–2 committed as WIP (`df420ed3`). The pilot
+  is **in evaluation**: rounds 1–3 (§9) are done. Round 3 (bounded by default,
+  natural height via `maxHeight='none'`) is implemented, uncommitted, and
+  benchmarked against r4. Don't start Phase 3 until the owner signs off.
 - **Update this file** when a decision changes, a phase finishes, or an
   intentional behaviour change is made.
 
@@ -610,11 +611,129 @@ again). Updates/news stickiness is unchanged.
 - **Awaiting the owner:** accept these natural-height costs, or choose a bounded
   height for the Repository Matcher.
 
+### Round 3: owner reverses natural height (2026-11-06), awaiting approval
+
+Owner: there's no real use case for natural-height tables in the primary system.
+The original complaint was that the constrained table felt claustrophobic, not
+internal scrolling itself. Wanted:
+
+- Bounded scroll container by default, keeping sticky headers and the
+  bounded-height performance (native build r4 numbers in `e2e/perf/README.md`).
+- Height controlled by the page or parent layout through standard CSS values.
+- Responsive, layout-driven sizing rather than hard-coded viewport offsets.
+- Small tables take only the space they need.
+- Keep the floating scrollbar.
+- Natural height only as a cheap override.
+- Repository Matcher: use the available viewport space as well as possible
+  without feeling cramped.
+- Recommend the simplest implementation (no unnecessary configuration).
+
+The owner committed the round-2 state as `df420ed3 wip: first iteration`, with
+their own `maxHeight='750px'` on the Repository Matcher table.
+
+**Recommendation (prototyped in the browser, not implemented):**
+
+1. **DataTable:**
+   - Default `max-height: 100dvh` on the root (a cap, not an offset).
+   - `min-height: 0` on the root, so a flex parent can shrink it.
+   - Sticky header always (the `data-sticky-header` flag goes; a no-op without
+     vertical overflow).
+   - `maxHeight` prop unchanged: any CSS value; `'none'` is the natural-height
+     override, at zero extra cost.
+   - Remove round 2's row-hover scroll pause (only needed for natural height;
+     the bounded r4 build had 0 jank without it).
+2. **Repository Matcher:**
+   - Replace `maxHeight='750px'` with a page-level results region: a
+     `Flex direction='column' maxH='100dvh'` around the toolbar (search, filter
+     tags, results count and Customize Columns) and the table.
+   - The table takes whatever height is left (flex). It fits the toolbar's
+     actual height, including wrapped filter tags, with no measuring.
+   - The Data Dictionary stays below it.
+3. **Prototype results (DOM restructure of the export):**
+   - With the region at the top of the window, the table bottom sits exactly at
+     the window bottom (0 px gap) at 1440×900, 1280×720, 1024×768 and 390×844,
+     with the search box and toolbar still on screen.
+   - Filtered to 1 row, the table and region shrink to the content.
+   - On mobile the toolbar strip stays visible above the table, a place to swipe
+     the page, so there's no scroll trap without breakpoint rules.
+
+### Round 3: approved and implemented (2026-11-06)
+
+**Owner approval, with an explicit requirement:** natural height stays available
+via `maxHeight="none"`. The bounded default must perform as if natural height
+weren't supported:
+
+- one shared implementation, with the differences in CSS/layout;
+- no extra JS, DOM, listeners, observers or render work when bounded;
+- no conditional logic or workarounds for natural height.
+- Benchmark against r4; flag any compromise before proceeding.
+
+**Done:**
+
+- **Recipe root:** `maxHeight: '100dvh'` (default cap) and `minHeight: 0`
+  (shrinks in a flex parent). The `maxHeight` prop is a style prop, so it
+  overrides the default with any CSS value; `'none'` = natural.
+- **Header:** `<th>` is always sticky; the `data-sticky-header` flag is removed.
+- **Removed:** round 2's row-hover scroll pause (effect, listener, timer,
+  `data-scrolling`).
+- **Nothing natural-height-specific remains in JS:** both modes render the same
+  DOM and run the same hooks. (The floating scrollbar's observers and the
+  tag-tooltip scroll guard serve both modes.)
+- **Repository Matcher:**
+  - The `maxHeight='750px'` is gone.
+  - The page wraps search, mobile filters, filter tags, count and the table in
+    `<Flex direction='column' maxH='100dvh'>`.
+  - The tag `Stack`'s `flex={1}` is removed (it would grow in a flex column).
+  - The search row's `mb={2}` becomes `mb={{ base: 2, md: 0 }}` and the mobile
+    filters' `mb={3}` is removed, so the non-collapsing flex margins give the
+    exact gaps the block layout had. Verified identical toolbar positions at
+    1440 and 390 against r4.
+- **Layout spec:**
+  - The table fills the window below the toolbar, with its header stuck.
+  - A single result shrinks it.
+  - `maxHeight='none'` grows it.
+  - On mobile the toolbar stays above the table.
+
+**Benchmark against r4 (2026-11-09; full table in `e2e/perf/README.md`, "Round
+3"):**
+
+- **Compromise found and fixed.** As first staged, 4× scrolling missed r4:
+  vertical 31 dropped / 2 janky / p95 50 ms (r4 9 / 0 / 33), with 12–24 long
+  tasks per scroll; horizontal p95 33 ms (r4 17).
+  - Cause: the scroller had no opaque background of its own (the white was on
+    the root), so Chrome repainted and re-layerized the visible table on the
+    main thread at every scroll step instead of compositing it. Not caused by
+    natural-height support, but it broke the requirement.
+  - Fix: `bg: 'white'` on the viewport slot (CSS only; both modes). Result:
+    vertical 14 / 0 / 33, horizontal 0 / 0 / 17, about 0 long tasks.
+  - Load and every interaction equal r4 within noise at 1× and 4×; every 1× INP
+    ≤ 120 ms.
+- **Requirement verified by construction:** both modes render the same DOM and
+  run the same hooks, listeners and observers; the only difference is the root's
+  `max-height`. Chakra merges style props after `css`, so the `maxHeight` prop
+  overrides the recipe's `100dvh` (checked with `system.css`).
+- **Guards added:**
+  - A Jest test renders the default and `maxHeight='none'` and asserts identical
+    DOM, listeners (including `window`'s), observers and React commit counts.
+    Mutation-tested: a natural-only `window` scroll listener fails it.
+  - A layout spec asserts the viewport's opaque background.
+  - The README's "Layout options" now states the rule: nothing in JS may exist
+    only for natural height, even unconditionally (the test can't catch that).
+- **Documented trap:** a responsive `maxHeight` replaces the default at every
+  breakpoint, so `{ md: '600px' }` alone leaves the table uncapped below `md`.
+  Give it a `base`.
+
 ## 10. Implementation notes and traps found so far
 
 - `useSlotRecipe` + `css` per element is expensive at table scale. Style
   repeated cell content from the recipe's root with descendant selectors and
   plain elements.
+- A scroller needs its **own** opaque background, or Chrome (at 1× pixel
+  density) won't composite it and repaints on every scroll step. A white
+  ancestor isn't enough. Diagnose with a trace: per-step Paint + Layerize with
+  no JavaScript.
+- In Jest's jsdom, `window.addEventListener` is an own bound property, so a spy
+  on `EventTarget.prototype` never sees `window` listeners.
 - Native table layout re-lays out the whole table when any cell changes size;
   DOM size is the only lever, since CSS containment doesn't help.
 - In recipe nested selectors, a template like `` `&[x] ${'& table td'}` ``

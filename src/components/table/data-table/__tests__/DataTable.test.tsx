@@ -203,4 +203,93 @@ describe('DataTable', () => {
     act(() => bump());
     expect(screen.getByText('alpha.csv')).toBe(before);
   });
+
+  /*
+  Natural height (`maxHeight='none'`) must be only a CSS value, so supporting
+  it costs bounded tables nothing: the same DOM, listeners, observers and React
+  commits as the bounded default. Any branch on `maxHeight` fails this. (It
+  can't catch natural-height-only work that runs in both modes; see the
+  README's "Height" section.)
+  */
+  it("renders and wires up maxHeight='none' exactly like the bounded default", async () => {
+    const trace: string[] = [];
+    const observer = (kind: string) =>
+      class {
+        observe(el: Element) {
+          trace.push(`${kind}: ${el.tagName}`);
+        }
+        unobserve() {}
+        disconnect() {}
+      };
+    const originals = {
+      ResizeObserver: window.ResizeObserver,
+      IntersectionObserver: window.IntersectionObserver,
+    };
+    Object.assign(window, {
+      ResizeObserver: observer('resize'),
+      IntersectionObserver: observer('intersection'),
+    });
+    // jsdom gives `window` its own bound `addEventListener`, so it needs its
+    // own spy; elements and `document` use the prototype's.
+    const spyOnListeners = (target: EventTarget) => {
+      const original = target.addEventListener;
+      return jest
+        .spyOn(target, 'addEventListener')
+        .mockImplementation(function (this: EventTarget, type, ...rest) {
+          trace.push(`listen: ${(this as Node).nodeName ?? 'window'} ${type}`);
+          return original.call(this, type, ...rest);
+        });
+    };
+    const listenSpies = [
+      spyOnListeners(EventTarget.prototype),
+      spyOnListeners(window),
+    ];
+
+    const renderTable = async (maxHeight?: 'none') => {
+      trace.length = 0;
+      let commits = 0;
+      const { container, unmount } = await setup(
+        <React.Profiler id='table' onRender={() => commits++}>
+          <DataTable
+            label='Files'
+            data={FILES}
+            columns={COLUMNS}
+            getRowId={getRowId}
+            maxHeight={maxHeight}
+          />
+        </React.Profiler>,
+      );
+      const root = container.querySelector('.nde-data-table')!;
+      const result = {
+        rootClass: root.className,
+        // Generated class names and `useId` ids aside, the markup must match.
+        dom: container.innerHTML
+          .replace(/ class="[^"]*"/g, '')
+          .replace(/:r[0-9a-z]+:/g, 'ID'),
+        trace: [...trace],
+        commits,
+      };
+      unmount();
+      return result;
+    };
+
+    try {
+      // Warm-up: anything registered once per page on first use is excluded.
+      await renderTable();
+      const bounded = await renderTable();
+      const natural = await renderTable('none');
+
+      expect(bounded.trace).toEqual(
+        expect.arrayContaining(['resize: TABLE', 'listen: window resize']),
+      );
+      expect(natural.dom).toBe(bounded.dom);
+      expect(natural.trace).toEqual(bounded.trace);
+      expect(natural.commits).toBe(bounded.commits);
+      // The one difference: the root's styles.
+      expect(natural.rootClass).not.toBe(bounded.rootClass);
+    } finally {
+      listenSpies.forEach(spy => spy.mockRestore());
+      Object.assign(window, originals);
+    }
+  });
 });

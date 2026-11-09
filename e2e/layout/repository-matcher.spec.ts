@@ -59,17 +59,41 @@ const headerWidths = (page: Page) =>
 test.describe('DataTable layout: desktop', () => {
   test.use({ viewport: { width: 1440, height: 900 } });
 
-  test('by default the table grows with its rows and the page scrolls', async ({
+  test('the table fills the window below the toolbar, with its header stuck', async ({
     page,
   }) => {
     await gotoPopulated(page);
-    const state = await viewport(page).evaluate(el => ({
-      innerScroll: el.scrollHeight - el.clientHeight,
-      maxHeight: getComputedStyle(el.parentElement!).maxHeight,
-    }));
-    expect(state.maxHeight).toBe('none');
-    expect(state.innerScroll).toBeLessThanOrEqual(1);
-    // The filter sidebar scrolls with the page too: no nested scroll areas.
+    // Scroll the results area (toolbar + table) to the top of the window.
+    await root(page).evaluate(el =>
+      window.scrollBy(0, el.parentElement!.getBoundingClientRect().top),
+    );
+    const fit = await root(page).evaluate(el => {
+      const view = el.querySelector('table')!.parentElement!;
+      const search = document
+        .querySelector('input[placeholder^="Search repositories"]')!
+        .getBoundingClientRect();
+      return {
+        bottomGap: window.innerHeight - el.getBoundingClientRect().bottom,
+        searchOnScreen: search.top >= 0 && search.bottom <= window.innerHeight,
+        innerScroll: view.scrollHeight > view.clientHeight + 1,
+      };
+    });
+    expect(Math.abs(fit.bottomGap)).toBeLessThanOrEqual(1);
+    expect(fit.searchOnScreen).toBe(true);
+    expect(fit.innerScroll).toBe(true);
+
+    // The header sticks while the rows scroll.
+    await viewport(page).evaluate(el => (el.scrollTop = 800));
+    const headerOffset = await root(page).evaluate(el => {
+      const view = el.querySelector('table')!.parentElement!;
+      return (
+        el.querySelector('thead th')!.getBoundingClientRect().top -
+        view.getBoundingClientRect().top
+      );
+    });
+    expect(Math.abs(headerOffset)).toBeLessThanOrEqual(1);
+
+    // The filter sidebar scrolls with the page: no second scroll area.
     const sidebarSticky = await page
       .getByText('Filters', { exact: true })
       .first()
@@ -84,31 +108,48 @@ test.describe('DataTable layout: desktop', () => {
     expect(sidebarSticky).toBe(false);
   });
 
-  test('a maxHeight from the parent gives internal scrolling and a sticky header', async ({
+  test('fewer rows take only the space they need', async ({ page }) => {
+    await gotoPopulated(page);
+    await page
+      .getByRole('textbox', { name: /search repositories/i })
+      .fill('bv-brc 13');
+    await expect(page.getByText('1 results')).toBeVisible();
+    const size = await viewport(page).evaluate(el => ({
+      innerScroll: el.scrollHeight - el.clientHeight,
+      height: el.parentElement!.getBoundingClientRect().height,
+    }));
+    expect(size.innerScroll).toBeLessThanOrEqual(1);
+    expect(size.height).toBeLessThan(400);
+  });
+
+  test("maxHeight='none' lets the table grow with its rows", async ({
     page,
   }) => {
     await gotoPopulated(page);
-    // What DataTable renders for `maxHeight='600px'`: the cap on the root and
-    // the sticky-header flag. (The pilot page itself uses natural height.)
+    // What `maxHeight='none'` renders, in a parent that doesn't cap it.
     await root(page).evaluate(el => {
-      el.style.maxHeight = '600px';
-      el.setAttribute('data-sticky-header', '');
+      el.style.maxHeight = 'none';
+      el.parentElement!.style.maxHeight = 'none';
     });
-    await scrollTableToTop(page);
-    await viewport(page).evaluate(el => (el.scrollTop = 800));
-    const state = await root(page).evaluate(el => {
-      const view = el.querySelector('table')!.parentElement!;
-      const th = el.querySelector('thead th')!;
-      return {
-        height: el.getBoundingClientRect().height,
-        headerOffset:
-          th.getBoundingClientRect().top - view.getBoundingClientRect().top,
-        scrolled: view.scrollTop,
-      };
-    });
-    expect(state.height).toBeLessThanOrEqual(601);
-    expect(state.scrolled).toBe(800);
-    expect(Math.abs(state.headerOffset)).toBeLessThanOrEqual(1);
+    const state = await viewport(page).evaluate(el => ({
+      innerScroll: el.scrollHeight - el.clientHeight,
+      height: el.getBoundingClientRect().height,
+    }));
+    expect(state.innerScroll).toBeLessThanOrEqual(1);
+    expect(state.height).toBeGreaterThan(900);
+  });
+
+  test('the scroll viewport is opaque, so Chrome can scroll it on the compositor', async ({
+    page,
+  }) => {
+    // Without its own opaque background, Chrome (at 1x pixel density) repaints
+    // the visible table on the main thread at every scroll step. The perf
+    // harness (e2e/perf) measures the effect; this guards the cause.
+    await gotoPopulated(page);
+    const background = await viewport(page).evaluate(
+      el => getComputedStyle(el).backgroundColor,
+    );
+    expect(background).toBe('rgb(255, 255, 255)');
   });
 
   test('a pinned first column stays put while the rest scroll sideways', async ({
@@ -361,16 +402,26 @@ for (const size of [
 test.describe('DataTable layout: small screens', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
-  test('the page scrolls instead of the table, so it can’t trap scrolling', async ({
+  test('the toolbar stays above the bounded table, so the page can still be swiped', async ({
     page,
   }) => {
     await gotoPopulated(page);
-    const state = await viewport(page).evaluate(el => ({
-      maxHeight: getComputedStyle(el.parentElement!).maxHeight,
-      innerScroll: el.scrollHeight - el.clientHeight,
-    }));
-    expect(state.maxHeight).toBe('none');
-    expect(state.innerScroll).toBeLessThanOrEqual(1);
+    await root(page).evaluate(el =>
+      window.scrollBy(0, el.parentElement!.getBoundingClientRect().top),
+    );
+    const state = await root(page).evaluate(el => {
+      const view = el.querySelector('table')!.parentElement!;
+      return {
+        bottomGap: window.innerHeight - el.getBoundingClientRect().bottom,
+        // Page content above the table, still on screen: somewhere to swipe
+        // the page rather than the table.
+        toolbarAbove: el.getBoundingClientRect().top,
+        innerScroll: view.scrollHeight > view.clientHeight + 1,
+      };
+    });
+    expect(Math.abs(state.bottomGap)).toBeLessThanOrEqual(1);
+    expect(state.toolbarAbove).toBeGreaterThan(80);
+    expect(state.innerScroll).toBe(true);
     // Still scrolls sideways.
     await expect(root(page)).toHaveAttribute('data-overflow-x', '');
   });
@@ -493,9 +544,7 @@ test.describe('DataTable headers', () => {
     await expect(access).not.toHaveAttribute('aria-sort');
   });
 
-  test('rows highlight on hover once scrolling has settled', async ({
-    page,
-  }) => {
+  test('rows highlight on hover', async ({ page }) => {
     await gotoPopulated(page);
     const cell = root(page).locator('tbody tr').nth(1).locator('td').nth(1);
     await cell.scrollIntoViewIfNeeded();
@@ -507,7 +556,6 @@ test.describe('DataTable headers', () => {
     await expect
       .poll(() => cell.evaluate(el => getComputedStyle(el).backgroundColor))
       .not.toBe(resting);
-    await expect(root(page)).not.toHaveAttribute('data-scrolling', '');
   });
 
   test('truncated tags show their full name on hover', async ({ page }) => {
