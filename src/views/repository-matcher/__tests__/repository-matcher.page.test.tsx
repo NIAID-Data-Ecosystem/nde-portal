@@ -2,6 +2,7 @@ import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { renderWithClient } from 'src/__tests__/mocks/utils';
+import { mockTableViewportHeight } from 'src/__tests__/utils/table-viewport';
 import RepositoryMatcher from 'src/pages/repository-matcher';
 import { useRepositoryMatcherData } from 'src/views/repository-matcher/hooks/useRepositoryMatcherData';
 
@@ -88,11 +89,15 @@ const openCustomizer = async (user: ReturnType<typeof userEvent.setup>) => {
 };
 
 describe('RepositoryMatcher page', () => {
+  // The table is virtualized: without a viewport height, jsdom mounts no rows.
+  let viewportHeight: jest.SpyInstance;
   beforeEach(() => {
     jest.clearAllMocks();
     window.localStorage.clear();
     setData();
+    viewportHeight = mockTableViewportHeight();
   });
+  afterEach(() => viewportHeight.mockRestore());
 
   it('renders the heading, intro, result count and a named table', async () => {
     await renderPage();

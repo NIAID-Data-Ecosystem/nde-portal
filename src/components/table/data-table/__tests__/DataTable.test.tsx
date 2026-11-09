@@ -1,6 +1,10 @@
 import userEvent from '@testing-library/user-event';
 import React, { useState } from 'react';
 import { act, render, screen, within } from 'src/__tests__/utils/render';
+import {
+  mockTableRowHeight,
+  mockTableViewportHeight,
+} from 'src/__tests__/utils/table-viewport';
 
 import { DataTable } from '../components/DataTable';
 import { useDataTable } from '../hooks/useDataTable';
@@ -291,5 +295,98 @@ describe('DataTable', () => {
       listenSpies.forEach(spy => spy.mockRestore());
       Object.assign(window, originals);
     }
+  });
+});
+
+describe('DataTable virtualization', () => {
+  const MANY: File[] = Array.from({ length: 30 }, (_, i) => ({
+    id: `f${i}`,
+    name: `file-${i}.csv`,
+  }));
+  // jsdom has no layout: an 800px viewport over 100px rows.
+  let spies: jest.SpyInstance[] = [];
+  beforeEach(() => {
+    spies = [mockTableViewportHeight(800), mockTableRowHeight(100)];
+  });
+  afterEach(() => spies.forEach(spy => spy.mockRestore()));
+
+  const bodyRows = () => Array.from(table().querySelectorAll('tbody > tr'));
+  const dataRows = () =>
+    bodyRows().filter(row => !row.hasAttribute('aria-hidden'));
+
+  it('mounts only the rows near the viewport, with the totals for assistive tech', async () => {
+    // Mounted with its data, the case where a viewport ref isn't attached yet.
+    await setup(
+      <DataTable
+        label='Files'
+        data={MANY}
+        columns={COLUMNS}
+        getRowId={getRowId}
+        virtualize
+      />,
+    );
+    // 8 rows fill the viewport, and 8 more are mounted below it.
+    const rows = dataRows();
+    expect(rows).toHaveLength(16);
+    expect(rows[0]).toHaveAttribute('aria-rowindex', '2');
+    expect(table()).toHaveAttribute('aria-rowcount', '31');
+    // The other 14 rows are one spacer, hidden from assistive tech.
+    const spacer = bodyRows().at(-1)!;
+    expect(spacer).toHaveAttribute('aria-hidden', 'true');
+    expect(spacer.firstElementChild).toHaveStyle({ height: '1400px' });
+  });
+
+  it('keeps zebra stripes in step with each row as the window moves', async () => {
+    await setup(
+      <DataTable
+        label='Files'
+        data={MANY}
+        columns={COLUMNS}
+        getRowId={getRowId}
+        virtualize
+      />,
+    );
+    const viewport = table().parentElement!;
+    // Windows starting at an odd row (7), then an even one (8).
+    for (const [scrollTop, firstIndex] of [
+      [1500, 7],
+      [1600, 8],
+    ]) {
+      Object.defineProperty(viewport, 'scrollTop', {
+        value: scrollTop,
+        configurable: true,
+      });
+      await act(async () => {
+        viewport.dispatchEvent(new Event('scroll'));
+        // Past the virtualizer's 150ms "still scrolling" reset.
+        await new Promise(resolve => setTimeout(resolve, 200));
+      });
+      const rows = bodyRows();
+      const data = dataRows();
+      expect(data[0]).toHaveAttribute('aria-rowindex', String(firstIndex + 2));
+      // Stripes are `tr:nth-of-type(even)`: each row's position among the
+      // <tr>s must have the parity it has in the full table.
+      for (const row of data) {
+        const index = Number(row.getAttribute('aria-rowindex')) - 2;
+        expect((rows.indexOf(row) + 1) % 2).toBe((index + 1) % 2);
+      }
+    }
+  });
+
+  it('adds nothing without `virtualize`: every row, no spacers or row counts', async () => {
+    await setup(
+      <DataTable
+        label='Files'
+        data={MANY}
+        columns={COLUMNS}
+        getRowId={getRowId}
+      />,
+    );
+    expect(bodyRows()).toHaveLength(30);
+    expect(dataRows()).toHaveLength(30);
+    expect(table()).not.toHaveAttribute('aria-rowcount');
+    expect(bodyRows()[0]).not.toHaveAttribute('aria-rowindex');
+    expect(bodyRows()[0]).not.toHaveAttribute('data-index');
+    expect(table().parentElement).not.toHaveAttribute('style');
   });
 });

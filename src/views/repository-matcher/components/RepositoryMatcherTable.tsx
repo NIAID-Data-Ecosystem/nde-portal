@@ -78,6 +78,7 @@ export const RepositoryMatcherTable = React.memo(
           interactive
           skeletonRows={10}
           maxHeight='800px'
+          virtualize
           status={{
             loading,
             error: error ? true : undefined,

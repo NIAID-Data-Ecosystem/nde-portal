@@ -23,8 +23,9 @@ import {
   UseDataTableOptions,
 } from '../hooks/useDataTable';
 import { useScrollViewport } from '../hooks/useScrollViewport';
-import type { ResolvedColumn } from '../types';
+import { DataRow } from './DataRow';
 import { HeaderCell } from './HeaderCell';
+import { VirtualRows } from './VirtualRows';
 
 export interface DataTableStatus {
   /** Data is loading. With no rows yet, skeleton rows stand in for them. */
@@ -57,6 +58,14 @@ interface DataTableDisplayProps {
   interactive?: boolean;
   /** Placeholder rows while loading with no data. Defaults to 5. */
   skeletonRows?: number;
+  /**
+   * Mount only the rows in and near the visible part of the table. Off by
+   * default. Only takes effect when the table scrolls itself (a bounded
+   * height); with `maxHeight='none'` every row still renders. Tradeoffs:
+   * find-in-page only sees mounted rows, and per-row UI state (an expanded
+   * "Show more", focus) resets when a row scrolls far enough away.
+   */
+  virtualize?: boolean;
 }
 
 export type DataTableProps<TRow> = DataTableDisplayProps &
@@ -66,50 +75,6 @@ export type DataTableProps<TRow> = DataTableDisplayProps &
   );
 
 /* ------------------------------------------------------------------------- */
-
-const DataCell = React.memo(function DataCell<TRow>({
-  row,
-  column,
-}: {
-  row: TRow;
-  column: ResolvedColumn<TRow>;
-}) {
-  return (
-    <td
-      data-align={column.align === 'end' ? 'end' : undefined}
-      data-wrap={column.wrap === 'normal' ? undefined : column.wrap}
-    >
-      <div style={column.contentStyle}>{column.renderCell(row)}</div>
-    </td>
-  );
-}) as <TRow>(props: {
-  row: TRow;
-  column: ResolvedColumn<TRow>;
-}) => React.ReactElement;
-
-/*
-Rows memoize on the row object and the visible-columns array. Re-sorting moves
-keyed rows without re-rendering them; changing which columns show re-renders
-the row, but each cell memoizes on its own column, so only new cells render.
-*/
-const DataRow = React.memo(function DataRow<TRow>({
-  row,
-  columns,
-}: {
-  row: TRow;
-  columns: ResolvedColumn<TRow>[];
-}) {
-  return (
-    <tr>
-      {columns.map(column => (
-        <DataCell key={column.id} row={row} column={column} />
-      ))}
-    </tr>
-  );
-}) as <TRow>(props: {
-  row: TRow;
-  columns: ResolvedColumn<TRow>[];
-}) => React.ReactElement;
 
 const StatusRow = ({
   colSpan,
@@ -130,6 +95,13 @@ const StatusRow = ({
 /** Rows rendered in the first pass when data arrives; the rest follow. */
 const FIRST_PAINT_ROWS = 20;
 
+/*
+Virtualized rows only: VirtualRows corrects the scroll position itself when a
+row above the viewport changes height, so the browser's scroll anchoring would
+correct it a second time.
+*/
+const VIRTUAL_VIEWPORT_STYLE: React.CSSProperties = { overflowAnchor: 'none' };
+
 const DataTableView = <TRow,>({
   table,
   label,
@@ -138,6 +110,7 @@ const DataTableView = <TRow,>({
   topScrollbar = false,
   interactive = false,
   skeletonRows = 5,
+  virtualize = false,
 }: DataTableDisplayProps & { table: DataTableInstance<TRow> }) => {
   const recipe = useSlotRecipe({ key: 'dataTable' });
   const styles = useMemo(() => recipe(), [recipe]);
@@ -163,6 +136,8 @@ const DataTableView = <TRow,>({
   // While the first rows are still on their way, keep the skeleton rather
   // than flashing the empty state.
   const showSkeleton = (loading || rowsPending) && rows.length === 0;
+  const virtualRows =
+    virtualize && !status?.error && !showSkeleton && rows.length > 0;
 
   useScrollViewport(
     {
@@ -227,7 +202,7 @@ const DataTableView = <TRow,>({
         )}
       </StatusRow>
     );
-  } else {
+  } else if (!virtualRows) {
     body = rows.map(row => (
       <DataRow key={row.id} row={row.original} columns={columns} />
     ));
@@ -253,9 +228,18 @@ const DataTableView = <TRow,>({
           <div style={{ height: 1 }} />
         </Box>
       )}
-      <Box ref={viewportRef} css={styles.viewport} aria-labelledby={captionId}>
+      <Box
+        ref={viewportRef}
+        css={styles.viewport}
+        aria-labelledby={captionId}
+        style={virtualRows ? VIRTUAL_VIEWPORT_STYLE : undefined}
+      >
         <Box asChild css={styles.table}>
-          <table aria-busy={loading || rowsPending || undefined}>
+          <table
+            aria-busy={loading || rowsPending || undefined}
+            // Virtualized: the total, since only some rows are in the DOM.
+            aria-rowcount={virtualRows ? rows.length + 1 : undefined}
+          >
             <VisuallyHidden asChild>
               <caption id={captionId}>{label}</caption>
             </VisuallyHidden>
@@ -274,7 +258,11 @@ const DataTableView = <TRow,>({
                 ))}
               </tr>
             </thead>
-            <tbody>{body}</tbody>
+            {virtualRows ? (
+              <VirtualRows rows={rows} columns={columns} />
+            ) : (
+              <tbody>{body}</tbody>
+            )}
           </table>
         </Box>
       </Box>
@@ -306,6 +294,7 @@ const UncontrolledDataTable = <TRow,>({
   topScrollbar,
   interactive,
   skeletonRows,
+  virtualize,
   ...options
 }: DataTableDisplayProps & UseDataTableOptions<TRow>) => {
   const table = useDataTable(options);
@@ -318,6 +307,7 @@ const UncontrolledDataTable = <TRow,>({
       topScrollbar={topScrollbar}
       interactive={interactive}
       skeletonRows={skeletonRows}
+      virtualize={virtualize}
     />
   );
 };

@@ -230,3 +230,52 @@ and load is 1266 / 1256 / 1217 ms. Results (local, gitignored) are in
   twice, and 6,064–6,564 ms three times) while the machine was swapping after a
   build. Interleaved, load is identical. 1× sort latency is bimodal for both r4
   (128–174 ms) and the fixed build (130–184 ms); its INP stays 16–32 ms.
+
+### Round 4 (2026-11-09): optional virtualization (`virtualize`)
+
+The Repository Matcher with `virtualize` (only rows in and near the viewport
+mounted; see the DataTable README), against the round-3 build without it
+(`ilv-r10`'s build). Interleaved, one run of each alternately, 5 rounds;
+medians. Results (local) are in `results/ilv-nv-*` (off) and `results/ilv-v-*`
+(virtualized).
+
+| Scenario (4×)                   | off         | virtualized  |
+| ------------------------------- | ----------- | ------------ |
+| load latency / TBT              | 4495 / 3414 | 4383 / 3291  |
+| sort latency / INP              | 571 / 64    | 277 / 56     |
+| pin latency / INP               | 582 / 336   | 327 / 192    |
+| hide / show column latency      | 401 / 513   | 373 / 279    |
+| search (first keystroke) / INP  | 1403 / 408  | 1338 / 456   |
+| warm search latency / INP       | 1889 / 376  | 1294 / 368   |
+| search clear latency / INP      | 1335 / 352  | 1395 / 376   |
+| expand latency / INP            | 580 / 480   | 282 / 200    |
+| scrollY dropped ≥1 / jank / p95 | 10 / 0 / 33 | 50 / 13 / 67 |
+| scrollY TBT                     | 0           | 133–165      |
+| scrollX dropped ≥1 / jank / p95 | 0 / 0 / 17  | 0 / 0 / 17   |
+
+At 1×:
+
+- Load is equal (1237 vs 1218 ms).
+- Sort, show column, warm search and expand are faster (expand INP 104 → 56 ms).
+- Pin latency is higher (267 → 348 ms) with the same INP (88 → 80). The pin
+  switch sits inside a popover, so that latency is noisy.
+- Vertical scroll drops 2 frames per 30 steps (0 before), none janky.
+
+Settled DOM (the harness's `domNodes` is taken at first paint, when the plain
+table has only its first 20 rows): page 7,820 → 3,492 nodes, table 5,275 → 946,
+70 → 12 rows mounted.
+
+- **Faster interactions** come from re-rendering and re-laying out 12–21 rows
+  instead of 70.
+- **The cost is vertical scrolling at 4×:** 13 janky frames per scroll, with no
+  blank frames (checked with `elementFromPoint` at each step). Each wheel step
+  mounts one or two rows. In the trace, the long tasks are React rendering the
+  new rows (about 290 ms JS over the scroll) and a **forced synchronous layout**
+  inside it (256 ms), on top of the normal layout (174 ms) and paint (150 ms).
+  - The virtualizer doesn't read sizes synchronously while the user scrolls (it
+    waits for its ResizeObserver).
+  - The likely source is `ExpandableText`. It measures truncation in a layout
+    effect on mount, then re-renders to show its toggle. That happens once per
+    page in a plain table but once per mounted row when virtualized. It hasn't
+    been isolated by A/B.
+- Horizontal scrolling and load are unaffected.

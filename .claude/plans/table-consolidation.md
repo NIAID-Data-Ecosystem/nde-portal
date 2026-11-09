@@ -7,10 +7,12 @@ rules stay in `.claude/CLAUDE.md`.
 
 - **Branch:** `chakra-v3-migration-table-reconciliation` (off the Chakra v3
   migration).
-- **Status (2026-11-09):** Phases 0–2 committed as WIP (`df420ed3`). The pilot
-  is **in evaluation**: rounds 1–3 (§9) are done. Round 3 (bounded by default,
-  natural height via `maxHeight='none'`) is implemented, uncommitted, and
-  benchmarked against r4. Don't start Phase 3 until the owner signs off.
+- **Status (2026-11-09):** The pilot is **in evaluation**.
+  - Phases 0–2 and round 3 (bounded by default, natural height via
+    `maxHeight='none'`) are committed (`e20b7af8`).
+  - Round 4 (optional virtualization, on for the Repository Matcher) is
+    uncommitted and under test.
+  - Don't start Phase 3 until the owner signs off.
 - **Update this file** when a decision changes, a phase finishes, or an
   intentional behaviour change is made.
 
@@ -723,6 +725,77 @@ weren't supported:
   breakpoint, so `{ md: '600px' }` alone leaves the table uncapped below `md`.
   Give it a `base`.
 
+**After commit `e20b7af8` (2026-11-09):**
+
+- The owner set `maxHeight='800px'` on the Repository Matcher. Two layout tests
+  that expect the table to fill the window now fail (24 px gap at 1440×900, 124
+  px at 390×844). **Awaiting the owner:** drop the `800px`, or update the two
+  tests to the cap.
+- **Bug fixed (`56cf7c28`):** `topScrollbar` was invisible on bounded tables
+  (shrunk to 0.48 px by the flex column; see §10). Fixed with `flexShrink: 0` on
+  the scrollbar slot and the sentinel. A layout test covers it.
+
+### Round 4: optional virtualization, under test (2026-11-09)
+
+Owner: test the native table with optional virtualization (decision 2 removed
+it). The owner chose `@tanstack/react-virtual`, bounded tables only, a
+hard-coded `virtualize` prop on the Repository Matcher, and accepting (and
+documenting) per-row state loss. Plan:
+`~/.claude/plans/glimmering-pondering-puffin.md`.
+
+- **Why not the old code:** `react-window` absolutely positions rows in divs,
+  and the old `Table` was a div grid with fixed widths (`flex: 1; minW: 280px`
+  per cell). Native `<tr>`s can't be positioned that way.
+- **Native widths survive virtualization.** Simulated, then measured live: with
+  about 20 rows mounted, three columns move (Pathogen Species 212–226,
+  Measurement Technique 212–218, License 331–352 px). The rest are fixed, and
+  only 4 of 50 scroll steps changed a width.
+- **Built:**
+  - `virtualize?: boolean` on `DataTable`.
+  - `components/VirtualRows.tsx` (the only caller of `useVirtualizer`) renders
+    its own `<tbody>`: overscan 8, rows keyed by id, estimates from the running
+    average of measured rows, `scrollMargin` set to the header's height,
+    `useFlushSync: false`.
+  - Spacer rows have inline neutral styles. There are 0, 1 or 2 spacers above,
+    so `nth-of-type` stripes keep each row's parity.
+  - `aria-rowcount` and `aria-rowindex`.
+  - Inline `overflow-anchor: none` on the viewport while virtualized. The
+    virtualizer corrects scroll position itself; the planned `data-virtual` +
+    recipe rule wasn't needed.
+  - `DataRow` moved to `components/DataRow.tsx`, unchanged apart from its
+    optional `index`/`measureRef`.
+- **Off costs nothing at runtime:** a Jest test asserts every row, and no
+  spacer, `aria-rowcount`, `aria-rowindex` or viewport style, without
+  `virtualize`. Bundle: +11 kB gzipped on pages importing `DataTable` (the plan
+  guessed ~5).
+- **Tests:**
+  - Jest: the window, totals and spacer; stripe parity (mutation-tested); the
+    off case.
+  - Layout spec: the window and totals, no blank viewport, the header stuck,
+    real stripe colours, columns within 8 px on the fixture.
+  - Two tag tests now scroll until their row is mounted.
+  - The page test sets a viewport height.
+- **Measured** (interleaved against the round-3 build; full table in
+  `e2e/perf/README.md`, "Round 4"):
+  - **Faster interactions at 4×:**
+    - sort 571 → 277 ms
+    - pin 582 → 327 ms
+    - show column 513 → 279 ms
+    - warm search 1889 → 1294 ms
+    - expand 580 → 282 ms (INP 480 → 200; the round-1 expand miss is gone)
+  - **Unchanged:** load, first-keystroke search, search clear, horizontal
+    scroll.
+  - **DOM:** table 5,275 → 946 nodes.
+  - **Cost:** vertical scroll at 4× goes from 10 dropped / 0 janky / p95 33 ms
+    to 50 / 13 / 67, with about 150 ms TBT. It's 2 dropped frames at 1×, none
+    janky. There are no blank frames.
+  - Traced: React mounting rows plus a forced synchronous layout per step. The
+    likely source is `ExpandableText`'s mount-time truncation measurement (once
+    per page in a plain table; once per mounted row here). Not yet isolated.
+- **Awaiting the owner:** keep, drop, or optimize. The candidate optimization is
+  `ExpandableText` measuring without a forced layout; A/B it first. Separately:
+  the bundle cost, and whether the `800px` cap stays.
+
 ## 10. Implementation notes and traps found so far
 
 - `useSlotRecipe` + `css` per element is expensive at table scale. Style
@@ -734,6 +807,18 @@ weren't supported:
   no JavaScript.
 - In Jest's jsdom, `window.addEventListener` is an own bound property, so a spy
   on `EventTarget.prototype` never sees `window` listeners.
+- The bounded root is a flex column: a fixed-size child next to the viewport
+  needs `flex-shrink: 0`. A scroller's flex minimum is 0, so the 12 px top
+  scrollbar shrank to 0.48 px beside a 20,000 px viewport, and the 1 px sentinel
+  to 0.05 px. It only shows when bounded.
+- React attaches a parent element's ref **after** its children's layout effects
+  run. A child hook that reads an ancestor's ref in a layout effect gets `null`
+  when both mount in the same commit (e.g. a virtualizer finding its scroll
+  viewport on a table that mounts with data). Find the element from the child's
+  own ref instead (`VirtualRows` uses its `<tbody>`).
+- jsdom has no layout, so a virtualizer mounts **no** rows (an empty range, not
+  just the overscan) until the scroll element has a height. Tests use
+  `src/__tests__/utils/table-viewport.ts`.
 - Native table layout re-lays out the whole table when any cell changes size;
   DOM size is the only lever, since CSS containment doesn't help.
 - In recipe nested selectors, a template like `` `&[x] ${'& table td'}` ``

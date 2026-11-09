@@ -151,6 +151,35 @@ The table owns how it behaves; the parent owns how much space it takes.
 - `interactive`: row hover highlight.
 - Pinning (`allowPinning` on the customizer) applies from `md` up.
 
+## Virtualization (`virtualize`, experimental)
+
+Off by default; on for the Repository Matcher while it's evaluated. Only the
+rows in and near the visible part of the table are mounted (8 beyond each edge),
+between two `aria-hidden` spacer rows. Rows are measured as they mount, so
+variable heights and expanding rows work.
+
+- **Bounded tables only.** It needs the table's own scroll viewport. With
+  `maxHeight='none'` the viewport is as tall as its rows, so every row mounts,
+  and the option does nothing useful.
+- **Still a native table.** Columns size to the mounted rows, within each
+  column's min/max, so they can shift slightly as rows come and go. Measured on
+  production data: 0–21 px on three columns, the rest fixed.
+- **Off costs nothing at runtime.** `useVirtualizer` runs only in `VirtualRows`,
+  which renders only when `virtualize` is set. A plain table gets no extra
+  hooks, listeners, attributes or spacers (a test checks the DOM).
+  `@tanstack/react-virtual` does add about 11 kB gzipped to every page that
+  imports `DataTable`. Lazy-load `VirtualRows` if this is adopted and that
+  matters.
+- **Known limitations:**
+  - Find-in-page only sees mounted rows.
+  - Per-row UI state resets when a row unmounts: an expanded "Show more", a tag
+    tooltip, and focus inside it.
+  - A screen reader's virtual cursor reads only mounted rows; `aria-rowcount`
+    and `aria-rowindex` give it the totals.
+- **Tests (jsdom):** jsdom has no layout, so a virtualized table mounts no rows
+  until the viewport has a height. Use `mockTableViewportHeight` (and
+  `mockTableRowHeight`) from `src/__tests__/utils/table-viewport`.
+
 ## Preferences
 
 Stored under `nde:table:<tableId>:v1` as `{ visible, order, pinned }`.

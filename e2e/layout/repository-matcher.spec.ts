@@ -8,7 +8,7 @@
  *
  * Runs with the a11y suite against the static export (see e2e/README.md).
  */
-import { expect, type Page, test } from '@playwright/test';
+import { expect, type Locator, type Page, test } from '@playwright/test';
 
 import {
   METADATA_RESPONSE,
@@ -35,6 +35,19 @@ async function gotoPopulated(page: Page) {
 
 const root = (page: Page) => page.locator('.nde-data-table');
 const viewport = (page: Page) => root(page).locator('table').locator('..');
+
+/**
+ * Scroll the table down until `target` is mounted. The pilot table is
+ * virtualized, so rows outside its window aren't in the DOM; in a plain table
+ * this returns straight away.
+ */
+async function scrollUntilMounted(page: Page, target: Locator) {
+  for (let step = 0; step < 60 && (await target.count()) === 0; step++) {
+    await viewport(page).evaluate(el => el.scrollBy(0, el.clientHeight / 2));
+    await page.waitForTimeout(50);
+  }
+  await expect(target).toBeAttached();
+}
 
 /** Scroll the page so the table's top edge is at the top of the window. */
 const scrollTableToTop = (page: Page) =>
@@ -275,6 +288,7 @@ test.describe('DataTable layout: desktop', () => {
         hasText: 'Escherichia coli (strain B / BL21-DE3)',
       })
       .first();
+    await scrollUntilMounted(page, tag);
     const fit = await tag.evaluate(el => ({
       clipped:
         el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth,
@@ -592,6 +606,7 @@ test.describe('DataTable headers', () => {
     await gotoPopulated(page);
     const full = 'Escherichia coli (strain B / BL21-DE3)';
     const tag = root(page).locator('.nde-tag', { hasText: full }).first();
+    await scrollUntilMounted(page, tag);
     await tag.scrollIntoViewIfNeeded();
     // Hovers during a scroll are ignored; let it settle.
     await page.waitForTimeout(300);
@@ -648,5 +663,114 @@ test.describe('DataTable header descriptions on touch', () => {
     // A tap elsewhere closes it.
     await page.getByRole('heading', { level: 1 }).tap();
     await expect(tooltip).toBeHidden();
+  });
+});
+
+test.describe('DataTable virtualization (the pilot table)', () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  /** Body rows that hold data (not the spacers). */
+  const dataRows = (page: Page) =>
+    root(page).locator('tbody tr[aria-rowindex]');
+
+  test('mounts a window of rows and announces the total', async ({ page }) => {
+    await gotoPopulated(page);
+    const mounted = await dataRows(page).count();
+    expect(mounted).toBeGreaterThan(3);
+    expect(mounted).toBeLessThan(ROW_COUNT);
+    await expect(root(page).locator('table')).toHaveAttribute(
+      'aria-rowcount',
+      String(ROW_COUNT + 1),
+    );
+    // Scrolled to the end, the last row is mounted.
+    await viewport(page).evaluate(el => (el.scrollTop = el.scrollHeight));
+    await expect(dataRows(page).last()).toHaveAttribute(
+      'aria-rowindex',
+      String(ROW_COUNT + 1),
+    );
+  });
+
+  test('scrolling never shows a blank viewport, and the header stays stuck', async ({
+    page,
+  }) => {
+    await gotoPopulated(page);
+    await scrollTableToTop(page);
+    const result = await viewport(page).evaluate(async view => {
+      const frame = () => new Promise(r => requestAnimationFrame(() => r(0)));
+      const box = view.getBoundingClientRect();
+      // The middle of the part of the viewport inside the window.
+      const y = (box.top + Math.min(box.bottom, window.innerHeight)) / 2;
+      const th = view.querySelector('thead th')!;
+      let blank = 0;
+      let headerOffset = 0;
+      let steps = 0;
+      while (view.scrollTop + view.clientHeight < view.scrollHeight - 1) {
+        view.scrollTop += view.clientHeight / 2;
+        steps++;
+        await frame();
+        await frame();
+        const row = document.elementFromPoint(box.left + 100, y)?.closest('tr');
+        if (!row?.hasAttribute('aria-rowindex')) blank++;
+        headerOffset = Math.max(
+          headerOffset,
+          Math.abs(th.getBoundingClientRect().top - box.top),
+        );
+      }
+      return { blank, headerOffset, steps };
+    });
+    expect(result.steps).toBeGreaterThan(5);
+    expect(result.blank).toBe(0);
+    expect(result.headerOffset).toBeLessThanOrEqual(1);
+  });
+
+  test('zebra stripes follow each row wherever the window starts', async ({
+    page,
+  }) => {
+    await gotoPopulated(page);
+    await page.mouse.move(0, 0); // no row hover
+    for (const fraction of [0.3, 0.32, 0.5, 0.55]) {
+      await viewport(page).evaluate(
+        (el, f) => (el.scrollTop = (el.scrollHeight - el.clientHeight) * f),
+        fraction,
+      );
+      await page.waitForTimeout(100);
+      // In the full table, rows with an odd aria-rowindex are striped.
+      const colours = await dataRows(page).evaluateAll(rows =>
+        rows.map(row => ({
+          odd: Number(row.getAttribute('aria-rowindex')) % 2 === 1,
+          bg: getComputedStyle(row.querySelector('td')!).backgroundColor,
+        })),
+      );
+      const odd = new Set(colours.filter(c => c.odd).map(c => c.bg));
+      const even = new Set(colours.filter(c => !c.odd).map(c => c.bg));
+      expect(odd.size).toBe(1);
+      expect(even.size).toBe(1);
+      expect([...odd][0]).not.toBe([...even][0]);
+    }
+  });
+
+  test('columns barely move as rows mount and unmount', async ({ page }) => {
+    await gotoPopulated(page);
+    const shift = await viewport(page).evaluate(async view => {
+      const frame = () => new Promise(r => requestAnimationFrame(() => r(0)));
+      const cells = () => [...view.querySelectorAll('thead th')];
+      const first = cells().map(th => (th as HTMLElement).offsetWidth);
+      let max = 0;
+      while (view.scrollTop + view.clientHeight < view.scrollHeight - 1) {
+        view.scrollTop += view.clientHeight / 2;
+        await frame();
+        await frame();
+        cells().forEach((th, i) => {
+          max = Math.max(
+            max,
+            Math.abs((th as HTMLElement).offsetWidth - first[i]),
+          );
+        });
+      }
+      return max;
+    });
+    // Native widths come from the mounted rows, bounded by each column's
+    // min/max. 0 px on this fixture; up to 21 px (License) on production data.
+    expect(shift).toBeLessThanOrEqual(8);
   });
 });
