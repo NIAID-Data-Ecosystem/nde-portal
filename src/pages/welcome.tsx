@@ -33,7 +33,7 @@ import {
   TOGGLES_COPY,
   ToggleKey,
 } from 'src/components/settings';
-import { getProviderLabel } from 'src/utils/auth/helpers';
+import { getSignInMethod } from 'src/utils/auth/helpers';
 import { ENABLE_AUTH, SHOW_WELCOME_PAGE } from 'src/utils/feature-flags';
 
 const IS_WELCOME_ENABLED = SHOW_WELCOME_PAGE && ENABLE_AUTH;
@@ -147,7 +147,7 @@ const Section = ({ title, subtitle, gap = 2, children }: SectionProps) => (
 const WelcomePage = () => {
   const router = useRouter();
   const { user } = useAuth();
-  const { account, error, savePreferences } = useUserData();
+  const { account, error, hasLoadedProfile, savePreferences } = useUserData();
 
   // Toggles only change local state; nothing is persisted until Save Settings.
   const [selected, setSelected] = useState(DEFAULT_WELCOME_PREFERENCES);
@@ -159,7 +159,15 @@ const WelcomePage = () => {
   }, [router]);
 
   const providerId = user?.oauth_provider || account?.oauth_provider || '';
-  const providerLabel = getProviderLabel(providerId.toLowerCase());
+  const { id: methodId, label: methodLabel } = getSignInMethod(
+    providerId,
+    account?.idp,
+  );
+  // Okta's sign-in method (idp) comes from the profile, so wait for it rather
+  // than flashing "Okta" first.
+  const showProvider =
+    Boolean(providerId) &&
+    (providerId.toLowerCase() !== 'okta' || hasLoadedProfile);
   const emailToggle = getEmailToggleState(account);
 
   const handleToggle = useCallback((key: ToggleKey, checked: boolean) => {
@@ -209,12 +217,11 @@ const WelcomePage = () => {
           <Heading as='h1' size='xl' fontWeight='bold'>
             {WELCOME_COPY.page.title}
           </Heading>
-          {providerId && (
+          {showProvider && (
             <Text color='gray.800' fontSize='md'>
               {WELCOME_COPY.provider.loggedInWith}{' '}
-              <ProviderIcon providerId={providerId} verticalAlign='-0.25em' />{' '}
-              {providerLabel}.{' '}
-              {WELCOME_COPY.provider.useEveryTime(providerLabel)}
+              <ProviderIcon providerId={methodId} verticalAlign='-0.25em' />{' '}
+              {methodLabel}. {WELCOME_COPY.provider.useEveryTime(methodLabel)}
             </Text>
           )}
         </VStack>
