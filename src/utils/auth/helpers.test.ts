@@ -3,6 +3,7 @@ import {
   getAuthConfig,
   getLoginErrorMessage,
   getProviderLabel,
+  getSignInMethod,
   LOGIN_ERROR_MESSAGES,
 } from './helpers';
 
@@ -133,5 +134,43 @@ describe('auth config', () => {
     process.env.NEXT_PUBLIC_AUTH_PROVIDERS = ',  ,';
 
     expect(getAuthConfig().loginProviders).toEqual([]);
+  });
+});
+
+describe('getSignInMethod', () => {
+  it.each([
+    ['google', 'Google'],
+    ['microsoft', 'Microsoft'],
+    ['orcid', 'ORCID'],
+  ])('shows the Okta sign-in method for idp %s', (idp, label) => {
+    expect(getSignInMethod('okta', idp)).toEqual({ id: idp, label });
+  });
+
+  it('labels the nih idp as NIH Login', () => {
+    expect(getSignInMethod('okta', 'nih')).toEqual({
+      id: 'nih',
+      label: 'NIH Login',
+    });
+  });
+
+  it.each([undefined, '', 'unknown'])('falls back to Okta for idp %p', idp => {
+    expect(getSignInMethod('okta', idp)).toEqual({
+      id: 'okta',
+      label: 'Okta',
+    });
+  });
+
+  it('ignores the idp for non-Okta providers', () => {
+    expect(getSignInMethod('github', 'google')).toEqual({
+      id: 'github',
+      label: 'GitHub',
+    });
+  });
+
+  it('is case-insensitive', () => {
+    expect(getSignInMethod('Okta', 'ORCID')).toEqual({
+      id: 'orcid',
+      label: 'ORCID',
+    });
   });
 });
