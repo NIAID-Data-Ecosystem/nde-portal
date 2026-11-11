@@ -4,7 +4,7 @@
  * authentication.
  */
 
-import { ReactNode, useCallback, useEffect, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import {
   Box,
@@ -147,11 +147,34 @@ const Section = ({ title, subtitle, gap = 2, children }: SectionProps) => (
 const WelcomePage = () => {
   const router = useRouter();
   const { user } = useAuth();
-  const { account, error, hasLoadedProfile, savePreferences } = useUserData();
+  const {
+    account,
+    error,
+    hasLoadedProfile,
+    onboardingComplete,
+    preferences,
+    savePreferences,
+  } = useUserData();
 
   // Toggles only change local state; nothing is persisted until Save Settings.
   const [selected, setSelected] = useState(DEFAULT_WELCOME_PREFERENCES);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Once the profile loads, show the user's saved choices if they've already
+  // been through onboarding. First-time users keep the opt-in defaults. Seed
+  // only once so later preference updates never overwrite in-progress edits.
+  const hasSeededRef = useRef(false);
+  useEffect(() => {
+    if (!hasLoadedProfile || hasSeededRef.current) return;
+    hasSeededRef.current = true;
+    if (onboardingComplete === true) {
+      setSelected({
+        contact_preference: preferences.contact_preference,
+        feedback_preference: preferences.feedback_preference,
+        beta: preferences.beta,
+      });
+    }
+  }, [hasLoadedProfile, onboardingComplete, preferences]);
 
   // If the page is disabled via feature flag, redirect to home page
   useEffect(() => {
@@ -263,6 +286,8 @@ const WelcomePage = () => {
         <Button
           colorScheme='primary'
           onClick={handleSave}
+          // Don't let a save send defaults before the real values have loaded.
+          isDisabled={!hasLoadedProfile}
           isLoading={isSaving}
           loadingText='Saving'
         >
