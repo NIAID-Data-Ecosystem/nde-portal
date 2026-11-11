@@ -43,8 +43,8 @@ export const ONTOLOGY_BROWSER_OPTIONS = [
   // },
 ] as OntologyOption[];
 
-const OLS_API_URL = 'https://www.ebi.ac.uk/ols4/api';
-const BIOTHINGS_API_URL = 'https://t.biothings.io/v1';
+const OLS_API_URL = process.env.NEXT_PUBLIC_OLS_API_URL;
+const BIOTHINGS_API_URL = process.env.NEXT_PUBLIC_BIOTHINGS_API_URL;
 
 /********************************************************
  *
