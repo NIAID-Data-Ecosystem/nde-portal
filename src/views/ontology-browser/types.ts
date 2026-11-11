@@ -27,6 +27,13 @@ export interface BioThingsDetailedLineageAPIResponseItem {
   taxid: number;
 }
 
+// BioThings batch POST returns this in place of a record for ids it doesn't
+// know (e.g. taxa deleted or merged in NCBI but still in the portal index).
+export interface BioThingsNotFoundItem {
+  query: string;
+  notfound: true;
+}
+
 export interface LocalStorageConfig {
   isCondensed: boolean;
   includeEmptyCounts: boolean;

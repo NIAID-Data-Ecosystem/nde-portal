@@ -4,6 +4,7 @@ import { fetchSearchResults } from 'src/utils/api';
 import {
   BioThingsDetailedLineageAPIResponseItem,
   BioThingsLineageAPIResponseItem,
+  BioThingsNotFoundItem,
   OLSAPIResponseItem,
   OntologyChildrenRequestParams,
   OntologyLineageItem,
@@ -386,7 +387,9 @@ export const fetchChildrenFromBioThingsAPI = async (
     // Fetch the detailed children information for each taxonId
     const {
       data: detailedLineageData,
-    }: { data: BioThingsDetailedLineageAPIResponseItem[] } = await axios.post(
+    }: {
+      data: (BioThingsDetailedLineageAPIResponseItem | BioThingsNotFoundItem)[];
+    } = await axios.post(
       `${BIOTHINGS_API_URL}/taxon`,
       {
         ids: selectedChildrenIds.join(','), // Stringify the lineage array
@@ -409,6 +412,12 @@ export const fetchChildrenFromBioThingsAPI = async (
     );
 
     const processedChildrenData = detailedLineageData
+      // Portal counts can reference taxa BioThings no longer has; skip them
+      // rather than crash on the missing `taxid`.
+      .filter(
+        (item): item is BioThingsDetailedLineageAPIResponseItem =>
+          !('notfound' in item) && item.taxid != null,
+      )
       .map((item: BioThingsDetailedLineageAPIResponseItem, idx: number) => {
         // Must set the parent to empty string if it is the root node.
         const isRootNode = item.parent_taxid === item.taxid;
