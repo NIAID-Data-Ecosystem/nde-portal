@@ -8,6 +8,7 @@ import {
   FormEvent,
   ReactNode,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -21,7 +22,9 @@ import {
 } from 'src/hooks/useUserData/types';
 import { SettingsSection } from './settings-section';
 import {
+  EMAIL_TOGGLE_KEYS,
   getEmailToggleState,
+  SettingAlert,
   SettingToggle,
   TOGGLE_TO_PREF,
   TOGGLES_COPY,
@@ -111,13 +114,20 @@ export function PreferencesForm({
   }, [hasLoadedProfile, preferences, initialValues, prefKeys]);
 
   const emailToggle = getEmailToggleState(account);
+  const emailAlertId = useId();
 
-  // Email updates can't be on without an email on the record, whatever the
-  // draft or saved value says.
-  const withEmailRule = (values: PreferenceValues): PreferenceValues =>
-    emailToggle.isDisabled && 'contact_preference' in values
-      ? { ...values, contact_preference: false }
-      : values;
+  // The email toggles can't be on without an email on the record, whatever
+  // the draft or saved value says. Until the profile loads the email is
+  // unknown, not missing, so show the starting values as they are.
+  const withEmailRule = (values: PreferenceValues): PreferenceValues => {
+    if (!hasLoadedProfile || !emailToggle.isDisabled) return values;
+    const next = { ...values };
+    EMAIL_TOGGLE_KEYS.forEach(key => {
+      const pref = TOGGLE_TO_PREF[key];
+      if (pref in next) next[pref] = false;
+    });
+    return next;
+  };
 
   const values = withEmailRule(draft);
   const savedValues = withEmailRule(pickValues(preferences, prefKeys));
@@ -127,16 +137,13 @@ export function PreferencesForm({
     onUnsavedChangesChange?.(hasChanges);
   }, [hasChanges, onUnsavedChangesChange]);
 
-  // Per-toggle extras, keyed by toggle. Keeps the render loop generic rather
-  // than special-casing individual toggles inline.
-  const toggleExtras: Partial<
-    Record<ToggleKey, { alert?: ReactNode; isDisabled?: boolean }>
-  > = {
-    emailUpdates: {
-      alert: emailToggle.alert,
-      isDisabled: emailToggle.isDisabled,
-    },
-  };
+  const isEmailToggle = (key: ToggleKey) => EMAIL_TOGGLE_KEYS.includes(key);
+  // Shown once, above the first section with email toggles.
+  const emailAlertSection = sections.findIndex(section =>
+    section.toggleKeys.some(isEmailToggle),
+  );
+
+  const showSaved = status === 'saved' && !hasChanges;
 
   const handleToggle = (key: ToggleKey, checked: boolean) => {
     setDraft(prev => ({ ...prev, [TOGGLE_TO_PREF[key]]: checked }));
@@ -158,12 +165,15 @@ export function PreferencesForm({
 
   return (
     <chakra.form onSubmit={handleSubmit} w='full'>
-      {sections.map(section => (
+      {sections.map((section, sectionIndex) => (
         <SettingsSection
           key={section.toggleKeys.join()}
           title={section.title}
           subtitle={section.subtitle}
         >
+          {emailToggle.alert && sectionIndex === emailAlertSection && (
+            <SettingAlert id={emailAlertId}>{emailToggle.alert}</SettingAlert>
+          )}
           {section.toggleKeys.map((key, index) => (
             <SettingToggle
               key={key}
@@ -172,7 +182,20 @@ export function PreferencesForm({
               isChecked={Boolean(values[TOGGLE_TO_PREF[key]])}
               onChange={checked => handleToggle(key, checked)}
               showBorder={index < section.toggleKeys.length - 1}
-              {...toggleExtras[key]}
+              // Nothing to edit until the profile loads: its values would
+              // replace any change made before then.
+              isDisabled={
+                !hasLoadedProfile ||
+                (isEmailToggle(key) && emailToggle.isDisabled)
+              }
+              // The alert sits above the email toggles, so point each one at
+              // it to keep the reason they're disabled with the switch for
+              // screen readers.
+              describedBy={
+                isEmailToggle(key) && emailToggle.alert
+                  ? emailAlertId
+                  : undefined
+              }
             />
           ))}
         </SettingsSection>
@@ -198,11 +221,11 @@ export function PreferencesForm({
         {/* Always mounted so screen readers announce the message when it
             appears. */}
         <HStack>
-          {status == 'saved' && <Icon as={FaCircleCheck} color='primary.400' />}
+          {showSaved && (
+            <Icon as={FaCircleCheck} color='primary.400' aria-hidden='true' />
+          )}
           <Text role='status' color='primary.700' fontSize='sm'>
-            {status === 'saved' && !hasChanges
-              ? PREFERENCES_FORM_COPY.saved
-              : ''}
+            {showSaved ? PREFERENCES_FORM_COPY.saved : ''}
           </Text>
         </HStack>
       </HStack>

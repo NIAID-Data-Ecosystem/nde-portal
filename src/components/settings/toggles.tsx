@@ -9,43 +9,18 @@ import { UserAccount, UserPreferencesKeys } from 'src/hooks/useUserData/types';
 
 export const TOGGLES_COPY = {
   emailUpdates: {
-    label: 'Email Updates',
+    label: 'Email updates',
     description:
       'Get monthly emails about new features and updates to the Discovery Portal.',
-
-    alerts: {
-      missingEmail: (
-        <>
-          Email updates are unavailable because your account does not have an
-          email address on record. Please add an email to your account to enable
-          this setting.
-        </>
-      ),
-      missingOrcidEmail: (
-        <>
-          We couldn’t access a public email address from your ORCID record. To
-          enable email updates, your ORCID record must include a verified email
-          address with visibility set to{' '}
-          <Text as='span' fontWeight='bold' color='inherit'>
-            Everyone
-          </Text>
-          . You can update this in{' '}
-          <Link href={'https://orcid.org/account'} textDecoration='underline'>
-            the email notification settings of your ORCID account
-          </Link>
-          .
-        </>
-      ),
-    },
   },
   feedbackTesting: {
-    label: 'Feedback and Testing',
+    label: 'Feedback and testing',
     description:
-      'Help improve the NIAID Data Ecosystem by getting occasional invitations to participate in feedback and usability testing sessions.',
+      'Help improve the NIAID Data Ecosystem by getting occasional emails to participate in feedback and usability testing sessions.',
   },
   betaFeatures: {
     label: 'Beta features',
-    description: 'Receive invitations to try experimental features.',
+    description: 'Receive emails to try experimental features.',
   },
   aiSearch: {
     label: 'AI-assisted search',
@@ -65,6 +40,32 @@ export const TOGGLES_COPY = {
   },
 };
 
+// Shown above the email toggles when the account has no email on record.
+export const EMAIL_REQUIRED_COPY = {
+  missingEmail: (
+    <>
+      These communication settings are unavailable because your account does not
+      have an email address on record. Please add an email to your account to
+      enable them.
+    </>
+  ),
+  missingOrcidEmail: (
+    <>
+      We couldn’t access a public email address from your ORCID record. To
+      enable these communication settings, your ORCID record must include a
+      verified email address with visibility set to{' '}
+      <Text as='span' fontWeight='bold' color='inherit'>
+        Everyone
+      </Text>
+      . You can update this in{' '}
+      <Link href={'https://orcid.org/account'} textDecoration='underline'>
+        the email notification settings of your ORCID account
+      </Link>
+      .
+    </>
+  ),
+};
+
 export type ToggleKey =
   | 'emailUpdates'
   | 'feedbackTesting'
@@ -79,9 +80,20 @@ export const TOGGLE_TO_PREF: Record<ToggleKey, UserPreferencesKeys> = {
   aiSearch: 'ai_toggle_preference',
 };
 
-// Email updates require an email on the record. When one is missing the toggle
-// is disabled and an explanatory alert is shown — ORCID accounts get a variant
-// pointing them to their ORCID email visibility settings.
+// Toggles that send the user emails, so they need an email on the record.
+export const EMAIL_TOGGLE_KEYS: ToggleKey[] = [
+  'emailUpdates',
+  'feedbackTesting',
+  'betaFeatures',
+];
+
+// The email toggles require an email on the record. When one is missing they
+// are disabled and an explanatory alert is shown — ORCID accounts get a
+// variant pointing them to their ORCID email visibility settings.
+//
+// `account` is null until the profile loads, and stays null if it fails to
+// load. The email is unknown rather than missing then, so the toggles stay
+// disabled but there's no alert claiming the account has no email.
 export const getEmailToggleState = (account: UserAccount | null) => {
   const hasEmail = Boolean(account?.email);
   // NIH Login users who signed in through ORCID have idp 'orcid'.
@@ -89,14 +101,42 @@ export const getEmailToggleState = (account: UserAccount | null) => {
     account?.oauth_provider?.toUpperCase() === 'ORCID' ||
     account?.idp === 'orcid';
 
-  const alert: ReactNode = hasEmail
-    ? undefined
-    : isOrcid
-    ? TOGGLES_COPY.emailUpdates.alerts.missingOrcidEmail
-    : TOGGLES_COPY.emailUpdates.alerts.missingEmail;
+  const alert: ReactNode =
+    !account || hasEmail
+      ? undefined
+      : isOrcid
+      ? EMAIL_REQUIRED_COPY.missingOrcidEmail
+      : EMAIL_REQUIRED_COPY.missingEmail;
 
   return { hasEmail, alert, isDisabled: !hasEmail };
 };
+
+/** Explains why some settings are unavailable. */
+export function SettingAlert({
+  id,
+  children,
+}: {
+  id?: string;
+  children: ReactNode;
+}) {
+  return (
+    <Box
+      id={id}
+      bg='orange.50'
+      border='1px'
+      borderColor='orange.200'
+      borderRadius='md'
+      px={3}
+      py={2}
+      mt={2}
+      w='full'
+    >
+      <Text fontSize='sm' color='orange.800' lineHeight='short'>
+        {children}
+      </Text>
+    </Box>
+  );
+}
 
 export function SettingToggle({
   label,
@@ -104,16 +144,17 @@ export function SettingToggle({
   isChecked,
   onChange,
   showBorder,
-  alert,
   isDisabled,
+  describedBy,
 }: {
   label: string;
   description: ReactNode;
   isChecked: boolean;
   onChange: (checked: boolean) => void;
   showBorder?: boolean;
-  alert?: ReactNode;
   isDisabled?: boolean;
+  /** Id of an element explaining the toggle, e.g. why it's disabled. */
+  describedBy?: string;
 }) {
   return (
     <HStack
@@ -129,27 +170,11 @@ export function SettingToggle({
         <Text fontSize='sm' color='gray.800'>
           {description}
         </Text>
-
-        {/* If alert is provided, render it */}
-
-        {alert && (
-          <Box
-            bg='orange.50'
-            border='1px'
-            borderColor='orange.200'
-            borderRadius='md'
-            px={3}
-            py={2}
-          >
-            <Text fontSize='sm' color='orange.800' lineHeight='short'>
-              {alert}
-            </Text>
-          </Box>
-        )}
       </VStack>
       <Switch
         colorScheme='primary'
         aria-label={label}
+        aria-describedby={describedBy}
         isChecked={isChecked}
         isDisabled={isDisabled}
         onChange={e => onChange(e.target.checked)}

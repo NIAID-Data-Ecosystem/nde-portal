@@ -102,7 +102,8 @@ const TOGGLE_SECTIONS: PreferencesFormSection[] = [
   },
 ];
 
-// Email Updates and Feedback and Testing are opted in by default.
+// Email updates and Feedback and testing are opted in by default (unless the
+// account has no email, which turns off all the email toggles).
 const DEFAULT_WELCOME_PREFERENCES: Partial<UserPreferences> = {
   contact_preference: true,
   feedback_preference: true,

@@ -89,7 +89,7 @@ const renderPage = async () => {
     </UserDataProvider>,
   );
   await waitFor(() =>
-    expect(toggle('Feedback and Testing').checked).toBe(true),
+    expect(toggle('Feedback and testing').checked).toBe(true),
   );
 };
 
@@ -126,7 +126,7 @@ describe('SettingsPage', () => {
       screen.getByRole('heading', { name: 'Search preferences' }),
     ).toBeInTheDocument();
 
-    fireEvent.click(toggle('Email Updates'));
+    fireEvent.click(toggle('Email updates'));
     fireEvent.click(toggle('AI-assisted search'));
     await flushRequests();
     expect(server.putBodies).toHaveLength(0);

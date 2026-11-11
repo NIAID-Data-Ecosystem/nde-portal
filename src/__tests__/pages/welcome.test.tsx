@@ -56,8 +56,8 @@ const toggle = (label: string) =>
   screen.getByRole('checkbox', { name: label }) as HTMLInputElement;
 
 const toggleStates = () => ({
-  email: toggle('Email Updates').checked,
-  feedback: toggle('Feedback and Testing').checked,
+  email: toggle('Email updates').checked,
+  feedback: toggle('Feedback and testing').checked,
   beta: toggle('Beta features').checked,
 });
 
@@ -76,6 +76,26 @@ describe('WelcomePage', () => {
       feedback: true,
       beta: false,
     });
+  });
+
+  it('shows the opt-in defaults, disabled, while the profile loads', () => {
+    mockUseUserData.mockReturnValue(
+      userData({
+        account: null,
+        hasLoadedProfile: false,
+        onboardingComplete: null,
+      }),
+    );
+    render(<WelcomePage />);
+
+    // Not forced off by the (still unknown) email, and no email alert yet.
+    expect(toggleStates()).toEqual({
+      email: true,
+      feedback: true,
+      beta: false,
+    });
+    expect(toggle('Email updates')).toBeDisabled();
+    expect(screen.queryByText(/email address/i)).not.toBeInTheDocument();
   });
 
   it('shows saved preferences for users who already completed onboarding', () => {
@@ -111,8 +131,8 @@ describe('WelcomePage', () => {
     mockUseUserData.mockReturnValue(userData({ onboardingComplete: true }));
     const { rerender } = render(<WelcomePage />);
 
-    fireEvent.click(toggle('Feedback and Testing'));
-    expect(toggle('Feedback and Testing').checked).toBe(true);
+    fireEvent.click(toggle('Feedback and testing'));
+    expect(toggle('Feedback and testing').checked).toBe(true);
 
     mockUseUserData.mockReturnValue(
       userData({
@@ -148,6 +168,32 @@ describe('WelcomePage', () => {
     );
     expect(mockReplace).toHaveBeenCalledWith('/search?q=malaria');
     expect(sessionStorage.getItem('auth_return_to')).toBeNull();
+  });
+
+  it('turns off the opt-in defaults when the account has no email', async () => {
+    const savePreferences = jest.fn().mockResolvedValue({ ok: true });
+    mockUseUserData.mockReturnValue(
+      userData({
+        account: { email: '', oauth_provider: 'github' },
+        savePreferences,
+      }),
+    );
+    render(<WelcomePage />);
+
+    expect(toggleStates()).toEqual({
+      email: false,
+      feedback: false,
+      beta: false,
+    });
+    expect(toggle('Feedback and testing')).toBeDisabled();
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Save Settings' }));
+    });
+    expect(savePreferences).toHaveBeenCalledWith(
+      { contact_preference: false, feedback_preference: false, beta: false },
+      { completeOnboarding: true },
+    );
   });
 
   it('stays on the page when the save fails', async () => {
