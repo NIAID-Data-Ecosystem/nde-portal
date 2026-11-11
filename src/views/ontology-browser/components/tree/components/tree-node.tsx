@@ -406,12 +406,11 @@ export const TreeNode = (props: {
                 node={node}
                 numChildrenDisplayed={sortedChildrenList.length}
                 totalElements={pagination?.totalElements || 0}
-                isDisabled={isLoading || sortedChildrenList.length < pageSize}
-                onShowMore={() => {
-                  // page + 1?
-                  const page = Math.floor(sortedChildrenList.length / pageSize);
-                  setPageFrom(page);
-                }}
+                isDisabled={isLoading}
+                // Advance by page index, not by displayed count: children
+                // hidden by `hideEmptyCounts` make the visible list shorter
+                // than the pages fetched.
+                onShowMore={() => setPageFrom(page => page + 1)}
               />
             </ListItem>
           )}

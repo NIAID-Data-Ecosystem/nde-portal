@@ -37,9 +37,9 @@ describe('fetchChildrenFromBioThingsAPI', () => {
     jest.restoreAllMocks();
   });
 
-  it('skips ids BioThings reports as notfound instead of throwing', async () => {
-    // Portal counts reference 3403061, a taxon that is no longer in NCBI /
-    // BioThings (real case: expanding "Viruses").
+  // Portal counts reference 3403061, a taxon that is no longer in NCBI /
+  // BioThings (real case: expanding "Viruses").
+  beforeEach(() => {
     mockedFetchSearchResults.mockResolvedValue({
       facets: {
         lineage: {
@@ -53,8 +53,25 @@ describe('fetchChildrenFromBioThingsAPI', () => {
       },
     });
     mockedAxios.get.mockResolvedValue({
-      data: { children: [2559587, 10472] },
+      data: { children: [10472, 2559587] },
     });
+  });
+
+  it('only paginates over ids BioThings lists as children', async () => {
+    mockedAxios.post.mockResolvedValue({
+      data: [record(2559587), record(10472)],
+    });
+
+    const { pagination } = await fetchChildrenFromBioThingsAPI(params);
+
+    // Portal-counted children first, stale id never requested or counted.
+    expect(mockedAxios.post.mock.calls[0][1]).toMatchObject({
+      ids: '2559587,10472',
+    });
+    expect(pagination).toMatchObject({ hasMore: false, totalElements: 2 });
+  });
+
+  it('skips records BioThings reports as notfound instead of throwing', async () => {
     mockedAxios.post.mockResolvedValue({
       data: [
         { query: '2559587', ...record(2559587, [1]) },
