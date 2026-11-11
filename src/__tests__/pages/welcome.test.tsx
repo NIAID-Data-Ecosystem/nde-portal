@@ -1,13 +1,14 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import WelcomePage from 'src/pages/welcome';
 import { UserPreferences } from 'src/hooks/useUserData/types';
 
 const mockUseUserData = jest.fn();
+const mockReplace = jest.fn();
 
 jest.mock('next/router', () => ({
   __esModule: true,
-  useRouter: () => ({ replace: jest.fn(), pathname: '/welcome' }),
+  useRouter: () => ({ replace: mockReplace, pathname: '/welcome' }),
 }));
 
 jest.mock('src/hooks/useAuth', () => ({
@@ -61,7 +62,11 @@ const toggleStates = () => ({
 });
 
 describe('WelcomePage', () => {
-  beforeEach(() => mockUseUserData.mockReset());
+  beforeEach(() => {
+    mockUseUserData.mockReset();
+    mockReplace.mockReset();
+    sessionStorage.clear();
+  });
 
   it('shows the opt-in defaults for users who have not onboarded', () => {
     mockUseUserData.mockReturnValue(userData());
@@ -121,5 +126,40 @@ describe('WelcomePage', () => {
       feedback: true,
       beta: true,
     });
+  });
+
+  it('saves the selected toggles, completes onboarding and returns the user', async () => {
+    const savePreferences = jest.fn().mockResolvedValue({ ok: true });
+    mockUseUserData.mockReturnValue(userData({ savePreferences }));
+    sessionStorage.setItem('auth_return_to', '/search?q=malaria');
+    render(<WelcomePage />);
+
+    fireEvent.click(toggle('Beta features'));
+    expect(savePreferences).not.toHaveBeenCalled();
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Save Settings' }));
+    });
+
+    expect(savePreferences).toHaveBeenCalledTimes(1);
+    expect(savePreferences).toHaveBeenCalledWith(
+      { contact_preference: true, feedback_preference: true, beta: true },
+      { completeOnboarding: true },
+    );
+    expect(mockReplace).toHaveBeenCalledWith('/search?q=malaria');
+    expect(sessionStorage.getItem('auth_return_to')).toBeNull();
+  });
+
+  it('stays on the page when the save fails', async () => {
+    const savePreferences = jest.fn().mockResolvedValue({ ok: false });
+    mockUseUserData.mockReturnValue(userData({ savePreferences }));
+    render(<WelcomePage />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Save Settings' }));
+    });
+
+    expect(savePreferences).toHaveBeenCalledTimes(1);
+    expect(mockReplace).not.toHaveBeenCalled();
   });
 });

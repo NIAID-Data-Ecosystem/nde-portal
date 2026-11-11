@@ -1,5 +1,6 @@
 /**
- * Shared user preference toggles used by the Settings and Welcome pages.
+ * A single user preference toggle, its copy, and the mapping from toggle keys
+ * to API preference fields.
  */
 
 import { ReactNode } from 'react';

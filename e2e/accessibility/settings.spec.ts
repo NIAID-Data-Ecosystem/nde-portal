@@ -19,18 +19,19 @@
  *     needs `NODE_ENV=development` so it is OFF in the production export and the
  *     real fetches run.
  *
- * State coverage note — this route is intentionally NOT the full four-state
- * matrix:
+ * State coverage note: this route deliberately skips the EMPTY state of the
+ * usual four-state matrix:
  *   - LOADING: `/user_info` kept pending → `withAuth` shows the "Loading..."
  *     spinner. Scanned below (directly, since no `main`/`h1` chrome renders yet).
  *   - POPULATED (authenticated): `/user_info` → a user and `/user/data` →
- *     preferences → the settings sections and toggles render. Primary state.
+ *     preferences → the settings sections, toggles and Save Settings button
+ *     render. Primary state.
  *   - EMPTY: not applicable. `useUserData` starts from `DEFAULT_PREFERENCES`, so
  *     the toggles always have values; there is no data-driven empty variant.
- *   - ERROR: not reachable as distinct UI. An unauthenticated/failed
- *     `/user_info` redirects to `/login` (covered by login.spec.ts), and a
- *     failed `/user/data` leaves the page on its default preferences with no
- *     error surface — there is no error UI on this page to scan.
+ *   - ERROR: a failed `/user/data` (any non-401 status) leaves the toggles on
+ *     their defaults and shows the shared preferences form's inline alert above
+ *     Save Settings. Scanned below. (An unauthenticated/failed `/user_info`
+ *     redirects to `/login` instead, covered by login.spec.ts.)
  */
 import { test, expect, type Page, type TestInfo } from '@playwright/test';
 import { runAxeScans } from '../utils/axe';
@@ -140,5 +141,41 @@ test.describe('a11y: Settings — authenticated (preferences)', () => {
     await expect(page.getByRole('button', { name: /log out/i })).toBeVisible();
 
     await runAxeScans(page, testInfo, 'authenticated');
+  });
+});
+
+// --- Error (profile failed to load) ------------------------------------------
+
+test.describe('a11y: Settings — error (preferences failed to load)', () => {
+  test('passes axe with the load error shown', async ({ page }, testInfo) => {
+    await page.route(USER_INFO_GLOB, route =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(USER_FIXTURE),
+      }),
+    );
+    await page.route(USER_DATA_GLOB, route =>
+      route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: 'Internal Server Error' }),
+      }),
+    );
+
+    await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
+
+    await expect(page.getByRole('main')).toBeVisible();
+    await expect(
+      page.getByRole('heading', { level: 1, name: /^settings$/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('alert').filter({ hasText: /unable to load/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: /save settings/i }),
+    ).toBeVisible();
+
+    await runAxeScans(page, testInfo, 'error');
   });
 });
