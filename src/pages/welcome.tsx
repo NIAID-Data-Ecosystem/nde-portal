@@ -4,11 +4,10 @@
  * authentication.
  */
 
-import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import {
   Box,
-  Button,
   Heading,
   Icon,
   IconProps,
@@ -27,11 +26,9 @@ import { withAuth } from 'src/components/auth/withAuth';
 import { ProviderIcon } from 'src/components/auth/provider-icon';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import {
-  getEmailToggleState,
-  SettingToggle,
-  TOGGLE_TO_PREF,
-  TOGGLES_COPY,
-  ToggleKey,
+  PreferencesForm,
+  PreferencesFormSection,
+  SettingsSection,
 } from 'src/components/settings';
 import { getSignInMethod } from 'src/utils/auth/helpers';
 import { ENABLE_AUTH, SHOW_WELCOME_PAGE } from 'src/utils/feature-flags';
@@ -97,13 +94,16 @@ const WELCOME_COPY = {
   saveButton: 'Save Settings',
 };
 
-const TOGGLE_KEYS: ToggleKey[] = [
-  'emailUpdates',
-  'feedbackTesting',
-  'betaFeatures',
+const TOGGLE_SECTIONS: PreferencesFormSection[] = [
+  {
+    title: WELCOME_COPY.sections.updates.title,
+    subtitle: WELCOME_COPY.sections.updates.subtitle,
+    toggleKeys: ['emailUpdates', 'feedbackTesting', 'betaFeatures'],
+  },
 ];
 
-// Email Updates and Feedback and Testing are opted in by default.
+// Email updates and Feedback and testing are opted in by default (unless the
+// account has no email, which turns off all the email toggles).
 const DEFAULT_WELCOME_PREFERENCES: Partial<UserPreferences> = {
   contact_preference: true,
   feedback_preference: true,
@@ -117,64 +117,10 @@ const BulletItem = ({ children }: { children: ReactNode }) => (
   </ListItem>
 );
 
-interface SectionProps {
-  title: ReactNode;
-  subtitle?: ReactNode;
-  gap?: number;
-  children: ReactNode;
-}
-
-/** Heading + optional subtitle + content, with consistent spacing. */
-const Section = ({ title, subtitle, gap = 2, children }: SectionProps) => (
-  <VStack alignItems='start' gap={gap} w='full' mb={8}>
-    <Heading
-      as='h2'
-      size='md'
-      fontWeight='semibold'
-      mb={subtitle ? 1 : undefined}
-    >
-      {title}
-    </Heading>
-    {subtitle && (
-      <Text color='gray.800' fontSize='sm' mb={2}>
-        {subtitle}
-      </Text>
-    )}
-    {children}
-  </VStack>
-);
-
 const WelcomePage = () => {
   const router = useRouter();
   const { user } = useAuth();
-  const {
-    account,
-    error,
-    hasLoadedProfile,
-    onboardingComplete,
-    preferences,
-    savePreferences,
-  } = useUserData();
-
-  // Toggles only change local state; nothing is persisted until Save Settings.
-  const [selected, setSelected] = useState(DEFAULT_WELCOME_PREFERENCES);
-  const [isSaving, setIsSaving] = useState(false);
-
-  // Once the profile loads, show the user's saved choices if they've already
-  // been through onboarding. First-time users keep the opt-in defaults. Seed
-  // only once so later preference updates never overwrite in-progress edits.
-  const hasSeededRef = useRef(false);
-  useEffect(() => {
-    if (!hasLoadedProfile || hasSeededRef.current) return;
-    hasSeededRef.current = true;
-    if (onboardingComplete === true) {
-      setSelected({
-        contact_preference: preferences.contact_preference,
-        feedback_preference: preferences.feedback_preference,
-        beta: preferences.beta,
-      });
-    }
-  }, [hasLoadedProfile, onboardingComplete, preferences]);
+  const { account, hasLoadedProfile, onboardingComplete } = useUserData();
 
   // If the page is disabled via feature flag, redirect to home page
   useEffect(() => {
@@ -191,33 +137,9 @@ const WelcomePage = () => {
   const showProvider =
     Boolean(providerId) &&
     (providerId.toLowerCase() !== 'okta' || hasLoadedProfile);
-  const emailToggle = getEmailToggleState(account);
 
-  const handleToggle = useCallback((key: ToggleKey, checked: boolean) => {
-    setSelected(prev => ({ ...prev, [TOGGLE_TO_PREF[key]]: checked }));
-  }, []);
-
-  const isChecked = (key: ToggleKey) =>
-    // Email updates can't be on without an email on the record.
-    key === 'emailUpdates' && emailToggle.isDisabled
-      ? false
-      : Boolean(selected[TOGGLE_TO_PREF[key]]);
-
-  const handleSave = async () => {
-    setIsSaving(true);
-    const result = await savePreferences(
-      {
-        ...selected,
-        contact_preference:
-          !emailToggle.isDisabled && Boolean(selected.contact_preference),
-      },
-      { completeOnboarding: true },
-    );
-    setIsSaving(false);
-
-    if (!result?.ok) return;
-
-    // Return the user to where they started the sign-up flow.
+  // Return the user to where they started the sign-up flow.
+  const handleSaved = () => {
     const returnTo = sessionStorage.getItem(AUTH_RETURN_TO_KEY);
     sessionStorage.removeItem(AUTH_RETURN_TO_KEY);
     router.replace(returnTo && returnTo !== WELCOME_PATH ? returnTo : '/');
@@ -225,7 +147,7 @@ const WelcomePage = () => {
 
   if (!IS_WELCOME_ENABLED) return null;
 
-  const { manage, updates } = WELCOME_COPY.sections;
+  const { manage } = WELCOME_COPY.sections;
 
   return (
     <PageContainer meta={getPageSeoConfig('/welcome')} px={0} py={0}>
@@ -250,49 +172,30 @@ const WelcomePage = () => {
         </VStack>
 
         {/* Saved items guidance */}
-        <Section title={manage.title}>
+        <SettingsSection title={manage.title}>
           <UnorderedList spacing={2} color='gray.800'>
             {manage.items.map((item, i) => (
               <BulletItem key={i}>{item}</BulletItem>
             ))}
           </UnorderedList>
-        </Section>
+        </SettingsSection>
 
         {/* Communication preferences */}
-        <Section title={updates.title} subtitle={updates.subtitle} gap={0}>
-          <VStack alignItems='start' gap={0} w='full'>
-            {TOGGLE_KEYS.map((key, index) => (
-              <SettingToggle
-                key={key}
-                {...TOGGLES_COPY[key]}
-                isChecked={isChecked(key)}
-                onChange={checked => handleToggle(key, checked)}
-                showBorder={index < TOGGLE_KEYS.length - 1}
-                {...(key === 'emailUpdates' && {
-                  alert: emailToggle.alert,
-                  isDisabled: emailToggle.isDisabled,
-                })}
-              />
-            ))}
-          </VStack>
-        </Section>
-
-        {error && (
-          <Text color='red.600' fontSize='sm' mb={4} role='alert'>
-            {error}
-          </Text>
-        )}
-
-        <Button
-          colorScheme='primary'
-          onClick={handleSave}
-          // Don't let a save send defaults before the real values have loaded.
-          isDisabled={!hasLoadedProfile}
-          isLoading={isSaving}
-          loadingText='Saving'
-        >
-          {WELCOME_COPY.saveButton}
-        </Button>
+        <PreferencesForm
+          sections={TOGGLE_SECTIONS}
+          // Users who've already onboarded see their saved choices; first-time
+          // users start from the opt-in defaults.
+          initialValues={
+            onboardingComplete === true
+              ? undefined
+              : DEFAULT_WELCOME_PREFERENCES
+          }
+          saveLabel={WELCOME_COPY.saveButton}
+          saveOptions={{ completeOnboarding: true }}
+          // Saving also completes onboarding, so it's meaningful unchanged.
+          allowUnchangedSave
+          onSaved={handleSaved}
+        />
       </Box>
     </PageContainer>
   );
