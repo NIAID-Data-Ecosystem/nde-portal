@@ -2,8 +2,10 @@
  * User Settings Page - Protected route requiring authentication
  */
 
+import { useState } from 'react';
 import { Box, Heading, Text, VStack, Button } from '@chakra-ui/react';
 import { useAuth } from 'src/hooks/useAuth';
+import { useUnsavedChangesWarning } from 'src/hooks/useUnsavedChangesWarning';
 import { withAuth } from 'src/components/auth/withAuth';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import {
@@ -37,6 +39,16 @@ const TOGGLE_SECTIONS: PreferencesFormSection[] = [
 function UserSettingsPage() {
   const { logout } = useAuth();
 
+  // Toggles only persist on Save, so warn before leaving with unsaved ones.
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const confirmLeave = useUnsavedChangesWarning(hasUnsavedChanges);
+
+  // Logging out unmounts this page before any navigation starts, so the
+  // navigation guard never sees it; ask here instead.
+  const handleLogout = () => {
+    if (confirmLeave()) logout();
+  };
+
   if (!ENABLE_AUTH) return null;
 
   return (
@@ -57,14 +69,17 @@ function UserSettingsPage() {
           </Text>
         </VStack>
 
-        <PreferencesForm sections={TOGGLE_SECTIONS} />
+        <PreferencesForm
+          sections={TOGGLE_SECTIONS}
+          onUnsavedChangesChange={setHasUnsavedChanges}
+        />
 
         {/* Log Out Button */}
         <Button
           colorScheme='red'
           variant='ghost'
           size='sm'
-          onClick={logout}
+          onClick={handleLogout}
           textDecoration='underline'
           ml={'-2'}
           mt={12}

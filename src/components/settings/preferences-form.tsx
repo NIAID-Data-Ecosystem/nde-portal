@@ -60,6 +60,9 @@ export interface PreferencesFormProps {
   allowUnchangedSave?: boolean;
   /** Called after a successful save. */
   onSaved?: () => void;
+  /** Called whenever the form gains or loses unsaved changes, e.g. to warn
+   * before leaving the page. */
+  onUnsavedChangesChange?: (hasUnsavedChanges: boolean) => void;
 }
 
 type PreferenceValues = Partial<Record<UserPreferencesKeys, boolean>>;
@@ -77,6 +80,7 @@ export function PreferencesForm({
   saveOptions,
   allowUnchangedSave = false,
   onSaved,
+  onUnsavedChangesChange,
 }: PreferencesFormProps) {
   const { account, error, hasLoadedProfile, preferences, savePreferences } =
     useUserData();
@@ -117,6 +121,10 @@ export function PreferencesForm({
   const values = withEmailRule(draft);
   const savedValues = withEmailRule(pickValues(preferences, prefKeys));
   const hasChanges = prefKeys.some(key => values[key] !== savedValues[key]);
+
+  useEffect(() => {
+    onUnsavedChangesChange?.(hasChanges);
+  }, [hasChanges, onUnsavedChangesChange]);
 
   // Per-toggle extras, keyed by toggle. Keeps the render loop generic rather
   // than special-casing individual toggles inline.

@@ -6,8 +6,13 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import mockRouter from 'next-router-mock';
 import SettingsPage from 'src/pages/settings';
 import { UserDataProvider } from 'src/hooks/useUserData';
+import {
+  ROUTE_CHANGE_CANCELLED,
+  UNSAVED_CHANGES_MESSAGE,
+} from 'src/hooks/useUnsavedChangesWarning';
 
 const mockLogout = jest.fn();
 
@@ -91,8 +96,13 @@ const renderPage = async () => {
 describe('SettingsPage', () => {
   const originalFetch = global.fetch;
 
+  let confirmSpy: jest.SpyInstance<boolean, [message?: string]>;
+
   beforeEach(() => {
     mockLogout.mockReset();
+    // jest.setup.js maps next/router to next-router-mock.
+    mockRouter.setCurrentUrl('/settings');
+    confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(false);
     // Silence the provider's [favorites test] console grouping.
     jest.spyOn(console, 'group').mockImplementation(() => {});
     jest.spyOn(console, 'log').mockImplementation(() => {});
@@ -140,11 +150,57 @@ describe('SettingsPage', () => {
     );
   });
 
+  it('warns before leaving with unsaved changes, until they are saved', async () => {
+    const server = createServer();
+    global.fetch = server.fetchMock as unknown as typeof fetch;
+    await renderPage();
+
+    // Nothing changed yet: leaving doesn't ask.
+    await act(() => mockRouter.push('/search'));
+    expect(confirmSpy).not.toHaveBeenCalled();
+    await act(() => mockRouter.push('/settings'));
+
+    fireEvent.click(toggle('Beta features'));
+    await act(async () => {
+      await expect(mockRouter.push('/search')).rejects.toBe(
+        ROUTE_CHANGE_CANCELLED,
+      );
+    });
+    expect(confirmSpy).toHaveBeenCalledWith(UNSAVED_CHANGES_MESSAGE);
+    expect(mockRouter.asPath).toBe('/settings');
+    expect(toggle('Beta features').checked).toBe(true);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Save Settings' }));
+    });
+    confirmSpy.mockClear();
+    await act(() => mockRouter.push('/search'));
+    expect(confirmSpy).not.toHaveBeenCalled();
+    expect(mockRouter.asPath).toBe('/search');
+  });
+
   it('logs the user out', async () => {
     const server = createServer();
     global.fetch = server.fetchMock as unknown as typeof fetch;
     await renderPage();
 
+    fireEvent.click(screen.getByRole('button', { name: 'Log Out' }));
+    expect(confirmSpy).not.toHaveBeenCalled();
+    expect(mockLogout).toHaveBeenCalledTimes(1);
+  });
+
+  it('asks before logging out with unsaved changes', async () => {
+    const server = createServer();
+    global.fetch = server.fetchMock as unknown as typeof fetch;
+    await renderPage();
+
+    fireEvent.click(toggle('Beta features'));
+
+    fireEvent.click(screen.getByRole('button', { name: 'Log Out' }));
+    expect(confirmSpy).toHaveBeenCalledWith(UNSAVED_CHANGES_MESSAGE);
+    expect(mockLogout).not.toHaveBeenCalled();
+
+    confirmSpy.mockReturnValue(true);
     fireEvent.click(screen.getByRole('button', { name: 'Log Out' }));
     expect(mockLogout).toHaveBeenCalledTimes(1);
   });
