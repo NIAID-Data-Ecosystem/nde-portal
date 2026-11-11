@@ -12,7 +12,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Button, chakra, HStack, Text } from '@chakra-ui/react';
+import { Button, chakra, HStack, Icon, Text } from '@chakra-ui/react';
 import { useUserData } from 'src/hooks/useUserData';
 import {
   SavePreferencesOptions,
@@ -27,6 +27,7 @@ import {
   TOGGLES_COPY,
   ToggleKey,
 } from './toggles';
+import { FaCircleCheck } from 'react-icons/fa6';
 
 export const PREFERENCES_FORM_COPY = {
   saveButton: 'Save Settings',
@@ -196,9 +197,14 @@ export function PreferencesForm({
         </Button>
         {/* Always mounted so screen readers announce the message when it
             appears. */}
-        <Text role='status' color='gray.800' fontSize='sm'>
-          {status === 'saved' && !hasChanges ? PREFERENCES_FORM_COPY.saved : ''}
-        </Text>
+        <HStack>
+          {status == 'saved' && <Icon as={FaCircleCheck} color='primary.400' />}
+          <Text role='status' color='primary.700' fontSize='sm'>
+            {status === 'saved' && !hasChanges
+              ? PREFERENCES_FORM_COPY.saved
+              : ''}
+          </Text>
+        </HStack>
       </HStack>
     </chakra.form>
   );
