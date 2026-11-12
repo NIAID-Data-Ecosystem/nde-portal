@@ -43,23 +43,23 @@ const termNames = (value: DefinedTerm[]) =>
   value?.map(v => v.name).filter((name): name is string => !!name) ?? [];
 
 /** The shape shared by the DefinedTerm tag columns (health condition, species…). */
-const definedTermTagColumn = (
-  column: Pick<RepositoryMatcherColumn<DefinedTerm[]>, 'id' | 'header'> & {
-    field: keyof RepositoryMatcherItem;
-    description?: string;
-    filterDescription?: string;
-  },
-): RepositoryMatcherColumn<DefinedTerm[]> => ({
-  id: column.id,
-  header: column.header,
-  description: column.description,
+const definedTermTagColumn = ({
+  field,
+  filterDescription,
+  ...column
+}: Pick<RepositoryMatcherColumn<DefinedTerm[]>, 'id' | 'header' | 'size'> & {
+  field: keyof RepositoryMatcherItem;
+  description?: string;
+  filterDescription?: string;
+}): RepositoryMatcherColumn<DefinedTerm[]> => ({
+  ...column,
   type: 'tags',
-  fields: [column.field],
+  fields: [field],
   transform: item =>
-    toArray(item[column.field] as DefinedTerm | DefinedTerm[] | undefined),
+    toArray(item[field] as DefinedTerm | DefinedTerm[] | undefined),
   getSearchValue: termNames,
   filter: { getFilterValues: termNames },
-  info: { filterDescription: column.filterDescription },
+  info: { filterDescription },
 });
 
 export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn[] = [
@@ -322,6 +322,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn[] = [
     id: 'meas-technique',
     header: getMetadataName('measurementTechnique') || '',
     field: 'measurementTechnique',
+    size: { min: 300 },
     description: getMetadataDescription('measurementTechnique') || '',
     filterDescription: getMetadataDescription('measurementTechnique') || '',
   }),
@@ -356,7 +357,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn[] = [
     header: getMetadataName('temporalCoverage') || '',
     description: getMetadataDescription('temporalCoverage') || '',
     fields: ['temporalCoverage'],
-    size: { min: 120 },
+    size: { min: 200 },
     // Sorts on the first coverage's start date (or its name for named
     // periods), newest first.
     sort: {
@@ -406,6 +407,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn[] = [
     // `link` for its wrapping: a bare URL may break anywhere instead of
     // stretching the column to its full length.
     type: 'link',
+    size: { max: 200 },
     sort: true,
     transform: item => item.license || '',
     cell: ({ value }: { value: string }) =>
