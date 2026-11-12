@@ -574,6 +574,41 @@ test.describe('DataTable headers', () => {
     await expect(access).not.toHaveAttribute('aria-sort');
   });
 
+  test('hovering the title shows the same description, in the same place, and clicking it still sorts', async ({
+    page,
+  }) => {
+    await gotoPopulated(page);
+    const access = page.getByRole('columnheader', { name: /^access/i });
+    const label = access.locator('.nde-header-label');
+    await label.scrollIntoViewIfNeeded();
+    const tooltip = page
+      .getByRole('tooltip')
+      .filter({ hasText: /access-level definitions/i });
+
+    // The title must sit above the sort button's full-cell hit area, or it
+    // gets no hover of its own and this never opens.
+    // Measured on the positioner: the content's open animation scales it.
+    const placed = page
+      .locator('[data-scope="tooltip"][data-part="positioner"]')
+      .filter({ has: tooltip });
+    await label.hover();
+    await expect(tooltip).toBeVisible();
+    const onTitle = (await placed.boundingBox())!;
+    await access.getByRole('button', { name: 'About Access' }).hover();
+    await expect(tooltip).toBeVisible();
+    const onIcon = (await placed.boundingBox())!;
+    expect(Math.abs(onIcon.x - onTitle.x)).toBeLessThanOrEqual(1);
+    expect(Math.abs(onIcon.y - onTitle.y)).toBeLessThanOrEqual(1);
+
+    // The rest of the cell only sorts.
+    const box = (await access.boundingBox())!;
+    await page.mouse.move(box.x + box.width - 6, box.y + box.height - 4);
+    await expect(tooltip).toBeHidden();
+
+    await label.click();
+    await expect(access).toHaveAttribute('aria-sort', 'ascending');
+  });
+
   test('rows highlight on hover', async ({ page }) => {
     await gotoPopulated(page);
     const cell = root(page).locator('tbody tr').nth(1).locator('td').nth(1);
@@ -647,6 +682,22 @@ test.describe('DataTable header descriptions on touch', () => {
     await expect(access).not.toHaveAttribute('aria-sort');
     // A tap elsewhere closes it.
     await page.getByRole('heading', { level: 1 }).tap();
+    await expect(tooltip).toBeHidden();
+  });
+
+  test('tapping the title only sorts', async ({ page }) => {
+    await gotoPopulated(page);
+    const access = page.getByRole('columnheader', { name: /^access/i });
+    const label = access.locator('.nde-header-label');
+    await label.scrollIntoViewIfNeeded();
+    const tooltip = page
+      .getByRole('tooltip')
+      .filter({ hasText: /access-level definitions/i });
+
+    await label.tap();
+    await expect(access).toHaveAttribute('aria-sort', 'ascending');
+    // Past the hover open delay: touch never opens it from the title.
+    await page.waitForTimeout(600);
     await expect(tooltip).toBeHidden();
   });
 });

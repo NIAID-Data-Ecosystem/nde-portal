@@ -1,6 +1,12 @@
 import userEvent from '@testing-library/user-event';
 import React, { useState } from 'react';
-import { act, render, screen, within } from 'src/__tests__/utils/render';
+import {
+  act,
+  render,
+  screen,
+  waitFor,
+  within,
+} from 'src/__tests__/utils/render';
 
 import { DataTable } from '../components/DataTable';
 import { useDataTable } from '../hooks/useDataTable';
@@ -107,6 +113,33 @@ describe('DataTable', () => {
       'When the file last changed.',
     );
     expect(header).not.toHaveAttribute('aria-sort');
+  });
+
+  it('also shows the header description when hovering the title, like InfoLabel', async () => {
+    const { user } = await setup(
+      <DataTable
+        label='Files'
+        data={FILES}
+        columns={COLUMNS}
+        getRowId={getRowId}
+      />,
+    );
+    const header = screen.getByRole('columnheader', { name: /modified/i });
+    const sort = within(header).getByRole('button', { name: 'Modified' });
+
+    await user.hover(within(sort).getByText('Modified'));
+    expect(await screen.findByRole('tooltip')).toHaveTextContent(
+      'When the file last changed.',
+    );
+    // Only the info button carries the description, so it's read once.
+    expect(sort).not.toHaveAccessibleDescription();
+
+    // Sorting from the title closes it.
+    await user.click(sort);
+    expect(header).toHaveAttribute('aria-sort', 'descending');
+    await waitFor(() =>
+      expect(screen.queryByRole('tooltip')).not.toBeInTheDocument(),
+    );
   });
 
   it('delegates sorting in server mode and renders the data as given', async () => {

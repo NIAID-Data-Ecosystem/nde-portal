@@ -328,6 +328,23 @@ first change, then removed.
 - **Resource page:** the sidebar is no longer sticky (as it was before the clip
   change).
 
+**Header title hover (owner, 2026-11-12):**
+
+- Like `InfoLabel`, hovering a described title also shows its description: one
+  tooltip with two triggers (title and icon, zag's multi-trigger `value`s),
+  anchored to both (`getAnchorElement`), so it doesn't move between them. The
+  rest of the sort hit area still only sorts; clicking the title sorts and
+  closes it; the icon turns blue on title hover. Shared `Tooltip` gained an
+  opt-in `manualTriggers` + `TooltipTrigger` for this.
+- A11y: the icon stays the keyboard, touch and screen-reader control (only it
+  carries `aria-describedby`); the title isn't focusable and the sort button
+  keeps its plain name, so nothing is announced twice, and a tap on the title
+  only sorts.
+- A clamped described title now shows its full text bold in that tooltip rather
+  than a native `title` (which had doubled up with the icon's tooltip).
+- Hybrid devices: a tap that closes the tooltip ends touch mode, so a mouse can
+  open it again.
+
 **Client pagination fix (2026-11-09; no effect on the pilot, which doesn't
 paginate):**
 
@@ -763,3 +780,8 @@ weren't supported:
 - A component declared inside another's render (`const X = () => …` used as
   `<X />`) is a new type each render: React remounts it, and focus inside it is
   lost. Found in `TablePagination`'s arrow buttons.
+- The sort button's full-cell `::after` (positioned) paints over its own in-flow
+  children, so they get no hover of their own: `elementFromPoint` over the title
+  returns the button. Lift a child that needs one with `position: relative` +
+  `z-index`. jsdom doesn't hit-test, so only a layout spec catches it
+  (`hovering the title shows the same description…`).

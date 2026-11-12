@@ -187,7 +187,11 @@ Non-hideable columns are always visible and first. "Clear All" leaves the
 - Header descriptions: an info icon beside the title (the `InfoLabel` icon)
   shows the description on hover and keyboard focus. On touch a tap toggles it.
   It is also the icon button's accessible description, and it's independent of
-  sorting.
+  sorting. Like `InfoLabel`, hovering the title shows it too, in the same
+  tooltip; the title is only an extra hover target (not focusable, and the sort
+  button keeps its plain name), so nothing is announced twice. A clamped
+  described title shows its full text in that tooltip instead of a native
+  `title`.
 - The scroll viewport is a focusable, named region whenever it scrolls.
 - Scroll padding keeps keyboard focus clear of the sticky header and pinned
   column.

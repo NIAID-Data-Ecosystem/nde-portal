@@ -140,17 +140,31 @@ export const dataTableSlotRecipe = defineSlotRecipe({
         },
         '&:disabled': { cursor: 'not-allowed', opacity: 0.6 },
       },
+      // The title sits above that hit area, so it can be hovered on its own
+      // (a described title opens its description). It's inside the button,
+      // so clicking it still sorts.
+      '& .nde-sort-button > .nde-header-label': {
+        position: 'relative',
+        zIndex: 1,
+      },
       '@media (hover: hover)': {
         '& table th:has(.nde-sort-button:hover:not(:disabled))': {
           bg: 'table.hover',
           color: 'gray.700',
+        },
+        // Hovering a described title highlights its icon at once, like
+        // InfoLabel, before the tooltip's open delay.
+        '& .nde-th-title:has(.nde-header-label:hover) .tooltip-icon': {
+          bg: 'blue.100',
+          color: 'blue.500',
         },
       },
       '& table th:has(.nde-sort-button:active:not(:disabled))': {
         bg: 'primary.100',
       },
       // The info icon (InfoLabel's): above the sort hit area, so it never
-      // sorts; a 26px target around the 14px icon; InfoLabel's blue on hover.
+      // sorts; a 26px target around the 14px icon; InfoLabel's blue on hover
+      // and while the tooltip is open (from either trigger).
       '& .nde-header-info': {
         colorPalette: 'primary',
         position: 'relative',

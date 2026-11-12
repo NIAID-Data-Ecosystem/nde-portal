@@ -15,9 +15,22 @@ export interface TooltipProps extends TooltipRootProps {
   portalRef?: React.RefObject<HTMLElement | null>;
   /** Forwarded to `Tooltip.Content` — use for sizing/overrides. */
   contentProps?: ChakraTooltip.ContentProps;
-  /** When true, renders children with no tooltip at all. */
+  /**
+   * When true, renders children with no tooltip at all (with
+   * `manualTriggers`: a tooltip that never opens).
+   */
   disabled?: boolean;
+  /**
+   * Render `children` as given rather than as the trigger, and mark each
+   * element that opens the tooltip with a `TooltipTrigger` (each with its own
+   * `value`). For several elements sharing one tooltip; `positioning`'s
+   * `getAnchorElement` can keep it in one place whichever is hovered.
+   */
+  manualTriggers?: boolean;
 }
+
+/** A trigger for a `Tooltip` with `manualTriggers`. Use with `asChild`. */
+export const TooltipTrigger = ChakraTooltip.Trigger;
 
 /**
  * Chakra v3 exposes Tooltip as a compound component. This flattens it back to a
@@ -34,16 +47,27 @@ const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
       portalled = true,
       portalRef,
       contentProps,
+      manualTriggers,
       ...props
     },
     ref,
   ) => {
-    if (disabled) return <>{children}</>;
+    if (disabled && !manualTriggers) return <>{children}</>;
     const borderColor = contentProps?.borderColor ?? 'gray.200';
 
     return (
-      <ChakraTooltip.Root positioning={{ offset: { mainAxis: 2 } }} {...props}>
-        <ChakraTooltip.Trigger asChild>{children}</ChakraTooltip.Trigger>
+      <ChakraTooltip.Root
+        positioning={{ offset: { mainAxis: 2 } }}
+        {...props}
+        // Only ever true with `manualTriggers`, whose triggers can't be
+        // unwrapped from it: they stay rendered, but open nothing.
+        disabled={disabled}
+      >
+        {manualTriggers ? (
+          children
+        ) : (
+          <ChakraTooltip.Trigger asChild>{children}</ChakraTooltip.Trigger>
+        )}
         <Portal disabled={!portalled} container={portalRef}>
           <ChakraTooltip.Positioner>
             <ChakraTooltip.Content
