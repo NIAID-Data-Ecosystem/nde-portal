@@ -21,8 +21,10 @@ const setFlag = (el: Element, name: string, on: boolean) => {
  * Wires up the table's scroll viewport without React state, so scrolling and
  * resizing never re-render the table:
  *
- * - data attributes on `root` for overflow and scroll position (drive the
- *   edge fade and the pinned column's shadow in CSS),
+ * - a data attribute on `root` for horizontal overflow (drives the pinned
+ *   column's shadow and the synced scrollbars in CSS). Nothing tracks the
+ *   scroll position: an attribute flipping as a scroll leaves the start
+ *   restyled every cell,
  * - CSS variables for the header height and pinned column width (used as
  *   scroll padding, so keyboard focus never lands under them),
  * - keyboard access: the viewport is a focusable, labelled region only while
@@ -56,13 +58,6 @@ export const useScrollViewport = (
       }
     };
 
-    const updateEdges = () => {
-      const max = viewport.scrollWidth - viewport.clientWidth;
-      const left = Math.abs(viewport.scrollLeft);
-      setFlag(root, 'data-at-start', left <= 1);
-      setFlag(root, 'data-at-end', left >= max - 1);
-    };
-
     const measure = () => {
       const verticalScrollbar = viewport.offsetWidth - viewport.clientWidth;
       const overflowX = viewport.scrollWidth > viewport.clientWidth + 1;
@@ -70,7 +65,6 @@ export const useScrollViewport = (
         overflowX || viewport.scrollHeight > viewport.clientHeight + 1;
       setFlag(root, 'data-overflow-x', overflowX);
       setVar('--nde-table-viewport-w', `${viewport.clientWidth}px`);
-      setVar('--nde-table-scrollbar-w', `${verticalScrollbar}px`);
       const head = table.tHead;
       setVar('--nde-table-header-h', `${head?.offsetHeight ?? 0}px`);
       const firstHeader = head?.rows[0]?.cells[0];
@@ -108,7 +102,6 @@ export const useScrollViewport = (
         if (phantom) phantom.style.width = `${viewport.scrollWidth}px`;
         bar.scrollLeft = viewport.scrollLeft;
       });
-      updateEdges();
     };
 
     // Non-passive, synchronous writes so every scrollbar moves in the same
@@ -123,7 +116,6 @@ export const useScrollViewport = (
         if (el !== source && el.scrollLeft !== x) el.scrollLeft = x;
       }
       syncing = false;
-      updateEdges();
     };
     const sources = [viewport, ...bars].map(el => {
       const handler = syncFrom(el);

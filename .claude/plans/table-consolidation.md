@@ -283,8 +283,8 @@ first change, then removed.
 - **Height and scrolling:**
   - The height cap changed from `60vh` to `maxHeight='viewport'` (`md` and up);
     below `md` the page scrolls.
-  - New: a floating horizontal scrollbar, and a right-edge fade while columns
-    are off-screen.
+  - New: a floating horizontal scrollbar. (A right-edge fade while columns
+    were off-screen was tried and removed, 2026-11-12.)
 - **Cell display:**
   - Missing values show "—" (screen readers: "No data"), replacing "not
     available" and "-".
@@ -785,3 +785,16 @@ weren't supported:
   returns the button. Lift a child that needs one with `position: relative` +
   `z-index`. jsdom doesn't hit-test, so only a layout spec catches it
   (`hovering the title shows the same description…`).
+- The pinned column's shadow is an `::after` strip past each first cell (a
+  per-cell `box-shadow` notched at every row). Anything positioned inside the
+  viewport counts toward its scroll size: a strip reaching 1px below the last
+  row (no bottom border) added vertical scroll, and one on the full-width
+  status cell would widen the horizontal scroll. So body strips reach *up*
+  over the row border, and the status cell has none (2026-11-12).
+- The shadow shows whenever the pinned table overflows, not only once scrolled
+  off the start. Any attribute on the root that a cell selector depends on
+  restyles every cell when it flips (invalidation goes by tag, `td`): a
+  `data-at-start` flag cost ~16 ms style per scroll leaving or reaching the
+  start at 4x CPU (840 cells), plus ~11 ms layout while the strip was created
+  by toggling `content`. Removed 2026-11-12; keep scroll-position state out of
+  the root's attributes.

@@ -12,11 +12,10 @@ attributes the component sets on the root:
   data-pinned        first column pinned (only from `md` up)
   data-interactive   rows highlight on hover
   data-overflow-x    content is wider than the viewport
-  data-at-start/end  horizontal scroll position
   data-floating      the floating scrollbar is showing (native one off-screen)
 
 and CSS variables it measures: --nde-table-header-h, --nde-table-pinned-w,
---nde-table-viewport-w, --nde-table-scrollbar-w.
+--nde-table-viewport-w.
 
 The visuals follow the tables this replaces: uppercase grey bold headers, a
 `bg.alt` header for the sorted column, `table.stripe` zebra rows, 1rem
@@ -37,6 +36,22 @@ const scrollbarStyles = {
 } as const;
 
 const firstCells = 'table :is(th, td):first-child';
+
+// The pinned column, whenever the table is wide enough to scroll under it.
+// Not only once scrolled away from the start: a scroll-position attribute on
+// the root restyled every cell whenever a scroll left or returned to the
+// start (~16 ms style + ~11 ms layout at 4x CPU, 840 cells, 2026-11-12).
+const pinnedShadow = '&[data-pinned][data-overflow-x]';
+const pinnedShadowStrip = {
+  // Only from `md` up, like the pinning: below it there's no sticky cell to
+  // position against, and no pseudo-element is generated at all.
+  content: { md: '""' },
+  position: 'absolute',
+  insetInlineStart: '100%',
+  width: '32px',
+  pointerEvents: 'none',
+  boxShadow: 'inset 8px 0 8px -8px rgba(0, 0, 0, 0.16)',
+} as const;
 
 export const dataTableSlotRecipe = defineSlotRecipe({
   className: 'nde-data-table',
@@ -200,21 +215,24 @@ export const dataTableSlotRecipe = defineSlotRecipe({
       },
       '&[data-pinned] table td:first-child': { zIndex: { md: 1 } },
       '&[data-pinned] table th:first-child': { zIndex: { md: 3 } },
-      [`&[data-pinned][data-overflow-x]:not([data-at-start]) ${firstCells}`]: {
-        boxShadow: { md: '4px 0 6px -4px rgba(0, 0, 0, 0.2)' },
-      },
-
-      /* Off-screen columns: fade the right edge while there is more to see. */
-      '&[data-overflow-x]:not([data-at-end])::after': {
-        content: '""',
-        position: 'absolute',
+      // Its shadow, while columns can scroll under it: a strip just past each
+      // cell's edge, rather than a `box-shadow` on the cell, which fades out at
+      // the top and bottom of every row and so notched the column's edge.
+      // Strips overlap the 1px row borders so they join up: the header's
+      // reaches down over its own, each body row's up over the one above.
+      // Reaching down instead would push the last row's (it has no border)
+      // past the table and add a pixel of vertical scroll.
+      [`${pinnedShadow} table th:first-child::after`]: {
+        ...pinnedShadowStrip,
         top: 0,
+        bottom: '-1px',
+      },
+      // Not on the status row: it spans every column, so its strip would
+      // hang past the table's end and widen the scroll.
+      [`${pinnedShadow} table td:first-child:not(.nde-status-cell)::after`]: {
+        ...pinnedShadowStrip,
+        top: '-1px',
         bottom: 0,
-        insetInlineEnd: 'var(--nde-table-scrollbar-w, 0px)',
-        width: 6,
-        pointerEvents: 'none',
-        bgImage: 'linear-gradient(to left, rgba(0, 0, 0, 0.07), transparent)',
-        zIndex: 4,
       },
 
       /* Synced scrollbars only exist while there is something to scroll. */
@@ -240,9 +258,6 @@ export const dataTableSlotRecipe = defineSlotRecipe({
       '& > .nde-table-pager': {
         // Keeps its height when a bounded root shrinks the viewport.
         flexShrink: 0,
-        // Above the right-edge fade, which spans the root's full height.
-        position: 'relative',
-        zIndex: 5,
       },
 
       /* Tags (TagsCell): the repo's subtle, small, full-radius Tag look. */
