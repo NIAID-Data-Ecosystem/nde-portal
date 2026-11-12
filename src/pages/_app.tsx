@@ -2,7 +2,7 @@ import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { theme } from 'src/theme';
-import { GoogleTagManager } from '@next/third-parties/google';
+import Script from 'next/script';
 import { fonts } from 'lib/fonts';
 import { ChakraProvider } from '@chakra-ui/react';
 import { AuthProvider } from 'src/hooks/useAuth';
@@ -11,6 +11,8 @@ import { WelcomeRedirect } from 'src/hooks/useUserData/useWelcomeRedirect';
 
 // Creates an instance of react-query for the app.
 const queryClient = new QueryClient();
+
+const GTM_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS;
 
 function App({ Component, pageProps }: AppProps) {
   return (
@@ -44,9 +46,14 @@ function App({ Component, pageProps }: AppProps) {
           </AuthProvider>
         </ChakraProvider>
       </QueryClientProvider>
-      <GoogleTagManager
-        gtmId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS || ''}
-      />
+      {/* <GoogleTagManager> injects an inline script, which the CSP blocks. */}
+      {GTM_ID ? (
+        <Script
+          id='gtm-init'
+          src={`/gtm-init.js?id=${encodeURIComponent(GTM_ID)}`}
+          strategy='afterInteractive'
+        />
+      ) : null}
     </>
   );
 }

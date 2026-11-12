@@ -22,5 +22,9 @@ export const KNOWN_PROVIDERS: Record<string, KnownProvider> = {
     label: 'Microsoft',
     icon: { as: FaMicrosoft, color: '#00A4EF' },
   },
-  okta: { label: 'NIH Login' },
+  okta: {
+    label: 'Okta',
+    loginText: 'Use another sign-in method',
+    methodIcons: ['google', 'microsoft', 'orcid'],
+  },
 };
