@@ -9,6 +9,7 @@ import { useUnsavedChangesWarning } from 'src/hooks/useUnsavedChangesWarning';
 import { withAuth } from 'src/components/auth/withAuth';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import {
+  AccountDetails,
   PreferencesForm,
   PreferencesFormSection,
 } from 'src/components/settings';
@@ -68,6 +69,8 @@ function UserSettingsPage() {
             {SETTINGS_COPY.page.subtitle}
           </Text>
         </VStack>
+
+        <AccountDetails />
 
         <PreferencesForm
           sections={TOGGLE_SECTIONS}

@@ -15,9 +15,11 @@ import {
 } from 'src/hooks/useUnsavedChangesWarning';
 
 const mockLogout = jest.fn();
+// The session user from `/user_info`.
+let mockUser: Record<string, unknown> | null = null;
 
 jest.mock('src/hooks/useAuth', () => ({
-  useAuth: () => ({ logout: mockLogout }),
+  useAuth: () => ({ logout: mockLogout, user: mockUser }),
 }));
 
 jest.mock('src/components/auth/withAuth', () => ({
@@ -39,7 +41,10 @@ jest.mock('src/components/page-container', () => ({
  * Uses the real UserDataProvider against an in-memory `/user/data` server
  * (NODE_ENV is "test", so the provider takes the real fetch path).
  */
-const createServer = () => {
+const createServer = (
+  profile: Record<string, unknown> = {},
+  { failGet = false } = {},
+) => {
   let stored: Record<string, unknown> = {
     email: 'user@example.com',
     oauth_provider: 'GitHub',
@@ -48,6 +53,7 @@ const createServer = () => {
     contact_preference: true,
     feedback_preference: true,
     onboarding_complete: true,
+    ...profile,
   };
   const putBodies: Record<string, unknown>[] = [];
   const fetchMock = jest.fn((url: string, init?: RequestInit) => {
@@ -56,8 +62,8 @@ const createServer = () => {
     let status = 404;
     let body: unknown = { error: 'not found' };
     if (path === '/user/data' && method === 'GET') {
-      status = 200;
-      body = stored;
+      status = failGet ? 500 : 200;
+      body = failGet ? { error: 'Internal Server Error' } : stored;
     } else if (path === '/user/data' && method === 'PUT') {
       const parsed = JSON.parse(String(init?.body));
       putBodies.push(parsed);
@@ -93,6 +99,26 @@ const renderPage = async () => {
   );
 };
 
+// Account details as label -> value, e.g. { Email: 'user@example.com' }.
+const accountDetails = () =>
+  Object.fromEntries(
+    screen
+      .queryAllByRole('term')
+      .map(term => [term.textContent, term.nextElementSibling?.textContent]),
+  );
+
+const renderAndWaitForAccountDetails = async () => {
+  render(
+    <UserDataProvider>
+      <SettingsPage />
+    </UserDataProvider>,
+  );
+  // The list is marked busy until the profile request settles.
+  await waitFor(() =>
+    expect(document.querySelector('dl')).toHaveAttribute('aria-busy', 'false'),
+  );
+};
+
 describe('SettingsPage', () => {
   const originalFetch = global.fetch;
 
@@ -100,6 +126,7 @@ describe('SettingsPage', () => {
 
   beforeEach(() => {
     mockLogout.mockReset();
+    mockUser = null;
     // jest.setup.js maps next/router to next-router-mock.
     mockRouter.setCurrentUrl('/settings');
     confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(false);
@@ -203,5 +230,84 @@ describe('SettingsPage', () => {
     confirmSpy.mockReturnValue(true);
     fireEvent.click(screen.getByRole('button', { name: 'Log Out' }));
     expect(mockLogout).toHaveBeenCalledTimes(1);
+  });
+  describe('account details', () => {
+    it('shows the email and sign-in method above the preferences', async () => {
+      const server = createServer();
+      global.fetch = server.fetchMock as unknown as typeof fetch;
+      await renderPage();
+
+      const headings = screen
+        .getAllByRole('heading', { level: 2 })
+        .map(heading => heading.textContent);
+      expect(headings[0]).toBe('Account details');
+      expect(accountDetails()).toEqual({
+        Email: 'user@example.com',
+        'Sign-in method': 'GitHub',
+      });
+    });
+
+    it('says there is no email on record when the account has none', async () => {
+      const server = createServer({ email: '' });
+      global.fetch = server.fetchMock as unknown as typeof fetch;
+      // The session's email isn't the one the email settings check, so it
+      // isn't shown in place of the profile's.
+      mockUser = { oauth_provider: 'GitHub', email: 'session@example.com' };
+      await renderAndWaitForAccountDetails();
+
+      expect(accountDetails()).toEqual({
+        Email: 'No email on record',
+        'Sign-in method': 'GitHub',
+      });
+    });
+
+    it("shows an NIH Login user's sign-in method once the profile loads", async () => {
+      let releaseProfile = () => {};
+      global.fetch = jest.fn(
+        () =>
+          new Promise<Response>(resolve => {
+            releaseProfile = () =>
+              resolve({
+                status: 200,
+                ok: true,
+                text: async () =>
+                  JSON.stringify({
+                    email: 'user@example.com',
+                    oauth_provider: 'Okta',
+                    idp: 'google',
+                  }),
+              } as Response);
+          }),
+      ) as unknown as typeof fetch;
+      mockUser = { oauth_provider: 'Okta' };
+      render(
+        <UserDataProvider>
+          <SettingsPage />
+        </UserDataProvider>,
+      );
+
+      // Placeholders, not "Okta", until the sign-in method (idp) arrives.
+      expect(accountDetails()).toEqual({ Email: '', 'Sign-in method': '' });
+      expect(screen.queryByText('Okta')).not.toBeInTheDocument();
+
+      await act(async () => releaseProfile());
+
+      expect(accountDetails()).toEqual({
+        Email: 'user@example.com',
+        'Sign-in method': 'Google',
+      });
+    });
+
+    it("falls back to the session's email if the profile fails to load", async () => {
+      const server = createServer({}, { failGet: true });
+      global.fetch = server.fetchMock as unknown as typeof fetch;
+      mockUser = { oauth_provider: 'ORCID', email: 'session@example.com' };
+      await renderAndWaitForAccountDetails();
+
+      expect(accountDetails()).toEqual({
+        Email: 'session@example.com',
+        'Sign-in method': 'ORCID',
+      });
+    });
   });
 });

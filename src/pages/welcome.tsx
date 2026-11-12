@@ -18,7 +18,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { FaCircle, FaRegBookmark } from 'react-icons/fa6';
-import { useAuth } from 'src/hooks/useAuth';
+import { useSignInMethod } from 'src/hooks/useSignInMethod';
 import { useUserData } from 'src/hooks/useUserData';
 import { UserPreferences } from 'src/hooks/useUserData/types';
 import { WELCOME_PATH } from 'src/hooks/useUserData/useWelcomeRedirect';
@@ -30,7 +30,6 @@ import {
   PreferencesFormSection,
   SettingsSection,
 } from 'src/components/settings';
-import { getSignInMethod } from 'src/utils/auth/helpers';
 import { ENABLE_AUTH, SHOW_WELCOME_PAGE } from 'src/utils/feature-flags';
 
 const IS_WELCOME_ENABLED = SHOW_WELCOME_PAGE && ENABLE_AUTH;
@@ -119,24 +118,17 @@ const BulletItem = ({ children }: { children: ReactNode }) => (
 
 const WelcomePage = () => {
   const router = useRouter();
-  const { user } = useAuth();
-  const { account, hasLoadedProfile, onboardingComplete } = useUserData();
+  const { onboardingComplete } = useUserData();
+  const {
+    id: methodId,
+    label: methodLabel,
+    isReady: showProvider,
+  } = useSignInMethod();
 
   // If the page is disabled via feature flag, redirect to home page
   useEffect(() => {
     if (!IS_WELCOME_ENABLED) router.replace('/');
   }, [router]);
-
-  const providerId = user?.oauth_provider || account?.oauth_provider || '';
-  const { id: methodId, label: methodLabel } = getSignInMethod(
-    providerId,
-    account?.idp,
-  );
-  // Okta's sign-in method (idp) comes from the profile, so wait for it rather
-  // than flashing "Okta" first.
-  const showProvider =
-    Boolean(providerId) &&
-    (providerId.toLowerCase() !== 'okta' || hasLoadedProfile);
 
   // Return the user to where they started the sign-up flow.
   const handleSaved = () => {

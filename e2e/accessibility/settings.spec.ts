@@ -24,8 +24,8 @@
  *   - LOADING: `/user_info` kept pending → `withAuth` shows the "Loading..."
  *     spinner. Scanned below (directly, since no `main`/`h1` chrome renders yet).
  *   - POPULATED (authenticated): `/user_info` → a user and `/user/data` →
- *     preferences → the settings sections, toggles and Save Settings button
- *     render. Primary state.
+ *     profile → the account details, settings sections, toggles and Save
+ *     Settings button render. Primary state.
  *   - EMPTY: not applicable. `useUserData` starts from `DEFAULT_PREFERENCES`, so
  *     the toggles always have values; there is no data-driven empty variant.
  *   - ERROR: a failed `/user/data` (any non-401 status) leaves the toggles on
@@ -139,6 +139,15 @@ test.describe('a11y: Settings — authenticated (preferences)', () => {
     ).toBeVisible();
     await expect(page.getByText(/email updates/i)).toBeVisible();
     await expect(page.getByRole('button', { name: /log out/i })).toBeVisible();
+
+    // Account details only fill in once `/user/data` loads, so wait for them
+    // to scan the loaded values rather than their skeletons.
+    await expect(
+      page.getByRole('heading', { level: 2, name: /account details/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('definition').filter({ hasText: USER_DATA_FIXTURE.email }),
+    ).toBeVisible();
 
     await runAxeScans(page, testInfo, 'authenticated');
   });

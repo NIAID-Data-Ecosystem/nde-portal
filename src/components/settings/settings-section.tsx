@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
-import { Heading, Text, VStack } from '@chakra-ui/react';
+import { Heading, Text, VStack, StackProps } from '@chakra-ui/react';
 
-export interface SettingsSectionProps {
+export interface SettingsSectionProps extends Omit<StackProps, 'title'> {
   title: ReactNode;
   subtitle?: ReactNode;
   children: ReactNode;
@@ -12,9 +12,10 @@ export function SettingsSection({
   title,
   subtitle,
   children,
+  ...stackProps
 }: SettingsSectionProps) {
   return (
-    <VStack alignItems='start' gap={0} w='full' mb={8}>
+    <VStack alignItems='start' gap={0} w='full' mb={8} {...stackProps}>
       <Heading as='h2' size='md' fontWeight='semibold' mb={subtitle ? 1 : 2}>
         {title}
       </Heading>
