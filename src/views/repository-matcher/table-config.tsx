@@ -226,91 +226,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn[] = [
     description: getMetadataDescription('infectiousAgent') || '',
     filterDescription: getMetadataDescription('infectiousAgent') || '',
   }),
-  // {
-  //   id: 'dataAccepted',
-  //   label: 'Accepting Data?',
-  //   fields: ['creativeWorkStatus'],
-  //   columns: {
-  //     isSortable: true,
-  //     isDefault: true,
-  //     style: { maxWidth: '180px', minWidth: '180px' },
-  //   },
-  //   transform: item => item.creativeWorkStatus,
-  //   component: ({
-  //     value,
-  //   }: {
-  //     value: CreativeWorkStatusDatasetType | null;
-  //     loading?: boolean;
-  //   }) => {
-  //     const isNotAccepting = [
-  //       'retired',
-  //       'maintenance',
-  //       'not accepting data',
-  //     ].includes(value?.toLowerCase() || '');
-  //     const color = isNotAccepting || !value ? 'gray.600' : 'primary.500';
 
-  //     return (
-  //       <HStack gap={1} color={color} opacity={isNotAccepting ? 0.8 : 1}>
-  //         {isNotAccepting ? (
-  //           <Icon ><FaXmark /></Icon>
-  //         ) : value ? (
-  //           <Icon ><FaCheck /></Icon>
-  //         ) : null}
-  //         <TextCell
-  //           value={value || ''}
-  //           color={'inherit'}
-  //           fontWeight={!value ? 'normal' : 'medium'}
-  //         />
-  //       </HStack>
-  //     );
-  //   },
-  //   filter: {
-  //     name: 'Accepting Data?',
-  //     description: getMetadataDescription('creativeWorkStatus') || '',
-  //     getFilterValues: (value: string) => (value ? [value] : []),
-  //   },
-  // },
-  // {
-  //   id: 'collectionSize',
-  //   label: getMetadataName('collectionSize') || '',
-  //   fields: ['collectionSize'],
-  //   columns: {
-  //     isSortable: false,
-  //     isDefault: true,
-  //     style: { maxWidth: '160px', minWidth: '160px' },
-  //   },
-  //   transform: item => item.collectionSize,
-  //   getSearchValue: (value: RepositoryMatcherItem['collectionSize']) => {
-  //     return value?.map(v => `${v.minValue} ${v.unitText || ''}`) || [];
-  //   },
-  //   component: ({
-  //     value,
-  //   }: {
-  //     value: RepositoryMatcherItem['collectionSize'];
-  //     loading?: boolean;
-  //   }) => {
-  //     return (
-  //       <VStack>
-  //         {value?.map((v, i) => (
-  //           <TextCell
-  //             key={i}
-  //             value={v.minValue ? `${v.minValue} ${v.unitText || ''}` : ''}
-  //             textAlign='end'
-  //             lineClamp={undefined}
-  //           >
-  //             <Text as='span' fontWeight='semibold' fontSize='inherit'>
-  //               {v.minValue?.toLocaleString() || '-'}
-  //             </Text>
-  //             <br />
-  //             <Text as='span' fontSize='inherit'>
-  //               {v.unitText}
-  //             </Text>
-  //           </TextCell>
-  //         ))}
-  //       </VStack>
-  //     );
-  //   },
-  // },
   definedTermTagColumn({
     id: 'species',
     header: 'Host Species',
@@ -333,25 +249,6 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn[] = [
     description: getMetadataDescription('topicCategory') || '',
     filterDescription: getMetadataDescription('topicCategory') || '',
   }),
-  // {
-  //   id: 'dateModified',
-  //   label: getMetadataName('dateModified') || '',
-  //   fields: ['dateModified'],
-  //   columns: { isSortable: true, isDefault: true },
-  //   transform: item => {
-  //     if (!item.dateModified) return '';
-  //     return new Date(item.dateModified).toLocaleDateString();
-  //   },
-  //   component: ({
-  //     value,
-  //     loading,
-  //   }: {
-  //     value: string;
-  //     loading?: boolean;
-  //   }) => {
-  //     return <TextCell value={value} loading={loading} lineClamp={1} />;
-  //   },
-  // },
   {
     id: 'temporalCoverage',
     header: getMetadataName('temporalCoverage') || '',
@@ -462,82 +359,6 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn[] = [
       ],
     },
   },
-  // {
-  //   id: 'usageInfo',
-  //   label: getMetadataName('usageInfo') || '',
-  //   fields: ['usageInfo'],
-  //   columns: { isSortable: true, isDefault: true },
-  //   transform: item => item.usageInfo || '',
-  //   getSearchValue: (value: RepositoryMatcherItem['usageInfo']) => {
-  //     if (typeof value === 'string') {
-  //       return value;
-  //     }
-  //     if (Array.isArray(value)) {
-  //       return value
-  //         .map(v => (typeof v === 'string' ? v : v.name || v.url || ''))
-  //         .filter(v => v);
-  //     }
-  //     if (value && typeof value === 'object') {
-  //       return value.name || value.url || '';
-  //     }
-  //     return null;
-  //   },
-  //   component: ({
-  //     value,
-  //     loading,
-  //   }: {
-  //     value: Repository['usageInfo'] | FormattedResource['usageInfo'];
-  //     loading?: boolean;
-  //   }) => {
-  //     if (typeof value === 'string') {
-  //       if (value.startsWith('http') || value.startsWith('www')) {
-  //         return (
-  //           <TextCellWithLink
-  //             label={value}
-  //             url={value}
-  //             loading={loading}
-  //             isExternal
-  //           />
-  //         );
-  //       }
-  //       return <TextCell value={value} loading={loading} lineClamp={1} />;
-  //     }
-
-  //     const usageDetails = Array.isArray(value) ? value : value ? [value] : [];
-
-  //     if (!loading && usageDetails.length === 0) {
-  //       return <TextCell value={''} loading={loading} lineClamp={1} />;
-  //     } else if (usageDetails.length > 0) {
-  //       return (
-  //         <VStack alignItems='flex-start'>
-  //           {usageDetails.map((u, i) => (
-  //             <Box key={i}>
-  //               {u.url ? (
-  //                 <TextCellWithLink
-  //                   label={u.name || u.url}
-  //                   url={u.url}
-  //                   loading={loading}
-  //                   isExternal
-  //                 />
-  //               ) : (
-  //                 <TextCell value={u.name || ''} loading={loading} />
-  //               )}
-  //               <br />
-  //               {u?.description && (
-  //                 <TextCell
-  //                   value={u.description}
-  //                   loading={loading}
-  //                   lineClamp={3}
-  //                 />
-  //               )}
-  //             </Box>
-  //           ))}
-  //         </VStack>
-  //       );
-  //     }
-  //     return <TextCell value={''} loading={loading} lineClamp={1} />;
-  //   },
-  // },
 ];
 
 export const FILTERABLE_REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn[] =
