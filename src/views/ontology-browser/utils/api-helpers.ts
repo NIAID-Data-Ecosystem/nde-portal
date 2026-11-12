@@ -4,6 +4,7 @@ import { fetchSearchResults } from 'src/utils/api';
 import {
   BioThingsDetailedLineageAPIResponseItem,
   BioThingsLineageAPIResponseItem,
+  BioThingsNotFoundItem,
   OLSAPIResponseItem,
   OntologyChildrenRequestParams,
   OntologyLineageItem,
@@ -342,26 +343,27 @@ export const fetchChildrenFromBioThingsAPI = async (
         return response?.facets.lineage.children.childTaxonCounts;
       });
 
-    // Fetch children data from the BioThings API
-    const childrenFromBiothingsIds: BioThingsLineageAPIResponseItem =
-      await axios
-        .get(`${BIOTHINGS_API_URL}/taxon/${params.id}?include_children`)
-        .then(res =>
-          res?.data?.children?.filter((child: number) => {
-            // filter out ids that are in children with counts
-            return !childrenWithCounts.find(
-              ({ taxonId }) => +taxonId === +child,
-            );
-          }),
-        );
+    // Fetch children data from the BioThings API. Only these can render under
+    // this node: the tree attaches a child by its BioThings `parent_taxid`.
+    const biothingsChildrenIds: number[] = await axios
+      .get(`${BIOTHINGS_API_URL}/taxon/${params.id}?include_children`)
+      .then(res =>
+        Array.isArray(res?.data?.children) ? res.data.children : [],
+      );
+    const biothingsChildrenSet = new Set(biothingsChildrenIds.map(Number));
+
+    // Children with portal datasets go first (by count). Skip portal ids that
+    // BioThings doesn't list under this node (deleted or re-parented in NCBI
+    // but stale in the portal index): they'd never render here, so counting
+    // them leaves pages short and inflates the total.
+    const portalChildrenIds = childrenWithCounts
+      .map(({ taxonId }) => +taxonId)
+      .filter(taxonId => biothingsChildrenSet.has(taxonId));
+    const portalChildrenSet = new Set(portalChildrenIds);
 
     const allChildrenIds = [
-      ...childrenWithCounts.map(({ taxonId }) => {
-        return taxonId;
-      }),
-      ...(Array.isArray(childrenFromBiothingsIds)
-        ? childrenFromBiothingsIds
-        : []),
+      ...portalChildrenIds,
+      ...biothingsChildrenIds.filter(child => !portalChildrenSet.has(+child)),
     ];
 
     // No children found, return empty array
@@ -386,7 +388,9 @@ export const fetchChildrenFromBioThingsAPI = async (
     // Fetch the detailed children information for each taxonId
     const {
       data: detailedLineageData,
-    }: { data: BioThingsDetailedLineageAPIResponseItem[] } = await axios.post(
+    }: {
+      data: (BioThingsDetailedLineageAPIResponseItem | BioThingsNotFoundItem)[];
+    } = await axios.post(
       `${BIOTHINGS_API_URL}/taxon`,
       {
         ids: selectedChildrenIds.join(','), // Stringify the lineage array
@@ -409,6 +413,11 @@ export const fetchChildrenFromBioThingsAPI = async (
     );
 
     const processedChildrenData = detailedLineageData
+      // Safety net: never crash on a record without `taxid`.
+      .filter(
+        (item): item is BioThingsDetailedLineageAPIResponseItem =>
+          !('notfound' in item) && item.taxid != null,
+      )
       .map((item: BioThingsDetailedLineageAPIResponseItem, idx: number) => {
         // Must set the parent to empty string if it is the root node.
         const isRootNode = item.parent_taxid === item.taxid;

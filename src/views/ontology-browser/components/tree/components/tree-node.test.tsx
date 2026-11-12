@@ -297,4 +297,70 @@ describe('TreeNode', () => {
     // Ensure that `<ul>` is empty i.e. (has no children)
     expect(ulElement?.childElementCount).toBe(0);
   });
+
+  it('requests the next page on "Show more" when empty children are hidden', async () => {
+    (useLocalStorage as jest.Mock).mockReturnValue([
+      transformSettingsToLocalStorageConfig({
+        isCondensed: { label: 'Show condensed view?', value: true },
+        hideEmptyCounts: { label: 'Hide Empty counts?', value: true },
+      }),
+      mockSetViewConfig,
+    ]);
+    const makeNode = (id: number, count: number, parentTaxonId = '10239') => ({
+      id: `${id}`,
+      taxonId: `${id}`,
+      parentTaxonId,
+      label: `taxon ${id}`,
+      commonName: '',
+      hasChildren: false,
+      iri: '',
+      ontologyName: 'ncbitaxon',
+      state: { opened: false, selected: false },
+      counts: { termCount: count, termAndChildrenCount: count },
+    });
+    // A full first page (SIZE = 20) where 2 children have no datasets, so
+    // only 18 are visible with hideEmptyCounts on.
+    const firstPage = Array.from({ length: 20 }, (_, i) =>
+      makeNode(i + 1, i < 2 ? 0 : 100 - i),
+    );
+    (fetchChildrenFromBioThingsAPI as jest.Mock).mockResolvedValue({
+      children: firstPage,
+      pagination: {
+        hasMore: true,
+        numPage: 0,
+        totalPages: 2,
+        totalElements: 40,
+      },
+    });
+    (fetchPortalCounts as jest.Mock).mockImplementation(async c => c);
+
+    render(
+      <UnorderedList>
+        <TreeNode
+          addToSearch={addToSearch}
+          depth={0}
+          isIncludedInSearch={isIncludedInSearch}
+          lineage={firstPage}
+          node={{ ...makeNode(10239, 1000, '1'), hasChildren: true }}
+          params={{ q: '', id: '10239', ontology: 'ncbitaxon' }}
+          updateLineage={updateLineage}
+        />
+      </UnorderedList>,
+      { wrapper },
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /Show all children of taxon 10239/ }),
+    );
+    const showMore = await screen.findByRole('button', { name: /Show more/ });
+    expect(screen.getByText(/Displaying 18 of 40/)).toBeInTheDocument();
+    expect(showMore).toBeEnabled();
+
+    fireEvent.click(showMore);
+    await waitFor(() =>
+      expect(fetchChildrenFromBioThingsAPI).toHaveBeenLastCalledWith(
+        expect.objectContaining({ from: 1 }),
+      ),
+    );
+  });
 });
