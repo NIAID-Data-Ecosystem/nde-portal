@@ -9,7 +9,7 @@
  * What this route is — a taxonomy explorer. On load it centers on a taxon
  * (`?id=`, default `1`/root) and renders that node's lineage as a tree with
  * per-term dataset counts. It depends on TWO external APIs, both client-side:
- *   - BioThings (`https://t.biothings.io/v1/taxon…`) for the lineage structure:
+ *   - BioThings (`https://mytaxon.info/v1/taxon…`) for the lineage structure:
  *       GET  /taxon/<id>?include_children → `{ lineage: [taxonId, …] }`
  *       POST /taxon                        → detailed records for those ids
  *   - the NDE `/query` API (`**\/query*`) for each node's portal counts
@@ -37,18 +37,18 @@
  * Endpoints mocked (all client-side):
  *   - `**\/taxon**`  BioThings lineage (GET ids list + POST detailed records)
  *   - `**\/query*`   NDE portal counts; also BioThings predictive search,
- *                    branched on the `t.biothings.io` host
+ *                    branched on the `mytaxon.info` host
  */
 import { test, expect, type Page, type TestInfo } from '@playwright/test';
 import { runAxeScans } from '../utils/axe';
 
 // --- Per-route configuration -------------------------------------------------
-
 const ROUTE = '/ontology-browser';
 // A representative populated route — a real taxon (eukaryota) so the lineage
 // resolves to a multi-node tree (root → cellular organisms → eukaryota).
 const POPULATED_ROUTE = '/ontology-browser?id=2759&ontology=ncbitaxon';
 
+const TAXON_URL = process.env.NEXT_PUBLIC_BIOTHINGS_API_URL;
 const TAXON_GLOB = '**/taxon**';
 const QUERY_GLOB = '**/query*';
 
@@ -123,11 +123,11 @@ const routeLineage = (route: import('@playwright/test').Route) =>
     : fulfillJson(route, { lineage: LINEAGE_IDS });
 
 // `**/query*` matches BOTH the NDE counts API and the BioThings predictive
-// search (`t.biothings.io/v1/query`). Branch on host so each gets its shape.
+// search (`mytaxon.info/v1/query`). Branch on host so each gets its shape.
 const routeQuery =
   (searchHits: typeof SEARCH_HITS = []) =>
   (route: import('@playwright/test').Route) =>
-    route.request().url().includes('t.biothings.io')
+    route.request().url().includes('mytaxon.info')
       ? fulfillJson(route, { hits: searchHits })
       : fulfillJson(route, NDE_COUNTS_FIXTURE);
 
