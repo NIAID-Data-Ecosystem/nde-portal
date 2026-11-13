@@ -1,12 +1,13 @@
-import { useMetadata } from 'src/hooks/api/useMetadata';
-import { ParentSize } from '@visx/responsive';
-import HeatMap from './components/heatmap';
 import { Box, Flex, Image, Link, Stack, Text } from '@chakra-ui/react';
-import BarChartHeatMap from './components/barchart-heatmap';
+import { ParentSize } from '@visx/responsive';
+import { ScrollContainer } from 'src/components/scroll-container';
+import { useMetadata } from 'src/hooks/api/useMetadata';
+
+import { ArcCircle } from './components/arc-circle';
 import { ArcSegments } from './components/arc-segments';
 import { ArcSegmentsTwo } from './components/arc-segments-two';
-import { ArcCircle } from './components/arc-circle';
-import { ScrollContainer } from 'src/components/scroll-container';
+import BarChartHeatMap from './components/barchart-heatmap';
+import HeatMap from './components/heatmap';
 
 export const CompatibilityBadge = () => {
   const { data } = useMetadata();

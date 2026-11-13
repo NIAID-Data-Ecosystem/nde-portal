@@ -1,13 +1,13 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { scaleLinear, scaleOrdinal } from '@visx/scale';
-import { MetadataSource } from 'src/hooks/api/types';
-import { theme } from 'src/theme';
-import { PatternLines } from '@visx/pattern';
 import { Box, Stack, Text } from '@chakra-ui/react';
-import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
-import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import { PatternLines } from '@visx/pattern';
+import { scaleLinear, scaleOrdinal } from '@visx/scale';
 import { Arc } from '@visx/shape';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import React, { useCallback, useMemo, useState } from 'react';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import { MetadataSource } from 'src/hooks/api/types';
+import { theme } from 'src/theme';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 

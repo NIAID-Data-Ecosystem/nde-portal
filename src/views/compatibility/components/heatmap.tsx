@@ -1,15 +1,15 @@
-import React, { useCallback, useMemo } from 'react';
+import { Box, Icon, Stack, Text } from '@chakra-ui/react';
 import { Group } from '@visx/group';
-import { scaleLinear } from '@visx/scale';
 import { HeatmapRect } from '@visx/heatmap';
+import { PatternLines } from '@visx/pattern';
+import { scaleLinear } from '@visx/scale';
+import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import React, { useCallback, useMemo } from 'react';
+import { FaCircleCheck, FaRegCircleUp } from 'react-icons/fa6';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { MetadataSource } from 'src/hooks/api/types';
 import { theme } from 'src/theme';
-import { PatternLines } from '@visx/pattern';
-import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
-import { Box, Icon, Stack, Text } from '@chakra-ui/react';
-import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
-import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
-import { FaCircleCheck, FaRegCircleUp } from 'react-icons/fa6';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
