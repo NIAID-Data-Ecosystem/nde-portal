@@ -1,116 +1,94 @@
+import { chakra, Flex, Icon, Stack, Text } from '@chakra-ui/react';
 import React from 'react';
-import { Flex, FlexProps, Icon, Text } from '@chakra-ui/react';
-import { FaRegClock, FaComputer } from 'react-icons/fa6';
-import TypeBanner, { getProgramResourceVariant } from '../type-banner';
-import { FormattedResource } from 'src/utils/api/types';
-import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
-import { operatingSystemIcons } from 'src/utils/helpers/operating-system-icons';
+import { FaComputer, FaRegClock } from 'react-icons/fa6';
+import Tooltip from 'src/components/tooltip';
+import TypeBanner from 'src/components/type-banner';
+import { getProgramResourceVariant } from 'src/components/type-banner/helpers';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+import { operatingSystemIcons } from 'src/utils/helpers/operating-system-icons';
+import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 
-interface DateTagProps extends FlexProps {
-  type?: string;
-  date: string;
-}
+import { getBannerDates } from './helpers';
+import { ResourceBannerProps } from './types';
 
-export const DateTag: React.FC<DateTagProps> = ({ type, date, ...props }) => {
-  return (
-    <Flex
-      px={2}
-      m={1}
-      alignItems='center'
-      bg='secondary.50'
-      w={['100%', '100%', 'unset']}
-      flex={1}
-      whiteSpace='nowrap'
-      borderRadius='semi'
-      {...props}
-    >
-      <Icon as={FaRegClock} mr={2} />
-      <Text fontSize='xs'>
-        {type && <strong>{type}</strong>} {date}
-      </Text>
-    </Flex>
-  );
-};
+// A light chip on the banner strip.
+const BannerTag = chakra('div', {
+  base: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 2,
+    px: 2,
+    py: 1,
+    borderRadius: 'semi',
+    fontSize: 'sm',
+    whiteSpace: 'nowrap',
+  },
+});
 
-interface ResourceBannerProps {
-  data?: FormattedResource;
-}
-
-const date_fields = [
-  { property: 'date', name: '' },
-  { property: 'datePublished', name: 'Published' },
-  { property: 'dateCreated', name: 'Created' },
-  { property: 'dateModified', name: 'Modified' },
-];
-
+// The resource page's type banner, followed by the resource's dates and, for
+// computational tools, the operating systems it supports.
 const ResourceBanner: React.FC<ResourceBannerProps> = ({ data }) => {
-  if (!data) {
-    return null;
-  }
-  const date_data = date_fields
-    .map(({ property, ...fields }) => ({
-      ...fields,
-      property,
-      value: data?.[property],
-    }))
-    .filter(({ property, value }) => {
-      if (property === 'date') {
-        // Check if date string is unique or is already included as datePublished, dateModified, dateCreated.
-        const is_unique =
-          Object.values(data).filter(date => date === value).length === 1;
-        return is_unique;
-      }
-      // Filter data for date properties where a values exists.
-      return value;
-    });
+  if (!data) return null;
 
-  const type = data?.['@type'];
-
-  // ResourceCatalogs with a sourceOrganization are displayed as
-  // "Program Resource" or "Program Info and Resource" with cyan banner
-  // styling instead of the default ResourceCatalog treatment.
-  const programVariant = getProgramResourceVariant(data);
+  const type = data['@type'];
+  const dates = getBannerDates(data);
+  const operatingSystems =
+    (type === 'ComputationalTool' && data.operatingSystem) || [];
+  const osLabel = `Operating systems supported: ${operatingSystems.join(', ')}`;
 
   return (
     <TypeBanner
       label={formatAPIResourceTypeForDisplay(type)}
       type={type}
-      creativeWorkStatus={data?.creativeWorkStatus}
-      bg='status.info_lt'
+      creativeWorkStatus={data.creativeWorkStatus}
+      bg='info.subtle'
       isNiaidFunded={isSourceFundedByNiaid(data.includedInDataCatalog)}
-      programVariant={programVariant}
+      programVariant={getProgramResourceVariant(data)}
     >
-      <Flex flexWrap='wrap' ml={[0, 0, 4]}>
-        {date_data.map((date, i) => {
-          return <DateTag key={i} type={date.name} date={date.value} />;
-        })}
-      </Flex>
-
-      {type === 'ComputationalTool' && (
-        <Flex
+      {(dates.length > 0 || operatingSystems.length > 0) && (
+        // Drops below the labels when there's less than 250px beside them.
+        <Stack
+          flex='1 1 250px'
+          flexWrap='wrap'
+          direction='row'
           alignItems='center'
-          mt={1}
-          mb={1}
-          ml={1}
-          bg='secondary.50'
-          borderRadius='semi'
+          justifyContent={{ base: 'flex-start', md: 'flex-end' }}
+          gap={2}
+          px={{ base: 4, md: 2 }}
+          py={1}
         >
-          {data.operatingSystem &&
-            data.operatingSystem.map((os, i) => {
-              const osIcon = operatingSystemIcons.find(
-                obj => obj.os === os,
-              )?.icon;
-              return (
-                <Icon
-                  key={i}
-                  as={osIcon || FaComputer}
-                  ml={i === 0 ? 2 : 0}
-                  mr={2}
-                />
-              );
-            })}
-        </Flex>
+          {dates.length > 0 && (
+            <Flex
+              flexWrap='wrap'
+              justifyContent={{ base: 'flex-start', md: 'flex-end' }}
+            >
+              {dates.map(({ label, value }) => (
+                <BannerTag key={label ?? 'date'}>
+                  <Icon as={FaRegClock} />
+                  <Text>
+                    {label && <strong>{label} </strong>}
+                    {value}
+                  </Text>
+                </BannerTag>
+              ))}
+            </Flex>
+          )}
+          {operatingSystems.length > 0 && (
+            <Tooltip content={osLabel}>
+              <BannerTag role='img' aria-label={osLabel}>
+                {operatingSystems.map(os => (
+                  <Icon
+                    key={os}
+                    as={
+                      operatingSystemIcons.find(icon => icon.os === os)?.icon ??
+                      FaComputer
+                    }
+                  />
+                ))}
+              </BannerTag>
+            </Tooltip>
+          )}
+        </Stack>
       )}
     </TypeBanner>
   );

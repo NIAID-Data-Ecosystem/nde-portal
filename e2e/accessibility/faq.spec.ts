@@ -22,7 +22,8 @@
  * and link-name issues, so scanning the rendered document matters.
  * This route does NOT render the site-wide search bar (no `includeSearchBar`).
  */
-import { test, expect, type Page, type TestInfo } from '@playwright/test';
+import { expect, type Page, test, type TestInfo } from '@playwright/test';
+
 import { runAxeScans } from '../utils/axe';
 
 // --- Per-route configuration -------------------------------------------------

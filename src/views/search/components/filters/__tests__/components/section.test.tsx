@@ -1,6 +1,8 @@
-import React from 'react';
 import { Accordion } from '@chakra-ui/react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import { fireEvent, render, screen } from 'src/__tests__/utils/render';
+
 import { FiltersSection } from '../../components/section';
 
 jest.mock('src/components/tooltip', () => ({
@@ -17,24 +19,28 @@ describe('filters/components/section', () => {
     jest.clearAllMocks();
   });
 
-  it('renders and expands panel content', () => {
+  it('renders and expands panel content', async () => {
     render(
-      <Accordion allowMultiple>
-        <FiltersSection name='Topic' description='topic description'>
+      <Accordion.Root multiple>
+        <FiltersSection id='topic' name='Topic' description='topic description'>
           <div>section-content</div>
         </FiltersSection>
-      </Accordion>,
+      </Accordion.Root>,
     );
 
-    fireEvent.click(screen.getByRole('button', { name: /topic/i }));
-    expect(screen.getByText('section-content')).toBeInTheDocument();
+    // zag's accordion trigger responds to a real pointer sequence; a bare
+    // fireEvent.click leaves the item closed. Content then mounts through the
+    // presence machine, so the assertion has to be async too.
+    await userEvent.click(screen.getByRole('button', { name: /topic/i }));
+    expect(await screen.findByText('section-content')).toBeInTheDocument();
   });
 
   it('shows chart toggle in visual-summary mode and invokes callback', () => {
     const onToggleViz = jest.fn();
     render(
-      <Accordion allowMultiple>
+      <Accordion.Root multiple>
         <FiltersSection
+          id='topic'
           name='Topic'
           description='topic description'
           filterId='topic'
@@ -43,7 +49,7 @@ describe('filters/components/section', () => {
         >
           <div>section-content</div>
         </FiltersSection>
-      </Accordion>,
+      </Accordion.Root>,
     );
 
     fireEvent.click(

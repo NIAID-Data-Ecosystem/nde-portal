@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import type { DocumentationProps } from '../types';
+
 import { fetchDocumentation } from '../services/api';
+import type { DocumentationProps } from '../types';
 
 interface UseDocumentationOptions {
   slug: string | string[];

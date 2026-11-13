@@ -1,5 +1,5 @@
-import fs from 'fs';
 import axios from 'axios';
+import fs from 'fs';
 import JSON5 from 'json5';
 
 /**

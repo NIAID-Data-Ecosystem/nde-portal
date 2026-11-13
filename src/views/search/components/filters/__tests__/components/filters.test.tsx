@@ -1,5 +1,6 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from 'src/__tests__/utils/render';
+
 import { Filters } from '../../components/filters';
 
 const updateRoute = jest.fn();
@@ -115,12 +116,12 @@ describe('filters/components/filters', () => {
       results: {
         includedInDataCatalog: {
           terms: [{ term: 'repo', label: 'Repo', count: 1 }],
-          isLoading: false,
+          loading: false,
           isUpdating: false,
         },
       },
       error: null,
-      isLoading: false,
+      loading: false,
       isUpdating: false,
     });
   });

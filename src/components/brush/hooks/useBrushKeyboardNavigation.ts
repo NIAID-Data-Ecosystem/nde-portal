@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
 import BaseBrush from '@visx/brush/lib/BaseBrush';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const BRUSH_STATES = ['brush', 'left', 'right'];
 

@@ -1,8 +1,9 @@
-import { uniqueId } from 'lodash';
 import type { UniqueIdentifier } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
-import type { FlattenedItem, TreeItem, TreeItems } from './types';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { uniqueId } from 'lodash';
+
+import type { FlattenedItem, TreeItem, TreeItems } from './types';
 
 export function findItem(items: TreeItems, itemId: UniqueIdentifier) {
   return items.find(({ id }) => id === itemId);

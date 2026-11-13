@@ -1,19 +1,21 @@
-import React from 'react';
 import {
   Flex,
   FlexProps,
+  HStack,
+  Stack,
   StackProps,
   Tag,
   Text,
   VStack,
 } from '@chakra-ui/react';
+import React from 'react';
+import { Link } from 'src/components/link';
 import {
   HasPart,
   IsBasisFor,
   IsPartOf,
   IsRelatedTo,
 } from 'src/utils/api/types';
-import { Link } from 'src/components/link';
 
 interface RelatedResourceBlockProps extends StackProps {
   data: IsBasisFor | IsRelatedTo | IsPartOf | HasPart;
@@ -80,12 +82,12 @@ export const RelatedResourceBlock = ({
   const pmid = 'pmid' in data && data?.pmid;
 
   return (
-    <VStack
+    <Stack
       alignItems='flex-start'
       fontSize='sm'
       px={2}
       py={2}
-      spacing={1.5}
+      gap={1.5}
       w='100%'
       {...props}
     >
@@ -93,62 +95,71 @@ export const RelatedResourceBlock = ({
       {(label || type || additionalType) && (
         <RelatedResourceBlockItem label='' w='100%'>
           {(additionalType || label || type) && (
-            <Text w='100%' lineHeight='short' fontWeight='medium'>
-              {/* Label: name or identifier or url*/}
-              {label && (
-                <>
-                  {linkProps ? (
-                    <Link noOfLines={3} mr={1.5} display='unset' {...linkProps}>
-                      {label}
-                    </Link>
-                  ) : (
-                    <Text as='span' mr={1.5}>
-                      {label}
-                    </Text>
+            // Tags sit beside the label, and wrap below it once the label
+            // would shrink past its flex-basis.
+            <Flex
+              alignItems='flex-start'
+              flexWrap='wrap'
+              columnGap={2}
+              rowGap={1}
+            >
+              <Text flex='1 1 12rem' lineHeight='moderate' fontWeight='medium'>
+                {/* Label: name or identifier or url*/}
+                {label && (
+                  <>
+                    {linkProps ? (
+                      <Link {...linkProps}>{label}</Link>
+                    ) : (
+                      <Text as='span'>{label}</Text>
+                    )}
+
+                    {/* Alternate Name */}
+                    {'alternateName' in data && data?.alternateName && (
+                      <Text as='span' fontStyle='italic' ml={1.5}>
+                        ({data?.alternateName})
+                      </Text>
+                    )}
+                  </>
+                )}
+              </Text>
+
+              {(type || additionalType) && (
+                <HStack gap={1} flexWrap='wrap'>
+                  {/* Type */}
+                  {type && (
+                    <Tag.Root
+                      size='sm'
+                      colorPalette='primary'
+                      borderRadius='full'
+                      variant='subtle'
+                      whiteSpace='nowrap'
+                    >
+                      <Tag.Label>{type}</Tag.Label>
+                    </Tag.Root>
                   )}
 
-                  {/* Alternate Name */}
-                  {'alternateName' in data && data?.alternateName && (
-                    <Text as='span' fontStyle='italic'>
-                      ({data?.alternateName})
-                    </Text>
+                  {/* Additional Type */}
+                  {additionalType && (
+                    <Tag.Root
+                      size='sm'
+                      colorPalette='primary'
+                      borderRadius='full'
+                      variant='subtle'
+                      whiteSpace='nowrap'
+                    >
+                      <Tag.Label>{additionalType}</Tag.Label>
+                    </Tag.Root>
                   )}
-                </>
+                </HStack>
               )}
-              {/* Type */}
-              {type && (
-                <Tag
-                  size='sm'
-                  colorScheme='primary'
-                  borderRadius='full'
-                  variant='subtle'
-                  alignSelf='flex-end'
-                >
-                  {type}
-                </Tag>
-              )}
-
-              {/* Additional Type */}
-              {additionalType && (
-                <Tag
-                  size='sm'
-                  colorScheme='primary'
-                  borderRadius='full'
-                  variant='subtle'
-                  alignSelf='flex-end'
-                >
-                  {additionalType}
-                </Tag>
-              )}
-            </Text>
+            </Flex>
           )}
         </RelatedResourceBlockItem>
       )}
-
       {/* Show identifiers if available, otherwise we show more datailed information like datePublished, authors and journal */}
       {doi || pmid ? (
         <RelatedResourceBlockItem label='Identifiers'>
-          <VStack flexDirection='column' alignItems='flex-start' spacing={0.5}>
+          <VStack flexDirection='column' alignItems='flex-start' gap={0.5}>
             {/* DOI */}
             {doi && (
               <Text as='span'>
@@ -207,14 +218,12 @@ export const RelatedResourceBlock = ({
           )}
         </>
       )}
-
       {/* Relationship */}
       {'relationship' in data && data?.relationship && (
         <RelatedResourceBlockItem label='Relationship'>
           <Text>{data?.relationship}</Text>
         </RelatedResourceBlockItem>
       )}
-
       {/* Citation */}
       {'citation' in data && data?.citation && (
         <RelatedResourceBlockItem label='Citation'>
@@ -228,7 +237,6 @@ export const RelatedResourceBlock = ({
           )}
         </RelatedResourceBlockItem>
       )}
-
       {/* Source */}
       {'includedInDataCatalog' in data &&
         data?.includedInDataCatalog &&
@@ -245,14 +253,12 @@ export const RelatedResourceBlock = ({
             )}
           </RelatedResourceBlockItem>
         )}
-
       {/* hasPart */}
       {'hasPart' in data && data?.hasPart && data.hasPart?.identifier && (
         <RelatedResourceBlockItem label='Has Part'>
           <Text>{data.hasPart.identifier}</Text>
         </RelatedResourceBlockItem>
       )}
-
       {/* encodingFormat */}
       {'encodingFormat' in data && data?.encodingFormat && (
         <RelatedResourceBlockItem label='Encoding Format'>
@@ -268,7 +274,7 @@ export const RelatedResourceBlock = ({
           )}
         </RelatedResourceBlockItem>
       )}
-    </VStack>
+    </Stack>
   );
 };
 
@@ -286,10 +292,12 @@ const RelatedResourceBlockItem = ({
 }: RelatedResourceBlockItemProps) => {
   return (
     <Flex
-      fontSize='xs'
+      fontSize='sm'
       flexDirection='column'
       lineHeight='shorter'
       wordBreak='break-word'
+      gap={0.5}
+      px={2}
       {...props}
     >
       {label && (

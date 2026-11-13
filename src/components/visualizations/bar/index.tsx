@@ -1,30 +1,31 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Flex, Text } from '@chakra-ui/react';
-import { useSpring, animated } from '@react-spring/web';
+import { animated, useSpring } from '@react-spring/web';
 import { Annotation, HtmlLabel } from '@visx/annotation';
 import { AxisBottom } from '@visx/axis';
 import { localPoint } from '@visx/event';
+import { GridColumns } from '@visx/grid';
 import { Group } from '@visx/group';
 import { useParentSize } from '@visx/responsive';
 import { scaleBand, scaleLinear, scaleLog } from '@visx/scale';
+import { scaleOrdinal } from '@visx/scale';
 import {
   TooltipWithBounds,
   useTooltip,
   useTooltipInPortal,
 } from '@visx/tooltip';
-import { theme } from 'src/theme';
-import {
-  TooltipWrapper,
-  TooltipTitle,
-} from 'src/components/visualizations/tooltip/index';
-import { ChartDatum } from 'src/views/search/components/summary/types';
 import { schemeObservable10 } from 'd3-scale-chromatic';
-import { scaleOrdinal } from '@visx/scale';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  TooltipTitle,
+  TooltipWrapper,
+} from 'src/components/visualizations/tooltip/index';
+import { system } from 'src/theme';
 import { MORE_ID } from 'src/views/search/components/summary/helpers';
-import { BarChartProps, TooltipEvt } from './types';
+import { ChartDatum } from 'src/views/search/components/summary/types';
+
 import { getMaxLabelWidthPx } from '../pie/helpers';
-import { GridColumns } from '@visx/grid';
 import { makeNiceTicks } from './helpers';
+import { BarChartProps, TooltipEvt } from './types';
 
 const barStyles = {
   height: {
@@ -43,7 +44,7 @@ const barStyles = {
   },
   padding: { y: 8 },
   rx: 2.5,
-  fill: theme.colors.gray[200],
+  fill: system.token('colors.gray.200'),
   fillOpacity: 0.6,
 };
 // label styles are minimal since we're hiding the axis line and ticks, but we need to reserve space for the tick labels
@@ -162,7 +163,7 @@ export const BarChart = ({
         paddingOuter: 0,
         round: true,
       }),
-    [plotHeight, data, isExpanded],
+    [plotHeight, data],
   );
   const barHeight = Math.min(barHeightMax, yScale.bandwidth());
 
@@ -235,10 +236,13 @@ export const BarChart = ({
                   tickFormat={v => Number(v).toLocaleString()}
                   tickLabelProps={() => ({
                     style: {
-                      fontFamily: theme.fonts.body,
-                      fontSize: theme.fontSizes['2xs'],
-                      fontWeight: theme.fontWeights.semibold,
-                      fill: theme.colors.text.heading,
+                      fontFamily: system.token('fonts.body'),
+                      fontSize: system.token('fontSizes.2xs'),
+                      style: {
+                        fontSize: system.token('fontSizes.2xs'),
+                      },
+                      fontWeight: system.token('fontWeights.semibold'),
+                      fill: system.token('colors.text.heading'),
                       textAnchor: 'middle',
                     },
                   })}
@@ -359,9 +363,7 @@ export const BarChart = ({
                           }}
                         >
                           <Text
-                            color={
-                              id === MORE_ID ? 'link.color' : 'text.heading'
-                            }
+                            color={id === MORE_ID ? 'link' : 'text.heading'}
                             width='100%'
                             display='block'
                             overflow='hidden'

@@ -1,6 +1,7 @@
 import { renderHook } from '@testing-library/react';
-import { useRepositoryMatcherFilters } from '../useRepositoryMatcherFilters';
+
 import { RepositoryMatcherRow } from '../useRepositoryMatcherData';
+import { useRepositoryMatcherFilters } from '../useRepositoryMatcherFilters';
 
 // Rows are keyed by column id with the already-transformed display values,
 // mirroring what useRepositoryMatcherData produces.

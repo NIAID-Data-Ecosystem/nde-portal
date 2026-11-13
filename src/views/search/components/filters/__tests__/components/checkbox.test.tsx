@@ -1,5 +1,7 @@
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from 'src/__tests__/utils/render';
+
 import { Checkbox } from '../../components/checkbox';
 
 const sendGTMEvent = jest.fn();
@@ -30,7 +32,7 @@ describe('filters/components/checkbox', () => {
         label='Group A'
         count={0}
         isHeader
-        isLoading={false}
+        loading={false}
         filterName='Source'
       />,
     );
@@ -44,7 +46,7 @@ describe('filters/components/checkbox', () => {
         term='scientific | common'
         label='scientific | common'
         count={3}
-        isLoading={false}
+        loading={false}
         filterName='Species'
       />,
     );
@@ -58,7 +60,7 @@ describe('filters/components/checkbox', () => {
         term='_exists_'
         label='Any'
         count={4}
-        isLoading={false}
+        loading={false}
         filterName='Keywords'
       />,
     );
@@ -69,25 +71,25 @@ describe('filters/components/checkbox', () => {
         term='-_exists_'
         label='No'
         count={4}
-        isLoading={false}
+        loading={false}
         filterName='Keywords'
       />,
     );
     expect(screen.getByText('Unspecified')).toBeInTheDocument();
   });
 
-  it('tracks GTM event for exists terms only', () => {
+  it('tracks GTM event for exists terms only', async () => {
     const { rerender } = render(
       <Checkbox
         term='_exists_'
         label='Any'
         count={1}
-        isLoading={false}
+        loading={false}
         filterName='Date'
       />,
     );
 
-    fireEvent.click(screen.getByRole('checkbox'));
+    await userEvent.click(screen.getByRole('checkbox'));
     expect(sendGTMEvent).toHaveBeenCalledTimes(1);
 
     rerender(
@@ -95,11 +97,11 @@ describe('filters/components/checkbox', () => {
         term='regular'
         label='Regular'
         count={1}
-        isLoading={false}
+        loading={false}
         filterName='Date'
       />,
     );
-    fireEvent.click(screen.getByRole('checkbox'));
+    await userEvent.click(screen.getByRole('checkbox'));
     expect(sendGTMEvent).toHaveBeenCalledTimes(1);
   });
 });

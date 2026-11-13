@@ -1,17 +1,18 @@
+import { Box, Flex, List, ListItemProps } from '@chakra-ui/react';
 import React, { forwardRef, HTMLAttributes, useMemo, useState } from 'react';
-import { Box, Flex, ListItem, ListItemProps } from '@chakra-ui/react';
-import { FlattenedItem } from '../../types';
-import { getStyles } from './styles';
-import { StyledWrapper, Wrapper } from './components/TreeItemWrapper';
-import { getUnionTheme } from 'src/components/advanced-search/utils/query-helpers';
-import { UnionButton } from './components/UnionButton';
-import { TreeItemActions } from './components/TreeItemActions';
-import { EditableContent } from './components/EditableContent';
-import { TreeItemContent } from './components/TreeItemContent';
 import {
-  SearchTypesConfigProps,
   SEARCH_TYPES_CONFIG,
+  SearchTypesConfigProps,
 } from 'src/components/advanced-search/components/Search/search-types-config';
+import { getUnionTheme } from 'src/components/advanced-search/utils/query-helpers';
+
+import { FlattenedItem } from '../../types';
+import { EditableContent } from './components/EditableContent';
+import { TreeItemActions } from './components/TreeItemActions';
+import { TreeItemContent } from './components/TreeItemContent';
+import { StyledWrapper, Wrapper } from './components/TreeItemWrapper';
+import { UnionButton } from './components/UnionButton';
+import { getStyles } from './styles';
 
 export interface TreeItemComponentProps
   extends Omit<HTMLAttributes<HTMLLIElement>, 'id'> {
@@ -94,7 +95,7 @@ export const TreeItem = React.memo(
     );
 
     return (
-      <ListItem ref={wrapperRef} {...styles} {...rest}>
+      <List.Item ref={wrapperRef} {...styles} {...rest}>
         <Flex
           ref={ref}
           style={style}
@@ -120,9 +121,9 @@ export const TreeItem = React.memo(
                 <Box p={1} py={2} maxW='100px'>
                   <UnionButton
                     id={id}
-                    colorScheme={
+                    colorPalette={
                       value.union
-                        ? getUnionTheme(value.union).colorScheme
+                        ? getUnionTheme(value.union).colorPalette
                         : 'primary'
                     }
                     selectedOption={value.union}
@@ -133,13 +134,13 @@ export const TreeItem = React.memo(
                 </Box>
               )}
               <StyledWrapper
-                borderRadius='base'
+                borderRadius='sm'
                 bg={childCount ? 'whiteAlpha.800' : '#fff'}
                 border='1px solid'
                 borderColor='gray.200'
                 borderLeftColor={
                   !ghost && value.union
-                    ? `${getUnionTheme(value.union).colorScheme}.300`
+                    ? `${getUnionTheme(value.union).colorPalette}.300`
                     : 'gray.200'
                 }
               >
@@ -210,7 +211,7 @@ export const TreeItem = React.memo(
             </Box>
           </Wrapper>
         </Flex>
-      </ListItem>
+      </List.Item>
     );
   }),
 );

@@ -1,10 +1,19 @@
-import React from 'react';
-import { act, fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
+
+import { ChakraProvider } from '@chakra-ui/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
+import React from 'react';
+import { system } from 'src/theme';
+import { useLocalStorage } from 'usehooks-ts';
+
 import { OntologyBrowserSettings } from './';
 import { OntologyViewSettings } from './components/ontology-view-settings';
-import { ChakraProvider } from '@chakra-ui/react';
-import { useLocalStorage } from 'usehooks-ts';
 import { transformSettingsToLocalStorageConfig } from './helpers';
 
 jest.mock('usehooks-ts', () => ({
@@ -14,7 +23,7 @@ jest.mock('usehooks-ts', () => ({
 describe('OntologyBrowserSettings', () => {
   const renderComponent = (props = {}) => {
     return render(
-      <ChakraProvider>
+      <ChakraProvider value={system}>
         <OntologyBrowserSettings label='Settings' buttonProps={{}} {...props} />
       </ChakraProvider>,
     );
@@ -64,7 +73,7 @@ describe('OntologyBrowserSettings', () => {
 
   test('does render the header and description when provided and popover opened', () => {
     render(
-      <ChakraProvider>
+      <ChakraProvider value={system}>
         <OntologyBrowserSettings
           label='Settings'
           description='This is a description'
@@ -117,7 +126,7 @@ describe('OntologyViewSettings', () => {
 
   const renderComponent = (props = {}) => {
     return render(
-      <ChakraProvider>
+      <ChakraProvider value={system}>
         <OntologyViewSettings settings={settings} {...props} />
       </ChakraProvider>,
     );
@@ -133,32 +142,38 @@ describe('OntologyViewSettings', () => {
     expect(screen.getByLabelText(/an unchecked switch/i)).toBeInTheDocument();
   });
 
-  test('toggles the a checked switch to false', () => {
+  test('toggles the a checked switch to false', async () => {
     renderComponent();
+    // zag drops events sent before its machine starts, a microtask after
+    // mount, and applies transitions asynchronously.
+    await act(async () => {});
     const switchElement = screen.getByLabelText(/a checked switch/i);
     expect(switchElement).toBeChecked();
 
-    act(() => {
-      fireEvent.click(switchElement);
-    });
+    fireEvent.click(switchElement);
 
-    expect(mockSetViewConfig).toHaveBeenCalledWith(
-      expect.objectContaining({ isCondensed: false }),
+    await waitFor(() =>
+      expect(mockSetViewConfig).toHaveBeenCalledWith(
+        expect.objectContaining({ isCondensed: false }),
+      ),
     );
     expect(mockSetViewConfig).toHaveBeenCalledTimes(1);
   });
 
-  test('toggles the an unchecked switch to true', () => {
+  test('toggles the an unchecked switch to true', async () => {
     renderComponent();
+    // zag drops events sent before its machine starts, a microtask after
+    // mount, and applies transitions asynchronously.
+    await act(async () => {});
     const switchElement = screen.getByLabelText(/an unchecked switch/i);
     expect(switchElement).not.toBeChecked();
 
-    act(() => {
-      fireEvent.click(switchElement);
-    });
+    fireEvent.click(switchElement);
 
-    expect(mockSetViewConfig).toHaveBeenCalledWith(
-      expect.objectContaining({ hideEmptyCounts: true }),
+    await waitFor(() =>
+      expect(mockSetViewConfig).toHaveBeenCalledWith(
+        expect.objectContaining({ hideEmptyCounts: true }),
+      ),
     );
     expect(mockSetViewConfig).toHaveBeenCalledTimes(1);
   });

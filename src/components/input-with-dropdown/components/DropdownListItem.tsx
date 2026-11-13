@@ -1,4 +1,3 @@
-import React, { useMemo } from 'react';
 import {
   Heading,
   Highlight,
@@ -6,7 +5,9 @@ import {
   ListItemProps as ChakraListItemProps,
   Text,
 } from '@chakra-ui/react';
+import React, { useMemo } from 'react';
 import { FormattedResource } from 'src/utils/api/types';
+
 import { useDropdownContext } from '..';
 
 interface DropdownListItemProps extends ChakraListItemProps {
@@ -18,7 +19,7 @@ interface DropdownListItemProps extends ChakraListItemProps {
 
 export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
   ({ name, searchTerm, value, index, onMouseOver, onClick, ...props }) => {
-    const { colorScheme, cursor, getListItemProps } = useDropdownContext();
+    const { colorPalette, cursor, getListItemProps } = useDropdownContext();
 
     // If item is highlighted (mouseover or keydown), update the input string with the value of the list item.
     const isSelected = useMemo(() => cursor === index, [index, cursor]);
@@ -43,7 +44,7 @@ export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
         {name && (
           <Text
             fontSize='12px'
-            color={`${colorScheme}.800`}
+            color={`${colorPalette}.800`}
             wordBreak='break-word'
             fontWeight='light'
             textAlign='left'
@@ -55,7 +56,7 @@ export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
         <Heading
           as='h4'
           size='sm'
-          lineHeight='short'
+          lineHeight='moderate'
           color='text.body'
           wordBreak='break-word'
           fontWeight='normal'
@@ -66,7 +67,7 @@ export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
             styles={{
               fontWeight: 'bold',
               textDecoration: 'underline',
-              color: `${colorScheme}.600`,
+              color: `${colorPalette}.600`,
               bg: 'transparent',
             }}
           >

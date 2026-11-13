@@ -1,81 +1,74 @@
-import {
-  Flex,
-  Icon,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  MenuGroup,
-  Text,
-} from '@chakra-ui/react';
-import { FaArrowsUpDown } from 'react-icons/fa6';
-import LoadingSpinner from 'src/components/loading';
+import { Flex, Icon, Menu, Portal, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
-import type { SidebarMobileProps } from '../../types';
+import { FaArrowsUpDown } from 'react-icons/fa6';
+
 import { DEFAULT_COLOR_SCHEME } from '../../constants';
+import type { SidebarMobileProps } from '../../types';
 
 export const SidebarMobile = ({
-  isLoading,
+  loading,
   menuTitle,
   sections,
   selectedSlug,
-  colorScheme = DEFAULT_COLOR_SCHEME,
+  colorPalette = DEFAULT_COLOR_SCHEME,
 }: SidebarMobileProps) => {
   return (
-    <Menu matchWidth>
+    <Menu.Root positioning={{ sameWidth: true }}>
       <Flex bg='white'>
-        <MenuButton
+        <Menu.Trigger
           bg='blackAlpha.100'
           borderRadius='semi'
-          color='page.placeholder'
+          color='text.placeholder'
           mx={2}
           my={2}
           flex={1}
           _hover={{ color: 'text.body' }}
+          disabled={loading || !sections?.length}
         >
           <Flex px={4} py={2} alignItems='center' justifyContent='center'>
-            <Text as='span' size='sm' flex={1} color='inherit'>
+            <Text as='span' fontSize='sm' flex={1} color='inherit'>
               {menuTitle || 'Documentation Menu'}
             </Text>
             <Icon as={FaArrowsUpDown} />
           </Flex>
-        </MenuButton>
+        </Menu.Trigger>
       </Flex>
-      <MenuList w='100%'>
-        {isLoading && (
-          <MenuItem>
-            <LoadingSpinner isLoading={isLoading} />
-          </MenuItem>
-        )}
-        {sections?.map(category => (
-          <MenuGroup key={category.id} title={category.name}>
-            {category.items.map(item => {
-              if (!item?.slug) return null;
-              const isSelected = selectedSlug === item.slug;
-              return (
-                // Compose the link onto the MenuItem so the `menuitem` role is on
-                // the anchor itself. Wrapping a MenuItem in NextLink instead puts
-                // a bare <a> as a direct child of role="menu", which fails axe's
-                // `aria-required-children` (a menu may only contain menuitems).
-                <MenuItem
-                  key={item.id}
-                  as={NextLink}
-                  href={item.href}
-                  pl={6}
-                  color={
-                    isSelected ? `${colorScheme}.600!important` : 'inherit'
-                  }
-                  bg={isSelected ? `${colorScheme}.100` : 'transparent'}
-                >
-                  <Text fontSize='sm' color='inherit'>
-                    {item.name}
-                  </Text>
-                </MenuItem>
-              );
-            })}
-          </MenuGroup>
-        ))}
-      </MenuList>
-    </Menu>
+      <Portal>
+        <Menu.Positioner>
+          <Menu.Content>
+            {!loading &&
+              sections?.map(category => (
+                <Menu.ItemGroup key={category.id}>
+                  <Menu.ItemGroupLabel>{category.name}</Menu.ItemGroupLabel>
+                  {category.items.map(item => {
+                    if (!item?.slug) return null;
+                    const isSelected = selectedSlug === item.slug;
+                    return (
+                      // Compose the link onto the Menu.Item so the `menuitem` role is on
+                      // the anchor itself. Wrapping a Menu.Item in NextLink instead puts
+                      // a bare <a> as a direct child of role="menu", which fails axe's
+                      // `aria-required-children` (a menu may only contain menuitems).
+                      <Menu.Item
+                        key={item.id}
+                        value={`${item.id}`}
+                        pl={6}
+                        fontSize='sm'
+                        // Unselected items leave `bg` to the recipe: a style
+                        // prop outranks its `_highlighted` background, which
+                        // is the keyboard focus indicator.
+                        color={isSelected ? `${colorPalette}.600` : undefined}
+                        bg={isSelected ? `${colorPalette}.100` : undefined}
+                        asChild
+                      >
+                        <NextLink href={item.href}>{item.name}</NextLink>
+                      </Menu.Item>
+                    );
+                  })}
+                </Menu.ItemGroup>
+              ))}
+          </Menu.Content>
+        </Menu.Positioner>
+      </Portal>
+    </Menu.Root>
   );
 };

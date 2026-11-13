@@ -17,7 +17,7 @@
  *
  * State coverage note — this route is intentionally NOT the full four-state
  * matrix:
- *   - LOADING: `/user_info` kept pending → `isLoading` stays true → the card
+ *   - LOADING: `/user_info` kept pending → `loading` stays true → the card
  *     shows the "Checking authentication status..." spinner. Scanned below.
  *   - POPULATED (logged-out): `/user_info` → 401 → `isAuthenticated=false`, the
  *     login provider buttons render. This is the primary interactive state.
@@ -31,7 +31,8 @@
  *   - AUTHENTICATED: not a scannable state — a resolved user triggers a
  *     `router.replace()` redirect away from `/login`.
  */
-import { test, expect, type Page, type TestInfo } from '@playwright/test';
+import { expect, type Page, test, type TestInfo } from '@playwright/test';
+
 import { runAxeScans } from '../utils/axe';
 
 // --- Per-route configuration -------------------------------------------------

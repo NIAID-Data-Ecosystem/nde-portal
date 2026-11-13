@@ -1,5 +1,6 @@
 import { SampleAggregate, SampleCollection } from 'src/utils/api/types';
 import { formatSampleLabelFromProperty } from 'src/utils/formatting/formatSample';
+
 import { getAvailableSamplePropertyColumns } from './helpers';
 
 export type SamplePropertyConfig = {

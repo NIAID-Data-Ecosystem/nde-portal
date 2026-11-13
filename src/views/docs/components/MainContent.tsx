@@ -1,15 +1,31 @@
+import { Box, Flex, Heading, Separator, Text } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-import { Box, Divider, Flex, Heading, Text } from '@chakra-ui/react';
-import { Error } from 'src/components/error';
 import Empty from 'src/components/empty';
+import { Error } from 'src/components/error';
 import { MDXComponents as DefaultMDXComponents } from 'src/components/mdx/components';
-import { transformString2Hash } from '../utils/markdown';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
+
 import { useDocumentation } from '../hooks/useDocumentation';
 import type { DocumentationProps } from '../types';
+import { transformString2Hash } from '../utils/markdown';
+
+/*
+Borders every image and video unless it has the `unstyled` class. Defined once
+here rather than inline, so the components stay stable across renders and a
+playing video isn't remounted.
+*/
+const mdxOverrides = {
+  img: (props: any) =>
+    DefaultMDXComponents.img({
+      ...props,
+      className: props?.className?.includes('unstyled')
+        ? props.className
+        : [props?.className, 'border'].filter(Boolean).join(' '),
+    }),
+};
 
 interface MainContentProps {
   id: number;
@@ -37,23 +53,13 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
     }
   }, [data?.updatedAt]);
 
-  const MDXComponents = useMDXComponents({
-    img: (props: any) => {
-      // Add a border to images unless they have the 'unstyled' class
-      return DefaultMDXComponents.img({
-        ...props,
-        className: props?.className?.includes('unstyled')
-          ? props.className
-          : `${props.className} border`,
-      });
-    },
-  });
+  const MDXComponents = useMDXComponents(mdxOverrides);
 
   if (error) {
     return (
       <Error>
         <Flex flexDirection='column' alignItems='center'>
-          <Text fontWeight='light' color='gray.800' fontSize='lg'>
+          <Text fontWeight='light' color='gray.600' fontSize='lg'>
             API Request:{' '}
             {error?.message ||
               "It's possible that the server is experiencing some issues."}{' '}
@@ -80,19 +86,16 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
         <Heading id={transformString2Hash(data.name)} as='h1' size='xl' mb={2}>
           {data.name}
         </Heading>
-        <Text color='gray.700'>{data.subtitle}</Text>
+        <Text color='gray.500'>{data.subtitle}</Text>
       </Box>
-
       <ReactMarkdown
         rehypePlugins={[rehypeRaw, remarkGfm]}
         components={MDXComponents}
       >
         {data.description}
       </ReactMarkdown>
-
-      <Divider orientation='horizontal' mt={8} mb={4} />
-
-      <Text fontStyle='italic' fontSize='xs' color='gray.800' textAlign='end'>
+      <Separator orientation='horizontal' mt={8} mb={4} />
+      <Text fontStyle='italic' fontSize='xs' color='gray.600' textAlign='end'>
         Last updated on{' '}
         <Text as='span' fontWeight='semibold'>
           {updatedAt}

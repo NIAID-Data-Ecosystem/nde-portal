@@ -1,11 +1,11 @@
+import { Box, Heading } from '@chakra-ui/react';
 import type { NextPage } from 'next';
+import { AdvancedSearch } from 'src/components/advanced-search';
 import {
   getPageSeoConfig,
   PageContainer,
   PageContent,
 } from 'src/components/page-container';
-import { Box, Heading } from '@chakra-ui/react';
-import { AdvancedSearch } from 'src/components/advanced-search';
 
 const AdvancedSearchPage: NextPage = () => {
   return (

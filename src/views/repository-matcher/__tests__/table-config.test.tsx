@@ -1,6 +1,7 @@
-import React from 'react';
 import { screen } from '@testing-library/react';
+import React from 'react';
 import { renderWithClient } from 'src/__tests__/mocks/utils';
+
 import {
   FILTERABLE_REPOSITORY_MATCHER_COLUMNS,
   REPOSITORY_MATCHER_COLUMNS,
@@ -134,7 +135,7 @@ describe('researchDomain column', () => {
 
   it('renders loading, empty, undefined, and populated states', () => {
     const loading = renderCell(
-      col().component({ value: [], isLoading: true, data: {} as any }),
+      col().component({ value: [], loading: true, data: {} as any }),
     );
     loading.unmount();
 
@@ -255,7 +256,7 @@ describe('topic column', () => {
 
   it('renders nothing extra while loading', () => {
     const { container } = renderCell(
-      col().component({ value: [], isLoading: true, data: {} as any }),
+      col().component({ value: [], loading: true, data: {} as any }),
     );
     expect(container).toBeInTheDocument();
   });
@@ -278,7 +279,7 @@ describe('temporalCoverage column', () => {
 
   it('renders loading, empty, and formatted ranges', () => {
     const { unmount } = renderCell(
-      col().component({ value: undefined, isLoading: true, data: {} as any }),
+      col().component({ value: undefined, loading: true, data: {} as any }),
     );
     unmount();
 

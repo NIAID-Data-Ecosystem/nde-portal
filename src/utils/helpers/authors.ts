@@ -1,4 +1,4 @@
-import { FormattedResource } from 'src/utils/api/types';
+import { Author, FormattedResource } from 'src/utils/api/types';
 
 // Add punctuation to end of string if needed.
 export const shouldAppendPunctuation = (
@@ -9,6 +9,25 @@ export const shouldAppendPunctuation = (
     return '';
   }
   return str.slice(-1) === symbol ? str : str + symbol;
+};
+
+// Format a single author's name, returning an empty string if no name fields exist.
+export const formatAuthorName = (author: Author): string => {
+  if (author.name) {
+    // If name has comma format so that first name goes after last name.
+    // [NOTE]: might cause issues. Not sure this is the best way of handling.
+    if (author.name.includes(',')) {
+      let [familyName, givenName] = author.name.split(',');
+      return `${givenName} ${familyName}`;
+    }
+    return author.name;
+  }
+  if (author.givenName || author.familyName) {
+    return `${author.givenName ? `${author.givenName} ` : ''}${
+      author?.familyName || ''
+    }`;
+  }
+  return '';
 };
 
 // Format authors name string with a given separator
@@ -23,23 +42,7 @@ export const formatAuthorsList2String = (
   let authors = !Array.isArray(authorsData) ? [authorsData] : authorsData;
 
   let author_list = authors.map((author, i) => {
-    // Not author name fields exist.
-    let author_name = '';
-
-    if (author.name) {
-      author_name = author.name;
-
-      // If name has comma format so that first name goes after last name.
-      // [NOTE]: might cause issues. Not sure this is the best way of handling.
-      if (author.name.includes(',')) {
-        let [familyName, givenName] = author.name.split(',');
-        author_name = `${givenName} ${familyName}`;
-      }
-    } else if (author.givenName || author.familyName) {
-      author_name = `${author.givenName ? `${author.givenName} ` : ''}${
-        author?.familyName || ''
-      }`;
-    }
+    const author_name = formatAuthorName(author);
 
     // if only one author.
     if (authors.length === 1) {

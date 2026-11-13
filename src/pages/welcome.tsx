@@ -4,32 +4,30 @@
  * authentication.
  */
 
-import { ReactNode, useEffect } from 'react';
-import { useRouter } from 'next/router';
 import {
   Box,
   Heading,
   Icon,
   IconProps,
-  ListItem,
-  ListIcon,
+  List,
   Text,
-  UnorderedList,
   VStack,
 } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
+import { ReactNode, useEffect } from 'react';
 import { FaCircle, FaRegBookmark } from 'react-icons/fa6';
-import { useSignInMethod } from 'src/hooks/useSignInMethod';
-import { useUserData } from 'src/hooks/useUserData';
-import { UserPreferences } from 'src/hooks/useUserData/types';
-import { WELCOME_PATH } from 'src/hooks/useUserData/useWelcomeRedirect';
-import { withAuth } from 'src/components/auth/withAuth';
 import { ProviderIcon } from 'src/components/auth/provider-icon';
+import { withAuth } from 'src/components/auth/withAuth';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import {
   PreferencesForm,
   PreferencesFormSection,
   SettingsSection,
 } from 'src/components/settings';
+import { useSignInMethod } from 'src/hooks/useSignInMethod';
+import { useUserData } from 'src/hooks/useUserData';
+import { UserPreferences } from 'src/hooks/useUserData/types';
+import { WELCOME_PATH } from 'src/hooks/useUserData/useWelcomeRedirect';
 import { ENABLE_AUTH, SHOW_WELCOME_PAGE } from 'src/utils/feature-flags';
 
 const IS_WELCOME_ENABLED = SHOW_WELCOME_PAGE && ENABLE_AUTH;
@@ -110,10 +108,10 @@ const DEFAULT_WELCOME_PREFERENCES: Partial<UserPreferences> = {
 };
 
 const BulletItem = ({ children }: { children: ReactNode }) => (
-  <ListItem>
-    <ListIcon as={FaCircle} aria-hidden='true' m={1.5} mr={2} boxSize={1} />
+  <List.Item>
+    <List.Indicator as={FaCircle} boxSize={1} aria-hidden='true' />
     {children}
-  </ListItem>
+  </List.Item>
 );
 
 const WelcomePage = () => {
@@ -150,7 +148,7 @@ const WelcomePage = () => {
         px={{ base: 4, md: 0 }}
       >
         {/* Header */}
-        <VStack alignItems='start' gap={4} mb={8}>
+        <VStack alignItems='start' mb={6}>
           <Heading as='h1' size='xl' fontWeight='bold'>
             {WELCOME_COPY.page.title}
           </Heading>
@@ -161,33 +159,33 @@ const WelcomePage = () => {
               {methodLabel}. {WELCOME_COPY.provider.useEveryTime(methodLabel)}
             </Text>
           )}
+
+          {/* Saved items guidance */}
+          <SettingsSection title={manage.title}>
+            <List.Root as='ul' pl={0} gap={2} color='gray.800'>
+              {manage.items.map((item, i) => (
+                <BulletItem key={i}>{item}</BulletItem>
+              ))}
+            </List.Root>
+          </SettingsSection>
+
+          {/* Communication preferences */}
+          <PreferencesForm
+            sections={TOGGLE_SECTIONS}
+            // Users who've already onboarded see their saved choices; first-time
+            // users start from the opt-in defaults.
+            initialValues={
+              onboardingComplete === true
+                ? undefined
+                : DEFAULT_WELCOME_PREFERENCES
+            }
+            saveLabel={WELCOME_COPY.saveButton}
+            saveOptions={{ completeOnboarding: true }}
+            // Saving also completes onboarding, so it's meaningful unchanged.
+            allowUnchangedSave
+            onSaved={handleSaved}
+          />
         </VStack>
-
-        {/* Saved items guidance */}
-        <SettingsSection title={manage.title}>
-          <UnorderedList spacing={2} color='gray.800'>
-            {manage.items.map((item, i) => (
-              <BulletItem key={i}>{item}</BulletItem>
-            ))}
-          </UnorderedList>
-        </SettingsSection>
-
-        {/* Communication preferences */}
-        <PreferencesForm
-          sections={TOGGLE_SECTIONS}
-          // Users who've already onboarded see their saved choices; first-time
-          // users start from the opt-in defaults.
-          initialValues={
-            onboardingComplete === true
-              ? undefined
-              : DEFAULT_WELCOME_PREFERENCES
-          }
-          saveLabel={WELCOME_COPY.saveButton}
-          saveOptions={{ completeOnboarding: true }}
-          // Saving also completes onboarding, so it's meaningful unchanged.
-          allowUnchangedSave
-          onSaved={handleSaved}
-        />
       </Box>
     </PageContainer>
   );

@@ -1,23 +1,23 @@
-import React, { useMemo, useState } from 'react';
-import NextLink from 'next/link';
-import { UrlObject } from 'url';
 import { Box, Checkbox, Flex, Text, VisuallyHidden } from '@chakra-ui/react';
-import { animated, useTransition, to } from '@react-spring/web';
+import { animated, to, useTransition } from '@react-spring/web';
 import { Annotation, HtmlLabel } from '@visx/annotation';
 import { localPoint } from '@visx/event';
 import { Group } from '@visx/group';
 import { useParentSize } from '@visx/responsive';
 import { scaleLog } from '@visx/scale';
-import Pie, { ProvidedProps, PieArcDatum } from '@visx/shape/lib/shapes/Pie';
+import Pie, { PieArcDatum, ProvidedProps } from '@visx/shape/lib/shapes/Pie';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
+import NextLink from 'next/link';
+import React, { useMemo, useState } from 'react';
 import { InfoLabel } from 'src/components/info-label';
-import { FacetTerm } from 'src/utils/api/types';
 import {
   customTooltipStyles,
   TooltipSubtitle,
   TooltipTitle,
   TooltipWrapper,
 } from 'src/components/visualizations/tooltip/index';
+import { FacetTerm } from 'src/utils/api/types';
+import { UrlObject } from 'url';
 
 interface Datum {
   count: number;
@@ -194,18 +194,28 @@ export const DonutChart = ({
       width={{ base: '100%', md: 'unset' }}
     >
       {/* Toggle log scale */}
-      <Checkbox
-        isChecked={applyLogScale}
-        onChange={() => setApplyLogScale(!applyLogScale)}
+      <Checkbox.Root
+        onCheckedChange={() => setApplyLogScale(!applyLogScale)}
         alignSelf='flex-start'
+        checked={applyLogScale}
+        // v2's default colorScheme; v3 leaves the control fill empty without a palette.
+        colorPalette='blue'
       >
-        <InfoLabel
-          title='Apply log scale'
-          tooltipText='Log scale compresses large values, making smaller categories more visible while preserving
-          proportions. Original counts are shown in tooltips.'
-        ></InfoLabel>
-      </Checkbox>
-
+        <Checkbox.HiddenInput />
+        <Checkbox.Control>
+          <Checkbox.Indicator />
+        </Checkbox.Control>
+        <Checkbox.Label>
+          <InfoLabel
+            tooltipProps={{
+              content:
+                'Log scale compresses large values, making smaller categories more visible while preserving proportions. Original counts are shown in tooltips.',
+            }}
+          >
+            Apply log scale
+          </InfoLabel>
+        </Checkbox.Label>
+      </Checkbox.Root>
       {/* Donut Chart */}
       <div ref={parentRef} style={{ width: '100%', height: `${height}px` }}>
         <Box ref={containerRef} width={width} height={height}>
@@ -268,7 +278,6 @@ export const DonutChart = ({
           </svg>
         </Box>
       </div>
-
       {/* Tooltip */}
       {tooltipOpen && tooltipData && (
         <TooltipInPortal
@@ -473,11 +482,11 @@ function AnimatedPie<Datum extends { count: number }>({
                   fontSize='xs'
                   fontWeight='semibold'
                   lineHeight='normal'
-                  sx={{
+                  css={{
                     hyphens: 'auto',
                     whiteSpace: 'normal',
                   }}
-                  noOfLines={2}
+                  lineClamp={2}
                 >
                   {displayLabel}
                 </Text>

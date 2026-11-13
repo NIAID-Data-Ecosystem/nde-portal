@@ -1,15 +1,39 @@
-import { useEffect, useState } from 'react';
-import {
-  Box,
-  Flex,
-  Icon,
-  IconButton,
-  ListItem,
-  UnorderedList,
-} from '@chakra-ui/react';
-import { FaAngleDown, FaAngleRight } from 'react-icons/fa6';
+import { Box, Flex, Icon, IconButton, List } from '@chakra-ui/react';
 import NextLink from 'next/link';
+import { useEffect, useState } from 'react';
+import { FaAngleDown, FaAngleRight } from 'react-icons/fa6';
+
 import type { TocItemProps } from '../../types';
+
+// Section link in the sidebar table of contents, indented by its depth.
+const TocLink = ({
+  href,
+  pl,
+  children,
+}: {
+  href: string;
+  pl: number;
+  children: React.ReactNode;
+}) => (
+  <Box
+    asChild
+    display='flex'
+    flex={1}
+    fontSize='sm'
+    pl={pl}
+    pr={2}
+    py={1}
+    lineHeight='tall'
+    color='text.body'
+    cursor='pointer'
+    _hover={{
+      bg: 'blackAlpha.50',
+      borderRadius: 'sm',
+    }}
+  >
+    <NextLink href={href}>{children}</NextLink>
+  </Box>
+);
 
 export const TocItem = ({
   tocItem,
@@ -53,33 +77,14 @@ export const TocItem = ({
   const hasChildren = childItems.length > 0;
 
   return (
-    <ListItem w='100%' display='flex' flexDirection='column'>
+    <List.Item w='100%' display='flex' flexDirection='column'>
       <Flex w='100%' alignItems='center'>
-        <NextLink
-          style={{ display: 'flex', flex: 1 }}
+        <TocLink
           href={`/knowledge-center/${pageSlug}#${tocItem.hash}`}
-          passHref
+          pl={8 + indent}
         >
-          <Box
-            as='span'
-            flex={1}
-            fontSize='sm'
-            pl={8 + indent}
-            pr={2}
-            py={1}
-            lineHeight='tall'
-            color='text.body'
-            bg='transparent'
-            cursor='pointer'
-            _hover={{
-              bg: 'blackAlpha.50',
-              borderRadius: 'base',
-              transition: 'fast',
-            }}
-          >
-            {tocItem.title}
-          </Box>
-        </NextLink>
+          {tocItem.title}
+        </TocLink>
         <Box
           w='40px'
           display='flex'
@@ -92,55 +97,31 @@ export const TocItem = ({
               aria-label={
                 isExpanded ? 'Collapse subsections' : 'Expand subsections'
               }
-              icon={
-                <Icon
-                  as={isExpanded ? FaAngleDown : FaAngleRight}
-                  boxSize={4}
-                />
-              }
               size='sm'
               variant='ghost'
               onClick={() => setIsExpanded(!isExpanded)}
-            />
+            >
+              <Icon as={isExpanded ? FaAngleDown : FaAngleRight} boxSize={4} />
+            </IconButton>
           )}
         </Box>
       </Flex>
-
       {/* Child TOC Items (subsections) */}
       {hasChildren && isExpanded && (
-        <UnorderedList ml={0} mt={1}>
+        <List.Root ps={0} mt={1}>
           {childItems.map((childItem, idx) => (
-            <ListItem key={idx} w='100%' display='flex' alignItems='center'>
-              <NextLink
-                style={{ display: 'flex', flex: 1 }}
+            <List.Item key={idx} w='100%' display='flex' alignItems='center'>
+              <TocLink
                 href={`/knowledge-center/${pageSlug}#${childItem.hash}`}
-                passHref
+                pl={8 + indent + 4}
               >
-                <Box
-                  as='span'
-                  flex={1}
-                  fontSize='sm'
-                  pl={8 + indent + 4}
-                  pr={2}
-                  py={1}
-                  lineHeight='tall'
-                  color='text.body'
-                  bg='transparent'
-                  cursor='pointer'
-                  _hover={{
-                    bg: 'blackAlpha.50',
-                    borderRadius: 'base',
-                    transition: 'fast',
-                  }}
-                >
-                  {childItem.title}
-                </Box>
-              </NextLink>
+                {childItem.title}
+              </TocLink>
               <Box w='40px' />
-            </ListItem>
+            </List.Item>
           ))}
-        </UnorderedList>
+        </List.Root>
       )}
-    </ListItem>
+    </List.Item>
   );
 };

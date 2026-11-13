@@ -1,26 +1,30 @@
-import React, { useEffect, useState } from 'react';
 import { InputProps } from '@chakra-ui/react';
-import { DropdownButton } from 'src/components/dropdown-button';
+import React, { useEffect, useState } from 'react';
 import { TreeItem } from 'src/components/advanced-search/components/SortableWithCombine';
 import {
   getUnionTheme,
   unionOptions,
 } from 'src/components/advanced-search/utils/query-helpers';
+import {
+  DropdownButton,
+  DropdownButtonProps,
+} from 'src/components/dropdown-button';
+
 import { useAdvancedSearchContext } from '../../AdvancedSearchFormContext';
 
 export interface InputSubmitButtonProps {
-  isDisabled: boolean;
-  colorScheme?: InputProps['colorScheme'];
+  disabled: boolean;
+  colorPalette?: InputProps['colorPalette'];
   items: TreeItem[];
-  size: InputProps['size'];
+  size: DropdownButtonProps['size'];
 }
 
 // Submit button for input.
 export const InputSubmitButton: React.FC<InputSubmitButtonProps> = ({
-  colorScheme = 'primary',
+  colorPalette = 'primary',
   size = 'md',
   items,
-  isDisabled,
+  disabled,
   ...props
 }) => {
   const { queryValue, updateQueryValue } = useAdvancedSearchContext();
@@ -64,8 +68,8 @@ export const InputSubmitButton: React.FC<InputSubmitButtonProps> = ({
       {...props}
       py={0}
       size={size}
-      colorScheme={union ? getUnionTheme(union).colorScheme : colorScheme}
-      isDisabled={isDisabled}
+      colorPalette={union ? getUnionTheme(union).colorPalette : colorPalette}
+      disabled={disabled}
     />
   );
 };

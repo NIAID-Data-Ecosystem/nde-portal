@@ -1,4 +1,5 @@
 import { remark } from 'remark';
+
 import type { ContentHeading } from '../types';
 
 // Transform a string into a URL-safe hash

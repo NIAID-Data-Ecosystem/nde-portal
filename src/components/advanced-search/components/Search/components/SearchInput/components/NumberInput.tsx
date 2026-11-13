@@ -1,16 +1,12 @@
-import { useState } from 'react';
 import {
   Flex,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
+  NativeSelect,
   NumberInput as ChakraNumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  Select,
 } from '@chakra-ui/react';
+import { useState } from 'react';
+import { formatNumber } from 'src/utils/helpers';
 
 import { AdvancedSearchInputProps } from '../types';
-import { formatNumber } from 'src/utils/helpers';
 
 interface NumberInputProps extends AdvancedSearchInputProps {
   options?: {
@@ -20,9 +16,8 @@ interface NumberInputProps extends AdvancedSearchInputProps {
 }
 
 export const NumberInput: React.FC<NumberInputProps> = ({
-  isDisabled,
-  colorScheme,
-  size,
+  disabled,
+  colorPalette,
   handleSubmit,
   renderSubmitButton,
 }) => {
@@ -40,69 +35,72 @@ export const NumberInput: React.FC<NumberInputProps> = ({
   );
 
   return (
-    <Flex
-      as='form'
-      w='100%'
-      alignItems='center'
-      onSubmit={e => {
-        e.preventDefault();
-        handleSubmit({
-          term: `${operator.label} ${formatNumber(+count)}`,
-          querystring: `${operator.value}${count}`,
-        });
-      }}
-    >
-      <Select
-        colorScheme={colorScheme}
-        // bg={colorScheme ? `${colorScheme}.50` : `gray.100`}
-        size='lg'
-        mr={2}
-        variant='outline'
-        isDisabled={isDisabled}
-        value={options.findIndex(option => option.label === operator.label)}
-        onChange={e => {
-          setOperator(options[+e.target.value]);
+    <Flex w='100%' alignItems='center' asChild>
+      <form
+        onSubmit={e => {
+          e.preventDefault();
+          handleSubmit({
+            term: `${operator.label} ${formatNumber(+count)}`,
+            querystring: `${operator.value}${count}`,
+          });
         }}
-        fontWeight='semibold'
       >
-        {options.map((option, index) => {
-          return (
-            <option key={option.label} value={index}>
-              {option.label} {option.value || '='}
-            </option>
-          );
-        })}
-      </Select>
-      <ChakraNumberInput
-        w='100%'
-        maxW={150}
-        value={formatNumber(+count, ' ')}
-        onChange={value => {
-          setCount(value);
-        }}
-        colorScheme={colorScheme} // [to do] - implement colorscheme.
-        clampValueOnBlur={true}
-        isDisabled={isDisabled}
-        allowMouseWheel
-        step={50}
-        defaultValue={0}
-        min={0}
-        size='lg'
-      >
-        <NumberInputField />
-        <NumberInputStepper>
-          <NumberIncrementStepper />
-          <NumberDecrementStepper />
-        </NumberInputStepper>
-      </ChakraNumberInput>
-      <Flex mx={2}>
-        {renderSubmitButton &&
-          renderSubmitButton({
-            type: 'submit',
-            w: '100%',
-            isDisabled,
-          })}
-      </Flex>
+        {/* Both controls are pinned to `lg`, as in v2, so they line up. */}
+        <NativeSelect.Root
+          size='lg'
+          mr={2}
+          variant='outline'
+          disabled={disabled}
+        >
+          <NativeSelect.Field
+            colorPalette={colorPalette}
+            value={options.findIndex(option => option.label === operator.label)}
+            onChange={e => {
+              setOperator(options[+e.target.value]);
+            }}
+            fontWeight='semibold'
+          >
+            {options.map((option, index) => {
+              return (
+                <option key={option.label} value={index}>
+                  {option.label} {option.value || '='}
+                </option>
+              );
+            })}
+          </NativeSelect.Field>
+          <NativeSelect.Indicator />
+        </NativeSelect.Root>
+        <ChakraNumberInput.Root
+          w='100%'
+          maxW={150}
+          value={formatNumber(+count, ' ')}
+          onValueChange={details => {
+            setCount(details.value);
+          }}
+          colorPalette={colorPalette}
+          clampValueOnBlur={true}
+          disabled={disabled}
+          allowMouseWheel
+          step={50}
+          defaultValue='0'
+          min={0}
+          size='lg'
+        >
+          <ChakraNumberInput.Input />
+          <ChakraNumberInput.Control>
+            <ChakraNumberInput.IncrementTrigger />
+            <ChakraNumberInput.DecrementTrigger />
+          </ChakraNumberInput.Control>
+        </ChakraNumberInput.Root>
+        <Flex mx={2}>
+          {renderSubmitButton &&
+            renderSubmitButton({
+              type: 'submit',
+              w: '100%',
+              disabled,
+            })}
+        </Flex>
+      </form>
     </Flex>
   );
 };

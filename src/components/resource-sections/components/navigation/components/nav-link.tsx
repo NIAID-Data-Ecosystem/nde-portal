@@ -16,9 +16,9 @@ export const NavLink: React.FC<NavLinkProps> = ({
 }) => {
   return (
     <Link
-      variant='ghost'
+      variant='plain'
       display='flex'
-      lineHeight='short'
+      lineHeight='moderate'
       pl={3}
       py={0.5}
       borderBottom='none!important'
@@ -37,7 +37,7 @@ export const NavLink: React.FC<NavLinkProps> = ({
       _hover={{
         textDecoration: 'underline!important',
         borderBottom: 'none!important',
-        '*': { borderBottom: 'none!important' },
+        '& *': { borderBottom: 'none!important' },
         color: isSelected ? color : 'text.body',
         ...props._hover,
       }}

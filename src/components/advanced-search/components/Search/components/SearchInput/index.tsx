@@ -1,5 +1,15 @@
-import React, { useEffect, useState } from 'react';
 import { Flex } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
+import { QueryValue } from 'src/components/advanced-search/types';
+import {
+  SHOW_DATA_COLLECTIONS_TAB,
+  SHOW_SAMPLES_TAB,
+} from 'src/utils/feature-flags';
+import {
+  APIResourceType,
+  formatAPIResourceTypeForDisplay,
+} from 'src/utils/formatting/formatResourceType';
+
 import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 import {
   DateInputGroup,
@@ -7,16 +17,7 @@ import {
   NumberInput,
   TextInput,
 } from './components/';
-import { QueryValue } from 'src/components/advanced-search/types';
 import { SearchInputProps } from './types';
-import {
-  APIResourceType,
-  formatAPIResourceTypeForDisplay,
-} from 'src/utils/formatting/formatResourceType';
-import {
-  SHOW_SAMPLES_TAB,
-  SHOW_DATA_COLLECTIONS_TAB,
-} from 'src/utils/feature-flags';
 
 // @type enum values that are gated behind feature flags.
 const GATED_RESOURCE_TYPES: Record<string, boolean> = {
@@ -115,7 +116,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       setErrors([]);
     },
     // Input is disabled when a search option that doesn't require text input is selected.
-    isDisabled:
+    disabled:
       selectedSearchType.id === '_exists_' ||
       selectedSearchType.id === '-_exists_',
     errors,

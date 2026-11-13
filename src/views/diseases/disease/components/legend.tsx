@@ -1,10 +1,10 @@
 import {
   Box,
-  Divider,
   Flex,
   Heading,
   HeadingProps,
   HStack,
+  Separator,
   Skeleton,
   Stack,
   StackProps,
@@ -43,8 +43,8 @@ export const LegendContainer = ({
       {orientation === 'vertical' ? (
         <Stack
           flexDirection='column'
-          divider={<Divider borderColor='gray.200' />}
-          spacing={1.5}
+          separator={<Separator borderColor='gray.200' />}
+          gap={1.5}
           my={2}
           {...props}
         >
@@ -52,8 +52,11 @@ export const LegendContainer = ({
         </Stack>
       ) : (
         <Stack
-          flexDirection={{ base: 'column', md: 'row' }}
-          spacing={{ base: 1.5, md: 8 }}
+          // A wrapping grid rather than a row: as a single row the last items
+          // overflowed the column, and at lg ran into the Sources chart beside it.
+          display={{ base: 'flex', md: 'grid' }}
+          gridTemplateColumns='repeat(auto-fit, minmax(8rem, 1fr))'
+          gap={{ base: 1.5, md: 6 }}
           my={2}
           {...props}
         >
@@ -84,7 +87,7 @@ export const LegendTableHeader: React.FC<TextProps> = ({
   return (
     <Text
       borderBottom='1px solid'
-      borderColor='page.placeholder'
+      borderColor='gray.600'
       fontSize='12px'
       fontWeight='semibold'
       lineHeight='shorter'
@@ -110,29 +113,31 @@ export const LegendTableHeader: React.FC<TextProps> = ({
 export const LegendItem = ({
   children,
   count,
-  isLoading,
+  loading,
   swatchBg,
 }: {
   children?: React.ReactNode;
   count?: number;
-  isLoading?: boolean;
+  loading?: boolean;
   swatchBg?: string;
 }) => {
   return (
     <Skeleton
-      isLoaded={!isLoading}
+      loading={!!loading}
       width='100%'
-      height={isLoading ? '20px' : 'unset'}
+      height={loading ? '20px' : 'unset'}
     >
       <HStack
         alignItems='flex-start'
         fontSize='xs'
-        lineHeight='short'
+        lineHeight='moderate'
         justifyContent='flex-start'
-        spacing={1.5}
+        gap={1.5}
         width='100%'
       >
-        {swatchBg && <Box width={4} height={4} bg={swatchBg} m={0.5} />}
+        {swatchBg && (
+          <Box width={4} height={4} flexShrink={0} bg={swatchBg} m={0.5} />
+        )}
         <Flex flex={1}>{children}</Flex>
         {count && (
           <Text textAlign='end' fontSize='inherit'>

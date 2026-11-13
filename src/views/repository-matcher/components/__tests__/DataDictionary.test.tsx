@@ -1,8 +1,9 @@
-import React from 'react';
 import { screen } from '@testing-library/react';
+import React from 'react';
 import { renderWithClient } from 'src/__tests__/mocks/utils';
-import { DataDictionary } from '../DataDictionary';
+
 import { RepositoryMatcherColumn } from '../../types';
+import { DataDictionary } from '../DataDictionary';
 
 const columns: RepositoryMatcherColumn[] = [
   {

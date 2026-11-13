@@ -1,27 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import remarkGfm from 'remark-gfm';
 import {
-  Divider,
   Flex,
   Heading,
   HStack,
+  Separator,
   Skeleton,
   SkeletonText,
   Tag,
   Text,
 } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
 import Empty from 'src/components/empty';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
+
 import { FeaturedPageProps } from '../types';
 
 interface MainContentProps {
-  isLoading?: boolean;
+  loading?: boolean;
   data?: FeaturedPageProps | null;
 }
 
-const Main = ({ data, isLoading }: MainContentProps) => {
+const Main = ({ data, loading }: MainContentProps) => {
   // Date formatting for last content update date.
   const [updatedAt, setUpdatedAt] = useState('');
 
@@ -49,31 +50,32 @@ const Main = ({ data, isLoading }: MainContentProps) => {
         width='100%'
         m='0 auto'
       >
-        {isLoading || data ? (
+        {loading || data ? (
           <>
+            {/* v3 spreads `height` onto the loaded content too, so only pass it while loading (v2's `skeletonHeight`). */}
             <SkeletonText
-              isLoaded={!isLoading}
-              mb={2}
+              loading={loading}
               noOfLines={1}
-              skeletonHeight={10}
+              height={loading ? 10 : undefined}
+              rootProps={{ mb: 2 }}
             >
               <Heading as='h1' size='xl'>
                 {data?.title || ''}
               </Heading>
             </SkeletonText>
             <SkeletonText
-              isLoaded={!isLoading}
-              mb={4}
+              loading={loading}
               noOfLines={1}
-              skeletonHeight={6}
+              height={loading ? 6 : undefined}
+              rootProps={{ mb: 4 }}
             >
-              <Text color='gray.700' lineHeight='short'>
+              <Text color='gray.500' lineHeight='moderate'>
                 {data?.subtitle || ''}
               </Text>
             </SkeletonText>
 
             <Skeleton
-              isLoaded={!isLoading}
+              loading={!!loading}
               height='100%'
               display='flex'
               flexDirection='column'
@@ -85,31 +87,27 @@ const Main = ({ data, isLoading }: MainContentProps) => {
                 {data?.content || ''}
               </ReactMarkdown>
               {data?.categories && data?.categories?.length > 0 && (
-                <HStack spacing={2} mt={8}>
+                <HStack gap={2} mt={8}>
                   {data.categories.map(({ id, name }) => (
-                    <Tag
+                    <Tag.Root
                       key={id}
-                      variant='outline'
+                      variant='surface'
                       size='sm'
-                      colorScheme='accent'
+                      colorPalette='accent'
                     >
-                      {name}
-                    </Tag>
+                      <Tag.Label>{name}</Tag.Label>
+                    </Tag.Root>
                   ))}
                 </HStack>
               )}
             </Skeleton>
 
-            <Divider orientation='horizontal' my={4} />
-            <SkeletonText
-              isLoaded={!isLoading}
-              noOfLines={1}
-              skeletonHeight={4}
-            >
+            <Separator orientation='horizontal' my={4} />
+            <SkeletonText loading={loading} noOfLines={1}>
               <Text
                 fontStyle='italic'
                 fontSize='xs'
-                color='gray.800'
+                color='gray.600'
                 textAlign='end'
               >
                 Last updated on{' '}

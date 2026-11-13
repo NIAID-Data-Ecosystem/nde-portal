@@ -19,12 +19,17 @@
  *   - `**\/metadata*`     the NDE metadata endpoint backing the filters sidebar
  *   - `**\/api/diseases*` the Strapi diseases lookup behind the carousel
  */
-import { test, expect, type Page, type TestInfo } from '@playwright/test';
+import { expect, type Page, test, type TestInfo } from '@playwright/test';
+
 import { runAxeScans, waitForSearchFiltersSettled } from '../utils/axe';
 import {
-  expectKeyboardOpens,
   expectEscapeReturnsFocus,
+  expectKeyboardOpens,
 } from '../utils/keyboard';
+import {
+  expectNoSkeletonsLoading,
+  expectSkeletonsLoading,
+} from '../utils/skeleton';
 
 // --- Per-route configuration -------------------------------------------------
 
@@ -5745,16 +5750,13 @@ test.describe('a11y: Search — loading', () => {
     }
     await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
 
-    // The header h1 renders immediately; the results cards render skeletons
-    // through src/components/skeleton with the `.custom-skeleton-loading`
-    // class — a CSS selector is acceptable here only because skeletons have no
-    // accessible surface to target.
+    // The header h1 renders immediately; the results cards render loading
+    // skeletons, which have no accessible surface to target (see
+    // e2e/utils/skeleton.ts for how they're detected).
     await expect(
       page.getByRole('heading', { level: 1, name: /showing all results/i }),
     ).toBeVisible();
-    await expect(
-      page.locator('.custom-skeleton-loading').first(),
-    ).toBeVisible();
+    await expectSkeletonsLoading(page);
 
     await runSharedChecks(page, testInfo, 'loading');
   });
@@ -5794,7 +5796,7 @@ test.describe('a11y: Search — empty', () => {
     await expect(
       page.getByText('No results found. Please try again.').last(),
     ).toBeVisible();
-    await expect(page.locator('.custom-skeleton-loading')).toHaveCount(0);
+    await expectNoSkeletonsLoading(page);
 
     await runSharedChecks(page, testInfo, 'empty');
   });
@@ -5865,7 +5867,7 @@ test.describe('a11y: Search — populated', () => {
     await expect(
       page.getByRole('link', { name: new RegExp(DATASET_NAME, 'i') }).first(),
     ).toBeVisible();
-    await expect(page.locator('.custom-skeleton-loading')).toHaveCount(0);
+    await expectNoSkeletonsLoading(page);
 
     // Scroll every card into view so each lazily renders its full body, then
     // wait for the in-view-only action ("View resource" renders once per card
@@ -5948,7 +5950,7 @@ async function gotoPopulated(page: Page) {
   ).toBeVisible();
 }
 
-// --- Search bar "Type" options menu (CheckboxList popover) --------------------
+// --- Search bar "Type" options menu (CheckboxMenu popover) --------------------
 
 test.describe('a11y: Search — type options menu', () => {
   test('passes axe with the search-bar type popover open', async ({
@@ -6028,8 +6030,13 @@ test.describe('a11y: Search — show metadata accordion', () => {
     // block's value. The collapsed button only carries the short "Species" tag
     // label (no value), and the other cards' panels stay collapsed, so this
     // string proves THIS panel is genuinely open before we scan.
+    // The trigger's name flips to "… hide metadata" once open, so `showMetadata`
+    // would re-resolve to the next (still collapsed) card. The only "hide
+    // metadata" button is the one just opened.
     await showMetadata.click();
-    await expect(showMetadata).toHaveAttribute('aria-expanded', 'true');
+    await expect(
+      page.getByRole('button', { name: /hide metadata/i }),
+    ).toHaveAttribute('aria-expanded', 'true');
     await expect(page.getByText('Homo sapiens').first()).toBeVisible();
 
     await runAxeScans(page, testInfo, 'show-metadata-accordion');
@@ -6060,7 +6067,7 @@ test.describe('a11y: Search — show metadata accordion', () => {
 // keeping the focus on the carousel.
 
 // The Retired catalog record. Kept separate from the non-retired set because the
-// Retired card renders on a gray `page.alt` background, which is where the
+// Retired card renders on a gray `bg.alt` background, which is where the
 // contrast regression lives — see the "resource catalog (retired)" describe.
 const RETIRED_RESOURCE_CATALOG_HIT = {
   '@type': 'ResourceCatalog',
@@ -6291,7 +6298,7 @@ async function gotoResourceCatalog(
   await expect(
     page.getByRole('link', { name: new RegExp(waitFor, 'i') }).first(),
   ).toBeVisible();
-  await expect(page.locator('.custom-skeleton-loading')).toHaveCount(0);
+  await expectNoSkeletonsLoading(page);
 }
 
 test.describe('a11y: Search — resource catalog carousel', () => {

@@ -1,22 +1,27 @@
-import React from 'react';
 import {
-  Center,
-  Divider,
+  ColorPalette,
   Flex,
-  FlexProps,
+  HStack,
   IconButton,
-  Select,
-  SelectProps,
-  Skeleton,
+  IconButtonProps,
+  NativeSelect,
+  Span,
+  Stack,
+  StackProps,
+  StackSeparator,
   Text,
-  useMultiStyleConfig,
+  useSlotRecipe,
 } from '@chakra-ui/react';
+import React from 'react';
 import {
   FaAngleLeft,
   FaAngleRight,
   FaAnglesLeft,
   FaAnglesRight,
 } from 'react-icons/fa6';
+import { PageCombobox } from 'src/components/page-combobox';
+
+import { TableSize, useTableSize } from '../hooks/useTableSize';
 
 // Based on NIAID's Table Styles
 // https://designsystem.niaid.nih.gov/components/atoms
@@ -26,7 +31,7 @@ const formatNumber = (number: number, separator = ',') => {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, separator);
 };
 
-export interface TablePaginationProps extends FlexProps {
+export interface TablePaginationProps extends StackProps {
   /**
    * Total number of data.
    */
@@ -53,9 +58,9 @@ export interface TablePaginationProps extends FlexProps {
   setFrom: (n: number) => void;
 
   /**
-   * Color scheme for table. Defaults to gray.
+   * Color palette for table. Defaults to gray.
    */
-  colorScheme?: SelectProps['colorScheme'];
+  colorPalette?: ColorPalette;
 
   /**
    * Options for number of rows to show per page.
@@ -70,8 +75,26 @@ export interface TablePaginationProps extends FlexProps {
   /**
    * Loading state for loading indicator.
    */
-  isLoading?: boolean;
+  loading?: boolean;
+
+  /**
+   * Overrides the size inherited from the parent Table, which sets the size of
+   * the select menus. (`size` is taken by the number of rows per page.)
+   */
+  styleSize?: TableSize;
 }
+
+/*
+Table size → the size of the "rows per page" select, the page combobox and the
+arrow buttons, one step down so they sit inside the pagination bar. All three
+share this scale, with matching heights at each step, so one value sizes them
+and keeps the row level.
+*/
+const SELECT_SIZE = {
+  sm: 'xs',
+  md: 'sm',
+  lg: 'md',
+} as const satisfies Record<TableSize, 'xs' | 'sm' | 'md'>;
 
 export const TablePagination: React.FC<TablePaginationProps> = ({
   total,
@@ -80,147 +103,180 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
   from,
   setFrom,
   pageSizeOptions,
-  colorScheme,
-  isLoading,
+  colorPalette = 'gray',
+  loading,
   numPages: totalPages,
+  styleSize,
   ...props
 }) => {
-  const styles = useMultiStyleConfig('Table', { colorScheme });
+  // `pagination` is not part of Chakra's table anatomy — see
+  // src/theme/slot-recipes/table-shell.slot-recipe.ts.
+  const recipe = useSlotRecipe({ key: 'tableShell' });
+  const styles = recipe();
+  // Outside a Table with no `styleSize`, fall back to `md`, which keeps the
+  // selects at their original `sm`.
+  const selectSize = SELECT_SIZE[useTableSize(styleSize) ?? 'md'];
   const numPages =
     totalPages !== undefined ? totalPages : Math.ceil(total / size);
+  // When every item fits on one page even at the smallest option, no choice
+  // changes what is shown. Keyed to the smallest option rather than the
+  // current `size`, so picking a larger size never locks out the smaller ones.
+  const isPageSizeDisabled = total <= Math.min(...pageSizeOptions);
 
   const ArrowButton = ({
     ariaLabel,
     icon,
-    isDisabled,
+    disabled,
     handleClick,
+    size,
   }: {
     ariaLabel: string;
     icon: React.ReactElement;
-    isDisabled: boolean;
+    disabled: boolean;
     handleClick: () => void;
+    size?: IconButtonProps['size'];
   }) => {
     return (
       <IconButton
-        colorScheme={colorScheme}
-        size='sm'
+        colorPalette={colorPalette}
+        size={size}
         aria-label={ariaLabel}
-        icon={icon}
         variant='outline'
-        isDisabled={isDisabled}
+        bg='white'
+        _hover={{ bg: 'colorPalette.subtle' }}
+        disabled={disabled}
         onClick={handleClick}
         mx={0.5}
         display={['none', 'flex']}
-      />
+      >
+        {icon}
+      </IconButton>
     );
   };
 
   return (
-    <Flex __css={styles.pagination} {...props}>
+    <Stack
+      colorPalette={colorPalette}
+      css={styles.pagination}
+      alignItems='center'
+      gap={0}
+      {...props}
+    >
       <Flex
-        p={4}
-        bg='page.alt'
+        p={2}
+        bg='bg.alt'
         w='100%'
         justifyContent='space-between'
+        alignItems='center'
         flexDirection={['column', 'row']}
       >
         {/* Select options for displaying per page rows */}
         <Flex pb={[4, 0]} flex={[1, 'unset']} flexDirection={['column', 'row']}>
           <Text fontSize='sm'>Rows per page: </Text>
-          {/* Display row options by increments of 5. */}
-          <Select
-            value={size}
-            onChange={e => {
-              setSize(+e.currentTarget.value);
-              setFrom(0);
-            }}
-            size='sm'
-            colorScheme={colorScheme}
+          {/*
+          The width is explicit because the recipe makes the root `width: 100%`
+          while the field keeps `minWidth: 0`. Inside this shrink-to-fit flex
+          row that resolves to min-content, collapsing the select onto the 2rem
+          of padding reserved for its indicator and clipping the value away.
+          */}
+          <NativeSelect.Root
+            disabled={isPageSizeDisabled}
+            flexShrink={0}
             mx={[0, 2]}
-            cursor='pointer'
-            bg='white'
-            aria-label='Select number of rows per page'
+            size={selectSize}
+            width='5rem'
           >
-            {pageSizeOptions.map((pageSizeOption, i) => {
-              return (
-                <option key={i} value={pageSizeOption}>
-                  {pageSizeOption}
-                </option>
-              );
-            })}
-          </Select>
+            <NativeSelect.Field
+              value={size}
+              onChange={e => {
+                setSize(+e.currentTarget.value);
+                setFrom(0);
+              }}
+              cursor='pointer'
+              bg='white'
+              aria-label='Select number of rows per page'
+            >
+              {pageSizeOptions.map((pageSizeOption, i) => {
+                return (
+                  <option key={i} value={pageSizeOption}>
+                    {pageSizeOption}
+                  </option>
+                );
+              })}
+            </NativeSelect.Field>
+            <NativeSelect.Indicator />
+          </NativeSelect.Root>
         </Flex>
 
         {/* Navigation for pages. */}
-        <Flex flex={[1, 'unset']} flexDirection={['column', 'row']}>
+        <Flex
+          flex={[1, 'unset']}
+          flexDirection={['column', 'row']}
+          alignItems='center'
+        >
           <ArrowButton
             icon={<FaAnglesLeft />}
             ariaLabel='Go to first page.'
-            isDisabled={from === 0}
+            disabled={from === 0}
             handleClick={() => setFrom(0)}
-          ></ArrowButton>
+            size={selectSize}
+          />
           <ArrowButton
             icon={<FaAngleLeft />}
             ariaLabel='Go to previous page.'
-            isDisabled={from === 0}
+            disabled={from === 0}
             handleClick={() => setFrom(from - 1)}
-          ></ArrowButton>
-          <Select
-            value={from}
-            onChange={e => setFrom(+e.currentTarget.value)}
-            size='sm'
-            colorScheme={colorScheme}
+            size={selectSize}
+          />
+          {/*
+          `from` is a 0-based page index here, while PageCombobox works in
+          1-based page numbers, so both directions convert at this boundary.
+          */}
+          <PageCombobox
+            // Matches the white "rows per page" select beside it on `bg.alt`.
+            inputProps={{ bg: 'white' }}
             mx={[0, 4]}
             my={[2, 0]}
-            cursor='pointer'
-            bg='white'
-            aria-label='Select page'
-          >
-            {Array.from(Array(numPages)).map((_, i) => {
-              return (
-                <option key={i} value={i}>
-                  Page {i + 1}
-                </option>
-              );
-            })}
-          </Select>
+            onPageChange={page => setFrom(page - 1)}
+            page={from + 1}
+            size={selectSize}
+            totalPages={numPages}
+            width='5rem'
+          />
           <ArrowButton
             icon={<FaAngleRight />}
             ariaLabel='Go to next page.'
-            isDisabled={from + 1 === numPages}
+            disabled={from + 1 === numPages}
             handleClick={() => setFrom(from + 1)}
-          ></ArrowButton>
+            size={selectSize}
+          />
           <ArrowButton
             icon={<FaAnglesRight />}
             ariaLabel='Go to last page.'
-            isDisabled={from + 1 === numPages}
+            disabled={from + 1 === numPages}
             handleClick={() => setFrom(numPages - 1)}
-          ></ArrowButton>
+            size={selectSize}
+          />
         </Flex>
       </Flex>
-
       {/* Display of what is currently showing. */}
-      <Flex
+      <HStack
+        separator={<StackSeparator />}
         alignItems='center'
         justifyContent='flex-end'
         w='100%'
         bg='white'
-        p={4}
+        px={4}
+        fontSize='sm'
+        py={1}
       >
-        <Skeleton isLoaded={!isLoading}>
-          <Text fontSize='sm'>
-            Page {formatNumber(from + 1)} of {formatNumber(numPages)}
-          </Text>
-        </Skeleton>
-        <Center display={'flex'} h='20px' mx={2}>
-          <Divider orientation='vertical' />
-        </Center>
-        <Skeleton isLoaded={!isLoading}>
-          <Text fontSize='sm'>
-            {formatNumber(total)} {total > 1 ? 'items' : 'item'}
-          </Text>
-        </Skeleton>
-      </Flex>
-    </Flex>
+        <Span>
+          Page {formatNumber(from + 1)} of {formatNumber(numPages)}
+        </Span>
+        <Span>
+          {formatNumber(total)} {total > 1 ? 'items' : 'item'}
+        </Span>
+      </HStack>
+    </Stack>
   );
 };

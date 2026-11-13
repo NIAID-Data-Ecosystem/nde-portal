@@ -5,6 +5,7 @@
 //    - Note: For Omics, it fetches the top 5 scoring results for each of the SD publishers from the Omics Discovery Index (OmicsDI).
 // The results are then written to a separate sitemap XML file (by source).
 import fs from 'fs';
+import path from 'path';
 import { fetchMetadata } from 'src/hooks/api/helpers';
 import {
   fetchAllSearchResults,
@@ -12,7 +13,6 @@ import {
   Params,
 } from 'src/utils/api';
 import { FacetTerm, FormattedResource } from 'src/utils/api/types';
-import path from 'path';
 import { getFundedByNIAID } from 'src/utils/helpers';
 
 // ------------------ Constants ------------------

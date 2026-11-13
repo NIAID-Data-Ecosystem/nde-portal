@@ -1,4 +1,5 @@
 import dynamic from 'next/dynamic';
+
 import { Layout } from './nav-layout';
 
 export const Nav = {

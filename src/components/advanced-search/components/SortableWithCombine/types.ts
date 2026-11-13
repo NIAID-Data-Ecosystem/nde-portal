@@ -1,4 +1,3 @@
-import type { MutableRefObject } from 'react';
 import type {
   CollisionDetection,
   DropAnimation,
@@ -8,6 +7,8 @@ import type {
   UniqueIdentifier,
 } from '@dnd-kit/core';
 import type { arrayMove, SortingStrategy } from '@dnd-kit/sortable';
+import type { MutableRefObject } from 'react';
+
 import { QueryValue } from '../../types';
 
 export interface Params {

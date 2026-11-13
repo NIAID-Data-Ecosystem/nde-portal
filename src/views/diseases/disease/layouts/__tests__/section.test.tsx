@@ -1,13 +1,16 @@
-import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+
 import { ChakraProvider } from '@chakra-ui/react';
+import { render, screen } from '@testing-library/react';
+import React from 'react';
+import { system } from 'src/theme';
+
 import { SectionTitle, SectionWrapper } from '../section';
 
 describe('SectionTitle', () => {
   const renderComponent = (props = {}) => {
     return render(
-      <ChakraProvider>
+      <ChakraProvider value={system}>
         <SectionTitle {...props} />
       </ChakraProvider>,
     );
@@ -20,7 +23,7 @@ describe('SectionTitle', () => {
     );
   });
 
-  it('renders nothing when children and isLoading are not provided', () => {
+  it('renders nothing when children and loading are not provided', () => {
     renderComponent({});
     expect(screen.queryByRole('heading')).not.toBeInTheDocument();
   });
@@ -43,7 +46,7 @@ describe('SectionTitle', () => {
 describe('SectionWrapper', () => {
   const renderComponent = (props = {}) => {
     return render(
-      <ChakraProvider>
+      <ChakraProvider value={system}>
         <SectionWrapper id='id' title='title' {...props} />
       </ChakraProvider>,
     );

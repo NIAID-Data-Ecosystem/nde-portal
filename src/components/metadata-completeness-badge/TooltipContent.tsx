@@ -1,15 +1,15 @@
-import React from 'react';
 import {
   Box,
-  Divider,
   Flex,
   Grid,
   GridItem,
   Icon,
+  Separator,
   Stack,
   Text,
 } from '@chakra-ui/react';
-import { FaRegCircleUp, FaCircleCheck } from 'react-icons/fa6';
+import React from 'react';
+import { FaCircleCheck, FaRegCircleUp } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 
 interface Stat {
@@ -59,7 +59,7 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
   }, 0);
 
   return (
-    <Flex flexDirection='column' p={1} minW={200}>
+    <Flex flexDirection='column' p={1} minW={200} maxWidth='90vw'>
       <Text fontWeight='semibold' fontSize='sm'>
         Metadata Compatibility
       </Text>
@@ -68,18 +68,17 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
         <Text fontWeight='semibold' flex={1}>
           Total Score
         </Text>
-        <Text mx={1} color='gray.800' fontWeight='bold'>
+        <Text mx={1} color='gray.600' fontWeight='bold'>
           {current_total_score} / {max_total_score}
         </Text>
       </Flex>
-      <Divider></Divider>
-
+      <Separator />
       {/* Rows of included and augmented fields */}
       <Stack direction='row' flexWrap='wrap'>
         {data.map(item => (
           <Box key={item.label} my={1} minWidth='200px' flex={1}>
             <Score {...item} />
-            <Stack spacing={0}>
+            <Stack gap={0}>
               {item.fields
                 .sort((a, b) => a.label.localeCompare(b.label))
                 .map((field, idx) => {
@@ -90,14 +89,14 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
                       gap={1}
                       border='1px solid'
                       borderColor='gray.100'
-                      bg={idx % 2 ? 'page.alt' : 'white'}
+                      bg={idx % 2 ? 'bg.alt' : 'white'}
                     >
                       <GridItem
                         px={1}
                         py={0.5}
                         colSpan={3}
                         fontWeight='medium'
-                        color='gray.800'
+                        color='gray.600'
                       >
                         <Text>
                           {field.label}{' '}

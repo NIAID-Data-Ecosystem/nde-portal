@@ -1,107 +1,68 @@
+import { Box, Flex, Text } from '@chakra-ui/react';
 import React from 'react';
-import { Box, Button, Flex, Icon, Text, TooltipProps } from '@chakra-ui/react';
-import { getMetadataTheme } from 'src/components/icon/helpers';
-import Tooltip from 'src/components/tooltip';
-import { FaInfo } from 'react-icons/fa6';
+import { InfoLabel, InfoLabelProps } from 'src/components/info-label';
+
+import { getMetadataColorPalette } from '../helpers';
 
 interface MetadataBlockProps {
   label: string;
   property: string;
-  isDisabled?: boolean;
+  disabled?: boolean;
   children?: React.ReactNode;
   bg?: string;
-  tooltipLabel?: TooltipProps['label'];
+  tooltipProps?: InfoLabelProps['tooltipProps'];
 }
 
-// Themed block for metadata
-
 export const MetadataBlock = ({
-  isDisabled,
+  disabled,
   label,
   property,
   children,
   bg,
-  tooltipLabel,
+  tooltipProps,
 }: MetadataBlockProps) => {
+  // Disabled text is gray.500, the lightest grey that passes AA on white (4.83:1; gray.400 is 2.56:1).
   return (
-    <Box flexDirection='column' color={isDisabled ? 'gray.700' : 'text.body'}>
+    <Box flexDirection='column' color={disabled ? 'gray.500' : 'text.body'}>
       <Flex alignItems='baseline'>
-        <MetadataLabel label={label}></MetadataLabel>
-        {tooltipLabel && (
-          <MetadataTooltip
-            tooltipLabel={tooltipLabel}
-            isDisabled={isDisabled}
-          />
-        )}
+        <MetadataLabel
+          tooltipProps={
+            tooltipProps?.content
+              ? { ...tooltipProps, content: tooltipProps.content, disabled }
+              : undefined
+          }
+          color='inherit'
+          iconProps={{ color: 'inherit' }}
+        >
+          {label}
+        </MetadataLabel>
       </Flex>
 
       <Box
         mb={2}
         py={0.5}
-        bg={isDisabled ? 'gray.500' : bg || `${getMetadataTheme(property)}.300`}
+        bg={
+          disabled
+            ? 'gray.300'
+            : bg || `${getMetadataColorPalette(property)}.300`
+        }
         borderRadius='semi'
       />
 
-      <Box fontSize='xs' mx={1} lineHeight='short'>
-        {isDisabled ? <></> : children}
+      <Box fontSize='sm' mx={1} lineHeight='moderate'>
+        {disabled ? <>N/A</> : children}
       </Box>
     </Box>
   );
 };
 
-export const MetadataLabel = ({
-  label,
-  ...props
-}: Pick<MetadataBlockProps, 'label'>) => {
+export const MetadataLabel = (props: InfoLabelProps) => {
   return (
-    <Text
-      mx={1}
-      fontSize='13px'
-      fontWeight='medium'
-      letterSpacing='wide'
+    <InfoLabel
       textTransform='uppercase'
-      color='inherit'
-      whiteSpace={['unset', 'nowrap']}
-      lineHeight='inherit'
+      fontSize='xs'
+      fontWeight='medium'
       {...props}
-    >
-      {label}
-    </Text>
-  );
-};
-
-// Tooltip for metadata usually for property definition
-export const MetadataTooltip = ({
-  isDisabled,
-  tooltipLabel,
-}: Pick<MetadataBlockProps, 'isDisabled' | 'tooltipLabel'>) => {
-  return (
-    <Tooltip label={tooltipLabel}>
-      <Flex
-        minW={4}
-        minH={4}
-        p={1}
-        _hover={{
-          div: {
-            bg: 'gray.800',
-            borderColor: 'gray.800',
-            color: 'white',
-          },
-        }}
-      >
-        <Button
-          as='div'
-          cursor='pointer'
-          borderRadius='full'
-          variant='outline'
-          colorScheme='gray'
-          p={0}
-          borderColor={isDisabled ? 'gray.500' : 'gray.600'}
-          color={isDisabled ? 'gray.500' : 'gray.600'}
-        >
-          <Icon as={FaInfo} boxSize='0.75rem' p={0.5} />
-        </Button>
-      </Flex>
-    </Tooltip>
+    />
   );
 };

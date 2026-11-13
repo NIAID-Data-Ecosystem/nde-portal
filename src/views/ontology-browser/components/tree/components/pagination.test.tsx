@@ -1,8 +1,10 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { Pagination } from './pagination';
+
+import React from 'react';
+import { fireEvent, render, screen } from 'src/__tests__/utils/render';
 import { OntologyLineageItemWithCounts } from 'src/views/ontology-browser/types';
+
+import { Pagination } from './pagination';
 
 const mockNode: OntologyLineageItemWithCounts = {
   id: '10239',
@@ -28,8 +30,8 @@ describe('Pagination Component', () => {
     render(
       <Pagination
         hasMore={false}
-        isDisabled={false}
-        isLoading={false}
+        disabled={false}
+        loading={false}
         node={mockNode}
         numChildrenDisplayed={5}
         onShowMore={() => {}}
@@ -43,8 +45,8 @@ describe('Pagination Component', () => {
     render(
       <Pagination
         hasMore={true}
-        isDisabled={false}
-        isLoading={false}
+        disabled={false}
+        loading={false}
         node={mockNode}
         numChildrenDisplayed={5}
         onShowMore={() => {}}
@@ -58,8 +60,8 @@ describe('Pagination Component', () => {
     render(
       <Pagination
         hasMore={false}
-        isDisabled={false}
-        isLoading={false}
+        disabled={false}
+        loading={false}
         node={mockNode}
         numChildrenDisplayed={5}
         onShowMore={() => {}}
@@ -74,8 +76,8 @@ describe('Pagination Component', () => {
     render(
       <Pagination
         hasMore={true}
-        isDisabled={false}
-        isLoading={false}
+        disabled={false}
+        loading={false}
         node={mockNode}
         numChildrenDisplayed={5}
         onShowMore={onShowMoreMock}
@@ -86,12 +88,12 @@ describe('Pagination Component', () => {
     expect(onShowMoreMock).toHaveBeenCalled();
   });
 
-  test('"Show more" button is disabled when isDisabled is true', () => {
+  test('"Show more" button is disabled when disabled is true', () => {
     render(
       <Pagination
         hasMore={true}
-        isDisabled={true}
-        isLoading={false}
+        disabled={true}
+        loading={false}
         node={mockNode}
         numChildrenDisplayed={5}
         onShowMore={() => {}}
@@ -101,12 +103,12 @@ describe('Pagination Component', () => {
     expect(screen.getByText(/Show more/)).toBeDisabled();
   });
 
-  test('"Show more" button shows loading state when isLoading is true', () => {
+  test('"Show more" button shows loading state when loading is true', () => {
     render(
       <Pagination
         hasMore={true}
-        isDisabled={false}
-        isLoading={true}
+        disabled={false}
+        loading={true}
         node={mockNode}
         numChildrenDisplayed={5}
         onShowMore={() => {}}

@@ -1,14 +1,6 @@
-import React from 'react';
-import {
-  Button,
-  ButtonProps,
-  Flex,
-  Icon,
-  Stack,
-  VStack,
-} from '@chakra-ui/react';
-import { FormattedResource } from 'src/utils/api/types';
+import { Button, ButtonProps, Flex, Stack, VStack } from '@chakra-ui/react';
 import NextLink from 'next/link';
+import React from 'react';
 import { FaArrowRight } from 'react-icons/fa6';
 import { SourceLogo } from 'src/components/source-logo';
 import {
@@ -17,53 +9,50 @@ import {
   getDDECatalog,
   getSourceLogoLinkOut,
 } from 'src/components/source-logo/helpers';
+import { FormattedResource } from 'src/utils/api/types';
 
 interface DataAccessProps {
-  isLoading: boolean;
+  loading: boolean;
   includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
   url?: FormattedResource['url'];
   recordType?: string | null;
   creativeWorkStatus?: FormattedResource['creativeWorkStatus'];
   children?: React.ReactNode;
-  colorScheme?: ButtonProps['colorScheme'];
+  colorPalette?: ButtonProps['colorPalette'];
   submittingDataUrl: FormattedResource['publishingPrinciples'];
 }
 
 const AccessResourceButton: React.FC<
   ButtonProps & { label: string; url: string; showIcon?: boolean }
-> = ({ url, colorScheme, label, showIcon = true, ...buttonProps }) => {
+> = ({ url, colorPalette, label, showIcon = true, ...buttonProps }) => {
   // Internal routes (e.g. the retired resources page) should navigate
   // in the same tab; external source links continue to open in a new tab.
   const isInternalLink = url.startsWith('/');
 
   return (
-    <NextLink
-      href={url}
-      target={isInternalLink ? undefined : '_blank'}
-      style={{ width: '100%' }}
-      passHref
+    <Button
+      asChild
+      colorPalette={colorPalette}
+      size='sm'
+      width='100%'
+      {...buttonProps}
     >
-      <Button
-        colorScheme={colorScheme}
-        size='sm'
-        rightIcon={showIcon ? <Icon as={FaArrowRight} /> : undefined}
-        width='100%'
-        {...buttonProps}
-      >
+      <NextLink href={url} target={isInternalLink ? undefined : '_blank'}>
         {label}
-      </Button>
-    </NextLink>
+        {showIcon ? <FaArrowRight /> : undefined}
+      </NextLink>
+    </Button>
   );
 };
 
 export const DataAccess: React.FC<DataAccessProps> = ({
-  isLoading,
+  loading,
   includedInDataCatalog,
   url,
   recordType,
   creativeWorkStatus,
   submittingDataUrl,
-  colorScheme = 'secondary',
+  colorPalette = 'secondary',
 }) => {
   // If resource is part of a catalog, only show DDE as source
   const catalogForLookup =
@@ -72,19 +61,19 @@ export const DataAccess: React.FC<DataAccessProps> = ({
       : includedInDataCatalog || [];
 
   const sources =
-    !isLoading && includedInDataCatalog
+    !loading && includedInDataCatalog
       ? formatSourcesWithLogos(catalogForLookup)
       : [];
 
   return (
-    <Stack mt={4} flexDirection='column' alignItems='flex-start' spacing={4}>
+    <Stack mt={4} flexDirection='row' flexWrap='wrap' gap={6}>
       {sources.map(source => (
-        <React.Fragment key={source.name}>
+        <Flex key={source.name} flexDirection='column'>
           <SourceLogo.Component
             imageProps={{
               width: 'auto',
               height: 'unset',
-              maxHeight: '80px',
+              maxHeight: '150px',
               mb: 1,
             }}
             source={source}
@@ -101,14 +90,13 @@ export const DataAccess: React.FC<DataAccessProps> = ({
                     url,
                     creativeWorkStatus,
                   })}
-                  colorScheme={colorScheme}
+                  colorPalette={colorPalette}
                 />
-                {/* [TO DO]: add data submission functionality when property is added to source */}
                 {submittingDataUrl && (
                   <AccessResourceButton
                     label='Submit Data'
                     url={submittingDataUrl}
-                    colorScheme={colorScheme}
+                    colorPalette={colorPalette}
                     variant='outline'
                     showIcon={false}
                   />
@@ -116,7 +104,7 @@ export const DataAccess: React.FC<DataAccessProps> = ({
               </VStack>
             </Flex>
           )}
-        </React.Fragment>
+        </Flex>
       ))}
     </Stack>
   );

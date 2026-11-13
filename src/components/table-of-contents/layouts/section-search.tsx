@@ -23,12 +23,13 @@ export const SectionSearch: React.FC<SectionSearchProps> = ({
           value={value}
           handleChange={handleChange}
           type='text'
+          colorPalette='secondary'
         />
         <Text
-          fontSize='xs'
+          fontSize='sm'
           fontWeight='light'
           mt={1}
-          color='gray.800'
+          color='gray.600'
           textAlign='right'
         >
           <Text as='span' fontWeight='medium'>

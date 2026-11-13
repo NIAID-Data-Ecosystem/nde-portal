@@ -1,18 +1,18 @@
 import {
-  formatUnitText,
-  formatNumericValue,
-  formatTerm,
-  formatPropertyId,
-  getAvailableSamplePropertyColumns,
-  getSampleCollectionItemsColumns,
-  getSampleCollectionItemsRows,
-} from './helpers';
-
-import {
   getValueByPath,
   hasNonEmptyValue,
 } from 'src/components/resource-sections/helpers';
 import { formatSampleLabelFromProperty } from 'src/utils/formatting/formatSample';
+
+import {
+  formatNumericValue,
+  formatPropertyId,
+  formatTerm,
+  formatUnitText,
+  getAvailableSamplePropertyColumns,
+  getSampleCollectionItemsColumns,
+  getSampleCollectionItemsRows,
+} from './helpers';
 
 // Mock dependencies
 jest.mock('src/components/resource-sections/helpers', () => ({

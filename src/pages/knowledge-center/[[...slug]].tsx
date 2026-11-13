@@ -1,47 +1,46 @@
-import React, { useEffect } from 'react';
 import {
   Box,
   Flex,
   Heading,
-  ListItem,
+  List,
   SimpleGrid,
   SkeletonText,
   Text,
-  UnorderedList,
   useMediaQuery,
 } from '@chakra-ui/react';
-import { Link } from 'src/components/link';
+import { useQuery } from '@tanstack/react-query';
+import DOCUMENTATION_COPY from 'configs/docs.json';
 import type { GetStaticProps, NextPage } from 'next';
+import NextLink from 'next/link';
+import { useRouter } from 'next/router';
+import React, { useEffect } from 'react';
+import Empty from 'src/components/empty';
+import { Error } from 'src/components/error';
+import { Link } from 'src/components/link';
 import {
   getPageSeoConfig,
   PageContainer,
   PageContent,
 } from 'src/components/page-container';
-import DOCUMENTATION_COPY from 'configs/docs.json';
-import { Error } from 'src/components/error';
-import { useQuery } from '@tanstack/react-query';
-import NextLink from 'next/link';
-import { useRouter } from 'next/router';
+import { HeroBanner } from 'src/views/docs/components/HeroBanner';
+import MainContent from 'src/views/docs/components/MainContent';
+import { DocsSearchBar } from 'src/views/docs/components/search-bar';
 import {
+  SidebarContainer,
   SidebarDesktop,
   SidebarMobile,
-  SidebarContainer,
 } from 'src/views/docs/components/sidebar';
-import MainContent from 'src/views/docs/components/MainContent';
-import Empty from 'src/components/empty';
-import IntegrationMain from 'src/views/integration/components/Main';
-import { DocsSearchBar } from 'src/views/docs/components/search-bar';
-import { HeroBanner } from 'src/views/docs/components/HeroBanner';
 import {
+  fetchAllDocumentationSlugs,
   fetchCategories,
   fetchDocumentation,
-  fetchAllDocumentationSlugs,
 } from 'src/views/docs/services/api';
 import type {
   DocumentationByCategories,
   DocumentationProps,
   SidebarContent,
 } from 'src/views/docs/types';
+import IntegrationMain from 'src/views/integration/components/Main';
 
 const Docs: NextPage<{
   slug: string[];
@@ -80,9 +79,9 @@ const Docs: NextPage<{
 
   const router = useRouter();
 
-  const [isLargerThanSm] = useMediaQuery('(min-width: 48em)', {
+  const [isLargerThanSm] = useMediaQuery(['(min-width: 48em)'], {
     ssr: true,
-    fallback: false, // return false on the server, and re-evaluate on the client side
+    fallback: [false], // return false on the server, and re-evaluate on the client side
   });
 
   const selectedPage = documentationPagesList?.reduce<
@@ -127,7 +126,6 @@ const Docs: NextPage<{
         subtitle={DOCUMENTATION_COPY.sections.hero.subtitle}
         body={!props.slug ? DOCUMENTATION_COPY.sections.hero.body : ''}
       />
-
       <Flex
         w='100%'
         justifyContent='flex-end'
@@ -143,7 +141,7 @@ const Docs: NextPage<{
       {error ? (
         <Error>
           <Flex flexDirection='column' justifyContent='center'>
-            <Text fontWeight='light' color='gray.800' fontSize='lg'>
+            <Text fontWeight='light' color='gray.600' fontSize='lg'>
               API Request:{' '}
               {error?.statusText ||
                 "It's possible that the server is experiencing some issues."}{' '}
@@ -153,8 +151,7 @@ const Docs: NextPage<{
       ) : (
         <Flex
           justifyContent='center'
-          bg='whiteAlpha.900'
-          p={0}
+          bg='white'
           flexDirection={{ base: 'column', md: 'row' }}
         >
           {/* Documentation Pages Navigation */}
@@ -163,7 +160,7 @@ const Docs: NextPage<{
           ) : isLargerThanSm ? (
             <SidebarContainer>
               <SidebarDesktop
-                isLoading={isLoading}
+                loading={isLoading}
                 sections={documentationPagesList}
                 selectedSlug={
                   Array.isArray(router.query.slug)
@@ -174,7 +171,7 @@ const Docs: NextPage<{
             </SidebarContainer>
           ) : (
             <SidebarMobile
-              isLoading={isLoading}
+              loading={isLoading}
               menuTitle={selectedPage?.name || ''}
               selectedSlug={
                 Array.isArray(router.query.slug)
@@ -189,7 +186,7 @@ const Docs: NextPage<{
               {/* CONTENT */}
               <PageContent
                 id='docs-content'
-                bg='#fff'
+                bg='white'
                 maxW={{ base: 'unset', lg: '1600px' }}
                 margin='0 auto'
                 px={4}
@@ -222,14 +219,14 @@ const Docs: NextPage<{
                     color='gray.500'
                     headingProps={{
                       fontSize: 'lg',
-                      color: 'gray.700',
+                      color: 'gray.500',
                     }}
                   />
                 ) : (
                   // List of categories with associated documents
                   <SimpleGrid
                     columns={{ base: 1, md: 2, lg: 3, xl: 4 }}
-                    spacing={{ base: 8, md: 10, lg: '50px' }}
+                    gap={{ base: 8, md: 10, lg: '50px' }}
                     margin='0 auto'
                     w='100%'
                     maxW='1400px'
@@ -248,47 +245,29 @@ const Docs: NextPage<{
                         >
                           {doc.name}
                         </Heading>
-                        <UnorderedList ml={0}>
+                        <List.Root ps={0} gap={2}>
                           {doc.items.map(item => (
-                            <ListItem key={item.id} my={2}>
+                            <List.Item key={item.id}>
                               <SkeletonText
-                                isLoaded={!isLoading}
+                                loading={isLoading}
                                 width={isLoading ? '75%' : '100%'}
                               >
-                                <NextLink
-                                  style={{
-                                    display: 'flex',
-                                    width: '100%',
-                                  }}
-                                  href={item.href}
-                                  passHref
+                                <Link
+                                  display='flex'
+                                  w='100%'
+                                  fontSize='sm'
+                                  lineHeight='tall'
+                                  color='text.body'
+                                  asChild
                                 >
-                                  <Link
-                                    as='span'
-                                    w='100%'
-                                    fontSize='sm'
-                                    color='text.body!important'
-                                    bg='transparent'
-                                    lineHeight='tall'
-                                    _selected={{
-                                      color: 'niaid.600!important',
-                                      bg: 'niaid.100',
-                                    }}
-                                    _hover={{
-                                      [`&[aria-selected=false]`]: {
-                                        bg: 'blackAlpha.50',
-                                        borderRadius: 'base',
-                                        transition: 'fast',
-                                      },
-                                    }}
-                                  >
+                                  <NextLink href={item.href}>
                                     {item.name}
-                                  </Link>
-                                </NextLink>
+                                  </NextLink>
+                                </Link>
                               </SkeletonText>
-                            </ListItem>
+                            </List.Item>
                           ))}
-                        </UnorderedList>
+                        </List.Root>
                       </Box>
                     ))}
                   </SimpleGrid>

@@ -1,45 +1,45 @@
-import React, { useEffect } from 'react';
-import NextLink from 'next/link';
 import {
   Box,
   Card,
-  Collapse,
-  Divider,
+  Collapsible,
   Flex,
   Icon,
-  ListItem,
+  List,
+  Separator,
   Stack,
-  UnorderedList,
 } from '@chakra-ui/react';
-import { Navigation } from 'src/components/resource-sections/components';
-import { Route } from 'src/components/resource-sections/helpers';
-import { useLocalStorage } from 'usehooks-ts';
-import { CardContainer } from 'src/components/resource-sections/components/card-container';
+import NextLink from 'next/link';
+import { useEffect, useState } from 'react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { Link } from 'src/components/link';
+import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
+import { Navigation } from 'src/components/resource-sections/components';
+import { CardContainer } from 'src/components/resource-sections/components/card-container';
+import { Route } from 'src/components/resource-sections/helpers';
+import { ScrollContainer } from 'src/components/scroll-container';
+import { ResourceData } from 'src/pages/resources';
+import { formatIdentifierAsAnchorSlug } from 'src/pages/sources';
+import { USE_MERGED_SOURCES_AND_CATALOGS } from 'src/utils/feature-flags';
+import { useLocalStorage } from 'usehooks-ts';
+
 import {
   ExternalAccess,
   LinkToSourcePage,
   UsageInfo,
 } from './components/external';
-import { ScrollContainer } from 'src/components/scroll-container';
-import { ResourceData } from 'src/pages/resources';
-import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
-import { Link } from 'src/components/link';
-import { formatIdentifierAsAnchorSlug } from 'src/pages/sources';
-import { USE_MERGED_SOURCES_AND_CATALOGS } from 'src/utils/feature-flags';
 
 export const Sidebar = ({
   data,
-  isLoading,
+  loading,
   sections,
 }: {
-  isLoading: boolean;
+  loading: boolean;
   data?: ResourceData;
   sections: Route[];
 }) => {
   const [searchHistory] = useLocalStorage<string[]>('basic-searches', []);
 
-  const [isMounted, setIsMounted] = React.useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const isDataCollectionType = data?.['@type'] === 'DataCollection';
 
@@ -55,10 +55,16 @@ export const Sidebar = ({
       display={{ base: 'none', lg: 'block' }}
     >
       <Box className='sidebar' position='sticky' top='0px'>
-        <Card flex={1} ml={[0, 0, 4]} my={[2, 2, 0]} sx={{ '>*': { p: 0 } }}>
+        <Card.Root
+          flex={1}
+          ml={[0, 0, 4]}
+          my={[2, 2, 0]}
+          css={{ '>*': { p: 0 } }}
+          variant='elevated'
+        >
           <Stack
-            divider={
-              <Divider
+            separator={
+              <Separator
                 borderColor='page.placeholder'
                 marginTop={'0!important'}
                 marginBottom={'0!important'}
@@ -73,67 +79,72 @@ export const Sidebar = ({
               />
             )}
             {/* External links to access data, documents or dataset at the source. */}
-            <ExternalAccess data={data} isLoading={isLoading} />
-            <UsageInfo data={data} isLoading={isLoading} />
+            <ExternalAccess data={data} loading={loading} />
+            <UsageInfo data={data} loading={loading} />
             {data?.['@type'] === 'ResourceCatalog' &&
               USE_MERGED_SOURCES_AND_CATALOGS && (
                 <LinkToSourcePage
                   href={`/sources#${formatIdentifierAsAnchorSlug(
                     data?._id || '',
                   )}`}
-                  isLoading={isLoading}
+                  loading={loading}
                 >
                   Learn more about {data?.name} in the sources page
                 </LinkToSourcePage>
               )}
           </Stack>
-        </Card>
+        </Card.Root>
 
         {/* Local navigation for page */}
         {sections.length > 0 && (
-          <Card
+          <Card.Root
             flex={1}
             ml={[0, 0, 4]}
             my={2}
-            sx={{ '>*': { p: [2, 4, 4, 6] } }}
+            css={{
+              '& >*': { p: [2, 4, 4, 6] },
+            }}
+            variant='elevated'
           >
             <Navigation routes={sections} />
-          </Card>
+          </Card.Root>
         )}
 
         {/* Search History links */}
         {isMounted && (
-          <Collapse in={!!searchHistory.length}>
-            <CardContainer heading='Previous Searches'>
-              <ScrollContainer maxH={250}>
-                <UnorderedList ml={0} spacing={2} my={2}>
-                  {searchHistory.slice(0, 3).map((search, idx) => (
-                    <ListItem key={idx} lineHeight='short' display='flex'>
-                      <Icon
-                        as={FaMagnifyingGlass}
-                        color='link.color'
-                        boxSize={3}
-                        m={1}
-                        mr={1.5}
-                        mt={1.5}
-                        lineHeight='short'
-                      />
-                      <NextLink
-                        href={{
-                          pathname: '/search',
-                          query: { q: search },
-                        }}
-                      >
-                        <Link as='span' fontSize='sm'>
-                          {search}
+          <Collapsible.Root open={!!searchHistory.length}>
+            <Collapsible.Content>
+              <CardContainer heading='Previous Searches'>
+                <ScrollContainer maxH={250}>
+                  <List.Root as='ul' pl={0} gap={2} my={2}>
+                    {searchHistory.slice(0, 3).map((search, idx) => (
+                      <List.Item key={idx} lineHeight='moderate' display='flex'>
+                        <Icon
+                          as={FaMagnifyingGlass}
+                          color='link'
+                          boxSize={3}
+                          m={1}
+                          mr={1.5}
+                          mt={1.5}
+                          lineHeight='moderate'
+                        />
+                        <Link asChild fontSize='sm' wordBreak='break-all'>
+                          <NextLink
+                            href={{
+                              pathname: '/search',
+                              query: { q: search },
+                            }}
+                          >
+                            {search}
+                          </NextLink>
                         </Link>
-                      </NextLink>
-                    </ListItem>
-                  ))}
-                </UnorderedList>
-              </ScrollContainer>
-            </CardContainer>
-          </Collapse>
+                      </List.Item>
+                    ))}
+                  </List.Root>
+                </ScrollContainer>
+              </CardContainer>
+            </Collapsible.Content>
+          </Collapsible.Root>
         )}
       </Box>
     </Flex>

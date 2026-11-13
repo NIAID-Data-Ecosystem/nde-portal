@@ -1,25 +1,25 @@
+import { Card, Flex, Skeleton, Text } from '@chakra-ui/react';
 import React from 'react';
-import { Text } from '@chakra-ui/react';
-import { DiseasePageProps } from 'src/views/diseases/types';
-import { Skeleton } from 'src/components/skeleton';
-import { CompactCard } from '../compact-card';
-import { TAB_LABELS } from 'src/views/search/config/tabs';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
+import { DiseasePageProps } from 'src/views/diseases/types';
+import { TAB_LABELS } from 'src/views/search/config/tabs';
+
+import { CompactCard } from '../compact-card';
 
 interface DiseaseOverviewCardProps {
   data?: DiseasePageProps | null;
-  isLoading?: boolean;
+  loading?: boolean;
 }
 
 export const DiseaseOverviewCard = ({
   data,
-  isLoading = false,
+  loading = false,
 }: DiseaseOverviewCardProps) => {
   const { title, description, slug, topicEmphasizedDescription } = data || {};
 
-  if (!isLoading && !slug) {
+  if (!loading && !slug) {
     console.warn(
       'DiseaseOverviewCard: Missing slug for disease overview card',
       {
@@ -47,25 +47,23 @@ export const DiseaseOverviewCard = ({
     : `Learn about resources in the NIAID Data Ecosystem.`;
 
   return (
-    <CompactCard.Base isLoading={isLoading}>
+    <CompactCard.Base loading={loading}>
       <CompactCard.Banner
         label={TAB_LABELS.DISEASE_OVERVIEW}
         type='Disease'
-        isLoading={isLoading}
+        loading={loading}
       />
-
-      <CompactCard.Header isLoading={isLoading}>
+      <CompactCard.Header loading={loading}>
         {title && (
           <CompactCard.Title linkProps={linkProps}>{title}</CompactCard.Title>
         )}
       </CompactCard.Header>
-
       <CompactCard.Body>
-        <Skeleton isLoaded={!isLoading} flex='1'>
-          {/* Description (if present) */}
-          {topicEmphasizedDescription || description ? (
-            <>
-              <Text as='div' noOfLines={6} fontSize='xs' lineHeight='short'>
+        <Skeleton loading={loading} flex='1'>
+          <Card.Description as='div'>
+            {/* Description (if present) */}
+            {(topicEmphasizedDescription || description) && (
+              <Flex lineClamp={6}>
                 {topicEmphasizedDescription ? (
                   <ReactMarkdown rehypePlugins={[rehypeRaw, remarkGfm]}>
                     {topicEmphasizedDescription}
@@ -73,16 +71,10 @@ export const DiseaseOverviewCard = ({
                 ) : (
                   <>{description}</>
                 )}
-              </Text>
-              <Text fontSize='xs' lineHeight='short' marginTop={7}>
-                {invitation}
-              </Text>
-            </>
-          ) : (
-            <Text fontSize='xs' lineHeight='short'>
-              {invitation}
-            </Text>
-          )}
+              </Flex>
+            )}
+            <Text marginTop={7}>{invitation}</Text>
+          </Card.Description>
         </Skeleton>
       </CompactCard.Body>
     </CompactCard.Base>

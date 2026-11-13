@@ -1,12 +1,13 @@
 import { createHash } from 'node:crypto';
+
 import csp from '../../../configs/csp.json';
 import {
   AUTH_LOGIN_PENDING_KEY,
   AUTH_PENDING_ATTR,
-  WELCOME_PENDING_SCRIPT,
   clearWelcomePending,
   isWelcomePending,
   setWelcomePending,
+  WELCOME_PENDING_SCRIPT,
 } from './welcome-pending';
 
 let mockShowWelcomePage = true;
@@ -57,7 +58,6 @@ describe('welcome-pending', () => {
   });
 
   describe('pre-hydration script', () => {
-    // eslint-disable-next-line no-new-func
     const runScript = () => new Function(WELCOME_PENDING_SCRIPT)();
 
     it('does nothing when no login is pending', () => {

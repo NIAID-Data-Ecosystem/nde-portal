@@ -25,7 +25,7 @@ export interface ResultsTableProps<TColumn extends BaseColumn> {
   /** Raw API results to display. */
   results: FormattedResource[];
   /** Whether data is still loading. */
-  isLoading: boolean;
+  loading: boolean;
   /**
    * Transform a FormattedResource into the flat row object that getCells
    * receives. Keep identifier resolution and catalog URL logic per-table.
@@ -38,7 +38,7 @@ export interface ResultsTableProps<TColumn extends BaseColumn> {
   getCells: (props: {
     column: Column;
     data: Record<string, unknown>;
-    isLoading?: boolean;
+    loading?: boolean;
   }) => React.ReactNode;
   /** Accessible label for the table element. */
   ariaLabel: string;

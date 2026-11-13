@@ -1,11 +1,12 @@
-import React from 'react';
 import { Checkbox, Flex, Text } from '@chakra-ui/react';
-import { DatePicker } from './date-picker';
+import React from 'react';
 import { formatNumber } from 'src/utils/helpers';
+
 import { FilterItem } from '../../../types';
+import { DatePicker } from './date-picker';
 
 interface DateControlsProps {
-  colorScheme: string;
+  colorPalette: string;
   selectedDates: string[];
   resourcesWithNoDate: FilterItem[];
   onDateSelect: (dates: string[]) => void;
@@ -13,7 +14,7 @@ interface DateControlsProps {
 }
 
 export const DateControls: React.FC<DateControlsProps> = ({
-  colorScheme,
+  colorPalette,
   selectedDates,
   resourcesWithNoDate,
   onDateSelect,
@@ -51,25 +52,27 @@ export const DateControls: React.FC<DateControlsProps> = ({
     selectedDates.length === 0 || selectedDates.includes('-_exists_');
 
   return (
-    <Flex bg='secondary.50' flexDirection='column' px={4} py={2}>
+    <Flex bg='secondary.50' flexDirection='column' px={4} py={2} gap={4}>
       <DatePicker
-        colorScheme={colorScheme}
+        colorPalette={colorPalette}
         selectedDates={selectedDates}
         handleSelectedFilter={onDateSelect}
         resetFilter={onResetFilter}
       />
-
       {/* Checkbox to toggle items with/without dates. Default behavior shows all resources. */}
-      <Checkbox
-        mt={4}
-        isChecked={isNoDateCheckboxChecked}
-        onChange={handleToggleNoDateResources}
-        isDisabled={!resourcesWithNoDate.length}
+      <Checkbox.Root
+        onCheckedChange={handleToggleNoDateResources}
+        disabled={!resourcesWithNoDate.length}
+        checked={isNoDateCheckboxChecked}
       >
-        <Text fontSize='sm' fontWeight='medium' lineHeight='shorter'>
+        <Checkbox.HiddenInput />
+        <Checkbox.Control>
+          <Checkbox.Indicator />
+        </Checkbox.Control>
+        <Checkbox.Label>
           Include {noDateCount} resources with no date information.
-        </Text>
-      </Checkbox>
+        </Checkbox.Label>
+      </Checkbox.Root>
     </Flex>
   );
 };

@@ -1,54 +1,58 @@
-import React, { useMemo } from 'react';
 import {
+  Box,
   Button,
   Card,
-  CardHeader,
-  CardBody,
   Flex,
-  Icon,
-  Text,
-  Tooltip,
-  Stack,
   Highlight,
   HStack,
+  Icon,
+  Separator,
+  Skeleton,
+  Stack,
+  Text,
+  Wrap,
 } from '@chakra-ui/react';
 import { useInView } from '@react-spring/web';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import NextLink from 'next/link';
-import { FaCircleArrowRight, FaAngleRight, FaRegClock } from 'react-icons/fa6';
-import { FormattedResource } from 'src/utils/api/types';
-import { TypeBanner } from 'src/components/resource-sections/components';
-import MetadataAccordion from './metadata-accordion';
-import OperatingSystems from './operating-systems';
-import { SearchableItems } from 'src/components/searchable-items';
-import { DisplayHTMLContent } from 'src/components/html-content';
+import React, { useMemo } from 'react';
+import { FaAngleRight, FaCircleArrowRight, FaRegClock } from 'react-icons/fa6';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
+import { BookmarkButton } from 'src/components/bookmark-buttons/button';
+import { CollapsibleText } from 'src/components/collapsible-text';
+import { DisplayHTMLContent } from 'src/components/html-content';
+import { InfoLabel } from 'src/components/info-label';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
+import {
+  SearchableItem,
+  SearchableItems,
+} from 'src/components/searchable-items';
+import { SourceLogo } from 'src/components/source-logo';
+import {
+  formatSourcesWithLogos,
+  getAccessResourceURL,
+} from 'src/components/source-logo/helpers';
 import { ToggleContainer } from 'src/components/toggle-container';
+import Tooltip from 'src/components/tooltip';
+import TypeBanner from 'src/components/type-banner';
+import { useBookmarkDataset } from 'src/hooks/useBookmarkDataset';
+import { FormattedResource } from 'src/utils/api/types';
+import { ENABLE_AUTH } from 'src/utils/feature-flags';
+import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
-import { Skeleton } from 'src/components/skeleton';
+import { CONTENT_TYPE_TOOLTIP } from 'src/views/search/config/content-type';
+
 import {
   filterWords,
   formatCollectionSize,
   getContentTypeItems,
 } from './helpers';
-import { CONTENT_TYPE_TOOLTIP } from 'src/views/search/config/content-type';
-import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
-import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
-import { InfoLabel } from 'src/components/info-label';
-import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
-import {
-  formatSourcesWithLogos,
-  getAccessResourceURL,
-} from 'src/components/source-logo/helpers';
-import { SourceLogo } from 'src/components/source-logo';
-import { BookmarkButton } from 'src/components/bookmark-buttons/button';
-import { useUserData } from 'src/hooks/useUserData';
-import { ENABLE_AUTH } from 'src/utils/feature-flags';
-import { useAuth } from 'src/hooks/useAuth';
-
+import MetadataAccordion from './metadata-accordion';
+import OperatingSystems from './operating-systems';
 interface SearchResultCardProps {
-  isLoading?: boolean;
+  loading?: boolean;
   data?: FormattedResource | null;
   referrerPath?: string;
   querystring: string;
@@ -56,22 +60,28 @@ interface SearchResultCardProps {
 
 const metadataFields = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
+// Height of the description peek shown while the card's description is collapsed.
+const COLLAPSED_DESCRIPTION_HEIGHT = 100;
+
+/* One pill list in the card's searchable metadata strip. */
+interface SearchableSection {
+  /** Heading shown beside the pills. */
+  label: string;
+  /** Plural noun used in the show more/fewer button, e.g. "topics". */
+  itemLabel: string;
+  tooltip?: string;
+  items: SearchableItem[];
+}
+
 const SearchResultCard: React.FC<SearchResultCardProps> = ({
-  isLoading,
+  loading,
   data,
   referrerPath,
   querystring,
 }) => {
-  const { user, login } = useAuth();
-
-  const { savedDatasets, addSavedDataset, removeSavedDataset } = useUserData();
-  const isFavorited = data?.id
-    ? savedDatasets.some(fd => fd.dataset_id === data.id)
-    : false;
   const {
     ['@type']: type,
     id,
-    alternateName,
     name,
     date,
     author,
@@ -80,21 +90,72 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     includedInDataCatalog,
     isAccessibleForFree,
     operatingSystem,
-    url,
   } = data || {};
 
-  const paddingCard = [4, 6, 8, 10];
+  const { isFavorited, toggleBookmark, isDisabled } = useBookmarkDataset({
+    id,
+    name: name || '',
+  });
+
   // lazy load large portion of cards on scroll.
   const [cardRef, inView] = useInView({ once: true });
 
   const sources =
-    isLoading || !includedInDataCatalog
+    loading || !includedInDataCatalog
       ? []
       : formatSourcesWithLogos(includedInDataCatalog) || [];
 
   // `about` and `exampleOfWork.about` values, merged into one unlabeled pill
   // list. Data Collections only.
   const contentTypeItems = useMemo(() => getContentTypeItems(data), [data]);
+
+  // Sections without values are dropped so the strip has no empty rows or
+  // stray separators.
+  const searchableSections = useMemo<SearchableSection[]>(() => {
+    if (!data) return [];
+
+    const describe = (field: string) =>
+      metadataFields[field].description?.[data['@type']];
+
+    const sections: SearchableSection[] = [
+      {
+        label: 'Topic Categories',
+        itemLabel: 'topics',
+        tooltip: describe('topicCategory'),
+        items: (data.topicCategory ?? []).flatMap(({ name }) =>
+          name ? [{ name, value: name, field: 'topicCategory.name' }] : [],
+        ),
+      },
+      {
+        label: 'Content Type',
+        itemLabel: 'content types',
+        tooltip: CONTENT_TYPE_TOOLTIP,
+        items: contentTypeItems,
+      },
+      {
+        label: 'Application Categories',
+        itemLabel: 'application categories',
+        tooltip: describe('applicationCategory'),
+        items: (data.applicationCategory ?? []).map(value => ({
+          name: value,
+          value,
+          field: 'applicationCategory',
+        })),
+      },
+      {
+        label: 'Programming Languages',
+        itemLabel: 'languages',
+        tooltip: describe('programmingLanguage'),
+        items: (data.programmingLanguage ?? []).map(value => ({
+          name: value,
+          value,
+          field: 'programmingLanguage',
+        })),
+      },
+    ];
+
+    return sections.filter(section => section.items.length > 0);
+  }, [data, contentTypeItems]);
 
   // Count and unitText for the DataCollection card's collection-size
   // rectangle.
@@ -113,14 +174,22 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     [querystring],
   );
 
+  // Shared by the header title link and the footer's "View resource" button.
+  // referrerPath is the current path of the page - used for breadcrumbs in resources page
+  const resourcePageLinkProps = {
+    href: { pathname: '/resources/', query: { id, referrerPath } },
+    as: `/resources?id=${id}`,
+    prefetch: false,
+  };
+
   return (
     // {/* Banner with resource type + date of publication */}
-    <Card
+    <Card.Root
       ref={cardRef}
-      variant='niaid'
       boxShadow='none'
       border='1px solid'
       borderColor='gray.100'
+      size='md'
     >
       <TypeBanner
         label={formatAPIResourceTypeForDisplay(type)}
@@ -130,42 +199,34 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         flexDirection={['column', 'row']}
         isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
       />
-
       {/* Card header where name of resource is a link to resource page */}
-      <CardHeader
+      <Card.Header
         bg='transparent'
         position='relative'
-        px={paddingCard}
-        pt={4}
-        color='link.color'
+        py={4}
+        color='link'
         _hover={{
-          p: { textDecoration: 'none' },
-          svg: {
+          '& p': { textDecoration: 'none' },
+          '& svg': {
             transform: 'translate(0px)',
             opacity: 0.9,
             transition: '0.2s ease-in-out',
           },
         }}
         _visited={{
-          color: 'link.color',
-          svg: { color: 'link.color' },
+          color: 'link',
+          '& svg': { color: 'link' },
         }}
         w='100%'
       >
         <Skeleton
-          isLoaded={!isLoading}
-          minHeight={isLoading ? '81px' : 'unset'}
+          loading={loading}
+          minHeight={loading ? '81px' : 'unset'}
           flex={1}
         >
           <NextLink
-            // referrerPath is the current path of the page - used for breadcrumbs in resources page
-            href={{
-              pathname: '/resources/',
-              query: { id, referrerPath },
-            }}
-            as={`/resources?id=${id}`}
+            {...resourcePageLinkProps}
             passHref
-            prefetch={false}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -173,12 +234,12 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
             }}
           >
             <DisplayHTMLContent
-              noOfLines={3}
-              content={name || alternateName || 'N/A'}
+              lineClamp={3}
+              content={name || 'N/A'}
               fontWeight='semibold'
               color='inherit'
               fontSize='lg'
-              lineHeight='short'
+              lineHeight='moderate'
               w='100%'
               textDecoration='underline'
               _hover={{
@@ -200,143 +261,107 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
             />
           </NextLink>
         </Skeleton>
-      </CardHeader>
+      </Card.Header>
+      <>
+        {(author?.length ||
+          isAccessibleForFree != null ||
+          conditionsOfAccess != null) && (
+          <Flex
+            flexDirection={['column-reverse', 'row']}
+            flexWrap={['wrap-reverse', 'wrap']}
+            w='100%'
+            px='calc(var(--card-padding)/2)' // divided by 2 because of toggle inner padding
+            pb={0.5}
+          >
+            {author && (
+              <ToggleContainer
+                ariaLabel='Toggle authors list'
+                noOfLines={1}
+                px='calc(var(--card-padding)/2)'
+                flex={1}
+                py={1}
+                fontSize='sm'
+                colorPalette='gray'
+                variant='ghost'
+              >
+                <Highlight query={highlightProps.query}>
+                  {formatAuthorsList2String(author, ',', 10) || ''}
+                </Highlight>
+              </ToggleContainer>
+            )}
+
+            {(isAccessibleForFree != null || conditionsOfAccess != null) && (
+              <Flex
+                justifyContent={['flex-end']}
+                alignItems='center'
+                w={['100%', 'unset']}
+                px='calc(var(--card-padding)/2)'
+              >
+                <AccessibleForFree
+                  type={data?.['@type']}
+                  isAccessibleForFree={isAccessibleForFree}
+                  mx={1}
+                />
+                <ConditionsOfAccess
+                  type={data?.['@type']}
+                  conditionsOfAccess={conditionsOfAccess}
+                  mx={1}
+                />
+              </Flex>
+            )}
+          </Flex>
+        )}
+      </>
+
       <Skeleton
-        isLoaded={!isLoading}
+        loading={loading}
         p='0px!important'
         minHeight={
-          isLoading
+          loading
             ? { base: '580px', sm: '400px', md: '330px', lg: '300px' }
             : 'unset'
         }
       >
         {inView && (
           <>
-            {(author?.length || isAccessibleForFree || conditionsOfAccess) && (
+            {(date || operatingSystem) && (
               <Flex
-                flexDirection={['column-reverse', 'row']}
-                flexWrap={['wrap-reverse', 'wrap']}
-                w='100%'
-                borderY='1px solid'
-                borderColor='gray.100'
+                px='calc(var(--card-padding))'
+                py={1}
+                bg='secondary.50'
+                alignItems='center'
               >
-                {author && (
-                  <ToggleContainer
-                    ariaLabel=''
-                    noOfLines={1}
-                    justifyContent='flex-start'
-                    m={0}
-                    px={paddingCard}
-                    py={2}
-                    flex={1}
-                    w='100%'
-                    _focus={{ outlineColor: 'transparent' }}
-                    fontSize='xs'
-                    color='text.body'
-                  >
-                    <Highlight query={highlightProps.query}>
-                      {formatAuthorsList2String(author, ',', 10) || ''}
-                    </Highlight>
-                  </ToggleContainer>
-                )}
-                {(typeof isAccessibleForFree !== undefined ||
-                  typeof isAccessibleForFree !== null ||
-                  conditionsOfAccess) && (
-                  <Flex
-                    justifyContent={['flex-end']}
-                    alignItems='center'
-                    w={['100%', 'unset']}
-                    flex={[1]}
-                    p={[0.5, 2]}
-                  >
-                    <AccessibleForFree
-                      type={data?.['@type']}
-                      isAccessibleForFree={isAccessibleForFree}
-                      mx={1}
-                    />
-                    <ConditionsOfAccess
-                      type={data?.['@type']}
-                      conditionsOfAccess={conditionsOfAccess}
-                      mx={1}
-                    />
-                  </Flex>
-                )}
+                <HStack
+                  whiteSpace='nowrap'
+                  alignItems='center'
+                  fontSize='sm'
+                  fontWeight='semibold'
+                  flex={1}
+                >
+                  {date && (
+                    <Tooltip content='Corresponds to the most recent of date modified, date published and date created.'>
+                      {/* An element, not a Fragment: the tooltip trigger is
+                      `asChild`, and a Fragment has no node to attach to. */}
+                      <HStack gap={2}>
+                        <FaRegClock />
+                        <Text>{date}</Text>
+                      </HStack>
+                    </Tooltip>
+                  )}
+                </HStack>
+
+                {operatingSystem && <OperatingSystems data={operatingSystem} />}
               </Flex>
             )}
-
-            <CardBody
-              p={0}
-              sx={{
-                '>*': {
-                  my: 0,
-                },
-              }}
-            >
-              {date && (
-                <Flex
-                  px={paddingCard}
-                  flex={1}
-                  borderRadius='semi'
-                  bg='secondary.50'
-                  fontWeight='semibold'
-                  whiteSpace='nowrap'
-                  alignItems='center'
-                  justify='space-between'
-                >
-                  <Tooltip
-                    label='Corresponds to the most recent of date modified, date published and date created.'
-                    hasArrow
-                    bg='#fff'
-                    sx={{
-                      color: 'text.body',
-                    }}
-                  >
-                    <Flex whiteSpace='nowrap' alignItems='center'>
-                      <Icon as={FaRegClock} mr={2} />
-                      <Text fontSize='xs'>{date}</Text>
-                    </Flex>
-                  </Tooltip>
-
-                  {operatingSystem && (
-                    <OperatingSystems data={operatingSystem} />
-                  )}
-                </Flex>
-              )}
-
-              {!date && (
-                <Flex
-                  px={paddingCard}
-                  py={1}
-                  flex={1}
-                  borderRadius='semi'
-                  bg='secondary.50'
-                  fontWeight='semibold'
-                  whiteSpace='nowrap'
-                  alignItems='center'
-                  justify='end'
-                >
-                  {operatingSystem && (
-                    <OperatingSystems data={operatingSystem} />
-                  )}
-                </Flex>
-              )}
-
-              <Stack
-                px={paddingCard}
-                py={[0, 1]}
-                flexDirection={{ base: 'column', md: 'row' }}
-                spacing={[1, 3, 4]}
+            <Card.Body p={0} gap={1}>
+              <Wrap
+                justifyContent='center'
+                px='calc(var(--card-padding))'
+                py='calc(var(--card-padding)/2)'
               >
                 {data && data['@type'] === 'DataCollection'
                   ? collectionSize && (
-                      <Tooltip
-                        label='What the data collection contains and its size'
-                        hasArrow
-                        bg='#fff'
-                        sx={{
-                          color: 'text.body',
-                        }}
-                      >
+                      <Tooltip content='What the data collection contains and its size'>
                         <Flex
                           flexDirection='column'
                           alignItems='center'
@@ -387,310 +412,109 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                         p={0}
                       />
                     )}
-                <Flex
-                  display={{ base: 'block', sm: 'none' }}
-                  px={2}
-                  py={{ base: 1, sm: 3 }}
-                  flexDirection={{ base: 'row', sm: 'column' }}
-                  alignItems='center'
-                  border={{ base: '1px', sm: 'none' }}
-                  borderColor='gray.100'
-                  borderRadius='semi'
-                  justifyContent='center'
-                >
-                  <SourceLogo.Wrapper>
-                    {sources?.length > 0 &&
-                      sources.map(source => {
-                        return (
-                          <SourceLogo.Component
-                            key={source.name}
-                            source={source}
-                            type={type}
-                            url={getAccessResourceURL({
-                              recordType: type,
-                              source,
-                            })}
-                          />
-                        );
-                      })}
-                  </SourceLogo.Wrapper>
-                </Flex>
 
-                {description && (
-                  <ToggleContainer
-                    ariaLabel=''
-                    noOfLines={[3, 10]}
-                    px={4}
-                    py={2}
-                    my={0}
-                    borderColor='transparent'
-                    justifyContent='space-between'
-                    _hover={{ bg: 'page.alt' }}
-                    _focus={{ outlineColor: 'transparent', bg: 'white' }}
-                    alignIcon='center'
-                    borderRadius='semi'
-                    flex={1}
-                  >
+                <CollapsibleText
+                  flex={1}
+                  px='calc(var(--card-padding)/2)'
+                  collapsedHeight={COLLAPSED_DESCRIPTION_HEIGHT}
+                  lineClamp={10}
+                >
+                  {description && (
                     <DisplayHTMLContent
                       content={description}
                       highlightProps={highlightProps}
                     />
-                  </ToggleContainer>
-                )}
-              </Stack>
-
+                  )}
+                </CollapsibleText>
+              </Wrap>
               <MetadataAccordion data={data} />
-
-              {data?.topicCategory &&
-                data?.topicCategory.some(topic => topic.name) && (
-                  <Flex
-                    borderBottom='1px solid'
-                    borderBottomColor='gray.200'
-                    px={paddingCard}
-                    py={1}
-                  >
-                    <SearchableItems
-                      generateButtonLabel={(
-                        limit,
-                        length,
-                        itemLabel = 'topics',
-                      ) =>
-                        limit === length
-                          ? `Show fewer ${itemLabel}`
-                          : `Show all ${itemLabel} (${length - limit} more)`
-                      }
-                      itemLimit={3}
-                      items={(data?.topicCategory ?? []).flatMap(topic =>
-                        typeof topic?.name === 'string'
-                          ? [
-                              {
-                                name: topic.name,
-                                value: topic.name,
-                                field: 'topicCategory.name',
-                              },
-                            ]
-                          : [],
-                      )}
-                      name={
-                        <InfoLabel
-                          title='Topic Categories'
-                          tooltipText={
-                            metadataFields['topicCategory'].description?.[
-                              data['@type']
-                            ]
-                          }
-                        />
-                      }
-                    />
-                  </Flex>
-                )}
-
-              {contentTypeItems.length > 0 && (
-                <Flex
-                  borderBottom='1px solid'
-                  borderBottomColor='gray.200'
-                  px={paddingCard}
+              {searchableSections.length > 0 && (
+                <Stack
+                  gap={1}
+                  separator={<Separator />}
                   py={1}
+                  borderTop='1px solid'
+                  borderColor='border'
+                  css={{
+                    '& > *': {
+                      px: 'var(--card-padding)',
+                    },
+                  }}
                 >
-                  <SearchableItems
-                    generateButtonLabel={(
-                      limit,
-                      length,
-                      itemLabel = 'content types',
-                    ) =>
-                      limit === length
-                        ? `Show fewer ${itemLabel}`
-                        : `Show all ${itemLabel} (${length - limit} more)`
-                    }
-                    itemLimit={3}
-                    items={contentTypeItems}
-                    // These values only exist on Data Collections, so a search
-                    // without the tab param would land on the empty Datasets tab.
-                    searchParams={{ tab: 'dc' }}
-                    name={
-                      <InfoLabel
-                        title='Content Type'
-                        tooltipText={CONTENT_TYPE_TOOLTIP}
+                  {searchableSections.map(
+                    ({ label, itemLabel, tooltip, items }) => (
+                      <SearchableItems
+                        key={label}
+                        itemLimit={3}
+                        items={items}
+                        itemLabel={itemLabel}
+                        heading={
+                          <InfoLabel tooltipProps={{ content: tooltip }}>
+                            {label}
+                          </InfoLabel>
+                        }
                       />
-                    }
-                  />
-                </Flex>
+                    ),
+                  )}
+                </Stack>
               )}
+            </Card.Body>
+            <Separator />
+            <Card.Footer
+              gap={4}
+              flexWrap='wrap'
+              pt='calc(var(--card-padding)/2)'
+              justifyContent='space-between'
+              alignItems='flex-end'
+            >
+              <SourceLogo.Wrapper flex={1}>
+                {sources.map(source => (
+                  <SourceLogo.Component
+                    key={source.name}
+                    source={source}
+                    type={type}
+                    url={getAccessResourceURL({ recordType: type, source })}
+                  />
+                ))}
+              </SourceLogo.Wrapper>
 
-              {data?.applicationCategory &&
-                data?.applicationCategory.length > 0 && (
-                  <Flex
-                    borderBottom='1px solid'
-                    borderBottomColor='gray.200'
-                    px={paddingCard}
-                    py={1}
-                  >
-                    <SearchableItems
-                      generateButtonLabel={(
-                        limit,
-                        length,
-                        itemLabel = 'Application Categories',
-                      ) =>
-                        limit === length
-                          ? `Show fewer ${itemLabel}`
-                          : `Show all ${itemLabel} (${length - limit} more)`
-                      }
-                      itemLimit={3}
-                      items={data?.applicationCategory.map(ac => ({
-                        name: ac,
-                        value: ac,
-                        field: 'applicationCategory',
-                      }))}
-                      name={
-                        <InfoLabel
-                          title='Application Categories'
-                          tooltipText={
-                            metadataFields['applicationCategory'].description?.[
-                              data['@type']
-                            ]
-                          }
-                        />
-                      }
-                    />
-                  </Flex>
-                )}
-
-              {data?.programmingLanguage &&
-                data?.programmingLanguage.length > 0 && (
-                  <Flex
-                    borderBottom='1px solid'
-                    borderBottomColor='gray.200'
-                    px={paddingCard}
-                    py={1}
-                  >
-                    <SearchableItems
-                      generateButtonLabel={(
-                        limit,
-                        length,
-                        itemLabel = 'languages',
-                      ) =>
-                        limit === length
-                          ? `Show fewer ${itemLabel}`
-                          : `Show all ${itemLabel} (${length - limit} more)`
-                      }
-                      itemLimit={3}
-                      items={data?.programmingLanguage.map(pl => ({
-                        name: pl,
-                        value: pl,
-                        field: 'programmingLanguage',
-                      }))}
-                      name={
-                        <InfoLabel
-                          title='Programming Languages'
-                          tooltipText={
-                            metadataFields['programmingLanguage'].description?.[
-                              data['@type']
-                            ]
-                          }
-                        />
-                      }
-                    />
-                  </Flex>
-                )}
-
-              <Stack
-                flex={1}
-                p={1}
-                flexDirection={{ base: 'column', sm: 'row' }}
-                alignItems={{ base: 'center', sm: 'flex-end' }}
+              <HStack
+                flex={{ base: 1, sm: 'unset' }}
+                mt={{ base: 2, sm: 0 }}
+                w={{ base: '100%', md: 'unset' }}
                 flexWrap='wrap'
-                px={paddingCard}
-                pt={[0, 1, 2]}
-                pb={[2, 4]}
-                my={1}
               >
-                <SourceLogo.Wrapper
-                  display={{ base: 'none', sm: 'flex' }}
-                  flex={1}
-                >
-                  {sources?.length > 0 &&
-                    sources.map(source => {
-                      return (
-                        <SourceLogo.Component
-                          key={source.name}
-                          source={source}
-                          type={type}
-                          url={getAccessResourceURL({
-                            recordType: type,
-                            source,
-                          })}
-                        />
-                      );
-                    })}
-                </SourceLogo.Wrapper>
-
-                <HStack
-                  flex={{ base: 1, sm: 'unset' }}
-                  mt={[2, 0]}
-                  w={{ base: '100%', sm: 'unset' }}
-                >
-                  {ENABLE_AUTH && (
-                    <BookmarkButton
-                      isFavorited={isFavorited}
-                      onClick={() => {
-                        if (!data?.id) return;
-                        if (!user) {
-                          login();
-                          return;
-                        }
-                        if (isFavorited) {
-                          removeSavedDataset(data.id);
-                        } else {
-                          addSavedDataset({
-                            dataset_id: data.id,
-                            name:
-                              data.name ||
-                              data.alternateName ||
-                              'Untitled Dataset',
-                            saved_at: new Date().toISOString(),
-                          });
-                        }
-                      }}
-                      disabled={!data?.id}
-                    />
-                  )}
-                  {id && (
-                    <NextLink
-                      // referrerPath is the current path of the page - used for breadcrumbs in resources page
-                      href={{
-                        pathname: '/resources/',
-                        query: { id, referrerPath },
-                      }}
-                      as={`/resources?id=${id}`}
-                      style={{ flex: 1 }}
-                      passHref
-                      prefetch={false}
-                    >
-                      <Flex
-                        flex={1}
-                        justifyContent='flex-end'
-                        flexWrap='wrap'
-                        maxW={{ base: '100%', sm: '150px' }}
-                      >
-                        <Button
-                          as='span'
-                          flex={1}
-                          size={{ base: 'md', sm: 'sm' }}
-                          rightIcon={<FaCircleArrowRight />}
-                          aria-label={`Go to details about resource ${name}`}
-                        >
-                          View resource
-                        </Button>
-                      </Flex>
+                {ENABLE_AUTH && (
+                  <BookmarkButton
+                    size={{ base: 'md', sm: 'sm' }}
+                    minWidth={{ base: '200px', sm: 'unset' }}
+                    flex={1}
+                    variant={{ base: 'outline', md: 'ghost' }}
+                    isFavorited={isFavorited}
+                    onClick={toggleBookmark}
+                    disabled={isDisabled}
+                  />
+                )}
+                {id && (
+                  <Button
+                    flex={1}
+                    size={{ base: 'md', sm: 'sm' }}
+                    aria-label={`Go to details about resource ${name}`}
+                    asChild
+                    minWidth={{ base: '200px', sm: '150px' }}
+                  >
+                    <NextLink {...resourcePageLinkProps} style={{ flex: 1 }}>
+                      View resource
+                      <FaCircleArrowRight />
                     </NextLink>
-                  )}
-                </HStack>
-              </Stack>
-            </CardBody>
+                  </Button>
+                )}
+              </HStack>
+            </Card.Footer>
           </>
         )}
       </Skeleton>
-    </Card>
+    </Card.Root>
   );
 };
 

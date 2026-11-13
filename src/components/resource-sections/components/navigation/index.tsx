@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Box, Heading, ListItem, UnorderedList } from '@chakra-ui/react';
+import { Box, Heading, List } from '@chakra-ui/react';
 import { throttle } from 'lodash';
-import { NavLink } from './components/nav-link';
+import React, { useEffect, useRef, useState } from 'react';
 import { LinkProps } from 'src/components/link';
+
+import { NavLink } from './components/nav-link';
 
 interface LocalNavigationProps {
   routes: { title: string; hash: string; depth?: number }[];
@@ -83,12 +84,11 @@ const LocalNavigation: React.FC<LocalNavigationProps> = ({
       <Heading as='h2' size='sm' fontWeight='semibold' mb={0} px={2}>
         On This Page
       </Heading>
-
-      <UnorderedList ml={0} mt={2}>
+      <List.Root as='ul' ml={0} pl={0} mt={2}>
         {routes &&
           routes.map((route, i) => {
             return (
-              <ListItem
+              <List.Item
                 key={`${route.hash}-${i}`}
                 py={1}
                 borderLeft='1px solid'
@@ -106,10 +106,10 @@ const LocalNavigation: React.FC<LocalNavigationProps> = ({
                 >
                   {route.title}
                 </NavLink>
-              </ListItem>
+              </List.Item>
             );
           })}
-      </UnorderedList>
+      </List.Root>
     </Box>
   );
 };

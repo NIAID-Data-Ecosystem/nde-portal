@@ -1,99 +1,94 @@
+import { Span, Tag, Text } from '@chakra-ui/react';
+import NextLink from 'next/link';
 import React from 'react';
 import { FaSquareArrowUpRight } from 'react-icons/fa6';
-import {
-  Tag,
-  TagLabel,
-  TagLeftIcon,
-  TagProps,
-  TagRightIcon,
-  Text,
-} from '@chakra-ui/react';
-import NextLink from 'next/link';
 import type { UrlObject } from 'url';
-import { IconType } from 'react-icons';
 
-interface TagWithUrlProps extends TagProps {
+export interface TagWithUrlProps extends Tag.RootProps {
+  /** Where the tag links to. Without one it renders as plain text. */
   href?: string | UrlObject | null;
+  /** Optional prefix shown before `children`, e.g. `'DOI |'`. Never underlined. */
   label?: string;
+  /** Opens `href` in a new tab and appends an external-link icon. */
   isExternal?: boolean;
-  leftIcon?: IconType;
+  leftIcon?: React.ReactNode;
 }
 
 /**
- * TagWithUrl is a component that wraps a Tag component with a URL.
- * It allows the user to click on the tag and navigate to the URL.
- * @param {TagWithUrlProps} props
- * @param {string | UrlObject} props.href - The URL to navigate to.
- * @param {string} props.label - The (optional) label to display before the tag.
- * @param {boolean} props.isExternal - Whether the URL is external.
+ * A tag that links to `href`, with an optional bold `label` prefix.
+ *
+ * Only `children` is underlined to read as a link, and the underline clears
+ * while the tag is hovered. The underline lives on the value's own span rather
+ * than the anchor, because a decoration on the anchor would also be drawn
+ * under the prefix.
+ *
+ * Without an `href` the tag degrades to plain text instead of rendering a dead
+ * link — see https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/245.
  */
-
-export const TagWithUrl = ({
-  children,
-  label,
-  href,
-  isExternal,
-  leftIcon,
-  noOfLines = 1,
-  ...props
-}: TagWithUrlProps) => {
-  const Label = () =>
-    label ? (
-      <Text
-        as='span'
-        mr={1}
-        fontWeight='semibold'
-        fontSize='inherit'
-        color='inherit'
-        lineHeight='inherit'
-      >
+export const TagWithUrl = React.forwardRef<HTMLElement, TagWithUrlProps>(
+  function TagWithUrl(
+    {
+      children,
+      label,
+      href,
+      isExternal,
+      leftIcon,
+      size = 'sm',
+      colorPalette = 'primary',
+      ...props
+    },
+    ref,
+  ) {
+    const prefix = label && (
+      <Span mr={1} fontWeight='semibold'>
         {label}
-      </Text>
-    ) : (
-      <></>
+      </Span>
     );
 
-  // Note: Show as plain text when there is no associated url
-  // See issue: https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/245
-  if (!href)
-    return (
-      <Text fontSize={props.fontSize || 'xs'} {...props}>
-        <Label />
-        {children}
-      </Text>
-    );
-  return (
-    <Tag
-      as={NextLink}
-      href={href}
-      target={isExternal ? '_blank' : '_self'}
-      size='sm'
-      variant='subtle'
-      alignItems='center'
-      _hover={{
-        '.tag-text': {
-          textDecoration: 'none',
-        },
-      }}
-      lineHeight='shorter'
-      {...props}
-    >
-      {leftIcon && <TagLeftIcon as={leftIcon} mr={0} />}
-
-      <TagLabel fontSize='inherit' lineHeight='inherit' display='inline'>
-        <Label />
+    if (!href) {
+      return (
         <Text
-          as='span'
-          className='tag-text'
-          textDecoration='underline'
-          fontSize='inherit'
-          lineHeight='inherit'
-          color='inherit'
+          ref={ref as React.Ref<HTMLParagraphElement>}
+          textStyle={size}
+          {...props}
         >
+          {prefix}
           {children}
         </Text>
-      </TagLabel>
-      {isExternal && <TagRightIcon as={FaSquareArrowUpRight} ml={1} />}
-    </Tag>
-  );
-};
+      );
+    }
+
+    return (
+      <Tag.Root
+        ref={ref as React.Ref<HTMLSpanElement>}
+        asChild
+        className='group'
+        size={size}
+        variant='subtle'
+        colorPalette={colorPalette}
+        lineHeight='shorter'
+        {...props}
+      >
+        <NextLink href={href} target={isExternal ? '_blank' : undefined}>
+          {leftIcon && <Tag.StartElement>{leftIcon}</Tag.StartElement>}
+          {/* `display: inline` lets the prefix and value wrap as one run of text,
+          overriding the single-line clamp the recipe puts on this slot. */}
+          <Tag.Label display='inline'>
+            {prefix}
+            <Span
+              textDecoration='underline'
+              _groupHover={{ textDecorationColor: 'transparent' }}
+            >
+              {children}
+            </Span>
+          </Tag.Label>
+          {isExternal && (
+            <Tag.EndElement>
+              <FaSquareArrowUpRight />
+            </Tag.EndElement>
+          )}
+        </NextLink>
+      </Tag.Root>
+    );
+  },
+);

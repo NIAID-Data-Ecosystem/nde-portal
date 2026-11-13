@@ -1,6 +1,6 @@
+import { Link } from '@chakra-ui/react';
+import NextLink from 'next/link';
 import React from 'react';
-import { Box, Link } from '@chakra-ui/react';
-import { SHARED_DESKTOP_ACTION_STYLES } from './styles';
 
 // A component for rendering a single navigation link, which can be either internal or external. It has styling for active and hover states.
 export const NavTopLevelLink = ({
@@ -16,16 +16,21 @@ export const NavTopLevelLink = ({
 }) => {
   return (
     <Link
-      href={href ?? '#'}
-      target={isExternal ? '_blank' : '_self'}
-      rel={isExternal ? 'noopener noreferrer' : undefined}
-      variant='unstyled'
-      __css={SHARED_DESKTOP_ACTION_STYLES}
-      _hover={{ bg: 'whiteAlpha.300', color: 'white' }}
-      _visited={{ color: 'white', _hover: { color: 'white' } }}
+      asChild
+      display='flex'
+      alignItems='center'
+      fontSize='inherit'
+      variant='nav'
+      data-active={isActive ? '' : undefined}
     >
-      {label}
-      {isActive && <Box bg='white' width='100%' height={0.5} />}
+      <NextLink
+        href={href ?? '#'}
+        target={isExternal ? '_blank' : '_self'}
+        rel={isExternal ? 'noopener noreferrer' : undefined}
+        aria-current={isActive ? 'page' : undefined}
+      >
+        {label}
+      </NextLink>
     </Link>
   );
 };
