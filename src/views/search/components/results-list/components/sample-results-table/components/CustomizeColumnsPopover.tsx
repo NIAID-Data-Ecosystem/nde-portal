@@ -1,7 +1,8 @@
 import React from 'react';
+
 import {
-  CustomizeColumnsPopover as GenericCustomizeColumnsPopover,
   ColumnConfig,
+  CustomizeColumnsPopover as GenericCustomizeColumnsPopover,
 } from '../../results-table/components/CustomizeColumnsPopover';
 import { SAMPLE_REQUIRED_COLUMN_IDS } from '../../results-table/constants';
 

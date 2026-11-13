@@ -1,5 +1,6 @@
 import { FormattedResource } from 'src/utils/api/types';
 import { formatTermLabel } from 'src/utils/formatting/formatTermLabel';
+
 import { toArray } from '../components/results-table/utils';
 
 /*

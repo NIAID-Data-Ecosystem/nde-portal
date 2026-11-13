@@ -1,4 +1,5 @@
 import { APIResourceType } from 'src/utils/formatting/formatResourceType';
+
 import { SelectedFilterType } from './components/filters';
 
 export type TabType = {

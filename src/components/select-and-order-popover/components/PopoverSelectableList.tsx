@@ -1,8 +1,7 @@
-import React, { useMemo } from 'react';
 import { Stack, Text } from '@chakra-ui/react';
 import {
-  DndContext,
   closestCenter,
+  DndContext,
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -13,9 +12,11 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
+import React, { useMemo } from 'react';
+
 import { PopoverItem, PopoverItemGroup } from '../types';
-import { PopoverListItem } from './PopoverListItem';
 import { PopoverEmptyState } from './PopoverEmptyState';
+import { PopoverListItem } from './PopoverListItem';
 
 interface PopoverSelectableListProps {
   /**
@@ -179,7 +180,7 @@ export const PopoverSelectableList = ({
           py={1}
         >
           {group.groupKey && (
-            <Text fontSize='xs' fontWeight='semibold' color='gray.800' px={1}>
+            <Text fontSize='xs' fontWeight='semibold' color='gray.600' px={1}>
               {group.groupKey}
             </Text>
           )}

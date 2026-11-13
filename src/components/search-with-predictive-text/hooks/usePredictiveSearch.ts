@@ -1,16 +1,16 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { debounce } from 'lodash';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { fetchSearchResults } from 'src/utils/api';
 import {
   FetchSearchResultsResponse,
   FormattedResource,
 } from 'src/utils/api/types';
 import { encodeString } from 'src/utils/querystring-helpers';
-import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
 export interface usePredictiveSearchResponse {
-  isLoading: boolean;
+  loading: boolean;
   error: Error | null;
   results: Partial<FormattedResource>[];
   searchTerm: string;
@@ -152,7 +152,7 @@ export const usePredictiveSearch = (
   };
 
   return {
-    isLoading: isLoading || isFetching,
+    loading: isLoading || isFetching,
     error,
     results,
     searchTerm,

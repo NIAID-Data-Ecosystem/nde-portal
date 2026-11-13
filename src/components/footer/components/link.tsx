@@ -1,7 +1,8 @@
+import { Flex, Icon } from '@chakra-ui/react';
 import React from 'react';
-import { Icon, Flex } from '@chakra-ui/react';
 import { FaAngleRight, FaGithub, FaRegEnvelope } from 'react-icons/fa6';
 import { Link, LinkProps } from 'src/components/link';
+
 import { FooterRoute } from '../types';
 
 export const StyledLink = ({ ...props }: LinkProps) => {

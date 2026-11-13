@@ -1,7 +1,7 @@
-import React from 'react';
-import { FaAngleRight, FaEllipsis } from 'react-icons/fa6';
 import { Button, Flex, HStack, Icon, IconButton } from '@chakra-ui/react';
+import { FaAngleRight, FaEllipsis } from 'react-icons/fa6';
 import Tooltip from 'src/components/tooltip';
+
 import { OntologyLineageItemWithCounts } from '../../../types';
 
 /**
@@ -42,22 +42,17 @@ export const OntologyTreeBreadcrumbs = ({
         py={2}
         pl={4}
         flexWrap='wrap'
-        spacing={0}
-        divider={
-          <Icon
-            as={FaAngleRight}
-            color='gray.400'
-            boxSize={3}
-            borderLeft='none'
-          />
-        }
+        gap={0}
       >
         {lineageNodes.map((node, index) => (
-          <React.Fragment key={node.id}>
+          // Each crumb and its chevron wrap as one unit, so a chevron never
+          // starts a line on its own.
+          <Flex key={node.id} alignItems='center'>
+            {/* v3's `xs` is v2's `sm` (32px). */}
             <Button
-              colorScheme='gray'
+              colorPalette='gray'
               variant='ghost'
-              size='sm'
+              size='xs'
               px={1}
               _hover={{ textDecoration: 'underline' }}
               // Update the selected node index when clicked
@@ -65,7 +60,12 @@ export const OntologyTreeBreadcrumbs = ({
             >
               {node.label}
             </Button>
-          </React.Fragment>
+            {/* Rendered by hand rather than via HStack's `separator`, which
+                would give the icon a separator's border. */}
+            {index < lineageNodes.length - 1 && (
+              <Icon as={FaAngleRight} color='gray.400' boxSize={3} />
+            )}
+          </Flex>
         ))}
       </HStack>
       {/*
@@ -73,7 +73,7 @@ export const OntologyTreeBreadcrumbs = ({
       - The button updates the selected node index to show the parent node.
       - The button is disabled when the selected node is the root node.
       */}
-      <Tooltip label='Show parent'>
+      <Tooltip content='Show parent'>
         <Flex
           alignItems='center'
           borderY='0.25px solid'
@@ -91,14 +91,15 @@ export const OntologyTreeBreadcrumbs = ({
         >
           <IconButton
             aria-label='show parent node'
-            icon={<FaEllipsis />}
             variant='ghost'
-            colorScheme='gray'
-            size='sm'
+            colorPalette='gray'
+            size='xs'
             color='currentColor'
             justifyContent='flex-start'
             px={2}
-          />
+          >
+            <FaEllipsis />
+          </IconButton>
         </Flex>
       </Tooltip>
     </>

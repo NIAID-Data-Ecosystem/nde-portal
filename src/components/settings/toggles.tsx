@@ -3,8 +3,8 @@
  * to API preference fields.
  */
 
-import { ReactNode } from 'react';
 import { Box, HStack, Link, Switch, Text, VStack } from '@chakra-ui/react';
+import { ReactNode } from 'react';
 import { UserAccount, UserPreferencesKeys } from 'src/hooks/useUserData/types';
 
 export const TOGGLES_COPY = {
@@ -171,14 +171,19 @@ export function SettingToggle({
           {description}
         </Text>
       </VStack>
-      <Switch
-        colorScheme='primary'
-        aria-label={label}
-        aria-describedby={describedBy}
-        isChecked={isChecked}
-        isDisabled={isDisabled}
-        onChange={e => onChange(e.target.checked)}
-      />
+      <Switch.Root
+        colorPalette='primary'
+        checked={isChecked}
+        onCheckedChange={e => onChange(e.checked)}
+        disabled={isDisabled}
+      >
+        {/* On the input, not Switch.Root: the root renders the wrapping
+            <label>, so ARIA there doesn't reach the control. */}
+        <Switch.HiddenInput aria-label={label} aria-describedby={describedBy} />
+        <Switch.Control>
+          <Switch.Thumb />
+        </Switch.Control>
+      </Switch.Root>
     </HStack>
   );
 }

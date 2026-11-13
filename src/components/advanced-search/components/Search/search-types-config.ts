@@ -1,7 +1,8 @@
-import { wildcardQueryString } from '../../utils/query-helpers';
-import { QueryValue } from '../../types';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+
+import { QueryValue } from '../../types';
+import { wildcardQueryString } from '../../utils/query-helpers';
 
 /**
  * @interface SearchTypesConfigProps:

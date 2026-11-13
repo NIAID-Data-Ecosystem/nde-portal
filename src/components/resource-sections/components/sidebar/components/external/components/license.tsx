@@ -1,37 +1,35 @@
+import { Image, Text, VStack } from '@chakra-ui/react';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import React from 'react';
-import { Box, Image, Text } from '@chakra-ui/react';
+import { InfoLabel } from 'src/components/info-label';
+import { Link } from 'src/components/link';
 import { FormattedResource } from 'src/utils/api/types';
 import { formatLicense } from 'src/utils/helpers';
-import { HeadingWithTooltip } from './heading-with-tooltip';
-import { Link } from 'src/components/link';
-import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
 interface LicenseProps {
-  isLoading: boolean;
+  loading: boolean;
   license?: FormattedResource['license'];
   type?: FormattedResource['@type'];
 }
 
-export const License: React.FC<LicenseProps> = ({
-  isLoading,
-  license,
-  type,
-}) => {
-  if (!isLoading && !(license && type)) {
+export const License: React.FC<LicenseProps> = ({ loading, license, type }) => {
+  if (!loading && !(license && type)) {
     return <></>;
   }
   const licenseInfo = license ? formatLicense(license) : null;
 
   return (
-    <Box>
-      <HeadingWithTooltip
+    <VStack align='start' gap={0.5}>
+      <InfoLabel
         label='License'
-        tooltipLabel={`${
-          SCHEMA_DEFINITIONS['license']?.description?.[
-            (type ??
-              'Dataset') as keyof (typeof SCHEMA_DEFINITIONS)['license']['description']
-          ] ?? ''
-        }`}
+        tooltipProps={{
+          content: `${
+            SCHEMA_DEFINITIONS['license']?.description?.[
+              (type ??
+                'Dataset') as keyof (typeof SCHEMA_DEFINITIONS)['license']['description']
+            ] ?? ''
+          }`,
+        }}
       />
 
       {licenseInfo?.img && (
@@ -50,6 +48,6 @@ export const License: React.FC<LicenseProps> = ({
       ) : (
         <Text>{licenseInfo?.title}</Text>
       )}
-    </Box>
+    </VStack>
   );
 };

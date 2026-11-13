@@ -1,8 +1,9 @@
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
-import { SearchTypesConfigProps } from '../search-types-config';
-import { QueryValue } from 'src/components/advanced-search/types';
-import { filterSearchTypes } from './SearchOptions/utils';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import React, { ReactNode, useCallback, useEffect, useState } from 'react';
+import { QueryValue } from 'src/components/advanced-search/types';
+
+import { SearchTypesConfigProps } from '../search-types-config';
+import { getSelectableSearchTypes } from './SearchTypePicker/utils';
 
 /**
  * @interface AdvancedSearchContextProps:
@@ -66,13 +67,13 @@ export const AdvancedSearchFormContext = ({
   // Get default search type for the field type.
   const getDefaultSearchOption: any = useCallback(
     (searchTypeOptions: SearchTypesConfigProps[]) => {
-      const filteredSearchTypes = filterSearchTypes(
+      const selectableSearchTypes = getSelectableSearchTypes(
         searchTypeOptions,
         queryValue,
       );
 
-      let defaultSearchOption = filteredSearchTypes[0];
-      filteredSearchTypes.forEach(searchType => {
+      let defaultSearchOption = selectableSearchTypes[0];
+      selectableSearchTypes.forEach(searchType => {
         if (searchType.isDefault) {
           // if there are suboptions look for the default.
           if (searchType?.options?.length) {

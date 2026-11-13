@@ -1,14 +1,4 @@
-import {
-  Box,
-  Flex,
-  Stack,
-  Table,
-  Tbody,
-  Tr,
-  Td,
-  Text,
-  HStack,
-} from '@chakra-ui/react';
+import { Box, Flex, HStack, Stack, Table, Text } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { ExampleOfWork } from 'src/utils/api/types';
@@ -30,10 +20,10 @@ export const ExampleOfWorkDisplay = ({
     ? [encodingFormat]
     : [];
   return (
-    <Stack mt={4} lineHeight='short' gap={4} fontSize='xs'>
+    <Stack mt={4} lineHeight='moderate' gap={4} fontSize='sm'>
       {schemaVersion && (
         <Box>
-          <Text fontWeight='semibold' lineHeight='short' mb={0.5}>
+          <Text fontWeight='semibold' lineHeight='moderate' mb={0.5}>
             Schema version
           </Text>
           <Link href={schemaVersion} isExternal>
@@ -44,14 +34,14 @@ export const ExampleOfWorkDisplay = ({
 
       {encodingFormats.length > 0 && (
         <Box>
-          <Text fontWeight='semibold' lineHeight='short' mb={0.5}>
+          <Text fontWeight='semibold' lineHeight='moderate' mb={0.5}>
             Encoding format
           </Text>
           <HStack
-            spacing={1}
+            gap={1}
             wrap='wrap'
-            divider={
-              <Text color='gray.400' mx={1}>
+            separator={
+              <Text color='gray.400' mx={1} borderWidth={0}>
                 |
               </Text>
             }
@@ -73,7 +63,7 @@ export const ExampleOfWorkDisplay = ({
 
       {properties.length > 0 && (
         <Box>
-          <Text fontWeight='semibold' lineHeight='short' mb={0.5}>
+          <Text fontWeight='semibold' lineHeight='moderate' mb={0.5}>
             Schema properties
           </Text>
 
@@ -88,30 +78,24 @@ export const ExampleOfWorkDisplay = ({
             border='1px solid'
             borderColor='gray.100'
             borderRadius='semi'
-            fontSize='xs'
-            mx={0.5}
+            fontSize='sm'
             py={0}
-            px={0.5}
           >
-            <Table
-              size='sm'
-              fontSize='xs'
-              sx={{ tr: { td: { px: 1.5, py: 1 } } }}
-            >
-              <Tbody>
+            <Table.Root size='sm' fontSize='sm'>
+              <Table.Body>
                 {properties.map((property, index) => (
-                  <Tr key={index} lineHeight='short' fontSize='xs'>
-                    <Td
+                  <Table.Row key={index} lineHeight='moderate' fontSize='sm'>
+                    <Table.Cell
                       fontSize='inherit'
                       fontWeight='medium'
-                      borderRight='1px!important'
-                      borderRightColor='primary.100!important'
+                      borderRight='1px solid'
+                      borderRightColor='primary.100'
                     >
                       {property.name ||
                         property.propertyID ||
                         'Unknown property'}
-                    </Td>
-                    <Td fontSize='inherit' lineHeight='inherit'>
+                    </Table.Cell>
+                    <Table.Cell fontSize='inherit' lineHeight='inherit'>
                       {property.value?.startsWith('http') ||
                       property.value?.startsWith('www.') ? (
                         <Link href={property.value} isExternal>
@@ -120,11 +104,11 @@ export const ExampleOfWorkDisplay = ({
                       ) : (
                         <>{property.value || 'Unknown value'}</>
                       )}
-                    </Td>
-                  </Tr>
+                    </Table.Cell>
+                  </Table.Row>
                 ))}
-              </Tbody>
-            </Table>
+              </Table.Body>
+            </Table.Root>
           </ScrollContainer>
         </Box>
       )}

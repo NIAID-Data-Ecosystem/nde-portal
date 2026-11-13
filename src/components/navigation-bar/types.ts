@@ -1,7 +1,9 @@
+import { IconType } from 'react-icons';
+
 export interface NavigationItem {
   label: string;
   description?: string;
-  icon?: React.ElementType;
+  icon?: IconType;
   isExternal?: boolean;
   href?: string;
   onClick?: () => void;

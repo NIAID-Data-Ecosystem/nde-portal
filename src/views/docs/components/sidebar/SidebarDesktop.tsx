@@ -1,159 +1,155 @@
-import { useEffect, useRef, useState } from 'react';
 import {
   Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
   Box,
   Flex,
   Icon,
+  List,
   SkeletonText,
   Text,
-  UnorderedList,
 } from '@chakra-ui/react';
+import { useEffect, useMemo, useState } from 'react';
 import { FaAngleDown, FaAngleRight } from 'react-icons/fa6';
-import { DocumentItem } from './DocumentItem';
-import type { SidebarDesktopProps, SidebarContent } from '../../types';
+
 import { DEFAULT_COLOR_SCHEME } from '../../constants';
+import type { SidebarContent, SidebarDesktopProps } from '../../types';
+import { DocumentItem } from './DocumentItem';
 
 export const SidebarDesktop = ({
-  isLoading,
+  loading,
   sections,
   selectedSlug,
-  colorScheme = DEFAULT_COLOR_SCHEME,
+  colorPalette = DEFAULT_COLOR_SCHEME,
 }: SidebarDesktopProps) => {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  const categories = (
-    isLoading
-      ? [...Array(5)].map((_, i) => ({
-          id: i,
-          name: 'Loading...',
-          items: [
-            {
-              id: i,
-              name: 'Loading...',
-              slug: 'loading',
-              href: { pathname: '/', query: { q: 'loading' } },
-            },
-          ],
-        }))
-      : sections
-  ) as SidebarContent[];
-
-  // Find which category contains the selected page
-  const getExpandedIndices = () => {
-    if (!selectedSlug || !categories) return [];
-
-    const expandedIndices: number[] = [];
-    categories.forEach((category, index) => {
-      const hasSelectedPage = category.items.some(
-        item => item.slug === selectedSlug,
-      );
-      if (hasSelectedPage) {
-        expandedIndices.push(index);
-      }
-    });
-    return expandedIndices;
-  };
-
-  const [expandedIndices, setExpandedIndices] = useState<number[]>(
-    getExpandedIndices(),
+  // Memoised so the effect below only fires when the inputs change. Built
+  // inline, the placeholder list is a new array every render, which re-ran the
+  // effect, set a new `[]`, and re-rendered in a loop for as long as the
+  // sidebar was loading.
+  const categories = useMemo(
+    () =>
+      (loading
+        ? [...Array(5)].map((_, i) => ({
+            id: i,
+            name: 'Loading...',
+            items: [
+              {
+                id: i,
+                name: 'Loading...',
+                slug: 'loading',
+                href: { pathname: '/', query: { q: 'loading' } },
+              },
+            ],
+          }))
+        : sections) as SidebarContent[],
+    [loading, sections],
   );
 
-  // Update expanded indices when selectedSlug changes
-  useEffect(() => {
-    const newExpandedIndices = getExpandedIndices();
-    setExpandedIndices(newExpandedIndices);
+  // Find which category contains the selected page
+  const selectedCategoryValues = useMemo(() => {
+    if (!selectedSlug || !categories) return [];
 
-    // Scroll sidebar to top when navigation occurs
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTop = 0;
-    }
-  }, [selectedSlug]);
+    return categories
+      .filter(category =>
+        category.items.some(item => item.slug === selectedSlug),
+      )
+      .map(category => `item-${category.id}`);
+  }, [categories, selectedSlug]);
+
+  const [expandedValues, setExpandedValues] = useState<string[]>(
+    selectedCategoryValues,
+  );
+
+  // Re-expand the selected page's category on navigation, and once the
+  // categories have loaded.
+  useEffect(() => {
+    setExpandedValues(selectedCategoryValues);
+  }, [selectedCategoryValues]);
 
   return (
-    <Accordion
-      index={expandedIndices}
-      onChange={indices => {
-        // Allow manual toggling of categories
-        setExpandedIndices(Array.isArray(indices) ? indices : [indices]);
-      }}
-      allowMultiple
+    <Accordion.Root
+      value={expandedValues}
+      // Allow manual toggling of categories
+      onValueChange={({ value }) => setExpandedValues(value)}
+      multiple
       minW='350px'
     >
       {categories.map(category => (
-        <AccordionItem key={category.id} mt={4} border='none'>
-          {({ isExpanded }) => (
-            <>
-              <h2>
-                <AccordionButton
-                  p={0}
-                  py={2}
-                  mb={1}
-                  // While loading the category name is hidden by the skeleton,
-                  // so give the button an accessible name to satisfy button-name.
-                  aria-label={isLoading ? 'Loading' : undefined}
-                >
-                  <SkeletonText
-                    isLoaded={!isLoading}
-                    width={isLoading ? '80%' : '100%'}
-                    noOfLines={1}
-                    skeletonHeight={4}
-                    display='flex'
-                    alignItems='center'
-                    flex={1}
+        <Accordion.Item
+          key={category.id}
+          mt={4}
+          border='none'
+          value={`item-${category.id}`}
+        >
+          <Accordion.ItemContext>
+            {({ expanded }) => (
+              <>
+                <h2>
+                  <Accordion.ItemTrigger
+                    p={0}
+                    py={2}
+                    mb={1}
+                    // While loading the category name is hidden by the skeleton,
+                    // so give the button an accessible name to satisfy button-name.
+                    aria-label={loading ? 'Loading' : undefined}
                   >
-                    <Flex alignItems='center' flex={1} pl={6}>
-                      <Text
-                        as='span'
-                        textAlign='left'
-                        fontSize='xs'
-                        color='gray.800'
-                        textTransform='uppercase'
-                        fontWeight='bold'
-                        flex={1}
-                      >
-                        {category.name}
-                      </Text>
-                    </Flex>
-                  </SkeletonText>
-                  <Box
-                    w='40px'
-                    display='flex'
-                    justifyContent='center'
-                    alignItems='center'
-                    mr={2}
-                  >
-                    {isExpanded ? (
-                      <Icon as={FaAngleDown} boxSize={4} />
-                    ) : (
-                      <Icon as={FaAngleRight} boxSize={4} />
-                    )}
-                  </Box>
-                </AccordionButton>
-              </h2>
-              <AccordionPanel p={0}>
-                <UnorderedList ml={0}>
-                  {category.items.map(item => {
-                    if (!item?.slug) return null;
-                    return (
-                      <DocumentItem
-                        key={item.id}
-                        item={item}
-                        selectedSlug={selectedSlug}
-                        colorScheme={colorScheme}
-                        isLoading={isLoading}
-                        activePageSlug={selectedSlug}
+                    <SkeletonText
+                      loading={loading}
+                      width={loading ? '80%' : '100%'}
+                      noOfLines={1}
+                      rootProps={{ flex: 1 }}
+                    >
+                      <Flex alignItems='center' flex={1} pl={6}>
+                        <Text
+                          as='span'
+                          textAlign='left'
+                          fontSize='xs'
+                          color='gray.600'
+                          textTransform='uppercase'
+                          fontWeight='bold'
+                          flex={1}
+                        >
+                          {category.name}
+                        </Text>
+                      </Flex>
+                    </SkeletonText>
+                    <Box
+                      w='40px'
+                      display='flex'
+                      justifyContent='center'
+                      alignItems='center'
+                      mr={2}
+                    >
+                      <Icon
+                        as={expanded ? FaAngleDown : FaAngleRight}
+                        boxSize={4}
                       />
-                    );
-                  })}
-                </UnorderedList>
-              </AccordionPanel>
-            </>
-          )}
-        </AccordionItem>
+                    </Box>
+                  </Accordion.ItemTrigger>
+                </h2>
+                <Accordion.ItemContent>
+                  {/* v2's AccordionPanel had no padding; v3's body pads by default. */}
+                  <Accordion.ItemBody p={0}>
+                    <List.Root ps={0}>
+                      {category.items.map(item => {
+                        if (!item?.slug) return null;
+                        return (
+                          <DocumentItem
+                            key={item.id}
+                            item={item}
+                            selectedSlug={selectedSlug}
+                            colorPalette={colorPalette}
+                            loading={loading}
+                            activePageSlug={selectedSlug}
+                          />
+                        );
+                      })}
+                    </List.Root>
+                  </Accordion.ItemBody>
+                </Accordion.ItemContent>
+              </>
+            )}
+          </Accordion.ItemContext>
+        </Accordion.Item>
       ))}
-    </Accordion>
+    </Accordion.Root>
   );
 };

@@ -63,9 +63,10 @@ against the built `out/`, not live source). When you only edit a spec file,
    so the mock fixture MUST include that slug or the nav 404s. See the "Favor
    mocked data over live data" and SSR sections of `references/patterns.md`.
 5. **Wait for state-specific UI before scanning** — a user-facing `getByRole` /
-   `getByText` for loaded/empty/error states; an implementation selector (e.g.
-   `.custom-skeleton-loading`) only for loading markers with no accessible
-   surface. Scanning too early scans the wrong DOM.
+   `getByText` for loaded/empty/error states; an implementation marker only for
+   loading markers with no accessible surface (for skeletons, the
+   `expectSkeletonsLoading`/`expectNoSkeletonsLoading` helpers in
+   `e2e/utils/skeleton.ts`). Scanning too early scans the wrong DOM.
 6. **Run axe** via the shared `runAxeScans(page, testInfo, state, options?)`
    helper. It does ONE axe traversal (`analyzeA11y`) and internally attaches +
    asserts the full WCAG scan plus the focused color-contrast and

@@ -1,5 +1,7 @@
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from 'src/__tests__/utils/render';
+
 import { DateControls } from '../../../../components/date-filter/components/date-controls';
 
 jest.mock('../../../../components/date-filter/components/date-picker', () => ({
@@ -16,11 +18,11 @@ jest.mock('../../../../components/date-filter/components/date-picker', () => ({
 }));
 
 describe('date-controls', () => {
-  it('toggles _exists_ when no date is selected', () => {
+  it('toggles _exists_ when no date is selected', async () => {
     const onDateSelect = jest.fn();
     render(
       <DateControls
-        colorScheme='secondary'
+        colorPalette='secondary'
         selectedDates={[]}
         resourcesWithNoDate={
           [{ term: '-_exists_', label: 'No', count: 10 }] as any
@@ -30,15 +32,15 @@ describe('date-controls', () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole('checkbox'));
+    await userEvent.click(screen.getByRole('checkbox'));
     expect(onDateSelect).toHaveBeenCalledWith(['_exists_']);
   });
 
-  it('removes _exists_ when toggled off and toggles -_exists_ branch', () => {
+  it('removes _exists_ when toggled off', async () => {
     const onDateSelect = jest.fn();
-    const { rerender } = render(
+    render(
       <DateControls
-        colorScheme='secondary'
+        colorPalette='secondary'
         selectedDates={['_exists_']}
         resourcesWithNoDate={
           [{ term: '-_exists_', label: 'No', count: 1 }] as any
@@ -48,12 +50,17 @@ describe('date-controls', () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole('checkbox'));
+    await userEvent.click(screen.getByRole('checkbox'));
     expect(onDateSelect).toHaveBeenCalledWith([]);
+  });
 
-    rerender(
+  it('adds -_exists_ when a date range is selected', async () => {
+    const onDateSelect = jest.fn();
+    // Rendered fresh rather than rerendered: the checkbox is controlled by
+    // zag, and toggling a rerendered instance does not re-fire the machine.
+    render(
       <DateControls
-        colorScheme='secondary'
+        colorPalette='secondary'
         selectedDates={['2020-01-01', '2020-12-31']}
         resourcesWithNoDate={
           [{ term: '-_exists_', label: 'No', count: 1 }] as any
@@ -62,7 +69,8 @@ describe('date-controls', () => {
         onResetFilter={jest.fn()}
       />,
     );
-    fireEvent.click(screen.getByRole('checkbox'));
+
+    await userEvent.click(screen.getByRole('checkbox'));
     expect(onDateSelect).toHaveBeenLastCalledWith([
       '2020-01-01',
       '2020-12-31',
@@ -73,7 +81,7 @@ describe('date-controls', () => {
   it('disables no-date checkbox when no no-date resources exist', () => {
     render(
       <DateControls
-        colorScheme='secondary'
+        colorPalette='secondary'
         selectedDates={[]}
         resourcesWithNoDate={[] as any}
         onDateSelect={jest.fn()}

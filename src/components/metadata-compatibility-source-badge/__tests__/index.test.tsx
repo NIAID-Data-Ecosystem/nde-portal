@@ -1,26 +1,12 @@
-import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { MetadataCompatibilitySourceBadge } from '../index';
-import { MetadataSource } from 'src/hooks/api/types';
-import { CompatibilityBadge, defaultMargin } from '../components/badge';
 
-// Mock Tooltip component
-jest.mock('src/components/tooltip-with-link', () => ({
-  __esModule: true,
-  default: ({
-    children,
-    label,
-  }: {
-    children: React.ReactNode;
-    label: string;
-  }) => (
-    <div>
-      {children}
-      <span role='tooltip'>{label}</span>
-    </div>
-  ),
-}));
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import { fireEvent, render, screen } from 'src/__tests__/utils/render';
+import { MetadataSource } from 'src/hooks/api/types';
+
+import { CompatibilityBadge, defaultMargin } from '../components/badge';
+import { MetadataCompatibilitySourceBadge } from '../index';
 
 describe('MetadataCompatibilitySourceBadge', () => {
   it('renders nothing when data is null or undefined', () => {
@@ -30,7 +16,7 @@ describe('MetadataCompatibilitySourceBadge', () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  it('renders the TooltipWithLink and CompatibilityBadge components when data is provided', async () => {
+  it('renders the linked label and CompatibilityBadge components when data is provided', async () => {
     const mockData = {
       required_fields: { name: 1, description: 1, date: 1 },
       recommended_fields: { dateCreated: 1 },
@@ -38,16 +24,18 @@ describe('MetadataCompatibilitySourceBadge', () => {
       percent_recommended_fields: 0.8,
     } as MetadataSource['sourceInfo']['metadata_completeness'];
 
-    const { getByText } = render(
-      <MetadataCompatibilitySourceBadge data={mockData} />,
+    render(<MetadataCompatibilitySourceBadge data={mockData} />);
+
+    const linkEl = screen.getByRole('link', { name: 'Metadata Compatibility' });
+    expect(linkEl).toHaveAttribute(
+      'href',
+      '/knowledge-center/metadata-compatibility-badge',
     );
 
-    const linkEl = getByText('Metadata Compatibility');
-    expect(linkEl).toBeInTheDocument();
-
-    fireEvent.mouseOver(linkEl);
-    await waitFor(() => {});
-    expect(screen.getByRole('tooltip')).toHaveTextContent(
+    await userEvent.setup().hover(linkEl);
+    expect(
+      await screen.findByRole('tooltip', {}, { timeout: 2000 }),
+    ).toHaveTextContent(
       'The metadata compatibility badge is a quantitative measure that represents how well a repository aligns with the metadata standards of the NIAID Data Ecosystem.',
     );
   });

@@ -17,14 +17,14 @@ export const DrillStackBreadcrumb = ({
       size='xs'
       variant='ghost'
       onClick={onBack}
-      color='link.color'
+      color='link'
       textDecoration='underline'
       mr={1}
     >
       <Icon as={FaArrowLeft} boxSize={3} mr={1} />
       Back
     </Button>
-    <Text noOfLines={1}>
+    <Text lineClamp={1}>
       {label} / {moreLabel}...
     </Text>
   </Flex>

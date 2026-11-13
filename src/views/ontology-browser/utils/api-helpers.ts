@@ -1,6 +1,7 @@
 import axios from 'axios';
 import Bottleneck from 'bottleneck';
 import { fetchSearchResults } from 'src/utils/api';
+
 import {
   BioThingsDetailedLineageAPIResponseItem,
   BioThingsLineageAPIResponseItem,

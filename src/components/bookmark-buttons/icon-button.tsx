@@ -1,5 +1,6 @@
 import { Icon, IconButton, IconButtonProps } from '@chakra-ui/react';
 import { FaBookmark, FaRegBookmark } from 'react-icons/fa6';
+
 import Tooltip from '../tooltip';
 
 export const BookmarkIconButton: React.FC<
@@ -12,24 +13,22 @@ export const BookmarkIconButton: React.FC<
     ariaLabel || (isFavorited ? 'Remove from saved' : 'Save this resource');
 
   return (
-    <Tooltip label={label}>
+    <Tooltip content={label}>
       <IconButton
-        icon={
-          isFavorited ? (
-            <Icon as={FaBookmark} fill='link.color' />
-          ) : (
-            <Icon as={FaRegBookmark} fill='page.placeholder' />
-          )
-        }
         aria-label={label}
         onClick={onClick}
         variant='ghost'
-        isRound={true}
-        borderRadius='50%'
-        size='sm'
-        colorScheme='blue'
+        size='xs'
+        colorPalette='niaid'
+        rounded='full'
         {...props}
-      />
+      >
+        <Icon
+          as={isFavorited ? FaBookmark : FaRegBookmark}
+          fill={isFavorited ? 'link' : 'text.placeholder'}
+          p={0.25}
+        />
+      </IconButton>
     </Tooltip>
   );
 };

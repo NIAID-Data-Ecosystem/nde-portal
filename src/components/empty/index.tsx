@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Flex,
   FlexProps,
@@ -7,7 +6,9 @@ import {
   Icon,
   IconProps,
 } from '@chakra-ui/react';
-import Glyph from '../icon/components/glyph';
+import React from 'react';
+
+import { EmptyGlyph } from './components/empty-glyph';
 
 interface EmptyProps extends FlexProps {
   icon?: string;
@@ -35,7 +36,10 @@ const Empty: React.FC<EmptyProps> = ({
     >
       <Flex direction='column' alignItems='center'>
         {icon && (
+          // EmptyGlyph renders bare <title>/<path> elements, so Icon must render
+          // its own <svg> instead of defaulting to asChild.
           <Icon
+            asChild={false}
             viewBox='0 0 200 200'
             boxSize={100}
             fill='currentColor'
@@ -43,12 +47,7 @@ const Empty: React.FC<EmptyProps> = ({
             role='img'
             {...iconProps}
           >
-            <Glyph
-              id='empty'
-              glyph='empty'
-              stroke='currentColor'
-              title='Empty, no data available.'
-            />
+            <EmptyGlyph id='empty' stroke='currentColor' />
           </Icon>
         )}
 

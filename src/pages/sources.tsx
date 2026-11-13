@@ -1,31 +1,32 @@
-import type { NextPage } from 'next';
-import React, { useEffect, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { useRouter } from 'next/router';
 import { Box, Button, Flex, Text } from '@chakra-ui/react';
+import { useQuery } from '@tanstack/react-query';
+import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
+import React, { useEffect, useMemo } from 'react';
+import { BadgeWithTooltip } from 'src/components/badges';
+import { Error, ErrorCTA } from 'src/components/error';
+import { getQueryStatusError } from 'src/components/error/utils';
 import {
   getPageSeoConfig,
   PageContainer,
   PageContent,
 } from 'src/components/page-container';
-import { Main } from 'src/views/sources';
-import { Error, ErrorCTA } from 'src/components/error';
-import { Metadata } from 'src/hooks/api/types';
-import { getQueryStatusError } from 'src/components/error/utils';
-import { fetchMetadata } from 'src/hooks/api/helpers';
-import { Source, useSourcesList } from 'src/hooks/api/useSourcesList';
 import {
   Label,
   Sidebar,
   SidebarItem,
 } from 'src/components/table-of-contents/layouts/sidebar';
+import { fetchMetadata } from 'src/hooks/api/helpers';
+import { Metadata } from 'src/hooks/api/types';
+import { Source, useSourcesList } from 'src/hooks/api/useSourcesList';
 import { formatDate } from 'src/utils/api/helpers';
-import { BadgeWithTooltip } from 'src/components/badges/components/BadgeWithTooltip';
-import { fetchSourceInformationFromGithub } from 'src/views/sources/helpers';
 import { USE_MERGED_SOURCES_AND_CATALOGS } from 'src/utils/feature-flags';
+import { Main } from 'src/views/sources';
+import { fetchSourceInformationFromGithub } from 'src/views/sources/helpers';
 
 /** Build-time GitHub commit info, keyed by source identifier. */
 interface GithubSourceInfo {
+  id: string;
   name: string;
   dateCreated?: string;
 }
@@ -184,7 +185,7 @@ const Sources: NextPage<SourcesProps> = ({ data }) => {
                           {/* Add tag to show source is funded by NIAID */}
                           {source.isNiaidFunded && (
                             <BadgeWithTooltip
-                              colorScheme='blue'
+                              colorPalette='blue'
                               variant='subtle'
                               mx={2}
                             >
@@ -206,16 +207,16 @@ const Sources: NextPage<SourcesProps> = ({ data }) => {
                 })}
             </Sidebar>
             <PageContent
+              width='100%'
               bg='#fff'
-              maxW={{ base: 'unset', lg: '1200px' }}
-              margin='0 auto'
-              px={4}
-              py={4}
-              justifyContent='flex-start'
-              mb={32}
               flex={3}
+              justifyContent='flex-start'
+              margin='0 auto'
+              maxW={{ base: 'unset', lg: '1200px' }}
+              mb={32}
+              p={4}
             >
-              <Main data={sourceItems} isLoading={isLoading} metadata={meta} />
+              <Main data={sourceItems} loading={isLoading} metadata={meta} />
             </PageContent>
           </>
         )}

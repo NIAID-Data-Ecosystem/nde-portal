@@ -1,8 +1,10 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { Warning } from './warning';
+
+import React from 'react';
+import { fireEvent, render, screen } from 'src/__tests__/utils/render';
 import { OntologyLineageItemWithCounts } from 'src/views/ontology-browser/types';
+
+import { Warning } from './warning';
 
 describe('Warning component', () => {
   const mockNode: OntologyLineageItemWithCounts = {

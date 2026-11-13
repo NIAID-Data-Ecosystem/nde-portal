@@ -2,10 +2,8 @@
  * User Settings Page - Protected route requiring authentication
  */
 
+import { Box, Button, Heading, Text, VStack } from '@chakra-ui/react';
 import { useState } from 'react';
-import { Box, Heading, Text, VStack, Button } from '@chakra-ui/react';
-import { useAuth } from 'src/hooks/useAuth';
-import { useUnsavedChangesWarning } from 'src/hooks/useUnsavedChangesWarning';
 import { withAuth } from 'src/components/auth/withAuth';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import {
@@ -13,6 +11,8 @@ import {
   PreferencesForm,
   PreferencesFormSection,
 } from 'src/components/settings';
+import { useAuth } from 'src/hooks/useAuth';
+import { useUnsavedChangesWarning } from 'src/hooks/useUnsavedChangesWarning';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
 const SETTINGS_COPY = {
@@ -61,11 +61,11 @@ function UserSettingsPage() {
         px={{ base: 4, md: 0 }}
       >
         {/* Header */}
-        <VStack alignItems='start' gap={2} mb={8}>
+        <VStack alignItems='start' gap={2} mb={4}>
           <Heading as='h1' size='xl' fontWeight='bold'>
             {SETTINGS_COPY.page.title}
           </Heading>
-          <Text color='gray.800' fontSize='md'>
+          <Text color='gray.600' fontSize='md'>
             {SETTINGS_COPY.page.subtitle}
           </Text>
         </VStack>
@@ -79,7 +79,7 @@ function UserSettingsPage() {
 
         {/* Log Out Button */}
         <Button
-          colorScheme='red'
+          colorPalette='red'
           variant='ghost'
           size='sm'
           onClick={handleLogout}

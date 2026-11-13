@@ -1,12 +1,11 @@
+import { Box, BoxProps, Flex, Image } from '@chakra-ui/react';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-import { Box, BoxProps, Flex, Image } from '@chakra-ui/react';
+import { MDXComponents as DefaultMDX } from 'src/components/mdx/components';
 import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import type { SectionProps } from 'src/views/integration/types';
-import { HeadingWithLink } from 'src/components/heading-with-link/components/HeadingWithLink';
-import { MDXComponents as DefaultMDX } from 'src/components/mdx/components';
 
 export const customMDX = {
   li: (props: any) => {
@@ -44,7 +43,12 @@ export const ParagraphSection = ({
   const MDXComponents = useMDXComponents(customMDX);
 
   return (
-    <Box id={slug || id} as='section' scrollMarginTop='-0.5rem' {...props}>
+    <Box
+      id={slug || `id-${id}`}
+      as='section'
+      scrollMarginTop='-0.5rem'
+      {...props}
+    >
       <Flex
         flexDirection={{
           base: 'column-reverse',

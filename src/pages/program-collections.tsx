@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { GetStaticProps, NextPage } from 'next';
 import { Flex, HStack, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
+import { GetStaticProps, NextPage } from 'next';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Error } from 'src/components/error';
+import { InternalLinkButton } from 'src/components/internal-link-button';
 import { Link } from 'src/components/link';
 import {
   getPageSeoConfig,
@@ -11,10 +12,9 @@ import {
 } from 'src/components/page-container';
 import {
   StyledCard,
-  StyleCardSubLabel,
-  StyledCardButton,
   StyledCardDescription,
   StyledCardStack,
+  StyledCardSubLabel,
 } from 'src/components/table-of-contents/components/card';
 import { SectionHeader } from 'src/components/table-of-contents/layouts/section-header';
 import { SectionSearch } from 'src/components/table-of-contents/layouts/section-search';
@@ -96,7 +96,7 @@ const ProgramCollections: NextPage<{
         {error ? (
           <Error>
             <Flex flexDirection='column' justifyContent='center'>
-              <Text fontWeight='light' color='gray.800' fontSize='lg'>
+              <Text fontWeight='light' color='gray.600' fontSize='lg'>
                 API Request:{' '}
                 {error?.message ||
                   'It’s possible that the server is experiencing some issues.'}{' '}
@@ -175,8 +175,7 @@ const ProgramCollections: NextPage<{
                         subtitle={`${collection.count.toLocaleString()} resources available`}
                         renderCTA={() =>
                           collection.sourceOrganization?.name ? (
-                            <StyledCardButton
-                              maxWidth='500px'
+                            <InternalLinkButton
                               href={{
                                 pathname: `/search`,
                                 query: {
@@ -190,7 +189,7 @@ const ProgramCollections: NextPage<{
                               }}
                             >
                               Search for resources related to {label}
-                            </StyledCardButton>
+                            </InternalLinkButton>
                           ) : (
                             <></>
                           )
@@ -207,11 +206,11 @@ const ProgramCollections: NextPage<{
                           {/* Parent Organization */}
                           {parentOrganizations.length > 0 && (
                             <HStack>
-                              <StyleCardSubLabel key={index}>
+                              <StyledCardSubLabel key={index}>
                                 {`Parent Organization(s): ${parentOrganizations.join(
                                   ', ',
                                 )}`}
-                              </StyleCardSubLabel>
+                              </StyledCardSubLabel>
                             </HStack>
                           )}
 

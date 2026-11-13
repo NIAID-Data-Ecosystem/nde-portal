@@ -1,28 +1,28 @@
-import React, { useEffect, useState, useRef } from 'react';
+import type { ColorPalette, ConditionalValue } from '@chakra-ui/react';
 import {
-  Button,
-  Drawer,
-  DrawerBody,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-  Flex,
-  Text,
-  useDisclosure,
-  useBreakpointValue,
-  Icon,
   Box,
+  Button,
+  CloseButton,
+  Drawer,
+  Flex,
+  Portal,
+  Stack,
+  Text,
+  useBreakpointValue,
+  useDisclosure,
 } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
 import { FaFilter } from 'react-icons/fa6';
-import { FilterConfig } from '../types';
+import { Alert } from 'src/components/alert';
 import { ScrollContainer } from 'src/components/scroll-container';
+
+import { FilterConfig } from '../types';
 import { CustomizeFiltersPopover } from './customize-filters-popover';
 
 export interface FiltersContainerProps {
+  colorPalette?: ConditionalValue<ColorPalette>;
   title?: string;
-  isDisabled?: boolean;
+  disabled?: boolean;
   removeAllFilters: () => void;
   error: Error | null;
   filtersList: FilterConfig[];
@@ -35,38 +35,50 @@ const DrawerContentMemo: React.FC<{
   onClose: () => void;
   innerHeight: number;
   title: string;
-}> = React.memo(({ content, onClose, innerHeight, title }) => (
-  <DrawerContent height={`${innerHeight}px`}>
-    <DrawerHeader borderBottomWidth='1px' py={3} px={4}>
-      <Flex align='center' gap={2}>
-        <Text fontSize='md' fontWeight='semibold' flex={1}>
-          {title}
-        </Text>
-      </Flex>
-    </DrawerHeader>
-    <DrawerCloseButton top={3} />
-    <ScrollContainer>
-      <DrawerBody px={2}>{content}</DrawerBody>
-    </ScrollContainer>
-    <DrawerFooter borderTopWidth='1px' py={3}>
-      <Button onClick={onClose} colorScheme='secondary' size='md' w='full'>
-        Done
-      </Button>
-    </DrawerFooter>
-  </DrawerContent>
+  colorPalette: ConditionalValue<ColorPalette>;
+}> = React.memo(({ content, onClose, innerHeight, title, colorPalette }) => (
+  <Drawer.Positioner>
+    {/*
+      Named explicitly: v2's DrawerHeader labelled the drawer, but v3's
+      Drawer.Header is a plain div; only Drawer.Title would.
+    */}
+    <Drawer.Content height={`${innerHeight}px`} aria-label={title}>
+      <Drawer.Header borderBottomWidth='1px' py={3} px={4}>
+        <Text>{title}</Text>
+      </Drawer.Header>
+
+      <Drawer.Body>
+        <ScrollContainer pr={4}>{content}</ScrollContainer>
+      </Drawer.Body>
+
+      <Drawer.Footer borderTopWidth='1px' py={3}>
+        <Button
+          onClick={onClose}
+          colorPalette={colorPalette}
+          size='md'
+          w='full'
+        >
+          Done
+        </Button>
+      </Drawer.Footer>
+      <Drawer.CloseTrigger asChild>
+        <CloseButton size='2xs' colorPalette={colorPalette} />
+      </Drawer.CloseTrigger>
+    </Drawer.Content>
+  </Drawer.Positioner>
 ));
 
 export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   title,
   error,
+  colorPalette = 'secondary',
   children,
   filtersList,
-  isDisabled = false,
+  disabled = false,
   removeAllFilters,
   onVisibleFiltersChange,
 }) => {
-  const btnRef = useRef<HTMLButtonElement>(null);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { open, onClose, onToggle } = useDisclosure();
   const screenSize = useBreakpointValue(
     {
       base: 'mobile',
@@ -91,49 +103,48 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
 
   const content = (
     <>
-      <Flex
-        px={{ base: 0, md: 4 }}
-        py={2}
-        gap={4}
-        flexDirection='column'
-        borderBottom='0.5px solid'
-        borderBottomColor='gray.100'
-      >
-        {/* Popover for customizing visible filters */}
-        <Flex gap={2} justifyContent='space-between'>
+      {/* Popover for customizing visible filters */}
+      <Stack gap={2} p={2}>
+        <Flex>
           <CustomizeFiltersPopover
             filtersList={filtersList}
             onVisibleFiltersChange={onVisibleFiltersChange}
           />
-          {/* {title && (
-            <Heading
-              size='sm'
-              fontWeight='medium'
-              lineHeight='short'
-              color='text.heading'
-            >
-              {title}
-            </Heading>
-          )} */}
+        </Flex>
+        <Flex justifyContent='flex-end'>
           <Button
-            colorScheme='secondary'
-            variant='link'
+            colorPalette={colorPalette}
+            variant='unstyled'
+            underline
             size='xs'
             onClick={removeAllFilters}
-            isDisabled={isDisabled}
-            _disabled={{ opacity: 1, color: 'gray.700' }}
+            disabled={disabled}
+            _disabled={{ opacity: 1, color: 'gray.500' }}
           >
             Clear All
           </Button>
         </Flex>
-      </Flex>
+      </Stack>
       {error ? (
-        <Flex p={4} bg='status.error_lt' role='alert'>
-          <Text fontSize='md' lineHeight='base' color='red.600'>
-            Something went wrong, unable to load filters. <br />
-            Try reloading the page.
-          </Text>
-        </Flex>
+        <Alert
+          title='Something went wrong, unable to load filters.'
+          status='error'
+          role='alert'
+          collapsible={false}
+        >
+          <Flex justifyContent='center' mt={2}>
+            <Button
+              colorPalette='red'
+              size='xs'
+              onClick={e => {
+                e.preventDefault();
+                window.location.reload();
+              }}
+            >
+              Try reloading the page
+            </Button>
+          </Flex>
+        </Alert>
       ) : (
         <Box bg='white'>{children}</Box>
       )}
@@ -142,56 +153,68 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
 
   return screenSize && screenSize !== 'desktop' ? (
     <>
-      <Button
-        ref={btnRef}
-        variant='solid'
-        bg='accent.400'
-        onClick={onOpen}
-        position='fixed'
-        zIndex='docked'
-        left={4}
-        bottom={50}
-        boxShadow='high'
-        borderRadius='full'
-        w='3.5rem'
-        h='3.5rem'
-        p={0}
-        transition='0.3s ease-in-out !important'
-        overflow='hidden'
-        justifyContent='flex-start'
-        _hover={{
-          width: '12rem',
-        }}
-      >
-        <Flex
-          w='3.5rem'
-          minW='3.5rem'
-          h='3.5rem'
-          alignItems='center'
-          justifyContent='center'
-        >
-          <Icon as={FaFilter} boxSize={5} ml={1} mr={2} />
-        </Flex>
-        <Text color='white' fontWeight='normal' fontSize='lg'>
-          {title || 'Filters'}
-        </Text>
-      </Button>
-      <Drawer
-        autoFocus={false}
-        isOpen={isOpen}
-        placement='left'
-        onClose={onClose}
-        finalFocusRef={btnRef}
+      <Drawer.Root
+        placement='start'
         size={screenSize === 'mobile' ? 'full' : 'md'}
+        open={open}
+        onOpenChange={onToggle}
       >
-        <DrawerOverlay />
-        <DrawerContentMemo
-          content={content}
-          onClose={onClose}
-          innerHeight={innerHeight}
-          title={title || 'Filters'}
-        />
-      </Drawer>
+        <Drawer.Trigger asChild>
+          <Button
+            variant='solid'
+            size='lg'
+            colorPalette={colorPalette}
+            aria-label={title || 'Filters'}
+            position='fixed'
+            zIndex='docked'
+            left={4}
+            bottom={50}
+            p={0}
+            width={11}
+            height={11}
+            borderRadius='semi'
+            justifyContent='flex-start'
+            color='white'
+            /*
+            The label is revealed by widening the button and clipping the
+            overflow 
+            */
+            overflow='hidden'
+            transitionProperty='width'
+            transitionDuration='slow'
+            transitionTimingFunction='ease-in-out'
+            _hover={{ width: '10rem' }}
+          >
+            <Flex
+              width={10}
+              minWidth={10}
+              height={10}
+              alignItems='center'
+              justifyContent='center'
+            >
+              <FaFilter />
+            </Flex>
+            <Text
+              fontSize='sm'
+              fontWeight='normal'
+              whiteSpace='nowrap'
+              color='inherit'
+            >
+              {title || 'Filters'}
+            </Text>
+          </Button>
+        </Drawer.Trigger>
+        <Portal>
+          <Drawer.Backdrop />
+          <DrawerContentMemo
+            content={content}
+            onClose={onClose}
+            innerHeight={innerHeight}
+            title={title || 'Filters'}
+            colorPalette={colorPalette}
+          />
+        </Portal>
+      </Drawer.Root>
     </>
   ) : (
     <Box width='100%'>{content}</Box>

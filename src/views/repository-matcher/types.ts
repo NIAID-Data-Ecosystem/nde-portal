@@ -35,7 +35,7 @@ export type RepositoryMatcherColumn<TValue = unknown> = {
   transform: (item: RepositoryMatcherItem) => TValue;
   component: (props: {
     value: TValue;
-    isLoading?: boolean;
+    loading?: boolean;
     data: RepositoryMatcherItem;
   }) => React.ReactNode;
   /**

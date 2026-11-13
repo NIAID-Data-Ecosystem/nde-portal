@@ -1,59 +1,59 @@
-import React from 'react';
-import { FormattedResource } from 'src/utils/api/types';
 import {
   Flex,
-  ListItem,
+  List,
   Skeleton,
   Stack,
-  StackDivider,
-  UnorderedList,
+  StackSeparator,
   Text,
   VStack,
 } from '@chakra-ui/react';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import React from 'react';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { Link } from 'src/components/link';
+import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
+import { SearchableItems } from 'src/components/searchable-items';
+import { FormattedResource } from 'src/utils/api/types';
+import { SHOULD_HIDE_SAMPLES } from 'src/utils/feature-flags';
+
+import { DownloadMetadata } from '../download-metadata';
+import { JsonViewer } from '../json-viewer';
+import { getMetadataDescription } from '../metadata';
 import {
-  ResourceHeader,
+  ResourceAuthors,
   ResourceBanner,
+  ResourceCitations,
+  ResourceHeader,
+  ResourceIdentifiers,
   ResourceOverview,
   ResourceProvenance,
   Section,
-  ResourceCitations,
-  ResourceAuthors,
 } from './components';
-import { Route } from './helpers';
-import FilesTable from './components/files-table';
+import { AboutResource } from './components/about';
+import { BasedOnActionProcess, BasedOnTable } from './components/based-on';
 import { CitedByTable } from './components/cited-by-table';
+import { DescriptionSection } from './components/description';
+import { ExampleOfWorkDisplay } from './components/example-of-work';
+import FilesTable from './components/files-table';
+import { Funding } from './components/funding';
+import { OverviewSectionWrapper } from './components/overview-section-wrapper';
+import { RelatedResources } from './components/related-resources';
+import { SamplesDisplay } from './components/samples';
 import {
   ExternalAccess,
   UsageInfo,
 } from './components/sidebar/components/external';
-import { Funding } from './components/funding';
-import { JsonViewer } from '../json-viewer';
-import { BasedOnTable, BasedOnActionProcess } from './components/based-on';
-import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
-import { DownloadMetadata } from '../download-metadata';
-import { SearchableItems } from 'src/components/searchable-items';
-import { Summary } from './components/summary';
-import { OverviewSectionWrapper } from './components/overview-section-wrapper';
-import { getMetadataDescription } from '../metadata';
-import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
-import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
-import { RelatedResources } from './components/related-resources';
-import { SamplesDisplay } from './components/samples';
-import { SHOULD_HIDE_SAMPLES } from 'src/utils/feature-flags';
-import { ExampleOfWorkDisplay } from './components/example-of-work';
-import { AboutResource } from './components/about';
-import { DescriptionSection } from './components/description';
+import { Route } from './helpers';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
 // use config file to show content in sections.
 const Sections = ({
-  isLoading,
+  loading,
   data,
   sections,
 }: {
-  isLoading: boolean;
+  loading: boolean;
   data?: FormattedResource;
   sections: Route[];
 }) => {
@@ -65,43 +65,38 @@ const Sections = ({
   );
   return (
     <>
-      <ResourceHeader
-        isLoading={isLoading}
-        name={data?.name}
-        alternateName={data?.alternateName}
-        id={data?.id}
-        doi={data?.doi}
-        nctid={data?.nctid}
-        type={data?.['@type']}
-        creativeWorkStatus={data?.creativeWorkStatus}
-      />
+      <VStack alignItems='flex-start' py={2}>
+        <ResourceHeader
+          loading={loading}
+          name={data?.name}
+          alternateName={data?.alternateName}
+          id={data?.id}
+        />
+        {data?.author && <ResourceAuthors authors={data.author} />}
+        <ResourceIdentifiers
+          loading={loading}
+          id={data?.id}
+          doi={data?.doi}
+          nctid={data?.nctid}
+          type={data?.['@type']}
+          creativeWorkStatus={data?.creativeWorkStatus}
+        />
+      </VStack>
+
       {/* Banner showing data type and publish date. For computational tools, operating system info is displayed when available. */}
-      {data?.author && <ResourceAuthors authors={data.author} />}
-
       <ResourceBanner data={data} />
-
-      {/*<--- AI Generated short description -->*/}
-      {process.env.NEXT_PUBLIC_APP_ENV !== 'production' &&
-        data?.disambiguatingDescription && (
-          <Flex mx={6} my={2}>
-            <Summary
-              description={data.disambiguatingDescription}
-              tagLabel='AI Generated'
-            />
-          </Flex>
-        )}
 
       {/* isBasedOn action property used for DataCollection contains an explanation of how the DataCollection was created */}
       {isDataCollectionType && (
         <Stack flexDirection='column' w='100%' px={4} my={4}>
           {/* Show description */}
           <Stack flexDirection='column' w='100%' gap={0.5} px={[0, 0, 4]}>
-            <Text fontWeight='semibold' lineHeight='short' fontSize='sm'>
+            <Text fontWeight='semibold' lineHeight='moderate' fontSize='sm'>
               Description
             </Text>
             <DescriptionSection
               description={data?.description}
-              isLoading={isLoading}
+              loading={loading}
             />
           </Stack>
           {isBasedOnActionProcess &&
@@ -110,7 +105,6 @@ const Sections = ({
             ))}
         </Stack>
       )}
-
       {sections.map(section => {
         const getSectionName = () => {
           if (section.hash === 'samples') {
@@ -128,8 +122,7 @@ const Sections = ({
             id={section.hash}
             key={section.hash}
             name={getSectionName()}
-            isLoading={isLoading}
-            isCollapsible={section?.ui?.isCollapsible}
+            loading={loading}
           >
             {/* for mobile viewing */}
             {section.hash === 'overview' && data && (
@@ -137,7 +130,7 @@ const Sections = ({
                 display={{ base: 'flex', lg: 'none' }}
                 flex={1}
                 width='100%'
-                border='1px'
+                borderWidth='1px'
                 borderColor='gray.100'
                 borderRadius='semi'
                 flexDirection='column'
@@ -146,9 +139,9 @@ const Sections = ({
                 <Stack
                   flexWrap='wrap'
                   direction={{ base: 'column', md: 'row' }}
-                  divider={<StackDivider borderColor='gray.100' />}
                 >
                   {/* Badge indicating completeness of metadata */}
+                  <StackSeparator borderColor='gray.100' />
                   {data && data['_meta'] && (
                     <Flex
                       px={4}
@@ -165,14 +158,16 @@ const Sections = ({
                       />
                     </Flex>
                   )}
+                  <StackSeparator borderColor='gray.100' />
                   {/* External links to access data, documents or dataset at the source. */}
+                  <StackSeparator borderColor='gray.100' />
                   <ExternalAccess
                     data={data}
-                    isLoading={isLoading}
+                    loading={loading}
                     minWidth={{ base: 'unset', sm: '350px' }}
                   />
                 </Stack>
-                <UsageInfo data={data} isLoading={isLoading} />
+                <UsageInfo data={data} loading={loading} />
               </Flex>
             )}
 
@@ -184,23 +179,23 @@ const Sections = ({
                   flexDirection={
                     isDataCollectionType ? 'column' : 'column-reverse'
                   }
-                  spacing={4}
+                  gap={4}
                 >
                   <AboutResource
                     about={data?.about}
                     collectionSize={data?.collectionSize}
                     exampleOfWork={data?.exampleOfWork}
                     genre={data?.genre}
-                    isLoading={isLoading}
+                    loading={loading}
                     type={data?.['@type']}
                   />
-                  <ResourceOverview isLoading={isLoading} {...data} />
+                  <ResourceOverview loading={loading} {...data} />
                 </VStack>
 
                 {/* Resource citation(s) */}
                 {data?.citation && (
                   <OverviewSectionWrapper
-                    isLoading={isLoading}
+                    loading={loading}
                     label={`Citation${
                       data?.citation.length > 1
                         ? `s (${data?.citation.length})`
@@ -219,18 +214,10 @@ const Sections = ({
             )}
             {/* Show keywords */}
             {section.hash === 'keywords' && (
-              <Skeleton isLoaded={!isLoading}>
+              <Skeleton loading={!!loading}>
                 {data?.keywords && data?.keywords?.length > 0 && (
                   <SearchableItems
-                    generateButtonLabel={(
-                      limit,
-                      length,
-                      itemLabel = 'keywords',
-                    ) =>
-                      limit === length
-                        ? `Show fewer ${itemLabel}`
-                        : `Show all ${itemLabel} (${length - limit} more)`
-                    }
+                    itemLabel='keywords'
                     itemLimit={20}
                     items={data?.keywords.map(kw => ({
                       name: kw,
@@ -243,19 +230,11 @@ const Sections = ({
             )}
             {/* Show application category */}
             {section.hash === 'applicationCategory' && (
-              <Skeleton isLoaded={!isLoading}>
+              <Skeleton loading={!!loading}>
                 {data?.applicationCategory &&
                   data?.applicationCategory?.length > 0 && (
                     <SearchableItems
-                      generateButtonLabel={(
-                        limit,
-                        length,
-                        itemLabel = 'application categories',
-                      ) =>
-                        limit === length
-                          ? `Show fewer ${itemLabel}`
-                          : `Show all ${itemLabel} (${length - limit} more)`
-                      }
+                      itemLabel='application categories'
                       itemLimit={10}
                       items={data?.applicationCategory.map(ac => ({
                         name: ac,
@@ -268,19 +247,11 @@ const Sections = ({
             )}
             {/* Show programming language */}
             {section.hash === 'programmingLanguage' && (
-              <Skeleton isLoaded={!isLoading}>
+              <Skeleton loading={!!loading}>
                 {data?.programmingLanguage &&
                   data?.programmingLanguage?.length > 0 && (
                     <SearchableItems
-                      generateButtonLabel={(
-                        limit,
-                        length,
-                        itemLabel = 'languages',
-                      ) =>
-                        limit === length
-                          ? `Show fewer ${itemLabel}`
-                          : `Show all ${itemLabel} (${length - limit} more)`
-                      }
+                      itemLabel='languages'
                       items={data?.programmingLanguage.map(pl => ({
                         name: pl,
                         value: pl,
@@ -291,13 +262,12 @@ const Sections = ({
                   )}
               </Skeleton>
             )}
-
             {/* Show description */}
             {!isDataCollectionType && section.hash === 'description' && (
               <DescriptionSection
                 description={data?.description}
                 abstract={data?.abstract}
-                isLoading={isLoading}
+                loading={loading}
               />
             )}
 
@@ -308,64 +278,64 @@ const Sections = ({
                 resourceIdentifier={data?.identifier ?? undefined}
               />
             )}
-
             {/* Show provenance */}
             {section.hash === 'provenance' && (
-              <ResourceProvenance isLoading={isLoading} {...data} />
+              <ResourceProvenance
+                loading={loading}
+                {...data}
+                type={data?.['@type']}
+              />
             )}
-
             {/* Show downloads */}
             {section.hash === 'downloads' && (
               <>
                 {/* Downloads for computational tools is a list of links. */}
                 {data?.downloadUrl && (
-                  <UnorderedList>
+                  <List.Root as='ul' pl={0} fontSize='sm'>
                     {data.downloadUrl.map(({ name }) => {
                       return (
-                        <ListItem key={name}>
+                        <List.Item key={name}>
                           <Link href={name} isExternal>
                             {name}
                           </Link>
-                        </ListItem>
+                        </List.Item>
                       );
                     })}
-                  </UnorderedList>
+                  </List.Root>
                 )}
                 {/* Downloads for datasets is a table with multiple properties. */}
                 {data?.distribution && (
                   <FilesTable
-                    isLoading={isLoading}
+                    loading={loading}
                     distribution={data.distribution}
                   />
                 )}
               </>
             )}
-
             {/* Show funding */}
             {section.hash === 'funding' && (
-              <Funding isLoading={isLoading} data={data?.funding || []} />
+              <Funding loading={loading} data={data?.funding || []} />
             )}
-
             {/* Show Based On information */}
             {section.hash === 'isBasedOn' && isBasedOn && (
               <BasedOnTable
                 id='software-information-is-based-on'
-                title={schema['isBasedOn']['description']?.[type]}
+                title={section.title}
+                subtitle={schema['isBasedOn']['description']?.[type]}
                 caption='Table showing resources that this resource is based on.'
-                isLoading={isLoading}
+                loading={loading}
                 items={isBasedOn}
               />
             )}
-
             {/* Show citedBy */}
             {section.hash === 'citedBy' && (
               <CitedByTable
-                isLoading={isLoading}
+                loading={loading}
                 data={data?.citedBy || []}
-                title={schema['citedBy']['description']?.[type]}
+                title={section.title}
+                subtitle={schema['citedBy']['description']?.[type]}
               />
             )}
-
             {/* Show related resources */}
             {section.hash === 'relatedResources' && (
               <RelatedResources
@@ -392,7 +362,7 @@ const Sections = ({
                 <Flex w='100%' justifyContent='flex-end' pb={2}>
                   <DownloadMetadata
                     buttonProps={{
-                      colorScheme: 'primary',
+                      colorPalette: 'primary',
                       variant: 'outline',
                       size: 'sm',
                       mb: 1,

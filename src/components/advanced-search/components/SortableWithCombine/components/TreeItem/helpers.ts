@@ -1,6 +1,7 @@
-import { QueryValue } from 'src/components/advanced-search/types';
-import { SearchTypesConfigProps } from '../../../Search/search-types-config';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { QueryValue } from 'src/components/advanced-search/types';
+
+import { SearchTypesConfigProps } from '../../../Search/search-types-config';
 
 /**
  * [getFieldDetails] Returns the metadata field config object for a given field property

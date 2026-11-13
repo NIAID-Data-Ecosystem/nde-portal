@@ -40,7 +40,7 @@ export const SectionList = ({
         <Flex justifyContent='center' my={4}>
           <Button
             size='sm'
-            colorScheme='gray'
+            colorPalette='gray'
             variant='outline'
             onClick={() => {
               const updatedSection = { ...sections[currentSectionIdx] };

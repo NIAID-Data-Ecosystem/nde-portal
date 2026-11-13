@@ -1,7 +1,8 @@
-import { FormattedResource } from 'src/utils/api/types';
 import { Text } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
+import { FormattedResource } from 'src/utils/api/types';
 import { shouldAppendPunctuation } from 'src/utils/helpers/authors';
+
 import { getCitationComponents } from './helpers';
 
 interface ResourceCitationsProps {

@@ -1,19 +1,20 @@
-import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { fetchMetadata } from './helpers';
-import { Metadata, MetadataSource } from './types';
-import { useResourceCatalogs } from './useResourceCatalogs';
+import { useMemo } from 'react';
 import { FormattedResource } from 'src/utils/api/types';
-import { getFundedByNIAID } from 'src/utils/helpers';
-import { getTabIdFromResourceType } from 'src/views/search/config/tabs';
-import {
-  OR_FILTER_KEY,
-  queryFilterObject2String,
-} from 'src/views/search/components/filters';
 import {
   SHOW_DATA_COLLECTIONS_TAB,
   SHOW_SAMPLES_TAB,
 } from 'src/utils/feature-flags';
+import { getFundedByNIAID } from 'src/utils/helpers';
+import {
+  OR_FILTER_KEY,
+  queryFilterObject2String,
+} from 'src/views/search/components/filters';
+import { getTabIdFromResourceType } from 'src/views/search/config/tabs';
+
+import { fetchMetadata } from './helpers';
+import { Metadata, MetadataSource } from './types';
+import { useResourceCatalogs } from './useResourceCatalogs';
 
 /**
  * Default fields fetched for standalone resource catalogs so they render

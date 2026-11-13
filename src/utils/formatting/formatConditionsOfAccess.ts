@@ -5,7 +5,7 @@ import { AccessTypes, FormattedResource } from '../api/types';
  See issue #59 for more information.
 */
 
-export const getColorScheme = (
+export const getColorPalette = (
   conditionsOfAccess: FormattedResource['conditionsOfAccess'],
 ) => {
   if (conditionsOfAccess?.includes('Open')) {

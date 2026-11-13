@@ -1,11 +1,21 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { useRouter } from 'next/router';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
 import { ChakraProvider } from '@chakra-ui/react';
-import { OntologyBrowserSearch } from './index';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { useRouter } from 'next/router';
+import React from 'react';
+import { system } from 'src/theme';
+
 import { searchOntologyAPI } from '../../utils/api-helpers';
+import { OntologyBrowserSearch } from './index';
 
 jest.mock('../../utils/api-helpers', () => {
   return {
@@ -44,10 +54,15 @@ jest.mock('next/router', () => ({
 }));
 
 jest.mock('usehooks-ts', () => ({
+  ...jest.requireActual('usehooks-ts'),
   useDebounceValue: (value: string) => [value, jest.fn()],
 }));
 
 const mockPush = jest.fn();
+
+// The ontology menu is a zag machine: it drops events sent before it starts (a
+// microtask after mount) and only mounts its items once opened.
+const waitForMenuMachine = () => act(async () => {});
 
 const createQueryClient = () =>
   new QueryClient({
@@ -63,7 +78,7 @@ describe('OntologyBrowserSearch', () => {
   // Wrap the component with the QueryClientProvider and ChakraProvider
   const wrapper = ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>
-      <ChakraProvider>{children}</ChakraProvider>
+      <ChakraProvider value={system}>{children}</ChakraProvider>
     </QueryClientProvider>
   );
   const renderComponent = (props = {}) => {
@@ -190,19 +205,21 @@ describe('OntologyBrowserSearch', () => {
   });
 
   it('updates selected ontologies when user selects a different one', async () => {
+    const user = userEvent.setup();
     renderComponent({ ontologyMenuOptions: ontologyMockOptions });
+    await waitForMenuMachine();
     const initialCount = ontologyMockOptions.length;
 
     // Open the ontology selection dropdown
     const button = screen.getByRole('button', {
       name: `Selected ontologies ${initialCount}`,
     });
-    fireEvent.click(button);
+    await user.click(button);
 
     // Unselect one ontology
     const ontologyToSelect = ontologyMockOptions[0].name;
-    const checkbox = screen.getByLabelText(ontologyToSelect);
-    fireEvent.click(checkbox);
+    const checkbox = await screen.findByLabelText(ontologyToSelect);
+    await user.click(checkbox);
 
     // Check that the number of selected ontologies updated
     await waitFor(() => {
@@ -214,7 +231,7 @@ describe('OntologyBrowserSearch', () => {
     });
   });
 
-  it('applies ontologies from router query params on load', () => {
+  it('applies ontologies from router query params on load', async () => {
     const selectedOntology = ontologyMockOptions[0];
     const unSelectedOntology = ontologyMockOptions[1];
     (useRouter as jest.Mock).mockReturnValue({
@@ -223,6 +240,7 @@ describe('OntologyBrowserSearch', () => {
     });
 
     renderComponent({ ontologyMenuOptions: ontologyMockOptions });
+    await waitForMenuMachine();
 
     // Expect only the ontology from router query to be selected
     const button = screen.getByRole('button', {
@@ -231,10 +249,12 @@ describe('OntologyBrowserSearch', () => {
     expect(button).toBeInTheDocument();
 
     // Open the ontology selection dropdown
-    fireEvent.click(button);
+    await userEvent.click(button);
 
     // check that the correct checkbox is checked
-    const selectedCheckbox = screen.getByLabelText(selectedOntology.name);
+    const selectedCheckbox = await screen.findByLabelText(
+      selectedOntology.name,
+    );
     expect(selectedCheckbox).toBeInTheDocument();
     expect(selectedCheckbox).toBeChecked();
 
@@ -244,7 +264,7 @@ describe('OntologyBrowserSearch', () => {
     expect(unselectedCheckbox).not.toBeChecked();
   });
 
-  it('loads when multiple ontologies are selected', () => {
+  it('loads when multiple ontologies are selected', async () => {
     const selectedOntologies = ontologyMockOptions.map(onto => onto.value);
     (useRouter as jest.Mock).mockReturnValue({
       query: { ontology: selectedOntologies },
@@ -252,6 +272,7 @@ describe('OntologyBrowserSearch', () => {
     });
 
     renderComponent({ ontologyMenuOptions: ontologyMockOptions });
+    await waitForMenuMachine();
 
     // Expect only the ontology from router query to be selected
     const button = screen.getByRole('button', {
@@ -260,10 +281,12 @@ describe('OntologyBrowserSearch', () => {
     expect(button).toBeInTheDocument();
 
     // Open the ontology selection dropdown
-    fireEvent.click(button);
+    await userEvent.click(button);
 
     // Check that multiple checkboxes are checked
-    const checkbox_01 = screen.getByLabelText(ontologyMockOptions[0].name);
+    const checkbox_01 = await screen.findByLabelText(
+      ontologyMockOptions[0].name,
+    );
     expect(checkbox_01).toBeInTheDocument();
     expect(checkbox_01).toBeChecked();
 

@@ -1,150 +1,100 @@
 import { formatConditionsOfAccess } from '../formatting/formatConditionsOfAccess';
-import { Author, Citation, Distribution, FormattedResource } from './types';
+import {
+  APIAuthor,
+  APICitation,
+  APIDistribution,
+  APIResource,
+  Author,
+  Citation,
+  Distribution,
+  FormattedResource,
+  OneOrMany,
+} from './types';
 
-interface APIAuthor {
-  identifier?: string; // orcid id
-  '@type'?: string;
-  affiliation?: { name: string; sameAs?: string };
-  email?: string;
-  name?: string;
-  familyName?: string;
-  givenName?: string;
-  role?: string;
-  title?: string;
-  url?: string;
-}
+// Treats null, undefined and '' as missing. Unlike `|| null`, this keeps
+// meaningful falsy values such as `false` and `0`.
+const orNull = <T>(value: T | null | undefined): T | null =>
+  value == null || value === '' ? null : value;
+
+// Standardizes value to be an array.
+const convertToArray = <T>(
+  value: OneOrMany<T> | null | undefined,
+): T[] | null => {
+  const present = orNull(value);
+  if (present === null) {
+    return null;
+  }
+  return Array.isArray(present) ? present : [present];
+};
 
 // Format the author field
 export const formatAuthor = (
-  authorData?: APIAuthor | APIAuthor[],
+  authorData?: OneOrMany<APIAuthor> | null,
 ): Author[] | null => {
-  if (!authorData) {
-    return null;
-  }
+  const getAuthorFields = (data: APIAuthor): Author => ({
+    identifier: orNull(data.identifier),
+    type: orNull(data['@type']),
+    name: orNull(data.name),
+    affiliation: orNull(data.affiliation),
+    familyName: orNull(data.familyName),
+    givenName: orNull(data.givenName),
+    role: orNull(data.role),
+    title: orNull(data.title),
+    url: orNull(data.url),
+    email: orNull(data.email),
+  });
 
-  const getAuthorFields = (data: APIAuthor) => {
-    return {
-      identifier: data['identifier'] || null,
-      type: data['@type'] || null,
-      name: data['name'] || null,
-      affiliation: data['affiliation'] || null,
-      familyName: data['familyName'] || null,
-      givenName: data['givenName'] || null,
-      role: data['role'] || null,
-      title: data['title'] || null,
-      url: data['url'] || null,
-      email: data['email'] || null,
-    };
-  };
-
-  if (Array.isArray(authorData)) {
-    return authorData.map(data => getAuthorFields(data));
-  } else {
-    return [getAuthorFields(authorData)];
-  }
+  return convertToArray(authorData)?.map(getAuthorFields) ?? null;
 };
-
-export interface APICitation {
-  abstract?: string | null;
-  author?: Author[] | null;
-  citation?: string | null;
-  datePublished?: string | null;
-  description?: string | null;
-  doi?: string | null;
-  identifier?: string | null;
-  issueNumber?: string | null;
-  journalName?: string | null;
-  journalNameAbbrev?: string | null;
-  name?: string | null;
-  pagination?: string | null;
-  pmcid?: string | null;
-  pmid?: string | null;
-  url?: string | null;
-  volumeNumber?: string | null;
-}
 
 // Format the citation field
 export const formatCitation = (
-  citationData?: APICitation | APICitation[],
+  citationData?: OneOrMany<APICitation> | null,
 ): Citation[] | null => {
-  if (!citationData) {
-    return null;
-  }
-  const getCitationFields = (data?: APICitation) => {
-    return {
-      abstract: data?.abstract || null,
-      author: data?.author || null,
-      citation: data?.citation || null,
-      datePublished: data?.datePublished || null,
-      description: data?.description || null,
-      doi: data?.doi || null,
-      id: data?.identifier || null,
-      issueNumber: data?.issueNumber || null,
-      journalName: data?.journalName || null,
-      journalNameAbbrev: data?.journalNameAbbrev || null,
-      name: data?.name || null,
-      pagination: data?.pagination || null,
-      pmcid: data?.pmcid || null,
-      pmid: data?.pmid || null,
-      url: data?.url || null,
-      volumeNumber: data?.volumeNumber || null,
-    };
-  };
+  const getCitationFields = (data?: APICitation): Citation => ({
+    abstract: orNull(data?.abstract),
+    author: orNull(data?.author),
+    citation: orNull(data?.citation),
+    datePublished: orNull(data?.datePublished),
+    description: orNull(data?.description),
+    doi: orNull(data?.doi),
+    id: orNull(data?.identifier),
+    issueNumber: orNull(data?.issueNumber),
+    journalName: orNull(data?.journalName),
+    journalNameAbbrev: orNull(data?.journalNameAbbrev),
+    name: orNull(data?.name),
+    pagination: orNull(data?.pagination),
+    pmcid: orNull(data?.pmcid),
+    pmid: orNull(data?.pmid),
+    url: orNull(data?.url),
+    volumeNumber: orNull(data?.volumeNumber),
+  });
 
-  if (Array.isArray(citationData)) {
-    return citationData.map(data => getCitationFields(data));
-  } else {
-    return [getCitationFields(citationData)];
-  }
+  return convertToArray(citationData)?.map(getCitationFields) ?? null;
 };
 
 // Format distribution fields.
-interface APIDistribution {
-  '@id'?: string | null;
-  '@type'?: string;
-  encodingFormat?: string | null;
-  contentSize?: number | null;
-  contentUrl?: string | null;
-  dateCreated?: string | null;
-  dateModified?: string | null;
-  datePublished?: string | null;
-  description?: string | null;
-  name?: string | null;
-}
-
 export const formatDistribution = (
-  distributionData?: APIDistribution | APIDistribution[],
+  distributionData?: OneOrMany<APIDistribution> | string | null,
 ): Distribution[] | null => {
-  if (!distributionData) {
-    return null;
-  }
+  const getDistributionFields = (data: APIDistribution): Distribution => ({
+    ...data,
+    encodingFormat: orNull(data.encodingFormat),
+    contentUrl: orNull(data.contentUrl),
+    contentSize: orNull(data.contentSize),
+    dateCreated: orNull(data.dateCreated),
+    dateModified: orNull(data.dateModified),
+    datePublished: orNull(data.datePublished),
+    description: orNull(data.description),
+    name: orNull(data.name),
+    '@id': orNull(data['@id']),
+  });
 
-  const getDistributionFields = (data: APIDistribution) => {
-    return {
-      ...data,
-      encodingFormat: data.encodingFormat || null,
-      contentUrl: data.contentUrl || null,
-      contentSize: data.contentSize || null,
-      dateCreated: data.dateCreated || null,
-      dateModified: data.dateModified || null,
-      datePublished: data.datePublished || null,
-      description: data.description || null,
-      name: data.name || null,
-      '@id': data['@id'] || null,
-    };
-  };
-
-  if (typeof distributionData === 'string') {
-    return [
-      getDistributionFields({
-        contentUrl: distributionData,
-      }),
-    ];
-  } else if (Array.isArray(distributionData)) {
-    return distributionData.map(data => getDistributionFields(data));
-  } else {
-    return [getDistributionFields(distributionData)];
+  const distribution = orNull(distributionData);
+  if (typeof distribution === 'string') {
+    return [getDistributionFields({ contentUrl: distribution })];
   }
+  return convertToArray(distribution)?.map(getDistributionFields) ?? null;
 };
 
 // Convert ISO date to format YYYY-MM-DD
@@ -153,7 +103,7 @@ export const formatISOString = (date: string) => {
 };
 
 // Format Date object to string  YYYY-MM-DD
-export const formatDate = (date?: string | Date) => {
+export const formatDate = (date?: string | Date | null) => {
   if (!date) {
     return null;
   }
@@ -178,76 +128,86 @@ export const formatDate = (date?: string | Date) => {
   return parsedDate.toISOString().split('T')[0];
 };
 
-// Standardizes value to be an array.
-const convertToArray = (property: any) => {
-  return property ? (Array.isArray(property) ? property : [property]) : null;
+// The API sends inLanguage as either a bare name or an object.
+const formatInLanguage = (
+  inLanguage: APIResource['inLanguage'],
+): FormattedResource['inLanguage'] => {
+  const language = orNull(inLanguage);
+  if (language === null) {
+    return null;
+  }
+  if (typeof language === 'string') {
+    return { alternateName: null, name: language };
+  }
+  return {
+    alternateName: orNull(language.alternateName),
+    name: orNull(language.name),
+  };
 };
 
-export const formatAPIResource = (data: any) => {
+export const formatAPIResource = (
+  data?: APIResource | null,
+): FormattedResource | undefined => {
   if (!data) {
     return undefined;
   }
-  const formattedResource: FormattedResource = {
+  // FormattedResource types some fields as always present (about, hasAPI, ...)
+  // or non-null (name, includedInDataCatalog), which the API doesn't
+  // guarantee, so the result can't be checked against it directly.
+  return {
     ...data,
-    id: data._id || null,
-    name: data.name || null,
-    aggregateRating: data.aggregateRating || null,
+    id: data._id,
+    name: orNull(data.name),
+    aggregateRating: orNull(data.aggregateRating),
     applicationCategory: convertToArray(data.applicationCategory),
     applicationSubCategory: convertToArray(data.applicationSubCategory),
     applicationSuite: convertToArray(data.applicationSuite),
-    availableOnDevice: data.availableOnDevice || null,
+    availableOnDevice: orNull(data.availableOnDevice),
     author: formatAuthor(data.author),
     citation: formatCitation(data.citation),
-    citedBy: convertToArray(data.citedBy) || null,
-    codeRepository: data.codeRepository || null,
-    collectionSize: convertToArray(data.collectionSize) || null,
-    condition: data.condition || null,
-    conditionsOfAccess:
-      formatConditionsOfAccess(data.conditionsOfAccess) || null,
-    date: formatDate(data.date) || null,
-    dateCreated: formatDate(data.dateCreated) || null,
-    dateModified: formatDate(data.dateModified) || null,
-    datePublished: formatDate(data.datePublished) || null,
-    description: Array.isArray(data.description)
-      ? data.description.join(' ')
-      : data.description || null,
+    citedBy: convertToArray(data.citedBy),
+    codeRepository: orNull(data.codeRepository),
+    collectionSize: convertToArray(data.collectionSize),
+    condition: orNull(data.condition),
+    conditionsOfAccess: formatConditionsOfAccess(data.conditionsOfAccess),
+    date: formatDate(data.date),
+    dateCreated: formatDate(data.dateCreated),
+    dateModified: formatDate(data.dateModified),
+    datePublished: formatDate(data.datePublished),
+    description: orNull(
+      Array.isArray(data.description)
+        ? data.description.join(' ')
+        : data.description,
+    ),
     discussionUrl: convertToArray(data.discussionUrl),
-    disease: data.disease || null,
+    disease: orNull(data.disease),
     distribution: formatDistribution(data.distribution),
-    doi: data['doi'] || data['@id'] || null,
+    doi: orNull(data.doi) ?? orNull(data['@id']),
     downloadUrl: convertToArray(data.downloadUrl),
     funding: convertToArray(data.funding),
-    genre: data.genre || null,
+    genre: orNull(data.genre),
     hasPart: convertToArray(data.hasPart),
     healthCondition: convertToArray(data.healthCondition),
-    includedInDataCatalog: data.includedInDataCatalog ?? null,
+    includedInDataCatalog: orNull(data.includedInDataCatalog),
     infectiousAgent: convertToArray(data.infectiousAgent),
     input: convertToArray(data.input),
-    interactionStatistics: data.interactionStatistics || null,
-    isAccessibleForFree: data.isAccessibleForFree || null,
+    interactionStatistics: orNull(data.interactionStatistics),
+    isAccessibleForFree: orNull(data.isAccessibleForFree),
     isBasedOn: convertToArray(data.isBasedOn),
     isBasisFor: convertToArray(data.isBasisFor),
     isPartOf: convertToArray(data.isPartOf),
     isRelatedTo: convertToArray(data.isRelatedTo),
     keywords: convertToArray(data.keywords),
-    inLanguage: data.inLanguage
-      ? {
-          alternateName: data.inLanguage.alternateName || null,
-          name:
-            typeof data.inLanguage === 'string'
-              ? data.inLanguage
-              : data.inLanguage.name,
-        }
-      : null,
-    license: data.license || null,
-    mainEntityOfPage: data.mainEntityOfPage || null,
+    inLanguage: formatInLanguage(data.inLanguage),
+    license: orNull(data.license),
+    mainEntityOfPage: orNull(data.mainEntityOfPage),
     measurementTechnique: convertToArray(data.measurementTechnique),
-    nctid: data['nctid'] || null,
+    nctid: orNull(data.nctid),
     output: convertToArray(data.output),
     processorRequirements: convertToArray(data.processorRequirements),
     programmingLanguage: convertToArray(data.programmingLanguage),
-    publisher: data.publisher || null,
-    sameAs: data.sameAs || null,
+    publisher: orNull(data.publisher),
+    sameAs: orNull(data.sameAs),
     sdPublisher: convertToArray(data.sdPublisher),
     softwareAddOn: convertToArray(data.softwareAddOn),
     softwareHelp: convertToArray(data.softwareHelp),
@@ -256,12 +216,11 @@ export const formatAPIResource = (data: any) => {
     sourceOrganization: convertToArray(data.sourceOrganization),
     spatialCoverage: convertToArray(data.spatialCoverage),
     species: convertToArray(data.species),
-    temporalCoverage: convertToArray(data.temporalCoverage) || null,
+    temporalCoverage: convertToArray(data.temporalCoverage),
     topicCategory: convertToArray(data.topicCategory),
-    url: data.url || null,
-    usageInfo: data.usageInfo || null,
-    variableMeasured: convertToArray(data.variableMeasured) || null,
-    version: data.version || null,
-  };
-  return formattedResource;
+    url: orNull(data.url),
+    usageInfo: orNull(data.usageInfo),
+    variableMeasured: convertToArray(data.variableMeasured),
+    version: orNull(data.version),
+  } as FormattedResource;
 };

@@ -1,5 +1,6 @@
 import { Facet } from 'src/utils/api/types';
 import { CONTENT_TYPE_ABOUT_FIELD } from 'src/views/search/config/content-type';
+
 import { mergeFacets } from '../../utils/merge-facets';
 
 const facet = (

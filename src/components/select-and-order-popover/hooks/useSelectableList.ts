@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
 import { arrayMove } from '@dnd-kit/sortable';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
 import { PopoverItem } from '../types';
 
 export interface UseSelectableListOptions {

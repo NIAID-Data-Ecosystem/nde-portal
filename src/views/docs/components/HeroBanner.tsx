@@ -28,7 +28,7 @@ export const HeroBanner = ({
           src='/assets/homepage/ecosystem-hero-nodes.png'
           position='absolute'
           objectFit='cover'
-          width={{ base: '100%', lg: '100%', xl: '100%' }}
+          width='100%'
           height={{ base: '100%', lg: 'unset', xl: '100%' }}
           maxWidth={{ base: '100%', '2xl': 'unset' }}
           bottom={{ base: '-50%', lg: 'unset' }}
@@ -39,9 +39,12 @@ export const HeroBanner = ({
       <Flex
         id='hero-gradient'
         zIndex={3}
-        bgGradient={{
-          base: 'linear(to-r, #ddf4fde6 0%, #ddf4fde6 75%, #ffc0cb00 100%)',
-          md: 'linear(to-r, #ffc0cb00 0%, #ddf4fde6 20%, #ddf4fde6 75%, #ffc0cb00 100%)',
+        // Plain CSS: v3's `bgGradient` only takes a direction (`to-r`) plus
+        // `gradientFrom`/`gradientTo`, so v2's `linear(...)` string was
+        // emitted verbatim and discarded by the browser.
+        bgImage={{
+          base: 'linear-gradient(to right, #ddf4fde6 0%, #ddf4fde6 75%, #ffc0cb00 100%)',
+          md: 'linear-gradient(to right, #ffc0cb00 0%, #ddf4fde6 20%, #ddf4fde6 75%, #ffc0cb00 100%)',
         }}
         borderRadius='semi'
         w='100%'
@@ -56,7 +59,7 @@ export const HeroBanner = ({
           textAlign={{ base: 'left', lg: 'center' }}
           alignItems={{ base: 'flex-start', lg: 'center' }}
           justifyContent={{ base: 'flex-start', lg: 'center' }}
-          spacing={2}
+          gap={2}
           px={{ base: 4 }}
           py={{ base: 3 }}
           mt={0}

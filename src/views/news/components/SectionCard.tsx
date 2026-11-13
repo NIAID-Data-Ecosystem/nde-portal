@@ -1,16 +1,7 @@
-import {
-  Box,
-  Card,
-  CardBody,
-  CardFooter,
-  Flex,
-  Heading,
-  Tag,
-  Text,
-} from '@chakra-ui/react';
-import { NewsOrEventsObject } from 'src/pages/updates';
+import { Box, Card, Flex, Heading, Tag, Text } from '@chakra-ui/react';
 import ReactMarkdown from 'react-markdown';
 import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
+import { NewsOrEventsObject } from 'src/pages/updates';
 import { formatDate } from 'src/utils/api/helpers';
 
 interface SectionCardProps extends NewsOrEventsObject {}
@@ -31,7 +22,7 @@ const SectionCard = (attributes: SectionCardProps) => {
   ];
   const MDXComponents = useMDXComponents();
   return (
-    <Card
+    <Card.Root
       id={attributes.slug}
       border='1px solid'
       borderColor='gray.100'
@@ -46,7 +37,7 @@ const SectionCard = (attributes: SectionCardProps) => {
             fontWeight='medium'
             fontSize='sm'
             whiteSpace='nowrap'
-            color='gray.800'
+            color='gray.600'
           >
             {formatDate(attributes.publishedAt || attributes.updatedAt)}
           </Text>
@@ -60,45 +51,44 @@ const SectionCard = (attributes: SectionCardProps) => {
               as='h4'
               fontWeight='semibold'
               size='sm'
-              color='gray.700'
+              color='gray.500'
               my={0}
               mt={1}
-              lineHeight='short'
+              lineHeight='moderate'
             >
               {attributes.subtitle}
             </Heading>
           )}
           {attributes.description && (
-            <CardBody p={0} lineHeight='short'>
+            <Card.Body p={0} lineHeight='moderate'>
               {/* useful for client-side fetch mdx handling */}
               <ReactMarkdown components={MDXComponents}>
                 {attributes.description}
               </ReactMarkdown>
-            </CardBody>
+            </Card.Body>
           )}
           {attributes.categories && attributes.categories.length > 0 && (
-            <CardFooter p={0} mt={2}>
+            <Card.Footer p={0} mt={2}>
               {attributes.categories.map((category, i) => {
                 const { name } = category;
                 return (
-                  <Tag
+                  <Tag.Root
                     key={category.id}
-                    m={1}
-                    colorScheme={
+                    colorPalette={
                       categoryColors[category.id % categoryColors.length]
                     }
-                    variant='subtle'
+                    variant='surface'
                     size='sm'
                   >
-                    {name}
-                  </Tag>
+                    <Tag.Label>{name}</Tag.Label>
+                  </Tag.Root>
                 );
               })}
-            </CardFooter>
+            </Card.Footer>
           )}
         </Box>
       </Flex>
-    </Card>
+    </Card.Root>
   );
 };
 

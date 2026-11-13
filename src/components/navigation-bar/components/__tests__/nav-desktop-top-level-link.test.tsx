@@ -1,10 +1,11 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen } from 'src/__tests__/utils/render';
+
 import { NavTopLevelLink } from '../nav-desktop-top-level-link';
 
 describe('NavTopLevelLink', () => {
   it('renders external link attributes and active indicator', () => {
-    const { container } = render(
+    render(
       <NavTopLevelLink
         label='Docs'
         href='https://example.org'
@@ -17,7 +18,8 @@ describe('NavTopLevelLink', () => {
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
     expect(link).toHaveAttribute('href', 'https://example.org');
-    expect(container.querySelector('div')).toBeInTheDocument();
+    expect(link).toHaveAttribute('data-active');
+    expect(link).toHaveAttribute('aria-current', 'page');
   });
 
   it('renders default internal fallback href', () => {
@@ -27,5 +29,7 @@ describe('NavTopLevelLink', () => {
     expect(link).toHaveAttribute('target', '_self');
     expect(link).toHaveAttribute('href', '#');
     expect(link).not.toHaveAttribute('rel');
+    expect(link).not.toHaveAttribute('data-active');
+    expect(link).not.toHaveAttribute('aria-current');
   });
 });

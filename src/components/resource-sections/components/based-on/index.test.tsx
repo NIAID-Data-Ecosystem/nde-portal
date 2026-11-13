@@ -1,12 +1,15 @@
-import React from 'react';
+import '@testing-library/jest-dom';
+
+import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ChakraProvider } from '@chakra-ui/react';
-import '@testing-library/jest-dom';
+import React from 'react';
+import { system } from 'src/theme';
+
 import { BasedOnActionProcess, BasedOnTable } from '.';
 
 const renderWithChakra = (ui: React.ReactElement) =>
-  render(<ChakraProvider>{ui}</ChakraProvider>);
+  render(<ChakraProvider value={system}>{ui}</ChakraProvider>);
 
 describe('BasedOnActionProcess', () => {
   it('renders a fallback message when there is no description and no steps', () => {
@@ -14,7 +17,7 @@ describe('BasedOnActionProcess', () => {
 
     expect(screen.getByText('No details provided.')).toBeInTheDocument();
     expect(
-      screen.queryByRole('button', { name: /Show/ }),
+      screen.queryByRole('button', { name: /show details/i }),
     ).not.toBeInTheDocument();
   });
 
@@ -60,7 +63,9 @@ describe('BasedOnActionProcess', () => {
       />,
     );
 
-    expect(screen.getByRole('button', { name: /Show/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /show details/i }),
+    ).toBeInTheDocument();
     expect(screen.getByText('How the collection was built.')).not.toBeVisible();
     expect(screen.getByText('Search the source')).not.toBeVisible();
   });
@@ -78,8 +83,8 @@ describe('BasedOnActionProcess', () => {
       />,
     );
 
-    await user.click(screen.getByRole('button', { name: /Show/ }));
-    expect(screen.getByRole('button', { name: /Hide/ })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /show details/i }));
+    expect(screen.getByRole('button', { name: /hide/i })).toBeInTheDocument();
 
     // AccordionPanel animates open, so it stays `hidden` for a frame or two
     // after the click. Wait for the panel before asserting on its contents.
@@ -100,7 +105,7 @@ describe('BasedOnActionProcess', () => {
       />,
     );
 
-    await user.click(screen.getByRole('button', { name: /Show/ }));
+    await user.click(screen.getByRole('button', { name: /show details/i }));
 
     await waitFor(() => expect(screen.getByText('Only step')).toBeVisible());
   });
@@ -111,7 +116,7 @@ describe('BasedOnTable', () => {
     renderWithChakra(
       <BasedOnTable
         id='is-based-on'
-        isLoading={false}
+        loading={false}
         caption='Table showing resources that this resource is based on.'
         title='Based on'
         items={items}

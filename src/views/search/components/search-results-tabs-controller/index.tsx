@@ -1,39 +1,40 @@
-import React, { useMemo, useEffect, useRef } from 'react';
-import { useRouter } from 'next/router';
-import { TabPanel } from '@chakra-ui/react';
+import { Tabs } from '@chakra-ui/react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useSearchTabsContext } from '../../context/search-tabs-context';
-import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
-import { SearchResults } from '../results-list';
-import { AccordionContent, AccordionWrapper } from '../layout/accordion';
-import { useSearchResultsData } from '../../hooks/useSearchResultsData';
-import { usePaginationContext } from '../../context/pagination-context';
-import { SearchTabs } from '../layout/tabs';
-import { FetchSearchResultsResponse } from 'src/utils/api/types';
-import { ResourceCatalogCard } from '../results-list/components/carousel-compact-card/resource-catalog-card';
-import { DiseaseOverviewCard } from '../results-list/components/carousel-compact-card/disease-overview-card';
-import { ProgramInfoCard } from '../results-list/components/carousel-compact-card/program-info-card';
+import { useRouter } from 'next/router';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Carousel } from 'src/components/carousel';
-import { CarouselWrapper } from '../layout/carousel-wrapper';
-import { EmptyState } from '../results-list/components/empty';
-import { TabType } from '../../types';
-import { generateOtherResourcesTitle, tabs } from '../../config/tabs';
-import { getDefaultTabId } from '../../utils/get-default-tab';
-import { useDiseaseData } from '../../hooks/useDiseaseData';
-import { useProgramInfoCollections } from '../../hooks/useProgramInfoCollections';
+import { fetchSearchResults, Params } from 'src/utils/api';
+import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import {
-  SHOW_SAMPLES_TAB,
   SHOW_DATA_COLLECTIONS_TAB,
   SHOW_PROGRAM_RESOURCE_UI,
+  SHOW_SAMPLES_TAB,
 } from 'src/utils/feature-flags';
-import {
-  useBioSampleAggregation,
-  BIOSAMPLE_EXTRA_FILTER,
-} from '../../hooks/useBioSampleAggregation';
-import { queryFilterObject2String } from '../filters/utils/query-string';
-import { fetchSearchResults, Params } from 'src/utils/api';
+
 import { defaultQuery, getDefaultSizeForTab } from '../../config/defaultQuery';
-import { SAMPLE_FIELDS, DATA_COLLECTION_FIELDS } from '../../config/fields';
+import { DATA_COLLECTION_FIELDS, SAMPLE_FIELDS } from '../../config/fields';
+import { generateOtherResourcesTitle, tabs } from '../../config/tabs';
+import { usePaginationContext } from '../../context/pagination-context';
+import { useSearchTabsContext } from '../../context/search-tabs-context';
+import {
+  BIOSAMPLE_EXTRA_FILTER,
+  useBioSampleAggregation,
+} from '../../hooks/useBioSampleAggregation';
+import { useDiseaseData } from '../../hooks/useDiseaseData';
+import { useProgramInfoCollections } from '../../hooks/useProgramInfoCollections';
+import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
+import { useSearchResultsData } from '../../hooks/useSearchResultsData';
+import { TabType } from '../../types';
+import { getDefaultTabId } from '../../utils/get-default-tab';
+import { queryFilterObject2String } from '../filters/utils/query-string';
+import { AccordionContent, AccordionWrapper } from '../layout/accordion';
+import { CarouselWrapper } from '../layout/carousel-wrapper';
+import { SearchTabs } from '../layout/tabs';
+import { SearchResults } from '../results-list';
+import { DiseaseOverviewCard } from '../results-list/components/carousel-compact-card/disease-overview-card';
+import { ProgramInfoCard } from '../results-list/components/carousel-compact-card/program-info-card';
+import { ResourceCatalogCard } from '../results-list/components/carousel-compact-card/resource-catalog-card';
+import { EmptyState } from '../results-list/components/empty';
 import { getSectionFilters } from '../results-list/utils/resource-type-filter';
 
 const CAROUSEL_RESULTS_FIELDS = [
@@ -58,17 +59,36 @@ const CAROUSEL_RESULTS_FIELDS = [
 // on every render.
 const EMPTY_DISEASES: never[] = [];
 
+// Result types whose accordion section is expanded by default, regardless of
+// how many results it has.
+const ALWAYS_EXPANDED_TYPES = new Set([
+  'Dataset',
+  'ComputationalTool',
+  'Sample',
+  'DataCollection',
+]);
+
+// Sections that never get their own accordion item: Disease is folded into the
+// ResourceCatalog "Other Resources" item, and Sample/DataCollection are gated
+// behind feature flags.
+const isRenderedSection = (section: TabType['types'][number]) => {
+  if (section.type === 'Disease') return false;
+  if (section.type === 'Sample') return SHOW_SAMPLES_TAB;
+  if (section.type === 'DataCollection') return SHOW_DATA_COLLECTIONS_TAB;
+  return true;
+};
+
 interface SearchResultsControllerProps {
-  colorScheme?: string;
+  colorPalette?: string;
   initialData: FetchSearchResultsResponse;
 }
 
 export const SearchResultsController = ({
-  colorScheme = 'secondary',
+  colorPalette = 'secondary',
   initialData,
 }: SearchResultsControllerProps) => {
   const router = useRouter();
-  const { selectedIndex, setSelectedIndex } = useSearchTabsContext();
+  const { selectedTab, setSelectedTab } = useSearchTabsContext();
   const { getPagination, setPagination } = usePaginationContext();
   const queryClient = useQueryClient();
 
@@ -76,23 +96,28 @@ export const SearchResultsController = ({
   // override the user choice if there are no results for that tab.
   const userSelectedTabRef = useRef<string | null>(null);
 
-  const handleTabChange = (index: number) => {
-    setSelectedIndex(index);
-    const selectedTab = tabs[index];
+  // v3 Tabs are value-based: the id string is the source of truth, not the
+  // index. Indexing into `tabs` here would also be wrong because the rendered
+  // list is filtered by feature flags, so its indices need not line up.
+  const handleTabChange = (tabId: string) => {
+    const nextTab = tabs.find(t => t.id === tabId);
+    if (!nextTab) return;
+
+    setSelectedTab(nextTab.id);
 
     // Record the user choice so the auto-tab respects it.
-    userSelectedTabRef.current = selectedTab.id;
+    userSelectedTabRef.current = nextTab.id;
 
-    const paginationState = getPagination(selectedTab.id);
+    const paginationState = getPagination(nextTab.id);
 
-    setPagination(selectedTab.id, paginationState);
+    setPagination(nextTab.id, paginationState);
 
     return router.replace(
       {
         query: {
           ...router.query,
           ...paginationState,
-          tab: selectedTab.id,
+          tab: nextTab.id,
         },
       },
       undefined,
@@ -238,7 +263,7 @@ export const SearchResultsController = ({
     // If the user has selected a tab, only leave it when that tab
     // has no associated results anymore.
     if (userSelectedTabRef.current !== null) {
-      const currentTab = tabs[selectedIndex];
+      const currentTab = selectedTab;
       const currentTabHasResults = currentTab?.types.some(({ type }) =>
         facetCountsWithBioSample.some(f => f.type === type && f.count > 0),
       );
@@ -261,12 +286,9 @@ export const SearchResultsController = ({
       selectedTypes,
     );
 
-    // Find the index for the tab
-    const calculatedIndex = tabs.findIndex(t => t.id === calculatedTabId);
-
     // Only update if different from current
-    if (calculatedIndex !== -1 && calculatedIndex !== selectedIndex) {
-      setSelectedIndex(calculatedIndex);
+    if (calculatedTabId && calculatedTabId !== selectedTab.id) {
+      setSelectedTab(calculatedTabId);
 
       // Update URL if needed
       if (router.query.tab !== calculatedTabId) {
@@ -288,6 +310,9 @@ export const SearchResultsController = ({
     queryParams.filters,
     router.isReady,
     router.query.q,
+    router,
+    selectedTab,
+    setSelectedTab,
   ]);
 
   const hasResourceCatalogRecords = useMemo(() => {
@@ -324,7 +349,7 @@ export const SearchResultsController = ({
 
   const {
     diseases: matchingDiseasesRaw,
-    isLoading: diseaseIsLoading,
+    loading: diseaseIsLoading,
     hasMatchingDiseases,
   } = useDiseaseData({
     searchQuery: queryParams.q || '',
@@ -434,70 +459,51 @@ export const SearchResultsController = ({
     [facetData?.facets, matchingDiseases.length, bioSampleTotal],
   );
 
-  const getAccordionDefaultIndices = (
+  // Types of the sections that should start expanded — these match the `value`
+  // given to each accordion item. Types rather than labels: zag builds element
+  // ids from the value, and a label's space splits `aria-controls` in two. Primary result types stay open even with no
+  // results so their empty state is visible; every other type only opens when
+  // it has results (ResourceCatalog also opens when there are matching diseases
+  // to show in its carousel).
+  const getAccordionDefaultValues = (
     sections: (TabType['types'][number] & { count: number })[],
   ) =>
-    sections.reduce((indices: number[], section, index) => {
-      if (section.type === 'ResourceCatalog') {
-        if (section.count > 0 || hasMatchingDiseases || hasProgramInfo) {
-          indices.push(index);
-        }
-      } else if (section.type === 'Dataset') {
-        if (section.count > 0 || section.count === 0) {
-          indices.push(index);
-        }
-      } else if (section.type === 'ComputationalTool') {
-        if (section.count > 0 || section.count === 0) {
-          indices.push(index);
-        }
-      } else if (section.type === 'Sample') {
-        if (section.count > 0 || section.count === 0) {
-          indices.push(index);
-        }
-      } else if (section.type === 'DataCollection') {
-        if (section.count > 0 || section.count === 0) {
-          indices.push(index);
-        }
-      } else if (section.count > 0) {
-        indices.push(index);
-      }
-      return indices;
-    }, []);
+    sections
+      .filter(
+        section =>
+          isRenderedSection(section) &&
+          (ALWAYS_EXPANDED_TYPES.has(section.type) ||
+            section.count > 0 ||
+            (section.type === 'ResourceCatalog' && hasMatchingDiseases)),
+      )
+      .map(section => section.type);
 
   return (
     <>
       <SearchTabs
-        index={selectedIndex}
-        onChange={handleTabChange}
-        colorScheme={colorScheme}
+        value={selectedTab.id}
+        onValueChange={e => handleTabChange(e.value)}
+        colorPalette={colorPalette}
         tabs={tabsWithFacetCounts}
         programInfoCount={programInfoCount}
         renderTabPanels={() =>
           tabsWithFacetCounts.map(tab => {
             const sections = tab.types;
-            const defaultIndices = getAccordionDefaultIndices(sections);
+            const defaultValues = getAccordionDefaultValues(sections);
 
             return (
-              <TabPanel key={tab.id}>
+              <Tabs.Content key={tab.id} value={tab.id} pt={0}>
                 <AccordionWrapper
-                  key={`${tab.id}-${defaultIndices.join('-')}`}
-                  defaultIndex={defaultIndices}
+                  key={`${tab.id}-${defaultValues.join('|')}`}
+                  defaultValue={defaultValues}
                 >
-                  {sections.map(section => {
-                    if (section.type === 'Disease') return null;
-                    if (section.type === 'Sample' && !SHOW_SAMPLES_TAB)
-                      return null;
-                    if (
-                      section.type === 'DataCollection' &&
-                      !SHOW_DATA_COLLECTIONS_TAB
-                    )
-                      return null;
-
+                  {sections.filter(isRenderedSection).map(section => {
                     // For ResourceCatalog, render "Other Resources" with carousel
                     if (section.type === 'ResourceCatalog') {
                       return (
                         <AccordionContent
-                          key='resource-catalog'
+                          key={section.label}
+                          value={section.type}
                           title={generateOtherResourcesTitle(
                             sections,
                             programInfoCount,
@@ -505,7 +511,7 @@ export const SearchResultsController = ({
                         >
                           {isCarouselLoading || shouldShowCarousel ? (
                             <CarouselWrapper>
-                              <Carousel gap={8} isLoading={isCarouselLoading}>
+                              <Carousel gap={8} loading={isCarouselLoading}>
                                 {(isCarouselLoading
                                   ? Array(3).fill({
                                       type: 'resource',
@@ -523,18 +529,18 @@ export const SearchResultsController = ({
                                     {carouselItem.type === 'resource' ? (
                                       <ResourceCatalogCard
                                         data={carouselItem.data}
-                                        isLoading={isCarouselLoading}
+                                        loading={isCarouselLoading}
                                         referrerPath={router.asPath}
                                       />
                                     ) : carouselItem.type === 'program-info' ? (
                                       <ProgramInfoCard
                                         data={carouselItem.data}
-                                        isLoading={isCarouselLoading}
+                                        loading={isCarouselLoading}
                                       />
                                     ) : (
                                       <DiseaseOverviewCard
                                         data={carouselItem.data}
-                                        isLoading={isCarouselLoading}
+                                        loading={isCarouselLoading}
                                       />
                                     )}
                                   </div>
@@ -560,7 +566,8 @@ export const SearchResultsController = ({
                     // Use accordionLabel if provided, otherwise fall back to label.
                     return (
                       <AccordionContent
-                        key={section.type}
+                        key={section.label}
+                        value={section.type}
                         title={`${
                           section.accordionLabel ?? section.label
                         } (${sectionCount.toLocaleString()})`}
@@ -574,7 +581,7 @@ export const SearchResultsController = ({
                     );
                   })}
                 </AccordionWrapper>
-              </TabPanel>
+              </Tabs.Content>
             );
           })
         }

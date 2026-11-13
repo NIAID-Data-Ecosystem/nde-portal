@@ -1,22 +1,22 @@
-import React from 'react';
-import { Box } from '@chakra-ui/react';
-import { FormattedResource } from 'src/utils/api/types';
-import { HeadingWithTooltip } from './heading-with-tooltip';
-import { Link } from 'src/components/link';
+import { Text, VStack } from '@chakra-ui/react';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import React from 'react';
+import { InfoLabel } from 'src/components/info-label';
+import { Link } from 'src/components/link';
+import { FormattedResource } from 'src/utils/api/types';
 
 interface DataUsageProps {
-  isLoading: boolean;
+  loading: boolean;
   usageInfo?: FormattedResource['usageInfo'];
   type?: FormattedResource['@type'];
 }
 
 export const DataUsage: React.FC<DataUsageProps> = ({
-  isLoading,
+  loading,
   type,
   usageInfo,
 }) => {
-  if (!isLoading && !usageInfo) {
+  if (!loading && !usageInfo) {
     return <></>;
   }
   const usageAgreement = Array.isArray(usageInfo) ? usageInfo : [usageInfo];
@@ -32,24 +32,24 @@ export const DataUsage: React.FC<DataUsageProps> = ({
       : '';
 
   return (
-    <Box>
-      <HeadingWithTooltip
+    <VStack align='start' gap={0.5}>
+      <InfoLabel
         label='Usage Information'
-        tooltipLabel={tooltipLabel}
+        tooltipProps={{ content: tooltipLabel }}
       />
       {usageAgreement.map((usageInfo, idx) => {
         if (!usageInfo?.url)
           return (
-            <React.Fragment key={'ua' + idx}>
+            <Text key={'ua' + idx}>
               {usageInfo?.name || 'View usage agreement'}
-            </React.Fragment>
+            </Text>
           );
         return (
-          <Link key={'ua' + idx} href={usageInfo?.url} fontSize='xs' isExternal>
+          <Link key={'ua' + idx} href={usageInfo?.url} isExternal>
             {usageInfo?.name || 'View usage agreement'}
           </Link>
         );
       })}
-    </Box>
+    </VStack>
   );
 };

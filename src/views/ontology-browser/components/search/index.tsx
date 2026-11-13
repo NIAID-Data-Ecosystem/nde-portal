@@ -1,42 +1,39 @@
-import React, { useEffect, useState, useCallback } from 'react';
 import {
   Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Button,
   Flex,
   HStack,
+  List,
   Tag,
-  TagLabel,
   Text,
-  UnorderedList,
   VStack,
 } from '@chakra-ui/react';
-import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
-import {
-  OntologyOption,
-  searchOntologyAPI,
-  SearchParams,
-} from '../../utils/api-helpers';
+import { useRouter } from 'next/router';
+import React, { useCallback, useEffect, useState } from 'react';
+import { CheckboxMenu } from 'src/components/checkbox-list';
 import {
   DropdownInput,
   InputWithDropdown,
 } from 'src/components/input-with-dropdown';
 import { DropdownContent } from 'src/components/input-with-dropdown/components/DropdownContent';
-import { CheckboxList } from 'src/components/checkbox-list';
 import { useDebounceValue } from 'usehooks-ts';
+
+import {
+  OntologyOption,
+  searchOntologyAPI,
+  SearchParams,
+} from '../../utils/api-helpers';
 import { DropdownListItem } from './dropdown-list-item';
 
 interface OntologyBrowserSearchProps {
-  colorScheme?: string;
+  colorPalette?: string;
   size?: 'sm' | 'md' | 'lg';
   ontologyMenuOptions?: OntologyOption[];
 }
 
 export const OntologyBrowserSearch = ({
-  colorScheme = 'primary',
+  colorPalette = 'primary',
   size = 'md',
   ontologyMenuOptions = [],
 }: OntologyBrowserSearchProps) => {
@@ -171,7 +168,7 @@ export const OntologyBrowserSearch = ({
       className='ontology-search'
       w='100%'
       alignItems='flex-start'
-      spacing={2}
+      gap={2}
     >
       <HStack
         w='100%'
@@ -187,24 +184,22 @@ export const OntologyBrowserSearch = ({
           minWidth={{ base: 'unset', md: '450px' }}
           zIndex='docked'
         >
-          <Text
-            as='label'
-            htmlFor='ontology-browser-search-bar'
-            fontSize='sm'
-            color='gray.800'
-            px={1}
-          >
-            Search taxonomy browser
+          <Text fontSize='sm' color='gray.600' px={1} asChild>
+            <label htmlFor='ontology-browser-search-bar'>
+              Search taxonomy browser
+            </label>
           </Text>
+          {/* The live term, not `debouncedTerm`: InputWithDropdown resets the
+              field to this value, so a lagging one overwrote fresh keystrokes. */}
           <InputWithDropdown
-            inputValue={debouncedTerm}
+            inputValue={searchTerm}
             cursorMax={suggestions?.length || 0}
-            colorScheme={colorScheme}
+            colorPalette={colorPalette}
           >
             <DropdownInput
               id='ontology-browser-search-bar'
               ariaLabel='Search taxonomy browser'
-              isLoading={isLoading}
+              loading={isLoading}
               placeholder='Enter a taxonomy name or identifier'
               size={size}
               type='text'
@@ -219,11 +214,11 @@ export const OntologyBrowserSearch = ({
               }}
               renderSubmitButton={() => (
                 <Button
-                  colorScheme={colorScheme}
+                  colorPalette={colorPalette}
                   size={size}
                   type='submit'
                   display={{ base: 'none', md: 'flex' }}
-                  isDisabled={
+                  disabled={
                     !!error ||
                     isLoading ||
                     !debouncedTerm.trim() ||
@@ -236,7 +231,9 @@ export const OntologyBrowserSearch = ({
             />
 
             <DropdownContent>
-              <UnorderedList ml={0}>
+              {/* `gap`, not item margins: List.Root is a flex column in v3,
+                  so v2's collapsing `my` on each item would double up. */}
+              <List.Root ps={0} py={1} gap={1}>
                 {suggestions?.map((suggestion, index) => (
                   <DropdownListItem
                     key={`${suggestion.definingOntology}-${suggestion._id}`}
@@ -254,47 +251,36 @@ export const OntologyBrowserSearch = ({
                     {suggestion.label}
                   </DropdownListItem>
                 ))}
-              </UnorderedList>
+              </List.Root>
             </DropdownContent>
           </InputWithDropdown>
         </Flex>
 
         {/* <!-- Select Ontology --> */}
-        <CheckboxList
-          flex={1}
-          fontSize='sm'
+        <CheckboxMenu
+          id='explore-ontology'
+          bg='white'
           width={{ base: '100%', md: 'unset' }}
           buttonProps={{
-            width: '250px',
-            overflow: 'hidden',
+            size: 'lg',
+            fontSize: 'sm',
           }}
-          zIndex={9}
           label={
-            <Text
-              as='span'
-              isTruncated
-              color='inherit'
-              display='flex'
-              alignItems='flex-end'
-              w='100%'
-            >
-              Selected ontologies
-              <Tag
-                variant='outline'
-                color='inherit'
+            <HStack alignItems='center'>
+              <Text fontWeight='inherit'>Selected ontologies</Text>
+              <Tag.Root
+                variant='surface'
                 borderRadius='full'
-                fontSize='xs'
-                alignSelf='flex-start'
-                lineHeight={1.2}
+                colorPalette='primary'
                 size='sm'
                 px={3}
-                ml={2}
               >
-                <TagLabel>{selectedOntologies.length}</TagLabel>
-              </Tag>
-            </Text>
+                <Tag.Label>{selectedOntologies.length}</Tag.Label>
+              </Tag.Root>
+            </HStack>
           }
-          size='lg'
+          size='md'
+          colorPalette='primary'
           description=''
           options={ontologyMenuOptions}
           selectedOptions={selectedOntologies}
@@ -303,13 +289,13 @@ export const OntologyBrowserSearch = ({
       </HStack>
       {/* <!-- Error Message --> */}
       {error && (
-        <Alert status='error' role='alert' flexWrap='wrap'>
-          <AlertIcon />
-          <AlertTitle>{error.message}</AlertTitle>
-          <AlertDescription>
+        <Alert.Root status='error' role='alert' flexWrap='wrap'>
+          <Alert.Indicator />
+          <Alert.Title>{error.message}</Alert.Title>
+          <Alert.Description>
             There was an error processing your search. Please try again later.
-          </AlertDescription>
-        </Alert>
+          </Alert.Description>
+        </Alert.Root>
       )}
       {/* <!-- No Match Found --> */}
       {suggestions &&
@@ -317,25 +303,25 @@ export const OntologyBrowserSearch = ({
         debouncedTerm &&
         !isLoading &&
         !error && (
-          <Alert status='info' flexWrap='wrap'>
-            <AlertIcon />
-            <AlertTitle>No Results Found</AlertTitle>
-            <AlertDescription>
+          <Alert.Root status='info' flexWrap='wrap'>
+            <Alert.Indicator />
+            <Alert.Title>No Results Found</Alert.Title>
+            <Alert.Description>
               No results found for <strong>{debouncedTerm}</strong>. Please try
               a different search term.
-            </AlertDescription>
-          </Alert>
+            </Alert.Description>
+          </Alert.Root>
         )}
       {/* <!-- No Match in Selected Ontologies --> */}
       {hasNoMatch && (
-        <Alert status='info' flexWrap='wrap'>
-          <AlertIcon />
-          <AlertTitle>
+        <Alert.Root status='info' flexWrap='wrap'>
+          <Alert.Indicator />
+          <Alert.Title>
             {suggestions && suggestions.length === 0
               ? 'No match'
               : 'No complete match'}
-          </AlertTitle>
-          <AlertDescription>
+          </Alert.Title>
+          <Alert.Description>
             Search term{' '}
             <Text as='span' textDecoration='underline'>
               {debouncedTerm}
@@ -349,8 +335,8 @@ export const OntologyBrowserSearch = ({
                 </Text>{' '}
               </Text>
             )}
-          </AlertDescription>
-        </Alert>
+          </Alert.Description>
+        </Alert.Root>
       )}
     </VStack>
   );

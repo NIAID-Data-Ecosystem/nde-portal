@@ -2,9 +2,9 @@ import React from 'react';
 
 export interface CarouselProps {
   gap?: number;
-  colorScheme?: string;
+  colorPalette?: string;
   children: React.ReactNode[];
-  isLoading?: boolean;
+  loading?: boolean;
 }
 
 export interface CarouselControlsProps {
@@ -12,7 +12,7 @@ export interface CarouselControlsProps {
   maxActiveItem: number;
   constraint: number;
   totalDots: number;
-  colorScheme: string;
+  colorPalette: string;
   gap: number;
   handleDecrementClick: () => void;
   handleIncrementClick: () => void;
@@ -21,7 +21,7 @@ export interface CarouselControlsProps {
   childrenLength: number;
   showProgressBar: boolean;
   progressPercentage: number;
-  isLoading?: boolean;
+  loading?: boolean;
 }
 
 export interface TrackProps {
@@ -46,11 +46,4 @@ export interface ItemProps {
   children: React.ReactNode;
   index: number;
   gap: number;
-}
-
-export interface DragEndInfo {
-  point: { x: number; y: number };
-  delta: { x: number; y: number };
-  offset: { x: number; y: number };
-  velocity: { x: number; y: number };
 }

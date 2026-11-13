@@ -1,6 +1,7 @@
 import { getUnionTheme } from 'src/components/advanced-search/utils/query-helpers';
-import { WrapperProps } from './TreeItemWrapper';
+
 import { FlattenedItem } from '../../../types';
+import { WrapperProps } from './TreeItemWrapper';
 
 export interface ItemProps
   extends Omit<
@@ -34,7 +35,7 @@ export const getItemStyles = ({
     position: 'relative',
     bg: '#fff',
     borderLeftColor: parentItem.value.union
-      ? `${getUnionTheme(parentItem.value.union).colorScheme}.300`
+      ? `${getUnionTheme(parentItem.value.union).colorPalette}.300`
       : 'transparent',
   };
 

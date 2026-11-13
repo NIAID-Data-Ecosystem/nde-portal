@@ -1,18 +1,18 @@
 import { Box, Heading, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import type { GetStaticProps, NextPage } from 'next';
 import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
+import { Error } from 'src/components/error';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import {
   getPageSeoConfig,
   PageContainer,
   PageContent,
 } from 'src/components/page-container';
-import { Error } from 'src/components/error';
 
 interface AboutContent {
   name: string;
@@ -100,7 +100,7 @@ const About: NextPage<AboutProps> = props => {
               {content.name || ''}
             </Heading>
             {content?.subtitle && (
-              <Text color='gray.700'>{content.subtitle}</Text>
+              <Text color='gray.500'>{content.subtitle}</Text>
             )}
 
             <ReactMarkdown

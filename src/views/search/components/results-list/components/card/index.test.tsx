@@ -1,8 +1,11 @@
-import React from 'react';
+import '@testing-library/jest-dom';
+
+import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ChakraProvider } from '@chakra-ui/react';
-import '@testing-library/jest-dom';
+import React from 'react';
+import { system } from 'src/theme';
+
 import SearchResultCard from '.';
 
 jest.mock('@react-spring/web', () => ({
@@ -32,8 +35,9 @@ jest.mock('src/components/source-logo', () => ({
     Component: () => null,
   },
 }));
-jest.mock('src/components/resource-sections/components', () => ({
-  TypeBanner: () => null,
+jest.mock('src/components/type-banner', () => ({
+  __esModule: true,
+  default: () => null,
 }));
 jest.mock('./operating-systems', () => ({
   __esModule: true,
@@ -60,7 +64,7 @@ jest.mock('src/components/metadata-completeness-badge/Circular', () => ({
 }));
 
 const renderWithChakra = (ui: React.ReactElement) =>
-  render(<ChakraProvider>{ui}</ChakraProvider>);
+  render(<ChakraProvider value={system}>{ui}</ChakraProvider>);
 
 const makeData = (overrides: Record<string, unknown> = {}) =>
   ({

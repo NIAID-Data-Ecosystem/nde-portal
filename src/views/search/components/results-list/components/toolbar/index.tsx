@@ -1,17 +1,17 @@
-import React from 'react';
+import { createListCollection, Flex, Stack } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
+import React from 'react';
 import { DownloadMetadata } from 'src/components/download-metadata';
 import { Params } from 'src/utils/api';
-import { usePaginationContext } from 'src/views/search/context/pagination-context';
-import { updateRoute } from 'src/views/search/utils/update-route';
-import { TabType } from 'src/views/search/types';
-import { SelectWithLabel } from './components/select-input';
 import {
   PAGE_SIZE_OPTIONS,
   SORT_OPTIONS,
 } from 'src/views/search/config/defaultQuery';
-import { Flex, Stack } from '@chakra-ui/react';
-import { MetadataScoreToggle } from './components/metadata-score-toggle';
+import { usePaginationContext } from 'src/views/search/context/pagination-context';
+import { TabType } from 'src/views/search/types';
+import { updateRoute } from 'src/views/search/utils/update-route';
+
+import { SelectWithLabel } from './components/select-input';
 
 /*
 [COMPONENT INFO]:
@@ -45,29 +45,9 @@ export const SearchResultsToolbar = ({
 
   return (
     <>
-      {/* Apply metadata score (optional) */}
-      {process.env.NEXT_PUBLIC_APP_ENV !== 'production' && (
-        <MetadataScoreToggle
-          isChecked={params.use_metadata_score === 'true'}
-          isDisabled={params.sort !== '_score'}
-          handleToggle={() => {
-            const newUseMetadataScore =
-              params.use_metadata_score === 'true' ? 'false' : 'true';
-            const update = { use_metadata_score: newUseMetadataScore, from: 1 };
-            setPagination(id, update);
-            updateRoute(router, update);
-          }}
-        />
-      )}
-      {/* View mode (optional), on its own row above the other controls */}
-      {viewModeControl && (
-        <Flex w='100%' pb={2}>
-          {viewModeControl}
-        </Flex>
-      )}
       <Flex
         borderBottom={{ base: '1px solid' }}
-        borderColor={{ base: 'page.alt' }}
+        borderColor={{ base: 'bg.alt' }}
         flexDirection={{ base: 'column-reverse', md: 'row' }}
         alignItems={{ base: 'unset', md: 'center' }}
         justifyContent={'space-between'}
@@ -79,41 +59,45 @@ export const SearchResultsToolbar = ({
         <Stack
           flexDirection={{ base: 'column', sm: 'row' }}
           flexWrap='wrap'
-          spacing={[1, 4]}
+          gap={[1, 4]}
         >
+          {/* View mode (optional), on its own row above the other controls */}
+          {viewModeControl}
           {/* Sort menu */}
           <SelectWithLabel
-            id='sort-results'
-            label='Sort by:'
-            options={SORT_OPTIONS}
-            value={sort}
-            handleChange={newSort => {
-              const update = { sort: newSort, from: 1 };
+            label='Sort by'
+            collection={createListCollection({ items: SORT_OPTIONS })}
+            value={[sort]}
+            onValueChange={({ value }) => {
+              const update = { sort: value[0], from: 1 };
               setPagination(id, update);
               updateRoute(router, update);
             }}
-            minWidth='200px'
+            width='250px'
           />
 
           {/* Size menu */}
           <SelectWithLabel
-            id='size-results'
-            label='Rows per page:'
-            options={PAGE_SIZE_OPTIONS}
-            value={size}
-            handleChange={newSize => {
-              const update = { size: +newSize, from: 1 };
+            label='Rows per page'
+            collection={createListCollection({ items: PAGE_SIZE_OPTIONS })}
+            value={[`${size}`]}
+            onValueChange={({ value }) => {
+              const update = { size: +value[0], from: 1 };
               // Update pagination state for the current tab.
               setPagination(id, update);
               updateRoute(router, update);
             }}
+            width='100px'
           />
         </Stack>
 
         {/* Right-side actions: optional extra slot + Download Metadata */}
         <Flex flexWrap='wrap' columnGap={2} rowGap={2} alignItems='center'>
-          {extraActions && <Flex pb={{ base: 2, md: 0 }}>{extraActions}</Flex>}
-          {/* Download CTA */}
+          {extraActions && (
+            <Flex pb={{ base: 2, md: 0 }} alignItems='flex-end'>
+              {extraActions}
+            </Flex>
+          )}
           <DownloadMetadata
             pb={{ base: 2, md: 0 }}
             exportFileName={`nde-results-${(params.q ?? '').replaceAll(

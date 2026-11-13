@@ -1,15 +1,15 @@
-import React, { useCallback, useMemo } from 'react';
-import { Group } from '@visx/group';
-import { scaleLinear } from '@visx/scale';
-import { MetadataSource } from 'src/hooks/api/types';
-import { theme } from 'src/theme';
-import { PatternLines } from '@visx/pattern';
-import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { Box, Icon, Stack, Text } from '@chakra-ui/react';
+import { Group } from '@visx/group';
+import { PatternLines } from '@visx/pattern';
+import { scaleLinear } from '@visx/scale';
+import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import React, { useCallback, useMemo } from 'react';
+import { FaCircleCheck, FaRegCircleUp } from 'react-icons/fa6';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import Tooltip from 'src/components/tooltip';
-import { FaCircleCheck, FaRegCircleUp } from 'react-icons/fa6';
+import { MetadataSource } from 'src/hooks/api/types';
+import { system } from 'src/theme';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -21,21 +21,21 @@ interface Bin {
   augmented: number | null;
 }
 
-const primary2 = theme.colors.pink[500];
-const secondary2 = theme.colors.secondary[500];
+const primary2 = system.token('colors.pink.500');
+const secondary2 = system.token('colors.secondary.500');
 
 const colorMax = (bins: Bin[]) =>
   bins.reduce((m, b) => Math.max(m, b.count), 0);
 
 const rectColorScale = (bins: Bin[], type?: string) => {
-  const colorScheme = !type
+  const colorPalette = !type
     ? [primary2, primary2]
     : type === 'required'
     ? [primary2, primary2]
     : [secondary2, secondary2];
 
   return scaleLinear<string>({
-    range: colorScheme,
+    range: colorPalette,
     domain: [0, colorMax(bins)],
   });
 };
@@ -55,6 +55,7 @@ const BIN_GAP = 2;
 const LABEL_HEIGHT = 18;
 const CATEGORY_GAP = 10;
 const RADIUS = 2;
+const ICON_SIZE = 10;
 
 let tooltipTimeout: number;
 
@@ -174,11 +175,12 @@ export const CompatibilityBadge = ({
       const fieldIsCompatible = bin.count > 0;
       const fill = fieldIsCompatible ? color(bin.count) : `url(#${patternId})`;
 
+      // Geometry stays as SVG attributes on the raw elements: Chakra v3 treats
+      // `x`/`y`/`rx`/`ry` as CSS style props and would swallow them.
       return (
-        <Box
-          as='g'
-          className='visx-heatmap-rect'
+        <g
           key={`heatmap-rect-${bin.type}-${idx}`}
+          className='visx-heatmap-rect'
           onMouseMove={(e: React.MouseEvent | React.TouchEvent) =>
             handleMouseMove(e, {
               x: margin.left + x + BIN_SIZE / 2,
@@ -194,8 +196,6 @@ export const CompatibilityBadge = ({
             })
           }
           onMouseLeave={handleMouseLeave}
-          rx={RADIUS}
-          ry={RADIUS}
         >
           <rect
             width={BIN_SIZE}
@@ -208,16 +208,14 @@ export const CompatibilityBadge = ({
             fillOpacity={1}
           />
           {bin.augmented && (
-            <Icon
-              as={FaRegCircleUp}
+            <FaRegCircleUp
+              x={x + (BIN_SIZE - ICON_SIZE) / 2}
+              y={y + (BIN_SIZE - ICON_SIZE) / 2}
+              size={ICON_SIZE}
               color={fieldIsCompatible ? 'white' : color(0)}
-              x={x + BIN_SIZE / 2}
-              y={y + BIN_SIZE / 2}
-              style={{ transform: 'translate(-5px, -5px)' }}
-              size={10}
             />
           )}
-        </Box>
+        </g>
       );
     });
 
@@ -226,10 +224,10 @@ export const CompatibilityBadge = ({
       width={`${width}px`}
       height={`${totalHeight}px`}
       position='relative'
-      sx={{
-        '.visx-heatmap-rect:hover': {
+      css={{
+        '& .visx-heatmap-rect:hover': {
           strokeWidth: 2,
-          stroke: theme.colors.status.warning,
+          stroke: system.token('colors.warning'),
         },
       }}
       onMouseLeave={handleMouseLeave}
@@ -239,7 +237,7 @@ export const CompatibilityBadge = ({
           id='fundamental-lines'
           height={5}
           width={5}
-          stroke={theme.colors.pink[400]}
+          stroke={system.token('colors.pink.400')}
           strokeWidth={1}
           orientation={['diagonal']}
         />
@@ -247,7 +245,7 @@ export const CompatibilityBadge = ({
           id='secondary-lines'
           height={5}
           width={5}
-          stroke={theme.colors.secondary[500]}
+          stroke={system.token('colors.secondary.500')}
           strokeWidth={1}
           orientation={['diagonal']}
         />
@@ -258,20 +256,14 @@ export const CompatibilityBadge = ({
           left={margin.left}
         >
           <Tooltip
-            label='Recommended fields coverage.'
-            position='absolute'
-            left={0}
-            top={0}
+            content='Recommended fields coverage.'
+            positioning={{ placement: 'top-start' }}
           >
-            <Box
-              as='text'
-              x={0}
-              y={LABEL_HEIGHT - 4}
-              fontSize='12px'
-              fill='gray.800'
-            >
-              Recommended{' | '}
-              {Math.round(data.percent_recommended_fields * 100)}%
+            <Box fontSize='12px' fill='gray.600' asChild>
+              <text x={0} y={LABEL_HEIGHT - 4}>
+                Recommended{' | '}
+                {Math.round(data.percent_recommended_fields * 100)}%
+              </text>
             </Box>
           </Tooltip>
           {renderBins(
@@ -284,20 +276,14 @@ export const CompatibilityBadge = ({
 
         <Group className='required-fields' top={requiredTop} left={margin.left}>
           <Tooltip
-            label='Fundamental fields coverage.'
-            position='absolute'
-            left={0}
-            top={0}
+            content='Fundamental fields coverage.'
+            positioning={{ placement: 'top-start' }}
           >
-            <Box
-              as='text'
-              x={0}
-              y={LABEL_HEIGHT - 4}
-              fontSize='12px'
-              fill='gray.800'
-            >
-              Fundamental{' | '}
-              {Math.round(data.percent_required_fields * 100)}%
+            <Box fontSize='12px' fill='gray.600' asChild>
+              <text x={0} y={LABEL_HEIGHT - 4}>
+                Fundamental{' | '}
+                {Math.round(data.percent_required_fields * 100)}%
+              </text>
             </Box>
           </Tooltip>
           {renderBins(
@@ -339,7 +325,7 @@ export const CompatibilityBadge = ({
                 {tooltipData.type.charAt(0).toUpperCase() +
                   tooltipData.type.slice(1)}
               </Text>
-              <Stack p={2} spacing={1} fontSize='xs'>
+              <Stack p={2} gap={1} fontSize='sm'>
                 {tooltipData.count ? (
                   <>
                     <Text lineHeight='shorter'>
@@ -368,7 +354,7 @@ export const CompatibilityBadge = ({
                     )}
                   </>
                 ) : (
-                  <Text lineHeight='short'>
+                  <Text lineHeight='moderate'>
                     {tooltipData.augmented ? (
                       <Text as='span' mt={1}>
                         <Icon

@@ -1,7 +1,10 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { ChakraProvider } from '@chakra-ui/react';
 import '@testing-library/jest-dom';
+
+import { ChakraProvider } from '@chakra-ui/react';
+import { render, screen } from '@testing-library/react';
+import React from 'react';
+import { system } from 'src/theme';
+
 import { SampleTable } from '.';
 
 const mockTable = jest.fn((props: any) => {
@@ -20,7 +23,7 @@ jest.mock('src/components/table', () => ({
 }));
 
 const renderWithChakra = (ui: React.ReactElement) =>
-  render(<ChakraProvider>{ui}</ChakraProvider>);
+  render(<ChakraProvider value={system}>{ui}</ChakraProvider>);
 
 describe('SampleTable', () => {
   beforeEach(() => {
@@ -79,7 +82,7 @@ describe('SampleTable', () => {
       expect.objectContaining({ bg: 'white' }),
     );
     expect(props.getTableRowProps(null, 1)).toEqual(
-      expect.objectContaining({ bg: 'page.alt' }),
+      expect.objectContaining({ bg: 'bg.alt' }),
     );
     expect(props.getTableRowProps(null, 2)).toEqual(
       expect.objectContaining({ bg: 'white' }),

@@ -1,19 +1,17 @@
-import React from 'react';
-import { FaCaretDown } from 'react-icons/fa6';
 import {
   Button,
   ButtonProps,
   Icon,
   Popover,
-  PopoverTrigger,
-  PopoverArrow,
-  PopoverContent,
-  PopoverBody,
+  Portal,
+  Span,
   Stack,
 } from '@chakra-ui/react';
+import React from 'react';
+import { FaCaretDown } from 'react-icons/fa6';
+
 import { TransformedNavigationDropdown } from '../types';
 import { NavDropdownItem } from './nav-dropdown-item';
-import { SHARED_DESKTOP_ACTION_STYLES } from './styles';
 
 /*
 This file contains the components for the desktop dropdown menu in the navigation bar. It includes:
@@ -33,49 +31,59 @@ export const NavDropdownTrigger = ({
   children: React.ReactNode;
 }) => {
   return (
-    <Popover
-      trigger='click'
-      placement='bottom-start'
+    <Popover.Root
       autoFocus
-      closeOnEsc
-      isLazy
+      closeOnEscape
+      lazyMount
+      positioning={{
+        placement: 'bottom-start',
+      }}
+      portalled
     >
-      {({ isOpen }) => (
-        <>
-          <PopoverTrigger>
-            <Button
-              __css={SHARED_DESKTOP_ACTION_STYLES}
-              _hover={{ bg: 'whiteAlpha.300', color: 'white' }}
-              {...buttonProps}
-            >
-              {icon && <Icon as={icon} mr={2} />}
-              {label}
-              <Icon as={FaCaretDown} ml={1} w={4} h={4} />
-            </Button>
-          </PopoverTrigger>
+      <Popover.Context>
+        {({ open: isOpen }) => (
+          <>
+            <Popover.Trigger asChild>
+              <Button
+                fontSize='inherit'
+                variant='unstyled'
+                _hover={{ bg: 'whiteAlpha.300', color: 'white' }}
+                gap={1.5}
+                {...buttonProps}
+              >
+                {icon && <Icon as={icon} boxSize={4} />}
+                {/* Truncates the label when the button is given a maxW */}
+                <Span truncate>{label}</Span>
+                <Icon as={FaCaretDown} w={4} h={4} />
+              </Button>
+            </Popover.Trigger>
 
-          {isOpen && children}
-        </>
-      )}
-    </Popover>
+            {isOpen && children}
+          </>
+        )}
+      </Popover.Context>
+    </Popover.Root>
   );
 };
 
 export const NavDropdown = ({ children }: { children: React.ReactNode }) => {
   return (
-    <PopoverContent
-      border={0}
-      boxShadow='xl'
-      bg='white'
-      py={2}
-      rounded='xl'
-      minW='sm'
-    >
-      <PopoverArrow />
-      <PopoverBody>
-        <Stack>{children}</Stack>
-      </PopoverBody>
-    </PopoverContent>
+    <Portal>
+      <Popover.Positioner>
+        <Popover.Content
+          border={0}
+          boxShadow='xl'
+          bg='white'
+          rounded='xl'
+          minW='sm'
+        >
+          <Popover.Arrow />
+          <Popover.Body>
+            <Stack>{children}</Stack>
+          </Popover.Body>
+        </Popover.Content>
+      </Popover.Positioner>
+    </Portal>
   );
 };
 

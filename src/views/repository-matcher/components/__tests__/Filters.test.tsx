@@ -1,10 +1,11 @@
-import React from 'react';
+import { useBreakpointValue } from '@chakra-ui/react';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useBreakpointValue } from '@chakra-ui/react';
+import React from 'react';
 import { renderWithClient } from 'src/__tests__/mocks/utils';
-import { Filters } from '../Filters';
 import { FILTERABLE_REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
+
+import { Filters } from '../Filters';
 
 jest.mock('@chakra-ui/react', () => {
   const actual = jest.requireActual('@chakra-ui/react');
@@ -32,7 +33,7 @@ const baseProps = {
   selected: {},
   onChange: jest.fn(),
   onClearAll: jest.fn(),
-  isLoading: false,
+  loading: false,
 };
 
 describe('Filters (desktop)', () => {

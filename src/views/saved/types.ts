@@ -1,4 +1,5 @@
 import { SavedDataset, SavedQuery } from 'src/hooks/useUserData/types';
+
 import { SavedResourceAdditionalMetadata } from './hooks/useBatchResourcesData';
 
 /** Items the saved page can render in a table. */
@@ -34,7 +35,7 @@ export type SavedColumn<TItem = SavedItem, TValue = unknown> = {
   transform: (item: TItem) => TValue;
   component: (props: {
     value: TValue;
-    isLoading?: boolean;
+    loading?: boolean;
     data: TItem;
   }) => React.ReactNode;
   /**

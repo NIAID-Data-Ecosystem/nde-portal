@@ -1,20 +1,25 @@
-import React, { useCallback } from 'react';
 import {
   Checkbox as ChakraCheckbox,
   Skeleton,
+  SkeletonProps,
+  Stack,
   Tag,
   Text,
 } from '@chakra-ui/react';
 import { sendGTMEvent } from '@next/third-parties/google';
+import React, { useCallback, useRef } from 'react';
 import Tooltip from 'src/components/tooltip';
 import { SHOW_FILTER_SPECIFIED_UNSPECIFIED_LABELS } from 'src/utils/feature-flags';
+
 import { FilterItem } from '../types';
+
+// [chakra-to-do]: consider: Virtualized listbox component https://chakra-ui.com/docs/components/listbox#virtualized
 
 // Memoized Checkbox component to prevent unnecessary re-renders
 interface FilterCheckboxProps extends FilterItem {
-  isLoading: boolean;
+  loading: boolean;
   isUpdating?: boolean;
-  colorScheme?: string;
+  colorPalette?: string;
   filterName: string;
 }
 
@@ -36,6 +41,24 @@ const getTooltipLabel = (
     );
   }
   return '';
+};
+
+// v2's Skeleton faded its content in only when it went from loading to loaded,
+// but v3's also fades in whenever it mounts already loaded. The virtualized
+// list mounts checkboxes all the time - scrolling, clearing the filter search,
+// a group header row giving way to a term - and each of those would blink, so
+// the fade is held back until this skeleton has actually been seen loading.
+const LabelSkeleton = ({ loading, ...props }: SkeletonProps) => {
+  const hasBeenLoading = useRef(loading);
+  if (loading) hasBeenLoading.current = true;
+
+  return (
+    <Skeleton
+      loading={loading}
+      css={hasBeenLoading.current ? undefined : { '--fade-duration': '0s' }}
+      {...props}
+    />
+  );
 };
 
 // Capitalize the first letter of a string, but only if it is not empty
@@ -76,11 +99,11 @@ const transformCheckboxLabel = ({
 
 export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
   ({
-    colorScheme,
+    colorPalette,
     count,
     filterName,
     isHeader,
-    isLoading,
+    loading,
     term,
     isUpdating,
     ...props
@@ -109,13 +132,14 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
         });
       }
     }, []);
+    const tooltipText = getTooltipLabel(term, filterName);
 
     // Display the header label for the group
     if (isHeader) {
       return (
         <Text
           px={3}
-          fontSize='xs'
+          fontSize='sm'
           fontWeight='semibold'
           lineHeight='shorter'
           pt={2}
@@ -127,8 +151,8 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
     }
 
     return (
-      <ChakraCheckbox
-        onChange={() => {
+      <ChakraCheckbox.Root
+        onCheckedChange={() => {
           trackGAEvent(term, filterName);
         }}
         value={term}
@@ -136,76 +160,78 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
         px={3}
         pr={2}
         py={1.5}
-        alignItems='flex-start'
+        // Line the checkbox up with the first line of the label. Where that line
+        // sits depends on the layout: a one-line label is centred against the
+        // count tag, while a label that wraps or has a sublabel starts at the
+        // top. A fixed margin can't cover both, so align on the baseline instead.
+        alignItems='baseline'
+        colorPalette={colorPalette}
         _hover={{
-          bg: `${colorScheme}.50`,
+          bg: `${colorPalette}.50`,
         }}
-        sx={{
-          '>.chakra-checkbox__control': {
-            mt: 1, // to keep checkbox in line with top of text for options with multiple lines
-          },
-          '>.chakra-checkbox__label': {
-            display: 'flex',
-            alignItems: 'center',
-            flex: 1,
-            opacity: count ? 1 : 0.8,
+        css={{
+          // The control has no text, so the baseline it would otherwise report
+          // is its bottom edge (or the check icon's once checked). This
+          // zero-width character gives it a real text baseline, centred in the
+          // box. It must use the label's font size and line height so the
+          // control lands centred on the label's first line.
+          '& .chakra-checkbox__control::before': {
+            content: '"\\200B"',
+            fontSize: 'sm',
+            lineHeight: 'shorter',
           },
         }}
       >
+        <ChakraCheckbox.HiddenInput />
+        <ChakraCheckbox.Control />
         {/* Loading skeleton only on load  */}
-        <Skeleton
-          isLoaded={!isLoading && !isUpdating}
-          display='flex'
-          alignItems='center'
-          flex={1}
-        >
-          <Tooltip label={getTooltipLabel(term, filterName)}>
-            <Text
-              as='span'
-              flex={1}
-              wordBreak='break-word'
-              color='text.heading'
-              fontSize='xs'
-              lineHeight='short'
-              mr={0.5}
-              display='flex'
-              flexDirection='column'
-              fontWeight={subLabel ? 'semibold' : 'normal'}
-            >
-              {label}
-              {subLabel && (
-                <Text
-                  as='span'
-                  flex={1}
-                  wordBreak='break-word'
-                  color='text.heading'
-                  fontSize='xs'
-                  lineHeight='short'
-                  fontWeight='normal'
-                  mr={0.5}
-                >
-                  {subLabel}
-                </Text>
-              )}
-            </Text>
-          </Tooltip>
+        <ChakraCheckbox.Label flex={1}>
+          <LabelSkeleton
+            loading={!(!loading && !isUpdating)}
+            display='flex'
+            alignItems='center'
+            flex={1}
+          >
+            <Tooltip content={tooltipText} disabled={!tooltipText}>
+              <Stack
+                gap={0.5}
+                flex={1}
+                wordBreak='break-word'
+                color='text.heading'
+                fontSize='sm'
+                lineHeight='shorter'
+                mr={0.5}
+                display='flex'
+                justifyContent='center'
+                flexDirection='column'
+                fontWeight={subLabel ? 'semibold' : 'normal'}
+              >
+                {label}
 
-          {/* Display the count of the filter term */}
-          {typeof count === 'number' && (
-            <Tag
-              as='span'
-              className='tag-count'
-              variant='subtle'
-              size='sm'
-              colorScheme={colorScheme}
-              borderRadius='full'
-              alignSelf='flex-start'
-            >
-              {count?.toLocaleString('en-US')}
-            </Tag>
-          )}
-        </Skeleton>
-      </ChakraCheckbox>
+                {subLabel && (
+                  <Text as='span' color='fg.muted' mr={0.5}>
+                    {subLabel}
+                  </Text>
+                )}
+              </Stack>
+            </Tooltip>
+
+            {/* Display the count of the filter term */}
+            {typeof count === 'number' && (
+              <Tag.Root
+                as='span'
+                className='tag-count'
+                variant='subtle'
+                size='sm'
+                colorPalette={colorPalette}
+                rounded='full'
+              >
+                <Tag.Label>{count?.toLocaleString('en-US')}</Tag.Label>
+              </Tag.Root>
+            )}
+          </LabelSkeleton>
+        </ChakraCheckbox.Label>
+      </ChakraCheckbox.Root>
     );
   },
 );

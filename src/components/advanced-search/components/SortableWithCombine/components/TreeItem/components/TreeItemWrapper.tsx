@@ -1,5 +1,6 @@
-import React, { useMemo } from 'react';
 import { Box, BoxProps } from '@chakra-ui/react';
+import React, { useMemo } from 'react';
+
 import { TreeItemComponentProps } from '..';
 import { getItemStyles } from './styles';
 

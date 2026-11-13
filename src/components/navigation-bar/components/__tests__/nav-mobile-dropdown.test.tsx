@@ -1,15 +1,7 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { MobileNavDropdown } from '../nav-mobile-dropdown';
+import { render, screen } from 'src/__tests__/utils/render';
 
-jest.mock('@chakra-ui/react', () => {
-  const actual = jest.requireActual('@chakra-ui/react');
-  return {
-    ...actual,
-    Collapse: ({ in: isOpen, children }: any) =>
-      isOpen ? <div data-testid='mobile-collapse'>{children}</div> : null,
-  };
-});
+import { MobileNavDropdown } from '../nav-mobile-dropdown';
 
 jest.mock('../nav-auth-action', () => ({
   MobileAuthAction: () => <div>mobile-auth-action</div>,
@@ -23,6 +15,7 @@ jest.mock('src/components/navigation-bar/components/nav-mobile-item', () => ({
 
 describe('MobileNavDropdown', () => {
   it('hides collapsed content when closed', () => {
+    // Collapsible keeps closed content mounted but hidden.
     render(
       <MobileNavDropdown
         isOpen={false}
@@ -30,8 +23,8 @@ describe('MobileNavDropdown', () => {
       />,
     );
 
-    expect(screen.queryByTestId('mobile-collapse')).not.toBeInTheDocument();
-    expect(screen.queryByText('mobile-auth-action')).not.toBeInTheDocument();
+    expect(screen.getByText('mobile-item:About')).not.toBeVisible();
+    expect(screen.getByText('mobile-auth-action')).not.toBeVisible();
   });
 
   it('renders routes and auth action when open', () => {
@@ -47,8 +40,8 @@ describe('MobileNavDropdown', () => {
       />,
     );
 
-    expect(screen.getByText('mobile-item:About')).toBeInTheDocument();
-    expect(screen.getByText('mobile-item:Search')).toBeInTheDocument();
-    expect(screen.getByText('mobile-auth-action')).toBeInTheDocument();
+    expect(screen.getByText('mobile-item:About')).toBeVisible();
+    expect(screen.getByText('mobile-item:Search')).toBeVisible();
+    expect(screen.getByText('mobile-auth-action')).toBeVisible();
   });
 });

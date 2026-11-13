@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+
 import csp from '../../configs/csp.json';
 
 export type CspViolation = {

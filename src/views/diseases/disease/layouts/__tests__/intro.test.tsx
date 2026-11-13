@@ -1,13 +1,16 @@
-import React from 'react';
-import { ChakraProvider } from '@chakra-ui/react';
 import '@testing-library/jest-dom';
+
+import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen } from '@testing-library/react';
+import React from 'react';
+import { system } from 'src/theme';
+
 import { IntroSection } from '../intro';
 
 describe('IntroSection', () => {
   const renderComponent = (props = {}) => {
     return render(
-      <ChakraProvider>
+      <ChakraProvider value={system}>
         <IntroSection {...props} />
       </ChakraProvider>,
     );
@@ -32,8 +35,8 @@ describe('IntroSection', () => {
     expect(screen.getByText('Test Description')).toBeInTheDocument();
   });
 
-  // it('shows skeleton loaders when isLoading is true', () => {
-  //   renderComponent({ isLoading: true });
+  // it('shows skeleton loaders when loading is true', () => {
+  //   renderComponent({ loading: true });
   //   expect(screen.getAllByRole('status')).toHaveLength(2); // Subtitle and Description skeletons
   // });
 

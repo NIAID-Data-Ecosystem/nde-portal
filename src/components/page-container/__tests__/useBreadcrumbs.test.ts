@@ -1,8 +1,9 @@
 import { renderHook } from '@testing-library/react';
-import { useBreadcrumbs } from '../hooks/useBreadcrumbs';
-import * as helpers from '../helpers';
-import { useRouter } from 'next/router';
 import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/router';
+
+import * as helpers from '../helpers';
+import { useBreadcrumbs } from '../hooks/useBreadcrumbs';
 
 jest.mock('next/router', () => ({
   useRouter: jest.fn(),

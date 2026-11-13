@@ -1,17 +1,17 @@
-import React from 'react';
 import { UniqueIdentifier } from '@dnd-kit/core';
-import {
-  DropdownButton,
-  DropdownButtonProps,
-} from 'src/components/dropdown-button';
+import React from 'react';
+import { UnionTypes } from 'src/components/advanced-search/types';
 import {
   getUnionTheme,
   unionOptions,
 } from 'src/components/advanced-search/utils/query-helpers';
-import { UnionTypes } from 'src/components/advanced-search/types';
+import {
+  DropdownButton,
+  DropdownButtonProps,
+} from 'src/components/dropdown-button';
 
 interface UnionButtonProps
-  extends Pick<DropdownButtonProps, 'colorScheme' | 'selectedOption'> {
+  extends Pick<DropdownButtonProps, 'colorPalette' | 'selectedOption'> {
   id: UniqueIdentifier;
   setSelectedOption:
     | ((id: UniqueIdentifier, union: UnionTypes) => void)
@@ -19,7 +19,7 @@ interface UnionButtonProps
 }
 
 export const UnionButton = React.memo((props: UnionButtonProps) => {
-  const { colorScheme, selectedOption } = props;
+  const { colorPalette, selectedOption } = props;
   return (
     <DropdownButton
       size='sm'
@@ -32,12 +32,12 @@ export const UnionButton = React.memo((props: UnionButtonProps) => {
           props: {
             bg: getUnionTheme(term).bg,
             _hover: getUnionTheme(term)._hover,
-            fontSize: 'xs',
+            fontSize: 'sm',
             textAlign: 'left',
           },
         };
       })}
-      colorScheme={colorScheme}
+      colorPalette={colorPalette}
       selectedOption={selectedOption}
       setSelectedOption={union => {
         const unionValue = union as UnionTypes;

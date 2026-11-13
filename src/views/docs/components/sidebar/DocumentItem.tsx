@@ -1,33 +1,31 @@
-import { useEffect, useState } from 'react';
 import {
   Box,
   Flex,
   Icon,
   IconButton,
-  ListItem,
+  List,
   SkeletonText,
-  UnorderedList,
 } from '@chakra-ui/react';
+import NextLink from 'next/link';
+import { useEffect, useState } from 'react';
 import { FaAngleDown, FaAngleRight } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
-import NextLink from 'next/link';
+
+import { MAX_HEADING_DEPTH } from '../../constants';
+import type { ContentHeading, DocumentItemProps } from '../../types';
 import { extractMarkdownHeadings } from '../../utils/markdown';
 import { TocItem } from './TocItem';
-import type { DocumentItemProps, ContentHeading } from '../../types';
-import { MAX_HEADING_DEPTH } from '../../constants';
 
 export const DocumentItem = ({
   item,
   selectedSlug,
-  colorScheme,
-  isLoading,
+  colorPalette,
+  loading,
   activePageSlug,
 }: DocumentItemProps) => {
   const isSelected = selectedSlug === item.slug;
-  const bg = isSelected ? `${colorScheme}.100` : 'transparent';
-  const color = isSelected
-    ? `${colorScheme}.600!important`
-    : 'text.body!important';
+  const bg = isSelected ? `${colorPalette}.100` : 'transparent';
+  const color = isSelected ? `${colorPalette}.600` : 'text.body';
 
   // Extract section and subsection names from description
   const tocItems: ContentHeading[] = item.description
@@ -45,39 +43,35 @@ export const DocumentItem = ({
   }, [isSelected, activePageSlug]);
 
   return (
-    <ListItem w='100%' display='flex' flexDirection='column'>
+    <List.Item w='100%' display='flex' flexDirection='column'>
       <Flex w='100%' alignItems='center'>
-        <NextLink
-          style={{ display: 'flex', flex: 1 }}
-          href={item.href}
-          passHref
+        <Link
+          asChild
+          // Navigation row, not prose: no underline, and the colour is set here
+          // rather than by the link's (visited) states.
+          variant='unstyled'
+          display='flex'
+          flex={1}
+          fontSize='sm'
+          px={8}
+          py={1}
+          lineHeight='tall'
+          color={color}
+          bg={bg}
+          // While loading the item name is hidden by the skeleton, so give the
+          // link an accessible name to satisfy link-name.
+          aria-label={loading ? 'Loading' : undefined}
+          _hover={{
+            bg: isSelected ? bg : 'blackAlpha.50',
+            borderRadius: 'sm',
+          }}
         >
-          <Link
-            as='span'
-            flex={1}
-            fontSize='sm'
-            px={8}
-            py={1}
-            lineHeight='tall'
-            color={color}
-            bg={bg}
-            // While loading the item name is hidden by the skeleton, so give the
-            // link an accessible name to satisfy link-name.
-            aria-label={isLoading ? 'Loading' : undefined}
-            _hover={{
-              bg: isSelected ? bg : 'blackAlpha.50',
-              borderRadius: 'base',
-              transition: 'fast',
-            }}
-          >
-            <SkeletonText
-              isLoaded={!isLoading}
-              width={isLoading ? '75%' : '100%'}
-            >
+          <NextLink href={item.href}>
+            <SkeletonText loading={loading} width={loading ? '75%' : '100%'}>
               {item.name}
             </SkeletonText>
-          </Link>
-        </NextLink>
+          </NextLink>
+        </Link>
         <Box
           w='40px'
           display='flex'
@@ -85,26 +79,21 @@ export const DocumentItem = ({
           alignItems='center'
           mr={2}
         >
-          {hasToc && !isLoading && (
+          {hasToc && !loading && (
             <IconButton
               aria-label={isExpanded ? 'Collapse sections' : 'Expand sections'}
-              icon={
-                <Icon
-                  as={isExpanded ? FaAngleDown : FaAngleRight}
-                  boxSize={4}
-                />
-              }
               size='sm'
               variant='ghost'
               onClick={() => setIsExpanded(!isExpanded)}
-            />
+            >
+              <Icon as={isExpanded ? FaAngleDown : FaAngleRight} boxSize={4} />
+            </IconButton>
           )}
         </Box>
       </Flex>
-
       {/* Table of contents (TOC) items (sections and subsections): only render depth 2 items, their children will be nested */}
       {hasToc && isExpanded && (
-        <UnorderedList ml={0} mt={1}>
+        <List.Root ps={0} mt={1}>
           {tocItems
             .filter(tocItem => tocItem.depth === 2)
             .map((tocItem, idx) => (
@@ -118,8 +107,8 @@ export const DocumentItem = ({
                 activePageSlug={activePageSlug}
               />
             ))}
-        </UnorderedList>
+        </List.Root>
       )}
-    </ListItem>
+    </List.Item>
   );
 };

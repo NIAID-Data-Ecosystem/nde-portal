@@ -62,7 +62,8 @@ deterministic:
 Each state should wait for visible UI that proves the page is in the intended
 state before running axe. Prefer user-facing locators such as roles, labels, and
 text. Use implementation selectors only for state markers that have no
-accessible surface, such as skeleton loading elements.
+accessible surface, such as skeleton loading elements (use the helpers in
+`e2e/utils/skeleton.ts`; Chakra v3 skeletons carry no loading class).
 
 For shared checks, put common axe and structural assertions in a helper function
 inside the spec. Keep state setup in separate `test.describe` blocks so the HTML

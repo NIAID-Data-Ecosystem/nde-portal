@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Button,
   Flex,
@@ -10,8 +9,9 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { PageContent } from 'src/components/page-container';
 import NextLink from 'next/link';
+import React from 'react';
+import { PageContent } from 'src/components/page-container';
 
 interface Error {
   title?: string;
@@ -54,20 +54,11 @@ export const ErrorCTA: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   return (
-    <Stack
-      w='100%'
-      flexWrap='wrap'
-      flexDirection='row'
-      justifyContent='center'
-      spacing={2}
-      sx={{ '>*': { minWidth: '150px', maxWidth: '310px', flex: 1 } }}
-    >
+    <Stack w='100%' flexWrap='wrap' flexDirection='row' gap={2}>
       {children}
-      <NextLink href='/'>
-        <Button w='100%' size='md'>
-          Back to Home
-        </Button>
-      </NextLink>
+      <Button size='md' variant='outline' asChild>
+        <NextLink href='/'>Back to Home</NextLink>
+      </Button>
     </Stack>
   );
 };
@@ -83,11 +74,11 @@ export const ErrorMessage: React.FC<Error & StackProps> = ({
   return (
     <VStack
       px={2}
-      bg='status.error_lt'
+      bg='error.subtle'
       color='red.500'
       flex={1}
       alignItems='flex-start'
-      spacing={1}
+      gap={1}
       {...props}
     >
       <Text fontSize='sm' color='inherit'>

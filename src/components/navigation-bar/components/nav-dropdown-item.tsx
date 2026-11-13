@@ -1,10 +1,11 @@
+import { Box, Flex, Icon, Link, Text } from '@chakra-ui/react';
 import React from 'react';
-import { Box, Flex, Link, Text, Icon } from '@chakra-ui/react';
 import {
   FaAngleDown,
   FaAngleRight,
   FaArrowUpRightFromSquare,
 } from 'react-icons/fa6';
+
 import { TransformedNavigationDropdown } from '../types';
 
 /*
@@ -24,7 +25,7 @@ import { TransformedNavigationDropdown } from '../types';
 
 //** Shared styles
 
-const ICON_COLOR = { '> *': { color: 'niaid.700' } };
+const ICON_COLOR = { '& > *': { color: 'niaid.700' } };
 
 const SHARED_DROPDOWN_ITEM_STYLES = {
   display: 'flex',
@@ -32,8 +33,8 @@ const SHARED_DROPDOWN_ITEM_STYLES = {
   py: 2,
   rounded: 'md',
   w: '100%',
-  justify: 'space-between',
-  align: 'center',
+  justifyContent: 'space-between',
+  alignItems: 'center',
 };
 
 /** Label + optional description, with an external-link icon when applicable. */
@@ -51,7 +52,12 @@ const DropdownItemContent = ({
       {icon && (
         <Icon as={icon} w={5} h={5} color='niaid.700' aria-hidden='true' />
       )}
-      <Text className='label' transition='all .3s ease' fontWeight={600}>
+      <Text
+        className='label'
+        transition='all .3s ease'
+        fontWeight={600}
+        fontSize='md'
+      >
         {label}
       </Text>
       {isExternal && (
@@ -59,7 +65,7 @@ const DropdownItemContent = ({
           as={FaArrowUpRightFromSquare}
           w={3}
           h={3}
-          color='niaid.700'
+          color='inherit'
           aria-label='Opens in new tab'
         />
       )}
@@ -68,7 +74,8 @@ const DropdownItemContent = ({
       <Text
         fontSize='sm'
         color='text.body'
-        lineHeight='short'
+        lineHeight='moderate'
+        pt={1}
         pr={1}
         textAlign='left'
       >
@@ -88,7 +95,7 @@ const DropdownItemArrowIcon = (): JSX.Element => (
     justify='flex-end'
     align='center'
   >
-    <Icon sx={ICON_COLOR} w={3} h={3} as={FaAngleRight} />
+    <Icon as={FaAngleRight} css={ICON_COLOR} w={3} h={3} />
   </Flex>
 );
 
@@ -99,8 +106,8 @@ const DropdownItemToggleIcon = ({
   isOpen?: boolean;
 }): JSX.Element => (
   <Icon
-    sx={ICON_COLOR}
     as={FaAngleDown}
+    css={ICON_COLOR}
     transition='all .25s ease-in-out'
     transform={
       isOpen ? 'translateX(-10px) rotate(180deg)' : 'translateX(-10px)'
@@ -123,13 +130,12 @@ export const NavDropdownItem = ({
   if (!href) {
     return (
       <Flex
-        as='button'
-        type='button'
         aria-expanded={isOpen}
         aria-label={`${isOpen ? 'Close' : 'Open'} ${label} dropdown`}
         {...SHARED_DROPDOWN_ITEM_STYLES}
-        color='gray.900'
-        _hover={{ bg: 'niaid.50', color: 'gray.900' }}
+        color='gray.700'
+        _hover={{ bg: 'niaid.50', color: 'gray.700' }}
+        as='button'
         onClick={onClick}
       >
         <DropdownItemContent
@@ -149,13 +155,14 @@ export const NavDropdownItem = ({
       href={href}
       target={isExternal ? '_blank' : undefined}
       rel={isExternal ? 'noopener noreferrer' : undefined}
+      variant='unstyled'
       color='niaid.800'
       {...SHARED_DROPDOWN_ITEM_STYLES}
       _hover={{
         bg: 'niaid.50',
         color: 'niaid.600',
-        '.label': { color: 'niaid.500' },
-        '.icon': { transform: 'translateX(0)' },
+        '& .label': { color: 'niaid.500' },
+        '& .icon': { transform: 'translateX(0)' },
       }}
       _visited={{ color: 'niaid.800' }}
       cursor='pointer'

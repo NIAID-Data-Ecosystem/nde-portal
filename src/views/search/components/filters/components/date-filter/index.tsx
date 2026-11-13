@@ -1,25 +1,26 @@
-import React, { useMemo } from 'react';
+import { Box, Button, Flex } from '@chakra-ui/react';
 import { omit } from 'lodash';
-import { Box, Flex, Text } from '@chakra-ui/react';
-import { DateRange } from './hooks/useDateRangeContext';
-import { FILTER_CONFIGS } from '../../config';
-import {
-  queryFilterObject2String,
-  queryFilterString2Object,
-} from '../../utils/query-string';
-import { HistogramSection } from './components/histogram-section';
-import { DateControls } from './components/date-controls';
-import { useDateFilterData } from './hooks/useDateFilterData';
+import React, { useMemo } from 'react';
+import { Alert } from 'src/components/alert';
+import { SearchQueryParams } from 'src/views/search/types';
 
+import { FILTER_CONFIGS } from '../../config';
 import {
   useFilterQueries,
   UseFilterQueriesResult,
 } from '../../hooks/useFilterQueries';
 import { FilterResults } from '../../types';
-import { SearchQueryParams } from 'src/views/search/types';
+import {
+  queryFilterObject2String,
+  queryFilterString2Object,
+} from '../../utils/query-string';
+import { DateControls } from './components/date-controls';
+import { HistogramSection } from './components/histogram-section';
+import { useDateFilterData } from './hooks/useDateFilterData';
+import { DateRange } from './hooks/useDateRangeContext';
 
 interface DateFilterProps {
-  colorScheme: string;
+  colorPalette: string;
   queryParams: SearchQueryParams;
   selectedDates: string[];
   handleSelectedFilter: (dates: string[]) => void;
@@ -58,15 +59,15 @@ const DateFilterContent: React.FC<
     results?: FilterResults;
     initialResults?: FilterResults;
     error: Error | null;
-    isLoading: boolean;
+    loading: boolean;
     isUpdating: boolean;
   }
 > = ({
-  colorScheme,
+  colorPalette,
   results,
   initialResults,
   error,
-  isLoading,
+  loading,
   isUpdating,
   selectedDates,
   handleSelectedFilter,
@@ -84,17 +85,25 @@ const DateFilterContent: React.FC<
 
   if (error) {
     return (
-      <Flex p={4} bg='status.error' role='alert'>
-        <Text
-          fontSize='md'
-          lineHeight='base'
-          fontWeight='semibold'
-          color='white'
-        >
-          Something went wrong, unable to load filters. <br />
-          Try reloading the page.
-        </Text>
-      </Flex>
+      <Alert
+        title='Something went wrong, unable to load filters.'
+        status='error'
+        role='alert'
+        collapsible={false}
+      >
+        <Flex justifyContent='center' mt={2}>
+          <Button
+            colorPalette='red'
+            size='xs'
+            onClick={e => {
+              e.preventDefault();
+              window.location.reload();
+            }}
+          >
+            Try reloading the page
+          </Button>
+        </Flex>
+      </Alert>
     );
   }
 
@@ -104,7 +113,7 @@ const DateFilterContent: React.FC<
         <HistogramSection
           data={selectedData || []}
           hasData={hasAnyDateData}
-          isLoading={isLoading}
+          loading={loading}
           isUpdating={isUpdating}
           onDateSelect={handleSelectedFilter}
         />
@@ -112,7 +121,7 @@ const DateFilterContent: React.FC<
 
       {showDateControls && (
         <DateControls
-          colorScheme={colorScheme}
+          colorPalette={colorPalette}
           selectedDates={selectedDates}
           resourcesWithNoDate={resourcesWithNoDate}
           onDateSelect={handleSelectedFilter}
@@ -179,24 +188,24 @@ export const DateFilter: React.FC<DateFilterProps> = props => {
     () => updatedAggregateQueryData?.results,
     [updatedAggregateQueryData?.results],
   );
-  const initialLoading = resolvedInitialAggQuery?.isLoading;
-  const isLoading = updatedAggregateQueryData?.isLoading;
+  const initialLoading = resolvedInitialAggQuery?.loading;
+  const loading = updatedAggregateQueryData?.loading;
   const isUpdating =
-    (!isLoading && updatedAggregateQueryData?.isUpdating) || false;
+    (!loading && updatedAggregateQueryData?.isUpdating) || false;
   const error = (updatedAggregateQueryData?.error as Error) || null;
 
   return (
     <DateRange
       data={initialResults?.date?.terms || []}
-      isLoading={initialLoading}
+      loading={initialLoading}
       selectedDates={selectedDates}
-      colorScheme='secondary'
+      colorPalette='secondary'
     >
       <DateFilterContent
         results={updatedResults}
         initialResults={initialResults}
         error={error}
-        isLoading={isLoading || initialLoading}
+        loading={loading || initialLoading}
         isUpdating={isUpdating}
         {...props}
       />

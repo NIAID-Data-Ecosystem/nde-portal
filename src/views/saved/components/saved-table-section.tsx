@@ -1,8 +1,9 @@
-import { useCallback, useMemo, useState } from 'react';
 import { Flex, Stack, Text, VStack } from '@chakra-ui/react';
-import { Table } from 'src/components/table';
+import { useCallback, useMemo, useState } from 'react';
 import { SearchInput } from 'src/components/search-input';
+import { Table } from 'src/components/table';
 import { useSearchedData } from 'src/views/repository-matcher/hooks/useSearchedData';
+
 import { formatTableData } from '../table-config';
 import { SavedColumn } from '../types';
 import { SavedEmptyState } from './saved-empty-state';
@@ -133,17 +134,17 @@ export function SavedTableSection<TItem>({
     ({
       column,
       data: row,
-      isLoading: rowLoading,
+      loading: rowLoading,
     }: {
       column: { property: string };
       data: any;
-      isLoading?: boolean;
+      loading?: boolean;
     }) => {
       const col = columns.find(c => c.id === column.property);
       if (!col) return null;
       return col.component({
         value: row?.[col.id],
-        isLoading: rowLoading,
+        loading: rowLoading,
         data: row,
       });
     },
@@ -154,20 +155,18 @@ export function SavedTableSection<TItem>({
     <Flex direction='column' gap={4} px={{ base: 4, lg: 40 }} py={8}>
       <Stack
         direction='row'
-        spacing={6}
+        gap={6}
         justifyContent='space-between'
         flexWrap='wrap'
       >
         <VStack align='start' gap={0.5} fontSize='sm' fontWeight='normal'>
           <Text fontWeight='semibold'>
             {title}
-            <Text as='span' color='gray.700' fontWeight='medium' ml={2}>
+            <Text as='span' color='gray.500' fontWeight='medium' ml={2}>
               {data.length} {data.length === 1 ? unit.singular : unit.plural}
             </Text>
           </Text>
-          <Text lineHeight='short' width='400px'>
-            {description}
-          </Text>
+          <Text lineHeight='moderate'>{description}</Text>
         </VStack>
         <Flex
           maxWidth={{ base: 'unset', xl: '350px' }}
@@ -184,8 +183,8 @@ export function SavedTableSection<TItem>({
             isResponsive={false}
             alignItems='flex-end'
             onClose={() => setSearchTerm('')}
-            width='100%'
-            colorScheme='primary'
+            colorPalette='primary'
+            flexProps={{ flex: 1 }}
           />
         </Flex>
       </Stack>
@@ -194,7 +193,7 @@ export function SavedTableSection<TItem>({
         caption={caption}
         columns={tableColumns}
         data={sortedData as any}
-        isLoading={false}
+        loading={false}
         hasPagination={true}
         stickyHeader
         virtualized

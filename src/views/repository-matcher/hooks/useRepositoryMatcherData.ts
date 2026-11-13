@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
-import { REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
-import { RepositoryMatcherItem } from '../types';
 import { useSourcesList } from 'src/hooks/api/useSourcesList';
+import { REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
+
+import { RepositoryMatcherItem } from '../types';
 
 export type RepositoryMatcherRow = {
   _id: string;
@@ -48,7 +49,7 @@ export const useRepositoryMatcherData = (fields: string[] = ['@type']) => {
   // Pass the requested `fields` through so resource catalogs carry the columns
   // (e.g. `creativeWorkStatus`) the matcher table filters and renders on.
   const {
-    isLoading,
+    isLoading: loading,
     error,
     data: sources,
   } = useSourcesList(
@@ -57,7 +58,7 @@ export const useRepositoryMatcherData = (fields: string[] = ['@type']) => {
   );
 
   const data = useMemo<RepositoryMatcherRow[]>(() => {
-    if (isLoading) return [];
+    if (loading) return [];
     const rows: RepositoryMatcherRow[] = [];
     (sources || [])
       .filter(item => {
@@ -88,11 +89,11 @@ export const useRepositoryMatcherData = (fields: string[] = ['@type']) => {
         rows.push(row);
       });
     return rows;
-  }, [sources, isLoading]);
+  }, [sources, loading]);
 
   return {
     data,
-    isLoading,
+    loading,
     error,
   };
 };

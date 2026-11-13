@@ -1,8 +1,5 @@
-import React from 'react';
-import { FormattedResource } from 'src/utils/api/types';
 import {
   Box,
-  Divider,
   Heading,
   HeadingProps,
   Skeleton,
@@ -10,44 +7,45 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
-import { DataAccess } from './components/data-access';
-import { DataUsage } from './components/usage';
-import { License } from './components/license';
-import { AssociatedDocumentation } from './components/associated-documentation';
-import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
-import { HasDownload } from 'src/components/badges/components/HasDownload';
-import { HasAPI } from 'src/components/badges/components/HasAPI';
-import { CreditText } from './components/credit-text';
+import React from 'react';
+import {
+  AccessibleForFree,
+  ConditionsOfAccess,
+  HasAPI,
+  HasDownload,
+} from 'src/components/badges';
 import { Link, LinkProps } from 'src/components/link';
 import { getMetadataDescription } from 'src/components/metadata/helpers';
+import { FormattedResource } from 'src/utils/api/types';
 
-interface ExternalProps extends Omit<WrapperProps, 'children'> {
-  data?: FormattedResource;
-}
+import { AssociatedDocumentation } from './components/associated-documentation';
+import { CreditText } from './components/credit-text';
+import { DataAccess } from './components/data-access';
+import { License } from './components/license';
+import { DataUsage } from './components/usage';
 
 export const LinkToSourcePage = ({
   children,
   href,
-  isLoading,
-}: LinkProps & { isLoading: boolean }) => {
+  loading,
+}: WrapperProps & { href: LinkProps['href'] }) => {
   return (
-    <Wrapper isLoading={isLoading}>
+    <Wrapper loading={loading}>
       <Link href={href}>
-        <Text>{children}</Text>
+        <Text color='inherit'>{children}</Text>
       </Link>
     </Wrapper>
   );
 };
 
-export const ExternalAccess = ({
-  data,
-  isLoading,
-  ...props
-}: ExternalProps) => {
+interface ExternalProps extends Omit<WrapperProps, 'children'> {
+  data?: FormattedResource;
+}
+export const ExternalAccess = ({ data, loading, ...props }: ExternalProps) => {
   return (
     <>
       {/* Source + data access info. */}
-      <Wrapper isLoading={isLoading} label='Resource Access' {...props}>
+      <Wrapper loading={loading} label='Resource Access' {...props}>
         {(data?.isAccessibleForFree === true ||
           data?.isAccessibleForFree === false ||
           data?.conditionsOfAccess) && (
@@ -73,7 +71,7 @@ export const ExternalAccess = ({
           </Stack>
         )}
         <DataAccess
-          isLoading={isLoading}
+          loading={loading}
           includedInDataCatalog={data?.includedInDataCatalog}
           url={data?.url}
           recordType={data?.['@type']}
@@ -87,29 +85,33 @@ export const ExternalAccess = ({
 
 export const UsageInfo = ({
   data,
-  isLoading,
+  loading,
 }: {
-  isLoading: boolean;
+  loading: boolean;
   data?: FormattedResource;
 }) => {
   return (
     <>
       <Box bg='secondary.50'>
         {/* License, usage agreement */}
-        {(data?.creditText || data?.usageInfo || data?.license) && (
+        {(data?.creditText ||
+          data?.usageInfo ||
+          data?.license ||
+          data?.mainEntityOfPage ||
+          data?.codeRepository) && (
           <Wrapper
-            isLoading={isLoading}
+            loading={loading}
             label='Usage and Licensing'
             bg='secondary.50'
           >
             <>
               <DataUsage
-                isLoading={isLoading}
+                loading={loading}
                 type={data?.['@type']}
                 usageInfo={data?.usageInfo}
               />
               <License
-                isLoading={isLoading}
+                loading={loading}
                 type={data?.['@type']}
                 license={data?.license}
               />
@@ -121,18 +123,16 @@ export const UsageInfo = ({
                   data?.['@type'],
                 )}
               />
+              {/* Reference documents and code repositories */}
+              {(data?.mainEntityOfPage || data?.codeRepository) && (
+                <AssociatedDocumentation
+                  loading={loading}
+                  type={data?.['@type']}
+                  mainEntityOfPage={data?.mainEntityOfPage}
+                  codeRepository={data?.codeRepository}
+                />
+              )}
             </>
-          </Wrapper>
-        )}
-        {/* Reference documents and code repositories */}
-        {(data?.mainEntityOfPage || data?.codeRepository) && (
-          <Wrapper isLoading={isLoading} label=''>
-            <AssociatedDocumentation
-              isLoading={isLoading}
-              type={data?.['@type']}
-              mainEntityOfPage={data?.mainEntityOfPage}
-              codeRepository={data?.codeRepository}
-            />
           </Wrapper>
         )}
       </Box>
@@ -142,19 +142,19 @@ export const UsageInfo = ({
 
 interface WrapperProps extends SkeletonProps {
   label?: string;
-  isLoading: boolean;
+  loading: boolean;
   children: React.ReactNode;
   headingProps?: HeadingProps;
 }
 
 export const Wrapper = ({
   label,
-  isLoading,
+  loading,
   children,
   headingProps,
   ...props
 }: WrapperProps) => (
-  <Skeleton isLoaded={!isLoading} fontSize='xs' flex={1} {...props}>
+  <Skeleton loading={!!loading} fontSize='sm' flex={1} {...props}>
     {label && (
       <Heading
         as='h2'
@@ -172,8 +172,8 @@ export const Wrapper = ({
     <Stack
       p={{ base: 4, md: 6 }}
       pt={{ base: 2, md: label ? 0 : 6 }}
-      spacing={{ base: 2, md: 4 }}
-      lineHeight='short'
+      gap={{ base: 2, md: 4 }}
+      lineHeight='moderate'
     >
       {children}
     </Stack>

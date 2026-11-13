@@ -1,5 +1,6 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from 'src/__tests__/utils/render';
+
 import Histogram from '../../../../components/date-filter/components/histogram';
 
 const useDateRangeContext = jest.fn();

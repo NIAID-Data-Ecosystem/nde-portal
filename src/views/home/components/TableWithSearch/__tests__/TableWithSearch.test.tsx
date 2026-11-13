@@ -1,8 +1,9 @@
-import React from 'react';
-import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { TableData, TableWithSearch } from '..';
+import React from 'react';
 import { renderWithClient } from 'src/__tests__/mocks/utils';
+import { render, screen, waitFor, within } from 'src/__tests__/utils/render';
+
+import { TableData, TableWithSearch } from '..';
 
 const mockData = [
   {
@@ -74,7 +75,7 @@ describe('TableWithSearch Component', () => {
   const defaultProps = {
     ariaLabel,
     caption: 'List of repositories and resource catalogs',
-    isLoading: false,
+    loading: false,
   };
 
   it('renders without crashing', () => {
@@ -157,10 +158,10 @@ describe('TableWithSearch Component', () => {
 
     await user.click(screen.getByRole('button', { name: /type/i }));
 
-    // Prefer scoping inside the popover/dialog if possible
-    const dialog = await screen.findByRole('dialog'); // or findByRole('dialog', { name: /type/i }) if it has an accessible name
+    // Scope inside the filter menu, which is a `menu` (not a dialog) in v3.
+    const menu = await screen.findByRole('menu');
 
-    const checkbox = await within(dialog).findByRole('checkbox', {
+    const checkbox = await within(menu).findByRole('checkbox', {
       name: /resource catalog/i,
     });
 

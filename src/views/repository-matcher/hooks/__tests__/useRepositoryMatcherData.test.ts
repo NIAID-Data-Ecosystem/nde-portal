@@ -1,10 +1,11 @@
 import { renderHook } from '@testing-library/react';
+import { useSourcesList } from 'src/hooks/api/useSourcesList';
+
 import {
   defaultSearchValue,
   removeUnnamedDefinedTerms,
   useRepositoryMatcherData,
 } from '../useRepositoryMatcherData';
-import { useSourcesList } from 'src/hooks/api/useSourcesList';
 
 // The hook now delegates fetching/merging to `useSourcesList` (which merges
 // resource catalogs into the metadata sources, de-duplicates them, and filters
@@ -76,7 +77,7 @@ describe('useRepositoryMatcherData', () => {
   it('reports loading and returns no rows while sources load', () => {
     setSources({ isLoading: true });
     const { result } = renderHook(() => useRepositoryMatcherData());
-    expect(result.current.isLoading).toBe(true);
+    expect(result.current.loading).toBe(true);
     expect(result.current.data).toEqual([]);
   });
 
