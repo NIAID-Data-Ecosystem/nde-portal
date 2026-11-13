@@ -1,3 +1,4 @@
+import mockRouter from 'next-router-mock';
 import React from 'react';
 import {
   act,
@@ -5,14 +6,13 @@ import {
   render,
   screen,
   waitFor,
-} from '@testing-library/react';
-import mockRouter from 'next-router-mock';
-import SettingsPage from 'src/pages/settings';
-import { UserDataProvider } from 'src/hooks/useUserData';
+} from 'src/__tests__/utils/render';
 import {
   ROUTE_CHANGE_CANCELLED,
   UNSAVED_CHANGES_MESSAGE,
 } from 'src/hooks/useUnsavedChangesWarning';
+import { UserDataProvider } from 'src/hooks/useUserData';
+import SettingsPage from 'src/pages/settings';
 
 const mockLogout = jest.fn();
 // The session user from `/user_info`.
@@ -88,6 +88,13 @@ const flushRequests = () =>
 const toggle = (label: string) =>
   screen.getByRole('checkbox', { name: label }) as HTMLInputElement;
 
+// zag applies a switch change in a microtask, so click inside an async act to
+// let it (and the form's state update) land before asserting.
+const clickToggle = (label: string) =>
+  act(async () => {
+    fireEvent.click(toggle(label));
+  });
+
 const renderPage = async () => {
   render(
     <UserDataProvider>
@@ -153,8 +160,8 @@ describe('SettingsPage', () => {
       screen.getByRole('heading', { name: 'Search preferences' }),
     ).toBeInTheDocument();
 
-    fireEvent.click(toggle('Email updates'));
-    fireEvent.click(toggle('AI-assisted search'));
+    await clickToggle('Email updates');
+    await clickToggle('AI-assisted search');
     await flushRequests();
     expect(server.putBodies).toHaveLength(0);
 
@@ -187,7 +194,7 @@ describe('SettingsPage', () => {
     expect(confirmSpy).not.toHaveBeenCalled();
     await act(() => mockRouter.push('/settings'));
 
-    fireEvent.click(toggle('Beta features'));
+    await clickToggle('Beta features');
     await act(async () => {
       await expect(mockRouter.push('/search')).rejects.toBe(
         ROUTE_CHANGE_CANCELLED,
@@ -221,7 +228,7 @@ describe('SettingsPage', () => {
     global.fetch = server.fetchMock as unknown as typeof fetch;
     await renderPage();
 
-    fireEvent.click(toggle('Beta features'));
+    await clickToggle('Beta features');
 
     fireEvent.click(screen.getByRole('button', { name: 'Log Out' }));
     expect(confirmSpy).toHaveBeenCalledWith(UNSAVED_CHANGES_MESSAGE);

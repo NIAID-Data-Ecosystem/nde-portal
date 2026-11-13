@@ -14,9 +14,9 @@ import React, {
 } from 'react';
 import { getAuthConfig } from 'src/utils/auth/helpers';
 import { AuthContextValue, AuthState, User } from 'src/utils/auth/types';
+import { setWelcomePending } from 'src/utils/auth/welcome-pending';
 import { fetchWithXsrf } from 'src/utils/auth/xsrf';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
-import { setWelcomePending } from 'src/utils/auth/welcome-pending';
 
 import { devMockAuth } from './mock';
 

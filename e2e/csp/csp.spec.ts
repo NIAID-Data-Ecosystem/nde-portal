@@ -4,7 +4,8 @@
  * - PLAYWRIGHT_BASE_URL set: no injection or stubs. Uses the deployed site's
  *   CSP header (enforced or report-only) and real third-party traffic.
  */
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
+
 import { installCspGuard } from '../utils/csp';
 
 const LIVE = !!process.env.PLAYWRIGHT_BASE_URL;

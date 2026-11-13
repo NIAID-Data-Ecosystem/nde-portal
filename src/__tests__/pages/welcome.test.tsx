@@ -1,7 +1,7 @@
 import React from 'react';
-import { act, fireEvent, render, screen } from '@testing-library/react';
-import WelcomePage from 'src/pages/welcome';
+import { act, fireEvent, render, screen } from 'src/__tests__/utils/render';
 import { UserPreferences } from 'src/hooks/useUserData/types';
+import WelcomePage from 'src/pages/welcome';
 
 const mockUseUserData = jest.fn();
 const mockReplace = jest.fn();
@@ -54,6 +54,13 @@ const userData = (overrides: Record<string, unknown> = {}) => ({
 
 const toggle = (label: string) =>
   screen.getByRole('checkbox', { name: label }) as HTMLInputElement;
+
+// zag applies a switch change in a microtask, so click inside an async act to
+// let it (and the form's state update) land before asserting.
+const clickToggle = (label: string) =>
+  act(async () => {
+    fireEvent.click(toggle(label));
+  });
 
 const toggleStates = () => ({
   email: toggle('Email updates').checked,
@@ -127,11 +134,11 @@ describe('WelcomePage', () => {
     expect(screen.getByRole('button', { name: 'Save Settings' })).toBeEnabled();
   });
 
-  it("doesn't overwrite the user's edits when preferences change later", () => {
+  it("doesn't overwrite the user's edits when preferences change later", async () => {
     mockUseUserData.mockReturnValue(userData({ onboardingComplete: true }));
     const { rerender } = render(<WelcomePage />);
 
-    fireEvent.click(toggle('Feedback and testing'));
+    await clickToggle('Feedback and testing');
     expect(toggle('Feedback and testing').checked).toBe(true);
 
     mockUseUserData.mockReturnValue(
@@ -154,7 +161,7 @@ describe('WelcomePage', () => {
     sessionStorage.setItem('auth_return_to', '/search?q=malaria');
     render(<WelcomePage />);
 
-    fireEvent.click(toggle('Beta features'));
+    await clickToggle('Beta features');
     expect(savePreferences).not.toHaveBeenCalled();
 
     await act(async () => {

@@ -436,8 +436,7 @@ test.describe('a11y: DataCollection resource — populated', () => {
 
     // Generation-process card, collapsed at rest. The whole header row is its
     // toggle, named "<action> show details", so match exactly — a loose /show/i
-    // also picks up the six `show more details about …` collapsible-Section
-    // accordion buttons.
+    // would also pick up any collapsed Section toggle ("<title> show details").
     await expect(page.getByText(ACTION_NAME).first()).toBeVisible();
     await expect(
       page.getByRole('button', { name: ACTION_SHOW, exact: true }),
@@ -451,12 +450,11 @@ test.describe('a11y: DataCollection resource — populated', () => {
     ).toBeVisible();
 
     // "Example of Work" section — a collapsible Section, so its accessible
-    // surface is the accordion button, and it is open by default.
+    // surface is the accordion trigger. It is open by default: the trigger is
+    // named from its title plus the "hide" control shown only while expanded.
     await expect(
-      page.getByRole('button', {
-        name: /show more details about example of work/i,
-      }),
-    ).toBeVisible();
+      page.getByRole('button', { name: 'Example of Work hide', exact: true }),
+    ).toHaveAttribute('aria-expanded', 'true');
     await expect(page.getByText('Schema version').first()).toBeVisible();
     await expect(page.getByText('Encoding format').first()).toBeVisible();
     await expect(page.getByText('Schema properties').first()).toBeVisible();
@@ -494,8 +492,8 @@ test.describe('a11y: DataCollection resource — action process details', () => 
     // Expand the action's details, then wait for the panel's own accessible
     // proof — the toggle flips from "show details" to "hide" — before scanning,
     // so we scan the expanded DOM and not the frame before it. Both names are
-    // matched exactly: the collapsible Sections expose `show more details
-    // about …` buttons that a loose /show/i would also resolve to.
+    // matched exactly: the collapsible Section toggles are named
+    // "<title> show details" / "<title> hide" too.
     await page.getByRole('button', { name: ACTION_SHOW, exact: true }).click();
 
     await expect(

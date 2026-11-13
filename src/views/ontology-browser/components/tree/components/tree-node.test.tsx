@@ -337,7 +337,7 @@ describe('TreeNode', () => {
     (fetchPortalCounts as jest.Mock).mockImplementation(async c => c);
 
     render(
-      <UnorderedList>
+      <List.Root as='ul'>
         <TreeNode
           addToSearch={addToSearch}
           depth={0}
@@ -347,7 +347,7 @@ describe('TreeNode', () => {
           params={{ q: '', id: '10239', ontology: 'ncbitaxon' }}
           updateLineage={updateLineage}
         />
-      </UnorderedList>,
+      </List.Root>,
       { wrapper },
     );
 

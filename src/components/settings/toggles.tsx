@@ -176,10 +176,10 @@ export function SettingToggle({
         checked={isChecked}
         onCheckedChange={e => onChange(e.checked)}
         disabled={isDisabled}
-        aria-label={label}
-        aria-describedby={describedBy}
       >
-        <Switch.HiddenInput />
+        {/* On the input, not Switch.Root: the root renders the wrapping
+            <label>, so ARIA there doesn't reach the control. */}
+        <Switch.HiddenInput aria-label={label} aria-describedby={describedBy} />
         <Switch.Control>
           <Switch.Thumb />
         </Switch.Control>

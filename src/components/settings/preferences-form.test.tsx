@@ -4,8 +4,9 @@ import {
   render,
   screen,
   waitFor,
-} from '@testing-library/react';
+} from 'src/__tests__/utils/render';
 import { UserDataProvider } from 'src/hooks/useUserData';
+
 import {
   PREFERENCES_FORM_COPY,
   PreferencesForm,
@@ -113,6 +114,13 @@ const savedIcon = () =>
 const toggle = (label: string) =>
   screen.getByRole('checkbox', { name: label }) as HTMLInputElement;
 
+// zag applies a switch change in a microtask, so click inside an async act to
+// let it (and the form's state update) land before asserting.
+const clickToggle = (label: string) =>
+  act(async () => {
+    fireEvent.click(toggle(label));
+  });
+
 const saveButton = () =>
   screen.getByRole('button', { name: PREFERENCES_FORM_COPY.saveButton });
 
@@ -156,8 +164,8 @@ describe('PreferencesForm', () => {
       ai: true,
     });
 
-    fireEvent.click(toggle('Beta features'));
-    fireEvent.click(toggle('AI-assisted search'));
+    await clickToggle('Beta features');
+    await clickToggle('AI-assisted search');
 
     expect(toggle('Beta features').checked).toBe(true);
     expect(toggle('AI-assisted search').checked).toBe(false);
@@ -172,10 +180,10 @@ describe('PreferencesForm', () => {
 
     expect(saveButton()).toBeDisabled();
 
-    fireEvent.click(toggle('Beta features'));
+    await clickToggle('Beta features');
     expect(saveButton()).toBeEnabled();
 
-    fireEvent.click(toggle('Beta features'));
+    await clickToggle('Beta features');
     expect(saveButton()).toBeDisabled();
   });
 
@@ -185,8 +193,8 @@ describe('PreferencesForm', () => {
     const onSaved = jest.fn();
     await renderForm({ onSaved });
 
-    fireEvent.click(toggle('Beta features'));
-    fireEvent.click(toggle('AI-assisted search'));
+    await clickToggle('Beta features');
+    await clickToggle('AI-assisted search');
     await save();
 
     expect(server.putBodies).toHaveLength(1);
@@ -205,7 +213,7 @@ describe('PreferencesForm', () => {
     expect(saveButton()).toBeDisabled();
 
     // Editing again clears the confirmation.
-    fireEvent.click(toggle('Feedback and testing'));
+    await clickToggle('Feedback and testing');
     expect(screen.getByRole('status')).toHaveTextContent('');
     expect(savedIcon()).toBeFalsy();
   });
@@ -215,9 +223,9 @@ describe('PreferencesForm', () => {
     const releaseSave = holdRequests(server.fetchMock, 'PUT');
     await renderForm();
 
-    fireEvent.click(toggle('Beta features'));
+    await clickToggle('Beta features');
     await save();
-    fireEvent.click(toggle('Feedback and testing'));
+    await clickToggle('Feedback and testing');
     await releaseSave();
 
     expect(server.putBodies).toHaveLength(1);
@@ -233,7 +241,7 @@ describe('PreferencesForm', () => {
     global.fetch = server.fetchMock as unknown as typeof fetch;
     await renderForm({ saveOptions: { completeOnboarding: true } });
 
-    fireEvent.click(toggle('Beta features'));
+    await clickToggle('Beta features');
     await save();
 
     expect(server.putBodies[0]).toMatchObject({
@@ -257,8 +265,8 @@ describe('PreferencesForm', () => {
       ai: true,
     });
 
-    fireEvent.click(toggle('Beta features'));
-    fireEvent.click(toggle('Feedback and testing'));
+    await clickToggle('Beta features');
+    await clickToggle('Feedback and testing');
     // Back to the saved values, but Save stays available.
     expect(saveButton()).toBeEnabled();
     await save();
@@ -304,7 +312,7 @@ describe('PreferencesForm', () => {
     // The forced-off values don't count as unsaved changes.
     expect(saveButton()).toBeDisabled();
 
-    fireEvent.click(toggle('AI-assisted search'));
+    await clickToggle('AI-assisted search');
     await save();
     expect(server.putBodies[0]).toEqual({
       ai_toggle_preference: false,
@@ -399,7 +407,7 @@ describe('PreferencesForm', () => {
     const onSaved = jest.fn();
     await renderForm({ onSaved });
 
-    fireEvent.click(toggle('Beta features'));
+    await clickToggle('Beta features');
     await save();
 
     expect(screen.getByRole('alert')).toHaveTextContent(

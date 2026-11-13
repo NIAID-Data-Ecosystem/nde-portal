@@ -2,16 +2,7 @@
  * User Settings Page - Protected route requiring authentication
  */
 
-import {
-  Box,
-  Button,
-  Heading,
-  StackProps,
-  StackSeparator,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
-import { ReactNode } from 'react';
+import { Box, Button, Heading, Text, VStack } from '@chakra-ui/react';
 import { useState } from 'react';
 import { withAuth } from 'src/components/auth/withAuth';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
@@ -45,37 +36,6 @@ const TOGGLE_SECTIONS: PreferencesFormSection[] = [
     toggleKeys: ['aiSearch'],
   },
 ];
-
-/** Heading + optional subtitle + content, with consistent spacing. */
-export const SettingsSection = ({
-  title,
-  subtitle,
-  children,
-  ...stackProps
-}: StackProps & {
-  title: ReactNode;
-  subtitle?: ReactNode;
-  children: ReactNode;
-}) => {
-  return (
-    <VStack alignItems='start' w='full' py={4} gap={4} {...stackProps}>
-      <Heading as='h2' size='md' fontWeight='semibold'>
-        {title}
-      </Heading>
-      {subtitle && <Text fontSize='sm'>{subtitle}</Text>}
-      {children && (
-        <VStack
-          alignItems='start'
-          w='full'
-          gap={4}
-          separator={<StackSeparator />}
-        >
-          {children}
-        </VStack>
-      )}
-    </VStack>
-  );
-};
 
 function UserSettingsPage() {
   const { logout } = useAuth();
