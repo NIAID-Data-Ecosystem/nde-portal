@@ -15,6 +15,7 @@
     "generate-metadata-completeness-fields": "tsx scripts/generate-metadata-completeness-fields.ts",
     "generate-schema-definitions": "yarn with-prod-env tsx scripts/generate-schema-definitions/index.ts",
     "generate-dataset-sitemaps": "yarn with-prod-env tsx scripts/generate-dataset-sitemaps.ts",
+    "csp:print": "node scripts/print-csp.mjs",
     "prepare": "husky install",
     "postinstall": "yarn theme:typegen",
     "release": "standard-version",

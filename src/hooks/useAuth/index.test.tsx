@@ -40,6 +40,11 @@ jest.mock('src/utils/auth/helpers', () => ({
   }),
 }));
 
+const mockSetWelcomePending = jest.fn();
+jest.mock('src/utils/auth/welcome-pending', () => ({
+  setWelcomePending: () => mockSetWelcomePending(),
+}));
+
 jest.mock('./mock', () => ({
   devMockAuth: {
     resolveUserInfo: () => mockResolveUserInfo(),
@@ -390,11 +395,14 @@ describe('useAuth hooks', () => {
       fireEvent.click(screen.getByText('login-no-provider'));
     });
     expect(sessionStorage.getItem('auth_return_to')).toBe('/current?x=1#hash');
+    // The /login hop doesn't start the post-login loader.
+    expect(mockSetWelcomePending).not.toHaveBeenCalled();
 
     await act(async () => {
       fireEvent.click(screen.getByText('login-provider'));
     });
     expect(mockGetLoginUrl).toHaveBeenCalledWith('github', '/current?x=1#hash');
+    expect(mockSetWelcomePending).toHaveBeenCalledTimes(1);
 
     await act(async () => {
       fireEvent.click(screen.getByText('logout-non-mock'));

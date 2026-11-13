@@ -22,7 +22,6 @@ import {
   SavePreferencesOptions,
   UserAccount,
   UserPreferences,
-  UserPreferencesKeys,
   UserProfile,
 } from './types';
 
@@ -42,6 +41,7 @@ const DEFAULT_MOCK_PROFILE: UserProfile = {
   favorite_datasets: MOCK_SAVED_DATASETS,
   name: process.env.NEXT_PUBLIC_MOCK_AUTH_NAME || 'Mock User',
   email: process.env.NEXT_PUBLIC_MOCK_AUTH_EMAIL,
+  idp: process.env.NEXT_PUBLIC_MOCK_AUTH_IDP,
   beta: true,
   contact_preference: false,
   feedback_preference: false,
@@ -83,6 +83,11 @@ function useUserDataState() {
   const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(
     null,
   );
+
+  // Whether the first /user/data request has settled (success or failure), so
+  // callers can tell "still loading" from "failed" when onboardingComplete is
+  // null.
+  const [hasLoadedProfile, setHasLoadedProfile] = useState(false);
 
   // Last failed saved-items mutation, surfaced to the UI as an error banner.
   // Cleared whenever a subsequent mutation succeeds (or on manual dismiss).
@@ -331,6 +336,7 @@ function useUserDataState() {
       setAccount({
         created: profile.created ?? '',
         email: profile.email ?? '',
+        idp: profile.idp,
         linked_accounts: profile.linked_accounts ?? [],
         name: profile.name ?? '',
         oauth_provider: profile.oauth_provider ?? '',
@@ -356,6 +362,7 @@ function useUserDataState() {
         'Unable to load your saved queries and resources. Please refresh to try again.',
       );
     }
+    setHasLoadedProfile(true);
     return result;
   }, [callUserDataApi]);
 
@@ -364,21 +371,8 @@ function useUserDataState() {
     void getProfile();
   }, [getProfile]);
 
-  const updatePreferenceField = useCallback(
-    (field: UserPreferencesKeys) => {
-      const nextPreferences = {
-        ...preferences,
-        [field]: !preferences[field],
-      };
-
-      setPreferences(nextPreferences);
-      void callUserDataApi('PUT', '/user/data', nextPreferences);
-    },
-    [callUserDataApi, preferences],
-  );
-
-  // Persist several preferences in a single request (e.g., the welcome page's
-  // "Save Settings"), rather than one PUT per toggle.
+  // Persist preferences in a single request when the user presses "Save
+  // Settings" on the Settings or Welcome page.
   const savePreferences = useCallback(
     async (
       updates: Partial<UserPreferences>,
@@ -524,13 +518,13 @@ function useUserDataState() {
     preferences,
     account,
     onboardingComplete,
+    hasLoadedProfile,
     savedQueries,
     savedDatasets,
     isDevMode,
     error,
     clearError,
     getProfile,
-    updatePreferenceField,
     savePreferences,
     addSavedQuery,
     removeSavedQuery,

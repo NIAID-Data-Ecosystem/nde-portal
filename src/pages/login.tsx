@@ -123,23 +123,20 @@ function LoginPage() {
                   {loginProviders.map(provider => (
                     <Button
                       key={provider.id}
-                      colorScheme='gray'
+                      colorPalette='niaid'
                       variant='outline'
-                      size='md'
+                      borderColor='gray.200'
+                      size='lg'
                       h='auto'
                       minH={10}
                       py={2}
-                      borderColor='gray.100'
                       _hover={{
-                        bg: 'niaid.50',
-                        borderColor: 'niaid.300',
-                      }}
-                      _active={{
                         bg: 'niaid.50',
                         borderColor: 'niaid.300',
                       }}
                       onClick={() => login(provider.id)}
                     >
+                      <ProviderIcon providerId={provider.id} />
                       <Stack as='span' gap={2} alignItems='center'>
                         <span>
                           {provider.loginText ??
