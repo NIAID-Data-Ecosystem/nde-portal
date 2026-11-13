@@ -35,7 +35,8 @@ export type UserProfile = UserPreferences & {
   // 'google', 'microsoft' or 'nih').
   idp?: string;
   // Set to true once the user saves settings on the welcome page. Kept out of
-  // UserPreferences so Settings page toggles never re-send (and overwrite) it.
+  // UserPreferences so saving on the Settings page never re-sends (and
+  // overwrites) it.
   onboarding_complete?: boolean;
 };
 

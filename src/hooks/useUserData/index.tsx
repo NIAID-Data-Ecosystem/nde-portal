@@ -14,7 +14,6 @@ import {
   SavedQuery,
   UserAccount,
   UserPreferences,
-  UserPreferencesKeys,
   UserProfile,
 } from './types';
 import { MOCK_SAVED_QUERIES } from './mocks/saved_queries';
@@ -41,6 +40,7 @@ const DEFAULT_MOCK_PROFILE: UserProfile = {
   favorite_datasets: MOCK_SAVED_DATASETS,
   name: process.env.NEXT_PUBLIC_MOCK_AUTH_NAME || 'Mock User',
   email: process.env.NEXT_PUBLIC_MOCK_AUTH_EMAIL,
+  idp: process.env.NEXT_PUBLIC_MOCK_AUTH_IDP,
   beta: true,
   contact_preference: false,
   feedback_preference: false,
@@ -370,21 +370,8 @@ function useUserDataState() {
     void getProfile();
   }, [getProfile]);
 
-  const updatePreferenceField = useCallback(
-    (field: UserPreferencesKeys) => {
-      const nextPreferences = {
-        ...preferences,
-        [field]: !preferences[field],
-      };
-
-      setPreferences(nextPreferences);
-      void callUserDataApi('PUT', '/user/data', nextPreferences);
-    },
-    [callUserDataApi, preferences],
-  );
-
-  // Persist several preferences in a single request (e.g., the welcome page's
-  // "Save Settings"), rather than one PUT per toggle.
+  // Persist preferences in a single request when the user presses "Save
+  // Settings" on the Settings or Welcome page.
   const savePreferences = useCallback(
     async (
       updates: Partial<UserPreferences>,
@@ -537,7 +524,6 @@ function useUserDataState() {
     error,
     clearError,
     getProfile,
-    updatePreferenceField,
     savePreferences,
     addSavedQuery,
     removeSavedQuery,

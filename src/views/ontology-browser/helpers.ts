@@ -8,7 +8,7 @@ export type OntologyOption = {
   relatedPortalSchemaProperties: string[];
 };
 
-const OLS_API_URL = 'https://www.ebi.ac.uk/ols4/api';
+const OLS_API_URL = process.env.NEXT_PUBLIC_OLS_API_URL;
 
 export interface SearchParams {
   q: string;
