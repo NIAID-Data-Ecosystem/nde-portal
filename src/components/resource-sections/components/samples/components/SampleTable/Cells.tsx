@@ -1,4 +1,4 @@
-import { Flex } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import React from 'react';
 import { Column } from 'src/components/table';
 import { renderTerm, TermValue } from 'src/components/table/data-table/cells';
@@ -8,6 +8,10 @@ The sample tables' cells, over the shared term renderer
 (src/components/table/data-table/cells/TermsCell.tsx): strings, booleans,
 DefinedTerms and QuantitativeValues. Lists show every value (no "Show More"),
 and nothing to show renders nothing, as these legacy tables always have.
+
+The wrappers set `text.body`, the colour these cells' `Text` used to set: the
+table's own colour (`fg`, near-black) would otherwise reach the plain text
+`renderTerm` renders. Links keep their own colour.
 */
 
 export type CellValue = TermValue;
@@ -24,13 +28,14 @@ const renderCellData = (props: {
     if (cellValue.length === 0) return null;
 
     return (
-      <Flex flexDirection='column' gap={2}>
+      <Flex flexDirection='column' gap={2} color='text.body'>
         {cellValue.map((value, idx) => renderTerm(value, idx))}
       </Flex>
     );
   }
 
-  return renderTerm(cellValue);
+  const term = renderTerm(cellValue);
+  return term && <Box color='text.body'>{term}</Box>;
 };
 
 export const Cell = {

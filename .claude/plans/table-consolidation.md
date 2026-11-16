@@ -371,11 +371,12 @@ changes, beyond the shared header/sort/stripe look:
 - **Widths:** per-type min/max instead of fixed widths (Name 200–320, Author
   180–280, Description the `longText` 280–560, was 250).
 - **Height and scrolling:** the page keeps the old `70vh` cap (now the
-  `maxHeight` prop), header sticky, top scrollbar on (decision 7), plus the
-  floating scrollbar. Loading shows skeleton rows under the real header instead
-  of one skeleton block.
+  `maxHeight` prop), header sticky, plus the floating scrollbar. No top
+  scrollbar: the owner removed it before committing `9d09781c`. Loading shows
+  skeleton rows under the real header instead of one skeleton block.
 - **Column controls:** the shared `ColumnCustomizer`, so "Reset to defaults" is
-  new here. Pinning stays off (Search never had it; decision 5 is opt-in).
+  new here. Since step 2 of `.claude/plans/search-tables-datatable.md` (owner's
+  D2), every Search table offers "Pin first column", unpinned by default.
 - **Shared hook fix (`useColumnPreferences.setVisible`):** hiding the last
   visible column now leaves the fallback columns, like "Clear All". Before, the
   stored empty selection read back as the defaults and re-showed every column.

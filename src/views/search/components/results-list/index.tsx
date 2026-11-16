@@ -48,14 +48,11 @@ import {
   CustomizeColumnsPopover as DataCollectionCustomizeColumnsPopover,
   DEFAULT_VISIBLE_COLUMN_IDS as DC_DEFAULT_VISIBLE_COLUMN_IDS,
 } from './components/data-collection-results-table/components/CustomizeColumnsPopover';
-import {
-  DatasetColumnCustomizer,
-  DatasetResultsTable,
-} from './components/dataset-results-table';
 import { EmptyState } from './components/empty';
 import { ErrorMessage } from './components/error';
 import { MAX_RESULTS, Pagination } from './components/pagination';
 import { COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS } from './components/results-table/constants';
+import { SEARCH_TABLES } from './components/results-table/tables';
 import {
   ALL_SAMPLE_COLUMNS,
   SampleResultsTable,
@@ -233,6 +230,9 @@ export const SearchResults = ({
     (!SHOW_SEARCH_VIEW_MODES ||
       !SHOW_DATA_COLLECTIONS_VIEW_MODES ||
       viewMode === 'table');
+  // The tab's table on the shared DataTable, when it shows one. The other
+  // tables below are still the legacy ones, each moving here in turn.
+  const searchTable = isDatasetTable ? SEARCH_TABLES.d : undefined;
 
   // Each tab type uses a minimal, tab-specific field list rather than the
   // shared RESULT_FIELDS base (which carries many fields that other tabs never
@@ -418,7 +418,9 @@ export const SearchResults = ({
             ) : undefined
           }
           extraActions={
-            isSamplesTab ? (
+            searchTable ? (
+              <searchTable.ColumnCustomizer />
+            ) : isSamplesTab ? (
               <SampleCustomizeColumnsPopover
                 columnsList={SAMPLE_COLUMN_CONFIGS}
                 onVisibleColumnsChange={setVisibleColumnIds}
@@ -430,8 +432,6 @@ export const SearchResults = ({
                 onVisibleColumnsChange={setDcVisibleColumnIds}
                 onColumnOrderChange={setDcColumnOrder}
               />
-            ) : isDatasetTable ? (
-              <DatasetColumnCustomizer />
             ) : isComputationalToolTable ? (
               <ComputationalToolCustomizeColumnsPopover
                 columnsList={COMPUTATIONAL_TOOL_COLUMN_CONFIGS}
@@ -462,8 +462,15 @@ export const SearchResults = ({
           </Alert>
         )}
 
-        {/* Samples tab */}
-        {isSamplesTab ? (
+        {searchTable ? (
+          <searchTable.Table
+            results={data?.results || []}
+            loading={!router.isReady || isLoading}
+            currentSort={sort}
+            onSortChange={handleSortChange}
+          />
+        ) : isSamplesTab ? (
+          /* Samples tab */
           <SampleResultsTable
             results={data?.results || []}
             loading={!router.isReady || isLoading}
@@ -482,14 +489,6 @@ export const SearchResults = ({
             currentSort={sort}
             onSortChange={handleSortChange}
             referrerPath={router.asPath}
-          />
-        ) : isDatasetTable ? (
-          /* Datasets tab in table view */
-          <DatasetResultsTable
-            results={data?.results || []}
-            loading={!router.isReady || isLoading}
-            currentSort={sort}
-            onSortChange={handleSortChange}
           />
         ) : isComputationalToolTable ? (
           /* Computational Tools tab in table view */

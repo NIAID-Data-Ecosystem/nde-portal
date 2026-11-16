@@ -5,11 +5,10 @@ decisions 1–14, §2 expectations and §3 "must preserve" list all apply here).
 This file covers Phase 4's remaining work and lays out the path to deleting the
 legacy `src/components/table` implementation.
 
-- **Status (2026-11-16):** decisions D1–D5 taken (§4); step 1 implemented
-  (uncommitted; browser check pending a dev-server restart), see its "Done"
-  note. Datasets is already on `DataTable`
-  (`9d09781c wip: search datasets table`); Samples, Computational Tools and Data
-  Collections are on the legacy `ResultsTable`.
+- **Status (2026-11-16):** decisions D1–D5 taken (§4). Step 1 committed
+  (`2542fa7e`); step 2 implemented (uncommitted), see the steps' "Done" notes.
+  Datasets is on the factory; Samples, Computational Tools and Data Collections
+  are on the legacy `ResultsTable`.
 - **Goal:** every table in the app on `DataTable`; one place for cells; the
   legacy `Table`, its parts, and the Search `ResultsTable` layer deleted.
 - **Update this file** as steps land, and log intentional changes in the main
@@ -103,8 +102,10 @@ src/views/search/components/results-list/components/results-table/
     computational-tools.tsx
     data-collections.tsx
     samples.tsx
-  index.ts                 SEARCH_TABLES registry, keyed by tab id
+    index.ts               SEARCH_TABLES registry, keyed by tab id
   __tests__/
+    search-tables.test.tsx contract, run against every SEARCH_TABLES entry
+    datasets.test.tsx …    each table's own cells
 ```
 
 The four `*-results-table/` folders, `results-table/components/`, `types.ts`,
@@ -148,9 +149,10 @@ const datasets = createSearchTable({
   `isSortable`/`apiSortField` pairs go away.
 - The factory owns what every Search table repeats: preferences
   (`useColumnPreferences` with legacy keys), the server-sort mapping,
-  `maxHeight='70vh'`, `topScrollbar`, skeleton rows, the full-width wrapper,
-  `allowReorder` and `allowPinning` (D2: the "Pin first column" switch is
-  offered, unpinned by default).
+  `maxHeight='70vh'`, skeleton rows, the full-width wrapper, `allowReorder` and
+  `allowPinning` (D2: the "Pin first column" switch is offered, unpinned by
+  default). No top scrollbar: the owner removed it from Datasets before
+  committing `9d09781c` (decision 7's re-evaluation).
 - Presets take overrides, e.g.
   `presets.source({ id: 'includedInDataCatalog', multiple: true })` for Samples,
   whose column id must stay as-is for the preference migration and which lists
@@ -243,6 +245,11 @@ Validation:
   `next dev` on this box leaves its resolver pointing at the old file ("Failed
   to read source code from …/index.tsx"); touching importers doesn't clear it.
   Restart the server.
+- **Regression found in step 2's browser check, fixed there:** the resource
+  page's sample tables set `fg` (near-black) on the table, which the old `Text`
+  overrode with `text.body`; plain `renderTerm` spans inherited `fg`. The
+  adapter's wrappers now set `text.body` (computed colour verified again). The
+  legacy Search tables were unaffected: their cells already inherit `text.body`.
 
 ### Step 2: the Search table factory, with Datasets ported onto it
 
@@ -272,6 +279,31 @@ Validation: the Datasets tests pass with only their import paths changed (the
 proof that step 2 is behaviour-neutral). Repeat the browser checks from the
 Datasets migration (sort → URL `sort`/`from=1`, toolbar select in sync,
 customizer, legacy migration).
+
+**Done (2026-11-16, uncommitted):**
+
+- `results-table/`: `create-search-table.tsx` (factory), `columns.tsx`
+  (`SearchColumnDef`, `searchColumn`, `resourceColumns`: name, source, date,
+  author, conditionsOfAccess, description, terms, funder, fundingId, license;
+  plus `linkListCell`), `shaping.ts` (moved from `utils.ts`, + `toSampleEntry`,
+  `toUsageInfoEntries`), `sort.ts` (`toSortState`, `apiSortFields`),
+  `tables/datasets.tsx` (67 lines, was 331) and the registry in
+  `tables/index.ts`. `utils.ts` keeps only the legacy helpers and re-exports the
+  shaping for the legacy tables.
+- The registry lives in `tables/index.ts`, not `results-table/index.ts`: that
+  name is the legacy `ResultsTable` until step 6, and renaming it under a
+  running dev server is the trap from step 1.
+- `results-list/index.tsx`: `searchTable` lookup for the customizer and the
+  table; `dataset-results-table/` deleted.
+- D2: "Pin first column" in the customizer, unpinned by default; verified in the
+  browser (first column sticky at `left: 0` while scrolled, persisted).
+- Tests: `__tests__/search-tables.test.tsx` (13 contract cases per table;
+  "required columns" is skipped for tables without any, like Datasets) and
+  `__tests__/datasets.test.tsx` (its cells, including funder / funding ID /
+  usage-info links). 75 related suites / 684 tests pass; typecheck and lint
+  clean.
+- For Samples (step 5), add `identifier` to the contract test's `FILLED_FROM_ID`
+  (a record with only an `_id` still gets one).
 
 ### Steps 3–5: one table per step
 
