@@ -1,11 +1,11 @@
 import { Text } from '@chakra-ui/react';
 import React from 'react';
+import { Link } from 'src/components/link';
+import { Column } from 'src/components/table';
 import {
   ExpandableList,
   ExpandableText,
-} from 'src/components/expandable-cells';
-import { Link } from 'src/components/link';
-import { Column } from 'src/components/table';
+} from 'src/components/table/data-table/cells';
 import {
   FormattedResource,
   Funder,

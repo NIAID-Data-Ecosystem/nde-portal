@@ -72,6 +72,30 @@ values such as `0` or "Unknown" are shown as they are.
 `cell` is called as a function during render: render components inside it, but
 don't call hooks in it directly.
 
+## Cells
+
+Shared cells for custom `cell`s live in `cells/` and are exported from here (or,
+without pulling in the table itself, from `data-table/cells`).
+
+| Cell               | Shows                                                                      |
+| ------------------ | -------------------------------------------------------------------------- |
+| `EmptyValue`       | The "No data" placeholder (`—`, read as "No data").                        |
+| `LinkCell`         | A link (internal, or external with the icon); text when there's no URL.    |
+| `LinkListCell`     | `{ label, url }` entries one per line, linked externally; "Show N More".   |
+| `TagsCell`         | Short terms as tags; "Show N More" past 12.                                |
+| `TermsCell`        | Strings, booleans, DefinedTerms, QuantitativeValues; one per line, linked. |
+| `AccessBadgeCell`  | Conditions of Access as the result cards' badge, with its tooltip.         |
+| `ResourceLinkCell` | A record's name linking to its resource page, with the page as referrer.   |
+
+**Cells render `EmptyValue` themselves** when they have nothing to show, so a
+`cell` can return one directly. That matters: the table only sees the element a
+`cell` returns, so a component that renders `null` leaves the cell blank, not
+"No data".
+
+**Building blocks** (`ExpandableText`, `ExpandableList`, `renderTerm`) render
+nothing for empty input instead, because the legacy tables, which show blank
+there, use them too. Check the value before using one in a `cell`.
+
 ## Examples
 
 Static table, everything internal:

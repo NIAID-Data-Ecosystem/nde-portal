@@ -12,8 +12,10 @@ rules stay in `.claude/CLAUDE.md`.
   natural height via `maxHeight='none'`) is implemented, uncommitted, and
   benchmarked against r4. Don't start Phase 3 until the owner signs off.
 - **2026-11-16:** Phase 4 started at the owner's request with the **Datasets**
-  table (uncommitted); see §6 "Search: Datasets". Samples, Computational Tools
-  and Data Collections are still on the legacy `ResultsTable`.
+  table (`9d09781c`); see §6 "Search: Datasets". Samples, Computational Tools
+  and Data Collections are still on the legacy `ResultsTable`. Their migration,
+  the move of shared cells into `data-table/`, and the path to deleting the
+  legacy table are planned in `.claude/plans/search-tables-datatable.md`.
 - **Update this file** when a decision changes, a phase finishes, or an
   intentional behaviour change is made.
 
@@ -385,6 +387,18 @@ changes, beyond the shared header/sort/stripe look:
   `dataTable` recipe's pinned-column selectors. Likely only because Search
   renders its results client-side (the Repository Matcher's table is in the
   server HTML and logs none). Dev-only.
+
+**Shared cells moved into `data-table/cells/` (2026-11-16; step 1 of
+`.claude/plans/search-tables-datatable.md`).** Term renderer, link list,
+resource link and access badge are shared; the legacy Search tables and the
+resource page's sample tables use them through small adapters that keep
+returning `null` (blank) for nothing to show. Intentional changes:
+
+- Resource page sample tables (owner's D3): a boolean `false` shows "No" (it
+  showed nothing); a `true` no longer throws (`'value' in true`).
+- Term cells (Search and resource page): a finite number shows as text (Search
+  showed nothing; the resource page threw). Blank terms no longer count toward
+  "Show N More".
 
 **Client pagination fix (2026-11-09; no effect on the pilot, which doesn't
 paginate):**

@@ -1,82 +1,16 @@
-import { Flex, Text, TextProps } from '@chakra-ui/react';
-import { Link } from 'src/components/link';
+import { Flex } from '@chakra-ui/react';
+import React from 'react';
 import { Column } from 'src/components/table';
-import { DefinedTerm, QuantitativeValue } from 'src/utils/api/types';
+import { renderTerm, TermValue } from 'src/components/table/data-table/cells';
 
-import { formatNumericValue, formatTerm, formatUnitText } from '../../helpers';
+/*
+The sample tables' cells, over the shared term renderer
+(src/components/table/data-table/cells/TermsCell.tsx): strings, booleans,
+DefinedTerms and QuantitativeValues. Lists show every value (no "Show More"),
+and nothing to show renders nothing, as these legacy tables always have.
+*/
 
-const TextCell = ({ children, ...rest }: TextProps) => {
-  return <Text {...rest}>{children}</Text>;
-};
-
-const DefinedTermCell = ({ identifier, name, url }: DefinedTerm) => {
-  const label = formatTerm(name || identifier || '');
-  if (label || url) {
-    return url ? (
-      <Link href={url} isExternal>
-        {label || url}
-      </Link>
-    ) : (
-      <TextCell>{label}</TextCell>
-    );
-  }
-  return null;
-};
-
-const QuantitativeValueCell = ({
-  maxValue,
-  minValue,
-  name,
-  unitText,
-  value,
-}: QuantitativeValue) => {
-  const valueStr = formatNumericValue({ value, minValue, maxValue });
-
-  // Fall back to `name` when no numeric value fields are present
-  // (e.g. { "@type": "QuantitativeValue", "name": "42 year" })
-  if (!valueStr && name) return <TextCell>{name}</TextCell>;
-
-  if (!unitText) return <TextCell>{valueStr}</TextCell>;
-  const unitStr = formatUnitText(unitText);
-  return <TextCell>{`${valueStr} ${unitStr}`}</TextCell>;
-};
-
-/**
- * Render the values cell based on the type of data it contains.
- * Supports strings, QuantitativeValues, DefinedTerms, and arrays of these types.
- */
-
-export type CellValue =
-  | string
-  | DefinedTerm
-  | QuantitativeValue
-  | null
-  | undefined;
-
-export const renderValue = (val: CellValue, key?: React.Key) => {
-  if (!val) return null;
-
-  if (typeof val === 'string') {
-    return <TextCell key={key}>{formatTerm(val)}</TextCell>;
-  }
-
-  // Check @type explicitly first so a QuantitativeValue with only a `name`
-  // field (and no value/minValue/maxValue) isn't misrouted to DefinedTermCell.
-  if (
-    (val as QuantitativeValue)['@type'] === 'QuantitativeValue' ||
-    'value' in val ||
-    'minValue' in val ||
-    'maxValue' in val
-  ) {
-    return <QuantitativeValueCell key={key} {...(val as QuantitativeValue)} />;
-  }
-
-  if ('name' in val || 'identifier' in val || 'url' in val) {
-    return <DefinedTermCell key={key} {...(val as DefinedTerm)} />;
-  }
-
-  return null;
-};
+export type CellValue = TermValue;
 
 // Render cell data which can be a single value or an array of values.
 const renderCellData = (props: {
@@ -86,23 +20,19 @@ const renderCellData = (props: {
 }) => {
   const cellValue = props.data;
 
-  // Array of values (e.g. strings, DefinedTerms, QuantitativeValues)
   if (Array.isArray(cellValue)) {
     if (cellValue.length === 0) return null;
 
     return (
       <Flex flexDirection='column' gap={2}>
-        {cellValue.map((value, idx) => renderValue(value, idx))}
+        {cellValue.map((value, idx) => renderTerm(value, idx))}
       </Flex>
     );
   }
 
-  return renderValue(cellValue);
+  return renderTerm(cellValue);
 };
 
 export const Cell = {
-  Text: TextCell,
-  DefinedTerm: DefinedTermCell,
-  QuantitativeValue: QuantitativeValueCell,
   renderCellData,
 };

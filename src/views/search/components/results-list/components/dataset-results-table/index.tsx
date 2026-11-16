@@ -1,15 +1,18 @@
 import { Box } from '@chakra-ui/react';
 import React, { useCallback, useMemo } from 'react';
-import { ConditionsOfAccess } from 'src/components/badges';
-import { ExpandableText } from 'src/components/expandable-cells';
 import {
-  CellContext,
+  AccessBadgeCell,
   ColumnCustomizer,
   ColumnDef,
   createColumnHelper,
   DataTable,
-  isEmptyValue,
+  ExpandableText,
+  LinkCell,
+  LinkListCell,
+  ResourceLinkCell,
   SortState,
+  TermsCell,
+  TermValue,
   toText,
   useColumnPreferences,
   useDataTable,
@@ -22,13 +25,6 @@ import {
 } from 'src/utils/api/types';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 
-import { CellValue, renderCellData } from '../results-table/components/Cells';
-import {
-  LinkEntry,
-  LinkListCell,
-  LinkOrTextCell,
-  SearchResourceNameCell,
-} from '../results-table/components/SharedCells';
 import {
   normalizeTermNames,
   toArray,
@@ -94,25 +90,11 @@ const termListColumn = (
     id,
     header,
     type: 'list',
-    accessor: row => accessor(row) as CellValue | CellValue[],
-    cell: ({ value, column }) =>
-      isEmptyValue(value)
-        ? null
-        : renderCellData({ data: value, toggleContext: column.header }),
+    accessor: row => accessor(row) as TermValue | TermValue[],
+    cell: ({ value, column }) => (
+      <TermsCell values={value} toggleContext={column.header} />
+    ),
   });
-
-/**
- * Several values stacked one per line, each linked when it has a url. Returns
- * null for none, so the table shows its "No data" placeholder (a
- * `LinkListCell` element rendering nothing would leave the cell blank).
- */
-const linkListCell = ({
-  value,
-  column,
-}: CellContext<FormattedResource, LinkEntry[] | null>) =>
-  value?.length ? (
-    <LinkListCell entries={value} toggleContext={column.header} />
-  ) : null;
 
 /**
  * Every column the table offers, in their default order (ids are the ones the
@@ -130,10 +112,7 @@ export const DATASET_COLUMNS: ColumnDef<FormattedResource>[] = [
     sort: true,
     size: { min: 200, max: 320 },
     // Links to the resource page, as the card's title does.
-    cell: ({ value }) =>
-      value.label ? (
-        <SearchResourceNameCell label={value.label} id={value.id} />
-      ) : null,
+    cell: ({ value }) => <ResourceLinkCell label={value.label} id={value.id} />,
   }),
   defineColumn({
     id: 'source',
@@ -141,8 +120,9 @@ export const DATASET_COLUMNS: ColumnDef<FormattedResource>[] = [
     type: 'link',
     accessor: row => toCatalogEntry(row.includedInDataCatalog),
     sort: true,
-    cell: ({ value }) =>
-      value ? <LinkOrTextCell label={value.name} url={value.url} /> : null,
+    cell: ({ value }) => (
+      <LinkCell href={value?.url} label={value?.name} external />
+    ),
   }),
   defineColumn({ id: 'date', header: 'Date', type: 'date', sort: true }),
   defineColumn({
@@ -166,10 +146,7 @@ export const DATASET_COLUMNS: ColumnDef<FormattedResource>[] = [
     accessor: row => row.conditionsOfAccess,
     sort: true,
     // The result card's badge (with its explanatory tooltip).
-    cell: ({ value, row }) =>
-      value && row['@type'] ? (
-        <ConditionsOfAccess conditionsOfAccess={value} type={row['@type']} />
-      ) : null,
+    cell: ({ value }) => <AccessBadgeCell value={value} />,
   }),
   defineColumn({ id: 'description', header: 'Description', type: 'longText' }),
   termListColumn('infectiousAgent', 'Pathogen', row => row.infectiousAgent),
@@ -205,7 +182,9 @@ export const DATASET_COLUMNS: ColumnDef<FormattedResource>[] = [
         label: name,
         url: identifier,
       })) ?? null,
-    cell: linkListCell,
+    cell: ({ value, column }) => (
+      <LinkListCell entries={value} toggleContext={column.header} />
+    ),
   }),
   defineColumn({
     id: 'fundingId',
@@ -217,15 +196,18 @@ export const DATASET_COLUMNS: ColumnDef<FormattedResource>[] = [
         label: identifier,
         url,
       })) ?? null,
-    cell: linkListCell,
+    cell: ({ value, column }) => (
+      <LinkListCell entries={value} toggleContext={column.header} />
+    ),
   }),
   defineColumn({
     id: 'license',
     header: 'License',
     type: 'link',
     accessor: row => toLicenseEntry(row.license),
-    cell: ({ value }) =>
-      value ? <LinkOrTextCell label={value.title} url={value.url} /> : null,
+    cell: ({ value }) => (
+      <LinkCell href={value?.url} label={value?.title} external />
+    ),
   }),
   defineColumn({
     id: 'usageInfo',
@@ -240,7 +222,9 @@ export const DATASET_COLUMNS: ColumnDef<FormattedResource>[] = [
           url: info?.url ?? null,
         }))
         .filter(entry => entry.label || entry.url),
-    cell: linkListCell,
+    cell: ({ value, column }) => (
+      <LinkListCell entries={value} toggleContext={column.header} />
+    ),
   }),
   termListColumn('topicCategory', 'Topic Category', row => row.topicCategory),
 ];

@@ -6,9 +6,21 @@
  * - `useDataTable`: headless state (columns, sort, pagination).
  * - `useColumnPreferences` + `ColumnCustomizer`: per-table column choices.
  * - `useTableSearch`: free-text filtering of prebuilt rows.
- * - cells: `EmptyValue`, `LinkCell`, `TagsCell` for custom `cell`s.
+ * - cells (see `cells/index.ts`) for custom `cell`s, and the term formatters.
  */
-export { EmptyValue, LinkCell, TagsCell } from './cells';
+export type { LinkEntry, TermValue } from './cells';
+export {
+  AccessBadgeCell,
+  EmptyValue,
+  ExpandableList,
+  ExpandableText,
+  LinkCell,
+  LinkListCell,
+  renderTerm,
+  ResourceLinkCell,
+  TagsCell,
+  TermsCell,
+} from './cells';
 export type { ColumnCustomizerProps } from './components/ColumnCustomizer';
 export { ColumnCustomizer } from './components/ColumnCustomizer';
 export type { DataTableProps, DataTableStatus } from './components/DataTable';
@@ -38,4 +50,5 @@ export type {
   SortValue,
 } from './types';
 export { createColumnHelper } from './types';
+export { formatNumericValue, formatTerm, formatUnitText } from './utils/terms';
 export { isEmptyValue, toSearchValue, toText } from './utils/values';

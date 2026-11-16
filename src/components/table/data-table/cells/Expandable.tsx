@@ -10,9 +10,13 @@ import { CollapsibleTextTrigger } from 'src/components/collapsible-text';
 import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 
 /**
- * Per-cell "Show More / Show Less" expansion for table cells (search results,
- * repository matcher). The toggle is CollapsibleText's trigger, which carries
- * aria-expanded; each cell adds aria-controls for accessibility.
+ * Per-cell "Show More / Show Less" expansion, used by the DataTable's cells and
+ * by the legacy tables until they migrate. The toggle is CollapsibleText's
+ * trigger, which carries aria-expanded; each cell adds aria-controls.
+ *
+ * Building blocks rather than cells: they render nothing for empty input, so a
+ * caller decides what an empty cell shows (the DataTable's "No data"
+ * placeholder, or blank in a legacy table).
  */
 
 /*

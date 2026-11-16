@@ -8,8 +8,8 @@ import {
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import React, { useRef, useState } from 'react';
-import { ExpandableText } from 'src/components/expandable-cells';
 import { Link } from 'src/components/link';
+import { ExpandableText } from 'src/components/table/data-table/cells';
 import Tooltip from 'src/components/tooltip';
 import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 

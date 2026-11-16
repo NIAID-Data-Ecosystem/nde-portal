@@ -1,27 +1,20 @@
-import { Text } from '@chakra-ui/react';
-import NextLink from 'next/link';
-import { useRouter } from 'next/router';
 import React from 'react';
-import { ExpandableList } from 'src/components/expandable-cells';
-import { Link } from 'src/components/link';
+import {
+  LinkCell,
+  LinkListCell as SharedLinkListCell,
+  ResourceLinkCell,
+} from 'src/components/table/data-table/cells';
 
-/**
- * Cell renderers shared by the search-result tables, alongside the value-shaped
- * renderers in `Cells.tsx`. These cover the patterns that recur across table
- * types (an internal resource link, a single external link, a stacked list of
- * links) so each table's `getCells` only describes what is specific to it.
- */
+/*
+Legacy `ResultsTable` adapters over the shared cells
+(src/components/table/data-table/cells), for the Search tables not yet on
+DataTable. Deleted once they migrate. Unlike the shared cells they return
+`null` for nothing to show, so those tables stay blank there.
+*/
 
 export type LinkEntry = { label: string; url: string | null };
 
-/**
- * A record's name, linking to its resource page the way the result cards do.
- *
- * `referrerPath` is the current path of the search page; it travels in the
- * router query (not the displayed URL) so the resources page breadcrumb can
- * link back to the search the user came from. Falls back to plain text when the
- * record has no id, rather than emitting a dead link.
- */
+/** A record's name, linking to its resource page (see `ResourceLinkCell`). */
 export const ResourceNameCell = ({
   label,
   id,
@@ -30,48 +23,14 @@ export const ResourceNameCell = ({
   label: string;
   id?: string;
   referrerPath?: string;
-}) => {
-  if (!label) return null;
-
-  return id ? (
-    <Link asChild fontSize='sm'>
-      <NextLink
-        href={{ pathname: '/resources/', query: { id, referrerPath } }}
-        as={`/resources?id=${id}`}
-        prefetch={false}
-      >
-        {label}
-      </NextLink>
-    </Link>
-  ) : (
-    <Text fontSize='sm'>{label}</Text>
-  );
-};
-
-/**
- * `ResourceNameCell` with the current search page as its referrer, read from
- * the router. For the shared DataTable, whose columns are module constants
- * and so can't be handed a per-render `referrerPath`.
- */
-export const SearchResourceNameCell = (props: {
-  label: string;
-  id?: string;
-}) => {
-  const { asPath } = useRouter();
-  return <ResourceNameCell {...props} referrerPath={asPath} />;
-};
+}) =>
+  label ? (
+    <ResourceLinkCell label={label} id={id} referrerPath={referrerPath} />
+  ) : null;
 
 /** A single value rendered as an external link when it has a url. */
-export const LinkOrTextCell = ({ label, url }: LinkEntry) => {
-  if (!label && !url) return null;
-  return url ? (
-    <Link href={url} isExternal fontSize='sm'>
-      {label || url}
-    </Link>
-  ) : (
-    <Text fontSize='sm'>{label}</Text>
-  );
-};
+export const LinkOrTextCell = ({ label, url }: LinkEntry) =>
+  label || url ? <LinkCell href={url} label={label} external /> : null;
 
 /** Several values stacked one per line, each an external link when it has a url. */
 export const LinkListCell = ({
@@ -81,13 +40,7 @@ export const LinkListCell = ({
   entries?: LinkEntry[] | null;
   /** Read after "Show N More" (e.g. the column header). */
   toggleContext?: string;
-}) => {
-  if (!entries || entries.length === 0) return null;
-  return (
-    <ExpandableList gap={1} toggleContext={toggleContext}>
-      {entries.map((entry, idx) => (
-        <LinkOrTextCell key={idx} label={entry.label} url={entry.url} />
-      ))}
-    </ExpandableList>
-  );
-};
+}) =>
+  entries?.some(entry => entry.label || entry.url) ? (
+    <SharedLinkListCell entries={entries} toggleContext={toggleContext} />
+  ) : null;

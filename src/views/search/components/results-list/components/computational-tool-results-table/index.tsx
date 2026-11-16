@@ -1,7 +1,7 @@
 import { Text } from '@chakra-ui/react';
 import React, { useMemo } from 'react';
-import { ExpandableText } from 'src/components/expandable-cells';
 import { Column } from 'src/components/table';
+import { ExpandableText } from 'src/components/table/data-table/cells';
 import { FormattedResource } from 'src/utils/api/types';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 

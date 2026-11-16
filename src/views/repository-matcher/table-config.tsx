@@ -1,11 +1,10 @@
 import { Circle, Tag } from '@chakra-ui/react';
 import React from 'react';
-import { ExpandableText } from 'src/components/expandable-cells';
 import {
   getMetadataDescription,
   getMetadataName,
 } from 'src/components/metadata';
-import { LinkCell } from 'src/components/table/data-table';
+import { ExpandableText, LinkCell } from 'src/components/table/data-table';
 import { formatDate } from 'src/utils/api/helpers';
 import { AccessTypes, DefinedTerm } from 'src/utils/api/types';
 import { USE_MERGED_SOURCES_AND_CATALOGS } from 'src/utils/feature-flags';
