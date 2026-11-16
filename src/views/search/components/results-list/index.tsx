@@ -2,10 +2,6 @@ import { List, VStack } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Alert } from 'src/components/alert';
-import {
-  resolveStoredOrderedIds,
-  resolveStoredVisibleIds,
-} from 'src/components/select-and-order-popover';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import {
   SHOW_DATA_COLLECTIONS_VIEW_MODES,
@@ -29,16 +25,6 @@ import { SearchViewMode, TabType } from '../../types';
 import { updateRoute } from '../../utils/update-route';
 import Card from './components/card';
 import {
-  ALL_COMPUTATIONAL_TOOL_COLUMNS,
-  ComputationalToolResultsTable,
-} from './components/computational-tool-results-table';
-import {
-  CUSTOM_COLUMN_ORDER_STORAGE_KEY as CT_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
-  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as CT_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-  CustomizeColumnsPopover as ComputationalToolCustomizeColumnsPopover,
-  DEFAULT_VISIBLE_COLUMN_IDS as CT_DEFAULT_VISIBLE_COLUMN_IDS,
-} from './components/computational-tool-results-table/components/CustomizeColumnsPopover';
-import {
   ALL_DATA_COLLECTION_COLUMNS,
   DataCollectionResultsTable,
 } from './components/data-collection-results-table';
@@ -51,7 +37,6 @@ import {
 import { EmptyState } from './components/empty';
 import { ErrorMessage } from './components/error';
 import { MAX_RESULTS, Pagination } from './components/pagination';
-import { COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS } from './components/results-table/constants';
 import { SEARCH_TABLES } from './components/results-table/tables';
 import {
   ALL_SAMPLE_COLUMNS,
@@ -130,41 +115,11 @@ const getInitialDataCollectionColumnOrder = (): string[] => {
   return allIds;
 };
 
-// The Computational Tools table resolves its persisted state through the
-// popover's own exported resolvers, which apply the required-column rules
-// (always visible, pinned first) that the hand-rolled helpers above do not.
-// (The Datasets table is on the shared DataTable, which persists its own.)
-const ALL_CT_COLUMN_IDS = ALL_COMPUTATIONAL_TOOL_COLUMNS.map(c => c.id);
-const CT_REQUIRED_IDS =
-  COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS as unknown as string[];
-
-const getInitialCTVisibleColumnIds = (): string[] =>
-  resolveStoredVisibleIds({
-    storageKey: CT_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-    allIds: ALL_CT_COLUMN_IDS,
-    defaultVisibleIds: CT_DEFAULT_VISIBLE_COLUMN_IDS,
-    requiredIds: CT_REQUIRED_IDS,
-  });
-
-const getInitialCTColumnOrder = (): string[] =>
-  resolveStoredOrderedIds({
-    storageKey: CT_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
-    allIds: ALL_CT_COLUMN_IDS,
-    requiredIds: CT_REQUIRED_IDS,
-  });
-
 // Build the ColumnConfig list expected by each CustomizeColumnsPopover.
 const SAMPLE_COLUMN_CONFIGS = ALL_SAMPLE_COLUMNS.map(col => ({
   id: col.id,
   title: col.title,
 }));
-
-const COMPUTATIONAL_TOOL_COLUMN_CONFIGS = ALL_COMPUTATIONAL_TOOL_COLUMNS.map(
-  col => ({
-    id: col.id,
-    title: col.title,
-  }),
-);
 
 const DATA_COLLECTION_COLUMN_CONFIGS = ALL_DATA_COLLECTION_COLUMNS.map(col => ({
   id: col.id,
@@ -230,9 +185,14 @@ export const SearchResults = ({
     (!SHOW_SEARCH_VIEW_MODES ||
       !SHOW_DATA_COLLECTIONS_VIEW_MODES ||
       viewMode === 'table');
-  // The tab's table on the shared DataTable, when it shows one. The other
-  // tables below are still the legacy ones, each moving here in turn.
-  const searchTable = isDatasetTable ? SEARCH_TABLES.d : undefined;
+  // The tab's table on the shared DataTable, when it shows one. Tabs not in
+  // SEARCH_TABLES yet still render their legacy table below.
+  const showsTable =
+    isSamplesTab ||
+    isDatasetTable ||
+    isComputationalToolTable ||
+    isDataCollectionTable;
+  const searchTable = showsTable ? SEARCH_TABLES[id] : undefined;
 
   // Each tab type uses a minimal, tab-specific field list rather than the
   // shared RESULT_FIELDS base (which carries many fields that other tabs never
@@ -267,14 +227,6 @@ export const SearchResults = ({
     isDataCollectionTable
       ? getInitialDataCollectionColumnOrder()
       : ALL_DATA_COLLECTION_COLUMNS.map(c => c.id),
-  );
-  const [ctVisibleColumnIds, setCtVisibleColumnIds] = useState<string[]>(() =>
-    isComputationalToolTable
-      ? getInitialCTVisibleColumnIds()
-      : CT_DEFAULT_VISIBLE_COLUMN_IDS,
-  );
-  const [ctColumnOrder, setCtColumnOrder] = useState<string[]>(() =>
-    isComputationalToolTable ? getInitialCTColumnOrder() : ALL_CT_COLUMN_IDS,
   );
 
   // Drops results that aren't one of this section's types. Most queries are
@@ -432,12 +384,6 @@ export const SearchResults = ({
                 onVisibleColumnsChange={setDcVisibleColumnIds}
                 onColumnOrderChange={setDcColumnOrder}
               />
-            ) : isComputationalToolTable ? (
-              <ComputationalToolCustomizeColumnsPopover
-                columnsList={COMPUTATIONAL_TOOL_COLUMN_CONFIGS}
-                onVisibleColumnsChange={setCtVisibleColumnIds}
-                onColumnOrderChange={setCtColumnOrder}
-              />
             ) : undefined
           }
         />
@@ -486,17 +432,6 @@ export const SearchResults = ({
             loading={!router.isReady || isLoading}
             visibleColumnIds={dcVisibleColumnIds}
             columnOrder={dcColumnOrder}
-            currentSort={sort}
-            onSortChange={handleSortChange}
-            referrerPath={router.asPath}
-          />
-        ) : isComputationalToolTable ? (
-          /* Computational Tools tab in table view */
-          <ComputationalToolResultsTable
-            results={data?.results || []}
-            loading={!router.isReady || isLoading}
-            visibleColumnIds={ctVisibleColumnIds}
-            columnOrder={ctColumnOrder}
             currentSort={sort}
             onSortChange={handleSortChange}
             referrerPath={router.asPath}

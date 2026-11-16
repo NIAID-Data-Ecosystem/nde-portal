@@ -5,10 +5,10 @@ decisions 1–14, §2 expectations and §3 "must preserve" list all apply here).
 This file covers Phase 4's remaining work and lays out the path to deleting the
 legacy `src/components/table` implementation.
 
-- **Status (2026-11-16):** decisions D1–D5 taken (§4). Step 1 committed
-  (`2542fa7e`); step 2 implemented (uncommitted), see the steps' "Done" notes.
-  Datasets is on the factory; Samples, Computational Tools and Data Collections
-  are on the legacy `ResultsTable`.
+- **Status (2026-11-16):** decisions D1–D5 taken (§4). Steps 1–2 committed
+  (`2542fa7e`, `c4b1ea47`); step 3 implemented (uncommitted), see the steps'
+  "Done" notes. Datasets and Computational Tools are on the factory; Samples and
+  Data Collections are on the legacy `ResultsTable`.
 - **Goal:** every table in the app on `DataTable`; one place for cells; the
   legacy `Table`, its parts, and the Search `ResultsTable` layer deleted.
 - **Update this file** as steps land, and log intentional changes in the main
@@ -321,6 +321,32 @@ Order is by closeness to Datasets, so each step adds a little new surface.
   `LinkListCell`.
 - Legacy keys `search-visible-computational-tool-columns` /
   `search-computational-tool-column-order`; fallback `name`.
+
+_Done (2026-11-16, uncommitted):_
+
+- `tables/computational-tools.tsx` (63 lines; the legacy folder was 431) and
+  `toSoftwareHelpEntries` in `shaping.ts`; registered as `ct`. The registry is
+  now typed `Partial<Record<TabType['id'], SearchTable>>`, and
+  `results-list/index.tsx` looks the tab up (`showsTable ? SEARCH_TABLES[id]`),
+  so the next tables only need registering.
+- Deleted: `computational-tool-results-table/`, the CT storage helpers, state
+  and branches in `results-list/index.tsx` (with its last use of
+  `resolveStored*`), and the CT constants.
+- Tests: the contract suite runs for `ct` automatically;
+  `__tests__/computational-tools.test.tsx` covers its own cells (capitalized
+  string lists, joined term names, software help rules, license). 81 related
+  suites / 786 tests pass; typecheck and lint clean.
+- Browser, against the legacy table (same query, `git stash` to get the legacy
+  build): all 17 headers equal; of 170 cells, 96 identical, 62 blank → "No
+  data", 4 access "Open" → the "Open Access" badge, 1 "Show 1 More" gaining its
+  hidden column context, 7 descriptions differing only in their toggle ("Show
+  More Description", or no toggle where the wider column now fits all four
+  lines). Table 3,130 → 3,371 px wide (columns at their type minimum;
+  Description 250 → 312); row heights similar. 390 checked.
+- Testing trap: the page rewrites `?tab=ct` to its default tab after load and
+  keeps the Tools panel mounted but hidden, so a scripted check must click the
+  Tools tab, or it reads a `display: none` table (0 px widths, `innerText`
+  falling back to text content).
 
 **Step 4: Data Collections** (`tables/data-collections.tsx`)
 

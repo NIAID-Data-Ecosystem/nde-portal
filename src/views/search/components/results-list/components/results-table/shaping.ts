@@ -1,4 +1,5 @@
 import {
+  FormattedResource,
   Funder,
   Funding,
   IncludedInDataCatalog,
@@ -156,3 +157,22 @@ export const toUsageInfoEntries = (
       url: info?.url ?? null,
     }))
     .filter(entry => entry.label || entry.url);
+
+/**
+ * Software help as `{ label, url }` entries, by the card's rules: entries
+ * without a url are dropped, an array `name` is joined (in practice it always
+ * arrives as one, e.g. `["General"]`, despite its declared type), and the url
+ * stands in when no name is left.
+ */
+export const toSoftwareHelpEntries = (
+  softwareHelp?: FormattedResource['softwareHelp'] | null,
+): { label: string; url: string }[] =>
+  toArray<{ name?: string | string[]; url?: string }>(
+    softwareHelp as { name?: string | string[]; url?: string }[],
+  ).flatMap(entry => {
+    if (!entry?.url) return [];
+    const name = Array.isArray(entry.name)
+      ? entry.name.filter(Boolean).join(', ')
+      : entry.name;
+    return [{ label: name || entry.url, url: entry.url }];
+  });
