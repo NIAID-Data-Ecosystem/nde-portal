@@ -7,8 +7,8 @@ import { datasetsTable } from './datasets';
 import { samplesTable } from './samples';
 
 /**
- * The Search tables on the shared DataTable, by tab id. Tabs not listed here
- * still use the legacy `ResultsTable` (see `results-list/index.tsx`).
+ * The Search tables, by tab id: the table a tab shows in table view (and the
+ * Samples tab always). See `results-list/index.tsx`.
  */
 export const SEARCH_TABLES: Partial<Record<TabType['id'], SearchTable>> = {
   d: datasetsTable,

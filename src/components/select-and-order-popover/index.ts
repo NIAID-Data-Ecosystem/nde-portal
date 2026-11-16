@@ -11,11 +11,7 @@ export type {
   UseSelectableListOptions,
   UseSelectableListResult,
 } from './hooks/useSelectableList';
-export {
-  resolveStoredOrderedIds,
-  resolveStoredVisibleIds,
-  useSelectableList,
-} from './hooks/useSelectableList';
+export { useSelectableList } from './hooks/useSelectableList';
 
 // Components
 export { PopoverEmptyState } from './components/PopoverEmptyState';

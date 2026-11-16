@@ -5,11 +5,11 @@ decisions 1–14, §2 expectations and §3 "must preserve" list all apply here).
 This file covers Phase 4's remaining work and lays out the path to deleting the
 legacy `src/components/table` implementation.
 
-- **Status (2026-11-16):** decisions D1–D5 taken (§4). Steps 1–3 committed
-  (`2542fa7e`, `c4b1ea47`, `862c1dd1`); step 4 staged by the owner; step 5
-  implemented (unstaged), see the steps' "Done" notes. All four Search tables
-  are on the factory; the legacy `ResultsTable` layer has no importers left and
-  goes in step 6.
+- **Status (2026-11-16):** decisions D1–D5 taken (§4). Steps 1–5 committed
+  (`2542fa7e`, `c4b1ea47`, `862c1dd1`, `e1379d18`); step 6 implemented
+  (uncommitted) except the perf comparison, which the owner skipped for now.
+  Every Search table is on the factory and the legacy Search layer is gone.
+  Next: main plan Phases 3 and 5 ("Later" below).
 - **Goal:** every table in the app on `DataTable`; one place for cells; the
   legacy `Table`, its parts, and the Search `ResultsTable` layer deleted.
 - **Update this file** as steps land, and log intentional changes in the main
@@ -480,6 +480,44 @@ Per step:
 Result: about 1,000 lines of legacy Search table code deleted.
 `results-list/index.tsx` loses its storage helpers and six `useState`s. Each
 table becomes a short config file.
+
+_Done (2026-11-16, uncommitted):_
+
+- Deleted the legacy layer: `results-table/index.tsx` (`ResultsTable`),
+  `types.ts` (`BaseColumn`), `utils.ts` (`withWidth`,
+  `deriveControlledSortProps`, `getApiSortFieldForProperty`, the shaping
+  re-export) and `components/` (`Cells`, `SharedCells`, the generic
+  `CustomizeColumnsPopover` and its test). (`constants.ts` and the
+  `*-results-table/` folders went in steps 3–5.) `results-table/` now holds only
+  the factory, presets, shaping, sort and `tables/`.
+- `resolveStoredVisibleIds`/`resolveStoredOrderedIds` were not unused, as this
+  plan assumed: `useSelectableList` hydrates with them. They're now internal to
+  the hook, no longer exported from the `select-and-order-popover` barrel.
+- e2e (fixtures in `e2e/fixtures/search-tables.ts`, navigation in
+  `e2e/utils/search-tables.ts`, shared by both specs):
+  - `e2e/accessibility/search.spec.ts`: each tab's table populated (4 states),
+    and the Customize Columns popover open (axe) plus its keyboard open /
+    Escape-returns-focus check. The L5917 comment now points at them.
+  - `e2e/layout/search-tables.spec.ts` (7 tests): a header click sends the API's
+    sort and returns to page 1; the toolbar Sort select and the headers stay in
+    sync both ways ("Best match" clears `aria-sort`); the 70vh cap with the
+    header stuck while rows scroll; pinning; every tab's table fits the page
+    width; at 390 the page never scrolls sideways but the table does; column
+    choices survive a reload. No top scrollbar check: Search has none.
+  - All 13 pass against the static export (`yarn build:a11y`), and so does the
+    rest of `search.spec.ts`, plus `resources.spec.ts`, `saved.spec.ts` and
+    `repository-matcher.spec.ts` (a11y): 63 of 66 in that run.
+- **Pre-existing, not from this work:** 3 tests in
+  `e2e/layout/repository-matcher.spec.ts` fail: "the table fills the window
+  below the toolbar" (100 px gap), "a pinned first column stays put" (asserts a
+  `box-shadow`, which `4d5db0bf` moved to an `::after` strip), and the
+  small-screen "toolbar stays above the bounded table" (168 px gap). They fail
+  identically on a `4d5db0bf` build (checked in a temporary worktree), so the
+  spec is out of date with the owner's later Repository Matcher layout and
+  pinned-shadow commits. Not changed; flagged.
+- **Perf: skipped by the owner (2026-11-16).** Still open: compare the heaviest
+  cases (Samples 100 × 28, Datasets 100 × 17) against `4d5db0bf` before relying
+  on the tables at 100 rows per page.
 
 ### Later: the rest of the app (main plan Phases 3 and 5)
 
