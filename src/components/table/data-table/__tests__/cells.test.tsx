@@ -147,6 +147,18 @@ describe('LinkListCell', () => {
     expect(screen.getByText('No Funding')).toBeInTheDocument();
     expect(screen.getAllByRole('link')).toHaveLength(1);
   });
+
+  it('renders each entry as its own element, so unlinked entries stay on their own lines', () => {
+    render(
+      <LinkListCell
+        entries={[{ label: 'Electron Micrograph' }, { label: 'Gene Variant' }]}
+      />,
+    );
+    // Adjacent bare text nodes would read as one ("Electron MicrographGene
+    // Variant") and render on one line in the list's flex column.
+    expect(screen.getByText('Electron Micrograph')).toBeInTheDocument();
+    expect(screen.getByText('Gene Variant')).toBeInTheDocument();
+  });
 });
 
 describe('ResourceLinkCell', () => {

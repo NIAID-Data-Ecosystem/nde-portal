@@ -60,6 +60,27 @@ describe('useColumnPreferences', () => {
     expect(result.current.visibleIds).toContain('name');
   });
 
+  it('keeps several required columns in their declared order, whatever the stored order', () => {
+    const columns = [
+      { id: 'name', hideable: false },
+      { id: 'source', hideable: false },
+      { id: 'date' },
+    ];
+    window.localStorage.setItem(
+      KEY,
+      JSON.stringify({
+        v: 1,
+        visible: ['date', 'source', 'name'],
+        order: ['date', 'source', 'name'],
+      }),
+    );
+    const { result } = renderHook(() =>
+      useColumnPreferences({ tableId: 'test', columns }),
+    );
+    expect(result.current.order).toEqual(['name', 'source', 'date']);
+    expect(result.current.visibleIds).toEqual(['name', 'source', 'date']);
+  });
+
   it('reorders with move up/down and drag, keeping required columns first', () => {
     const { result } = setup();
     act(() => result.current.moveDown('description'));

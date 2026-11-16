@@ -22,7 +22,9 @@ export const LinkCell = ({
   external?: boolean;
 }) => {
   const text = label || href || '';
-  if (!href) return text ? <>{text}</> : <EmptyValue />;
+  // An element, not a bare text node: in a list (a flex column), adjacent text
+  // nodes would merge into one line.
+  if (!href) return text ? <span>{text}</span> : <EmptyValue />;
   if (external ?? isExternalHref(href)) {
     const url = /^www\./i.test(href) ? `https://${href}` : href;
     return (

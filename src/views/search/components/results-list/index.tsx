@@ -1,6 +1,6 @@
 import { List, VStack } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Alert } from 'src/components/alert';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import {
@@ -24,114 +24,20 @@ import { useViewMode } from '../../hooks/useViewMode';
 import { SearchViewMode, TabType } from '../../types';
 import { updateRoute } from '../../utils/update-route';
 import Card from './components/card';
-import {
-  ALL_DATA_COLLECTION_COLUMNS,
-  DataCollectionResultsTable,
-} from './components/data-collection-results-table';
-import {
-  CUSTOM_COLUMN_ORDER_STORAGE_KEY as DC_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
-  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as DC_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-  CustomizeColumnsPopover as DataCollectionCustomizeColumnsPopover,
-  DEFAULT_VISIBLE_COLUMN_IDS as DC_DEFAULT_VISIBLE_COLUMN_IDS,
-} from './components/data-collection-results-table/components/CustomizeColumnsPopover';
 import { EmptyState } from './components/empty';
 import { ErrorMessage } from './components/error';
 import { MAX_RESULTS, Pagination } from './components/pagination';
 import { SEARCH_TABLES } from './components/results-table/tables';
-import {
-  ALL_SAMPLE_COLUMNS,
-  SampleResultsTable,
-} from './components/sample-results-table';
-import {
-  CUSTOM_COLUMN_ORDER_STORAGE_KEY as SAMPLE_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
-  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as SAMPLE_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-  CustomizeColumnsPopover as SampleCustomizeColumnsPopover,
-  DEFAULT_VISIBLE_COLUMN_IDS as SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS,
-} from './components/sample-results-table/components/CustomizeColumnsPopover';
 import { SearchResultsToolbar } from './components/toolbar';
 import { ViewModeRadio } from './components/toolbar/components/view-mode-radio';
 import { getSectionFilters } from './utils/resource-type-filter';
 
-const readFromStorage = (key: string, fallback: string[]): string[] => {
-  if (typeof window === 'undefined') return fallback;
-  try {
-    const stored = window.localStorage.getItem(key);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch {
-    // ignore
-  }
-  return fallback;
-};
-
-// Read the persisted visible column IDs from localStorage.
-// Falls back to the default subset when no stored value exists.
-const getInitialVisibleColumnIds = (): string[] => {
-  const stored = readFromStorage(
-    SAMPLE_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-    SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS,
-  );
-  const allIds = ALL_SAMPLE_COLUMNS.map(c => c.id);
-  const valid = stored.filter((id: string) => allIds.includes(id));
-  return valid.length > 0 ? valid : SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS;
-};
-
-// Read the persisted column order from localStorage.
-// Falls back to the master column order when no stored value exists.
-const getInitialColumnOrder = (): string[] => {
-  const allIds = ALL_SAMPLE_COLUMNS.map(c => c.id);
-  const stored = readFromStorage(
-    SAMPLE_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
-    allIds,
-  );
-  const valid = stored.filter((id: string) => allIds.includes(id));
-  if (valid.length > 0) {
-    const missing = allIds.filter(id => !valid.includes(id));
-    return [...valid, ...missing];
-  }
-  return allIds;
-};
-
-const getInitialDataCollectionVisibleColumnIds = (): string[] => {
-  const stored = readFromStorage(
-    DC_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-    DC_DEFAULT_VISIBLE_COLUMN_IDS,
-  );
-  const allIds = ALL_DATA_COLLECTION_COLUMNS.map(c => c.id);
-  const valid = stored.filter((id: string) => allIds.includes(id));
-  return valid.length > 0 ? valid : DC_DEFAULT_VISIBLE_COLUMN_IDS;
-};
-
-const getInitialDataCollectionColumnOrder = (): string[] => {
-  const allIds = ALL_DATA_COLLECTION_COLUMNS.map(c => c.id);
-  const stored = readFromStorage(DC_CUSTOM_COLUMN_ORDER_STORAGE_KEY, allIds);
-  const valid = stored.filter((id: string) => allIds.includes(id));
-  if (valid.length > 0) {
-    const missing = allIds.filter(id => !valid.includes(id));
-    return [...valid, ...missing];
-  }
-  return allIds;
-};
-
-// Build the ColumnConfig list expected by each CustomizeColumnsPopover.
-const SAMPLE_COLUMN_CONFIGS = ALL_SAMPLE_COLUMNS.map(col => ({
-  id: col.id,
-  title: col.title,
-}));
-
-const DATA_COLLECTION_COLUMN_CONFIGS = ALL_DATA_COLLECTION_COLUMNS.map(col => ({
-  id: col.id,
-  title: col.title,
-}));
-
 /*
 [COMPONENT INFO]:
  Search results pages displays the list of records returned by a search.
- Contains pagination and search results cards. When the active tab is the
- Samples tab ('s') or the DataCollection tab ('dc'), results are rendered
- as a table instead of cards.
+ Contains pagination and search results cards. The Samples tab always shows
+ a table; the other tabs show a table instead of cards in their table view
+ (see SEARCH_TABLES).
 */
 
 export const SearchResults = ({
@@ -185,8 +91,7 @@ export const SearchResults = ({
     (!SHOW_SEARCH_VIEW_MODES ||
       !SHOW_DATA_COLLECTIONS_VIEW_MODES ||
       viewMode === 'table');
-  // The tab's table on the shared DataTable, when it shows one. Tabs not in
-  // SEARCH_TABLES yet still render their legacy table below.
+  // The tab's table (see SEARCH_TABLES), when it shows one rather than cards.
   const showsTable =
     isSamplesTab ||
     isDatasetTable ||
@@ -206,28 +111,6 @@ export const SearchResults = ({
     : isDataCollectionTab
     ? DATA_COLLECTION_FIELDS
     : RESULT_FIELDS;
-
-  // Only initialize column state for the tab type that this instance actually
-  // renders. Avoid paying the localStorage read cost for the other table
-  // type on every mount.
-  const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(() =>
-    isSamplesTab
-      ? getInitialVisibleColumnIds()
-      : SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS,
-  );
-  const [columnOrder, setColumnOrder] = useState<string[]>(() =>
-    isSamplesTab ? getInitialColumnOrder() : ALL_SAMPLE_COLUMNS.map(c => c.id),
-  );
-  const [dcVisibleColumnIds, setDcVisibleColumnIds] = useState<string[]>(() =>
-    isDataCollectionTable
-      ? getInitialDataCollectionVisibleColumnIds()
-      : DC_DEFAULT_VISIBLE_COLUMN_IDS,
-  );
-  const [dcColumnOrder, setDcColumnOrder] = useState<string[]>(() =>
-    isDataCollectionTable
-      ? getInitialDataCollectionColumnOrder()
-      : ALL_DATA_COLLECTION_COLUMNS.map(c => c.id),
-  );
 
   // Drops results that aren't one of this section's types. Most queries are
   // already scoped to them, but when the selected `@type` filter excludes
@@ -353,7 +236,7 @@ export const SearchResults = ({
   return (
     <>
       <VStack borderRadius='semi' px={4} py={2}>
-        {/* Toolbar controls: Sort, size, download metadata, and optional extra actions. Whenever a table is being rendered (Samples, and Datasets/Computational Tools/Data Collections in table view) the "Customize Columns" button is injected via the extraActions prop so it appears to the left of Download Metadata. */}
+        {/* Toolbar controls: Sort, size, download metadata, and optional extra actions. Whenever a table is shown, its "Customize Columns" button is injected via the extraActions prop so it appears to the left of Download Metadata. */}
         <SearchResultsToolbar
           id={id}
           params={params}
@@ -370,21 +253,7 @@ export const SearchResults = ({
             ) : undefined
           }
           extraActions={
-            searchTable ? (
-              <searchTable.ColumnCustomizer />
-            ) : isSamplesTab ? (
-              <SampleCustomizeColumnsPopover
-                columnsList={SAMPLE_COLUMN_CONFIGS}
-                onVisibleColumnsChange={setVisibleColumnIds}
-                onColumnOrderChange={setColumnOrder}
-              />
-            ) : isDataCollectionTable ? (
-              <DataCollectionCustomizeColumnsPopover
-                columnsList={DATA_COLLECTION_COLUMN_CONFIGS}
-                onVisibleColumnsChange={setDcVisibleColumnIds}
-                onColumnOrderChange={setDcColumnOrder}
-              />
-            ) : undefined
+            searchTable ? <searchTable.ColumnCustomizer /> : undefined
           }
         />
 
@@ -414,27 +283,6 @@ export const SearchResults = ({
             loading={!router.isReady || isLoading}
             currentSort={sort}
             onSortChange={handleSortChange}
-          />
-        ) : isSamplesTab ? (
-          /* Samples tab */
-          <SampleResultsTable
-            results={data?.results || []}
-            loading={!router.isReady || isLoading}
-            visibleColumnIds={visibleColumnIds}
-            columnOrder={columnOrder}
-            currentSort={sort}
-            onSortChange={handleSortChange}
-          />
-        ) : isDataCollectionTable ? (
-          /* DataCollection tab in table view */
-          <DataCollectionResultsTable
-            results={data?.results || []}
-            loading={!router.isReady || isLoading}
-            visibleColumnIds={dcVisibleColumnIds}
-            columnOrder={dcColumnOrder}
-            currentSort={sort}
-            onSortChange={handleSortChange}
-            referrerPath={router.asPath}
           />
         ) : (
           /* Dataset / ComputationalTool / DataCollection tabs in card view: render result cards */

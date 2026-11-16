@@ -2,7 +2,9 @@ import type { TabType } from 'src/views/search/types';
 
 import type { SearchTable } from '../create-search-table';
 import { computationalToolsTable } from './computational-tools';
+import { dataCollectionsTable } from './data-collections';
 import { datasetsTable } from './datasets';
+import { samplesTable } from './samples';
 
 /**
  * The Search tables on the shared DataTable, by tab id. Tabs not listed here
@@ -11,4 +13,6 @@ import { datasetsTable } from './datasets';
 export const SEARCH_TABLES: Partial<Record<TabType['id'], SearchTable>> = {
   d: datasetsTable,
   ct: computationalToolsTable,
+  dc: dataCollectionsTable,
+  s: samplesTable,
 };

@@ -5,10 +5,11 @@ decisions 1–14, §2 expectations and §3 "must preserve" list all apply here).
 This file covers Phase 4's remaining work and lays out the path to deleting the
 legacy `src/components/table` implementation.
 
-- **Status (2026-11-16):** decisions D1–D5 taken (§4). Steps 1–2 committed
-  (`2542fa7e`, `c4b1ea47`); step 3 implemented (uncommitted), see the steps'
-  "Done" notes. Datasets and Computational Tools are on the factory; Samples and
-  Data Collections are on the legacy `ResultsTable`.
+- **Status (2026-11-16):** decisions D1–D5 taken (§4). Steps 1–3 committed
+  (`2542fa7e`, `c4b1ea47`, `862c1dd1`); step 4 staged by the owner; step 5
+  implemented (unstaged), see the steps' "Done" notes. All four Search tables
+  are on the factory; the legacy `ResultsTable` layer has no importers left and
+  goes in step 6.
 - **Goal:** every table in the app on `DataTable`; one place for cells; the
   legacy `Table`, its parts, and the Search `ResultsTable` layer deleted.
 - **Update this file** as steps land, and log intentional changes in the main
@@ -361,6 +362,41 @@ _Done (2026-11-16, uncommitted):_
 - Keep the page logic that forces the table when either view-mode flag hides the
   radio.
 
+_Done (2026-11-16, uncommitted):_
+
+- `tables/data-collections.tsx` (89 lines; the legacy folder was 413), with
+  `toBasedOnActionNames` and `toCollectionSizes` in `shaping.ts`; registered as
+  `dc`. Content type stays in the table file: `shaping.ts` importing
+  `utils/content-type.ts` would have made a cycle (that file took `toArray` from
+  `results-table/utils.ts`, which re-exports `shaping.ts`). `content-type.ts`
+  now imports `toArray` from `shaping.ts`, its real home (it would have broken
+  in step 6 otherwise).
+- `LinkListCell` gained `gap`; Content Type, Based On and Collection Size keep
+  the legacy table's wider spacing (`gap={2}`).
+- Deleted: `data-collection-results-table/`, the DC storage helpers, state and
+  branches in `results-list/index.tsx`, and the DC constant.
+- **Two shared fixes, found by the new tests:**
+  - `LinkCell`'s text fallback was a bare text node. In a list (a flex column)
+    consecutive unlinked entries merged into one line ("Electron MicrographGene
+    Variant"). Since step 1 this affected Datasets' Funder / Funding ID / Usage
+    Info lists with several unlinked entries. It's now a `<span>`.
+  - `useColumnPreferences` kept required columns in their _stored_ relative
+    order, so a stored `[source, name, …]` put Source first; the legacy popover
+    always pinned them in their declared order. Required columns can't be moved,
+    so they now always lead in declared order. No effect on the Repository
+    Matcher (one required column).
+  - Both have regression tests (`cells.test.tsx`,
+    `useColumnPreferences.test.ts`).
+- Tests: the contract suite runs for `dc`, including the required-columns case
+  (Name, Source); `__tests__/data-collections.test.tsx` covers content type
+  (merged, sorted, linked), Based On (Actions only) and Collection Size. 83
+  related suites / 808 tests pass; typecheck and lint clean.
+- Browser, against the legacy table (50 rows): headers equal; of 600 cells, 401
+  identical, 99 blank → "No data", 50 access badges, 50 descriptions differing
+  only in their toggle (context added, or none needed in the wider column; rows
+  130 → 105 px). Content Type, Based On and Collection Size match the legacy
+  text exactly. Table 2,220 → 2,390 px. 390 checked.
+
 **Step 5: Samples** (`tables/samples.tsx`)
 
 - `identifier` is `hideable: false`. Its value is the record's `identifier`, or
@@ -374,6 +410,30 @@ _Done (2026-11-16, uncommitted):_
 - Funder and Funding ID use the presets, deleting the hand-rolled shaping.
   Funding ID keeps its wider size.
 - Drop the hand-rolled storage readers in `index.tsx`.
+
+_Done (2026-11-16, unstaged; step 4 is staged):_
+
+- `tables/samples.tsx` (115 lines; the legacy folder was 589), with
+  `toCatalogEntries` (now also behind `toCatalogEntry`, which takes the first)
+  and `toSampleIdentifier` in `shaping.ts`; registered as `s`. Default
+  visibility comes from the legacy list (`DEFAULT_VISIBLE_IDS`), so 18 of 28
+  columns start hidden.
+- `results-list/index.tsx` has no per-tab table code left: one `showsTable` flag
+  and a `SEARCH_TABLES[id]` lookup drive the customizer and the table. Deleted:
+  `sample-results-table/`, `readFromStorage` and the Samples storage helpers,
+  the last column `useState`s, and `results-table/constants.ts`.
+- Contract test: Samples' `identifier` is in `FILLED_FROM_ID`, and the
+  customizer case now hides a _default-visible_ column (Samples' first hideable
+  column starts hidden). `__tests__/samples.test.tsx` covers the identifier
+  (link, `_id` fallback), plain capitalized name, every catalog, and terms. 84
+  related suites / 826 tests pass; typecheck and lint clean.
+- Browser, against the legacy table (50 rows; default columns and all 28 via the
+  legacy keys): headers equal both ways; text differs only by blank → "No data",
+  the access badge, and "Show 3 More Funding ID" context. Found and fixed in
+  that check: Funding ID's minimum was narrower than the legacy column, so long
+  IDs wrapped and rows grew 172 → 289 px. At the legacy content width
+  (`min: 248`, 280 px with padding) rows are 172 → 184 px, the same +12 px as
+  every migrated table (the shared cell padding). 390 checked.
 
 Per step:
 

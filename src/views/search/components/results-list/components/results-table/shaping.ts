@@ -1,8 +1,10 @@
 import {
+  CollectionSize,
   FormattedResource,
   Funder,
   Funding,
   IncludedInDataCatalog,
+  IsBasedOn,
   SampleAggregate,
   SampleCollection,
   UsageInfo,
@@ -25,23 +27,25 @@ export const toArray = <T>(value: T | T[] | null | undefined): T[] =>
   Array.isArray(value) ? value : value ? [value] : [];
 
 /**
- * Reduce `includedInDataCatalog` to the first catalog as `{ name, url }`,
- * preferring the archived URL over the catalog's own URL.
+ * Every catalog in `includedInDataCatalog` as `{ name, url }`, preferring each
+ * one's archived URL over its own URL.
  */
+export const toCatalogEntries = (
+  includedInDataCatalog?: IncludedInDataCatalog | IncludedInDataCatalog[],
+): CatalogEntry[] =>
+  toArray(includedInDataCatalog).map(catalog => {
+    const archivedAt = catalog?.archivedAt;
+    const url =
+      (Array.isArray(archivedAt) ? archivedAt[0] : archivedAt) ??
+      catalog?.url ??
+      null;
+    return { name: catalog?.name ?? '', url };
+  });
+
+/** The first catalog in `includedInDataCatalog` (see `toCatalogEntries`). */
 export const toCatalogEntry = (
   includedInDataCatalog?: IncludedInDataCatalog | IncludedInDataCatalog[],
-): CatalogEntry | null => {
-  const catalog = toArray(includedInDataCatalog)[0] ?? null;
-  if (!catalog) return null;
-
-  const archivedAt = catalog.archivedAt;
-  const url =
-    (Array.isArray(archivedAt) ? archivedAt[0] : archivedAt) ??
-    catalog.url ??
-    null;
-
-  return { name: catalog.name ?? '', url };
-};
+): CatalogEntry | null => toCatalogEntries(includedInDataCatalog)[0] ?? null;
 
 /**
  * Flatten `funding[].funder[]` into named funders, collapsing duplicates by
@@ -176,3 +180,34 @@ export const toSoftwareHelpEntries = (
       : entry.name;
     return [{ label: name || entry.url, url: entry.url }];
   });
+
+/** Based On: the names of the `isBasedOn` entries that are Actions. */
+export const toBasedOnActionNames = (
+  isBasedOn?: FormattedResource['isBasedOn'] | IsBasedOn | null,
+): string[] =>
+  toArray<IsBasedOn>(isBasedOn as IsBasedOn | IsBasedOn[] | null)
+    .filter(entry => entry?.['@type'] === 'Action' && entry?.name)
+    .map(entry => entry.name as string);
+
+/**
+ * Collection size as text, one per entry: "<minValue>+ <unit, lowercased>"
+ * ("1000+ samples"), with either part alone when the other is missing.
+ */
+export const toCollectionSizes = (
+  collectionSize?: CollectionSize | CollectionSize[] | null,
+): string[] =>
+  toArray<CollectionSize>(collectionSize).flatMap(entry => {
+    const amount = entry?.minValue != null ? `${entry.minValue}+` : null;
+    const unit = entry?.unitText ? entry.unitText.toLowerCase() : null;
+    return amount || unit ? [[amount, unit].filter(Boolean).join(' ')] : [];
+  });
+
+/**
+ * A sample's identifier: its `identifier` when that's a single non-empty
+ * string, otherwise its `_id` without the leading underscore, upper-cased.
+ */
+export const toSampleIdentifier = (resource: FormattedResource): string => {
+  const identifier = (resource as { identifier?: unknown }).identifier;
+  if (typeof identifier === 'string' && identifier) return identifier;
+  return resource._id?.replace(/^_/, '').toUpperCase() ?? '';
+};

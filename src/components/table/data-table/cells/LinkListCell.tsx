@@ -1,3 +1,4 @@
+import type { FlexProps } from '@chakra-ui/react';
 import React from 'react';
 
 import { EmptyValue } from './EmptyValue';
@@ -18,10 +19,13 @@ export interface LinkEntry {
 export const LinkListCell = ({
   entries,
   maxVisible,
+  gap = 1,
   toggleContext,
 }: {
   entries?: LinkEntry[] | null;
   maxVisible?: number;
+  /** Space between entries. Defaults to 1. */
+  gap?: FlexProps['gap'];
   /** Read after "Show N More" (e.g. the column header). */
   toggleContext?: string;
 }) => {
@@ -29,7 +33,7 @@ export const LinkListCell = ({
   if (links.length === 0) return <EmptyValue />;
   return (
     <ExpandableList
-      gap={1}
+      gap={gap}
       maxVisible={maxVisible}
       toggleContext={toggleContext}
     >

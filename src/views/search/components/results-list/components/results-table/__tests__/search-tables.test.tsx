@@ -24,7 +24,10 @@ A table's own cells are tested in its own file (e.g. datasets.test.tsx).
  * Columns a record with only an `_id` still fills (e.g. an identifier derived
  * from it), by tab id. Every other column shows "No data" for such a record.
  */
-const FILLED_FROM_ID: Record<string, string[]> = {};
+const FILLED_FROM_ID: Record<string, string[]> = {
+  // Derived from `_id` when the record has no identifier of its own.
+  s: ['identifier'],
+};
 
 const RECORD = {
   _id: 'r-1',
@@ -224,7 +227,8 @@ describe.each(Object.entries(SEARCH_TABLES) as [string, SearchTable][])(
       it('reorders columns and shares its state with the table', async () => {
         const { user } = await setup({}, { withCustomizer: true });
         const dialog = await openCustomizer(user);
-        const first = allIds.find(id => !requiredIds.includes(id))!;
+        // A column that's shown, so unchecking it hides it.
+        const first = defaultIds.find(id => !requiredIds.includes(id))!;
         expect(
           within(dialog).getByRole('button', {
             name: `Reorder ${headerOf(first)}`,

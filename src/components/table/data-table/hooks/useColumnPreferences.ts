@@ -170,9 +170,12 @@ const moveItem = (list: string[], from: number, to: number) => {
   return next;
 };
 
-/** Non-hideable columns always lead, in their own relative order. */
+/**
+ * Non-hideable columns always lead, in their declared order (they can't be
+ * moved, so a stored order never rearranges them).
+ */
 const pinRequired = (order: string[], requiredIds: string[]) => [
-  ...order.filter(id => requiredIds.includes(id)),
+  ...requiredIds.filter(id => order.includes(id)),
   ...order.filter(id => !requiredIds.includes(id)),
 ];
 
