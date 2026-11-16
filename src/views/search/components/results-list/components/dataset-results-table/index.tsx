@@ -1,7 +1,19 @@
-import { Text } from '@chakra-ui/react';
-import React, { useMemo } from 'react';
+import { Box } from '@chakra-ui/react';
+import React, { useCallback, useMemo } from 'react';
+import { ConditionsOfAccess } from 'src/components/badges';
 import { ExpandableText } from 'src/components/expandable-cells';
-import { Column } from 'src/components/table';
+import {
+  CellContext,
+  ColumnCustomizer,
+  ColumnDef,
+  createColumnHelper,
+  DataTable,
+  isEmptyValue,
+  SortState,
+  toText,
+  useColumnPreferences,
+  useDataTable,
+} from 'src/components/table/data-table';
 import {
   FormattedResource,
   SampleAggregate,
@@ -10,177 +22,35 @@ import {
 } from 'src/utils/api/types';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 
-import { ResultsTable } from '../results-table';
-import { renderCellData } from '../results-table/components/Cells';
+import { CellValue, renderCellData } from '../results-table/components/Cells';
 import {
+  LinkEntry,
   LinkListCell,
   LinkOrTextCell,
-  ResourceNameCell,
+  SearchResourceNameCell,
 } from '../results-table/components/SharedCells';
-import { DATASET_FALLBACK_COLUMN_IDS } from '../results-table/constants';
-import { BaseColumn } from '../results-table/types';
 import {
-  CatalogEntry,
-  FunderEntry,
-  FundingIdEntry,
-  LicenseEntry,
   normalizeTermNames,
   toArray,
   toCatalogEntry,
   toFunderEntries,
   toFundingIdEntries,
   toLicenseEntry,
-  withWidth,
+  toSortState,
 } from '../results-table/utils';
 
-export interface DatasetColumn extends BaseColumn {}
-
 /*
- Columns mirror the metadata the Dataset card displays: the card header fields
- (name, source, date, author, access badges, description) followed by the
- properties in the card's metadata accordion, in its SORT_ORDER. Labels match
- the card's wording.
-*/
-export const ALL_DATASET_COLUMNS: DatasetColumn[] = [
-  {
-    id: 'name',
-    title: 'Name',
-    property: 'name',
-    isSortable: true,
-    apiSortField: 'name.raw',
-    props: withWidth('250px'),
-  },
-  {
-    id: 'source',
-    title: 'Source',
-    property: 'includedInDataCatalog',
-    isSortable: true,
-    apiSortField: 'includedInDataCatalog.name',
-    props: withWidth('160px'),
-  },
-  {
-    id: 'date',
-    title: 'Date',
-    property: 'date',
-    isSortable: true,
-    apiSortField: 'date',
-    props: withWidth('130px'),
-  },
-  {
-    id: 'author',
-    title: 'Author',
-    property: 'author',
-    isSortable: false,
-    apiSortField: null,
-    props: withWidth('220px'),
-  },
-  {
-    id: 'conditionsOfAccess',
-    title: 'Conditions of Access',
-    property: 'conditionsOfAccess',
-    isSortable: true,
-    apiSortField: 'conditionsOfAccess',
-    props: withWidth('180px'),
-  },
-  {
-    id: 'description',
-    title: 'Description',
-    property: 'description',
-    isSortable: false,
-    apiSortField: null,
-    props: withWidth('250px'),
-  },
-  {
-    id: 'infectiousAgent',
-    title: 'Pathogen',
-    property: 'infectiousAgent',
-    isSortable: false,
-    apiSortField: null,
-    props: withWidth('160px'),
-  },
-  {
-    id: 'species',
-    title: 'Species',
-    property: 'species',
-    isSortable: false,
-    apiSortField: null,
-    props: withWidth('170px'),
-  },
-  {
-    id: 'healthCondition',
-    title: 'Health Condition',
-    property: 'healthCondition',
-    isSortable: false,
-    apiSortField: null,
-    props: withWidth('160px'),
-  },
-  {
-    id: 'measurementTechnique',
-    title: 'Measurement Technique',
-    property: 'measurementTechnique',
-    isSortable: false,
-    apiSortField: null,
-    props: withWidth('200px'),
-  },
-  {
-    id: 'variableMeasured',
-    title: 'Variable Measured',
-    property: 'variableMeasured',
-    isSortable: false,
-    apiSortField: null,
-    props: withWidth('200px'),
-  },
-  {
-    id: 'samples',
-    title: 'Samples',
-    property: 'samples',
-    isSortable: false,
-    apiSortField: null,
-    props: withWidth('180px'),
-  },
-  {
-    id: 'funder',
-    title: 'Funder',
-    property: 'funder',
-    isSortable: false,
-    apiSortField: null,
-    props: withWidth('200px'),
-  },
-  {
-    id: 'fundingId',
-    title: 'Funding ID',
-    property: 'fundingId',
-    isSortable: false,
-    apiSortField: null,
-    props: withWidth('160px'),
-  },
-  {
-    id: 'license',
-    title: 'License',
-    property: 'license',
-    isSortable: false,
-    apiSortField: null,
-    props: withWidth('200px'),
-  },
-  {
-    id: 'usageInfo',
-    title: 'Usage Info',
-    property: 'usageInfo',
-    isSortable: false,
-    apiSortField: null,
-    props: withWidth('200px'),
-  },
-  {
-    id: 'topicCategory',
-    title: 'Topic Category',
-    property: 'topicCategory',
-    isSortable: false,
-    apiSortField: null,
-    props: withWidth('160px'),
-  },
-];
+The Datasets tab's table view, on the shared DataTable
+(src/components/table/data-table). Columns mirror the metadata the Dataset card
+displays: the card header fields (name, source, date, author, access badge,
+description) followed by the properties in the card's metadata accordion, in
+its SORT_ORDER. Labels match the card's wording.
 
-type UsageInfoEntry = { name: string; url: string | null };
+Rows are the API results as they come; each column's `accessor` shapes its own
+value, so a hidden column costs nothing. Sorting is server-side: the table only
+reports the requested sort, and the page refetches.
+*/
+
 type SampleEntry = { count: number; kind: 'experimental' | 'population' };
 
 /**
@@ -188,7 +58,7 @@ type SampleEntry = { count: number; kind: 'experimental' | 'population' };
  * which kind of sample it is. Discriminates on the top-level `@type`, the same
  * way the card's sample pill does: a SampleCollection is an experimental count,
  * a SampleAggregate a population count. Returns null when there is no count to
- * show, so the cell renders blank.
+ * show.
  */
 const getSampleEntry = (
   sample?: SampleAggregate | SampleCollection | null,
@@ -209,215 +79,269 @@ const getSampleEntry = (
   return count == null ? null : { count, kind: 'population' };
 };
 
-export const toRow = (resource: FormattedResource): Record<string, unknown> => {
-  // Usage info may be a single object or an array. The card falls back to
-  // "Usage Agreement" when an entry has no name.
-  const usageInfoEntries: UsageInfoEntry[] = toArray<UsageInfo>(
-    resource.usageInfo,
-  )
-    .map(info => ({
-      name: info?.name || 'Usage Agreement',
-      url: info?.url ?? null,
-    }))
-    .filter(entry => entry.name || entry.url);
+const defineColumn = createColumnHelper<FormattedResource>();
 
-  return {
-    ...resource,
-    includedInDataCatalog: toCatalogEntry(resource.includedInDataCatalog),
-    measurementTechnique: normalizeTermNames(resource.measurementTechnique),
-    // Columns derived from `funding`, `sample`, `usageInfo` and `license`.
-    // Stored as arrays (or null when empty) so getCells stacks multiple
-    // entries per record uniformly.
-    funder: toFunderEntries(resource.funding),
-    fundingId: toFundingIdEntries(resource.funding),
-    usageInfo: usageInfoEntries.length > 0 ? usageInfoEntries : null,
-    license: toLicenseEntry(resource.license),
-    samples: getSampleEntry(resource.sample),
-  };
+/**
+ * DefinedTerm / QuantitativeValue properties (pathogen, species, …): one term
+ * per line, linked when the term has a url, "Show N More" past 5.
+ */
+const termListColumn = (
+  id: string,
+  header: string,
+  accessor: (row: FormattedResource) => unknown,
+) =>
+  defineColumn({
+    id,
+    header,
+    type: 'list',
+    accessor: row => accessor(row) as CellValue | CellValue[],
+    cell: ({ value, column }) =>
+      isEmptyValue(value)
+        ? null
+        : renderCellData({ data: value, toggleContext: column.header }),
+  });
+
+/**
+ * Several values stacked one per line, each linked when it has a url. Returns
+ * null for none, so the table shows its "No data" placeholder (a
+ * `LinkListCell` element rendering nothing would leave the cell blank).
+ */
+const linkListCell = ({
+  value,
+  column,
+}: CellContext<FormattedResource, LinkEntry[] | null>) =>
+  value?.length ? (
+    <LinkListCell entries={value} toggleContext={column.header} />
+  ) : null;
+
+/**
+ * Every column the table offers, in their default order (ids are the ones the
+ * pre-DataTable table persisted, so saved preferences migrate). All are shown
+ * by default. Kept as a module constant: cells memoize on it.
+ */
+export const DATASET_COLUMNS: ColumnDef<FormattedResource>[] = [
+  defineColumn({
+    id: 'name',
+    header: 'Name',
+    accessor: row => ({
+      label: row.name || toText(row.alternateName),
+      id: row.id,
+    }),
+    sort: true,
+    size: { min: 200, max: 320 },
+    // Links to the resource page, as the card's title does.
+    cell: ({ value }) =>
+      value.label ? (
+        <SearchResourceNameCell label={value.label} id={value.id} />
+      ) : null,
+  }),
+  defineColumn({
+    id: 'source',
+    header: 'Source',
+    type: 'link',
+    accessor: row => toCatalogEntry(row.includedInDataCatalog),
+    sort: true,
+    cell: ({ value }) =>
+      value ? <LinkOrTextCell label={value.name} url={value.url} /> : null,
+  }),
+  defineColumn({ id: 'date', header: 'Date', type: 'date', sort: true }),
+  defineColumn({
+    id: 'author',
+    header: 'Author',
+    // The same comma-joined string the card shows, clamped.
+    accessor: row => formatAuthorsList2String(row.author, ',', 10),
+    size: { min: 180, max: 280 },
+    cell: ({ value, column }) =>
+      value ? (
+        <ExpandableText
+          text={value}
+          noOfLines={3}
+          toggleContext={column.header}
+        />
+      ) : null,
+  }),
+  defineColumn({
+    id: 'conditionsOfAccess',
+    header: 'Conditions of Access',
+    accessor: row => row.conditionsOfAccess,
+    sort: true,
+    // The result card's badge (with its explanatory tooltip).
+    cell: ({ value, row }) =>
+      value && row['@type'] ? (
+        <ConditionsOfAccess conditionsOfAccess={value} type={row['@type']} />
+      ) : null,
+  }),
+  defineColumn({ id: 'description', header: 'Description', type: 'longText' }),
+  termListColumn('infectiousAgent', 'Pathogen', row => row.infectiousAgent),
+  termListColumn('species', 'Species', row => row.species),
+  termListColumn(
+    'healthCondition',
+    'Health Condition',
+    row => row.healthCondition,
+  ),
+  // Some terms carry an array `name`; joined the way the card does.
+  termListColumn('measurementTechnique', 'Measurement Technique', row =>
+    normalizeTermNames(row.measurementTechnique),
+  ),
+  termListColumn(
+    'variableMeasured',
+    'Variable Measured',
+    row => row.variableMeasured,
+  ),
+  defineColumn({
+    id: 'samples',
+    header: 'Samples',
+    accessor: row => getSampleEntry(row.sample),
+    cell: ({ value }) =>
+      value ? `${value.count.toLocaleString()} (${value.kind})` : null,
+  }),
+  defineColumn({
+    id: 'funder',
+    header: 'Funder',
+    type: 'list',
+    // Each name linked to the funder's identifier.
+    accessor: row =>
+      toFunderEntries(row.funding)?.map(({ name, identifier }) => ({
+        label: name,
+        url: identifier,
+      })) ?? null,
+    cell: linkListCell,
+  }),
+  defineColumn({
+    id: 'fundingId',
+    header: 'Funding ID',
+    type: 'identifier',
+    // Each identifier linked to its funding URL.
+    accessor: row =>
+      toFundingIdEntries(row.funding)?.map(({ identifier, url }) => ({
+        label: identifier,
+        url,
+      })) ?? null,
+    cell: linkListCell,
+  }),
+  defineColumn({
+    id: 'license',
+    header: 'License',
+    type: 'link',
+    accessor: row => toLicenseEntry(row.license),
+    cell: ({ value }) =>
+      value ? <LinkOrTextCell label={value.title} url={value.url} /> : null,
+  }),
+  defineColumn({
+    id: 'usageInfo',
+    header: 'Usage Info',
+    type: 'link',
+    // A single object or an array; an entry with no name reads "Usage
+    // Agreement", as on the card.
+    accessor: row =>
+      toArray<UsageInfo>(row.usageInfo)
+        .map(info => ({
+          label: info?.name || 'Usage Agreement',
+          url: info?.url ?? null,
+        }))
+        .filter(entry => entry.label || entry.url),
+    cell: linkListCell,
+  }),
+  termListColumn('topicCategory', 'Topic Category', row => row.topicCategory),
+];
+
+/** The API sort field for each sortable column. */
+const API_SORT_FIELDS: Record<string, string> = {
+  name: 'name.raw',
+  source: 'includedInDataCatalog.name',
+  date: 'date',
+  conditionsOfAccess: 'conditionsOfAccess',
 };
 
-// Builds the cell renderer for this table.
-export const createGetCells =
-  (referrerPath?: string) =>
-  ({
-    column,
-    data,
-    loading,
-  }: {
-    column: Column;
-    data: Record<string, unknown>;
-    loading?: boolean;
-  }) => {
-    const value = data?.[column.property];
+/** Pre-v1 keys written by the old customize-columns popover. */
+const LEGACY_KEYS = {
+  visible: 'search-visible-dataset-columns',
+  order: 'search-dataset-column-order',
+};
+/** Every column can be hidden; "Clear All" leaves Name. */
+const FALLBACK_IDS = ['name'];
 
-    // Name: links to the resource page, as the card's title does.
-    if (column.property === 'name') {
-      return (
-        <ResourceNameCell
-          label={(value as string) || (data?.alternateName as string) || ''}
-          id={data?.id as string | undefined}
-          referrerPath={referrerPath}
-        />
-      );
-    }
+/**
+ * The table's column choices. The customizer (in the results toolbar) and the
+ * table each call this; same table id, so they share one state.
+ */
+const useDatasetColumnPreferences = () =>
+  useColumnPreferences({
+    tableId: 'search-datasets',
+    columns: DATASET_COLUMNS,
+    fallbackIds: FALLBACK_IDS,
+    legacyKeys: LEGACY_KEYS,
+  });
 
-    // Plain text scalars.
-    if (
-      column.property === 'date' ||
-      column.property === 'conditionsOfAccess'
-    ) {
-      return value ? <Text fontSize='sm'>{String(value)}</Text> : null;
-    }
+const getRowId = (row: FormattedResource, index: number) =>
+  row._id || row.id || String(index);
 
-    // Source: { name, url } => link or plain text
-    if (column.property === 'includedInDataCatalog') {
-      const catalog = value as CatalogEntry | null;
-      if (!catalog) return null;
-      return <LinkOrTextCell label={catalog.name} url={catalog.url} />;
-    }
-
-    // Author: the same comma-joined string the card shows, clamped.
-    if (column.property === 'author') {
-      const authors = formatAuthorsList2String(
-        value as FormattedResource['author'],
-        ',',
-        10,
-      );
-      return <ExpandableText text={authors} noOfLines={3} loading={loading} />;
-    }
-
-    // Description: clamped to a few lines with a "Show More" / "Show Less" toggle.
-    if (column.property === 'description') {
-      return (
-        <ExpandableText
-          text={(value as string) || ''}
-          noOfLines={4}
-          loading={loading}
-        />
-      );
-    }
-
-    // Funder: name linked to the funder's identifier.
-    if (column.property === 'funder') {
-      const entries = value as FunderEntry[] | null;
-      return (
-        <LinkListCell
-          entries={entries?.map(({ name, identifier }) => ({
-            label: name,
-            url: identifier,
-          }))}
-        />
-      );
-    }
-
-    // Funding ID: identifier linked to the funding URL.
-    if (column.property === 'fundingId') {
-      const entries = value as FundingIdEntry[] | null;
-      return (
-        <LinkListCell
-          entries={entries?.map(({ identifier, url }) => ({
-            label: identifier,
-            url,
-          }))}
-        />
-      );
-    }
-
-    // Usage Info: name (or "Usage Agreement") linked to the usage URL.
-    if (column.property === 'usageInfo') {
-      const entries = value as UsageInfoEntry[] | null;
-      return (
-        <LinkListCell
-          entries={entries?.map(({ name, url }) => ({ label: name, url }))}
-        />
-      );
-    }
-
-    // License: title linked to the license URL.
-    if (column.property === 'license') {
-      const license = value as LicenseEntry | null;
-      if (!license) return null;
-      return <LinkOrTextCell label={license.title} url={license.url} />;
-    }
-
-    // Samples: the count with its kind. Blank when
-    // the record has no sample count.
-    if (column.property === 'samples') {
-      const entry = value as SampleEntry | null;
-      return entry ? (
-        <Text fontSize='sm'>{`${entry.count.toLocaleString()} (${
-          entry.kind
-        })`}</Text>
-      ) : null;
-    }
-
-    // infectiousAgent, species, healthCondition, measurementTechnique,
-    // variableMeasured, topicCategory, and any other DefinedTerm /
-    // QuantitativeValue fields.
-    return renderCellData({ column, data: value as any, loading });
-  };
+/** The "Customize Columns" popover for the Datasets table. */
+export const DatasetColumnCustomizer = () => {
+  const preferences = useDatasetColumnPreferences();
+  return (
+    <ColumnCustomizer
+      columns={DATASET_COLUMNS}
+      preferences={preferences}
+      allowReorder
+    />
+  );
+};
 
 interface DatasetResultsTableProps {
+  /** The current page of results, already sorted by the API. */
   results: FormattedResource[];
   loading: boolean;
   /**
-   * IDs of columns that should be visible.
-   * When undefined, all columns are shown.
-   */
-  visibleColumnIds?: string[];
-  /**
-   * Full ordered list of all column IDs (visible + hidden).
-   * The table renders visible columns in this order.
-   * When undefined, the default ALL_DATASET_COLUMNS order is used.
-   */
-  columnOrder?: string[];
-  /**
-   * The currently active API sort string (e.g. `"name.raw"` or `"-date"`).
-   * A leading `-` indicates descending order.
-   * When provided the table header highlights the matching column and
-   * delegates sort-toggle clicks to `onSortChange` instead of sorting
-   * the page locally.
+   * The current API sort string (e.g. `"name.raw"` or `"-date"`; a leading
+   * `-` is descending). The matching column shows as sorted; a sort no column
+   * matches ("Best match") shows none.
    */
   currentSort?: string;
   /**
-   * Called when the user clicks a sortable column header arrow.
-   * Receives the API sort field and the desired direction.
+   * Called when a sortable header is clicked, with that column's API sort
+   * field and the requested direction. The caller updates the URL and
+   * refetches.
    */
-  onSortChange?: (apiField: string, ascending: boolean) => void;
-  /**
-   * Current path of the search page, forwarded to the resource page by the
-   * Name cell's link so its breadcrumb can point back to this search.
-   */
-  referrerPath?: string;
+  onSortChange: (apiField: string, ascending: boolean) => void;
 }
 
 export const DatasetResultsTable = ({
   results,
   loading,
-  visibleColumnIds,
-  columnOrder,
   currentSort,
   onSortChange,
-  referrerPath,
 }: DatasetResultsTableProps) => {
-  // Keep the cell renderer's identity stable: the generic Table memoizes each
-  // row on it, so a fresh function every render would re-render every cell.
-  const getCells = useMemo(() => createGetCells(referrerPath), [referrerPath]);
+  const preferences = useDatasetColumnPreferences();
+  const sortState = useMemo(
+    () => toSortState(currentSort, API_SORT_FIELDS),
+    [currentSort],
+  );
+  const handleSortChange = useCallback(
+    (next: SortState) => {
+      const field = API_SORT_FIELDS[next.columnId];
+      if (field) onSortChange(field, next.direction === 'asc');
+    },
+    [onSortChange],
+  );
+
+  const table = useDataTable({
+    data: results,
+    columns: DATASET_COLUMNS,
+    getRowId,
+    preferences,
+    sort: { mode: 'server', state: sortState, onChange: handleSortChange },
+  });
 
   return (
-    <ResultsTable
-      columns={ALL_DATASET_COLUMNS}
-      results={results}
-      loading={loading}
-      toRow={toRow}
-      getCells={getCells}
-      ariaLabel='Dataset search results'
-      caption='Table of dataset search results'
-      requiredColumnIds={DATASET_FALLBACK_COLUMN_IDS as unknown as string[]}
-      visibleColumnIds={visibleColumnIds}
-      columnOrder={columnOrder}
-      currentSort={currentSort}
-      onSortChange={onSortChange}
-    />
+    <Box width='100%'>
+      <DataTable
+        table={table}
+        label='Dataset search results'
+        maxHeight='70vh'
+        skeletonRows={10}
+        status={{ loading }}
+      />
+    </Box>
   );
 };

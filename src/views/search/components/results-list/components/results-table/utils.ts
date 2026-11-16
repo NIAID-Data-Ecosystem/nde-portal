@@ -1,3 +1,4 @@
+import type { SortState } from 'src/components/table/data-table';
 import { Funder, Funding, IncludedInDataCatalog } from 'src/utils/api/types';
 import { formatLicense } from 'src/utils/helpers';
 
@@ -156,4 +157,25 @@ export const getApiSortFieldForProperty = <TColumn extends BaseColumn>(
 ): string | null => {
   const col = columns.find(c => c.property === property);
   return col?.apiSortField ?? null;
+};
+
+/*
+Server sort for the tables on the shared DataTable. `fields` maps each
+sortable column id to its API sort field (e.g. `{ name: 'name.raw' }`); the
+URL/API sort string is that field, with a leading `-` for descending.
+*/
+
+/**
+ * The table's sort state for an API sort string, or `null` when no column
+ * sorts on it (e.g. "Best match", `_score`), so no header shows as sorted.
+ */
+export const toSortState = (
+  apiSort: string | undefined,
+  fields: Record<string, string>,
+): SortState | null => {
+  if (!apiSort) return null;
+  const descending = apiSort.startsWith('-');
+  const field = descending ? apiSort.slice(1) : apiSort;
+  const columnId = Object.keys(fields).find(id => fields[id] === field);
+  return columnId ? { columnId, direction: descending ? 'desc' : 'asc' } : null;
 };

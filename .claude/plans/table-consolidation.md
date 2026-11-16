@@ -11,6 +11,9 @@ rules stay in `.claude/CLAUDE.md`.
   is **in evaluation**: rounds 1–3 (§9) are done. Round 3 (bounded by default,
   natural height via `maxHeight='none'`) is implemented, uncommitted, and
   benchmarked against r4. Don't start Phase 3 until the owner signs off.
+- **2026-11-16:** Phase 4 started at the owner's request with the **Datasets**
+  table (uncommitted); see §6 "Search: Datasets". Samples, Computational Tools
+  and Data Collections are still on the legacy `ResultsTable`.
 - **Update this file** when a decision changes, a phase finishes, or an
   intentional behaviour change is made.
 
@@ -283,8 +286,8 @@ first change, then removed.
 - **Height and scrolling:**
   - The height cap changed from `60vh` to `maxHeight='viewport'` (`md` and up);
     below `md` the page scrolls.
-  - New: a floating horizontal scrollbar. (A right-edge fade while columns
-    were off-screen was tried and removed, 2026-11-12.)
+  - New: a floating horizontal scrollbar. (A right-edge fade while columns were
+    off-screen was tried and removed, 2026-11-12.)
 - **Cell display:**
   - Missing values show "—" (screen readers: "No data"), replacing "not
     available" and "-".
@@ -345,6 +348,44 @@ first change, then removed.
 - Hybrid devices: a tap that closes the tooltip ends touch mode, so a mouse can
   open it again.
 
+**Search: Datasets (Phase 4, 2026-11-16).** `dataset-results-table/index.tsx` is
+on `DataTable` in server mode; the page's sort handler, URL sync, page reset and
+toolbar select are unchanged (verified in a browser: a header click writes
+`sort=-date&from=1` and the toolbar select follows; "Best match" marks no
+column). Rows are the raw API results; each column's `accessor` shapes its
+value, and the legacy cell renderers are reused as per-column `cell`s.
+Preferences: `nde:table:search-datasets:v1`, migrating
+`search-visible-dataset-columns` / `search-dataset-column-order`; fallback
+`name`. The dataset `CustomizeColumnsPopover` wrapper, its storage helpers in
+`results-list/index.tsx` and the dataset constants are deleted. Intentional
+changes, beyond the shared header/sort/stripe look:
+
+- **Sorting:** two states; Date's first click is newest first.
+- **Cells:** missing values show "—" / "No data" (were blank). Dates go through
+  `formatDate`. Conditions of Access is the card's badge with its tooltip
+  (decision 10; was plain text). "Show More" / "Show N More" toggles carry the
+  column name for screen readers. An array `alternateName` fallback is
+  comma-joined.
+- **Widths:** per-type min/max instead of fixed widths (Name 200–320, Author
+  180–280, Description the `longText` 280–560, was 250).
+- **Height and scrolling:** the page keeps the old `70vh` cap (now the
+  `maxHeight` prop), header sticky, top scrollbar on (decision 7), plus the
+  floating scrollbar. Loading shows skeleton rows under the real header instead
+  of one skeleton block.
+- **Column controls:** the shared `ColumnCustomizer`, so "Reset to defaults" is
+  new here. Pinning stays off (Search never had it; decision 5 is opt-in).
+- **Shared hook fix (`useColumnPreferences.setVisible`):** hiding the last
+  visible column now leaves the fallback columns, like "Clear All". Before, the
+  stored empty selection read back as the defaults and re-showed every column.
+  (The legacy Search table showed only Name but left the popover all unchecked,
+  then showed every column after a reload.) No effect on the Repository Matcher,
+  whose Name can't be hidden.
+- Known, not changed: in dev, Emotion logs ~10 `:first-child` "potentially
+  unsafe when doing server-side rendering" errors on Search table view, from the
+  `dataTable` recipe's pinned-column selectors. Likely only because Search
+  renders its results client-side (the Repository Matcher's table is in the
+  server HTML and logs none). Dev-only.
+
 **Client pagination fix (2026-11-09; no effect on the pilot, which doesn't
 paginate):**
 
@@ -387,14 +428,14 @@ The legacy `src/components/table` (`Table`, `Cell`, `Th`, `Row`,
 
 ## 8. Phases
 
-| Phase | Scope                                                                                                                                                                                                                                                                                                                                                                                                                                      | Status                                 |
-| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------- |
-| 0     | Performance criteria and baseline; native-layout spike                                                                                                                                                                                                                                                                                                                                                                                     | ✅ done                                |
-| 1     | Headless foundations (utils, `useColumnPreferences`, `useDataTable`, `useTableSearch`, controlled popover view)                                                                                                                                                                                                                                                                                                                            | ✅ done                                |
-| 2     | `DataTable` and the Repository Matcher pilot; layout spec; a11y error state                                                                                                                                                                                                                                                                                                                                                                | ✅ done, **awaiting owner evaluation** |
-| 3     | Saved and Home onto `DataTable`. Saved drops virtualization (decision 2) and switches dates to ISO (decision 12); Home keeps its local search and filters                                                                                                                                                                                                                                                                                  | not started                            |
-| 4     | Search: four tables on `DataTable` server mode. One column file per type with per-column `cell`; Samples reuses the shared row shaping. One `ColumnCustomizer` per tab; delete the 5 search popover files and the storage helpers; migrate legacy keys. Top scrollbar on (decision 7); Conditions of Access badge (decision 10). Add an axe scan of table view and fix the misleading comment at `e2e/accessibility/search.spec.ts` ~L5917 | not started                            |
-| 5     | Category 2: Files and Samples onto `DataTable`; cited-by and based-on take the shared header/sort; the funding row drawer stays bespoke. Delete the legacy `Table`, `useTableSort`, `getTruncatedText`, and Saved's use of `repository-matcher/components/TableCells.tsx`                                                                                                                                                                  | not started                            |
+| Phase | Scope                                                                                                                                                                                                                                                                                                                                                                                                                                      | Status                                                                           |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| 0     | Performance criteria and baseline; native-layout spike                                                                                                                                                                                                                                                                                                                                                                                     | ✅ done                                                                          |
+| 1     | Headless foundations (utils, `useColumnPreferences`, `useDataTable`, `useTableSearch`, controlled popover view)                                                                                                                                                                                                                                                                                                                            | ✅ done                                                                          |
+| 2     | `DataTable` and the Repository Matcher pilot; layout spec; a11y error state                                                                                                                                                                                                                                                                                                                                                                | ✅ done, **awaiting owner evaluation**                                           |
+| 3     | Saved and Home onto `DataTable`. Saved drops virtualization (decision 2) and switches dates to ISO (decision 12); Home keeps its local search and filters                                                                                                                                                                                                                                                                                  | not started                                                                      |
+| 4     | Search: four tables on `DataTable` server mode. One column file per type with per-column `cell`; Samples reuses the shared row shaping. One `ColumnCustomizer` per tab; delete the 5 search popover files and the storage helpers; migrate legacy keys. Top scrollbar on (decision 7); Conditions of Access badge (decision 10). Add an axe scan of table view and fix the misleading comment at `e2e/accessibility/search.spec.ts` ~L5917 | **in progress**: Datasets done (axe scan run ad hoc, no spec yet); 3 tables left |
+| 5     | Category 2: Files and Samples onto `DataTable`; cited-by and based-on take the shared header/sort; the funding row drawer stays bespoke. Delete the legacy `Table`, `useTableSort`, `getTruncatedText`, and Saved's use of `repository-matcher/components/TableCells.tsx`                                                                                                                                                                  | not started                                                                      |
 
 Dependencies: 3 and 4 can run in parallel after sign-off; 5 comes last.
 
@@ -788,13 +829,13 @@ weren't supported:
 - The pinned column's shadow is an `::after` strip past each first cell (a
   per-cell `box-shadow` notched at every row). Anything positioned inside the
   viewport counts toward its scroll size: a strip reaching 1px below the last
-  row (no bottom border) added vertical scroll, and one on the full-width
-  status cell would widen the horizontal scroll. So body strips reach *up*
-  over the row border, and the status cell has none (2026-11-12).
+  row (no bottom border) added vertical scroll, and one on the full-width status
+  cell would widen the horizontal scroll. So body strips reach _up_ over the row
+  border, and the status cell has none (2026-11-12).
 - The shadow shows whenever the pinned table overflows, not only once scrolled
   off the start. Any attribute on the root that a cell selector depends on
   restyles every cell when it flips (invalidation goes by tag, `td`): a
   `data-at-start` flag cost ~16 ms style per scroll leaving or reaching the
-  start at 4x CPU (840 cells), plus ~11 ms layout while the strip was created
-  by toggling `content`. Removed 2026-11-12; keep scroll-position state out of
-  the root's attributes.
+  start at 4x CPU (840 cells), plus ~11 ms layout while the strip was created by
+  toggling `content`. Removed 2026-11-12; keep scroll-position state out of the
+  root's attributes.

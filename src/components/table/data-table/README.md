@@ -174,8 +174,9 @@ you pass `pagination` to `DataTable` directly or pass a `table` from
 Stored under `nde:table:<tableId>:v1` as `{ visible, order, pinned }`.
 `legacyKeys` migrates old keys on first read. Columns added after a user saved
 take their default visibility and slot in after their nearest predecessor.
-Non-hideable columns are always visible and first. "Clear All" leaves the
-`fallbackIds` (default: the non-hideable columns).
+Non-hideable columns are always visible and first. "Clear All", or hiding the
+last visible column, leaves the `fallbackIds` (default: the non-hideable
+columns).
 
 ## Accessibility
 

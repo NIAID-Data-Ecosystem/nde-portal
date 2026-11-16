@@ -49,22 +49,13 @@ import {
   DEFAULT_VISIBLE_COLUMN_IDS as DC_DEFAULT_VISIBLE_COLUMN_IDS,
 } from './components/data-collection-results-table/components/CustomizeColumnsPopover';
 import {
-  ALL_DATASET_COLUMNS,
+  DatasetColumnCustomizer,
   DatasetResultsTable,
 } from './components/dataset-results-table';
-import {
-  CUSTOM_COLUMN_ORDER_STORAGE_KEY as DATASET_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
-  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as DATASET_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-  CustomizeColumnsPopover as DatasetCustomizeColumnsPopover,
-  DEFAULT_VISIBLE_COLUMN_IDS as DATASET_DEFAULT_VISIBLE_COLUMN_IDS,
-} from './components/dataset-results-table/components/CustomizeColumnsPopover';
 import { EmptyState } from './components/empty';
 import { ErrorMessage } from './components/error';
 import { MAX_RESULTS, Pagination } from './components/pagination';
-import {
-  COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS,
-  DATASET_REQUIRED_COLUMN_IDS,
-} from './components/results-table/constants';
+import { COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS } from './components/results-table/constants';
 import {
   ALL_SAMPLE_COLUMNS,
   SampleResultsTable,
@@ -142,27 +133,10 @@ const getInitialDataCollectionColumnOrder = (): string[] => {
   return allIds;
 };
 
-// The Dataset table resolves its persisted state through the popover's own
-// exported resolvers, which apply the required-column rules (always visible,
-// pinned first) that the hand-rolled helpers above do not.
-const ALL_DATASET_COLUMN_IDS = ALL_DATASET_COLUMNS.map(c => c.id);
-const DATASET_REQUIRED_IDS = DATASET_REQUIRED_COLUMN_IDS as unknown as string[];
-
-const getInitialDatasetVisibleColumnIds = (): string[] =>
-  resolveStoredVisibleIds({
-    storageKey: DATASET_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-    allIds: ALL_DATASET_COLUMN_IDS,
-    defaultVisibleIds: DATASET_DEFAULT_VISIBLE_COLUMN_IDS,
-    requiredIds: DATASET_REQUIRED_IDS,
-  });
-
-const getInitialDatasetColumnOrder = (): string[] =>
-  resolveStoredOrderedIds({
-    storageKey: DATASET_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
-    allIds: ALL_DATASET_COLUMN_IDS,
-    requiredIds: DATASET_REQUIRED_IDS,
-  });
-
+// The Computational Tools table resolves its persisted state through the
+// popover's own exported resolvers, which apply the required-column rules
+// (always visible, pinned first) that the hand-rolled helpers above do not.
+// (The Datasets table is on the shared DataTable, which persists its own.)
 const ALL_CT_COLUMN_IDS = ALL_COMPUTATIONAL_TOOL_COLUMNS.map(c => c.id);
 const CT_REQUIRED_IDS =
   COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS as unknown as string[];
@@ -184,11 +158,6 @@ const getInitialCTColumnOrder = (): string[] =>
 
 // Build the ColumnConfig list expected by each CustomizeColumnsPopover.
 const SAMPLE_COLUMN_CONFIGS = ALL_SAMPLE_COLUMNS.map(col => ({
-  id: col.id,
-  title: col.title,
-}));
-
-const DATASET_COLUMN_CONFIGS = ALL_DATASET_COLUMNS.map(col => ({
   id: col.id,
   title: col.title,
 }));
@@ -298,16 +267,6 @@ export const SearchResults = ({
     isDataCollectionTable
       ? getInitialDataCollectionColumnOrder()
       : ALL_DATA_COLLECTION_COLUMNS.map(c => c.id),
-  );
-  const [datasetVisibleColumnIds, setDatasetVisibleColumnIds] = useState<
-    string[]
-  >(() =>
-    isDatasetTable
-      ? getInitialDatasetVisibleColumnIds()
-      : DATASET_DEFAULT_VISIBLE_COLUMN_IDS,
-  );
-  const [datasetColumnOrder, setDatasetColumnOrder] = useState<string[]>(() =>
-    isDatasetTable ? getInitialDatasetColumnOrder() : ALL_DATASET_COLUMN_IDS,
   );
   const [ctVisibleColumnIds, setCtVisibleColumnIds] = useState<string[]>(() =>
     isComputationalToolTable
@@ -472,11 +431,7 @@ export const SearchResults = ({
                 onColumnOrderChange={setDcColumnOrder}
               />
             ) : isDatasetTable ? (
-              <DatasetCustomizeColumnsPopover
-                columnsList={DATASET_COLUMN_CONFIGS}
-                onVisibleColumnsChange={setDatasetVisibleColumnIds}
-                onColumnOrderChange={setDatasetColumnOrder}
-              />
+              <DatasetColumnCustomizer />
             ) : isComputationalToolTable ? (
               <ComputationalToolCustomizeColumnsPopover
                 columnsList={COMPUTATIONAL_TOOL_COLUMN_CONFIGS}
@@ -533,11 +488,8 @@ export const SearchResults = ({
           <DatasetResultsTable
             results={data?.results || []}
             loading={!router.isReady || isLoading}
-            visibleColumnIds={datasetVisibleColumnIds}
-            columnOrder={datasetColumnOrder}
             currentSort={sort}
             onSortChange={handleSortChange}
-            referrerPath={router.asPath}
           />
         ) : isComputationalToolTable ? (
           /* Computational Tools tab in table view */

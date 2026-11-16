@@ -1,5 +1,6 @@
 import { Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 import React from 'react';
 import { ExpandableList } from 'src/components/expandable-cells';
 import { Link } from 'src/components/link';
@@ -47,6 +48,19 @@ export const ResourceNameCell = ({
   );
 };
 
+/**
+ * `ResourceNameCell` with the current search page as its referrer, read from
+ * the router. For the shared DataTable, whose columns are module constants
+ * and so can't be handed a per-render `referrerPath`.
+ */
+export const SearchResourceNameCell = (props: {
+  label: string;
+  id?: string;
+}) => {
+  const { asPath } = useRouter();
+  return <ResourceNameCell {...props} referrerPath={asPath} />;
+};
+
 /** A single value rendered as an external link when it has a url. */
 export const LinkOrTextCell = ({ label, url }: LinkEntry) => {
   if (!label && !url) return null;
@@ -60,10 +74,17 @@ export const LinkOrTextCell = ({ label, url }: LinkEntry) => {
 };
 
 /** Several values stacked one per line, each an external link when it has a url. */
-export const LinkListCell = ({ entries }: { entries?: LinkEntry[] | null }) => {
+export const LinkListCell = ({
+  entries,
+  toggleContext,
+}: {
+  entries?: LinkEntry[] | null;
+  /** Read after "Show N More" (e.g. the column header). */
+  toggleContext?: string;
+}) => {
   if (!entries || entries.length === 0) return null;
   return (
-    <ExpandableList gap={1}>
+    <ExpandableList gap={1} toggleContext={toggleContext}>
       {entries.map((entry, idx) => (
         <LinkOrTextCell key={idx} label={entry.label} url={entry.url} />
       ))}

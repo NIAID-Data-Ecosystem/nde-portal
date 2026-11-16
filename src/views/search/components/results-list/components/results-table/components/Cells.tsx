@@ -106,16 +106,19 @@ export const renderValue = (val: CellValue, key?: React.Key) => {
 
 // Render a cell value that may be a single scalar or an array of scalars.
 export const renderCellData = (props: {
-  column: Column;
+  /** Unused; kept for the legacy `Table`'s `getCells` call shape. */
+  column?: Column;
   data: CellValue | CellValue[];
   loading?: boolean;
+  /** Read after "Show N More" (e.g. the column header). */
+  toggleContext?: string;
 }): React.ReactNode => {
   const cellValue = props.data;
 
   if (Array.isArray(cellValue)) {
     if (cellValue.length === 0) return null;
     return (
-      <ExpandableList>
+      <ExpandableList toggleContext={props.toggleContext}>
         {cellValue.map((value, idx) => renderValue(value, idx))}
       </ExpandableList>
     );

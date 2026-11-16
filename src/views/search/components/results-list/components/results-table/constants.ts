@@ -11,8 +11,6 @@ export const SAMPLE_REQUIRED_COLUMN_IDS = ['identifier'] as const;
 
 export const DATA_COLLECTION_REQUIRED_COLUMN_IDS = ['name', 'source'] as const;
 
-export const DATASET_REQUIRED_COLUMN_IDS = [] as const;
-
 export const COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS = [] as const;
 
 /**
@@ -23,6 +21,4 @@ export const COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS = [] as const;
  * only reinstated as a fallback so the table never renders with zero
  * columns.
  */
-export const DATASET_FALLBACK_COLUMN_IDS = ['name'] as const;
-
 export const COMPUTATIONAL_TOOL_FALLBACK_COLUMN_IDS = ['name'] as const;

@@ -115,6 +115,28 @@ describe('useColumnPreferences', () => {
     expect(result.current.visibleIds).toEqual(['name', 'description']);
   });
 
+  it('leaves the fallback columns when the last visible column is hidden', () => {
+    // No required columns, so nothing else keeps the table from emptying.
+    const columns = [{ id: 'name' }, { id: 'date' }, { id: 'source' }];
+    const { result } = renderHook(() =>
+      useColumnPreferences({
+        tableId: 'test',
+        columns,
+        fallbackIds: ['name'],
+      }),
+    );
+    act(() => result.current.setVisible('name', false));
+    act(() => result.current.setVisible('source', false));
+    expect(result.current.visibleIds).toEqual(['date']);
+    // Not every default column back.
+    act(() => result.current.setVisible('date', false));
+    expect(result.current.visibleIds).toEqual(['name']);
+    expect(stored().visible).toEqual(['name']);
+    // Hiding the fallback itself when it's the last one keeps it.
+    act(() => result.current.setVisible('name', false));
+    expect(result.current.visibleIds).toEqual(['name']);
+  });
+
   it('persists the pinned state and resets everything to defaults', () => {
     const { result } = setup();
     act(() => {

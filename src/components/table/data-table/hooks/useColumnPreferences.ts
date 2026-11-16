@@ -322,13 +322,20 @@ export const useColumnPreferences = ({
       });
 
     return {
+      // Hiding the last visible column leaves the fallback columns, as "Clear
+      // All" does. (A stored empty selection would otherwise read back as the
+      // defaults, re-showing every column.)
       setVisible: (id: string, visible: boolean) =>
-        update(({ visibleIds }) => ({
-          visibleIds:
+        update(({ visibleIds }) => {
+          const next =
             visible || requiredIds.includes(id)
               ? [...visibleIds, id]
-              : visibleIds.filter(v => v !== id),
-        })),
+              : visibleIds.filter(v => v !== id);
+          return {
+            visibleIds:
+              next.length > 0 ? next : [...requiredIds, ...fallbackIds],
+          };
+        }),
       toggleAll: () =>
         update(({ visibleIds, order }) => ({
           visibleIds:
