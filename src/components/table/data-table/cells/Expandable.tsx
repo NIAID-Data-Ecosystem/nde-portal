@@ -99,6 +99,7 @@ export const ExpandableText = ({
         ref={textRef}
         lineClamp={expanded ? undefined : noOfLines}
         fontSize='sm'
+        width='100%'
         {...props}
       >
         {text}

@@ -82,7 +82,7 @@ without pulling in the table itself, from `data-table/cells`).
 | `EmptyValue`       | The "No data" placeholder (`—`, read as "No data").                        |
 | `LinkCell`         | A link (internal, or external with the icon); text when there's no URL.    |
 | `LinkListCell`     | `{ label, url }` entries one per line, linked externally; "Show N More".   |
-| `TagsCell`         | Short terms as tags; "Show N More" past 12.                                |
+| `TagsCell`         | Short terms as tags; "Show N More" past 12; or `getSearchHref` links.      |
 | `TermsCell`        | Strings, booleans, DefinedTerms, QuantitativeValues; one per line, linked. |
 | `AccessBadgeCell`  | Conditions of Access as the result cards' badge, with its tooltip.         |
 | `ResourceLinkCell` | A record's name linking to its resource page, with the page as referrer.   |

@@ -47,7 +47,7 @@ export const COMPUTATIONAL_TOOL_COLUMNS: SearchColumnDef[] = [
   resourceColumns.funder(),
   resourceColumns.license(),
   resourceColumns.terms('softwareVersion', 'Software Version'),
-  resourceColumns.terms('topicCategory', 'Topic Category'),
+  resourceColumns.topicCategory(),
 ];
 
 export const computationalToolsTable = createSearchTable({

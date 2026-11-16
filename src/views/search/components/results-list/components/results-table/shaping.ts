@@ -181,6 +181,21 @@ export const toSoftwareHelpEntries = (
     return [{ label: name || entry.url, url: entry.url }];
   });
 
+/**
+ * Topic categories by name, deduplicated and sorted the way the result card
+ * lists them (`SearchableItems`).
+ */
+export const toTopicCategoryNames = (
+  topicCategory?: FormattedResource['topicCategory'],
+): string[] => {
+  const names = toArray(topicCategory)
+    .map(category => category?.name)
+    .filter((name): name is string => typeof name === 'string' && !!name);
+  return Array.from(new Set(names)).sort((a, b) =>
+    a.localeCompare(b, undefined, { sensitivity: 'base' }),
+  );
+};
+
 /** Based On: the names of the `isBasedOn` entries that are Actions. */
 export const toBasedOnActionNames = (
   isBasedOn?: FormattedResource['isBasedOn'] | IsBasedOn | null,

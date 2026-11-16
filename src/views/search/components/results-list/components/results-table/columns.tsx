@@ -1,4 +1,5 @@
 import React from 'react';
+import { getSearchableItemHref } from 'src/components/searchable-items';
 import {
   AccessBadgeCell,
   ColumnDef,
@@ -6,6 +7,7 @@ import {
   LinkCell,
   LinkListCell,
   ResourceLinkCell,
+  TagsCell,
   TermsCell,
   TermValue,
   toText,
@@ -18,6 +20,7 @@ import {
   toFunderEntries,
   toFundingIdEntries,
   toLicenseEntry,
+  toTopicCategoryNames,
 } from './shaping';
 
 /*
@@ -178,6 +181,31 @@ export const resourceColumns = {
           url,
         })) ?? null,
       cell: linkListCell,
+    }),
+
+  /**
+   * Topic categories as tags, each starting a search for itself as the result
+   * card's do (`topicCategory.name:"<name>"`).
+   */
+  topicCategory: () =>
+    searchColumn({
+      id: 'topicCategory',
+      header: 'Topic Category',
+      type: 'tags',
+      accessor: row => toTopicCategoryNames(row.topicCategory),
+      cell: ({ value, column }) => (
+        <TagsCell
+          values={value}
+          toggleContext={column.header}
+          getSearchHref={name =>
+            getSearchableItemHref({
+              name,
+              value: name,
+              field: 'topicCategory.name',
+            })
+          }
+        />
+      ),
     }),
 
   /** The license title (as the cards format it), linked to its URL. */

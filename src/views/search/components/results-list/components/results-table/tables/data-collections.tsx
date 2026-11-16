@@ -46,7 +46,7 @@ export const DATA_COLLECTION_COLUMNS: SearchColumnDef[] = [
   resourceColumns.terms('healthCondition', 'Health Condition'),
   resourceColumns.terms('infectiousAgent', 'Pathogen Species'),
   resourceColumns.terms('species', 'Host Species'),
-  resourceColumns.terms('topicCategory', 'Topic Category'),
+  resourceColumns.topicCategory(),
   searchColumn({
     id: 'isBasedOn',
     header: 'Based On',

@@ -519,6 +519,28 @@ _Done (2026-11-16, uncommitted):_
   cases (Samples 100 × 28, Datasets 100 × 17) against `4d5db0bf` before relying
   on the tables at 100 rows per page.
 
+### Owner adjustments after step 6
+
+- **Topic Category as searchable tags (2026-11-16, uncommitted).** Datasets,
+  Computational Tools and Data Collections now use
+  `resourceColumns.topicCategory()` (`type: 'tags'`) instead of a `terms` list.
+  Each tag links to `/search?q=topicCategory.name:"<name>"`, the same href the
+  card's tags build (`getSearchableItemHref`, now exported from
+  `searchable-items`). Names are deduplicated and sorted as on the card
+  (`toTopicCategoryNames`) and shown as the API gives them, without the `terms`
+  capitalization. `TagsCell` takes an optional `getSearchHref` for this.
+  Owner decisions: one line with an ellipsis and a tooltip, like the
+  Repository Matcher; not rounded; and, after a cost estimate, **styled plain
+  elements rather than tag components** (2026-11-16). Each tag is a `NextLink`
+  (`prefetch={false}`) > icon + label > text, styled in the dataTable recipe
+  (`.nde-tag-link*`) to look exactly like the cards' `TagWithUrl` (checked:
+  pixel-identical to the `TagWithUrl` version, same computed styles). The
+  tooltip is TagsCell's lazy one, also opened by keyboard focus (focus is
+  restored after the tag remounts; touch and click just navigate). While it's
+  mounted, the link's `aria-describedby` is emptied, because the tooltip
+  repeats the link's own name. The plain `.nde-tag` spans (Repository Matcher)
+  stay as they are. Column id unchanged, so saved preferences still apply.
+
 ### Later: the rest of the app (main plan Phases 3 and 5)
 
 Steps 1–6 leave every Search table and every shared cell on the new system. What

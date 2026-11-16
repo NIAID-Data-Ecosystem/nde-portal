@@ -14,6 +14,28 @@ The Computational Tools table's own cells. What every Search table shares
 as Name and Source) is in search-tables.test.tsx and datasets.test.tsx.
 */
 
+// The shared mock keeps only an object href's pathname; keep its query too,
+// to check the search a topic category tag starts.
+jest.mock('next/link', () => {
+  const { forwardRef } = jest.requireActual('react');
+  const { format } = jest.requireActual('url');
+  return {
+    __esModule: true,
+    default: forwardRef(
+      ({ href, children, prefetch, as, ...rest }: any, ref: any) => (
+        <a
+          ref={ref}
+          href={typeof href === 'string' ? href : format(href)}
+          data-as={as}
+          {...rest}
+        >
+          {children}
+        </a>
+      ),
+    ),
+  };
+});
+
 const RESULTS = [
   {
     _id: 'ct-1',
@@ -33,6 +55,11 @@ const RESULTS = [
       { name: 'No link' },
     ],
     license: 'https://opensource.org/licenses/MIT',
+    topicCategory: [
+      { name: 'Sequence analysis' },
+      { name: 'Genomics' },
+      { name: 'Sequence analysis' },
+    ],
   },
 ] as unknown as FormattedResource[];
 
@@ -103,6 +130,21 @@ describe('Computational Tools table', () => {
       help.getByRole('link', { name: /example\.org\/faq/ }),
     ).toHaveAttribute('href', 'https://example.org/faq');
     expect(help.queryByText('No link')).not.toBeInTheDocument();
+  });
+
+  // As on the card: deduplicated, sorted, each searching for itself.
+  it('links each topic category to a search for it', async () => {
+    await setup();
+    const links = cell('Topic Category').getAllByRole('link');
+    expect(links.map(link => link.textContent)).toEqual([
+      'Genomics',
+      'Sequence analysis',
+    ]);
+    const href = new URL(links[1].getAttribute('href')!, 'http://x');
+    expect(href.pathname).toBe('/search');
+    expect(href.searchParams.get('q')).toBe(
+      'topicCategory.name:"Sequence analysis"',
+    );
   });
 
   it('links the license', async () => {

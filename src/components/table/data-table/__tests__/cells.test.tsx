@@ -8,6 +8,7 @@ import {
   LinkListCell,
   renderTerm,
   ResourceLinkCell,
+  TagsCell,
   TermsCell,
   TermValue,
 } from '../cells';
@@ -123,6 +124,83 @@ describe('TermsCell', () => {
     });
     await user.click(toggle);
     expect(screen.getByText('G')).toBeInTheDocument();
+  });
+});
+
+describe('TagsCell', () => {
+  it('shows each value as a tag, or "No data" without any', () => {
+    const { rerender } = render(<TagsCell values={['Immunology', '']} />);
+    expect(screen.getByText('Immunology')).toHaveClass('nde-tag');
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    rerender(<TagsCell values={[]} />);
+    expect(screen.getByText('No data')).toBeInTheDocument();
+  });
+
+  it('links each tag to the search getSearchHref returns', () => {
+    render(
+      <TagsCell
+        values={['Immunology', 'Virology']}
+        getSearchHref={value => ({ pathname: '/search', query: { q: value } })}
+      />,
+    );
+    const links = screen.getAllByRole('link');
+    expect(links.map(link => link.textContent)).toEqual([
+      'Immunology',
+      'Virology',
+    ]);
+    expect(links[0]).toHaveAttribute('href', '/search?q=Immunology');
+  });
+
+  describe('a clipped search link', () => {
+    // jsdom has no layout: make every tag's text read as clipped.
+    beforeEach(() => {
+      jest
+        .spyOn(HTMLElement.prototype, 'scrollWidth', 'get')
+        .mockReturnValue(200);
+      jest
+        .spyOn(HTMLElement.prototype, 'clientWidth', 'get')
+        .mockReturnValue(100);
+    });
+    afterEach(() => jest.restoreAllMocks());
+
+    const renderLinks = () =>
+      render(
+        <TagsCell
+          values={['Genotype and phenotype', 'Virology']}
+          getSearchHref={value => ({
+            pathname: '/search',
+            query: { q: value },
+          })}
+        />,
+      );
+
+    it('shows its full name in a tooltip on hover, without repeating it as its description', async () => {
+      const user = userEvent.setup();
+      renderLinks();
+      await user.hover(
+        screen.getByRole('link', { name: 'Genotype and phenotype' }),
+      );
+      expect(await screen.findByRole('tooltip')).toHaveTextContent(
+        'Genotype and phenotype',
+      );
+      expect(
+        screen.getByRole('link', { name: 'Genotype and phenotype' }),
+      ).not.toHaveAccessibleDescription();
+    });
+
+    it('shows the tooltip on keyboard focus, and keeps the focus', async () => {
+      const user = userEvent.setup();
+      renderLinks();
+      await user.tab();
+      expect(await screen.findByRole('tooltip')).toHaveTextContent(
+        'Genotype and phenotype',
+      );
+      expect(
+        screen.getByRole('link', { name: 'Genotype and phenotype' }),
+      ).toHaveFocus();
+      await user.tab();
+      expect(screen.getByRole('link', { name: 'Virology' })).toHaveFocus();
+    });
   });
 });
 
