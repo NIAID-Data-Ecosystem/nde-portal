@@ -20,6 +20,7 @@ interface SearchTabsProps extends Omit<Tabs.RootProps, 'children'> {
 export const SearchTabs = ({
   colorPalette = 'secondary',
   tabs,
+  programInfoCount = 0,
   renderTabPanels,
   ...props
 }: SearchTabsProps) => (
@@ -40,7 +41,7 @@ export const SearchTabs = ({
           color='text.body'
           _selected={{ color: 'colorPalette.solid', bg: 'white' }}
         >
-          <TabLabel types={tab.types} />
+          <TabLabel types={tab.types} programInfoCount={programInfoCount} />
         </Tabs.Trigger>
       ))}
     </Tabs.List>
@@ -53,12 +54,20 @@ const isOtherResourceType = (type: string): boolean => {
 };
 
 // Each tab is labelled with one or more resource types and their result counts.
-const TabLabel = ({ types }: { types: TabWithCounts['types'] }) => {
+const TabLabel = ({
+  types,
+  programInfoCount,
+}: {
+  types: TabWithCounts['types'];
+  programInfoCount: number;
+}) => {
   const dataset = types.find(type => type.type === 'Dataset');
   const otherResources = types.filter(type => isOtherResourceType(type.type));
 
-  // The default tab folds Resource Catalogs and Disease Overviews into a single
-  // "Other Resources" count alongside Datasets; every other tab has one type.
+  // The default tab folds Resource Catalogs, Disease Overviews and Program
+  // Info cards into a single "Other Resources" count alongside Datasets (the
+  // same total as that section's accordion title); every other tab has one
+  // type.
   const segments =
     dataset && otherResources.length === 2
       ? [
@@ -67,7 +76,7 @@ const TabLabel = ({ types }: { types: TabWithCounts['types'] }) => {
             label: `and ${TAB_LABELS.OTHER_RESOURCES}`,
             count: otherResources.reduce(
               (total, type) => total + type.count,
-              0,
+              programInfoCount,
             ),
           },
         ]

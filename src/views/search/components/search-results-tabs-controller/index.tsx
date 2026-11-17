@@ -10,6 +10,7 @@ import {
   SHOW_PROGRAM_RESOURCE_UI,
   SHOW_SAMPLES_TAB,
 } from 'src/utils/feature-flags';
+import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 
 import { defaultQuery, getDefaultSizeForTab } from '../../config/defaultQuery';
 import { DATA_COLLECTION_FIELDS, SAMPLE_FIELDS } from '../../config/fields';
@@ -163,6 +164,14 @@ export const SearchResultsController = ({
 
   const bioSampleTotal = bioSampleAgg.data?.total ?? 0;
 
+  // The counts the auto-tab below picks a tab from haven't arrived for this
+  // search yet. The Samples count shows the previous search's total in the
+  // meantime (`keepPreviousData`), so that counts as pending too.
+  const tabCountsPending =
+    searchResultsData.response.isPending ||
+    bioSampleAgg.isPending ||
+    bioSampleAgg.isPlaceholderData;
+
   // The Sample and DataCollection prefetches below only help if their params
   // match the first page the tab's results section requests (see
   // `SearchResults`), since both share the query key. That means the same
@@ -241,7 +250,10 @@ export const SearchResultsController = ({
   ]);
 
   // Determine the correct tab based on actual search results.
-  useEffect(() => {
+  // A layout effect, so a switch lands before the browser paints: the render
+  // that brings the counts in also shows the current tab's results, and when
+  // those are empty they would otherwise flash up just before the switch.
+  useIsomorphicLayoutEffect(() => {
     if (!facetData?.facets || !router.isReady) return;
     const facetCounts =
       facetData?.facets?.['@type']?.terms?.map(term => ({
@@ -404,9 +416,17 @@ export const SearchResultsController = ({
   const shouldShowCarousel =
     hasResourceCatalogRecords || hasMatchingDiseases || hasProgramInfo;
 
+  // Whether there are resource catalogs comes from the `@type` counts, so
+  // until those are in for this search the carousel is loading, not empty.
   const isCarouselLoading =
+    searchResultsData.response.isPending ||
     (hasResourceCatalogRecords && (carouselIsLoading || carouselIsPending)) ||
     diseaseIsLoading;
+
+  // The open sections come from the counts and the disease matches (see
+  // `getAccordionDefaultValues`), which read as zero while they load. Waiting
+  // for them keeps a section from collapsing and re-opening on every search.
+  const holdAccordionDefaults = tabCountsPending || diseaseIsLoading;
 
   const tabsWithFacetCounts = useMemo(
     () =>
@@ -492,10 +512,21 @@ export const SearchResultsController = ({
             const defaultValues = getAccordionDefaultValues(sections);
 
             return (
-              <Tabs.Content key={tab.id} value={tab.id} pt={0}>
+              <Tabs.Content
+                key={tab.id}
+                value={tab.id}
+                pt={0}
+                // Ark leaves a tab's panel on screen until an animation frame
+                // after the switch (its presence machine, for exit
+                // animations, which these panels don't have). That frame can
+                // wait on the new tab's first render, so the old panel stays
+                // up beside it, often showing an empty state. Hide it in the
+                // same render instead.
+                hidden={tab.id !== selectedTab.id}
+              >
                 <AccordionWrapper
-                  key={`${tab.id}-${defaultValues.join('|')}`}
                   defaultValue={defaultValues}
+                  holdDefaultValue={holdAccordionDefaults}
                 >
                   {sections.filter(isRenderedSection).map(section => {
                     // For ResourceCatalog, render "Other Resources" with carousel
@@ -576,6 +607,7 @@ export const SearchResultsController = ({
                           id={tab.id}
                           tabs={tabs}
                           types={[section.type]}
+                          tabCountsPending={tabCountsPending}
                         />
                       </AccordionContent>
                     );

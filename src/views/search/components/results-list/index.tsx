@@ -44,10 +44,17 @@ export const SearchResults = ({
   id,
   tabs,
   types,
+  tabCountsPending = false,
 }: {
   id: TabType['id'];
   tabs: TabType[];
   types: string[];
+  /**
+   * The result counts that pick the active tab are still loading for this
+   * search. They can move the page to another tab, so until they arrive an
+   * empty page here shows as loading, not as "No results found".
+   */
+  tabCountsPending?: boolean;
 }) => {
   const router = useRouter();
 
@@ -155,8 +162,17 @@ export const SearchResults = ({
     },
   );
 
-  const { data, isLoading, isRefetching, isFetching, error, isFetched } =
-    response;
+  const { data, isRefetching, isFetching, error, isFetched } = response;
+
+  // A filter can leave this section empty while another tab has results
+  // (e.g. a source with only Data Collections, picked on the Datasets tab).
+  // The page then switches to that tab once the tab counts arrive (see the
+  // tabs controller), but this section's results often arrive first. Showing
+  // the empty state in that gap flashes "No results found" for a filter that
+  // does have results, so keep loading until the counts are in.
+  const isLoading =
+    response.isLoading ||
+    (tabCountsPending && !error && !data?.results?.length);
 
   const { markResultsFetching, markResultsFetched } =
     useSearchResultsFetchedContext();
@@ -282,7 +298,8 @@ export const SearchResults = ({
             results={data?.results || []}
             // Any fetch, not just the first: a refetch of cached results
             // keeps them up with a small loading indicator over the rows.
-            loading={!router.isReady || isFetching}
+            // `isLoading` adds an empty page held for the tab counts.
+            loading={!router.isReady || isFetching || isLoading}
             currentSort={sort}
             onSortChange={handleSortChange}
           />
@@ -303,7 +320,12 @@ export const SearchResults = ({
                   .fill(null)
                   .map((_, idx) => {
                     return (
-                      <List.Item key={data?.results?.[idx]._id || idx} w='100%'>
+                      // No result at `idx` while loading, including an empty
+                      // page held for the tab counts.
+                      <List.Item
+                        key={data?.results?.[idx]?._id || idx}
+                        w='100%'
+                      >
                         <Card
                           loading={!router.isReady || isLoading}
                           data={data?.results[idx]}
