@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.5.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v7.4.0...v7.5.0) (2026-11-17)
+
+
+### 🐛 Bugfixes
+
+* **search:** type menu selection and align default tab with filters [#587](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/587) ([#588](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/588)) ([e3ffed6](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/e3ffed6b2ac0c8e559a4834183a34184e68e53b3))
+* **settings:** show the ORCID email alert to NIH Login ORCID users ([fcae64c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/fcae64c6dd1c517807dff13422d65df12605b1cf))
+
+
+### 🚀 Features
+
+* add okta authentication ([7736720](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/7736720aa85185801bc77abcc36c131328be3dab))
+* add okta authentication ([ffbb38b](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/ffbb38bbd694d7a13ac8263f316667c0672e4f28))
+* add Okta integration + refactor authentication config ([#578](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/578)) ([d506de5](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/d506de59965208b3aa779838340f39bc1217cb54))
+* **settings:** add account details section to settings page ([77549da](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/77549da4fa335c843c11614c181339533a27ed75))
+* shorten welcome page titles ([#586](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/586)) ([0ecb89f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/0ecb89f045ae6491c1bc9069aefefe2fca73afbb))
+* show Welcome page based on onboarding boolean ([#585](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/585)) ([7e73dfb](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/7e73dfba81f8ee940a87397ff0e20a17196f8fc7))
+
 ### [7.4.1](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v7.4.0...v7.4.1) (2026-11-04)
 
 ### 🐛 Bugfixes
