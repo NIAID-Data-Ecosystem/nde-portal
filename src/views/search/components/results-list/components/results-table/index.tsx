@@ -2,7 +2,11 @@ import React, { useMemo } from 'react';
 import { Skeleton } from 'src/components/skeleton';
 import { Table } from 'src/components/table';
 import { BaseColumn, ResultsTableProps } from './types';
-import { deriveControlledSortProps, getApiSortFieldForProperty } from './utils';
+import {
+  deriveControlledSortProps,
+  getApiSortFieldForProperty,
+  resolveVisibleColumns,
+} from './utils';
 
 /**
  * Generic results table shared by all search-result table views (Samples,
@@ -33,31 +37,19 @@ export const ResultsTable = <TColumn extends BaseColumn>({
 }: ResultsTableProps<TColumn>) => {
   const rows = useMemo(() => results.map(toRow), [results, toRow]);
 
-  // Required columns used as the fallback when visibleColumnIds resolves to
-  // an empty array (e.g. during pre-hydration or after a "Clear All").
-  const requiredColumns = useMemo(
-    () => columns.filter(col => requiredColumnIds.includes(col.id)),
-    [columns, requiredColumnIds],
+  // Build the ordered + filtered column list, falling back to the required
+  // columns when visibleColumnIds resolves to an empty array (e.g., during
+  // pre-hydration or after a "Clear All").
+  const visibleColumns = useMemo(
+    () =>
+      resolveVisibleColumns(
+        columns,
+        visibleColumnIds,
+        columnOrder,
+        requiredColumnIds,
+      ),
+    [columns, visibleColumnIds, columnOrder, requiredColumnIds],
   );
-
-  // Build the ordered + filtered column list:
-  // 1. Start from columnOrder (if provided) or the master list order.
-  // 2. Keep only columns that are in visibleColumnIds.
-  // 3. Fall back to required columns if the result is empty.
-  const visibleColumns = useMemo(() => {
-    const sourceOrder =
-      columnOrder && columnOrder.length > 0
-        ? columnOrder
-            .map(id => columns.find(c => c.id === id))
-            .filter((c): c is TColumn => !!c)
-        : columns;
-
-    const filtered = visibleColumnIds
-      ? sourceOrder.filter(col => visibleColumnIds.includes(col.id))
-      : sourceOrder;
-
-    return filtered.length > 0 ? filtered : requiredColumns;
-  }, [columns, visibleColumnIds, columnOrder, requiredColumns]);
 
   // Controlled sort: derive which column property is active and its direction.
   const { controlledSortProperty, controlledSortAsc } = useMemo(

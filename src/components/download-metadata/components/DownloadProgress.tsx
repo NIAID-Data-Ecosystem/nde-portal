@@ -25,7 +25,10 @@ export interface DownloadOption {
   fn: (
     data: DownloadArgs['dataObject'],
     exportFileName: DownloadArgs['downloadName'],
-  ) => { href?: string; download?: string } | null;
+  ) =>
+    | { href?: string; download?: string }
+    | null
+    | Promise<{ href?: string; download?: string } | null>;
 }
 interface DownloadMetadataProgressProps extends FlexProps {
   cancelQuery: () => void;

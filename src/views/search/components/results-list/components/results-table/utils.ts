@@ -156,3 +156,34 @@ export const getApiSortFieldForProperty = <TColumn extends BaseColumn>(
   const col = columns.find(c => c.property === property);
   return col?.apiSortField ?? null;
 };
+
+/**
+ * Resolve which columns a table shows, and in what order:
+ * 1. Start from `columnOrder` (if provided) or the master list order.
+ * 2. Keep only columns that are in `visibleColumnIds` (all when undefined).
+ * 3. Fall back to the required columns if the result is empty.
+ *
+ * Shared by the rendered table and the XLSX "Custom Result View" export so
+ * that both always agree on the columns.
+ */
+export const resolveVisibleColumns = <TColumn extends BaseColumn>(
+  columns: TColumn[],
+  visibleColumnIds: string[] | undefined,
+  columnOrder: string[] | undefined,
+  requiredColumnIds: readonly string[],
+): TColumn[] => {
+  const sourceOrder =
+    columnOrder && columnOrder.length > 0
+      ? columnOrder
+          .map(id => columns.find(c => c.id === id))
+          .filter((c): c is TColumn => !!c)
+      : columns;
+
+  const filtered = visibleColumnIds
+    ? sourceOrder.filter(col => visibleColumnIds.includes(col.id))
+    : sourceOrder;
+
+  return filtered.length > 0
+    ? filtered
+    : columns.filter(col => requiredColumnIds.includes(col.id));
+};

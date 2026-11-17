@@ -23,7 +23,10 @@ import {
   toLicenseEntry,
   withWidth,
 } from '../results-table/utils';
-import { renderCellData } from '../results-table/components/Cells';
+import {
+  renderCellData,
+  valueToEntries,
+} from '../results-table/components/Cells';
 import { ExpandableText } from '../results-table/components/ExpandableCells';
 import {
   LinkListCell,
@@ -31,6 +34,13 @@ import {
   ResourceNameCell,
 } from '../results-table/components/SharedCells';
 import { DATASET_FALLBACK_COLUMN_IDS } from '../results-table/constants';
+import {
+  ExportEntriesGetter,
+  authorEntries,
+  linkEntries,
+  nameEntries,
+  textEntries,
+} from '../results-table/export';
 
 export interface DatasetColumn extends BaseColumn {}
 
@@ -357,6 +367,67 @@ export const createGetCells =
     // QuantitativeValue fields.
     return renderCellData({ column, data: value as any, isLoading });
   };
+
+/**
+ * Plain-data counterpart of `createGetCells` for the XLSX "Custom Result View"
+ * download: the text and link(s) each cell shows. Keep in sync with the cell
+ * renderer above.
+ */
+export const getExportEntries: ExportEntriesGetter = (property, row) => {
+  const value = row?.[property];
+
+  switch (property) {
+    case 'name':
+      return nameEntries(row);
+    case 'date':
+    case 'conditionsOfAccess':
+    case 'description':
+      return textEntries(value);
+    case 'includedInDataCatalog': {
+      const catalog = value as CatalogEntry | null;
+      return catalog
+        ? linkEntries([{ label: catalog.name, url: catalog.url }])
+        : [];
+    }
+    case 'author':
+      return authorEntries(value);
+    case 'funder':
+      return linkEntries(
+        (value as FunderEntry[] | null)?.map(({ name, identifier }) => ({
+          label: name,
+          url: identifier,
+        })),
+      );
+    case 'fundingId':
+      return linkEntries(
+        (value as FundingIdEntry[] | null)?.map(({ identifier, url }) => ({
+          label: identifier,
+          url,
+        })),
+      );
+    case 'usageInfo':
+      return linkEntries(
+        (value as UsageInfoEntry[] | null)?.map(({ name, url }) => ({
+          label: name,
+          url,
+        })),
+      );
+    case 'license': {
+      const license = value as LicenseEntry | null;
+      return license
+        ? linkEntries([{ label: license.title, url: license.url }])
+        : [];
+    }
+    case 'samples': {
+      const entry = value as SampleEntry | null;
+      return entry
+        ? textEntries(`${entry.count.toLocaleString()} (${entry.kind})`)
+        : [];
+    }
+    default:
+      return valueToEntries(value as any);
+  }
+};
 
 interface DatasetResultsTableProps {
   results: FormattedResource[];

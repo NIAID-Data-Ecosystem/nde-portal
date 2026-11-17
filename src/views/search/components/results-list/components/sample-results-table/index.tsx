@@ -11,12 +11,20 @@ import {
 import { ResultsTable } from '../results-table';
 import { BaseColumn } from '../results-table/types';
 import { withWidth } from '../results-table/utils';
-import { renderCellData } from '../results-table/components/Cells';
+import {
+  renderCellData,
+  valueToEntries,
+} from '../results-table/components/Cells';
 import {
   ExpandableList,
   ExpandableText,
 } from '../results-table/components/ExpandableCells';
 import { SAMPLE_REQUIRED_COLUMN_IDS } from '../results-table/constants';
+import {
+  ExportEntriesGetter,
+  linkEntries,
+  textEntries,
+} from '../results-table/export';
 
 export interface SampleColumn extends BaseColumn {}
 
@@ -476,6 +484,51 @@ export const getCells = ({
 
   // All other fields: delegate to the shared cell renderer
   return renderCellData({ column, data: value as any, isLoading });
+};
+
+/**
+ * Plain-data counterpart of `getCells` for the XLSX "Custom Result View"
+ * download: the text and link(s) each cell shows. Keep in sync with the cell
+ * renderer above.
+ */
+export const getExportEntries: ExportEntriesGetter = (property, row) => {
+  const value = row?.[property];
+
+  switch (property) {
+    case 'identifier': {
+      const id = value as { identifier: string; url: string } | null;
+      return id
+        ? linkEntries([{ label: id.identifier, url: id.url || null }])
+        : [];
+    }
+    case 'includedInDataCatalog':
+      return linkEntries(
+        (value as CatalogEntry[] | null)?.map(({ name, url }) => ({
+          label: name,
+          url,
+        })),
+      );
+    case 'funder':
+      return linkEntries(
+        (value as FunderEntry[] | null)?.map(({ name, identifier }) => ({
+          label: name,
+          url: identifier,
+        })),
+      );
+    case 'fundingId':
+      return linkEntries(
+        (value as FundingIdEntry[] | null)?.map(({ identifier, url }) => ({
+          label: identifier,
+          url,
+        })),
+      );
+    case 'description':
+    case 'date':
+    case 'conditionsOfAccess':
+      return textEntries(value);
+    default:
+      return valueToEntries(value as any);
+  }
 };
 
 interface SampleResultsTableProps {

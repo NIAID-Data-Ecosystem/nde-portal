@@ -12,11 +12,15 @@ import {
   UnorderedList,
   useDisclosure,
 } from '@chakra-ui/react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FaDownload, FaCircleExclamation } from 'react-icons/fa6';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Params, fetchAllSearchResults } from 'src/utils/api';
 import { DownloadArgs, downloadAsCsv, downloadAsJson } from './helpers';
+import { XlsxColumnSpec, downloadAsXlsx } from './xlsx';
+import { formatAPIResource } from 'src/utils/api/helpers';
+import { FormattedResource } from 'src/utils/api/types';
+import { SHOW_XLSX_CUSTOM_VIEW_DOWNLOAD } from 'src/utils/feature-flags';
 import { Disclaimer } from './components/Disclaimer';
 import { FaXmark } from 'react-icons/fa6';
 import { encodeString } from 'src/utils/querystring-helpers';
@@ -24,13 +28,26 @@ import { sendGTMEvent } from '@next/third-parties/google';
 import { useRouter } from 'next/router';
 
 /*
- [COMPONENT INFO]: Download data button that gives JSON or CSV download options.
+ [COMPONENT INFO]: Download data button that gives JSON or CSV download options,
+ plus an XLSX option mirroring a customized table view when `customViewExport`
+ is provided.
 */
+
+/**
+ * Describes the table view to export as XLSX: the visible columns, in order,
+ * and how to turn a formatted API record into the row those columns read.
+ */
+export interface CustomViewExport {
+  sheetName: string;
+  columns: XlsxColumnSpec[];
+  toRow: (resource: FormattedResource) => Record<string, unknown>;
+}
 
 interface DownloadMetadataProps extends FlexProps {
   exportFileName: string;
   params: Params;
   buttonProps?: ButtonProps;
+  customViewExport?: CustomViewExport;
 }
 
 const trackDownloadEvent = (params: {
@@ -44,6 +61,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
   exportFileName,
   children,
   buttonProps,
+  customViewExport,
   ...props
 }) => {
   // Toggle open/close a download format list.
@@ -52,6 +70,11 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
 
   // Options for download format and corresponding formatting functions.
   const [downloadFormat, setDownloadFormat] = useState<any | null>(null);
+
+  // Read the table view at download time rather than when the option was
+  // clicked, so the file reflects the columns shown when the data arrives.
+  const customViewExportRef = useRef(customViewExport);
+  customViewExportRef.current = customViewExport;
 
   const options = [
     {
@@ -70,6 +93,30 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
         exportFileName: DownloadArgs['downloadName'],
       ) => downloadAsCsv(data, exportFileName),
     },
+    ...(SHOW_XLSX_CUSTOM_VIEW_DOWNLOAD && customViewExport
+      ? [
+          {
+            name: 'XLSX Format (Custom Result View)',
+            format: 'xlsx',
+            fn: (
+              data: DownloadArgs['dataObject'],
+              exportFileName: DownloadArgs['downloadName'],
+            ) => {
+              const view = customViewExportRef.current;
+              if (!view) return null;
+              const records = Array.isArray(data) ? data : [data];
+              const rows = records
+                .map(record => formatAPIResource(record))
+                .filter((resource): resource is FormattedResource => !!resource)
+                .map(view.toRow);
+              return downloadAsXlsx(
+                { sheetName: view.sheetName, columns: view.columns, rows },
+                exportFileName,
+              );
+            },
+          },
+        ]
+      : []),
   ];
 
   // Detect if query has change by using the stringified params as a query key.
@@ -145,11 +192,20 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
         const response = await fetchDownloadData();
         const results = response.data?.results;
         if (results) {
-          const downloadDetails = downloadFormat.fn(results, exportFileName);
-          initiateDownload(downloadDetails);
+          const downloadDetails = await downloadFormat.fn(
+            results,
+            exportFileName,
+          );
+          if (downloadDetails?.href && downloadDetails?.download) {
+            initiateDownload(downloadDetails);
+          } else {
+            clearDownloadState();
+          }
         }
       } catch (error) {
         console.error('Error in data fetching for download:', error);
+        // Don't leave the progress bar running if building the file failed.
+        clearDownloadState();
       }
     };
 

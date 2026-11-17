@@ -16,7 +16,10 @@ import {
   toLicenseEntry,
   withWidth,
 } from '../results-table/utils';
-import { renderCellData } from '../results-table/components/Cells';
+import {
+  renderCellData,
+  valueToEntries,
+} from '../results-table/components/Cells';
 import { ExpandableText } from '../results-table/components/ExpandableCells';
 import {
   LinkEntry,
@@ -25,6 +28,13 @@ import {
   ResourceNameCell,
 } from '../results-table/components/SharedCells';
 import { COMPUTATIONAL_TOOL_FALLBACK_COLUMN_IDS } from '../results-table/constants';
+import {
+  ExportEntriesGetter,
+  authorEntries,
+  linkEntries,
+  nameEntries,
+  textEntries,
+} from '../results-table/export';
 
 export interface ComputationalToolColumn extends BaseColumn {}
 
@@ -297,6 +307,49 @@ export const createGetCells =
     // topicCategory are DefinedTerm arrays. The shared renderer handles both.
     return renderCellData({ column, data: value as any, isLoading });
   };
+
+/**
+ * Plain-data counterpart of `createGetCells` for the XLSX "Custom Result View"
+ * download: the text and link(s) each cell shows. Keep in sync with the cell
+ * renderer above.
+ */
+export const getExportEntries: ExportEntriesGetter = (property, row) => {
+  const value = row?.[property];
+
+  switch (property) {
+    case 'name':
+      return nameEntries(row);
+    case 'date':
+    case 'conditionsOfAccess':
+    case 'description':
+      return textEntries(value);
+    case 'includedInDataCatalog': {
+      const catalog = value as CatalogEntry | null;
+      return catalog
+        ? linkEntries([{ label: catalog.name, url: catalog.url }])
+        : [];
+    }
+    case 'author':
+      return authorEntries(value);
+    case 'softwareHelp':
+      return linkEntries(value as LinkEntry[] | null);
+    case 'funder':
+      return linkEntries(
+        (value as FunderEntry[] | null)?.map(({ name, identifier }) => ({
+          label: name,
+          url: identifier,
+        })),
+      );
+    case 'license': {
+      const license = value as LicenseEntry | null;
+      return license
+        ? linkEntries([{ label: license.title, url: license.url }])
+        : [];
+    }
+    default:
+      return valueToEntries(value as any);
+  }
+};
 
 interface ComputationalToolResultsTableProps {
   results: FormattedResource[];

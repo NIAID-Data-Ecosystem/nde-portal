@@ -1,6 +1,9 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import { DownloadMetadata } from 'src/components/download-metadata';
+import {
+  CustomViewExport,
+  DownloadMetadata,
+} from 'src/components/download-metadata';
 import { Params } from 'src/utils/api';
 import { usePaginationContext } from 'src/views/search/context/pagination-context';
 import { updateRoute } from 'src/views/search/utils/update-route';
@@ -30,6 +33,7 @@ export const SearchResultsToolbar = ({
   params,
   extraActions,
   viewModeControl,
+  customViewExport,
 }: {
   id: TabType['id'];
   params: Params;
@@ -37,6 +41,11 @@ export const SearchResultsToolbar = ({
   extraActions?: React.ReactNode;
   /** Optional content rendered on its own row above the other controls. */
   viewModeControl?: React.ReactNode;
+  /**
+   * The table view currently shown, enabling the "XLSX Format (Custom Result
+   * View)" download option. Omit for card views.
+   */
+  customViewExport?: CustomViewExport;
 }) => {
   const router = useRouter();
 
@@ -121,6 +130,7 @@ export const SearchResultsToolbar = ({
               '_',
             )}`}
             params={params}
+            customViewExport={customViewExport}
             buttonProps={{ variant: 'outline' }}
           >
             Download Metadata

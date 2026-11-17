@@ -16,19 +16,29 @@ import Banner from 'src/components/banner';
 import {
   SampleResultsTable,
   ALL_SAMPLE_COLUMNS,
+  toRow as sampleToRow,
+  getExportEntries as getSampleExportEntries,
 } from './components/sample-results-table';
 import {
   DataCollectionResultsTable,
   ALL_DATA_COLLECTION_COLUMNS,
+  toRow as dataCollectionToRow,
+  getExportEntries as getDataCollectionExportEntries,
 } from './components/data-collection-results-table';
 import {
   DatasetResultsTable,
   ALL_DATASET_COLUMNS,
+  toRow as datasetToRow,
+  getExportEntries as getDatasetExportEntries,
 } from './components/dataset-results-table';
 import {
   ComputationalToolResultsTable,
   ALL_COMPUTATIONAL_TOOL_COLUMNS,
+  toRow as computationalToolToRow,
+  getExportEntries as getComputationalToolExportEntries,
 } from './components/computational-tool-results-table';
+import { buildExportColumns } from './components/results-table/export';
+import { CustomViewExport } from 'src/components/download-metadata';
 import { useSearchResultsFetchedContext } from '../../context/search-results-fetched-context';
 import {
   CustomizeColumnsPopover as SampleCustomizeColumnsPopover,
@@ -55,8 +65,12 @@ import {
   CUSTOM_COLUMN_ORDER_STORAGE_KEY as CT_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
 } from './components/computational-tool-results-table/components/CustomizeColumnsPopover';
 import {
+  COMPUTATIONAL_TOOL_FALLBACK_COLUMN_IDS,
   COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS,
+  DATA_COLLECTION_REQUIRED_COLUMN_IDS,
+  DATASET_FALLBACK_COLUMN_IDS,
   DATASET_REQUIRED_COLUMN_IDS,
+  SAMPLE_REQUIRED_COLUMN_IDS,
 } from './components/results-table/constants';
 import {
   resolveStoredVisibleIds,
@@ -317,6 +331,78 @@ export const SearchResults = ({
     isComputationalToolTable ? getInitialCTColumnOrder() : ALL_CT_COLUMN_IDS,
   );
 
+  // The table view currently shown, described for the XLSX "Custom Result
+  // View" download: its visible columns in the user's order, and the same row
+  // shaping the table applies.
+  const customViewExport = useMemo<CustomViewExport | undefined>(() => {
+    if (isSamplesTab) {
+      return {
+        sheetName: 'Samples',
+        toRow: sampleToRow,
+        columns: buildExportColumns({
+          columns: ALL_SAMPLE_COLUMNS,
+          visibleColumnIds,
+          columnOrder,
+          requiredColumnIds: SAMPLE_REQUIRED_COLUMN_IDS,
+          getExportEntries: getSampleExportEntries,
+        }),
+      };
+    }
+    if (isDataCollectionTable) {
+      return {
+        sheetName: 'Data Collections',
+        toRow: dataCollectionToRow,
+        columns: buildExportColumns({
+          columns: ALL_DATA_COLLECTION_COLUMNS,
+          visibleColumnIds: dcVisibleColumnIds,
+          columnOrder: dcColumnOrder,
+          requiredColumnIds: DATA_COLLECTION_REQUIRED_COLUMN_IDS,
+          getExportEntries: getDataCollectionExportEntries,
+        }),
+      };
+    }
+    if (isDatasetTable) {
+      return {
+        sheetName: 'Datasets',
+        toRow: datasetToRow,
+        columns: buildExportColumns({
+          columns: ALL_DATASET_COLUMNS,
+          visibleColumnIds: datasetVisibleColumnIds,
+          columnOrder: datasetColumnOrder,
+          requiredColumnIds: DATASET_FALLBACK_COLUMN_IDS,
+          getExportEntries: getDatasetExportEntries,
+        }),
+      };
+    }
+    if (isComputationalToolTable) {
+      return {
+        sheetName: 'Computational Tools',
+        toRow: computationalToolToRow,
+        columns: buildExportColumns({
+          columns: ALL_COMPUTATIONAL_TOOL_COLUMNS,
+          visibleColumnIds: ctVisibleColumnIds,
+          columnOrder: ctColumnOrder,
+          requiredColumnIds: COMPUTATIONAL_TOOL_FALLBACK_COLUMN_IDS,
+          getExportEntries: getComputationalToolExportEntries,
+        }),
+      };
+    }
+    return undefined;
+  }, [
+    isSamplesTab,
+    isDataCollectionTable,
+    isDatasetTable,
+    isComputationalToolTable,
+    visibleColumnIds,
+    columnOrder,
+    dcVisibleColumnIds,
+    dcColumnOrder,
+    datasetVisibleColumnIds,
+    datasetColumnOrder,
+    ctVisibleColumnIds,
+    ctColumnOrder,
+  ]);
+
   // Drops results that aren't one of this section's types. Most queries are
   // already scoped to them, but when the selected `@type` filter excludes
   // every one of them, the section queries the selected types instead (see
@@ -445,6 +531,7 @@ export const SearchResults = ({
         <SearchResultsToolbar
           id={id}
           params={params}
+          customViewExport={customViewExport}
           viewModeControl={
             showViewMode ? (
               <ViewModeRadio id={id} value={viewMode} onChange={setViewMode} />
