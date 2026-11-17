@@ -12,8 +12,8 @@ export const AccordionContent = ({
   title,
   children,
   ...rest
-}: AccordionItemProps & {
-  title: string;
+}: Omit<AccordionItemProps, 'title'> & {
+  title: React.ReactNode;
   children: React.ReactNode;
 }) => {
   return (

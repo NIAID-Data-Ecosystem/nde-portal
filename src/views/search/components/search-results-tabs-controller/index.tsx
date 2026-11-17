@@ -1,5 +1,5 @@
 import { Tabs } from '@chakra-ui/react';
-import { useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Carousel } from 'src/components/carousel';
@@ -14,7 +14,11 @@ import { useIsomorphicLayoutEffect } from 'usehooks-ts';
 
 import { defaultQuery, getDefaultSizeForTab } from '../../config/defaultQuery';
 import { DATA_COLLECTION_FIELDS, SAMPLE_FIELDS } from '../../config/fields';
-import { generateOtherResourcesTitle, tabs } from '../../config/tabs';
+import {
+  generateOtherResourcesTitle,
+  TAB_LABELS,
+  tabs,
+} from '../../config/tabs';
 import { usePaginationContext } from '../../context/pagination-context';
 import { useSearchTabsContext } from '../../context/search-tabs-context';
 import {
@@ -30,6 +34,7 @@ import { getDefaultTabId } from '../../utils/get-default-tab';
 import { queryFilterObject2String } from '../filters/utils/query-string';
 import { AccordionContent, AccordionWrapper } from '../layout/accordion';
 import { CarouselWrapper } from '../layout/carousel-wrapper';
+import { Count, sumCounts } from '../layout/count';
 import { SearchTabs } from '../layout/tabs';
 import { SearchResults } from '../results-list';
 import { DiseaseOverviewCard } from '../results-list/components/carousel-compact-card/disease-overview-card';
@@ -136,10 +141,17 @@ export const SearchResultsController = ({
       size: 0,
       use_ai_search: queryParams.use_ai_search ?? 'false',
     },
-    { enabled: router.isReady },
+    // A new search keeps showing the previous counts until its own arrive,
+    // rather than dropping every tab and section to zero.
+    { enabled: router.isReady, placeholderData: keepPreviousData },
   );
 
   const { data: facetData } = searchResultsData.response;
+  // No `@type` counts for this search yet: none at all, or the previous
+  // search's, still showing.
+  const facetCountsPending =
+    searchResultsData.response.isPending ||
+    searchResultsData.response.isPlaceholderData;
 
   // Serialize the currently selected filters so the BioSample aggregation
   // respects them.
@@ -165,10 +177,10 @@ export const SearchResultsController = ({
   const bioSampleTotal = bioSampleAgg.data?.total ?? 0;
 
   // The counts the auto-tab below picks a tab from haven't arrived for this
-  // search yet. The Samples count shows the previous search's total in the
-  // meantime (`keepPreviousData`), so that counts as pending too.
+  // search yet. Both show the previous search's counts in the meantime
+  // (`keepPreviousData`), so that counts as pending too.
   const tabCountsPending =
-    searchResultsData.response.isPending ||
+    facetCountsPending ||
     bioSampleAgg.isPending ||
     bioSampleAgg.isPlaceholderData;
 
@@ -253,8 +265,10 @@ export const SearchResultsController = ({
   // A layout effect, so a switch lands before the browser paints: the render
   // that brings the counts in also shows the current tab's results, and when
   // those are empty they would otherwise flash up just before the switch.
+  // It waits for every count, as the ones on screen until then are the
+  // previous search's.
   useIsomorphicLayoutEffect(() => {
-    if (!facetData?.facets || !router.isReady) return;
+    if (tabCountsPending || !facetData?.facets || !router.isReady) return;
     const facetCounts =
       facetData?.facets?.['@type']?.terms?.map(term => ({
         type: term.term,
@@ -317,6 +331,7 @@ export const SearchResultsController = ({
       }
     }
   }, [
+    tabCountsPending,
     facetData?.facets,
     bioSampleTotal,
     queryParams.filters,
@@ -362,6 +377,7 @@ export const SearchResultsController = ({
   const {
     diseases: matchingDiseasesRaw,
     loading: diseaseIsLoading,
+    count: diseaseCount,
     hasMatchingDiseases,
   } = useDiseaseData({
     searchQuery: queryParams.q || '',
@@ -376,14 +392,21 @@ export const SearchResultsController = ({
 
   // Program collections without a resource catalog, shown as "Program Info"
   // cards after the resource catalogs.
-  const { programCollections, hasProgramInfo } = useProgramInfoCollections({
+  const {
+    programCollections,
+    hasProgramInfo,
+    isLoading: programInfoIsLoading,
+  } = useProgramInfoCollections({
     q: queryParams.q,
     filters: queryParams.filters,
     enabled: router.isReady,
   });
-  const programInfoCount = SHOW_PROGRAM_RESOURCE_UI
-    ? programCollections.length
-    : 0;
+  // `undefined` until the collections first load.
+  const programInfoCount = !SHOW_PROGRAM_RESOURCE_UI
+    ? 0
+    : programInfoIsLoading
+    ? undefined
+    : programCollections.length;
 
   const carouselItems = useMemo(() => {
     const items: Array<{
@@ -419,7 +442,7 @@ export const SearchResultsController = ({
   // Whether there are resource catalogs comes from the `@type` counts, so
   // until those are in for this search the carousel is loading, not empty.
   const isCarouselLoading =
-    searchResultsData.response.isPending ||
+    facetCountsPending ||
     (hasResourceCatalogRecords && (carouselIsLoading || carouselIsPending)) ||
     diseaseIsLoading;
 
@@ -454,18 +477,24 @@ export const SearchResultsController = ({
                 (type !== 'DataCollection' || SHOW_DATA_COLLECTIONS_TAB),
             )
             .map(({ label, accordionLabel, type }) => {
+              // `undefined` until the counts first load. A later search shows
+              // the previous counts until its own arrive.
               const terms = facetData?.facets?.['@type']?.terms ?? [];
               const facet = terms.find(t => t.term === type);
-              let count = facet?.count || 0;
+              let count: number | undefined = facetData
+                ? facet?.count || 0
+                : searchResultsData.response.isPending
+                ? undefined
+                : 0;
 
               if (type === 'Disease') {
-                count = matchingDiseases.length;
+                count = diseaseCount;
               }
 
               // Use the BioSample-scoped total for the Sample type so the tab
               // label reflects only @type:Sample AND additionalType:"BioSample".
               if (type === 'Sample') {
-                count = bioSampleTotal;
+                count = bioSampleAgg.isPending ? undefined : bioSampleTotal;
               }
 
               return { label, accordionLabel, type, count };
@@ -476,7 +505,13 @@ export const SearchResultsController = ({
             types: tabTypesWithCount,
           };
         }),
-    [facetData?.facets, matchingDiseases.length, bioSampleTotal],
+    [
+      facetData,
+      searchResultsData.response.isPending,
+      diseaseCount,
+      bioSampleAgg.isPending,
+      bioSampleTotal,
+    ],
   );
 
   // Types of the sections that should start expanded — these match the `value`
@@ -486,14 +521,14 @@ export const SearchResultsController = ({
   // it has results (ResourceCatalog also opens when there are matching diseases
   // to show in its carousel).
   const getAccordionDefaultValues = (
-    sections: (TabType['types'][number] & { count: number })[],
+    sections: (TabType['types'][number] & { count: number | undefined })[],
   ) =>
     sections
       .filter(
         section =>
           isRenderedSection(section) &&
           (ALWAYS_EXPANDED_TYPES.has(section.type) ||
-            section.count > 0 ||
+            (section.count ?? 0) > 0 ||
             (section.type === 'ResourceCatalog' && hasMatchingDiseases)),
       )
       .map(section => section.type);
@@ -531,14 +566,37 @@ export const SearchResultsController = ({
                   {sections.filter(isRenderedSection).map(section => {
                     // For ResourceCatalog, render "Other Resources" with carousel
                     if (section.type === 'ResourceCatalog') {
+                      const otherResourcesCount = sumCounts(
+                        ...sections
+                          .filter(
+                            ({ type }) =>
+                              type === 'ResourceCatalog' || type === 'Disease',
+                          )
+                          .map(({ count }) => count),
+                        programInfoCount,
+                      );
                       return (
                         <AccordionContent
                           key={section.label}
                           value={section.type}
-                          title={generateOtherResourcesTitle(
-                            sections,
-                            programInfoCount,
-                          )}
+                          title={
+                            otherResourcesCount === undefined ? (
+                              // Which parts the title breaks down depends on
+                              // the counts, so it waits for all of them.
+                              <>
+                                {TAB_LABELS.OTHER_RESOURCES} (
+                                <Count count={undefined} />)
+                              </>
+                            ) : (
+                              generateOtherResourcesTitle(
+                                sections.map(({ type, count }) => ({
+                                  type,
+                                  count: count ?? 0,
+                                })),
+                                programInfoCount,
+                              )
+                            )
+                          }
                         >
                           {isCarouselLoading || shouldShowCarousel ? (
                             <CarouselWrapper>
@@ -586,22 +644,19 @@ export const SearchResultsController = ({
                     }
 
                     // For Dataset, ComputationalTool, Sample, and DataCollection
-                    // render normal search results.
-                    // The Sample accordion title uses bioSampleTotal so it matches the tab label.
-                    const sectionCount =
-                      section.type === 'Sample'
-                        ? bioSampleTotal
-                        : section.count;
-
-                    // For Dataset and ComputationalTool, render normal search results
+                    // render normal search results, titled with the same count
+                    // as the tab label (the BioSample-scoped total for Sample).
                     // Use accordionLabel if provided, otherwise fall back to label.
                     return (
                       <AccordionContent
                         key={section.label}
                         value={section.type}
-                        title={`${
-                          section.accordionLabel ?? section.label
-                        } (${sectionCount.toLocaleString()})`}
+                        title={
+                          <>
+                            {section.accordionLabel ?? section.label} (
+                            <Count count={section.count} />)
+                          </>
+                        }
                       >
                         <SearchResults
                           id={tab.id}

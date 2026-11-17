@@ -4,7 +4,9 @@ import { act, render, screen } from 'src/__tests__/utils/render';
 
 import { SearchTabs } from '../tabs';
 
-const TABS = [
+type TabsWithCounts = React.ComponentProps<typeof SearchTabs>['tabs'];
+
+const TABS: TabsWithCounts = [
   {
     id: 'd' as const,
     types: [
@@ -23,10 +25,10 @@ const TABS = [
   },
 ];
 
-const setup = async (programInfoCount?: number) => {
+const setup = async (programInfoCount: number | undefined, tabs = TABS) => {
   const view = render(
     <SearchTabs
-      tabs={TABS}
+      tabs={tabs}
       defaultValue='d'
       programInfoCount={programInfoCount}
       renderTabPanels={() =>
@@ -48,20 +50,29 @@ describe('SearchTabs', () => {
 
     // Resource Catalogs (2) + Disease Overviews (1) + Program Info (4).
     expect(screen.getByRole('tab', { name: /Datasets/ })).toHaveTextContent(
-      'Datasets5and Other Resources7',
+      /^Datasets5and Other Resources7$/,
     );
     expect(screen.getByRole('tab', { name: /Tools/ })).toHaveTextContent(
-      'Tools7',
+      /^Tools7$/,
     );
     // Consumed, not spread onto the DOM.
     expect(container.querySelector('[programinfocount]')).toBeNull();
   });
 
-  it('counts no Program Info cards by default', async () => {
-    await setup();
+  it('shows a placeholder, not zero, for a count still loading', async () => {
+    // Program Info and the Tools count haven't loaded yet.
+    await setup(undefined, [
+      TABS[0],
+      { ...TABS[1], types: [{ ...TABS[1].types[0], count: undefined }] },
+    ]);
 
-    expect(screen.getByRole('tab', { name: /Datasets/ })).toHaveTextContent(
-      'Datasets5and Other Resources3',
-    );
+    // Other Resources needs every part, so it waits for Program Info too.
+    const datasets = screen.getByRole('tab', { name: /Datasets/ });
+    expect(datasets).toHaveTextContent(/^Datasets5and Other Resources$/);
+    const tools = screen.getByRole('tab', { name: /Tools/ });
+    expect(tools).toHaveTextContent(/^Tools$/);
+    expect(
+      tools.querySelector('[data-scope="skeleton"], .chakra-skeleton'),
+    ).not.toBeNull();
   });
 });
