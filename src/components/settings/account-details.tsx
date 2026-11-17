@@ -3,12 +3,13 @@
  * (or that it has none) and how the user signs in.
  */
 
-import { ReactNode } from 'react';
 import { chakra, HStack, Skeleton } from '@chakra-ui/react';
+import { ReactNode } from 'react';
 import { ProviderIcon } from 'src/components/auth/provider-icon';
 import { useAuth } from 'src/hooks/useAuth';
 import { useSignInMethod } from 'src/hooks/useSignInMethod';
 import { useUserData } from 'src/hooks/useUserData';
+
 import { SettingsSection } from './settings-section';
 
 export const ACCOUNT_DETAILS_COPY = {

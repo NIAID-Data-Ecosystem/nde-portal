@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
 import { Flex, Icon } from '@chakra-ui/react';
-import { FaAngleDown, FaRegPenToSquare } from 'react-icons/fa6';
-import { Action, Handle, Remove } from './Actions';
-import { TreeItemComponentProps } from '..';
 import { UniqueIdentifier } from '@dnd-kit/core';
+import React, { useMemo } from 'react';
+import { FaAngleDown, FaRegPenToSquare } from 'react-icons/fa6';
+
+import { TreeItemComponentProps } from '..';
+import { Action, Handle, Remove } from './Actions';
 
 interface TreeItemActionsProps
   extends Pick<
@@ -44,36 +45,35 @@ export const TreeItemActions = React.memo(
           {...handleProps}
           aria-label='drag item'
           className='tree-item-handle'
-          color='page.placeholder'
+          color='text.placeholder'
         />
-
         {/* Collapse children items */}
         {!clone && onCollapse && (
           <Action
             id={id}
             aria-label='collapse items'
             handleClick={onCollapse}
-            colorScheme='gray'
+            colorPalette='gray'
             variant='ghost'
-            color='page.placeholder'
+            color='text.placeholder'
             mx={1}
-            icon={collapseIcon}
-          />
+          >
+            {collapseIcon}
+          </Action>
         )}
-
         <Flex flex={1}>{children}</Flex>
-
         {!clone && onUpdate && (
           <Action
             id={id}
-            aria-label='collapse items'
+            aria-label='edit item'
             handleClick={onUpdate}
-            colorScheme='gray'
+            colorPalette='gray'
             variant='ghost'
-            color='page.placeholder'
+            color='text.placeholder'
             mx={1}
-            icon={<Icon as={FaRegPenToSquare} />}
-          />
+          >
+            <FaRegPenToSquare />
+          </Action>
         )}
         {/* Button to delete item. */}
         {!clone && onRemove && (

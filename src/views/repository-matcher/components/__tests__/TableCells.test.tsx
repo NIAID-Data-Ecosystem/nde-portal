@@ -1,10 +1,11 @@
-import React from 'react';
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import React from 'react';
 import { renderWithClient } from 'src/__tests__/mocks/utils';
+
 import {
-  TagCellList,
   TagCell,
+  TagCellList,
   TextCell,
   TextCellWithLink,
 } from '../TableCells';
@@ -24,11 +25,9 @@ const stubOverflow = () => {
 
 describe('TagCellList', () => {
   it('renders skeleton tags while loading', () => {
-    const { container } = renderWithClient(<TagCellList isLoading />);
-    // Three loading TagCells render as custom skeletons, no placeholder text.
-    expect(container.querySelectorAll('.custom-skeleton-loading').length).toBe(
-      3,
-    );
+    const { container } = renderWithClient(<TagCellList loading />);
+    // Three loading TagCells render as skeletons, no placeholder text.
+    expect(container.querySelectorAll('.chakra-skeleton').length).toBe(3);
     expect(screen.queryByText('not available')).not.toBeInTheDocument();
   });
 
@@ -72,10 +71,8 @@ describe('TagCellList', () => {
 
 describe('TagCell', () => {
   it('renders a skeleton while loading', () => {
-    const { container } = renderWithClient(<TagCell value='x' isLoading />);
-    expect(
-      container.querySelector('.custom-skeleton-loading'),
-    ).toBeInTheDocument();
+    const { container } = renderWithClient(<TagCell value='x' loading />);
+    expect(container.querySelector('.chakra-skeleton')).toBeInTheDocument();
     expect(screen.queryByText('x')).not.toBeInTheDocument();
   });
 
@@ -90,7 +87,7 @@ describe('TagCell', () => {
 describe('TextCell', () => {
   it('renders a skeleton while loading', () => {
     const { container } = renderWithClient(
-      <TextCell value='hello' isLoading noOfLines={1} />,
+      <TextCell value='hello' loading lineClamp={1} />,
     );
     expect(container.querySelector('.chakra-skeleton')).toBeInTheDocument();
   });
@@ -118,7 +115,7 @@ describe('TextCell', () => {
     const restore = stubOverflow();
     const user = userEvent.setup();
     renderWithClient(
-      <TextCell value='A very long body of text' expandable noOfLines={2} />,
+      <TextCell value='A very long body of text' expandable lineClamp={2} />,
     );
     const toggle = screen.getByRole('button', { name: /show more/i });
     await user.click(toggle);
@@ -132,7 +129,7 @@ describe('TextCell', () => {
 describe('TextCellWithLink', () => {
   it('renders a skeleton while loading', () => {
     const { container } = renderWithClient(
-      <TextCellWithLink label='Repo' isLoading />,
+      <TextCellWithLink label='Repo' loading />,
     );
     expect(container.querySelector('.chakra-skeleton')).toBeInTheDocument();
   });

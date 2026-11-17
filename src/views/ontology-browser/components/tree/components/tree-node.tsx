@@ -1,44 +1,44 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Flex,
   HStack,
   Icon,
   IconButton,
-  ListItem,
-  StackDivider,
+  List,
+  StackSeparator,
   Text,
-  UnorderedList,
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   FaAngleRight,
   FaMagnifyingGlass,
   FaMinus,
   FaPlus,
 } from 'react-icons/fa6';
-import {
-  fetchChildrenFromBioThingsAPI,
-  fetchPortalCounts,
-} from '../../../utils/api-helpers';
 import { Link } from 'src/components/link';
+import Tooltip from 'src/components/tooltip';
 import { useLocalStorage } from 'usehooks-ts';
+
 import {
   OntologyLineageItemWithCounts,
   OntologyPagination,
 } from '../../../types';
-import { getChildren, sortChildrenList } from '../../../utils/ontology-helpers';
 import {
-  getTooltipLabelByCountType,
+  fetchChildrenFromBioThingsAPI,
+  fetchPortalCounts,
+} from '../../../utils/api-helpers';
+import { getChildren, sortChildrenList } from '../../../utils/ontology-helpers';
+import { ErrorMessage } from '../../error-message';
+import {
+  getTooltipContentByCountType,
   OntologyBrowserCountTag,
 } from '../../ontology-browser-count-tag';
+import { DEFAULT_ONTOLOGY_BROWSER_SETTINGS } from '../../settings';
+import { transformSettingsToLocalStorageConfig } from '../../settings/helpers';
+import { getIndent, SIZE, TreeProps } from '..';
 import { Pagination } from '../components/pagination';
 import { Warning } from '../components/warning';
-import { TreeProps, MARGIN, SIZE } from '..';
-import { transformSettingsToLocalStorageConfig } from '../../settings/helpers';
-import { DEFAULT_ONTOLOGY_BROWSER_SETTINGS } from '../../settings';
-import { ErrorMessage } from '../../error-message';
-import Tooltip from 'src/components/tooltip';
 
 const hasZeroCounts = (node: OntologyLineageItemWithCounts) =>
   node?.counts?.termCount === 0 && node?.counts?.termAndChildrenCount === 0;
@@ -236,18 +236,20 @@ export const TreeNode = (props: {
     return <></>;
   }
   return (
-    <ListItem>
+    <List.Item>
+      {/* Below `md` the row stacks: term on one line, counts right-aligned
+          on the next, in line with the header's columns. */}
       <Flex
-        alignItems='center'
+        flexDirection={{ base: 'column', md: 'row' }}
+        alignItems={{ base: 'stretch', md: 'center' }}
         borderTop={depth !== 0 ? '0.25px solid' : 'none'}
         borderColor='gray.200'
-        sx={{ '>*': { px: 4, py: 2 } }}
-        pl={`${(depth + 1) * MARGIN}px`}
+        pl={getIndent(depth + 1)}
         _hover={{
           bg: 'blackAlpha.50',
         }}
       >
-        <Flex alignItems='center' flex={1}>
+        <Flex alignItems='center' flex={1} px={{ base: 2, md: 4 }} py={2}>
           {sortedChildrenList.length > 0 || node.hasChildren ? (
             // The chevron is the real toggle control. Keeping the toggle as a
             // dedicated <button> (rather than wrapping the whole row, term link
@@ -256,15 +258,22 @@ export const TreeNode = (props: {
             <IconButton
               aria-label={`Show all children of ${node.label}`}
               aria-expanded={isToggled}
-              icon={<FaAngleRight />}
               variant='ghost'
-              colorScheme='gray'
-              size='sm'
+              colorPalette='gray'
+              // v3's `xs` is v2's `sm` (32px).
+              size='xs'
               cursor='pointer'
               transform={isToggled ? 'rotate(90deg)' : ''}
               color='currentColor'
+              // v3's ghost variant fills `[aria-expanded=true]`; v2 didn't.
+              _expanded={{
+                bg: 'transparent',
+                _hover: { bg: 'colorPalette.subtle' },
+              }}
               onClick={toggleNode}
-            />
+            >
+              <FaAngleRight />
+            </IconButton>
           ) : (
             <Box mx={4}></Box>
           )}
@@ -272,17 +281,17 @@ export const TreeNode = (props: {
             alignItems='flex-start'
             flex={1}
             fontWeight='normal'
-            lineHeight='short'
+            lineHeight='moderate'
             ml={2}
             textAlign='left'
             wordBreak='break-word'
           >
-            <Text color='gray.800' fontSize='12px'>
+            <Text color='gray.600' fontSize='12px'>
               {node.ontologyName} | {node.taxonId}
             </Text>
             <Tooltip
-              label={getTooltipLabelByCountType('termCount')}
-              placement='bottom'
+              content={getTooltipContentByCountType('termCount')}
+              positioning={{ placement: 'bottom' }}
             >
               <Link
                 href={`/search?q=${
@@ -293,8 +302,11 @@ export const TreeNode = (props: {
                 fontSize='xs'
               >
                 <Icon as={FaMagnifyingGlass} mr={1.5} boxSize={3} />
+                {/* A span, not the default <p>: the link is inline, so a block
+                    child would drop the label onto its own line. */}
                 <Text
-                  color={node.state.selected ? 'primary.500' : 'currentColor'}
+                  as='span'
+                  color='currentColor'
                   fontWeight={node.state.selected ? 'semibold' : 'medium'}
                   lineHeight='inherit'
                   textAlign='left'
@@ -306,23 +318,30 @@ export const TreeNode = (props: {
             </Tooltip>
           </Box>
         </Flex>
-        <Flex alignItems='center'>
+        <Flex
+          alignItems='center'
+          px={{ base: 2, md: 4 }}
+          pt={{ base: 0, md: 2 }}
+          pb={2}
+        >
           <HStack
-            divider={<StackDivider borderColor='gray.100' />}
             flex={1}
             alignItems='unset'
-            spacing={3}
+            justifyContent='flex-end'
+            gap={3}
+            separator={<StackSeparator borderColor='gray.100' />}
           >
             <OntologyBrowserCountTag
-              isLoading={isLoading}
-              tooltipLabel={getTooltipLabelByCountType('termCount')}
+              loading={isLoading}
+              tooltipLabel={getTooltipContentByCountType('termCount')}
             >
               {node?.counts?.termCount?.toLocaleString() || 0}
             </OntologyBrowserCountTag>
-
             <OntologyBrowserCountTag
-              isLoading={isLoading}
-              tooltipLabel={getTooltipLabelByCountType('termAndChildrenCount')}
+              loading={isLoading}
+              tooltipLabel={getTooltipContentByCountType(
+                'termAndChildrenCount',
+              )}
             >
               {node?.counts?.termAndChildrenCount?.toLocaleString() || 0}
             </OntologyBrowserCountTag>
@@ -335,10 +354,9 @@ export const TreeNode = (props: {
                 ? `Remove ${node.label} from search list`
                 : `Search portal for resources related to ${node.label}`
             }
-            icon={isIncludedInSearch(node.taxonId) ? <FaMinus /> : <FaPlus />}
-            size='xs'
+            // v3's `2xs` is v2's `xs` (24px).
+            size='2xs'
             variant='outline'
-            fontSize='xs'
             onClick={e => {
               e.stopPropagation();
               addToSearch({
@@ -348,12 +366,13 @@ export const TreeNode = (props: {
                 taxonId: node.taxonId,
               });
             }}
-          />
+          >
+            {isIncludedInSearch(node.taxonId) ? <FaMinus /> : <FaPlus />}
+          </IconButton>
         </Flex>
       </Flex>
-
       {isToggled && sortedChildrenList.length > 0 ? (
-        <UnorderedList id='children-list' ml={0}>
+        <List.Root id='children-list' ps={0}>
           {sortedChildrenList.map(child => (
             <TreeNode
               key={child.id}
@@ -368,13 +387,13 @@ export const TreeNode = (props: {
           ))}
           {/* If there are only children with 0 counts and the conmfiguration hides them, show a note */}
           {showHiddenElementsWarning && (
-            <ListItem
+            <List.Item
               className='hiddenElementsWarning'
-              bg='status.warning_lt'
+              bg='warning.subtle'
               fontSize='xs'
               px={4}
               py={2}
-              pl={`${(depth + 2) * MARGIN}px`}
+              pl={getIndent(depth + 2)}
             >
               <Warning
                 node={node}
@@ -387,37 +406,37 @@ export const TreeNode = (props: {
                   }
                 }}
               />
-            </ListItem>
+            </List.Item>
           )}
 
           {/* Handles pagination when children items exceed the SIZE value */}
           {showPagination && (
-            <ListItem
+            <List.Item
               borderTop='0.25px solid'
               borderColor='gray.200'
               px={4}
               py={2}
-              pl={`${(depth + 2) * MARGIN}px`}
+              pl={getIndent(depth + 2)}
               bg='niaid.50'
             >
               <Pagination
                 hasMore={showPagination}
-                isLoading={isLoading}
+                loading={isLoading}
                 node={node}
                 numChildrenDisplayed={sortedChildrenList.length}
                 totalElements={pagination?.totalElements || 0}
-                isDisabled={isLoading}
+                disabled={isLoading}
                 // Advance by page index, not by displayed count: children
                 // hidden by `hideEmptyCounts` make the visible list shorter
                 // than the pages fetched.
                 onShowMore={() => setPageFrom(page => page + 1)}
               />
-            </ListItem>
+            </List.Item>
           )}
-        </UnorderedList>
+        </List.Root>
       ) : (
         <></>
       )}
-    </ListItem>
+    </List.Item>
   );
 };

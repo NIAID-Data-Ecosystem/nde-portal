@@ -1,7 +1,15 @@
-import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { act, render, screen } from 'src/__tests__/utils/render';
+import { CheckboxMenu } from 'src/components/checkbox-list';
+
 import { Filters } from '../filters/';
-import { CheckboxList } from 'src/components/checkbox-list';
+
+// Menu content only mounts once opened. zag drops a click dispatched before its
+// machine has started, hence the tick before opening.
+const openMenu = async (name: RegExp) => {
+  await act(async () => {});
+  await userEvent.click(screen.getByRole('button', { name }));
+};
 
 describe('Landing Table Filters Component', () => {
   const mockData = [
@@ -45,13 +53,14 @@ describe('Landing Table Filters Component', () => {
       />,
     );
 
-    expect(screen.findByRole('button', { name: /type/i })).toBeInTheDocument;
-    expect(screen.findByRole('button', { name: /Research domain/i }))
-      .toBeInTheDocument;
-    expect(screen.findByRole('button', { name: /access/i })).toBeInTheDocument;
+    expect(screen.getByRole('button', { name: /type/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /Research domain/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /access/i })).toBeInTheDocument();
   });
 
-  it('passes correct props to CheckboxList components', async () => {
+  it('passes correct props to CheckboxMenu components', async () => {
     render(
       <Filters
         data={mockData}
@@ -59,9 +68,7 @@ describe('Landing Table Filters Component', () => {
         setFilters={mockUpdateFilter}
       />,
     );
-    // Find the button and simulate a click
-    const typeButton = screen.getByRole('button', { name: /type/i });
-    userEvent.click(typeButton);
+    await openMenu(/type/i);
 
     // Use findByText to wait asynchronously for the labels to appear
     const resourceCatalogLabel = await screen.findByText('Resource Catalog');
@@ -72,7 +79,7 @@ describe('Landing Table Filters Component', () => {
   });
 });
 
-describe('Landing Table CheckboxList Component', () => {
+describe('Landing Table CheckboxMenu Component', () => {
   const mockOptions = [
     { name: 'Resource Catalog', value: 'ResourceCatalog', count: 10 },
     { name: 'Dataset Repository', value: 'Repository', count: 5 },
@@ -87,9 +94,10 @@ describe('Landing Table CheckboxList Component', () => {
   ];
   const mockHandleChange = jest.fn();
 
-  it('renders options correctly', () => {
+  it('renders options correctly', async () => {
     render(
-      <CheckboxList
+      <CheckboxMenu
+        id='type'
         label='Type'
         options={mockOptions}
         handleChange={mockHandleChange}
@@ -97,13 +105,16 @@ describe('Landing Table CheckboxList Component', () => {
       />,
     );
 
-    expect(screen.getByText('Resource Catalog')).toBeInTheDocument();
+    await openMenu(/type/i);
+
+    expect(await screen.findByText('Resource Catalog')).toBeInTheDocument();
     expect(screen.getByText('Dataset Repository')).toBeInTheDocument();
   });
 
-  it('calls handleChange on option click', () => {
+  it('calls handleChange on option click', async () => {
     render(
-      <CheckboxList
+      <CheckboxMenu
+        id='type'
         label='Type'
         options={mockOptions}
         handleChange={mockHandleChange}
@@ -111,7 +122,8 @@ describe('Landing Table CheckboxList Component', () => {
       />,
     );
 
-    fireEvent.click(screen.getByText('Resource Catalog'));
+    await openMenu(/type/i);
+    await userEvent.click(await screen.findByText('Resource Catalog'));
 
     const newSelectedOptions = [
       ...mockSelectedOptions,

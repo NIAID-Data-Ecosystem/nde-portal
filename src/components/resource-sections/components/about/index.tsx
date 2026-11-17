@@ -1,14 +1,15 @@
-import { OverviewSectionWrapper } from '../overview-section-wrapper';
-import { FormattedResource } from 'src/utils/api/types';
+import { Box, SimpleGrid, VStack } from '@chakra-ui/react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
-import { TagWithUrl } from 'src/components/tag-with-url';
 import { SearchableItems } from 'src/components/searchable-items';
+import { TagWithUrl } from 'src/components/tag-with-url';
+import { FormattedResource } from 'src/utils/api/types';
 import {
   getContentTypeItems,
   getResourceCatalogContentTypeItems,
 } from 'src/views/search/components/results-list/components/card/helpers';
+
 import { ResourceCatalogCollection } from '../collection-information';
-import { Box, SimpleGrid, VStack } from '@chakra-ui/react';
+import { OverviewSectionWrapper } from '../overview-section-wrapper';
 
 // Note: `about` and `exampleOfWork.about` are displayed under the umbrella term "Content Types" since they both generally describe the type of content associated with the resource. `genre` is displayed separately as "Research Domain" since it typically describes the broader domain or field of research that the resource is associated with, which is a different aspect than the specific content types described by `about` and `exampleOfWork.about`.
 
@@ -17,14 +18,14 @@ export const AboutResource = ({
   collectionSize,
   exampleOfWork,
   genre,
-  isLoading,
+  loading,
   type,
 }: {
   about?: FormattedResource['about'];
   collectionSize?: FormattedResource['collectionSize'];
   exampleOfWork?: FormattedResource['exampleOfWork'];
   genre?: FormattedResource['genre'];
-  isLoading: boolean;
+  loading: boolean;
   type?: FormattedResource['@type'];
 }) => {
   // If none of the relevant fields are present, don't render the section at all
@@ -76,17 +77,16 @@ export const AboutResource = ({
   return (
     <SimpleGrid
       minChildWidth={{ base: 'unset', sm: '280px', xl: '300px' }}
-      spacingX={14}
-      spacingY={10}
+      rowGap={14}
+      columnGap={10}
       mt={4}
-      rowGap={0}
       w='100%'
     >
       {/* Col 1: Genre & Content Types */}
-      <VStack>
+      <VStack gap={3}>
         {genre && (
           <OverviewSectionWrapper
-            isLoading={isLoading}
+            loading={loading}
             label='Research Domain'
             scrollContainerProps={{
               border: 'none',
@@ -97,9 +97,9 @@ export const AboutResource = ({
               (item, idx) => (
                 <TagWithUrl
                   key={`${item}-${idx}`}
-                  colorScheme='primary'
+                  colorPalette='primary'
                   m={0.5}
-                  leftIcon={FaMagnifyingGlass}
+                  leftIcon={<FaMagnifyingGlass />}
                   href={{
                     pathname: '/search',
                     query: {
@@ -116,7 +116,7 @@ export const AboutResource = ({
         {/* `about` and `exampleOfWork.about` are displayed under the umbrella term "Content Types" */}
         {searchableContentTypeItems.length > 0 && (
           <OverviewSectionWrapper
-            isLoading={isLoading}
+            loading={loading}
             label='Content Types'
             scrollContainerProps={{
               border: 'none',
@@ -131,13 +131,12 @@ export const AboutResource = ({
               items={searchableContentTypeItems}
               itemLimit={Infinity}
               maxHeight='unset'
-              searchParams={isDataCollectionType ? { tab: 'dc' } : undefined}
             />
           </OverviewSectionWrapper>
         )}
         {contentTypes.length > 0 && (
           <OverviewSectionWrapper
-            isLoading={isLoading}
+            loading={loading}
             label='Content Types'
             scrollContainerProps={{
               border: 'none',
@@ -150,9 +149,9 @@ export const AboutResource = ({
                 // Resolved names are not unique on their own: distinct terms
                 // can share one, and unnamed terms all fall back to 'N/A'.
                 key={`${item.name}-${idx}`}
-                colorScheme='primary'
+                colorPalette='primary'
                 m={0.5}
-                leftIcon={FaMagnifyingGlass}
+                leftIcon={<FaMagnifyingGlass />}
                 href={item.url || undefined}
               >
                 {item.name}
@@ -165,13 +164,10 @@ export const AboutResource = ({
       {/* Col 2: Size of collection */}
       {collectionSize && (
         <OverviewSectionWrapper
-          isLoading={isLoading}
+          loading={loading}
           label='Collection Size Details'
           maxWidth={{ base: 'unset', xl: '500px' }}
-          scrollContainerProps={{
-            maxHeight: 'unset',
-            py: 0,
-          }}
+          hasScroll={false}
         >
           <ResourceCatalogCollection collectionSize={collectionSize} />
         </OverviewSectionWrapper>

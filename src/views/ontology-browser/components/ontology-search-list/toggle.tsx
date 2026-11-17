@@ -1,5 +1,5 @@
-import React from 'react';
 import { Box, Button, Icon, Text } from '@chakra-ui/react';
+import React from 'react';
 import { FaAnglesLeft, FaMagnifyingGlass } from 'react-icons/fa6';
 import Tooltip from 'src/components/tooltip';
 
@@ -17,12 +17,12 @@ export const ListToggle = ({
   return (
     <>
       {!isOpen && (
-        <Tooltip label={label}>
+        <Tooltip content={label}>
           <Button
             aria-label={label}
             onClick={toggleOpen}
             size='sm'
-            colorScheme='gray'
+            colorPalette='gray'
             bg='white'
             variant='ghost'
             height={{ base: 'auto', lg: '100%' }}
@@ -33,8 +33,8 @@ export const ListToggle = ({
             <Box>
               <Icon as={FaMagnifyingGlass} />
               <Icon
-                display={{ base: 'none', lg: 'block' }}
                 as={FaAnglesLeft}
+                display={{ base: 'none', lg: 'block' }}
                 fill='gray.600'
                 mt={4}
               />

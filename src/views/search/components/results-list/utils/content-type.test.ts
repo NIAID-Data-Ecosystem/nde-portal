@@ -1,4 +1,5 @@
 import { FormattedResource } from 'src/utils/api/types';
+
 import { getContentTypeLabel, getContentTypeTerms } from './content-type';
 
 // The helper only reads `about` and `exampleOfWork`, so the fixtures are

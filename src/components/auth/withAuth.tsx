@@ -3,10 +3,10 @@
  * Use this to wrap pages that should only be accessible to logged-in users
  */
 
-import { ComponentType, useEffect } from 'react';
+import { Box, Spinner, Text } from '@chakra-ui/react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { Box, Spinner, Text } from '@chakra-ui/react';
+import { ComponentType, useEffect } from 'react';
 import { useAuth } from 'src/hooks/useAuth';
 
 interface WithAuthOptions {
@@ -42,18 +42,18 @@ export function withAuth<P extends object>(
 
   function AuthenticatedComponent(props: P) {
     const router = useRouter();
-    const { isAuthenticated, isLoading } = useAuth();
+    const { isAuthenticated, loading } = useAuth();
 
     useEffect(() => {
-      if (!isLoading && !isAuthenticated && redirectTo) {
+      if (!loading && !isAuthenticated && redirectTo) {
         // Store current path to redirect back after login
         sessionStorage.setItem('auth_return_to', router.asPath);
         router.replace(redirectTo);
       }
-    }, [isLoading, isAuthenticated, redirectTo, router]);
+    }, [loading, isAuthenticated, router]);
 
     // Show loading state
-    if (isLoading) {
+    if (loading) {
       if (LoadingComponent) {
         return <LoadingComponent />;
       }
@@ -73,7 +73,7 @@ export function withAuth<P extends object>(
             minHeight='50vh'
           >
             <Spinner size='lg' color='blue.500' />
-            <Text mt={4} color='gray.800'>
+            <Text mt={4} color='gray.600'>
               Loading...
             </Text>
           </Box>

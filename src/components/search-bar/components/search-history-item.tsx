@@ -1,10 +1,12 @@
+import { Highlight, Icon, List, Text } from '@chakra-ui/react';
 import React, { useMemo } from 'react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
-import { Highlight, Icon, ListItem, Text } from '@chakra-ui/react';
+import { SearchBarProps } from 'src/views/docs/types';
+
 import { useDropdownContext } from '../../input-with-dropdown';
 
 interface SearchHistoryItemProps {
-  colorScheme: string;
+  colorPalette: SearchBarProps['colorPalette'];
   index: number;
   searchTerm: string;
   value: string;
@@ -12,7 +14,7 @@ interface SearchHistoryItemProps {
 }
 export const SearchHistoryItem = React.memo(
   ({
-    colorScheme,
+    colorPalette,
     index,
     searchTerm,
     value,
@@ -21,7 +23,7 @@ export const SearchHistoryItem = React.memo(
     const { cursor, getListItemProps, setInputValue } = useDropdownContext();
     const isSelected = useMemo(() => cursor === index, [index, cursor]);
     return (
-      <ListItem
+      <List.Item
         display='flex'
         alignItems='flex-start'
         borderRadius='base'
@@ -49,16 +51,16 @@ export const SearchHistoryItem = React.memo(
         />
         <Text
           fontSize='sm'
-          lineHeight='short'
+          lineHeight='moderate'
           color='text.body'
           wordBreak='break-word'
           fontWeight='normal'
           textAlign='left'
-          sx={{
-            '* > .search-term': {
+          css={{
+            '& * > .search-term': {
               fontWeight: 'bold',
               textDecoration: 'underline',
-              color: `${colorScheme}.400`,
+              color: `${colorPalette}.400`,
               bg: 'transparent',
             },
           }}
@@ -68,14 +70,14 @@ export const SearchHistoryItem = React.memo(
             styles={{
               fontWeight: 'bold',
               textDecoration: 'underline',
-              color: `${colorScheme}.400`,
+              color: `${colorPalette}.400`,
               bg: 'transparent',
             }}
           >
             {value}
           </Highlight>
         </Text>
-      </ListItem>
+      </List.Item>
     );
   },
 );

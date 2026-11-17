@@ -1,8 +1,9 @@
+import { Button, Flex, Icon, Presence, Text } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-import { Button, Flex, Icon, SlideFade, Text } from '@chakra-ui/react';
-import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
-import { useLocalStorage } from 'usehooks-ts';
 import { FaTriangleExclamation } from 'react-icons/fa6';
+import { useLocalStorage } from 'usehooks-ts';
+
+import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 
 export const Disclaimer = () => {
   const { selectedSearchType } = useAdvancedSearchContext();
@@ -27,17 +28,17 @@ export const Disclaimer = () => {
       mt={1}
     >
       {isMounted ? (
-        <Flex bg='status.warning_lt' alignItems='center'>
+        <Flex bg='warning.subtle' alignItems='center'>
           <Button
             size='sm'
             variant='ghost'
             onClick={() => setIsMinimized(!isMinimized)}
             px={2}
             position='unset'
-            bg={isMinimized ? 'status.warning' : 'status.warning_lt'}
-            borderColor='status.warning'
+            bg={isMinimized ? 'warning' : 'warning.subtle'}
+            borderColor='warning'
             color='text.heading'
-            _hover={{ bg: 'status.warning_lt' }}
+            _hover={{ bg: 'warning.subtle' }}
             _active={{ boxShadow: 'none' }}
             _focus={{ boxShadow: 'none' }}
           >
@@ -50,10 +51,13 @@ export const Disclaimer = () => {
               </Text>
             )}
           </Button>
-          <SlideFade
-            in={!isMinimized && !!selectedSearchType?.additionalInfo}
-            offsetX={20}
-            offsetY={0}
+          <Presence
+            present={!isMinimized && !!selectedSearchType?.additionalInfo}
+            animationName={{
+              _open: 'slide-from-bottom, fade-in',
+              _closed: 'slide-to-bottom, fade-out',
+            }}
+            animationDuration='moderate'
           >
             <Flex
               display={isMinimized ? 'none' : 'flex'}
@@ -71,13 +75,13 @@ export const Disclaimer = () => {
                 px={2}
                 mx={1}
                 position='unset'
-                _hover={{ bg: 'status.warning' }}
-                _active={{ bg: 'status.warning', boxShadow: 'none' }}
+                _hover={{ bg: 'warning' }}
+                _active={{ bg: 'warning', boxShadow: 'none' }}
               >
                 Got it
               </Button>
             </Flex>
-          </SlideFade>
+          </Presence>
         </Flex>
       ) : (
         <></>

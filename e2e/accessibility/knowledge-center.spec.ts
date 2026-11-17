@@ -53,11 +53,12 @@
  *     never shows the index's empty grid; each shape is scanned in the state it
  *     can actually reach.
  */
-import { test, expect, type Page, type TestInfo } from '@playwright/test';
+import { expect, type Page, test, type TestInfo } from '@playwright/test';
+
 import { runAxeScans } from '../utils/axe';
 import {
-  expectKeyboardOpens,
   expectEscapeReturnsFocus,
+  expectKeyboardOpens,
 } from '../utils/keyboard';
 
 // --- Per-route configuration -------------------------------------------------

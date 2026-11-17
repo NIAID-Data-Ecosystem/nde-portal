@@ -1,16 +1,17 @@
-import React, { useMemo, useRef, useState } from 'react';
-import { max } from 'd3-array';
 import { Brush } from '@visx/brush';
+import BaseBrush from '@visx/brush/lib/BaseBrush';
+import { BrushProps } from '@visx/brush/lib/Brush';
+import { Bounds } from '@visx/brush/lib/types';
 import { Group } from '@visx/group';
 import { useParentSize } from '@visx/responsive';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { Bar } from '@visx/shape';
-import BaseBrush from '@visx/brush/lib/BaseBrush';
-import { BrushProps } from '@visx/brush/lib/Brush';
+import { max } from 'd3-array';
+import React, { useMemo, useRef, useState } from 'react';
 import { BrushHandle } from 'src/components/brush/components/brush-handle';
 import { useBrushKeyboardNavigation } from 'src/components/brush/hooks/useBrushKeyboardNavigation';
-import { Bounds } from '@visx/brush/lib/types';
 import { FacetTerm } from 'src/utils/api/types';
+
 import { FacetProps } from '../../../types';
 
 interface BrushableBarChartProps {
@@ -19,7 +20,7 @@ interface BrushableBarChartProps {
   defaultWidth?: number;
   defaultHeight?: number;
   margin?: { top: number; right: number; bottom: number; left: number };
-  colorScheme: FacetProps['colorScheme'];
+  colorPalette: FacetProps['colorPalette'];
 }
 
 const getTerm = (d: FacetTerm) => d.term;
@@ -27,7 +28,7 @@ const getTerm = (d: FacetTerm) => d.term;
 export const BrushableBarChart = ({
   data,
   onBrushSelection,
-  colorScheme,
+  colorPalette,
   defaultWidth = 480,
   defaultHeight = 80,
   margin = { top: 20, right: 10, bottom: 20, left: 10 },
@@ -109,7 +110,7 @@ export const BrushableBarChart = ({
                   height={barHeight}
                   fill={
                     selected.some(term => term === d.term)
-                      ? colorScheme?.[300] || '#ccc'
+                      ? colorPalette?.[300] || '#ccc'
                       : '#f2f2f2'
                   }
                 />

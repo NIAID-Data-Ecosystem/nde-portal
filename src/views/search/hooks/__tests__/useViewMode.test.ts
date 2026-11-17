@@ -1,7 +1,8 @@
-import { act } from 'react';
 import { renderHook } from '@testing-library/react';
-import { useViewMode } from '../useViewMode';
+import { act } from 'react';
+
 import { getViewModeStorageKey } from '../../config/view-mode';
+import { useViewMode } from '../useViewMode';
 
 beforeEach(() => {
   localStorage.clear();

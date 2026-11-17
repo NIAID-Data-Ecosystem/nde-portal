@@ -1,4 +1,4 @@
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { encodeString } from 'src/utils/querystring-helpers';

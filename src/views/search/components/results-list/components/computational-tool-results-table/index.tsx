@@ -1,9 +1,19 @@
-import React, { useMemo } from 'react';
 import { Text } from '@chakra-ui/react';
+import React, { useMemo } from 'react';
+import { ExpandableText } from 'src/components/expandable-cells';
 import { Column } from 'src/components/table';
 import { FormattedResource } from 'src/utils/api/types';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
+
 import { ResultsTable } from '../results-table';
+import { renderCellData } from '../results-table/components/Cells';
+import {
+  LinkEntry,
+  LinkListCell,
+  LinkOrTextCell,
+  ResourceNameCell,
+} from '../results-table/components/SharedCells';
+import { COMPUTATIONAL_TOOL_FALLBACK_COLUMN_IDS } from '../results-table/constants';
 import { BaseColumn } from '../results-table/types';
 import {
   CatalogEntry,
@@ -16,15 +26,6 @@ import {
   toLicenseEntry,
   withWidth,
 } from '../results-table/utils';
-import { renderCellData } from '../results-table/components/Cells';
-import { ExpandableText } from '../results-table/components/ExpandableCells';
-import {
-  LinkEntry,
-  LinkListCell,
-  LinkOrTextCell,
-  ResourceNameCell,
-} from '../results-table/components/SharedCells';
-import { COMPUTATIONAL_TOOL_FALLBACK_COLUMN_IDS } from '../results-table/constants';
 
 export interface ComputationalToolColumn extends BaseColumn {}
 
@@ -210,11 +211,11 @@ export const createGetCells =
   ({
     column,
     data,
-    isLoading,
+    loading,
   }: {
     column: Column;
     data: Record<string, unknown>;
-    isLoading?: boolean;
+    loading?: boolean;
   }) => {
     const value = data?.[column.property];
 
@@ -251,18 +252,16 @@ export const createGetCells =
         ',',
         10,
       );
-      return (
-        <ExpandableText text={authors} noOfLines={3} isLoading={isLoading} />
-      );
+      return <ExpandableText text={authors} noOfLines={3} loading={loading} />;
     }
 
-    // Description: clamped to a few lines with a "Show more" / "Show less" toggle.
+    // Description: clamped to a few lines with a "Show More" / "Show Less" toggle.
     if (column.property === 'description') {
       return (
         <ExpandableText
           text={(value as string) || ''}
           noOfLines={4}
-          isLoading={isLoading}
+          loading={loading}
         />
       );
     }
@@ -295,12 +294,12 @@ export const createGetCells =
     // applicationCategory, programmingLanguage, operatingSystem and
     // softwareVersion are string arrays; input, output, featureList and
     // topicCategory are DefinedTerm arrays. The shared renderer handles both.
-    return renderCellData({ column, data: value as any, isLoading });
+    return renderCellData({ column, data: value as any, loading });
   };
 
 interface ComputationalToolResultsTableProps {
   results: FormattedResource[];
-  isLoading: boolean;
+  loading: boolean;
   /**
    * IDs of columns that should be visible.
    * When undefined, all columns are shown.
@@ -334,7 +333,7 @@ interface ComputationalToolResultsTableProps {
 
 export const ComputationalToolResultsTable = ({
   results,
-  isLoading,
+  loading,
   visibleColumnIds,
   columnOrder,
   currentSort,
@@ -347,7 +346,7 @@ export const ComputationalToolResultsTable = ({
     <ResultsTable
       columns={ALL_COMPUTATIONAL_TOOL_COLUMNS}
       results={results}
-      isLoading={isLoading}
+      loading={loading}
       toRow={toRow}
       getCells={getCells}
       ariaLabel='Computational tool search results'

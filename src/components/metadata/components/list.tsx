@@ -1,19 +1,13 @@
+import { List } from '@chakra-ui/react';
 import React from 'react';
-import { ListItem, UnorderedList, ListIcon, ListProps } from '@chakra-ui/react';
-import { FaCircle } from 'react-icons/fa6';
-import { getMetadataTheme } from 'src/components/icon/helpers';
 
-export const MetadataList = ({ children, ...props }: ListProps) => {
+import { getMetadataColorPalette } from '../helpers';
+
+export const MetadataList = ({ children, ...props }: List.RootProps) => {
   return (
-    <UnorderedList
-      ml={0}
-      my={1.5}
-      display='flex'
-      flexDirection='column'
-      {...props}
-    >
+    <List.Root as='ul' listStyleType='disc' gap={2} paddingStart={3} {...props}>
       {children}
-    </UnorderedList>
+    </List.Root>
   );
 };
 
@@ -25,15 +19,11 @@ export const MetadataListItem = ({
   property: string;
 }) => {
   return (
-    <ListItem mb={3} display='flex' fontSize='xs' lineHeight='short' w='100%'>
-      <ListIcon
-        as={FaCircle}
-        m={2}
-        mx={1}
-        boxSize={1}
-        fill={`${getMetadataTheme(property)}.400`}
-      />
+    <List.Item
+      w='100%'
+      _marker={{ color: `${getMetadataColorPalette(property)}.400` }}
+    >
       {children}
-    </ListItem>
+    </List.Item>
   );
 };

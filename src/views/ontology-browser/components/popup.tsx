@@ -1,10 +1,11 @@
 import { Button } from '@chakra-ui/react';
+import { useQuery } from '@tanstack/react-query';
 import NextLink from 'next/link';
 import {
   SelectedFilterType,
   SelectedFilterValueType,
 } from 'src/views/search/components/filters/types';
-import { useQuery } from '@tanstack/react-query';
+
 import {
   ONTOLOGY_BROWSER_OPTIONS,
   searchOntologyAPI,
@@ -48,8 +49,8 @@ const findRelatedOntology = (
 ) => {
   const selectedFilterKeys = Object.keys(filters);
 
-  // If there are no filters selected, return early
-  if (selectedFilterKeys.length === 0) {
+  // If there are no filters selected and no querystring, return early
+  if (selectedFilterKeys.length === 0 && !querystring) {
     return {
       hasOntology: false,
     };
@@ -75,12 +76,10 @@ const findRelatedOntology = (
       // Check if the querystring contains the property
       if (querystring && querystring.includes(property)) {
         let term = extractSubstringFromQueryString(querystring, property);
-        if (property.includes('identifier')) {
-          if (ontology.value === 'ncbitaxon') {
-            term = `${ontology.value}_${term}`;
-          } else if (ontology.value === 'edam') {
-            term = `${term?.replace('topic', 'EDAM')}`;
-          }
+        // NCBI Taxonomy identifiers are already the bare taxon id ("9606")
+        // that the BioThings search takes.
+        if (property.includes('identifier') && ontology.value === 'edam') {
+          term = `${term?.replace('topic', 'EDAM')}`;
         }
 
         return {
@@ -137,33 +136,35 @@ export const OntologyBrowserPopup = ({
   }
 
   return (
-    <NextLink
-      href={{
-        pathname: `/ontology-browser`,
-        query: {
-          q: querystring,
-          id: suggestions?.[0]?._id || '',
-          ontology: suggestions?.[0]?.definingOntology || '',
-        },
+    <Button
+      size='sm'
+      variant='unstyled'
+      underline
+      colorPalette='blue'
+      py={1}
+      px={2}
+      color='link'
+      _hover={{
+        color: 'link',
+        textDecoration: 'none',
+        borderRadius: 'semi',
+        bg: 'blue.50',
       }}
+      loading={isLoading}
+      asChild
     >
-      <Button
-        size='sm'
-        variant='link'
-        colorScheme='blue'
-        py={1}
-        px={2}
-        color='link.color'
-        _hover={{
-          color: 'link.color',
-          textDecoration: 'none',
-          borderRadius: 'semi',
-          bg: 'blue.50',
+      <NextLink
+        href={{
+          pathname: `/ontology-browser`,
+          query: {
+            q: querystring,
+            id: suggestions?.[0]?._id || '',
+            ontology: suggestions?.[0]?.definingOntology || '',
+          },
         }}
-        isLoading={isLoading}
       >
         use ontology browser?
-      </Button>
-    </NextLink>
+      </NextLink>
+    </Button>
   );
 };

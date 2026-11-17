@@ -1,12 +1,14 @@
-import { rest } from 'msw';
 import { renderHook, waitFor } from '@testing-library/react';
-import { createWrapper } from './mocks/utils.tsx';
-import { useRepoData } from 'src/hooks/api/useRepoData.ts';
+import { rest } from 'msw';
+import { useMetadata } from 'src/hooks/api/useMetadata.tsx';
+
 import { server } from '../../jest.setup.js';
+import { mockRepositoriesMetadata } from './mocks/data';
+import { createWrapper } from './mocks/utils.tsx';
 
 describe('use query hook', () => {
-  test('successful useRepoData query hook', async () => {
-    const { result } = renderHook(() => useRepoData(), {
+  test('successful useMetadata query hook', async () => {
+    const { result } = renderHook(() => useMetadata(), {
       wrapper: createWrapper(),
     });
 
@@ -14,21 +16,8 @@ describe('use query hook', () => {
       timeout: 5000,
     });
 
-    const { _id, abstract, conditionsOfAccess, name, type, url } =
-      result.current.data[0];
-
-    expect(result.current.data).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          _id,
-          abstract,
-          type,
-          name: name || '',
-          url,
-          conditionsOfAccess: conditionsOfAccess || '',
-        }),
-      ]),
-    );
+    // useMetadata returns the raw `/metadata` response served by the msw handler.
+    expect(result.current.data).toEqual(mockRepositoriesMetadata);
   });
 
   test('failure query hook', async () => {
@@ -42,7 +31,7 @@ describe('use query hook', () => {
       }),
     );
 
-    const { result } = renderHook(() => useRepoData(), {
+    const { result } = renderHook(() => useMetadata(), {
       wrapper: createWrapper(),
     });
     // fetchMetadata retries 5xx responses with exponential backoff

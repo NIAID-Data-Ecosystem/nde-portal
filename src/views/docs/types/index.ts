@@ -1,3 +1,5 @@
+import { InputProps } from '@chakra-ui/react';
+
 export interface DocumentationProps {
   id: number;
   name: string;
@@ -54,25 +56,25 @@ export interface SidebarContent {
 }
 
 export interface SidebarMobileProps {
-  isLoading: boolean;
+  loading: boolean;
   menuTitle?: string;
   sections?: SidebarContent[];
   selectedSlug?: string;
-  colorScheme?: string;
+  colorPalette?: string;
 }
 
 export interface SidebarDesktopProps {
-  isLoading: boolean;
+  loading: boolean;
   sections?: SidebarContent[];
   selectedSlug?: string;
-  colorScheme?: string;
+  colorPalette?: string;
 }
 
 export interface DocumentItemProps {
   item: SidebarContent['items'][0];
   selectedSlug?: string;
-  colorScheme: string;
-  isLoading: boolean;
+  colorPalette: string;
+  loading: boolean;
   activePageSlug?: string;
 }
 
@@ -96,26 +98,24 @@ export interface SearchResultItemProps {
   index: number;
   result: SearchResult;
   searchTerm: string;
-  colorScheme: string;
+  colorPalette: SearchBarProps['colorPalette'];
   onClick: () => void;
 }
 
 export interface SearchBarProps {
   ariaLabel: string;
   placeholder: string;
-  colorScheme?: string;
-  size?: string;
+  colorPalette?: InputProps['colorPalette'];
+  size?: InputProps['size'];
   searchHistory: string[];
   setSearchHistory: React.Dispatch<React.SetStateAction<string[]>>;
-  currentCursorMax: number;
   setCurrentCursorMax: React.Dispatch<React.SetStateAction<number>>;
-  currentInputValue: string;
   setCurrentInputValue: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export interface DocsSearchBarProps {
   ariaLabel: string;
   placeholder: string;
-  colorScheme?: string;
-  size?: string;
+  colorPalette?: SearchBarProps['colorPalette'];
+  size?: SearchBarProps['size'];
 }

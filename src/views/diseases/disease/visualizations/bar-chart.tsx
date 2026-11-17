@@ -1,14 +1,12 @@
-import React, { useMemo, useState } from 'react';
-import NextLink from 'next/link';
 import {
-  Text as ChakraText,
   Checkbox,
   Flex,
   HStack,
+  Text as ChakraText,
   VisuallyHidden,
   VStack,
 } from '@chakra-ui/react';
-import { useSpring, animated } from '@react-spring/web';
+import { animated, useSpring } from '@react-spring/web';
 import { Annotation, HtmlLabel } from '@visx/annotation';
 import { localPoint } from '@visx/event';
 import { Group } from '@visx/group';
@@ -21,18 +19,21 @@ import {
   useTooltip,
   useTooltipInPortal,
 } from '@visx/tooltip';
-import { UrlObject } from 'url';
+import NextLink from 'next/link';
+import React, { useMemo, useState } from 'react';
 import { InfoLabel } from 'src/components/info-label';
-import { MetadataSource } from 'src/hooks/api/types';
-import { theme } from 'src/theme';
-import { FacetTerm } from 'src/utils/api/types';
 import {
   customTooltipStyles,
-  TooltipWrapper,
   TooltipBody,
   TooltipSubtitle,
   TooltipTitle,
+  TooltipWrapper,
 } from 'src/components/visualizations/tooltip/index';
+import { MetadataSource } from 'src/hooks/api/types';
+import { system } from 'src/theme';
+import { FacetTerm } from 'src/utils/api/types';
+import { UrlObject } from 'url';
+
 import { getFillColor } from '../../chart-utils';
 
 export interface SourceFacet {
@@ -66,7 +67,7 @@ interface BarChartProps {
   };
 
   /** State of the data loading. */
-  isLoading?: boolean;
+  loading?: boolean;
 
   /** Function to get the route for a given term. */
   getRoute: (term: string) => UrlObject;
@@ -82,10 +83,10 @@ const barStyles = { minHeight: 10, padding: 25, rx: 2.5 };
 const domainStyles = {
   IID: {
     fillOpacity: 0.6,
-    stroke: theme.colors.page.placeholder,
+    stroke: system.token('colors.text.placeholder'),
   },
   Generalist: {
-    fill: theme.colors.page.placeholder,
+    fill: system.token('colors.text.placeholder'),
     fillOpacity: 0.2,
   },
 };
@@ -96,7 +97,7 @@ export const BarChart = ({
   description,
   data,
   defaultDimensions,
-  isLoading,
+  loading,
   getRoute,
   handleGATracking,
   useLogScale = false,
@@ -186,17 +187,28 @@ export const BarChart = ({
     <>
       <Flex justifyContent='space-between' alignItems='flex-end'>
         {/* Toggle for log scale */}
-        <Checkbox
-          isChecked={applyLogScale}
-          onChange={() => setApplyLogScale(!applyLogScale)}
+        <Checkbox.Root
+          onCheckedChange={() => setApplyLogScale(!applyLogScale)}
           alignSelf='flex-end'
+          checked={applyLogScale}
+          // v2's default colorScheme; v3 leaves the control fill empty without a palette.
+          colorPalette='blue'
         >
-          <InfoLabel
-            title='Apply log scale'
-            tooltipText='Log scale compresses large values, making smaller categories more visible while preserving
-              proportions. Original counts are shown in tooltips.'
-          ></InfoLabel>
-        </Checkbox>
+          <Checkbox.HiddenInput />
+          <Checkbox.Control>
+            <Checkbox.Indicator />
+          </Checkbox.Control>
+          <Checkbox.Label>
+            <InfoLabel
+              tooltipProps={{
+                content:
+                  'Log scale compresses large values, making smaller categories more visible while preserving proportions. Original counts are shown in tooltips.',
+              }}
+            >
+              Apply log scale
+            </InfoLabel>
+          </Checkbox.Label>
+        </Checkbox.Root>
         <Legend id={`${id}-iidpattern-swatch`} />
       </Flex>
       <div ref={parentRef} style={{ width: '100%', height: `${svgHeight}px` }}>
@@ -304,8 +316,8 @@ export const BarChart = ({
                             fontSize='xs'
                             lineHeight='normal'
                             maxWidth={`${xMax}px`}
-                            noOfLines={1}
-                            visibility={isLoading ? 'hidden' : 'visible'}
+                            lineClamp={1}
+                            visibility={loading ? 'hidden' : 'visible'}
                           >
                             {datum?.info?.name || datum.term} |{' '}
                             {datum.count.toLocaleString()}
@@ -320,7 +332,7 @@ export const BarChart = ({
           </svg>
 
           {/* Tooltip */}
-          {!isLoading && tooltipOpen && tooltipData && (
+          {!loading && tooltipOpen && tooltipData && (
             <TooltipWithBounds
               key={Math.random()}
               data-testid='tooltip'
@@ -388,7 +400,7 @@ const IIDPattern = ({ id }: { id: string }) => {
       width={6}
       height={6}
       // stroke='black'
-      stroke={theme.colors.page.placeholder}
+      stroke={system.token('colors.text.placeholder')}
       strokeWidth={1}
       orientation={['diagonal']}
     />
@@ -398,7 +410,7 @@ const IIDPattern = ({ id }: { id: string }) => {
 const Legend = ({ id }: { id: string }) => {
   const swatchSize = 16;
   return (
-    <VStack alignItems='flex-start' spacing={1}>
+    <VStack alignItems='flex-start' gap={1}>
       {/* IID Pattern Swatch */}
       <HStack>
         <svg width={swatchSize} height={swatchSize}>

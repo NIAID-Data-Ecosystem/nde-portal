@@ -1,14 +1,9 @@
-import React from 'react';
-import {
-  Checkbox,
-  Flex,
-  Icon,
-  IconButton,
-  Text,
-  Tooltip,
-} from '@chakra-ui/react';
-import { FaAngleDown, FaAngleUp, FaGripVertical } from 'react-icons/fa6';
+import { Checkbox, Flex, Icon, IconButton, Text } from '@chakra-ui/react';
 import { useSortable } from '@dnd-kit/sortable';
+import React from 'react';
+import { FaAngleDown, FaAngleUp, FaGripVertical } from 'react-icons/fa6';
+
+import Tooltip from '../../tooltip';
 import { PopoverItem } from '../types';
 
 interface PopoverListItemProps {
@@ -92,7 +87,13 @@ export const PopoverListItem = ({
     >
       {/* Drag handle, which is rendered only when ordering is enabled */}
       {enableOrdering && (
-        <Tooltip label={dragTooltip} placement='left' hasArrow openDelay={400}>
+        <Tooltip
+          content={dragTooltip}
+          openDelay={400}
+          positioning={{
+            placement: 'left',
+          }}
+        >
           <Flex
             {...(dragDisabled ? {} : { ...attributes, ...listeners })}
             cursor={dragDisabled ? 'not-allowed' : 'grab'}
@@ -106,59 +107,70 @@ export const PopoverListItem = ({
           </Flex>
         </Tooltip>
       )}
-
       {/* Checkbox */}
-      <Checkbox
+      <Checkbox.Root
         value={item.id}
-        isChecked={isChecked}
-        isDisabled={isRequired}
-        onChange={e => onCheck(item.id, e.target.checked)}
+        disabled={isRequired}
+        checked={isChecked}
+        onCheckedChange={e => onCheck(item.id, !!e.checked)}
         flex={1}
         minW={0}
+        size='sm'
+        variant='solid'
+        colorPalette='blue'
       >
-        <Text
-          ml={1}
-          fontSize='xs'
-          noOfLines={1}
-          title={isFallback ? `${item.title} (shown by default)` : item.title}
-        >
-          {item.title}
-          {isFallback && (
-            <Text as='span' color='gray.600' fontWeight='normal'>
-              {' '}
-              (shown by default)
-            </Text>
-          )}
-        </Text>
-      </Checkbox>
-
+        <Checkbox.HiddenInput />
+        <Checkbox.Control>
+          <Checkbox.Indicator />
+        </Checkbox.Control>
+        <Checkbox.Label>
+          <Text
+            ml={1}
+            fontSize='xs'
+            lineClamp={1}
+            title={isFallback ? `${item.title} (shown by default)` : item.title}
+          >
+            {item.title}
+            {isFallback && (
+              <Text as='span' color='gray.600' fontWeight='normal'>
+                {' '}
+                (shown by default)
+              </Text>
+            )}
+          </Text>
+        </Checkbox.Label>
+      </Checkbox.Root>
       {/* Up/down buttons, which is rendered only when ordering is enabled and not searching */}
       {enableOrdering && !isSearching && (
         <Flex
+          py={0.5}
           gap={0.5}
           flexShrink={0}
+          alignItems='center'
           opacity={0}
-          _groupHover={{ opacity: isRequired ? 0 : 1 }}
+          _hover={{ opacity: isRequired ? 0 : 1 }}
           transition='opacity 0.15s'
         >
           <IconButton
             aria-label={`Move ${item.title} up`}
-            icon={<Icon as={FaAngleUp} />}
-            size='xs'
+            size='2xs'
             variant='ghost'
-            colorScheme='gray'
-            isDisabled={isRequired || isFirst}
+            colorPalette='blue'
+            disabled={isRequired || isFirst}
             onClick={() => onMoveUp?.(item.id)}
-          />
+          >
+            <FaAngleUp />
+          </IconButton>
           <IconButton
             aria-label={`Move ${item.title} down`}
-            icon={<Icon as={FaAngleDown} />}
-            size='xs'
+            size='2xs'
             variant='ghost'
-            colorScheme='gray'
-            isDisabled={isRequired || isLast}
+            colorPalette='blue'
+            disabled={isRequired || isLast}
             onClick={() => onMoveDown?.(item.id)}
-          />
+          >
+            <FaAngleDown />
+          </IconButton>
         </Flex>
       )}
     </Flex>

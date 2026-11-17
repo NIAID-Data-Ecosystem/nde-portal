@@ -1,4 +1,5 @@
 import { FormattedResource } from 'src/utils/api/types';
+
 import { getFundedByNIAID } from '../helpers';
 
 export const isSourceFundedByNiaid = (
@@ -13,9 +14,5 @@ export const isSourceFundedByNiaid = (
       : [includedInDataCatalog]
     : [];
 
-  return (
-    sources
-      .map(source => getFundedByNIAID(source.name))
-      .filter(isNiaidFunded => !!isNiaidFunded).length > 0
-  );
+  return sources.filter(source => getFundedByNIAID(source.name)).length > 0;
 };

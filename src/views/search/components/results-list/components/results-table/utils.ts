@@ -1,5 +1,6 @@
 import { Funder, Funding, IncludedInDataCatalog } from 'src/utils/api/types';
 import { formatLicense } from 'src/utils/helpers';
+
 import { BaseColumn } from './types';
 
 /**

@@ -1,12 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
 import { Box, BoxProps, Button } from '@chakra-ui/react';
+import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { HeadingWithTooltip } from './heading-with-tooltip';
-import { getAccessResourceURL } from 'src/components/source-logo/helpers';
-import { Link } from 'src/components/link';
-import { FormattedResource } from 'src/utils/api/types';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
+import { InfoLabel } from 'src/components/info-label';
+import { Link } from 'src/components/link';
+import { getAccessResourceURL } from 'src/components/source-logo/helpers';
+import { FormattedResource } from 'src/utils/api/types';
 
 // Render markdown anchors with the themed Link component so credit text links
 // pick up the same color/underline/visited styles as the rest of the portal.
@@ -84,10 +84,17 @@ export const CreditText = ({
     <Box {...rest}>
       {/* Optional heading with tooltip */}
       {label && (
-        <HeadingWithTooltip label={label} tooltipLabel={tooltipLabel || ''} />
+        <InfoLabel
+          label={label}
+          tooltipProps={{ content: tooltipLabel || '' }}
+        />
       )}
       {/* Collapsed to select number of lines unless expanded */}
-      <Box ref={containerRef} noOfLines={expanded ? undefined : noOfLines}>
+      <Box
+        ref={containerRef}
+        color='text.body'
+        lineClamp={expanded ? undefined : noOfLines}
+      >
         {data?.creditText ? (
           <ReactMarkdown
             rehypePlugins={[rehypeRaw]}
@@ -124,9 +131,9 @@ export const CreditText = ({
       {/* Only show toggle if there's credit text AND it overflows the set noOfLines*/}
       {data?.creditText && isOverflowing && (
         <Button
-          variant='link'
+          variant='unstyled'
+          underline
           onClick={() => setExpanded(!expanded)}
-          color='blue.500'
           mt={0}
         >
           {expanded ? 'Show less' : 'Show more'}

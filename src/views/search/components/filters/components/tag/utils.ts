@@ -1,19 +1,19 @@
-import { TagInfo } from '.';
-
-import { capitalize, has, isPlainObject, uniqBy } from 'lodash';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { capitalize, has, isPlainObject, uniqBy } from 'lodash';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import { SHOW_FILTER_SPECIFIED_UNSPECIFIED_LABELS } from 'src/utils/feature-flags';
+import {
+  APIResourceType,
+  formatAPIResourceTypeForDisplay,
+} from 'src/utils/formatting/formatResourceType';
+
 import {
   FilterConfig,
   SelectedFilterType,
   SelectedFilterValueType,
 } from '../../types';
-import {
-  APIResourceType,
-  formatAPIResourceTypeForDisplay,
-} from 'src/utils/formatting/formatResourceType';
 import { OR_FILTER_KEY } from '../../utils/query-string';
-import { SHOW_FILTER_SPECIFIED_UNSPECIFIED_LABELS } from 'src/utils/feature-flags';
+import { TagInfo } from '.';
 
 // Constants
 const DISPLAY_NAME_SEPARATOR = ' | ';

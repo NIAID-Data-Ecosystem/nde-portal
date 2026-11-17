@@ -18,8 +18,10 @@
  * Every violation is attached to the HTML report; the build only FAILS on
  * `serious`/`critical` impact. See e2e/utils/axe.ts.
  */
-import { test, expect, type Page, type TestInfo } from '@playwright/test';
+import { expect, type Page, test, type TestInfo } from '@playwright/test';
+
 import { runAxeScans } from '../utils/axe';
+import { expectNoSkeletonsLoading } from '../utils/skeleton';
 
 test.use({ viewport: { width: 375, height: 812 } });
 
@@ -211,7 +213,7 @@ test.describe('a11y: Mobile — Search', () => {
     await expect(
       page.getByText('No results found. Please try again.').last(),
     ).toBeVisible();
-    await expect(page.locator('.custom-skeleton-loading')).toHaveCount(0);
+    await expectNoSkeletonsLoading(page);
 
     await runAxeScans(page, testInfo, 'mobile-search');
   });

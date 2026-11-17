@@ -1,6 +1,7 @@
-import { renderHook, act } from '@testing-library/react';
-import { useTableSort } from '../hooks/useTableSort'; // Update the import path as needed
+import { act, renderHook } from '@testing-library/react';
 import { createWrapper } from 'src/__tests__/mocks/utils';
+
+import { useTableSort } from '../hooks/useTableSort'; // Update the import path as needed
 
 describe('useTableSort', () => {
   test('initializes with default values', () => {

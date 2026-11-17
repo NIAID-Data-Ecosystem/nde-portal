@@ -1,13 +1,14 @@
-import React from 'react';
 import {
-  Divider,
   Flex,
   FlexProps,
   Heading,
+  Separator,
   SkeletonText,
   Text,
   TextProps,
 } from '@chakra-ui/react';
+import Link from 'next/link';
+import React from 'react';
 import { HeadingWithLinkStyles } from 'src/components/heading-with-link/components/HeadingWithLink';
 
 type HeadingLevel = 'h1' | 'h2' | 'h3' | 'h4' | 'h5';
@@ -38,16 +39,16 @@ export const headingStyles: Record<
 export const SectionTitle = ({
   as,
   children,
-  isLoading,
+  loading,
   slug,
   ...props
 }: {
   as?: HeadingLevel | string;
   children?: string;
-  isLoading?: boolean;
+  loading?: boolean;
   slug?: string;
 } & TextProps) => {
-  if (!children && !isLoading) return null;
+  if (!children && !loading) return null;
 
   if (as && ['h1', 'h2', 'h3', 'h4', 'h5'].includes(as)) {
     const { fontSize, skeletonHeight, mb, fontWeight, color } =
@@ -67,12 +68,12 @@ export const SectionTitle = ({
 
     return (
       <>
+        {/* v3 defaults `loading` to true and spreads `height` onto the loaded content too, so coerce one and only pass the other while loading. */}
         <SkeletonText
-          isLoaded={!isLoading}
+          loading={!!loading}
           noOfLines={1}
-          skeletonHeight={skeletonHeight}
-          width='100%'
-          mb={mb}
+          height={loading ? skeletonHeight : undefined}
+          rootProps={{ mb }}
         >
           {slug ? (
             <SectionTitleWithLink slug={slug}>{heading}</SectionTitleWithLink>
@@ -80,20 +81,13 @@ export const SectionTitle = ({
             heading
           )}
         </SkeletonText>
-        {as === 'h3' && (
-          <Divider mt={2} mb={4} borderColor='page.placeholder' />
-        )}
+        {as === 'h3' && <Separator mt={2} mb={4} borderColor='gray.600' />}
       </>
     );
   }
 
   return (
-    <SkeletonText
-      isLoaded={!isLoading}
-      noOfLines={4}
-      skeletonHeight={4}
-      width='100%'
-    >
+    <SkeletonText loading={!!loading} noOfLines={4}>
       <Text as={as} {...props}>
         {children}
       </Text>
@@ -108,11 +102,13 @@ export const SectionTitleWithLink = ({
   children: React.ReactNode;
   slug: string;
 }) => (
-  <Flex as='a' href={slug} alignItems='center' sx={HeadingWithLinkStyles}>
-    {children}
-    <Text as='span' fontWeight='bold' fontSize='inherit'>
-      #
-    </Text>
+  <Flex asChild alignItems='center' css={HeadingWithLinkStyles}>
+    <Link href={slug}>
+      {children}
+      <Text as='span' fontWeight='bold' fontSize='inherit'>
+        #
+      </Text>
+    </Link>
   </Flex>
 );
 
@@ -121,13 +117,13 @@ export const SectionWrapper: React.FC<
     as?: HeadingLevel;
     children?: React.ReactNode;
     id: string;
-    isLoading?: boolean;
+    loading?: boolean;
     slug?: string;
     title: string;
   }
-> = ({ as = 'h2', id, children, isLoading, slug, title, ...props }) => (
+> = ({ as = 'h2', id, children, loading, slug, title, ...props }) => (
   <Flex as='section' id={id} mt={4} mb={4} flexDirection='column' {...props}>
-    <SectionTitle as={as} isLoading={isLoading} slug={slug}>
+    <SectionTitle as={as} loading={loading} slug={slug}>
       {title}
     </SectionTitle>
     {children}
@@ -139,7 +135,7 @@ export const SectionDescription: React.FC<TextProps> = ({
   ...props
 }) => {
   return (
-    <Text lineHeight='short' mb={2} {...props}>
+    <Text lineHeight='moderate' mb={2} {...props}>
       {children}
     </Text>
   );

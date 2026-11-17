@@ -1,7 +1,10 @@
-import React from 'react';
-import { render, screen, within } from '@testing-library/react';
-import { ChakraProvider } from '@chakra-ui/react';
 import '@testing-library/jest-dom';
+
+import { ChakraProvider } from '@chakra-ui/react';
+import { render, screen, within } from '@testing-library/react';
+import React from 'react';
+import { system } from 'src/theme';
+
 import Sections from '.';
 import { Route } from './helpers';
 
@@ -11,6 +14,7 @@ import { Route } from './helpers';
 // handed to them is asserted through what they render.
 jest.mock('./components', () => ({
   ResourceHeader: () => null,
+  ResourceIdentifiers: () => null,
   ResourceBanner: () => null,
   ResourceAuthors: () => null,
   ResourceOverview: () => <div data-testid='resource-overview' />,
@@ -32,15 +36,10 @@ jest.mock('./components', () => ({
   ),
 }));
 
-jest.mock('./components/summary', () => ({ Summary: () => null }));
 jest.mock('./components/sidebar/components/external', () => ({
   ExternalAccess: () => null,
   UsageInfo: () => null,
 }));
-jest.mock(
-  './components/sidebar/components/external/components/credit-text',
-  () => ({ CreditText: () => null }),
-);
 jest.mock('./components/samples', () => ({ SamplesDisplay: () => null }));
 jest.mock('./components/files-table', () => ({
   __esModule: true,
@@ -62,7 +61,7 @@ const makeSection = (overrides: Partial<Route>): Route =>
     title: 'Section',
     hash: 'overview',
     properties: [],
-    ui: { isCollapsible: true, showInNavigation: true, showEmptyState: true },
+    ui: { showInNavigation: true, showEmptyState: true },
     ...overrides,
   } as Route);
 
@@ -71,8 +70,8 @@ const renderSections = (
   sections: Route[] = [],
 ) =>
   render(
-    <ChakraProvider>
-      <Sections isLoading={false} data={data as any} sections={sections} />
+    <ChakraProvider value={system}>
+      <Sections loading={false} data={data as any} sections={sections} />
     </ChakraProvider>,
   );
 

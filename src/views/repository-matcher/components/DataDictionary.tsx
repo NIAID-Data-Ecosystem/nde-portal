@@ -1,5 +1,6 @@
-import React from 'react';
 import { Box, Heading, Text, VStack } from '@chakra-ui/react';
+import React from 'react';
+
 import { RepositoryMatcherColumn } from '../types';
 
 interface DataDictionaryProps {
@@ -25,7 +26,7 @@ export const DataDictionary: React.FC<DataDictionaryProps> = ({
         <Heading as='h2' fontSize='lg'>
           Table Dictionary
         </Heading>
-        <Text lineHeight='short'>
+        <Text lineHeight='moderate'>
           Definitions of fields and values used in the Repository Matcher
         </Text>
       </VStack>
@@ -60,7 +61,7 @@ export const DataDictionary: React.FC<DataDictionaryProps> = ({
                     {label}
                   </Text>
                 )}
-                {description && <Text color='gray.800'>{description}</Text>}
+                {description && <Text color='gray.600'>{description}</Text>}
               </Box>
               {visibleTerms && visibleTerms.length > 0 && (
                 <VStack mx={6} my={4} alignItems='flex-start'>

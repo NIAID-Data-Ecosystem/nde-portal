@@ -1,5 +1,5 @@
-import fs from 'fs/promises';
 import axios from 'axios';
+import fs from 'fs/promises';
 import { SiteConfig } from 'src/components/page-container/types';
 
 const CONFIG_FILE_PATH = 'configs/site.config.json';

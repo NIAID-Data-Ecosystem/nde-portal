@@ -1,12 +1,13 @@
-import { useCallback, useState } from 'react';
+import { Box, Flex, List, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
-import { Box, Flex, ListItem, Text, UnorderedList } from '@chakra-ui/react';
-import { UrlObject } from 'url';
+import { useCallback, useState } from 'react';
 import { Link } from 'src/components/link';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { FacetTerm } from 'src/utils/api/types';
-import { BrushableBarChart } from './brushable-bar-chart';
+import { UrlObject } from 'url';
+
 import { FacetProps } from '../../../types';
+import { BrushableBarChart } from './brushable-bar-chart';
 
 interface BrushableListChartProps {
   data: FacetTerm[];
@@ -41,7 +42,7 @@ export const BrushableListChart = ({
       {/* Add Brush */}
       <BrushableBarChart
         data={data}
-        colorScheme={facet.colorScheme}
+        colorPalette={facet.colorPalette}
         onBrushSelection={onBrushSelection}
         {...chartDimensions}
       />
@@ -49,7 +50,7 @@ export const BrushableListChart = ({
         <Flex
           fontSize='xs'
           fontWeight='semibold'
-          lineHeight='short'
+          lineHeight='moderate'
           justifyContent='space-between'
           mr={4}
           ml={1}
@@ -63,41 +64,46 @@ export const BrushableListChart = ({
         </Flex>
         {/* List of terms and associated counts */}
         <ScrollContainer
-          as={UnorderedList}
+          // The scroll-area recipe is `width: 100%`, which `ml` would push past the column.
+          width='auto'
           ml={1}
           mt={1}
           maxHeight={`${SCROLL_HEIGHT}px`}
           minHeight={`${SCROLL_HEIGHT}px`}
         >
-          {selectedData.map(item => (
-            <ListItem
-              key={item.term}
-              fontSize='sm'
-              color='gray.500'
-              display='flex'
-              justifyContent='space-between'
-              pr={4}
-              pl={1}
-              py={1}
-              borderBottom='1px solid'
-              borderBottomColor='#ededed'
-              lineHeight='short'
-            >
-              {/* Term: Links to search results */}
-              <NextLink
-                onClick={() =>
-                  handleGATracking({ label: item.term, count: item.count })
-                }
-                href={getSearchRoute(item.term)}
-                passHref
+          {/* ScrollContainer is a ScrollArea, so the list sits inside its viewport rather than being rendered `as` a ul. */}
+          <List.Root ps={0}>
+            {selectedData.map(item => (
+              <List.Item
+                key={item.term}
+                fontSize='sm'
+                color='gray.500'
+                display='flex'
+                justifyContent='space-between'
+                pr={4}
+                pl={1}
+                py={1}
+                borderBottom='1px solid'
+                borderBottomColor='#ededed'
+                lineHeight='moderate'
               >
-                <Link as='p'>{item.term}</Link>
-              </NextLink>
+                {/* Term: Links to search results */}
+                <Link asChild>
+                  <NextLink
+                    onClick={() =>
+                      handleGATracking({ label: item.term, count: item.count })
+                    }
+                    href={getSearchRoute(item.term)}
+                  >
+                    {item.term}
+                  </NextLink>
+                </Link>
 
-              {/* Count */}
-              <Text>{item.count.toLocaleString()}</Text>
-            </ListItem>
-          ))}
+                {/* Count */}
+                <Text>{item.count.toLocaleString()}</Text>
+              </List.Item>
+            ))}
+          </List.Root>
         </ScrollContainer>
       </Box>
     </>

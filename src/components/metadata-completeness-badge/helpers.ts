@@ -1,5 +1,6 @@
-import { FormattedResource } from 'src/utils/api/types';
 import METADATA_COMPLETENESS_FIELDS from 'src/components/metadata-completeness-badge/fields.json';
+import { FormattedResource } from 'src/utils/api/types';
+
 import { getMetadataNameByDotfield } from '../advanced-search/utils/query-helpers';
 
 // Use the same list of required and recommended fields

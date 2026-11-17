@@ -1,32 +1,32 @@
-import React from 'react';
 import {
   Box,
-  Divider,
   Flex,
   SimpleGrid,
   Skeleton,
+  StackSeparator,
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { FormattedResource } from 'src/utils/api/types';
+import React from 'react';
 import {
   generateMetadataContentforCompToolCard,
   SORT_ORDER,
   SORT_ORDER_COMPTOOL,
 } from 'src/components/metadata';
 import {
+  generateMetadataContent,
+  getMetadataDescription,
   MetadataBlock,
   MetadataContent,
   MetadataList,
   MetadataListItem,
-  generateMetadataContent,
-  getMetadataDescription,
   sortMetadataArray,
 } from 'src/components/metadata';
 import { ScrollContainer } from 'src/components/scroll-container';
+import { FormattedResource } from 'src/utils/api/types';
 
 export interface OverviewProps extends Partial<FormattedResource> {
-  isLoading: boolean;
+  loading: boolean;
 }
 
 const DATASET_SORT_ORDER = [...SORT_ORDER, 'spatialCoverage'];
@@ -36,7 +36,7 @@ const Overview: React.FC<OverviewProps> = ({
   id,
   infectiousAgent,
   inLanguage,
-  isLoading,
+  loading,
   locationNames,
   measurementTechnique,
   spatialCoverage,
@@ -89,7 +89,7 @@ const Overview: React.FC<OverviewProps> = ({
               id: `${id}-spatialCoverage`,
               label: 'Spatiotemporal Coverage',
               property: 'spatialCoverage',
-              isDisabled: !(
+              disabled: !(
                 spatialCoverage ||
                 temporalCoverage ||
                 inLanguage?.name ||
@@ -109,76 +109,65 @@ const Overview: React.FC<OverviewProps> = ({
     >
       <SimpleGrid
         minChildWidth={{ base: 'unset', sm: '280px', xl: '300px' }}
-        spacingX={14}
-        spacingY={10}
+        rowGap={14}
+        columnGap={10}
         p={4}
         border='1px solid'
         borderColor='gray.100'
         borderRadius='semi'
         w='100%'
       >
-        {sortedMetadataContent.map(
-          ({ img, items, name, glyph, url, ...props }) => {
-            if (props.property === 'spatialCoverage') {
-              return (
-                <SpatiotemporalCoverage
-                  key={`block-${props.id}`}
-                  id={props.id}
-                  isDisabled={props.isDisabled}
-                  isLoading={isLoading}
-                  inLanguage={inLanguage}
-                  spatialCoverage={spatialCoverage}
-                  temporalCoverage={temporalCoverage}
-                  type={data['@type']}
-                />
-              );
-            }
-
+        {sortedMetadataContent.map(({ img, items, glyph, url, ...props }) => {
+          if (props.property === 'spatialCoverage') {
             return (
-              <Skeleton
-                key={`block-${props.id}-${props.property}`}
-                isLoaded={!isLoading}
-              >
-                <MetadataBlock
-                  tooltipLabel={getMetadataDescription(
+              <SpatiotemporalCoverage
+                key={`block-${props.id}`}
+                id={props.id}
+                disabled={props.disabled}
+                loading={loading}
+                inLanguage={inLanguage}
+                spatialCoverage={spatialCoverage}
+                temporalCoverage={temporalCoverage}
+                type={data['@type']}
+              />
+            );
+          }
+
+          return (
+            <Skeleton
+              key={`block-${props.id}-${props.property}`}
+              loading={loading}
+            >
+              <MetadataBlock
+                tooltipProps={{
+                  content: getMetadataDescription(
                     props.property,
                     data['@type'],
-                  )}
-                  {...props}
-                >
-                  {name && (
-                    <MetadataContent
-                      name={name}
-                      img={img}
-                      url={url}
-                      {...content}
-                    />
-                  )}
-                  {items && items.length > 0 && (
-                    <ScrollContainer maxHeight='150px' overflow='auto'>
-                      <MetadataList>
-                        {items.map(({ key, ...item }) => {
-                          return (
-                            <MetadataListItem
-                              key={key}
-                              property={props.property}
-                            >
-                              <MetadataContent
-                                includeOntology
-                                includeSearch
-                                {...item}
-                              />
-                            </MetadataListItem>
-                          );
-                        })}
-                      </MetadataList>
-                    </ScrollContainer>
-                  )}
-                </MetadataBlock>
-              </Skeleton>
-            );
-          },
-        )}
+                  ),
+                }}
+                {...props}
+              >
+                {items && items.length > 0 && (
+                  <ScrollContainer maxHeight='150px'>
+                    <MetadataList px={4}>
+                      {items.map(({ key, ...item }) => {
+                        return (
+                          <MetadataListItem key={key} property={props.property}>
+                            <MetadataContent
+                              includeOntology
+                              includeSearch
+                              {...item}
+                            />
+                          </MetadataListItem>
+                        );
+                      })}
+                    </MetadataList>
+                  </ScrollContainer>
+                )}
+              </MetadataBlock>
+            </Skeleton>
+          );
+        })}
       </SimpleGrid>
     </Flex>
   );
@@ -189,15 +178,15 @@ export default Overview;
 interface SpatiotemporalCoverageProps
   extends Pick<
     OverviewProps,
-    'isLoading' | 'id' | 'inLanguage' | 'spatialCoverage' | 'temporalCoverage'
+    'loading' | 'id' | 'inLanguage' | 'spatialCoverage' | 'temporalCoverage'
   > {
   type?: FormattedResource['@type'];
-  isDisabled: boolean;
+  disabled: boolean;
 }
 const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
   id,
-  isDisabled,
-  isLoading,
+  disabled,
+  loading,
   inLanguage,
   spatialCoverage,
   temporalCoverage,
@@ -216,37 +205,38 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
     .map(s => s.name);
 
   return (
-    <Skeleton key={`block-${id}-spatioTemporal`} isLoaded={!isLoading}>
+    <Skeleton key={`block-${id}-spatioTemporal`} loading={!!loading}>
       <MetadataBlock
         label='Spatiotemporal Coverage'
         property='spatialCoverage'
-        isDisabled={isDisabled}
-        bg='gray.900'
-        tooltipLabel={
-          <>
-            <Box>
-              Spatial Coverage:{' '}
-              {getMetadataDescription('spatialCoverage', type)}
-            </Box>
-            <Box>
-              Temporal Coverage:{' '}
-              {getMetadataDescription('temporalCoverage', type)}
-            </Box>
-            <Box>Language: {getMetadataDescription('inLanguage', type)}</Box>
-          </>
-        }
+        disabled={disabled}
+        bg='gray.700'
+        tooltipProps={{
+          content: (
+            <>
+              <Box>
+                Spatial Coverage:{' '}
+                {getMetadataDescription('spatialCoverage', type)}
+              </Box>
+              <Box>
+                Temporal Coverage:{' '}
+                {getMetadataDescription('temporalCoverage', type)}
+              </Box>
+              <Box>Language: {getMetadataDescription('inLanguage', type)}</Box>
+            </>
+          ),
+        }}
       >
-        <VStack alignItems='flex-start' divider={<Divider />}>
+        <VStack alignItems='flex-start' separator={<StackSeparator />}>
           {/* Geographic information of dataset */}
           {spatialInformation && (
             <>
-              <Text fontWeight='medium' color='gray.800'>
+              <Text fontWeight='medium' color='gray.600'>
                 Spatial Coverage
               </Text>
               <MetadataContent name={spatialInformation.join(', ')} />
             </>
           )}
-
           {/* Period information of dataset */}
           {temporalCoverage &&
             temporalCoverage.map((coverage, idx) => {
@@ -257,17 +247,19 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
               }
               return (
                 <React.Fragment key={'temporal' + idx}>
-                  <Text fontWeight='medium' color='gray.800'>
+                  <Text fontWeight='medium' color='gray.600'>
                     Temporal Coverage
                   </Text>
                   {/* Start */}
-                  {coverage?.name && <Text>{coverage?.name}</Text>}
+                  {coverage?.name && (
+                    <Text fontSize='inherit'>{coverage?.name}</Text>
+                  )}
                   {coverage?.startDate && (
                     <Text>
+                      Start Date:
                       <Text as='span' fontWeight='medium'>
-                        Start Date:
-                      </Text>{' '}
-                      {coverage.startDate}
+                        {coverage.startDate}
+                      </Text>
                     </Text>
                   )}
                   {/* End */}
@@ -291,11 +283,10 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
                 </React.Fragment>
               );
             })}
-
           {/* Language of dataset */}
           {inLanguage?.name && (
             <>
-              <Text fontWeight='medium' color='gray.800'>
+              <Text fontWeight='medium' color='gray.600'>
                 Language
               </Text>
               <MetadataContent name={getLanguageDisplayName(inLanguage.name)} />

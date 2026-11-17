@@ -36,7 +36,8 @@
  *     reliably across environments. It is documented here rather than dropped
  *     silently.
  */
-import { test, expect, type Page, type TestInfo } from '@playwright/test';
+import { expect, type Page, test, type TestInfo } from '@playwright/test';
+
 import { runAxeScans } from '../utils/axe';
 
 // --- Per-route configuration -------------------------------------------------

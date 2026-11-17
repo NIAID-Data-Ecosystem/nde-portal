@@ -1,7 +1,7 @@
-import React from 'react';
 import {
   Box,
   Button,
+  Card,
   Flex,
   Heading,
   HStack,
@@ -9,13 +9,13 @@ import {
   Image,
   Link,
   List,
-  ListItem,
   Spinner,
   Stack,
   Text,
 } from '@chakra-ui/react';
-import { FaCheck } from 'react-icons/fa6';
 import { useRouter } from 'next/router';
+import React from 'react';
+import { FaCheck } from 'react-icons/fa6';
 import { ProviderIcon } from 'src/components/auth/provider-icon';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { useAuth } from 'src/hooks/useAuth';
@@ -23,26 +23,33 @@ import { getProviderLabel } from 'src/utils/auth/helpers';
 import { ENABLE_AUTH } from 'src/utils/feature-flags';
 
 const ListItemContent = ({ children }: { children: React.ReactNode }) => (
-  <HStack alignItems='center' spacing={4} lineHeight='short'>
-    <Icon as={FaCheck} boxSize={4} aria-hidden='true' color='niaid.500' />
-
-    <Text fontSize='inherit'>{children}</Text>
-  </HStack>
+  <List.Item lineHeight='tall'>
+    <List.Indicator>
+      <Icon
+        as={FaCheck}
+        boxSize={4}
+        mb={1}
+        aria-hidden='true'
+        color='niaid.500'
+      />
+    </List.Indicator>
+    {children}
+  </List.Item>
 );
 
 function LoginPage() {
   const router = useRouter();
-  const { isAuthenticated, isLoading, loginProviders, login } = useAuth();
+  const { isAuthenticated, loading, loginProviders, login } = useAuth();
 
   React.useEffect(() => {
-    if (!isLoading && isAuthenticated) {
+    if (!loading && isAuthenticated) {
       const returnTo =
         typeof window !== 'undefined'
           ? sessionStorage.getItem('auth_return_to') || '/'
           : '/';
       router.replace(returnTo);
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [isAuthenticated, loading, router]);
 
   // If auth is disabled via feature flag, redirect to home page
   React.useEffect(() => {
@@ -96,78 +103,74 @@ function LoginPage() {
           >
             Log in to your account
           </Heading>
-          <Box
+          <Card.Root
+            variant='elevated'
+            size='lg'
             w='100%'
             maxW={{ base: '500px', lg: '350px' }}
-            textAlign='center'
-            bg='whiteAlpha.800'
-            border='1px'
-            borderColor='gray.100'
-            borderRadius='6px'
-            boxShadow='sm'
             p={{ base: 6, md: 8 }}
-            zIndex={1}
           >
-            {isLoading ? (
-              <Stack align='center' py={4}>
-                <Spinner color='niaid.500' />
-                <Text color='gray.700'>Checking authentication status...</Text>
-              </Stack>
-            ) : (
-              <Stack spacing={3} maxW='260px' mx='auto'>
-                {loginProviders.map(provider => (
-                  <Button
-                    key={provider.id}
-                    colorScheme='gray'
-                    variant='outline'
-                    size='md'
-                    h='auto'
-                    minH={10}
-                    py={2}
-                    borderColor='gray.100'
-                    _hover={{
-                      bg: 'niaid.50',
-                      borderColor: 'niaid.300',
-                    }}
-                    _active={{
-                      bg: 'niaid.50',
-                      borderColor: 'niaid.300',
-                    }}
-                    onClick={() => login(provider.id)}
-                    leftIcon={<ProviderIcon providerId={provider.id} />}
-                  >
-                    <Stack as='span' spacing={2} alignItems='center'>
-                      <span>
-                        {provider.loginText ?? `Log In with ${provider.label}`}
-                      </span>
-                      {provider.methodIcons && (
-                        <HStack as='span' spacing={2}>
-                          {provider.methodIcons.map(methodId => (
-                            // Labelled so the button's accessible name lists
-                            // the sign-in methods shown.
-                            <ProviderIcon
-                              key={methodId}
-                              providerId={methodId}
-                              role='img'
-                              aria-hidden={false}
-                              aria-label={getProviderLabel(methodId)}
-                            />
-                          ))}
-                        </HStack>
-                      )}
-                    </Stack>
-                  </Button>
-                ))}
-              </Stack>
-            )}
-          </Box>
+            <Card.Body>
+              {loading ? (
+                <Stack align='center' py={4}>
+                  <Spinner color='niaid.500' />
+                  <Text color='gray.500'>
+                    Checking authentication status...
+                  </Text>
+                </Stack>
+              ) : (
+                <Stack gap={3} maxW='260px' mx='auto'>
+                  {loginProviders.map(provider => (
+                    <Button
+                      key={provider.id}
+                      colorPalette='niaid'
+                      variant='outline'
+                      borderColor='gray.200'
+                      size='lg'
+                      h='auto'
+                      minH={10}
+                      py={2}
+                      _hover={{
+                        bg: 'niaid.50',
+                        borderColor: 'niaid.300',
+                      }}
+                      onClick={() => login(provider.id)}
+                    >
+                      <ProviderIcon providerId={provider.id} />
+                      <Stack as='span' gap={2} alignItems='center'>
+                        <span>
+                          {provider.loginText ??
+                            `Log In with ${provider.label}`}
+                        </span>
+                        {provider.methodIcons && (
+                          <HStack as='span' gap={2}>
+                            {provider.methodIcons.map(methodId => (
+                              // Labelled so the button's accessible name lists
+                              // the sign-in methods shown.
+                              <ProviderIcon
+                                key={methodId}
+                                providerId={methodId}
+                                role='img'
+                                aria-hidden={false}
+                                aria-label={getProviderLabel(methodId)}
+                              />
+                            ))}
+                          </HStack>
+                        )}
+                      </Stack>
+                    </Button>
+                  ))}
+                </Stack>
+              )}
+            </Card.Body>
+          </Card.Root>
         </Flex>
 
         <Flex
           width={{ base: '100%', lg: '46%' }}
           px={{ base: 4, md: 8, lg: 10 }}
           py={{ base: 8, lg: 14 }}
-          bg='page.alt'
+          bg='bg.alt'
           alignItems='center'
           fontSize='md'
         >
@@ -176,7 +179,7 @@ function LoginPage() {
             maxWidth='540px'
             mx={{ base: 'auto', lg: 0 }}
             p={{ base: 6, md: 8 }}
-            color='gray.700'
+            color='gray.600'
           >
             <Image
               src='/assets/logos/niaid-nde-desktop-color.svg'
@@ -186,7 +189,7 @@ function LoginPage() {
               mb={8}
             />
 
-            <Stack spacing={6} fontSize='inherit' lineHeight='tall'>
+            <Stack gap={6} fontSize='inherit' lineHeight='tall'>
               <Text>
                 The NIAID Data Ecosystem Discovery Portal is a project from the
                 National Institute of Allergy and Infectious Diseases (NIAID) to
@@ -211,23 +214,15 @@ function LoginPage() {
               Why create a user account?
             </Heading>
 
-            <List spacing={3} color='gray.700' fontSize='inherit'>
-              <ListItem>
-                <ListItemContent>
-                  Save and re-visit selected datasets
-                </ListItemContent>
-              </ListItem>
-              <ListItem>
-                <ListItemContent>
-                  Personalize your sitewide preferences
-                </ListItemContent>
-              </ListItem>
-              <ListItem>
-                <ListItemContent>
-                  Opt in to experimental features
-                </ListItemContent>
-              </ListItem>
-            </List>
+            <List.Root gap={3} pl={0} fontSize='inherit'>
+              <ListItemContent>
+                Save and re-visit selected datasets
+              </ListItemContent>
+              <ListItemContent>
+                Personalize your sitewide preferences
+              </ListItemContent>
+              <ListItemContent>Opt in to experimental features</ListItemContent>
+            </List.Root>
 
             <Link
               href='/about'
