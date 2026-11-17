@@ -14,24 +14,12 @@ export const TableContainer = React.forwardRef<
   return (
     <Table.ScrollArea
       ref={ref}
+      // The browser's own scrollbars, thinned and tinted, not
+      // `::-webkit-scrollbar`: Chrome repaints a scroller with custom
+      // scrollbars on every scroll step (see the dataTable slot recipe).
       css={{
-        '&::-webkit-scrollbar': {
-          width: '10px',
-          height: '10px',
-        },
-        '&::-webkit-scrollbar-track': {
-          background: 'blackAlpha.100',
-          borderRadius: '13px',
-        },
-        '&::-webkit-scrollbar-thumb': {
-          background: 'gray.300',
-          borderRadius: '13px',
-        },
-        '&:hover': {
-          '&::-webkit-scrollbar-thumb': {
-            background: 'text.placeholder',
-          },
-        },
+        scrollbarWidth: 'thin',
+        scrollbarColor: '{colors.gray.300} {colors.blackAlpha.100}',
       }}
       {...props}
     >

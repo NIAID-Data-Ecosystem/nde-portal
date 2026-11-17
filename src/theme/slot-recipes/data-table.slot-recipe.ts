@@ -22,7 +22,28 @@ The visuals follow the tables this replaces: uppercase grey bold headers, a
 horizontal cell padding.
 */
 
-const scrollbarStyles = {
+/*
+The viewport's scrollbars are the browser's own, thinned and tinted with the
+standard properties, not `::-webkit-scrollbar`. Chrome paints those custom
+scrollbars itself, so at 1x pixel density a scroller that has them repaints the
+whole document on every scroll step. Measured 2026-11-17 (headed Chrome,
+Repository Matcher, 1,200px horizontal scroll): 40-60 table repaints and
+~250 ms of paint, down to 1 and ~30 ms.
+No hover tint: `scrollbar-color` is inherited, so changing it on hover would
+restyle every cell each time the pointer entered or left the table.
+*/
+const viewportScrollbarStyles = {
+  scrollbarWidth: 'thin',
+  scrollbarColor: '{colors.gray.300} {colors.blackAlpha.100}',
+} as const;
+
+/*
+The synced scrollbars (top and floating) keep custom scrollbars: they hold
+nothing but a 1px phantom, so repainting them is cheap, and a custom scrollbar
+stays visible where the platform's own would be an overlay that only shows
+while scrolling (macOS), leaving an empty strip.
+*/
+const syncedScrollbarStyles = {
   '&::-webkit-scrollbar': { width: '10px', height: '10px' },
   '&::-webkit-scrollbar-track': {
     background: 'blackAlpha.100',
@@ -339,7 +360,7 @@ export const dataTableSlotRecipe = defineSlotRecipe({
       scrollPaddingTop: 'var(--nde-table-header-h, 0px)',
       scrollPaddingInlineStart: 'var(--nde-table-pinned-w, 0px)',
       focusVisibleRing: 'inside',
-      ...scrollbarStyles,
+      ...viewportScrollbarStyles,
     },
     table: {
       width: '100%',
@@ -359,7 +380,7 @@ export const dataTableSlotRecipe = defineSlotRecipe({
       flexShrink: 0,
       overflowX: 'auto',
       overflowY: 'hidden',
-      ...scrollbarStyles,
+      ...syncedScrollbarStyles,
     },
   },
 });
