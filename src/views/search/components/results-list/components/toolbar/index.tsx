@@ -92,7 +92,13 @@ export const SearchResultsToolbar = ({
         </Stack>
 
         {/* Right-side actions: optional extra slot + Download Metadata */}
-        <Flex flexWrap='wrap' columnGap={2} rowGap={2} alignItems='center'>
+        <Flex
+          flexWrap='wrap'
+          columnGap={2}
+          rowGap={2}
+          alignItems='center'
+          alignSelf='flex-end'
+        >
           {extraActions && (
             <Flex pb={{ base: 2, md: 0 }} alignItems='flex-end'>
               {extraActions}
