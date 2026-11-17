@@ -40,6 +40,51 @@ const setup = async (ui: React.ReactElement) => {
 };
 
 const table = () => screen.getByRole('table', { name: 'Files' });
+
+/*
+DataTable renders a new set of rows in a background pass. These rows' cells
+suspend until `release()`, which holds that pass back, so a test can see what
+shows while the old rows are still up.
+*/
+type SlowFile = File & { slow?: boolean };
+const suspendingRows = () => {
+  let released = false;
+  let release!: () => void;
+  const pending = new Promise<void>(resolve => {
+    release = () => {
+      released = true;
+      resolve();
+    };
+  });
+  const SlowName = ({ name }: { name: string }) => {
+    if (!released) throw pending;
+    return <>{name}</>;
+  };
+  const columns: ColumnDef<SlowFile>[] = [
+    {
+      id: 'name',
+      header: 'Name',
+      cell: ({ row }) =>
+        row.slow ? <SlowName name={row.name} /> : <>{row.name}</>,
+    },
+  ];
+  const ui = (data: SlowFile[], loading: boolean) => (
+    <React.Suspense fallback='suspended'>
+      <DataTable
+        label='Files'
+        data={data}
+        columns={columns}
+        getRowId={getRowId}
+        status={{ loading }}
+      />
+    </React.Suspense>
+  );
+  const NEXT_PAGE: SlowFile[] = [
+    { id: 'd', name: 'delta.csv', slow: true },
+    { id: 'e', name: 'epsilon.csv', slow: true },
+  ];
+  return { ui, release: () => release(), NEXT_PAGE };
+};
 const columnTexts = (index: number) =>
   within(table())
     .getAllByRole('row')
@@ -184,6 +229,81 @@ describe('DataTable', () => {
     expect(table()).toHaveAttribute('aria-busy', 'true');
     expect(within(table()).getAllByRole('row')).toHaveLength(4);
     expect(screen.getByRole('button', { name: 'Name' })).toBeDisabled();
+    // The skeleton is the loading indicator here; no second one.
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  });
+
+  it('keeps the rows up with a small loading indicator while loading with data', async () => {
+    const { rerender } = await setup(
+      <DataTable
+        label='Files'
+        data={FILES}
+        columns={COLUMNS}
+        getRowId={getRowId}
+        status={{ loading: true }}
+      />,
+    );
+    expect(table()).toHaveAttribute('aria-busy', 'true');
+    expect(screen.getByRole('status')).toHaveTextContent('Loading…');
+    expect(within(table()).getAllByRole('row')).toHaveLength(4);
+    expect(columnTexts(0)).toEqual(['beta.csv', 'alpha.csv', 'gamma.csv']);
+    expect(screen.getByRole('button', { name: 'Name' })).toBeEnabled();
+
+    rerender(
+      <DataTable
+        label='Files'
+        data={FILES}
+        columns={COLUMNS}
+        getRowId={getRowId}
+        status={{ loading: false }}
+      />,
+    );
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    expect(table()).not.toHaveAttribute('aria-busy');
+
+    // Not over an error either.
+    rerender(
+      <DataTable
+        label='Files'
+        data={FILES}
+        columns={COLUMNS}
+        getRowId={getRowId}
+        status={{ loading: true, error: true }}
+      />,
+    );
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  });
+
+  it('keeps the loading indicator until the new rows are on screen, not just until loading ends', async () => {
+    const { ui, release, NEXT_PAGE } = suspendingRows();
+    const { rerender } = await setup(ui(FILES, true));
+    expect(screen.getByRole('status')).toHaveTextContent('Loading…');
+
+    // Loading ended, but the new rows haven't rendered yet.
+    rerender(ui(NEXT_PAGE, false));
+    await act(async () => {});
+    expect(columnTexts(0)).toEqual(['beta.csv', 'alpha.csv', 'gamma.csv']);
+    expect(screen.getByRole('status')).toHaveTextContent('Loading…');
+
+    // The new rows and the indicator's removal land together.
+    await act(async () => release());
+    expect(columnTexts(0)).toEqual(['delta.csv', 'epsilon.csv']);
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  });
+
+  it('never shows the loading indicator while rows change without loading', async () => {
+    const { ui, release, NEXT_PAGE } = suspendingRows();
+    const { rerender } = await setup(ui(FILES, false));
+
+    // E.g. a client-side filter: the old rows stay up, with no indicator.
+    rerender(ui(NEXT_PAGE, false));
+    await act(async () => {});
+    expect(columnTexts(0)).toEqual(['beta.csv', 'alpha.csv', 'gamma.csv']);
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+
+    await act(async () => release());
+    expect(columnTexts(0)).toEqual(['delta.csv', 'epsilon.csv']);
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
 
   it('spans empty and error messages across every column', async () => {

@@ -117,6 +117,14 @@ Static table, everything internal:
 />
 ```
 
+`status.loading` with no rows shows skeleton rows. With rows already showing
+(say, a background refetch), the rows stay up and a small "Loading…" indicator
+shows centred under the header (`role="status"`, after a 0.3 s delay so quick
+fetches don't flash it). It stays until the rows that loading brought are on
+screen, which can be a while after `loading` turns false (new rows render in a
+background pass). Rows that change without loading (filtering) never show it,
+and neither does an error.
+
 Server-sorted (the caller fetches; the table only reports the request):
 
 ```tsx

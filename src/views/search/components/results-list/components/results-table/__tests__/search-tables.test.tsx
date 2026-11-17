@@ -163,6 +163,14 @@ describe.each(Object.entries(SEARCH_TABLES) as [string, SearchTable][])(
       await setup({ results: [], loading: true });
       expect(table()).toHaveAttribute('aria-busy', 'true');
       expect(screen.queryByText('No results')).not.toBeInTheDocument();
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    });
+
+    it('keeps the current results up with a loading indicator while fetching', async () => {
+      await setup({ results: [RECORD], loading: true });
+      expect(table()).toHaveAttribute('aria-busy', 'true');
+      expect(within(table()).getAllByRole('row')).toHaveLength(2);
+      expect(screen.getByRole('status')).toHaveTextContent('Loading…');
     });
 
     describe('legacy preferences', () => {

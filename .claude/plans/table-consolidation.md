@@ -443,6 +443,32 @@ paginate):**
   buttons remounted on every page change and keyboard focus fell to `<body>`.
   Hoisted to module level; visually unchanged.
 
+**Loading indicator over rows (2026-11-17, owner request: "a small loading
+indicator" for the Search tables).**
+
+- `DataTable`: `status.loading` while rows are showing now draws a small
+  "Loading…" pill (Chakra `Spinner` + text, `role="status"`), centred just under
+  the header in the root, so it stays put while the rows scroll. It fades in
+  after 0.3 s, so a quick refetch doesn't flash it. Not shown over an error or
+  the skeleton (which is still the indicator when there are no rows). Before,
+  that state only set `aria-busy`.
+- It stays until the new rows are on screen (owner, same day). New rows render
+  in the deferred background pass, which finished ~500 ms after the response in
+  dev (page 2 of Datasets: response at 305 ms, pill gone at 453, rows at 945).
+  The pill now leaves in that same commit (pill and rows both at 803 ms). It's
+  latched in state on `loading`, so rows changing without loading (the
+  Repository Matcher's filters) never show it; checked in the browser too.
+- Timing-dependent, unchanged: a new page or sort has no data until it arrives,
+  and the deferred pass is rendering an empty set meanwhile. A fast response
+  keeps the old rows (with the pill) up throughout. A slow one (1.5 s in dev)
+  swaps them for the skeleton partway, at ~0.9 s.
+- Search passes `isFetching` (was `isLoading`), so a refetch of cached results
+  (back to a visited page or sort, returning to a tab, a prefetched tab) keeps
+  the rows up with the pill. A new query key still has no data, so it still
+  shows skeleton rows. The cards and the page pagination are unchanged.
+- No effect on the Repository Matcher: it passes `isLoading` and has no rows
+  while loading.
+
 ## 7. Architecture (as built)
 
 `src/components/table/data-table/` (see its `README.md`):

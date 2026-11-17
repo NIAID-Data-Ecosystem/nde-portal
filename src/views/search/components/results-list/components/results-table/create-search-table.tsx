@@ -45,6 +45,10 @@ export interface SearchTableConfig {
 export interface SearchTableProps {
   /** The current page of results, already sorted by the API. */
   results: FormattedResource[];
+  /**
+   * Results are being fetched: skeleton rows when there are none yet, a
+   * small loading indicator over the current ones otherwise.
+   */
   loading: boolean;
   /**
    * The current API sort string (e.g. `"name.raw"` or `"-date"`; a leading `-`

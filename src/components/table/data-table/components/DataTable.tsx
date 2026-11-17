@@ -2,6 +2,7 @@ import {
   Box,
   BoxProps,
   Skeleton,
+  Spinner,
   Text,
   useSlotRecipe,
   VisuallyHidden,
@@ -37,7 +38,11 @@ const TablePagination = dynamic(() =>
 );
 
 export interface DataTableStatus {
-  /** Data is loading. With no rows yet, skeleton rows stand in for them. */
+  /**
+   * Data is loading. With no rows yet, skeleton rows stand in for them. With
+   * rows already showing (e.g. a background refetch), they stay up and a
+   * small "Loading…" indicator shows under the header until it ends.
+   */
   loading?: boolean;
   /** Shown in place of the rows when set; `true` uses a default message. */
   error?: React.ReactNode;
@@ -173,6 +178,17 @@ const DataTableView = <TRow,>({
   // While the first rows are still on their way, keep the skeleton rather
   // than flashing the empty state.
   const showSkeleton = (loading || rowsPending) && rows.length === 0;
+  // Loading with rows on screen: they stay up, and a small indicator says
+  // newer ones are on the way. It stays until those rows are on screen, not
+  // just until loading ends: the new rows render in the background pass
+  // above, which can take a while after the data arrives (~500 ms for a page
+  // of Search results in dev).
+  const showingPreviousRows = rowsPending && deferredRows.length > 0;
+  const [awaitingRows, setAwaitingRows] = useState(false);
+  const nextAwaitingRows = loading || (awaitingRows && showingPreviousRows);
+  if (nextAwaitingRows !== awaitingRows) setAwaitingRows(nextAwaitingRows);
+  const showLoadingIndicator =
+    nextAwaitingRows && rows.length > 0 && !status?.error;
 
   useScrollViewport(
     {
@@ -319,6 +335,16 @@ const DataTableView = <TRow,>({
       >
         <div style={{ height: 1 }} />
       </Box>
+      {showLoadingIndicator && (
+        <div className='nde-table-loading' role='status'>
+          <Spinner
+            size='xs'
+            color='primary.500'
+            css={{ '--spinner-track-color': 'colors.gray.200' }}
+          />
+          Loading…
+        </div>
+      )}
       {/* Inside the root, so a bounded table keeps its pager in view. */}
       {pager && (
         <TablePagination

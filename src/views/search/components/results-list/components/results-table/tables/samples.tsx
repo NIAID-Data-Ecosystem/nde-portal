@@ -106,6 +106,7 @@ const COLUMNS: SearchColumnDef[] = [
   terms({
     id: 'associatedGenotype',
     header: 'Associated Genotype',
+    size: { min: 200 },
   }),
   terms({
     id: 'associatedPhenotype',

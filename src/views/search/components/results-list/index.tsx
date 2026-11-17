@@ -280,7 +280,9 @@ export const SearchResults = ({
         {searchTable ? (
           <searchTable.Table
             results={data?.results || []}
-            loading={!router.isReady || isLoading}
+            // Any fetch, not just the first: a refetch of cached results
+            // keeps them up with a small loading indicator over the rows.
+            loading={!router.isReady || isFetching}
             currentSort={sort}
             onSortChange={handleSortChange}
           />

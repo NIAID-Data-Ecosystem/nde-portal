@@ -275,6 +275,35 @@ export const dataTableSlotRecipe = defineSlotRecipe({
       },
       '&[data-floating] .nde-floating-scrollbar': { visibility: 'visible' },
 
+      /* Loading indicator: rows are up and newer ones are loading. */
+      // Centred just under the header, over the rows, in the root rather than
+      // the viewport, so it stays put while the rows scroll either way. Fades
+      // in after a short delay, so a quick refetch doesn't flash it.
+      '& > .nde-table-loading': {
+        position: 'absolute',
+        top: 'calc(var(--nde-table-header-h, 0px) + 0.5rem)',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        // Above the sticky header cells (2) and the pinned header cell (3).
+        zIndex: 4,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 2,
+        px: 3,
+        py: 1,
+        bg: 'white',
+        borderWidth: '1px',
+        borderColor: 'gray.200',
+        borderRadius: 'full',
+        boxShadow: 'sm',
+        color: 'text.body',
+        fontSize: 'sm',
+        lineHeight: 'moderate',
+        whiteSpace: 'nowrap',
+        pointerEvents: 'none',
+        animation: 'fade-in 0.2s ease-out 0.3s both',
+      },
+
       /* Pager (client pagination): below the rows, inside the root. */
       '& > .nde-table-pager': {
         // Keeps its height when a bounded root shrinks the viewport.
