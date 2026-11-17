@@ -104,7 +104,7 @@ export const SHOW_DATA_COLLECTIONS_VIEW_MODES = true;
 // session) to signed-in users whose profile has `onboarding_complete: false`,
 // until they save their settings there. Enabled in non-production environments
 // for testing/review. To enable in production, set this flag to `true`.
-export const SHOW_WELCOME_PAGE = !isProd;
+export const SHOW_WELCOME_PAGE = true;
 
 // Make the "Dataset", "Sample" and "Software" Content Type values also match
 // records of @type Dataset, Sample and ComputationalTool respectively, in the
