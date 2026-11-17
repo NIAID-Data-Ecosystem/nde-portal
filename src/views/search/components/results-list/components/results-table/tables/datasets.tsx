@@ -5,11 +5,7 @@ import {
   SearchColumnDef,
 } from '../columns';
 import { createSearchTable } from '../create-search-table';
-import {
-  normalizeTermNames,
-  toSampleEntry,
-  toUsageInfoEntries,
-} from '../shaping';
+import { toSampleEntry, toUsageInfoEntries } from '../shaping';
 
 /*
 The Datasets tab's table view. Columns mirror the metadata the Dataset card
@@ -25,14 +21,14 @@ export const DATASET_COLUMNS: SearchColumnDef[] = [
   resourceColumns.author(),
   resourceColumns.conditionsOfAccess(),
   resourceColumns.description(),
-  resourceColumns.terms('infectiousAgent', 'Pathogen'),
-  resourceColumns.terms('species', 'Species'),
-  resourceColumns.terms('healthCondition', 'Health Condition'),
-  // Some terms carry an array `name`; joined the way the card does.
-  resourceColumns.terms('measurementTechnique', 'Measurement Technique', row =>
-    normalizeTermNames(row.measurementTechnique),
-  ),
-  resourceColumns.terms('variableMeasured', 'Variable Measured'),
+  resourceColumns.terms({ id: 'infectiousAgent', header: 'Pathogen' }),
+  resourceColumns.terms({ id: 'species', header: 'Species' }),
+  resourceColumns.terms({ id: 'healthCondition', header: 'Health Condition' }),
+  resourceColumns.measurementTechnique(),
+  resourceColumns.terms({
+    id: 'variableMeasured',
+    header: 'Variable Measured',
+  }),
   searchColumn({
     id: 'samples',
     header: 'Samples',
@@ -51,7 +47,7 @@ export const DATASET_COLUMNS: SearchColumnDef[] = [
     accessor: row => toUsageInfoEntries(row.usageInfo),
     cell: linkListCell,
   }),
-  resourceColumns.terms('topicCategory', 'Topic Category'),
+  resourceColumns.terms({ id: 'topicCategory', header: 'Topic Category' }),
 ];
 
 export const datasetsTable = createSearchTable({

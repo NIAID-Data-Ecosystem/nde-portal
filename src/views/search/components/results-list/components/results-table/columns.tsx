@@ -16,6 +16,7 @@ import { FormattedResource } from 'src/utils/api/types';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 
 import {
+  normalizeTermNames,
   toCatalogEntry,
   toFunderEntries,
   toFundingIdEntries,
@@ -26,8 +27,8 @@ import {
 /*
 Column definitions shared by the Search tables (./tables/*). Each is a function
 returning a fresh definition, so a table can adjust one with overrides
-(`resourceColumns.terms('infectiousAgent', 'Pathogen Species')`, or
-`{ ...resourceColumns.name(), size: … }`). Labels match the result cards'
+(`resourceColumns.terms({ id: 'infectiousAgent', header: 'Pathogen', size: … })`,
+or `{ ...resourceColumns.name(), size: … }`). Labels match the result cards'
 wording; accessors shape API records with ./shaping.ts, and cells are the
 shared DataTable cells, which show "No data" for missing values themselves.
 */
@@ -48,6 +49,17 @@ export type SearchColumnDef<TValue = any> = ColumnDef<
 export const searchColumn = <TValue,>(
   def: SearchColumnDef<TValue>,
 ): SearchColumnDef<TValue> => def;
+
+/**
+ * `resourceColumns.terms`' argument: a column definition whose `accessor` may
+ * return any term-shaped value (it's read as `TermValue | TermValue[]`).
+ */
+type TermsColumnOptions = Omit<
+  SearchColumnDef<TermValue | TermValue[]>,
+  'accessor'
+> & {
+  accessor?: (row: FormattedResource) => unknown;
+};
 
 /** A `cell` for `{ label, url }` entries: one per line, "Show N More" past five. */
 export const linkListCell = ({
@@ -121,6 +133,7 @@ export const resourceColumns = {
       apiSortField: 'conditionsOfAccess',
       accessor: row => row.conditionsOfAccess,
       cell: ({ value }) => <AccessBadgeCell value={value} />,
+      size: { min: 200 },
     }),
 
   description: () =>
@@ -133,26 +146,34 @@ export const resourceColumns = {
   /**
    * A term-shaped property (DefinedTerms, QuantitativeValues or strings): one
    * per line, linked when a term has a url. Reads `row[id]` unless given an
-   * `accessor`.
+   * `accessor`. Any other column field (`size`, `apiSortField`, `hideable`…)
+   * overrides the default.
    */
-  terms: (
-    id: string,
-    header: string,
-    accessor?: (row: FormattedResource) => unknown,
-  ) =>
-    searchColumn({
-      id,
-      header,
+  terms: ({ accessor, ...def }: TermsColumnOptions) =>
+    searchColumn<TermValue | TermValue[]>({
       type: 'list',
-      accessor: row =>
-        (accessor
-          ? accessor(row)
-          : (row as unknown as Record<string, unknown>)[id]) as
-          | TermValue
-          | TermValue[],
       cell: ({ value, column }) => (
         <TermsCell values={value} toggleContext={column.header} />
       ),
+      ...def,
+      accessor: row =>
+        (accessor
+          ? accessor(row)
+          : (row as unknown as Record<string, unknown>)[def.id]) as
+          | TermValue
+          | TermValue[],
+    }),
+
+  /**
+   * Measurement techniques as terms, linked when available. Some carry an array
+   * `name`; it's joined the way the card does.
+   */
+  measurementTechnique: (): SearchColumnDef<TermValue | TermValue[]> =>
+    resourceColumns.terms({
+      id: 'measurementTechnique',
+      header: 'Measurement Technique',
+      size: { min: 200 },
+      accessor: row => normalizeTermNames(row.measurementTechnique),
     }),
 
   /** Funders by name, each linked to the funder's identifier. */

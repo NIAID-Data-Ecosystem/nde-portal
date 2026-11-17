@@ -25,17 +25,33 @@ export const COMPUTATIONAL_TOOL_COLUMNS: SearchColumnDef[] = [
   resourceColumns.conditionsOfAccess(),
   resourceColumns.description(),
   // String lists, one per line.
-  resourceColumns.terms('applicationCategory', 'Application Categories'),
-  resourceColumns.terms('programmingLanguage', 'Programming Languages'),
-  resourceColumns.terms('operatingSystem', 'Operating System'),
+  resourceColumns.terms({
+    id: 'applicationCategory',
+    header: 'Application Categories',
+    size: { min: 200 },
+  }),
+  resourceColumns.terms({
+    id: 'programmingLanguage',
+    header: 'Programming Languages',
+    size: { min: 220 },
+  }),
+  resourceColumns.terms({ id: 'operatingSystem', header: 'Operating System' }),
   // These terms can carry an array `name`; joined the way the card does.
-  resourceColumns.terms('input', 'Input', row => normalizeTermNames(row.input)),
-  resourceColumns.terms('featureList', 'Feature List', row =>
-    normalizeTermNames(row.featureList),
-  ),
-  resourceColumns.terms('output', 'Output', row =>
-    normalizeTermNames(row.output),
-  ),
+  resourceColumns.terms({
+    id: 'input',
+    header: 'Input',
+    accessor: row => normalizeTermNames(row.input),
+  }),
+  resourceColumns.terms({
+    id: 'featureList',
+    header: 'Feature List',
+    accessor: row => normalizeTermNames(row.featureList),
+  }),
+  resourceColumns.terms({
+    id: 'output',
+    header: 'Output',
+    accessor: row => normalizeTermNames(row.output),
+  }),
   searchColumn({
     id: 'softwareHelp',
     header: 'Software Help',
@@ -46,7 +62,7 @@ export const COMPUTATIONAL_TOOL_COLUMNS: SearchColumnDef[] = [
   }),
   resourceColumns.funder(),
   resourceColumns.license(),
-  resourceColumns.terms('softwareVersion', 'Software Version'),
+  resourceColumns.terms({ id: 'softwareVersion', header: 'Software Version' }),
   resourceColumns.topicCategory(),
 ];
 

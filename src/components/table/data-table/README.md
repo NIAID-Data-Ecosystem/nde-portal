@@ -61,6 +61,12 @@ Sizes are soft bounds for native auto layout: `min` is where the table starts
 scrolling sideways, `max` is where content starts wrapping. With few columns the
 table fills its container.
 
+There's no width field, and a `max` on its own won't make a column narrower. A
+partial `size` is merged over the type's defaults, and in CSS `min-width` beats
+`max-width`. So `size: { max: 120 }` on a `list` column keeps its 160px min and
+renders at least 160px wide. To narrow a column, lower `min` too. To pin a
+width, set both to the same value: `size: { min: 120, max: 120 }`.
+
 Overrides, per column: `accessor` (default `row[id]`), `cell` (custom React
 content; return `null` for the "No data" placeholder), `sort` (`true`, or
 `{ value, descFirst }`), `size`, `align`, `hideable`, `defaultVisible`,
@@ -201,6 +207,22 @@ take their default visibility and slot in after their nearest predecessor.
 Non-hideable columns are always visible and first. "Clear All", or hiding the
 last visible column, leaves the `fallbackIds` (default: the non-hideable
 columns).
+
+## Search tables
+
+The Search results tables are built with `createSearchTable` from shared column
+definitions (`resourceColumns`), both in
+`src/views/search/components/results-list/components/results-table/`.
+
+- **`resourceColumns.terms(…)` overrides replace its defaults.** Passing `cell`
+  drops `TermsCell`, and passing `type` changes the column's default size,
+  wrapping, alignment and first sort direction. Only `accessor` can't be
+  replaced: it's always wrapped and its result cast to
+  `TermValue | TermValue[]`. That cast is unchecked.
+- **`sort` on its own does nothing.** `createSearchTable` turns sorting off for
+  any column without an `apiSortField`, so `sort: true` alone leaves the column
+  unsortable. Pass `apiSortField` instead. Alongside an `apiSortField`, `sort`
+  can still set `descFirst`.
 
 ## Accessibility
 
