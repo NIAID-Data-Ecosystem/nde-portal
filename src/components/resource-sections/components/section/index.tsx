@@ -61,6 +61,8 @@ export const Section: React.FC<SectionProps> = ({
             </Text>
           )
         }
+        // Section names title the page's sections (under the resource's h1). Skipped without a name so there is no empty heading.
+        headingLevel={name ? 'h2' : undefined}
         defaultValue={['details']}
       >
         <Content />
