@@ -153,7 +153,7 @@ const WelcomePage = () => {
             {WELCOME_COPY.page.title}
           </Heading>
           {showProvider && (
-            <Text color='gray.800' fontSize='md'>
+            <Text fontSize='md'>
               {WELCOME_COPY.provider.loggedInWith}{' '}
               <ProviderIcon providerId={methodId} verticalAlign='-0.25em' />{' '}
               {methodLabel}. {WELCOME_COPY.provider.useEveryTime(methodLabel)}
@@ -162,7 +162,7 @@ const WelcomePage = () => {
 
           {/* Saved items guidance */}
           <SettingsSection title={manage.title}>
-            <List.Root as='ul' pl={0} gap={2} color='gray.800'>
+            <List.Root as='ul' pl={0} gap={2}>
               {manage.items.map((item, i) => (
                 <BulletItem key={i}>{item}</BulletItem>
               ))}

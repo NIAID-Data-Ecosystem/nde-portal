@@ -3,7 +3,15 @@
  * to API preference fields.
  */
 
-import { Box, HStack, Link, Switch, Text, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Heading,
+  HStack,
+  Link,
+  Switch,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import { ReactNode } from 'react';
 import { UserAccount, UserPreferencesKeys } from 'src/hooks/useUserData/types';
 
@@ -165,11 +173,11 @@ export function SettingToggle({
       {...(showBorder && { borderBottom: '1px', borderColor: 'gray.200' })}
     >
       <VStack alignItems='start' gap={1} flex={1}>
-        <Text fontWeight='medium'>{label}</Text>
+        <Heading as='h3' fontSize='md' fontWeight='medium'>
+          {label}
+        </Heading>
 
-        <Text fontSize='sm' color='gray.800'>
-          {description}
-        </Text>
+        <Text fontSize='sm'>{description}</Text>
       </VStack>
       <Switch.Root
         colorPalette='primary'

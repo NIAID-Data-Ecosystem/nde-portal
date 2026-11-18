@@ -43,7 +43,7 @@ function AccountDetail({
       {...(showBorder && { borderBottom: '1px', borderColor: 'gray.200' })}
     >
       <chakra.dt fontWeight='medium'>{label}</chakra.dt>
-      <chakra.dd fontSize='sm' color='gray.800' mt={1} overflowWrap='anywhere'>
+      <chakra.dd fontSize='sm' mt={1} overflowWrap='anywhere'>
         {isLoading ? (
           // Inline, so it sits in a line of text and the row keeps the height
           // it will have once the value loads.
