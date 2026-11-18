@@ -20,7 +20,7 @@ export const RelatedResourceSectionWrapper = ({
       alignItems='flex-start'
       border='1px solid'
       borderColor='gray.200'
-      borderRadius='base'
+      borderRadius='sm'
       flexDirection='column'
       {...props}
     >

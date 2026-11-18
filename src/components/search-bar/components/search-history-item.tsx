@@ -26,7 +26,7 @@ export const SearchHistoryItem = React.memo(
       <List.Item
         display='flex'
         alignItems='flex-start'
-        borderRadius='base'
+        borderRadius='sm'
         cursor='pointer'
         px={2}
         py={1}
