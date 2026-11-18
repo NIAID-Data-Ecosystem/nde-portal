@@ -23,8 +23,6 @@ export const SavedDataErrorToast = () => {
       id: error,
       title: error,
       type: 'error',
-      description:
-        'An error occurred while saving your data. Please try again.',
       closable: true,
     });
     clearError();
