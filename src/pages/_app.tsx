@@ -4,6 +4,7 @@ import { fonts } from 'lib/fonts';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import Script from 'next/script';
+import { Toaster } from 'src/components/toaster';
 import { AuthProvider } from 'src/hooks/useAuth';
 import { UserDataProvider } from 'src/hooks/useUserData';
 import { WelcomeRedirect } from 'src/hooks/useUserData/useWelcomeRedirect';
@@ -44,6 +45,9 @@ function App({ Component, pageProps }: AppProps) {
               <WelcomeRedirect />
             </UserDataProvider>
           </AuthProvider>
+          {/* v3 no longer mounts a toast container inside ChakraProvider; without
+              this, `toaster.create()` calls render nothing. */}
+          <Toaster />
         </ChakraProvider>
       </QueryClientProvider>
       {/* <GoogleTagManager> injects an inline script, which the CSP blocks. */}

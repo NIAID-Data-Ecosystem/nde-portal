@@ -26,7 +26,7 @@ export const DropdownContent: React.FC<DropdownContentProps> = ({
         zIndex='dropdown'
         boxShadow='lg'
         bg='white'
-        borderRadius='base'
+        borderRadius='sm'
       >
         <ScrollContainer maxHeight='500px' left={0} {...props}>
           {children}

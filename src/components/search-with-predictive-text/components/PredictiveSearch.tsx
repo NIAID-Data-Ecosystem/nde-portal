@@ -199,7 +199,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
                       }
                       mx={2}
                       my={1}
-                      borderRadius='base'
+                      borderRadius='sm'
                       minW={150}
                       maxW={{ base: 'unset', md: 180 }}
                     >

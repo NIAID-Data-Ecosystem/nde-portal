@@ -1,7 +1,5 @@
 import { RepositoryMatcherItem } from 'src/views/repository-matcher/types';
-import { getTabIdFromResourceType } from 'src/views/search/config/tabs';
 
-import { itemTypes } from '..';
 import { itemTypes } from '..';
 
 const makeItem = (overrides: Partial<RepositoryMatcherItem>) =>

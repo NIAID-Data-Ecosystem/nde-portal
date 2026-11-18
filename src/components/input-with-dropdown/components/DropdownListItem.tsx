@@ -26,7 +26,7 @@ export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
     const displayValue = Array.isArray(value) ? value.join(' or ') : value;
     return (
       <NDEListItem
-        borderRadius='base'
+        borderRadius='sm'
         cursor='pointer'
         p={2}
         m={2}

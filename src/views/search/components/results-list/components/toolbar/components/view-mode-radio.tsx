@@ -1,14 +1,7 @@
-import {
-  Fieldset,
-  Flex,
-  HStack,
-  RadioGroup,
-  RadioGroupRootProps,
-  Text,
-} from '@chakra-ui/react';
+import { HStack, RadioGroup, RadioGroupRootProps } from '@chakra-ui/react';
 import React from 'react';
 import { VIEW_MODE_OPTIONS } from 'src/views/search/config/view-mode';
-import { SearchViewMode, TabType } from 'src/views/search/types';
+import { SearchViewMode } from 'src/views/search/types';
 
 interface ViewModeRadioProps extends RadioGroupRootProps {
   label: string;
@@ -28,43 +21,39 @@ export const ViewModeRadio = ({
   colorPalette = 'primary',
   ...props
 }: ViewModeRadioProps) => {
-  const labelId = `view-mode-label-${id}`;
-
   return (
-    <Fieldset.Root
-      gap={2}
-      size={size as 'sm' | 'md' | 'lg'}
-      width='unset'
+    <RadioGroup.Root
+      display='flex'
+      flexDirection='column'
       justifyContent='center'
+      gap={2}
+      size={size}
+      name={`view-mode-${id}`}
+      value={value}
+      onValueChange={onValueChange}
+      colorPalette={colorPalette}
+      variant='solid'
+      {...props}
     >
-      <Fieldset.Legend>{label}</Fieldset.Legend>
-      <Fieldset.Content>
-        <RadioGroup.Root
-          size={size}
-          name={`view-mode-${id}`}
-          aria-labelledby={labelId}
-          value={value}
-          onValueChange={onValueChange}
-          colorPalette={colorPalette}
-          variant='solid'
-          {...props}
-        >
-          {/*
-          v3 requires the Item's inner parts explicitly: ItemHiddenInput is the
-          real input the state machine listens to (without it the group is
-          inert) and ItemControl draws the radio itself.
-        */}
-          <HStack gap={4} fontSize='sm'>
-            {VIEW_MODE_OPTIONS.map(option => (
-              <RadioGroup.Item key={option.value} value={option.value}>
-                <RadioGroup.ItemHiddenInput />
-                <RadioGroup.ItemIndicator />
-                <RadioGroup.ItemText>{option.label}</RadioGroup.ItemText>
-              </RadioGroup.Item>
-            ))}
-          </HStack>
-        </RadioGroup.Root>
-      </Fieldset.Content>
-    </Fieldset.Root>
+      {/*
+        RadioGroup.Label names the radiogroup: Ark points the root's
+        aria-labelledby at this part's id, so no hand-made id is needed.
+      */}
+      <RadioGroup.Label fontWeight='medium'>{label}</RadioGroup.Label>
+      {/*
+        v3 requires the Item's inner parts explicitly: ItemHiddenInput is the
+        real input the state machine listens to (without it the group is
+        inert) and ItemIndicator draws the radio itself.
+      */}
+      <HStack gap={4} fontSize='sm'>
+        {VIEW_MODE_OPTIONS.map(option => (
+          <RadioGroup.Item key={option.value} value={option.value}>
+            <RadioGroup.ItemHiddenInput />
+            <RadioGroup.ItemIndicator />
+            <RadioGroup.ItemText>{option.label}</RadioGroup.ItemText>
+          </RadioGroup.Item>
+        ))}
+      </HStack>
+    </RadioGroup.Root>
   );
 };
