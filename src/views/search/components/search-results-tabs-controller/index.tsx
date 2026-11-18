@@ -96,6 +96,15 @@ export const SearchResultsController = ({
   // override the user choice if there are no results for that tab.
   const userSelectedTabRef = useRef<string | null>(null);
 
+  // The results the auto-tab last ran against. The auto-tab only picks a tab
+  // when the results change, so that its other dependencies (the selected tab,
+  // the router) re-running it after a tab click do not switch the user away
+  // from a tab with no results — that tab should show its empty state.
+  const autoTabResultsRef = useRef<{
+    facets: FetchSearchResultsResponse['facets'];
+    bioSampleTotal: number;
+  } | null>(null);
+
   // v3 Tabs are value-based: the id string is the source of truth, not the
   // index. Indexing into `tabs` here would also be wrong because the rendered
   // list is filtered by feature flags, so its indices need not line up.
@@ -243,6 +252,18 @@ export const SearchResultsController = ({
   // Determine the correct tab based on actual search results.
   useEffect(() => {
     if (!facetData?.facets || !router.isReady) return;
+
+    // Filter changes need no check of their own: the facets are fetched
+    // with the filters, so new filters bring new facets.
+    const lastResults = autoTabResultsRef.current;
+    if (
+      lastResults?.facets === facetData.facets &&
+      lastResults.bioSampleTotal === bioSampleTotal
+    ) {
+      return;
+    }
+    autoTabResultsRef.current = { facets: facetData.facets, bioSampleTotal };
+
     const facetCounts =
       facetData?.facets?.['@type']?.terms?.map(term => ({
         type: term.term,
