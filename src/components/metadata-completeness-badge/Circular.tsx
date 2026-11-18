@@ -199,7 +199,7 @@ export const CompletenessBadgeCircle = ({
               transform='translate(-50%, -50%)'
               fontWeight='bold'
               fontSize={fontSize}
-              lineHeight='none'
+              lineHeight={1}
               color='gray.600'
             >
               {total_score}
