@@ -10,6 +10,8 @@ import { MAX_CELL_CHARACTERS } from './helpers';
  (e.g. "Topic Category 1", "Topic Category 2"), one link per cell. Columns
  that only contain plain text keep a single cell per row, joining multiple
  values with "; ".
+
+ Columns with no data in any row are left out of the file.
 */
 
 /** A single value shown in a cell, optionally linked to a url. */
@@ -126,11 +128,23 @@ export const buildXlsxWorkbook = async <TRow>({
   rows,
 }: XlsxSheetSpec<TRow>): Promise<Uint8Array> => {
   // Extract every cell's entries once: [column][row] => entries.
-  const entriesByColumn = columns.map(column =>
+  const allEntriesByColumn = columns.map(column =>
     rows.map(row => cleanEntries(column.getEntries(row) || [])),
   );
 
-  const layout = columns.map((column, colIdx) =>
+  // Leave out columns with no data in any row. If every column is empty,
+  // keep them all so the sheet still has headers.
+  const nonEmptyIdx = columns
+    .map((_, colIdx) => colIdx)
+    .filter(colIdx =>
+      allEntriesByColumn[colIdx].some(entries => entries.length > 0),
+    );
+  const keptIdx =
+    nonEmptyIdx.length > 0 ? nonEmptyIdx : columns.map((_, colIdx) => colIdx);
+  const keptColumns = keptIdx.map(colIdx => columns[colIdx]);
+  const entriesByColumn = keptIdx.map(colIdx => allEntriesByColumn[colIdx]);
+
+  const layout = keptColumns.map((column, colIdx) =>
     expandColumn(column.header, entriesByColumn[colIdx]),
   );
 
