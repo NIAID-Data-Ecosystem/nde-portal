@@ -113,7 +113,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
           flexDirection='column'
           {...props}
         >
-          <Stack gap='1px' bg='gray.100'>
+          <Stack gap={0.5}>
             {/* <!-- Banner for failed OAuth login attempts --> */}
             <LoginErrorBanner />
             {/* <!-- Banner for dev and staging instance --> */}

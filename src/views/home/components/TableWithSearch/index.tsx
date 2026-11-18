@@ -4,7 +4,6 @@ import React, { useCallback, useState } from 'react';
 import { Link } from 'src/components/link';
 import { SearchInput, SearchInputProps } from 'src/components/search-input';
 import { Table } from 'src/components/table';
-import { getTabIdFromResourceType } from 'src/views/search/config/tabs';
 
 import { Filters } from './filters/';
 import { formatDomainName, formatTypeName } from './helpers';
@@ -120,7 +119,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
             </Box>
 
             {/* <!-- Filter Tags--> */}
-            <Stack direction='row'>
+            <Stack direction='row' flexWrap='wrap'>
               {filters.length > 0 && (
                 <Tag.Root
                   key='clear-all'
@@ -198,10 +197,6 @@ export const RepositoryCells = ({
   data: TableData;
   loading?: boolean;
 }) => {
-  const tab = data?.type?.includes('Computational Tool Repository')
-    ? getTabIdFromResourceType('ComputationalTool')
-    : undefined;
-
   return (
     <Flex id={`cell-${data._id}-${column.property}`} py={1}>
       {/* Repository/Resource Catalog name */}

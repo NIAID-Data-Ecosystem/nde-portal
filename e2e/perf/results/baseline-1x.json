@@ -1,0 +1,490 @@
+{
+  "label": "baseline-1x",
+  "base": "http://localhost:3201",
+  "runs": 5,
+  "throttle": 1,
+  "viewport": "1440x900",
+  "date": "2026-11-06T15:11:43.439Z",
+  "summary": {
+    "load": {
+      "latency": 1284,
+      "tbt": 660,
+      "longestTask": 406,
+      "longTasks": 6,
+      "inp": 0
+    },
+    "rows": 70,
+    "domNodes": 3425,
+    "scrollY": {
+      "frames": 100,
+      "p95Frame": 17,
+      "maxFrame": 33,
+      "jankFrames": 0,
+      "tbt": 0,
+      "longestTask": 0,
+      "longTasks": 0,
+      "inp": 16
+    },
+    "scrollX": {
+      "frames": 123,
+      "p95Frame": 17,
+      "maxFrame": 17,
+      "jankFrames": 0,
+      "tbt": 0,
+      "longestTask": 0,
+      "longTasks": 0,
+      "inp": 16
+    },
+    "sort": {
+      "latency": 218,
+      "tbt": 109,
+      "longestTask": 159,
+      "longTasks": 1,
+      "inp": 176
+    },
+    "pin": {
+      "latency": 240,
+      "tbt": 95,
+      "longestTask": 145,
+      "longTasks": 1,
+      "inp": 160
+    },
+    "hideColumn": {
+      "latency": 596,
+      "tbt": 89,
+      "longestTask": 139,
+      "longTasks": 1,
+      "inp": 40
+    },
+    "showColumn": {
+      "latency": 254,
+      "tbt": 110,
+      "longestTask": 160,
+      "longTasks": 1,
+      "inp": 24
+    },
+    "searchFilter": {
+      "latency": 465,
+      "tbt": 282,
+      "longestTask": 252,
+      "longTasks": 2,
+      "inp": 160
+    },
+    "searchClear": {
+      "latency": 456,
+      "tbt": 242,
+      "longestTask": 254,
+      "longTasks": 2,
+      "inp": 96
+    },
+    "expand": {
+      "latency": 130,
+      "tbt": 0,
+      "longestTask": 0,
+      "longTasks": 0,
+      "inp": 72
+    }
+  },
+  "raw": [
+    {
+      "load": {
+        "latency": 1283.9000000003725,
+        "tbt": 651,
+        "longestTask": 399,
+        "longTasks": 6,
+        "inp": 0
+      },
+      "rows": 70,
+      "domNodes": 3419,
+      "scrollY": {
+        "frames": 104,
+        "p95Frame": 16.700000000000728,
+        "maxFrame": 33.40000000000009,
+        "jankFrames": 0,
+        "tbt": 0,
+        "longestTask": 0,
+        "longTasks": 0,
+        "inp": 16
+      },
+      "scrollX": {
+        "frames": 123,
+        "p95Frame": 16.700000000000728,
+        "maxFrame": 16.800000000000182,
+        "jankFrames": 0,
+        "tbt": 0,
+        "longestTask": 0,
+        "longTasks": 0,
+        "inp": 16
+      },
+      "sort": {
+        "latency": 234.5,
+        "tbt": 116,
+        "longestTask": 166,
+        "longTasks": 1,
+        "inp": 176
+      },
+      "pin": {
+        "latency": 235.79999999981374,
+        "tbt": 95,
+        "longestTask": 145,
+        "longTasks": 1,
+        "inp": 160
+      },
+      "hideColumn": {
+        "latency": 484.79999999981374,
+        "tbt": 87,
+        "longestTask": 137,
+        "longTasks": 1,
+        "inp": 40
+      },
+      "showColumn": {
+        "latency": 280.40000000037253,
+        "tbt": 118,
+        "longestTask": 168,
+        "longTasks": 1,
+        "inp": 24
+      },
+      "searchFilter": {
+        "latency": 465,
+        "tbt": 272,
+        "longestTask": 243,
+        "longTasks": 2,
+        "inp": 160
+      },
+      "searchClear": {
+        "latency": 455.19999999925494,
+        "tbt": 229,
+        "longestTask": 244,
+        "longTasks": 2,
+        "inp": 96
+      },
+      "expand": {
+        "latency": 136,
+        "tbt": 0,
+        "longestTask": 0,
+        "longTasks": 0,
+        "inp": 64
+      }
+    },
+    {
+      "load": {
+        "latency": 1286.7999999998137,
+        "tbt": 660,
+        "longestTask": 409,
+        "longTasks": 6,
+        "inp": 0
+      },
+      "rows": 70,
+      "domNodes": 3425,
+      "scrollY": {
+        "frames": 103,
+        "p95Frame": 16.800000000000182,
+        "maxFrame": 66.69999999999982,
+        "jankFrames": 1,
+        "tbt": 11,
+        "longestTask": 61,
+        "longTasks": 1,
+        "inp": 16
+      },
+      "scrollX": {
+        "frames": 123,
+        "p95Frame": 16.800000000000182,
+        "maxFrame": 16.800000000000182,
+        "jankFrames": 0,
+        "tbt": 0,
+        "longestTask": 0,
+        "longTasks": 0,
+        "inp": 0
+      },
+      "sort": {
+        "latency": 218,
+        "tbt": 109,
+        "longestTask": 159,
+        "longTasks": 1,
+        "inp": 176
+      },
+      "pin": {
+        "latency": 239.79999999981374,
+        "tbt": 96,
+        "longestTask": 146,
+        "longTasks": 1,
+        "inp": 160
+      },
+      "hideColumn": {
+        "latency": 630.2000000001863,
+        "tbt": 89,
+        "longestTask": 139,
+        "longTasks": 1,
+        "inp": 40
+      },
+      "showColumn": {
+        "latency": 253.5,
+        "tbt": 110,
+        "longestTask": 160,
+        "longTasks": 1,
+        "inp": 24
+      },
+      "searchFilter": {
+        "latency": 458.69999999925494,
+        "tbt": 282,
+        "longestTask": 252,
+        "longTasks": 2,
+        "inp": 160
+      },
+      "searchClear": {
+        "latency": 461,
+        "tbt": 251,
+        "longestTask": 255,
+        "longTasks": 2,
+        "inp": 104
+      },
+      "expand": {
+        "latency": 130.20000000018626,
+        "tbt": 0,
+        "longestTask": 0,
+        "longTasks": 0,
+        "inp": 72
+      }
+    },
+    {
+      "load": {
+        "latency": 1309.5,
+        "tbt": 685,
+        "longestTask": 415,
+        "longTasks": 6,
+        "inp": 0
+      },
+      "rows": 70,
+      "domNodes": 3425,
+      "scrollY": {
+        "frames": 100,
+        "p95Frame": 16.700000000000728,
+        "maxFrame": 33.29999999999973,
+        "jankFrames": 0,
+        "tbt": 0,
+        "longestTask": 0,
+        "longTasks": 0,
+        "inp": 16
+      },
+      "scrollX": {
+        "frames": 123,
+        "p95Frame": 16.700000000000728,
+        "maxFrame": 16.800000000000182,
+        "jankFrames": 0,
+        "tbt": 0,
+        "longestTask": 0,
+        "longTasks": 0,
+        "inp": 16
+      },
+      "sort": {
+        "latency": 215.90000000037253,
+        "tbt": 106,
+        "longestTask": 156,
+        "longTasks": 1,
+        "inp": 168
+      },
+      "pin": {
+        "latency": 236.69999999925494,
+        "tbt": 94,
+        "longestTask": 144,
+        "longTasks": 1,
+        "inp": 160
+      },
+      "hideColumn": {
+        "latency": 596.0999999996275,
+        "tbt": 84,
+        "longestTask": 134,
+        "longTasks": 1,
+        "inp": 40
+      },
+      "showColumn": {
+        "latency": 247.5,
+        "tbt": 96,
+        "longestTask": 146,
+        "longTasks": 1,
+        "inp": 24
+      },
+      "searchFilter": {
+        "latency": 461.5,
+        "tbt": 267,
+        "longestTask": 238,
+        "longTasks": 2,
+        "inp": 152
+      },
+      "searchClear": {
+        "latency": 453.79999999981374,
+        "tbt": 236,
+        "longestTask": 250,
+        "longTasks": 2,
+        "inp": 96
+      },
+      "expand": {
+        "latency": 110.20000000018626,
+        "tbt": 0,
+        "longestTask": 0,
+        "longTasks": 0,
+        "inp": 64
+      }
+    },
+    {
+      "load": {
+        "latency": 1269.8999999994412,
+        "tbt": 667,
+        "longestTask": 402,
+        "longTasks": 6,
+        "inp": 0
+      },
+      "rows": 70,
+      "domNodes": 3425,
+      "scrollY": {
+        "frames": 100,
+        "p95Frame": 16.700000000000273,
+        "maxFrame": 33.30000000000018,
+        "jankFrames": 0,
+        "tbt": 0,
+        "longestTask": 0,
+        "longTasks": 0,
+        "inp": 16
+      },
+      "scrollX": {
+        "frames": 123,
+        "p95Frame": 16.800000000000182,
+        "maxFrame": 16.800000000000182,
+        "jankFrames": 0,
+        "tbt": 0,
+        "longestTask": 0,
+        "longTasks": 0,
+        "inp": 16
+      },
+      "sort": {
+        "latency": 209,
+        "tbt": 108,
+        "longestTask": 158,
+        "longTasks": 1,
+        "inp": 168
+      },
+      "pin": {
+        "latency": 240.5,
+        "tbt": 92,
+        "longestTask": 142,
+        "longTasks": 1,
+        "inp": 160
+      },
+      "hideColumn": {
+        "latency": 475.6000000005588,
+        "tbt": 89,
+        "longestTask": 139,
+        "longTasks": 1,
+        "inp": 48
+      },
+      "showColumn": {
+        "latency": 250.70000000018626,
+        "tbt": 95,
+        "longestTask": 145,
+        "longTasks": 1,
+        "inp": 24
+      },
+      "searchFilter": {
+        "latency": 484.79999999981374,
+        "tbt": 295,
+        "longestTask": 262,
+        "longTasks": 2,
+        "inp": 160
+      },
+      "searchClear": {
+        "latency": 468.8999999994412,
+        "tbt": 251,
+        "longestTask": 265,
+        "longTasks": 2,
+        "inp": 96
+      },
+      "expand": {
+        "latency": 130.30000000074506,
+        "tbt": 0,
+        "longestTask": 0,
+        "longTasks": 0,
+        "inp": 72
+      }
+    },
+    {
+      "load": {
+        "latency": 1241.2999999998137,
+        "tbt": 643,
+        "longestTask": 406,
+        "longTasks": 6,
+        "inp": 0
+      },
+      "rows": 70,
+      "domNodes": 3425,
+      "scrollY": {
+        "frames": 99,
+        "p95Frame": 16.700000000000728,
+        "maxFrame": 33.40000000000009,
+        "jankFrames": 0,
+        "tbt": 0,
+        "longestTask": 0,
+        "longTasks": 0,
+        "inp": 16
+      },
+      "scrollX": {
+        "frames": 123,
+        "p95Frame": 16.700000000000728,
+        "maxFrame": 16.800000000000182,
+        "jankFrames": 0,
+        "tbt": 0,
+        "longestTask": 0,
+        "longTasks": 0,
+        "inp": 16
+      },
+      "sort": {
+        "latency": 232.3999999994412,
+        "tbt": 111,
+        "longestTask": 161,
+        "longTasks": 1,
+        "inp": 176
+      },
+      "pin": {
+        "latency": 243.20000000018626,
+        "tbt": 98,
+        "longestTask": 148,
+        "longTasks": 1,
+        "inp": 160
+      },
+      "hideColumn": {
+        "latency": 680.0999999996275,
+        "tbt": 124,
+        "longestTask": 174,
+        "longTasks": 1,
+        "inp": 40
+      },
+      "showColumn": {
+        "latency": 341.3999999994412,
+        "tbt": 111,
+        "longestTask": 161,
+        "longTasks": 1,
+        "inp": 48
+      },
+      "searchFilter": {
+        "latency": 476.1000000005588,
+        "tbt": 303,
+        "longestTask": 265,
+        "longTasks": 2,
+        "inp": 168
+      },
+      "searchClear": {
+        "latency": 455.79999999981374,
+        "tbt": 242,
+        "longestTask": 254,
+        "longTasks": 2,
+        "inp": 96
+      },
+      "expand": {
+        "latency": 140.29999999981374,
+        "tbt": 0,
+        "longestTask": 0,
+        "longTasks": 0,
+        "inp": 72
+      }
+    }
+  ]
+}

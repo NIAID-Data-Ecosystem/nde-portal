@@ -65,9 +65,9 @@ export const Sidebar = ({
           <Stack
             separator={
               <Separator
-                borderColor='page.placeholder'
-                marginTop={'0!important'}
-                marginBottom={'0!important'}
+                borderColor='gray.200'
+                marginTop='0!important'
+                marginBottom='0!important'
               />
             }
           >

@@ -27,11 +27,13 @@ export const fontSizes = defineTokens.fontSizes({
 });
 
 /*
-`base` does NOT exist in Chakra v3 (its scale is shorter/short/moderate/tall/
-taller). The global body style and every Heading size reference
-`lineHeight: 'base'`, so without this token that resolves to the literal string
-"base", which browsers discard — silently falling back to v3's `html`
-line-height of 1.5. `short` overrides v3's 1.375 back to the v2 value.
+The v2 NIAID overrides (`base` 2, `short` 1.5) are deliberately off, so v3's
+stock line heights apply app-wide.
+
+v3's scale is shorter/short/moderate/tall/taller only. There is no `base`
+(v2's stock `base` of 1.5 is v3's `moderate`) and no `none` (use `1`). An
+unknown name is emitted as a literal string that browsers discard, so the
+element silently inherits its parent's line-height instead.
 */
 export const lineHeights = defineTokens.lineHeights({
   // base: { value: 2 },

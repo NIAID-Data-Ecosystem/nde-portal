@@ -2,7 +2,6 @@ import {
   Box,
   Combobox,
   createListCollection,
-  Flex,
   HStack,
   Icon,
   InputGroup,
@@ -223,7 +222,7 @@ const FieldSelectOption = ({ item }: { item: FieldOption }) => {
             display='block'
             fontWeight='medium'
             color='inherit'
-            lineHeight='none'
+            lineHeight={1}
           >
             {label}
           </Combobox.ItemText>

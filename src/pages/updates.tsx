@@ -343,6 +343,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                                     ?.showMax,
                                 )
                                 .map((event: NewsOrEventsObject) => {
+                                  console.log('e', event);
                                   return (
                                     <SectionCard key={event.id} {...event} />
                                   );

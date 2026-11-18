@@ -1,9 +1,10 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { GoogleTagManager } from '@next/third-parties/google';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fonts } from 'lib/fonts';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
+import Script from 'next/script';
+import { Toaster } from 'src/components/toaster';
 import { AuthProvider } from 'src/hooks/useAuth';
 import { UserDataProvider } from 'src/hooks/useUserData';
 import { WelcomeRedirect } from 'src/hooks/useUserData/useWelcomeRedirect';
@@ -11,6 +12,8 @@ import { system } from 'src/theme';
 
 // Creates an instance of react-query for the app.
 const queryClient = new QueryClient();
+
+const GTM_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS;
 
 function App({ Component, pageProps }: AppProps) {
   return (
@@ -42,11 +45,19 @@ function App({ Component, pageProps }: AppProps) {
               <WelcomeRedirect />
             </UserDataProvider>
           </AuthProvider>
+          {/* v3 no longer mounts a toast container inside ChakraProvider; without
+              this, `toaster.create()` calls render nothing. */}
+          <Toaster />
         </ChakraProvider>
       </QueryClientProvider>
-      <GoogleTagManager
-        gtmId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS || ''}
-      />
+      {/* <GoogleTagManager> injects an inline script, which the CSP blocks. */}
+      {GTM_ID ? (
+        <Script
+          id='gtm-init'
+          src={`/gtm-init.js?id=${encodeURIComponent(GTM_ID)}`}
+          strategy='afterInteractive'
+        />
+      ) : null}
     </>
   );
 }

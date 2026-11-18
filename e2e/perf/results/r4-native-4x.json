@@ -1,0 +1,604 @@
+{
+  "label": "r4-native-4x",
+  "base": "http://localhost:3303",
+  "runs": 5,
+  "throttle": 4,
+  "viewport": "1440x900",
+  "date": "2026-11-06T17:59:46.108Z",
+  "summary": {
+    "load": {
+      "latency": 4687,
+      "tbt": 3623,
+      "longestTask": 1825,
+      "longTasks": 12,
+      "inp": 0
+    },
+    "rows": 70,
+    "domNodes": 4137,
+    "fontsReadyBeforeInteractions": 1,
+    "scrollY": {
+      "frames": 68,
+      "p95Frame": 33,
+      "maxFrame": 33,
+      "dropped1": 12,
+      "dropped2": 0,
+      "jankFrames": 0,
+      "tbt": 0,
+      "longestTask": 0,
+      "longTasks": 0,
+      "inp": 40
+    },
+    "scrollX": {
+      "frames": 119,
+      "p95Frame": 17,
+      "maxFrame": 17,
+      "dropped1": 0,
+      "dropped2": 0,
+      "jankFrames": 0,
+      "tbt": 0,
+      "longestTask": 0,
+      "longTasks": 0,
+      "inp": 32
+    },
+    "sort": {
+      "latency": 550,
+      "tbt": 343,
+      "longestTask": 392,
+      "longTasks": 2,
+      "inp": 72
+    },
+    "pin": {
+      "latency": 638,
+      "tbt": 277,
+      "longestTask": 327,
+      "longTasks": 1,
+      "inp": 368
+    },
+    "hideColumn": {
+      "latency": 407,
+      "tbt": 149,
+      "longestTask": 180,
+      "longTasks": 2,
+      "inp": 256
+    },
+    "showColumn": {
+      "latency": 546,
+      "tbt": 325,
+      "longestTask": 360,
+      "longTasks": 2,
+      "inp": 432
+    },
+    "searchFilter": {
+      "latency": 1537,
+      "tbt": 1161,
+      "longestTask": 814,
+      "longTasks": 3,
+      "inp": 448
+    },
+    "searchClear": {
+      "latency": 1381,
+      "tbt": 1119,
+      "longestTask": 858,
+      "longTasks": 2,
+      "inp": 376
+    },
+    "searchFilterWarm": {
+      "latency": 1941,
+      "tbt": 1279,
+      "longestTask": 747,
+      "longTasks": 4,
+      "inp": 384
+    },
+    "expand": {
+      "latency": 647,
+      "tbt": 406,
+      "longestTask": 444,
+      "longTasks": 2,
+      "inp": 504
+    },
+    "expandWarm": {
+      "latency": 262,
+      "tbt": 13,
+      "longestTask": 60,
+      "longTasks": 2,
+      "inp": 104
+    }
+  },
+  "raw": [
+    {
+      "load": {
+        "latency": 4925.89999999851,
+        "tbt": 3800,
+        "longestTask": 1902,
+        "longTasks": 12,
+        "inp": 0
+      },
+      "rows": 70,
+      "domNodes": 4137,
+      "fontsReadyBeforeInteractions": 1,
+      "scrollY": {
+        "frames": 66,
+        "p95Frame": 33.399999999999636,
+        "maxFrame": 33.400000000000546,
+        "dropped1": 12,
+        "dropped2": 0,
+        "jankFrames": 0,
+        "tbt": 0,
+        "longestTask": 0,
+        "longTasks": 0,
+        "inp": 40
+      },
+      "scrollX": {
+        "frames": 121,
+        "p95Frame": 16.700000000000728,
+        "maxFrame": 16.700000000000728,
+        "dropped1": 0,
+        "dropped2": 0,
+        "jankFrames": 0,
+        "tbt": 0,
+        "longestTask": 0,
+        "longTasks": 0,
+        "inp": 32
+      },
+      "sort": {
+        "latency": 647.6999999992549,
+        "tbt": 408,
+        "longestTask": 445,
+        "longTasks": 2,
+        "inp": 80
+      },
+      "pin": {
+        "latency": 659.5,
+        "tbt": 279,
+        "longestTask": 329,
+        "longTasks": 1,
+        "inp": 368
+      },
+      "hideColumn": {
+        "latency": 419.5,
+        "tbt": 166,
+        "longestTask": 188,
+        "longTasks": 2,
+        "inp": 272
+      },
+      "showColumn": {
+        "latency": 545.8999999985099,
+        "tbt": 322,
+        "longestTask": 357,
+        "longTasks": 2,
+        "inp": 432
+      },
+      "searchFilter": {
+        "latency": 1489.5,
+        "tbt": 1091,
+        "longestTask": 779,
+        "longTasks": 3,
+        "inp": 424
+      },
+      "searchClear": {
+        "latency": 1364.8999999985099,
+        "tbt": 1110,
+        "longestTask": 851,
+        "longTasks": 2,
+        "inp": 376
+      },
+      "searchFilterWarm": {
+        "latency": 1928.1000000014901,
+        "tbt": 1274,
+        "longestTask": 728,
+        "longTasks": 4,
+        "inp": 376
+      },
+      "expand": {
+        "latency": 693.8999999985099,
+        "tbt": 457,
+        "longestTask": 496,
+        "longTasks": 2,
+        "inp": 584
+      },
+      "expandWarm": {
+        "latency": 255.19999999925494,
+        "tbt": 10,
+        "longestTask": 60,
+        "longTasks": 1,
+        "inp": 88
+      }
+    },
+    {
+      "load": {
+        "latency": 4687.39999999851,
+        "tbt": 3623,
+        "longestTask": 1825,
+        "longTasks": 12,
+        "inp": 0
+      },
+      "rows": 70,
+      "domNodes": 4137,
+      "fontsReadyBeforeInteractions": 1,
+      "scrollY": {
+        "frames": 64,
+        "p95Frame": 33.399999999999636,
+        "maxFrame": 33.400000000000546,
+        "dropped1": 14,
+        "dropped2": 0,
+        "jankFrames": 0,
+        "tbt": 0,
+        "longestTask": 0,
+        "longTasks": 0,
+        "inp": 40
+      },
+      "scrollX": {
+        "frames": 119,
+        "p95Frame": 16.799999999999272,
+        "maxFrame": 16.800000000000182,
+        "dropped1": 0,
+        "dropped2": 0,
+        "jankFrames": 0,
+        "tbt": 0,
+        "longestTask": 0,
+        "longTasks": 0,
+        "inp": 24
+      },
+      "sort": {
+        "latency": 550.1999999992549,
+        "tbt": 343,
+        "longestTask": 392,
+        "longTasks": 2,
+        "inp": 72
+      },
+      "pin": {
+        "latency": 638.2000000029802,
+        "tbt": 277,
+        "longestTask": 327,
+        "longTasks": 1,
+        "inp": 368
+      },
+      "hideColumn": {
+        "latency": 401.0999999977648,
+        "tbt": 147,
+        "longestTask": 179,
+        "longTasks": 2,
+        "inp": 256
+      },
+      "showColumn": {
+        "latency": 563.3000000007451,
+        "tbt": 325,
+        "longestTask": 360,
+        "longTasks": 2,
+        "inp": 424
+      },
+      "searchFilter": {
+        "latency": 1670.699999999255,
+        "tbt": 1219,
+        "longestTask": 836,
+        "longTasks": 3,
+        "inp": 496
+      },
+      "searchClear": {
+        "latency": 1384.3999999985099,
+        "tbt": 1118,
+        "longestTask": 857,
+        "longTasks": 2,
+        "inp": 384
+      },
+      "searchFilterWarm": {
+        "latency": 1967.199999999255,
+        "tbt": 1282,
+        "longestTask": 747,
+        "longTasks": 5,
+        "inp": 376
+      },
+      "expand": {
+        "latency": 575.9000000022352,
+        "tbt": 344,
+        "longestTask": 384,
+        "longTasks": 2,
+        "inp": 464
+      },
+      "expandWarm": {
+        "latency": 263.30000000074506,
+        "tbt": 13,
+        "longestTask": 59,
+        "longTasks": 2,
+        "inp": 104
+      }
+    },
+    {
+      "load": {
+        "latency": 4678.39999999851,
+        "tbt": 3597,
+        "longestTask": 1829,
+        "longTasks": 11,
+        "inp": 0
+      },
+      "rows": 70,
+      "domNodes": 4137,
+      "fontsReadyBeforeInteractions": 1,
+      "scrollY": {
+        "frames": 68,
+        "p95Frame": 33.399999999999636,
+        "maxFrame": 33.399999999999636,
+        "dropped1": 10,
+        "dropped2": 0,
+        "jankFrames": 0,
+        "tbt": 0,
+        "longestTask": 0,
+        "longTasks": 0,
+        "inp": 40
+      },
+      "scrollX": {
+        "frames": 115,
+        "p95Frame": 16.799999999999272,
+        "maxFrame": 16.800000000000182,
+        "dropped1": 0,
+        "dropped2": 0,
+        "jankFrames": 0,
+        "tbt": 0,
+        "longestTask": 0,
+        "longTasks": 0,
+        "inp": 24
+      },
+      "sort": {
+        "latency": 544.1999999992549,
+        "tbt": 339,
+        "longestTask": 384,
+        "longTasks": 2,
+        "inp": 72
+      },
+      "pin": {
+        "latency": 620.3000000007451,
+        "tbt": 271,
+        "longestTask": 321,
+        "longTasks": 1,
+        "inp": 360
+      },
+      "hideColumn": {
+        "latency": 407.4000000022352,
+        "tbt": 169,
+        "longestTask": 201,
+        "longTasks": 2,
+        "inp": 280
+      },
+      "showColumn": {
+        "latency": 513.1999999992549,
+        "tbt": 297,
+        "longestTask": 340,
+        "longTasks": 2,
+        "inp": 408
+      },
+      "searchFilter": {
+        "latency": 1536.5999999977648,
+        "tbt": 1161,
+        "longestTask": 831,
+        "longTasks": 2,
+        "inp": 448
+      },
+      "searchClear": {
+        "latency": 1367.699999999255,
+        "tbt": 1119,
+        "longestTask": 876,
+        "longTasks": 2,
+        "inp": 352
+      },
+      "searchFilterWarm": {
+        "latency": 1888.4000000022352,
+        "tbt": 1274,
+        "longestTask": 754,
+        "longTasks": 4,
+        "inp": 384
+      },
+      "expand": {
+        "latency": 614.4000000022352,
+        "tbt": 383,
+        "longestTask": 412,
+        "longTasks": 2,
+        "inp": 504
+      },
+      "expandWarm": {
+        "latency": 262.1000000014901,
+        "tbt": 7,
+        "longestTask": 57,
+        "longTasks": 2,
+        "inp": 96
+      }
+    },
+    {
+      "load": {
+        "latency": 4681.60000000149,
+        "tbt": 3600,
+        "longestTask": 1790,
+        "longTasks": 11,
+        "inp": 0
+      },
+      "rows": 70,
+      "domNodes": 4137,
+      "fontsReadyBeforeInteractions": 1,
+      "scrollY": {
+        "frames": 70,
+        "p95Frame": 33.400000000000546,
+        "maxFrame": 50.099999999999454,
+        "dropped1": 20,
+        "dropped2": 3,
+        "jankFrames": 2,
+        "tbt": 21,
+        "longestTask": 61,
+        "longTasks": 3,
+        "inp": 64
+      },
+      "scrollX": {
+        "frames": 119,
+        "p95Frame": 16.799999999999272,
+        "maxFrame": 16.800000000000182,
+        "dropped1": 0,
+        "dropped2": 0,
+        "jankFrames": 0,
+        "tbt": 0,
+        "longestTask": 0,
+        "longTasks": 0,
+        "inp": 32
+      },
+      "sort": {
+        "latency": 543.6000000014901,
+        "tbt": 330,
+        "longestTask": 377,
+        "longTasks": 2,
+        "inp": 64
+      },
+      "pin": {
+        "latency": 650.5,
+        "tbt": 292,
+        "longestTask": 342,
+        "longTasks": 1,
+        "inp": 384
+      },
+      "hideColumn": {
+        "latency": 399.80000000074506,
+        "tbt": 145,
+        "longestTask": 178,
+        "longTasks": 2,
+        "inp": 256
+      },
+      "showColumn": {
+        "latency": 562.5,
+        "tbt": 359,
+        "longestTask": 391,
+        "longTasks": 2,
+        "inp": 464
+      },
+      "searchFilter": {
+        "latency": 1621.7999999970198,
+        "tbt": 1264,
+        "longestTask": 814,
+        "longTasks": 3,
+        "inp": 552
+      },
+      "searchClear": {
+        "latency": 1401.3999999985099,
+        "tbt": 1160,
+        "longestTask": 880,
+        "longTasks": 2,
+        "inp": 384
+      },
+      "searchFilterWarm": {
+        "latency": 1941.2000000029802,
+        "tbt": 1299,
+        "longestTask": 760,
+        "longTasks": 4,
+        "inp": 384
+      },
+      "expand": {
+        "latency": 647.1000000014901,
+        "tbt": 406,
+        "longestTask": 444,
+        "longTasks": 2,
+        "inp": 528
+      },
+      "expandWarm": {
+        "latency": 275.19999999925494,
+        "tbt": 27,
+        "longestTask": 70,
+        "longTasks": 2,
+        "inp": 120
+      }
+    },
+    {
+      "load": {
+        "latency": 4892.199999999255,
+        "tbt": 3727,
+        "longestTask": 1819,
+        "longTasks": 13,
+        "inp": 0
+      },
+      "rows": 70,
+      "domNodes": 4137,
+      "fontsReadyBeforeInteractions": 1,
+      "scrollY": {
+        "frames": 68,
+        "p95Frame": 33.30000000000018,
+        "maxFrame": 33.400000000000546,
+        "dropped1": 10,
+        "dropped2": 0,
+        "jankFrames": 0,
+        "tbt": 1,
+        "longestTask": 51,
+        "longTasks": 1,
+        "inp": 40
+      },
+      "scrollX": {
+        "frames": 121,
+        "p95Frame": 16.700000000000728,
+        "maxFrame": 16.80000000000109,
+        "dropped1": 0,
+        "dropped2": 0,
+        "jankFrames": 0,
+        "tbt": 0,
+        "longestTask": 0,
+        "longTasks": 0,
+        "inp": 32
+      },
+      "sort": {
+        "latency": 584.5,
+        "tbt": 350,
+        "longestTask": 400,
+        "longTasks": 2,
+        "inp": 72
+      },
+      "pin": {
+        "latency": 627.8000000007451,
+        "tbt": 271,
+        "longestTask": 321,
+        "longTasks": 1,
+        "inp": 368
+      },
+      "hideColumn": {
+        "latency": 410.19999999925494,
+        "tbt": 149,
+        "longestTask": 180,
+        "longTasks": 2,
+        "inp": 256
+      },
+      "showColumn": {
+        "latency": 545,
+        "tbt": 346,
+        "longestTask": 369,
+        "longTasks": 2,
+        "inp": 448
+      },
+      "searchFilter": {
+        "latency": 1487.300000000745,
+        "tbt": 1091,
+        "longestTask": 790,
+        "longTasks": 2,
+        "inp": 432
+      },
+      "searchClear": {
+        "latency": 1380.5999999977648,
+        "tbt": 1128,
+        "longestTask": 858,
+        "longTasks": 2,
+        "inp": 368
+      },
+      "searchFilterWarm": {
+        "latency": 1962.5,
+        "tbt": 1279,
+        "longestTask": 739,
+        "longTasks": 5,
+        "inp": 384
+      },
+      "expand": {
+        "latency": 677.5,
+        "tbt": 467,
+        "longestTask": 505,
+        "longTasks": 2,
+        "inp": 0
+      },
+      "expandWarm": {
+        "latency": 253,
+        "tbt": 46,
+        "longestTask": 87,
+        "longTasks": 2,
+        "inp": 112
+      }
+    }
+  ]
+}

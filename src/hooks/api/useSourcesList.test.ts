@@ -239,6 +239,7 @@ describe('getResourceCatalogIdentifier', () => {
       } else {
         process.env.NEXT_PUBLIC_BASE_URL = baseUrl;
       }
+
       return (require('./useSourcesList') as typeof import('./useSourcesList'))
         .getResourceCatalogIdentifier;
     };

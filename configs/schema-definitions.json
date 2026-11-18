@@ -692,7 +692,7 @@
     "name": "Application Sub Category",
     "dotfield": "applicationSubCategory",
     "property": "applicationSubCategory",
-    "count": 0,
+    "count": 989,
     "type": "object",
     "description": {
       "ComputationalTool": "A subcategory of the computational tool, like gene regulation."
@@ -726,7 +726,7 @@
     "name": "Application Sub Category Name",
     "dotfield": "applicationSubCategory.name",
     "property": "name",
-    "count": 0,
+    "count": 989,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -750,7 +750,7 @@
     "name": "Application Suite",
     "dotfield": "applicationSuite",
     "property": "applicationSuite",
-    "count": 0,
+    "count": 3156,
     "type": "text",
     "description": {
       "ComputationalTool": "The name of the application suite to which the application belongs (e.g. Excel belongs to Office)."
@@ -1195,7 +1195,7 @@
     "name": "Citation Author Family Name",
     "dotfield": "citation.author.familyName",
     "property": "familyName",
-    "count": 0,
+    "count": 59364,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -1211,7 +1211,7 @@
     "name": "Citation Author Given Name",
     "dotfield": "citation.author.givenName",
     "property": "givenName",
-    "count": 0,
+    "count": 59364,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -2586,7 +2586,7 @@
     "name": "Discussion Url",
     "dotfield": "discussionUrl",
     "property": "discussionUrl",
-    "count": 0,
+    "count": 1383,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -3594,7 +3594,7 @@
     "name": "Has Part Additional Type",
     "dotfield": "hasPart.additionalType",
     "property": "additionalType",
-    "count": 12499,
+    "count": 12498,
     "type": "object",
     "description": {
       "ComputationalTool": "Additional type of the referenced work, such as a Sample, Run, Experiment, or BioProject"
@@ -3605,7 +3605,7 @@
     "name": "Has Part Additional Type Name",
     "dotfield": "hasPart.additionalType.name",
     "property": "name",
-    "count": 12499,
+    "count": 12498,
     "type": "keyword",
     "schemaType": "string",
     "isAdvancedSearchField": false
@@ -4535,7 +4535,7 @@
     "name": "Input Description",
     "dotfield": "input.description",
     "property": "description",
-    "count": 0,
+    "count": 235,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -4582,7 +4582,7 @@
     "name": "Input Identifier",
     "dotfield": "input.identifier",
     "property": "identifier",
-    "count": 0,
+    "count": 467,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -4653,7 +4653,7 @@
     "name": "Interaction Statistic",
     "dotfield": "interactionStatistic",
     "property": "interactionStatistic",
-    "count": 0,
+    "count": 15130,
     "type": "object",
     "description": {
       "Dataset": "The number of interactions with the work, such as page views or tool downloads.",
@@ -4683,7 +4683,7 @@
     "name": "Interaction Statistic Interaction Type",
     "dotfield": "interactionStatistic.interactionType",
     "property": "interactionType",
-    "count": 0,
+    "count": 15130,
     "type": "text",
     "schemaType": "string",
     "isAdvancedSearchField": false
@@ -4692,7 +4692,7 @@
     "name": "Interaction Statistic User Interaction Count",
     "dotfield": "interactionStatistic.userInteractionCount",
     "property": "userInteractionCount",
-    "count": 0,
+    "count": 15130,
     "type": "unsigned_long",
     "schemaType": "integer",
     "isAdvancedSearchField": false
@@ -7042,7 +7042,7 @@
     "name": "Output Identifier",
     "dotfield": "output.identifier",
     "property": "identifier",
-    "count": 0,
+    "count": 426,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -7078,7 +7078,7 @@
     "name": "Processor Requirements",
     "dotfield": "processorRequirements",
     "property": "processorRequirements",
-    "count": 0,
+    "count": 482,
     "type": "text",
     "description": {
       "ComputationalTool": "Processor architecture required to run the application (e.g. IA64)."
@@ -9696,7 +9696,7 @@
     "name": "Software Add On Identifier",
     "dotfield": "softwareAddOn.identifier",
     "property": "identifier",
-    "count": 0,
+    "count": 81,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -9748,7 +9748,7 @@
     "name": "Software Requirements",
     "dotfield": "softwareRequirements",
     "property": "softwareRequirements",
-    "count": 0,
+    "count": 3017,
     "type": "text",
     "description": {
       "ComputationalTool": "Component dependency requirements for application. This includes runtime environments and shared libraries that are not included in the application distribution package, but required to run the application (Examples: DirectX, Java or .NET runtime)."
@@ -10451,17 +10451,25 @@
     },
     "isAdvancedSearchField": true
   },
-  "temporalCoverage.@type": {
-    "name": "Temporal Coverage Type",
-    "dotfield": "temporalCoverage.@type",
+  "temporalCoverage.temporalInterval": {
+    "name": "Temporal Coverage Temporal Interval",
+    "dotfield": "temporalCoverage.temporalInterval",
+    "property": "temporalInterval",
+    "count": 92827,
+    "type": "object",
+    "isAdvancedSearchField": false
+  },
+  "temporalCoverage.temporalInterval.@type": {
+    "name": "Temporal Coverage Temporal Interval Type",
+    "dotfield": "temporalCoverage.temporalInterval.@type",
     "property": "@type",
     "count": 104425,
     "type": "text",
     "isAdvancedSearchField": false
   },
-  "temporalCoverage.duration": {
-    "name": "Temporal Coverage Duration",
-    "dotfield": "temporalCoverage.duration",
+  "temporalCoverage.temporalInterval.duration": {
+    "name": "Temporal Coverage Temporal Interval Duration",
+    "dotfield": "temporalCoverage.temporalInterval.duration",
     "property": "duration",
     "count": 422735,
     "type": "text",
@@ -10474,9 +10482,9 @@
     },
     "isAdvancedSearchField": false
   },
-  "temporalCoverage.endDate": {
-    "name": "Temporal Coverage End Date",
-    "dotfield": "temporalCoverage.endDate",
+  "temporalCoverage.temporalInterval.endDate": {
+    "name": "Temporal Coverage Temporal Interval End Date",
+    "dotfield": "temporalCoverage.temporalInterval.endDate",
     "property": "endDate",
     "count": 87521,
     "type": "date",
@@ -10489,9 +10497,9 @@
     },
     "isAdvancedSearchField": true
   },
-  "temporalCoverage.name": {
-    "name": "Temporal Coverage Name",
-    "dotfield": "temporalCoverage.name",
+  "temporalCoverage.temporalInterval.name": {
+    "name": "Temporal Coverage Temporal Interval Name",
+    "dotfield": "temporalCoverage.temporalInterval.name",
     "property": "name",
     "count": 3233,
     "type": "text",
@@ -10504,9 +10512,9 @@
     },
     "isAdvancedSearchField": false
   },
-  "temporalCoverage.startDate": {
-    "name": "Temporal Coverage Start Date",
-    "dotfield": "temporalCoverage.startDate",
+  "temporalCoverage.temporalInterval.startDate": {
+    "name": "Temporal Coverage Temporal Interval Start Date",
+    "dotfield": "temporalCoverage.temporalInterval.startDate",
     "property": "startDate",
     "count": 32668,
     "type": "date",
@@ -10519,9 +10527,9 @@
     },
     "isAdvancedSearchField": true
   },
-  "temporalCoverage.temporalType": {
-    "name": "Temporal Coverage Temporal Type",
-    "dotfield": "temporalCoverage.temporalType",
+  "temporalCoverage.temporalInterval.temporalType": {
+    "name": "Temporal Coverage Temporal Interval Temporal Type",
+    "dotfield": "temporalCoverage.temporalInterval.temporalType",
     "property": "temporalType",
     "count": 15482,
     "type": "text",
@@ -10546,7 +10554,7 @@
     "name": "Thumbnail Url",
     "dotfield": "thumbnailUrl",
     "property": "thumbnailUrl",
-    "count": 610,
+    "count": 687,
     "type": "text",
     "schemaType": "string",
     "description": {

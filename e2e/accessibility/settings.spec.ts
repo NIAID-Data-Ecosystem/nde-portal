@@ -19,18 +19,19 @@
  *     needs `NODE_ENV=development` so it is OFF in the production export and the
  *     real fetches run.
  *
- * State coverage note — this route is intentionally NOT the full four-state
- * matrix:
+ * State coverage note: this route deliberately skips the EMPTY state of the
+ * usual four-state matrix:
  *   - LOADING: `/user_info` kept pending → `withAuth` shows the "Loading..."
  *     spinner. Scanned below (directly, since no `main`/`h1` chrome renders yet).
  *   - POPULATED (authenticated): `/user_info` → a user and `/user/data` →
- *     preferences → the settings sections and toggles render. Primary state.
+ *     profile → the account details, settings sections, toggles and Save
+ *     Settings button render. Primary state.
  *   - EMPTY: not applicable. `useUserData` starts from `DEFAULT_PREFERENCES`, so
  *     the toggles always have values; there is no data-driven empty variant.
- *   - ERROR: not reachable as distinct UI. An unauthenticated/failed
- *     `/user_info` redirects to `/login` (covered by login.spec.ts), and a
- *     failed `/user/data` leaves the page on its default preferences with no
- *     error surface — there is no error UI on this page to scan.
+ *   - ERROR: a failed `/user/data` (any non-401 status) leaves the toggles on
+ *     their defaults and shows the shared preferences form's inline alert above
+ *     Save Settings. Scanned below. (An unauthenticated/failed `/user_info`
+ *     redirects to `/login` instead, covered by login.spec.ts.)
  */
 import { expect, type Page, test, type TestInfo } from '@playwright/test';
 
@@ -86,7 +87,14 @@ test.describe('a11y: Settings — loading (auth check in flight)', () => {
     // The withAuth loading UI is a bare spinner + text (no PageContainer chrome,
     // so no main/h1 to assert). "Loading..." appears twice — the Chakra Spinner's
     // visually-hidden label and the withAuth paragraph — so take the first match.
-    await expect(page.getByText(/^loading\.\.\.$/i).first()).toBeVisible();
+    // Scope to #__next: _document also renders a hidden static login-pending
+    // loader (#auth-pending-loader) with the same text, ahead of the React root.
+    await expect(
+      page
+        .locator('#__next')
+        .getByText(/^loading\.\.\.$/i)
+        .first(),
+    ).toBeVisible();
 
     await runAxeScans(page, testInfo, 'loading');
   });
@@ -133,6 +141,51 @@ test.describe('a11y: Settings — authenticated (preferences)', () => {
     await expect(page.getByText(/email updates/i)).toBeVisible();
     await expect(page.getByRole('button', { name: /log out/i })).toBeVisible();
 
+    // Account details only fill in once `/user/data` loads, so wait for them
+    // to scan the loaded values rather than their skeletons.
+    await expect(
+      page.getByRole('heading', { level: 2, name: /account details/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('definition').filter({ hasText: USER_DATA_FIXTURE.email }),
+    ).toBeVisible();
+
     await runAxeScans(page, testInfo, 'authenticated');
+  });
+});
+
+// --- Error (profile failed to load) ------------------------------------------
+
+test.describe('a11y: Settings — error (preferences failed to load)', () => {
+  test('passes axe with the load error shown', async ({ page }, testInfo) => {
+    await page.route(USER_INFO_GLOB, route =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(USER_FIXTURE),
+      }),
+    );
+    await page.route(USER_DATA_GLOB, route =>
+      route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: 'Internal Server Error' }),
+      }),
+    );
+
+    await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
+
+    await expect(page.getByRole('main')).toBeVisible();
+    await expect(
+      page.getByRole('heading', { level: 1, name: /^settings$/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('alert').filter({ hasText: /unable to load/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: /save settings/i }),
+    ).toBeVisible();
+
+    await runAxeScans(page, testInfo, 'error');
   });
 });

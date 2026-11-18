@@ -81,7 +81,7 @@ export const StyledCard: React.FC<StyledCardProps> = ({
               alignItems='flex-start'
             >
               <Image
-                borderRadius='base'
+                borderRadius='sm'
                 width='100%'
                 height='auto'
                 src={thumbnail.url}

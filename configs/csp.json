@@ -1,0 +1,44 @@
+{
+  "production": [
+    "default-src 'self'",
+    "script-src 'self' 'sha256-fvUAUA0vW+sZs+M7bWcvpLrw4y86Ada6Bm29gPmUm6c=' https://www.googletagmanager.com https://dap.digitalgov.gov https://www.google-analytics.com",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: https:",
+    "font-src 'self' data:",
+    "connect-src 'self' https://api.data.niaid.nih.gov https://www.ebi.ac.uk https://t.biothings.io https://mytaxon.info https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://dap.digitalgov.gov https://stats.g.doubleclick.net",
+    "frame-src 'none'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+    "upgrade-insecure-requests"
+  ],
+  "staging": [
+    "default-src 'self'",
+    "script-src 'self' 'sha256-fvUAUA0vW+sZs+M7bWcvpLrw4y86Ada6Bm29gPmUm6c=' https://www.googletagmanager.com https://dap.digitalgov.gov https://www.google-analytics.com",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: https:",
+    "font-src 'self' data:",
+    "connect-src 'self' https://api-staging.data.niaid.nih.gov https://www.ebi.ac.uk https://t.biothings.io https://mytaxon.info https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://dap.digitalgov.gov https://stats.g.doubleclick.net",
+    "frame-src 'none'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+    "upgrade-insecure-requests"
+  ],
+  "dev": [
+    "default-src 'self'",
+    "script-src 'self' 'sha256-fvUAUA0vW+sZs+M7bWcvpLrw4y86Ada6Bm29gPmUm6c=' https://www.googletagmanager.com https://dap.digitalgov.gov https://www.google-analytics.com",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: https:",
+    "font-src 'self' data:",
+    "connect-src 'self' https://api.nde-dev.biothings.io https://www.ebi.ac.uk https://t.biothings.io https://mytaxon.info https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://dap.digitalgov.gov https://stats.g.doubleclick.net",
+    "frame-src 'none'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+    "upgrade-insecure-requests"
+  ]
+}
