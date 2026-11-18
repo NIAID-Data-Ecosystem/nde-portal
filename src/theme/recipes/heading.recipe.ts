@@ -30,28 +30,28 @@ export const headingRecipe = defineRecipe({
       // Defined by the NIAID theme.
       h1: {
         fontSize: ['5xl', null, '6xl'],
-        lineHeight: 'base',
+        lineHeight: 'moderate',
         fontWeight: 800,
       },
       h2: {
         fontSize: ['4xl', null, '5xl'],
-        lineHeight: 'base',
+        lineHeight: 'moderate',
       },
       h3: {
         fontSize: ['3xl', null, '4xl'],
-        lineHeight: ['base', null, 'base'],
+        lineHeight: 'moderate',
       },
       h4: {
         fontSize: ['2xl', null, '3xl'],
-        lineHeight: ['base', null, 'base'],
+        lineHeight: 'moderate',
       },
       h5: {
         fontSize: ['xl', null, '2xl'],
-        lineHeight: ['base', null, 'base'],
+        lineHeight: 'moderate',
       },
-      h6: { fontSize: 'lg', lineHeight: 'base' },
-      sm: { fontSize: 'md', lineHeight: 'base' },
-      xs: { fontSize: 'sm', lineHeight: 'base' },
+      h6: { fontSize: 'lg', lineHeight: 'moderate' },
+      sm: { fontSize: 'md', lineHeight: 'moderate' },
+      xs: { fontSize: 'sm', lineHeight: 'moderate' },
     },
   },
   defaultVariants: {
