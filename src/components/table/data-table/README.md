@@ -57,9 +57,14 @@ Keep column arrays stable (module constants): cells memoize on them.
 | `list`           | one per line, "Show N More" past 5                 | start | asc        | 160 / 320            |
 | `tags`           | tags, "Show N More" past 12                        | start | asc        | 180 / 360            |
 
-Sizes are soft bounds for native auto layout: `min` is where the table starts
-scrolling sideways, `max` is where content starts wrapping. With few columns the
-table fills its container.
+Sizes are soft bounds on a column's content width (padding comes on top) for
+native auto layout: `min` is where the table starts scrolling sideways, and
+`max` caps how wide the column asks to be, so long content wraps there instead
+of crowding out the other columns. With few columns the table still fills its
+container: the browser shares the spare width out between the columns, so they
+can end up wider than their `max`, and their content fills them. The bounds are
+inline styles on the `<th>` and `<td>`s themselves. A wrapper inside the cell
+would stop the content at the `max` and leave a gap.
 
 There's no width field, and a `max` on its own won't make a column narrower. A
 partial `size` is merged over the type's defaults, and in CSS `min-width` beats

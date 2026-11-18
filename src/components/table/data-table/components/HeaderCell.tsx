@@ -226,10 +226,12 @@ export const HeaderCell = React.memo(function HeaderCell({
             : 'descending'
           : undefined
       }
+      // The column's min/max, shared with its body cells.
+      style={column.cellStyle}
       data-align={column.align === 'end' ? 'end' : undefined}
       onPointerEnter={column.description ? undefined : offerClampedTitle}
     >
-      <div className='nde-th' style={column.headerStyle}>
+      <div className='nde-th'>
         {/* Title and info icon at the start, sort arrows at the end. */}
         {column.description ? (
           <DescribedTitle {...titleProps} description={column.description} />

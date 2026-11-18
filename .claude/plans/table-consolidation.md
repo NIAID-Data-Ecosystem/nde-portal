@@ -469,6 +469,29 @@ indicator" for the Search tables).**
 - No effect on the Repository Matcher: it passes `isLoading` and has no rows
   while loading.
 
+**Columns fill spare width (2026-11-18, owner request: "if the space allows I'd
+like the cells to expand to take up the available space").**
+
+- Before: each column's min/max was on a `<div>` inside every cell. With width
+  to spare, the browser widened the `<td>`s but the `<div>` stayed at its max,
+  so text wrapped early and left a blank strip. Measured in a mock at 1800px:
+  a Name cell was 516px wide, but its content stopped at 320px.
+- Now: the bounds (`ResolvedColumn.cellStyle`, replacing `contentStyle` and
+  `headerStyle`) are inline styles on the `<th>` and `<td>`s, and the wrapper
+  `<div>` is gone (one element fewer per cell). Cells are `content-box`, so the
+  numbers still mean content width.
+- Measured in Chromium and Firefox at 1800, 1000 and 600px: every column width
+  is identical to before. Long unbreakable codes are still capped. The only
+  difference is that content fills a cell that is wider than its max.
+- Headers now get the max too. With content filling the cell, the arrows reach
+  the cell's end, as round 2 decided.
+- **Safari not verified:** WebKit doesn't launch on this WSL box (missing
+  system libraries). Check on a Mac. If WebKit ignored `max-width` on cells,
+  its columns would be uncapped.
+- Specs: `DataTable.test.tsx` (bounds on the cells, no wrapper); the
+  Repository Matcher layout spec reads the minimum from the `<th>`, and a new
+  test checks the description and header fill a column wider than its max.
+
 ## 7. Architecture (as built)
 
 `src/components/table/data-table/` (see its `README.md`):
@@ -729,7 +752,8 @@ again). Updates/news stickiness is unchanged.
 - The description is also the icon button's `aria-describedby`.
 - Title and icon at the start of the header cell, sort arrows at the end.
 - The header's inner wrapper uses only the column minimum (`headerStyle`), so
-  the arrows reach the cell's end.
+  the arrows reach the cell's end. (Superseded 2026-11-18: the bounds moved onto
+  the cells, see "Columns fill spare width" in §6; arrows still reach the end.)
 
 **Truncated-tag tooltips restored (owner).**
 
@@ -883,6 +907,14 @@ weren't supported:
   pin rows by index.
 - `pkill -f "<pattern>"` inside a Bash command kills its own shell when the
   pattern appears in the command line.
+- Column bounds go on the cells, not on a wrapper inside them. A cell's
+  `max-width` caps what its column asks for in auto layout, but not the width
+  it's given, so content fills spare width; a wrapper's `max-width` caps the
+  content too. Cells must be `content-box` (Chakra's preflight is `border-box`,
+  which would take the 32px padding out of each bound). A wrapper with
+  `min-width: max(<min>px, 100%)` looks like an alternative, but Firefox drops
+  the px minimum during intrinsic sizing and columns shrink below their mins
+  (2026-11-18).
 - A component declared inside another's render (`const X = () => …` used as
   `<X />`) is a new type each render: React remounts it, and focus inside it is
   lost. Found in `TablePagination`'s arrow buttons.

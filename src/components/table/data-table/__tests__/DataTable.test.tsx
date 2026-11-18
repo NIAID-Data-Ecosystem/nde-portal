@@ -111,6 +111,25 @@ describe('DataTable', () => {
     expect(columnTexts(1)[2]).toBe('—No data');
   });
 
+  it('bounds each column on its header and body cells, not on a wrapper inside them', async () => {
+    await setup(
+      <DataTable
+        label='Files'
+        data={FILES}
+        columns={COLUMNS}
+        getRowId={getRowId}
+      />,
+    );
+    // A wrapper's max-width would stop the content short of a cell that the
+    // table widened to use spare space; on the cell it only caps what the
+    // column asks for (checked in a real browser in e2e/layout).
+    const [header, firstRow] = within(table()).getAllByRole('row');
+    for (const cell of [header.children[0], firstRow.children[0]]) {
+      expect(cell).toHaveStyle({ minWidth: '140px', maxWidth: '320px' });
+    }
+    expect(firstRow.children[0].firstElementChild).toBeNull();
+  });
+
   it('sorts client-side from one button per header, with aria-sort and an announcement', async () => {
     const { user } = await setup(
       <DataTable

@@ -223,10 +223,15 @@ test.describe('DataTable layout: desktop', () => {
     await expect(root(page)).toHaveAttribute('data-overflow-x', '');
     const belowMinimum = await root(page).evaluate(
       el =>
-        [...el.querySelectorAll('thead th')].filter(th => {
-          const inner = th.firstElementChild as HTMLElement;
-          const min = parseFloat(inner.style.minWidth || '0');
-          return inner.getBoundingClientRect().width + 0.5 < min;
+        [...el.querySelectorAll<HTMLElement>('thead th')].filter(th => {
+          // The column's min is on the cell and means content width.
+          const min = parseFloat(th.style.minWidth || '0');
+          const style = getComputedStyle(th);
+          const content =
+            th.getBoundingClientRect().width -
+            parseFloat(style.paddingLeft) -
+            parseFloat(style.paddingRight);
+          return content + 0.5 < min;
         }).length,
     );
     expect(belowMinimum).toBe(0);
@@ -264,6 +269,54 @@ test.describe('DataTable layout: desktop', () => {
     for (const label of Object.keys(widths)) {
       expect(widths[label]).toBeGreaterThanOrEqual(widthsWithAll[label]);
     }
+  });
+
+  test('with width to spare, content fills its cell instead of stopping at the column max', async ({
+    page,
+  }) => {
+    await gotoPopulated(page);
+    const dialog = await openCustomizer(page);
+    await dialog.getByRole('button', { name: /clear all/i }).click();
+    await dialog.getByText('Description', { exact: true }).click();
+    await page.keyboard.press('Escape');
+
+    // Name and Description ask for at most 320 + 560px of content: far less
+    // than the table's width at 1440px, so the browser shares out the rest.
+    const description = await root(page).evaluate(el => {
+      const headers = [...el.querySelectorAll<HTMLElement>('thead th')];
+      const index = headers.findIndex(
+        th =>
+          th.querySelector('.nde-header-label')?.textContent === 'Description',
+      );
+      const contentWidth = (cell: HTMLElement) => {
+        const style = getComputedStyle(cell);
+        return (
+          cell.getBoundingClientRect().width -
+          parseFloat(style.paddingLeft) -
+          parseFloat(style.paddingRight)
+        );
+      };
+      const cell = el.querySelectorAll<HTMLElement>('tbody tr')[0].children[
+        index
+      ] as HTMLElement;
+      const header = headers[index];
+      return {
+        max: parseFloat(cell.style.maxWidth),
+        cell: contentWidth(cell),
+        // The clamped description paragraph, and the header's title + arrows.
+        text: cell.querySelector('p')!.getBoundingClientRect().width,
+        headerRow: header.querySelector('.nde-th')!.getBoundingClientRect()
+          .width,
+        header: contentWidth(header),
+      };
+    });
+    expect(description.cell).toBeGreaterThan(description.max + 50);
+    expect(Math.abs(description.text - description.cell)).toBeLessThanOrEqual(
+      1,
+    );
+    expect(
+      Math.abs(description.headerRow - description.header),
+    ).toBeLessThanOrEqual(1);
   });
 
   test('long tags are clamped instead of widening their column', async ({

@@ -23,7 +23,7 @@ describe('resolveColumn', () => {
       sortable: true,
       wrap: 'nowrap',
     });
-    expect(count.contentStyle).toEqual({
+    expect(count.cellStyle).toEqual({
       minWidth: '80px',
       maxWidth: undefined,
     });
@@ -35,7 +35,7 @@ describe('resolveColumn', () => {
       descFirst: false,
       sortable: false,
     });
-    expect(name.contentStyle.minWidth).toBe(`${TYPE_DEFAULTS.text.size.min}px`);
+    expect(name.cellStyle.minWidth).toBe(`${TYPE_DEFAULTS.text.size.min}px`);
   });
 
   it('lets a column override every default', () => {
@@ -55,7 +55,7 @@ describe('resolveColumn', () => {
       hideable: false,
       defaultVisible: false,
     });
-    expect(column.contentStyle).toEqual({ minWidth: '50px', maxWidth: '90px' });
+    expect(column.cellStyle).toEqual({ minWidth: '50px', maxWidth: '90px' });
   });
 
   it('reads row[id] by default and uses the accessor when given', () => {

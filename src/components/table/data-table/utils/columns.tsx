@@ -20,8 +20,9 @@ interface TypeDefaults {
 Per-type defaults. The sizes are soft bounds for native `table-layout: auto`:
 `min` is the narrowest the column gets before the table scrolls sideways, and
 `max` caps how wide the column's content asks to be, so one long description
-can't take all the spare width. Seeded from the widths the search and
-repository-matcher tables hard-coded before.
+can't take all the spare width. Width left over once every column has what it
+asks for is shared out by the browser, and the content fills it. Seeded from
+the widths the search and repository-matcher tables hard-coded before.
 */
 export const TYPE_DEFAULTS: Record<ColumnType, TypeDefaults> = {
   text: {
@@ -93,8 +94,7 @@ export const resolveColumn = <TRow,>(
     descFirst: sortOptions?.descFirst ?? defaults.descFirst,
     hideable: def.hideable ?? true,
     defaultVisible: def.defaultVisible ?? true,
-    contentStyle: { minWidth: px(size.min), maxWidth: px(size.max) },
-    headerStyle: { minWidth: px(size.min) },
+    cellStyle: { minWidth: px(size.min), maxWidth: px(size.max) },
     getValue,
     getSortValue: sortOptions?.value
       ? row => sortOptions.value!(getValue(row), row)

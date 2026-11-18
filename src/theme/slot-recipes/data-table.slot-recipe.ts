@@ -106,6 +106,10 @@ export const dataTableSlotRecipe = defineSlotRecipe({
 
       /* Cells */
       '& table :is(th, td)': {
+        // Each column's min/max is set on its cells and means content width,
+        // so the padding comes on top (the preflight's `border-box` would take
+        // it out of the column's bounds).
+        boxSizing: 'content-box',
         px: 4,
         textAlign: 'start',
         verticalAlign: 'top',

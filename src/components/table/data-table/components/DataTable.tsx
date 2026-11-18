@@ -91,10 +91,11 @@ const DataCell = React.memo(function DataCell<TRow>({
 }) {
   return (
     <td
+      style={column.cellStyle}
       data-align={column.align === 'end' ? 'end' : undefined}
       data-wrap={column.wrap === 'normal' ? undefined : column.wrap}
     >
-      <div style={column.contentStyle}>{column.renderCell(row)}</div>
+      {column.renderCell(row)}
     </td>
   );
 }) as <TRow>(props: {
@@ -250,10 +251,8 @@ const DataTableView = <TRow,>({
     body = Array.from({ length: skeletonRows }, (_, index) => (
       <tr key={`skeleton-${index}`}>
         {columns.map(column => (
-          <td key={column.id}>
-            <div style={column.contentStyle}>
-              <Skeleton height='3.5' width='80%' my={1} />
-            </div>
+          <td key={column.id} style={column.cellStyle}>
+            <Skeleton height='3.5' width='80%' my={1} />
           </td>
         ))}
       </tr>

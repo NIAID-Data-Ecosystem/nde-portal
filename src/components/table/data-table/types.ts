@@ -34,7 +34,12 @@ export interface SortState {
 /** What a column sorts on. Empty values always sort last. */
 export type SortValue = string | number | null | undefined;
 
-/** Soft width bounds in px. `max` is where content starts wrapping. */
+/**
+ * Soft width bounds for the column's content, in px. `min` is where the table
+ * starts scrolling sideways; `max` caps how wide the column asks to be (its
+ * content wraps there), but a table with width to spare still shares it out,
+ * so a column can end up wider and its content fills it.
+ */
 export interface ColumnSize {
   min?: number;
   max?: number;
@@ -93,14 +98,14 @@ export interface ResolvedColumn<TRow> {
   descFirst: boolean;
   hideable: boolean;
   defaultVisible: boolean;
-  /** Inline style for the cell's inner wrapper; one shared object per column. */
-  contentStyle: React.CSSProperties;
   /**
-   * The header's inner wrapper: the column's minimum only, so the header
-   * spans the whole cell (its sort arrows sit at the cell's end) even when
-   * the column grows past its content maximum.
+   * Inline style for the column's `<th>` and `<td>`s (its min/max); one shared
+   * object per column. On the cells themselves rather than a wrapper inside
+   * them: a cell's `max-width` caps what the column asks for in table layout,
+   * but not the width it's given, so content fills any spare width instead of
+   * stopping at the max and leaving a gap.
    */
-  headerStyle: React.CSSProperties;
+  cellStyle: React.CSSProperties;
   getValue: (row: TRow) => unknown;
   getSortValue: (row: TRow) => SortValue;
   renderCell: (row: TRow) => React.ReactNode;
