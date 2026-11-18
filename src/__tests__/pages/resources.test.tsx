@@ -1,5 +1,5 @@
-import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
+import React from 'react';
 import { renderWithClient } from 'src/__tests__/mocks/utils';
 import ResourcePage from 'src/pages/resources';
 import { getResourceById } from 'src/utils/api';
@@ -70,7 +70,6 @@ jest.mock('src/components/resource-sections/resource-sections', () => ({
         hash: 'overview',
         properties: ['about'],
         ui: {
-          isCollapsible: true,
           showInNavigation: true,
           showEmptyState: true,
         },
@@ -80,7 +79,6 @@ jest.mock('src/components/resource-sections/resource-sections', () => ({
         hash: 'description',
         properties: ['description'],
         ui: {
-          isCollapsible: true,
           showInNavigation: true,
           showEmptyState: false,
         },
@@ -90,7 +88,6 @@ jest.mock('src/components/resource-sections/resource-sections', () => ({
         hash: 'exampleOfWork',
         properties: ['exampleOfWork.schemaVersion'],
         ui: {
-          isCollapsible: true,
           showInNavigation: false,
           showEmptyState: false,
         },
@@ -100,7 +97,6 @@ jest.mock('src/components/resource-sections/resource-sections', () => ({
         hash: 'samples',
         properties: ['sample'],
         ui: {
-          isCollapsible: true,
           showInNavigation: true,
           showEmptyState: false,
         },

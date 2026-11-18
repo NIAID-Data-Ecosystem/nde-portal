@@ -1,18 +1,19 @@
 import { Box, Flex, Icon, Image, Text } from '@chakra-ui/react';
-import { MetadataItem } from '../helpers';
-import { MetadataWithTag } from './tag';
-import { MetadataButtonGroup, OntologyButton, SearchButton } from './buttons';
 import { FaSquareArrowUpRight } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
+
+import { MetadataItem } from '../helpers';
+import { MetadataButtonGroup, OntologyButton, SearchButton } from './buttons';
+import { MetadataWithTag } from './tag';
 
 interface MetadataContentProps extends Omit<MetadataItem, 'key'> {
   includeSearch?: boolean;
   includeOntology?: boolean;
-  colorScheme?: string;
+  colorPalette?: string;
 }
 export const MetadataContent = ({
   name,
-  colorScheme,
+  colorPalette,
   img,
   scientificName,
   tags,
@@ -22,6 +23,13 @@ export const MetadataContent = ({
   ontologyProps,
   searchProps,
 }: MetadataContentProps) => {
+  // Gate on `value` here rather than inside the buttons: ButtonGroup counts every
+  // child element when assigning first/last, so a button that renders nothing
+  // would leave its sibling with a squared-off edge.
+  const search = includeSearch && searchProps?.value ? searchProps : undefined;
+  const ontology =
+    includeOntology && ontologyProps?.value ? ontologyProps : undefined;
+
   return (
     <Flex
       flex={1}
@@ -30,7 +38,7 @@ export const MetadataContent = ({
       flexWrap='wrap'
       w='100%'
     >
-      <Box flex={1} fontSize='xs' lineHeight='short' minW='130px' mx={0.5}>
+      <Box flex={1} fontSize='sm' lineHeight='moderate' minW='130px' mx={0.5}>
         {scientificName && <Text fontWeight='semibold'>{scientificName}</Text>}
         <Flex>
           {img && (
@@ -45,16 +53,8 @@ export const MetadataContent = ({
           )}
           {name &&
             (url ? (
-              <Link href={url} target='_blank' alignItems='center'>
-                <Text wordBreak='break-word' w='100%'>
-                  {name}
-                </Text>
-                <Icon
-                  as={FaSquareArrowUpRight}
-                  boxSize={2.5}
-                  ml={1}
-                  color='gray.800'
-                />
+              <Link href={url} isExternal>
+                {name}
               </Link>
             ) : (
               <Text fontWeight='normal' wordBreak='break-word' w='100%'>
@@ -64,16 +64,14 @@ export const MetadataContent = ({
         </Flex>
         {tags &&
           tags.map((tag, idx) => (
-            <MetadataWithTag key={idx} colorScheme={colorScheme} {...tag} />
+            <MetadataWithTag key={idx} colorPalette={colorPalette} {...tag} />
           ))}
       </Box>
-      {((includeSearch && searchProps) ||
-        (includeOntology && ontologyProps)) && (
+
+      {(search || ontology) && (
         <MetadataButtonGroup>
-          {includeSearch && searchProps && <SearchButton {...searchProps} />}
-          {includeOntology && ontologyProps && (
-            <OntologyButton {...ontologyProps} />
-          )}
+          {search && <SearchButton {...search} />}
+          {ontology && <OntologyButton {...ontology} />}
         </MetadataButtonGroup>
       )}
     </Flex>

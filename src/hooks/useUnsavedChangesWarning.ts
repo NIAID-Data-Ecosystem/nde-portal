@@ -19,8 +19,8 @@
  * (which unmounts protected pages before any navigation starts).
  */
 
-import { useCallback, useEffect, useRef } from 'react';
 import Router from 'next/router';
+import { useCallback, useEffect, useRef } from 'react';
 
 export const UNSAVED_CHANGES_MESSAGE =
   'You have unsaved changes. Leave this page without saving them?';

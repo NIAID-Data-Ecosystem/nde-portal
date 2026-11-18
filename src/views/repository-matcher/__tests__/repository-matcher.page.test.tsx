@@ -1,6 +1,6 @@
-import React from 'react';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import React from 'react';
 import { renderWithClient } from 'src/__tests__/mocks/utils';
 import RepositoryMatcher from 'src/pages/repository-matcher';
 import { useRepositoryMatcherData } from 'src/views/repository-matcher/hooks/useRepositoryMatcherData';
@@ -103,9 +103,9 @@ const rows = [
 
 const setData = ({
   data = rows,
-  isLoading = false,
-}: { data?: any[]; isLoading?: boolean } = {}) => {
-  mockUseData.mockReturnValue({ data, isLoading, error: null });
+  loading = false,
+}: { data?: any[]; loading?: boolean } = {}) => {
+  mockUseData.mockReturnValue({ data, loading, error: null });
 };
 
 describe('RepositoryMatcher page', () => {
@@ -196,7 +196,7 @@ describe('RepositoryMatcher page', () => {
   });
 
   it('renders loading rows while data is loading', () => {
-    setData({ data: [], isLoading: true });
+    setData({ data: [], loading: true });
     renderWithClient(<RepositoryMatcher />);
     expect(screen.getByText('0 results')).toBeInTheDocument();
   });

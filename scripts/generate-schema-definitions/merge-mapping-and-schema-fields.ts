@@ -1,7 +1,8 @@
-import { dotfieldAndCamelCaseToHumanReadable } from './helpers';
 import ADVANCED_SEARCH_CONFIG from 'configs/advanced-search-fields.json';
+
 import { MappedFieldsWithCounts } from './fetch-fields-from-mapping';
 import { SchemaFieldDetails } from './fetch-fields-from-schema';
+import { dotfieldAndCamelCaseToHumanReadable } from './helpers';
 
 // Match and merge the field details from the NDE schema and the mapping.
 export const mergeMappingAndSchemaFields = (

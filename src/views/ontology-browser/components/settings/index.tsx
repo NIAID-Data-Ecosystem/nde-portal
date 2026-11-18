@@ -1,21 +1,19 @@
-import React from 'react';
 import {
   Button,
   ButtonProps,
+  CloseButton,
   Flex,
   FlexProps,
   Icon,
   Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverCloseButton,
-  PopoverHeader,
-  PopoverBody,
-  PopoverArrow,
+  Portal,
+  Separator,
   Text,
 } from '@chakra-ui/react';
+import React from 'react';
 import { FaCaretDown, FaGear } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
+
 import { OntologyViewSettings } from './components/ontology-view-settings';
 
 /**
@@ -67,51 +65,64 @@ export const OntologyBrowserSettings: React.FC<OntologyPopoverProps> = ({
 }) => {
   return (
     <Flex flex={{ base: 1, sm: 'unset' }} height={{ base: 'unset' }} {...rest}>
-      <Popover>
-        <PopoverTrigger>
+      <Popover.Root>
+        <Popover.Trigger asChild>
           <Button
-            colorScheme='primary'
-            flex={1}
-            fontWeight='medium'
-            fontSize='inherit'
-            lineHeight='shorter'
-            px={4}
-            leftIcon={<Icon as={FaGear} color='inherit' />}
-            rightIcon={<FaCaretDown />}
+            colorPalette='primary'
             variant='outline'
-            justifyContent='space-between'
+            bg='white'
             {...buttonProps}
           >
+            <Icon as={FaGear} color='inherit' />
             {buttonProps?.children || label}
+            <FaCaretDown />
           </Button>
-        </PopoverTrigger>
-        <PopoverContent>
-          <PopoverArrow />
-          <PopoverCloseButton />
-          <PopoverHeader>
-            <Text fontWeight='semibold' lineHeight='normal' my={1}>
-              {label}
-            </Text>
-            {description && (
-              <Text
-                color='page.placeholder'
-                fontSize='sm'
-                fontStyle='italic'
-                fontWeight='normal'
-                lineHeight='short'
-                mt={1.5}
-              >
-                {description}
-              </Text>
-            )}
-          </PopoverHeader>
-          <PopoverBody>
-            <ScrollContainer maxHeight='300px'>
-              <OntologyViewSettings settings={settings} />
-            </ScrollContainer>
-          </PopoverBody>
-        </PopoverContent>
-      </Popover>
+        </Popover.Trigger>
+        <Portal>
+          <Popover.Positioner>
+            <Popover.Content>
+              <Popover.Arrow>
+                <Popover.ArrowTip />
+              </Popover.Arrow>
+              <Popover.Header pb={2}>
+                <Flex alignItems='center'>
+                  <Flex flexDirection='column' flex={1}>
+                    <Popover.Title
+                      fontWeight='semibold'
+                      lineHeight='normal'
+                      my={1}
+                    >
+                      {label}
+                    </Popover.Title>
+                    {description && (
+                      <Text
+                        color='text.placeholder'
+                        fontSize='sm'
+                        fontStyle='italic'
+                        fontWeight='normal'
+                        lineHeight='moderate'
+                        mt={1.5}
+                      >
+                        {description}
+                      </Text>
+                    )}
+                  </Flex>
+                  {/* A bare CloseTrigger renders an empty, unlabelled button. */}
+                  <Popover.CloseTrigger asChild>
+                    <CloseButton size='xs' />
+                  </Popover.CloseTrigger>
+                </Flex>
+              </Popover.Header>
+              <Separator />
+              <Popover.Body>
+                <ScrollContainer maxHeight='300px'>
+                  <OntologyViewSettings settings={settings} />
+                </ScrollContainer>
+              </Popover.Body>
+            </Popover.Content>
+          </Popover.Positioner>
+        </Portal>
+      </Popover.Root>
     </Flex>
   );
 };

@@ -1,7 +1,8 @@
-import { act } from 'react';
 import { renderHook } from '@testing-library/react';
-import { useSelectableList } from '../useSelectableList';
+import { act } from 'react';
+
 import { PopoverItem } from '../../types';
+import { useSelectableList } from '../useSelectableList';
 
 const ITEMS: PopoverItem[] = [
   { id: 'a', title: 'Alpha' },

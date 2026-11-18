@@ -176,7 +176,14 @@ Interaction-specific gotchas:
   while a route is still compiling, so `locator.click()` can time out
   ("`<nextjs-portal> intercepts pointer events`"). Fire the React handler
   directly with `locator.dispatchEvent('click')`, or use the keyboard, for
-  clicks that only need to trigger an `onClick`.
+  clicks that only need to trigger an `onClick`. **Not for accordion
+  triggers:** zag's accordion only acts on a click once the trigger has focus,
+  and a dispatched click never focuses it, so the panel silently stays shut.
+  Use a real `click()` there (the static export has no dev overlay anyway).
+- **Toggles whose name changes on open** (`show details` → `hide`,
+  `show metadata` → `hide metadata`): a locator built from the closed name
+  re-resolves after the click, often to the next collapsed instance. Assert
+  the open state through the open name instead.
 - **react-select**: open with `getByRole('combobox', { name })` + `.click()`,
   narrow the list with `.pressSequentially('…')`, choose with
   `getByRole('option', { name })`. Its menu/options are a portal.
@@ -204,7 +211,10 @@ passes or failures.
 Prefer user-facing locators in this order: `getByRole`, `getByLabel`,
 `getByText`. Reach for implementation selectors (`getByTestId`, CSS) only for
 state markers with no accessible surface — a skeleton loader is the canonical
-example.
+example. Chakra v3's Skeleton sets no loading attribute or class (loaded and
+loading both render `.chakra-skeleton`), so use the
+`expectSkeletonsLoading`/`expectNoSkeletonsLoading` helpers in
+`e2e/utils/skeleton.ts` instead of a raw selector.
 
 You do **not** need a per-test wait for fade/transition animations. Chakra fades
 many surfaces in by animating opacity 0→1 (`<Skeleton>` reveals, `<Collapse>`

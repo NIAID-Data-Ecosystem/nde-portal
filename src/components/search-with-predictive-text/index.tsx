@@ -1,8 +1,9 @@
-import React, { ReactElement } from 'react';
 import { InputProps } from '@chakra-ui/react';
+import React, { ReactElement } from 'react';
 import { FormattedResource } from 'src/utils/api/types';
-import { usePredictiveSearch } from './hooks/usePredictiveSearch';
+
 import { PredictiveSearch } from './components/PredictiveSearch';
+import { usePredictiveSearch } from './hooks/usePredictiveSearch';
 
 interface SearchWithPredictiveTextProps {
   ariaLabel: string; // input label for accessibility
@@ -10,8 +11,8 @@ interface SearchWithPredictiveTextProps {
   field?: string; //default field to search through,
   term?: string; //default term to search with,
   size?: InputProps['size'];
-  isLoading?: boolean;
-  colorScheme?: InputProps['colorScheme'];
+  loading?: boolean;
+  colorPalette?: InputProps['colorPalette'];
   handleSubmit: (
     inputValue: string,
     field: string,
@@ -34,7 +35,7 @@ export const SearchWithPredictiveText: React.FC<
     <PredictiveSearch
       {...props}
       {...usePredictiveSearchProps}
-      isLoading={props.isLoading || usePredictiveSearchProps.isLoading}
+      loading={props.loading || usePredictiveSearchProps.loading}
     />
   );
 };

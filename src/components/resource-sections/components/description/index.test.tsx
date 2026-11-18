@@ -1,16 +1,19 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { ChakraProvider } from '@chakra-ui/react';
 import '@testing-library/jest-dom';
+
+import { ChakraProvider } from '@chakra-ui/react';
+import { render, screen } from '@testing-library/react';
+import React from 'react';
+import { system } from 'src/theme';
+
 import { DescriptionSection } from '.';
 
 const renderWithChakra = (ui: React.ReactElement) =>
-  render(<ChakraProvider>{ui}</ChakraProvider>);
+  render(<ChakraProvider value={system}>{ui}</ChakraProvider>);
 
 describe('DescriptionSection', () => {
   it('renders nothing when both description and abstract are missing', () => {
     const { container } = renderWithChakra(
-      <DescriptionSection isLoading={false} />,
+      <DescriptionSection loading={false} />,
     );
 
     expect(container.querySelector('.chakra-skeleton')).not.toBeInTheDocument();
@@ -23,7 +26,7 @@ describe('DescriptionSection', () => {
         <DescriptionSection
           description={value}
           abstract={value}
-          isLoading={false}
+          loading={false}
         />,
       );
 
@@ -37,7 +40,7 @@ describe('DescriptionSection', () => {
     renderWithChakra(
       <DescriptionSection
         description='A description of the resource.'
-        isLoading={false}
+        loading={false}
       />,
     );
 
@@ -48,7 +51,7 @@ describe('DescriptionSection', () => {
 
   it('renders the abstract prefixed with a bolded "Abstract:" label', () => {
     renderWithChakra(
-      <DescriptionSection abstract='An abstract summary.' isLoading={false} />,
+      <DescriptionSection abstract='An abstract summary.' loading={false} />,
     );
 
     expect(screen.getByText('Abstract:')).toBeInTheDocument();
@@ -60,7 +63,7 @@ describe('DescriptionSection', () => {
       <DescriptionSection
         abstract='An abstract summary.'
         description='A description of the resource.'
-        isLoading={false}
+        loading={false}
       />,
     );
 
@@ -75,7 +78,7 @@ describe('DescriptionSection', () => {
     renderWithChakra(
       <DescriptionSection
         description='A description of the resource.'
-        isLoading={false}
+        loading={false}
       />,
     );
 
@@ -86,7 +89,7 @@ describe('DescriptionSection', () => {
     const { container } = renderWithChakra(
       <DescriptionSection
         description='A description of the resource.'
-        isLoading={true}
+        loading={true}
       />,
     );
 

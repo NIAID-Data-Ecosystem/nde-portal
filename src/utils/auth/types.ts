@@ -16,7 +16,7 @@ export interface KnownProvider {
   /** Display name, e.g. used in "Log In with <label>" */
   label: string;
   /** Brand icon on the login button. Providers without one show no icon. */
-  icon?: { as: IconType; color: string };
+  icon?: { component: IconType; color: string };
   /** Login button text. Defaults to "Log In with <label>". */
   loginText?: string;
   /**
@@ -61,7 +61,7 @@ export interface User {
 export interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
-  isLoading: boolean;
+  loading: boolean;
   error: string | null;
 }
 

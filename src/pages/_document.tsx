@@ -6,7 +6,6 @@ import NextDocument, {
   NextScript,
 } from 'next/document';
 import React from 'react';
-import { Box } from '@chakra-ui/react';
 import {
   AUTH_PENDING_LOADER_ID,
   WELCOME_PENDING_SCRIPT,
@@ -20,8 +19,11 @@ class Document extends NextDocument {
     return NextDocument.getInitialProps(ctx);
   }
   render() {
+    // `className='light'` pins Chakra's light-mode condition. The app has no
+    // colour-mode toggle, and v3 scopes `_dark` to a `.dark` ancestor, so this
+    // only makes the existing behaviour explicit.
     return (
-      <Box as={Html} lang='en'>
+      <Html lang='en' className='light'>
         <Head>
           <link rel='icon' href='/favicon.png' />
           {/* Hide the page a user returns to after login until the welcome
@@ -40,7 +42,7 @@ class Document extends NextDocument {
           <Main />
           <NextScript />
         </body>
-      </Box>
+      </Html>
     );
   }
 }

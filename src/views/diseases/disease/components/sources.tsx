@@ -8,11 +8,12 @@ import {
   getSearchResultsRoute,
   trackDiseasesEvent,
 } from 'src/views/diseases/helpers';
+
 import { TopicQueryProps } from '../../types';
-import { ChartWrapper } from '../layouts/chart-wrapper';
-import { BarChart, SourceFacet } from '../visualizations/bar-chart';
-import { MarkdownContent } from '../layouts/markdown-content';
 import DISEASE_PAGE_COPY from '../disease-page.json';
+import { ChartWrapper } from '../layouts/chart-wrapper';
+import { MarkdownContent } from '../layouts/markdown-content';
+import { BarChart, SourceFacet } from '../visualizations/bar-chart';
 
 export const Sources = ({
   id,
@@ -136,7 +137,7 @@ export const Sources = ({
             />
           }
           error={error}
-          isLoading={isLoading}
+          loading={isLoading}
           skeletonProps={{
             minHeight: '200px',
             width: '100%',
@@ -149,7 +150,7 @@ export const Sources = ({
               data={data}
               title={DISEASE_PAGE_COPY['charts']['sources']['title']}
               description={DISEASE_PAGE_COPY['charts']['sources']['title']}
-              isLoading={isLoading}
+              loading={isLoading}
               defaultDimensions={{
                 width: 300,
                 height: 200,
@@ -172,7 +173,7 @@ export const Sources = ({
               }}
             />
           ) : (
-            <Text color='page.placeholder' fontStyle='italic' mt={4}>
+            <Text color='text.placeholder' fontStyle='italic' mt={4}>
               No data available.
             </Text>
           )}

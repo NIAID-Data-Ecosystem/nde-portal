@@ -1,5 +1,5 @@
+import { Heading, StackProps, Text, VStack } from '@chakra-ui/react';
 import { ReactNode } from 'react';
-import { Heading, Text, VStack, StackProps } from '@chakra-ui/react';
 
 export interface SettingsSectionProps extends Omit<StackProps, 'title'> {
   title: ReactNode;
@@ -20,7 +20,7 @@ export function SettingsSection({
         {title}
       </Heading>
       {subtitle && (
-        <Text color='gray.800' fontSize='sm' mb={2}>
+        <Text fontSize='sm' mb={2}>
           {subtitle}
         </Text>
       )}

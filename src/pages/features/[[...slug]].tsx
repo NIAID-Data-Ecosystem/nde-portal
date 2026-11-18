@@ -1,22 +1,22 @@
-import React from 'react';
-import type { GetStaticProps, NextPage } from 'next';
 import { Flex, Skeleton, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
+import SITE_CONFIG from 'configs/site.config.json';
+import type { GetStaticProps, NextPage } from 'next';
+import React from 'react';
 import { Error } from 'src/components/error';
 import {
   getPageSeoConfig,
   PageContainer,
   PageContent,
 } from 'src/components/page-container';
+import { SiteConfig } from 'src/components/page-container/types';
+import Main from 'src/views/features/components/Main';
+import { TableOfContents } from 'src/views/features/components/TableOfContents';
 import {
   fetchAllFeaturedPages,
   fetchFeaturedContent,
 } from 'src/views/features/helpers';
-import Main from 'src/views/features/components/Main';
 import { FeaturedPageProps } from 'src/views/features/types';
-import { TableOfContents } from 'src/views/features/components/TableOfContents';
-import SITE_CONFIG from 'configs/site.config.json';
-import { SiteConfig } from 'src/components/page-container/types';
 
 const siteConfig = SITE_CONFIG as SiteConfig;
 
@@ -72,7 +72,7 @@ const FeaturedPage: NextPage<{
       {error ? (
         <Error>
           <Flex flexDirection='column' justifyContent='center'>
-            <Text fontWeight='light' color='gray.800' fontSize='lg'>
+            <Text fontWeight='light' color='gray.600' fontSize='lg'>
               API Request:{' '}
               {error?.message ||
                 'It’s possible that the server is experiencing some issues.'}{' '}
@@ -87,8 +87,13 @@ const FeaturedPage: NextPage<{
                 {/* Banner img */}
                 {(isLoading || data?.banner) && (
                   <Skeleton
-                    isLoaded={!isLoading}
-                    backgroundImage={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${data?.banner?.url}`}
+                    loading={!!isLoading}
+                    // v3 doesn't wrap bgImage in `url()` like v2 did; a bare URL's `//` is read as a comment and drops the props after it.
+                    backgroundImage={
+                      data?.banner?.url
+                        ? `url(${process.env.NEXT_PUBLIC_STRAPI_API_URL}${data.banner.url})`
+                        : undefined
+                    }
                     backgroundSize='cover'
                     display={{ base: 'none', sm: 'flex' }}
                     width={{
@@ -118,7 +123,7 @@ const FeaturedPage: NextPage<{
                     mb={32}
                     flex={1}
                   >
-                    <Main isLoading={isLoading} data={data} />
+                    <Main loading={isLoading} data={data} />
                   </PageContent>
                 </Flex>
               </Flex>

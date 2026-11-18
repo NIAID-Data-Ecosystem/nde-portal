@@ -1,32 +1,25 @@
+import { Box, Button, HStack, Tag, TagRootProps } from '@chakra-ui/react';
+import { isEqual } from 'lodash';
 import React, { useMemo } from 'react';
 import {
-  Box,
-  Button,
-  HStack,
-  Tag,
-  TagCloseButton,
-  TagLabel,
-} from '@chakra-ui/react';
+  APPLY_DEFAULT_DATE_PARAM,
+  defaultQuery,
+} from 'src/views/search/config/defaultQuery';
+import { usePaginationContext } from 'src/views/search/context/pagination-context';
+
+import { SearchResultsHeading } from '../../../search-results-header';
 import {
   FilterConfig,
   SelectedFilterType,
   SelectedFilterValueType,
 } from '../../types';
 import {
-  APPLY_DEFAULT_DATE_PARAM,
-  defaultQuery,
-} from 'src/views/search/config/defaultQuery';
-import { isEqual } from 'lodash';
-import { generateTags } from './utils';
-import { SearchResultsHeading } from '../../../search-results-header';
-import { usePaginationContext } from 'src/views/search/context/pagination-context';
-
-import {
   getFacetSelection,
   OR_FILTER_KEY,
   queryFilterObject2String,
   updateFacetSelection,
 } from '../../utils/query-string';
+import { generateTags } from './utils';
 
 interface FilterTagsProps {
   filtersConfig: FilterConfig[];
@@ -48,10 +41,22 @@ export interface TagInfo {
  * Users can remove individual tags or clear all filters at once.
  */
 
-const tagStyles = {
-  colorScheme: 'secondary',
-  size: 'sm',
-  variant: 'solid',
+const FilterTag: React.FC<
+  TagRootProps & {
+    label: string;
+    onRemove?: () => void;
+  }
+> = ({ label, onRemove, ...props }) => {
+  return (
+    <Tag.Root colorPalette='secondary' size='sm' variant='solid' {...props}>
+      <Tag.Label>{label}</Tag.Label>
+      {onRemove && (
+        <Tag.EndElement>
+          <Tag.CloseTrigger aria-label='close' onClick={onRemove} />
+        </Tag.EndElement>
+      )}
+    </Tag.Root>
+  );
 };
 export const FilterTags: React.FC<FilterTagsProps> = React.memo(
   ({ filtersConfig, selectedFilters, handleRouteUpdate, removeAllFilters }) => {
@@ -129,31 +134,29 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
     return (
       <Box>
         <SearchResultsHeading as='h2'>Filtered by: </SearchResultsHeading>
-        <HStack flexWrap='wrap' spacing={1.5} py={1}>
+        <HStack flexWrap='wrap' gap={1.5} py={1}>
           {/* Clear all filters button */}
+
           <Button
-            size='xs'
+            size='2xs'
+            fontSize='14px'
             onClick={() => {
               resetPagination();
               removeAllFilters();
             }}
-            colorScheme='secondary'
+            colorPalette='secondary'
             variant='outline'
-            lineHeight='unset'
-            fontWeight='medium'
           >
             Clear All
           </Button>
 
           {/* Render each tag with close button */}
           {tags.map(({ key, name, value, displayValue, filterKey }) => (
-            <Tag key={key} {...tagStyles}>
-              <TagLabel>{`${name}: ${displayValue}`}</TagLabel>
-
-              <TagCloseButton
-                onClick={() => removeSelectedFilter(filterKey, value)}
-              />
-            </Tag>
+            <FilterTag
+              key={key}
+              label={`${name}: ${displayValue}`}
+              onRemove={() => removeSelectedFilter(filterKey, value)}
+            />
           ))}
         </HStack>
       </Box>

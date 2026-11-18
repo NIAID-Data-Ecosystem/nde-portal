@@ -1,3 +1,29 @@
+import { Box, List } from '@chakra-ui/react';
+import {
+  Announcements,
+  closestCenter,
+  defaultDropAnimation,
+  DndContext,
+  DragEndEvent,
+  DragMoveEvent,
+  DragOverEvent,
+  DragOverlay,
+  DragStartEvent,
+  DropAnimation,
+  KeyboardSensor,
+  MeasuringStrategy,
+  Modifier,
+  PointerSensor,
+  UniqueIdentifier,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import React, {
   useCallback,
   useEffect,
@@ -6,30 +32,11 @@ import React, {
   useState,
 } from 'react';
 import { createPortal } from 'react-dom';
-import {
-  DragOverlay,
-  DndContext,
-  DropAnimation,
-  defaultDropAnimation,
-  KeyboardSensor,
-  PointerSensor,
-  UniqueIdentifier,
-  useSensor,
-  useSensors,
-  MeasuringStrategy,
-  DragEndEvent,
-  DragMoveEvent,
-  DragStartEvent,
-  closestCenter,
-  DragOverEvent,
-  Modifier,
-  Announcements,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+import { system } from 'src/theme';
+
+import { SortableTreeItem } from './components/SortableTreeItem';
+import { sortableTreeKeyboardCoordinates } from './keyboardCoordinates';
+import type { FlattenedItem, SensorContext, TreeItem } from './types';
 import {
   buildTree,
   createNewGroup,
@@ -41,12 +48,6 @@ import {
   setProperty,
   updateIndices,
 } from './utils';
-import type { FlattenedItem, SensorContext, TreeItem } from './types';
-import { CSS } from '@dnd-kit/utilities';
-import { Box, UnorderedList } from '@chakra-ui/react';
-import { theme } from 'src/theme';
-import { SortableTreeItem } from './components/SortableTreeItem';
-import { sortableTreeKeyboardCoordinates } from './keyboardCoordinates';
 
 const dropAnimationConfig: DropAnimation = {
   keyframes({ transform }) {
@@ -268,7 +269,7 @@ export function SortableWithCombine({
           onDragEnd={handleDragEnd}
           onDragCancel={handleDragCancel}
         >
-          <UnorderedList ml={0}>
+          <List.Root ps={0}>
             <SortableContext
               items={sortedIds}
               strategy={verticalListSortingStrategy}
@@ -307,7 +308,7 @@ export function SortableWithCombine({
                     <DragOverlay
                       dropAnimation={dropAnimationConfig}
                       modifiers={indicator ? [adjustTranslate] : undefined}
-                      zIndex={theme.zIndices['popover']}
+                      zIndex={system.token('zIndex.popover')}
                     >
                       {activeId && activeItem ? (
                         <SortableTreeItem
@@ -327,7 +328,7 @@ export function SortableWithCombine({
                   )
                 : null}
             </SortableContext>
-          </UnorderedList>
+          </List.Root>
         </DndContext>
       </Box>
     </Box>
@@ -495,7 +496,6 @@ export function SortableWithCombine({
           }
         }
       }
-      console.log('announcement', announcement);
       return announcement;
     }
 

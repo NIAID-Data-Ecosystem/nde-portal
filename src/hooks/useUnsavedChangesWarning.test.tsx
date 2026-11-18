@@ -1,6 +1,7 @@
 import { renderHook } from '@testing-library/react';
-import mockRouter from 'next-router-mock';
 import type { NextRouter } from 'next/router';
+import mockRouter from 'next-router-mock';
+
 import {
   ROUTE_CHANGE_CANCELLED,
   UNSAVED_CHANGES_MESSAGE,

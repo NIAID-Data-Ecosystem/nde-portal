@@ -1,17 +1,9 @@
-import React, { ReactNode } from 'react';
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardProps,
-  BoxProps,
-  TextProps,
-  Text,
-} from '@chakra-ui/react';
+import { BoxProps, Card, Skeleton, TextProps } from '@chakra-ui/react';
 import NextLink from 'next/link';
-import { TypeBanner } from 'src/components/resource-sections/components';
-import { Skeleton } from 'src/components/skeleton';
-import { TypeBannerProps } from 'src/components/resource-sections/components/type-banner';
+import React, { ReactNode } from 'react';
+import { Link } from 'src/components/link';
+import TypeBanner from 'src/components/type-banner';
+import { TypeBannerProps } from 'src/components/type-banner/types';
 
 const CARD_HEIGHTS = {
   base: '310px',
@@ -22,42 +14,41 @@ const CARD_HEIGHTS = {
 } as const;
 
 // Base compact card wrapper component
-interface BaseProps extends Omit<CardProps, 'children' | 'as'> {
-  isLoading?: boolean;
+interface BaseProps extends Omit<Card.RootProps, 'children' | 'as'> {
+  loading?: boolean;
   children: ReactNode;
 }
 
-const Base = ({ isLoading = false, children, ...cardProps }: BaseProps) => {
+const Base = ({ loading = false, children, ...cardProps }: BaseProps) => {
   return (
-    <Card
-      variant='niaid'
+    <Card.Root
+      variant='outline'
       boxShadow='none'
-      border='1px solid'
-      borderColor='gray.200'
       height={CARD_HEIGHTS}
+      size='xs'
       {...cardProps}
     >
       {children}
-    </Card>
+    </Card.Root>
   );
 };
 
 // Banner component
 interface BannerProps extends TypeBannerProps {
-  isLoading?: boolean;
+  loading?: boolean;
 }
 
 const Banner = ({
   label,
   type,
   isNiaidFunded,
-  isLoading = false,
+  loading = false,
   ...props
 }: BannerProps) => {
   return (
     <Skeleton
-      isLoaded={!isLoading}
-      height={isLoading ? '40px' : 'auto'}
+      loading={loading}
+      height={loading ? '40px' : 'auto'}
       borderTopRadius='md'
     >
       <TypeBanner
@@ -75,38 +66,17 @@ const Banner = ({
 
 // Header wrapper component
 interface HeaderProps extends BoxProps {
-  isLoading?: boolean;
+  loading?: boolean;
   children: ReactNode;
 }
 
-const Header = ({ isLoading = false, children, ...boxProps }: HeaderProps) => {
+const Header = ({ loading = false, children, ...boxProps }: HeaderProps) => {
   return (
-    <CardHeader
-      bg='transparent'
-      position='relative'
-      px={2}
-      pt={1}
-      pb={1}
-      w='100%'
-      color='link.color'
-      _hover={{
-        p: { textDecoration: 'none' },
-        svg: {
-          transform: 'translate(0px)',
-          opacity: 0.9,
-          transition: '0.2s ease-in-out',
-        },
-      }}
-      _visited={{
-        color: 'link.color',
-        svg: { color: 'link.color' },
-      }}
-      {...boxProps}
-    >
-      <Skeleton isLoaded={!isLoading} minHeight='27px' flex={1}>
-        {!isLoading && children}
+    <Card.Header {...boxProps}>
+      <Skeleton loading={loading} minHeight='27px' flex={1}>
+        {!loading && children}
       </Skeleton>
-    </CardHeader>
+    </Card.Header>
   );
 };
 
@@ -123,21 +93,9 @@ interface TitleProps extends Omit<TextProps, 'children'> {
 
 const Title = ({ children, linkProps, ...textProps }: TitleProps) => {
   const content = (
-    <Text
-      noOfLines={3}
-      fontWeight='semibold'
-      color='inherit'
-      fontSize='md'
-      lineHeight='short'
-      w='100%'
-      textDecoration='underline'
-      _hover={{
-        textDecoration: 'none',
-      }}
-      {...textProps}
-    >
+    <Card.Title lineClamp={3} color='inherit' textStyle='md' {...textProps}>
       {children}
-    </Text>
+    </Card.Title>
   );
 
   if (!linkProps) {
@@ -145,19 +103,20 @@ const Title = ({ children, linkProps, ...textProps }: TitleProps) => {
   }
 
   return (
-    <NextLink
-      href={linkProps.href}
-      as={linkProps.as}
-      passHref
-      prefetch={false}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        width: '100%',
-      }}
-    >
-      {content}
-    </NextLink>
+    <Link asChild>
+      <NextLink
+        href={linkProps.href}
+        as={linkProps.as}
+        prefetch={false}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          width: '100%',
+        }}
+      >
+        {content}
+      </NextLink>
+    </Link>
   );
 };
 
@@ -168,20 +127,9 @@ interface BodyProps extends BoxProps {
 
 const Body = ({ children, ...boxProps }: BodyProps) => {
   return (
-    <CardBody
-      p={2}
-      sx={{
-        '>*': {
-          my: 0,
-        },
-      }}
-      flex='1'
-      display='flex'
-      flexDirection='column'
-      {...boxProps}
-    >
+    <Card.Body gap={2} {...boxProps}>
       {children}
-    </CardBody>
+    </Card.Body>
   );
 };
 

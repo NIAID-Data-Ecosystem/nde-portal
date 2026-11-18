@@ -1,11 +1,12 @@
+import SchemaDefinitions from 'configs/schema-definitions.json';
 import { uniqueId } from 'lodash';
+import { encodeString } from 'src/utils/querystring-helpers';
+
 import {
   collapseTree,
   FlattenedItem,
   TreeItem,
 } from '../components/SortableWithCombine';
-import SchemaDefinitions from 'configs/schema-definitions.json';
-import { encodeString } from 'src/utils/querystring-helpers';
 import { QueryValue, UnionTypes } from '../types';
 
 export const unionOptions = ['AND', 'OR', 'NOT'] as UnionTypes[];
@@ -15,7 +16,7 @@ export const getUnionTheme = (term: UnionTypes) => {
     return {
       background: 'primary.500',
       bg: 'primary.500',
-      colorScheme: 'primary',
+      colorPalette: 'primary',
       _hover: { bg: 'primary.600' },
     };
   }
@@ -23,7 +24,7 @@ export const getUnionTheme = (term: UnionTypes) => {
     return {
       background: 'secondary.500',
       bg: 'secondary.500',
-      colorScheme: 'secondary',
+      colorPalette: 'secondary',
       _hover: { bg: 'secondary.600' },
     };
   }
@@ -31,7 +32,7 @@ export const getUnionTheme = (term: UnionTypes) => {
     return {
       background: 'red.500',
       bg: 'red.500',
-      colorScheme: 'red',
+      colorPalette: 'red',
       _hover: { bg: 'red.600' },
     };
   }

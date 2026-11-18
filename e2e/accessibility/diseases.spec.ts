@@ -61,7 +61,8 @@
  *     is best-practice/moderate and does not block; the missing h1 on the error
  *     page is a pre-existing minor gap, out of scope here.)
  */
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
+
 import { runAxeScans } from '../utils/axe';
 
 // --- Per-route configuration -------------------------------------------------

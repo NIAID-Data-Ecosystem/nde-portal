@@ -1,5 +1,6 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from 'src/__tests__/utils/render';
+
 import { DatePicker } from '../../../../components/date-filter/components/date-picker';
 
 jest.mock(
@@ -19,7 +20,7 @@ describe('date-picker', () => {
     const handleSelectedFilter = jest.fn();
     render(
       <DatePicker
-        colorScheme='secondary'
+        colorPalette='secondary'
         selectedDates={['2020-01-01', '2022-12-31']}
         handleSelectedFilter={handleSelectedFilter}
         resetFilter={jest.fn()}
@@ -45,7 +46,7 @@ describe('date-picker', () => {
     const resetFilter = jest.fn();
     render(
       <DatePicker
-        colorScheme='secondary'
+        colorPalette='secondary'
         selectedDates={['2020-01-01', '2099-12-31'] as any}
         handleSelectedFilter={handleSelectedFilter}
         resetFilter={resetFilter}

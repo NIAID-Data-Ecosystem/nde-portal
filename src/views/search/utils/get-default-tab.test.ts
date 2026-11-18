@@ -1,6 +1,6 @@
-import { getDefaultTabId, sortTypesByPriority } from './get-default-tab';
 import { tabs } from '../config/tabs';
 import { DEFAULT_TAB_ID } from '../context/search-tabs-context';
+import { getDefaultTabId, sortTypesByPriority } from './get-default-tab';
 
 const counts = (entries: Record<string, number>) =>
   Object.entries(entries).map(([type, count]) => ({ type, count }));

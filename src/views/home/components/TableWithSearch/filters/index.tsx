@@ -1,9 +1,10 @@
-import { TableData } from '..';
-import { useMemo } from 'react';
-import { getFilterData } from '../helpers';
-import { CheckboxList } from 'src/components/checkbox-list';
-import { formatDomainName, formatTypeName } from '../helpers';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { useMemo } from 'react';
+import { CheckboxMenu } from 'src/components/checkbox-list';
+
+import { TableData } from '..';
+import { getFilterData } from '../helpers';
+import { formatDomainName, formatTypeName } from '../helpers';
 
 interface TableFiltersProps {
   data: TableData[];
@@ -12,6 +13,12 @@ interface TableFiltersProps {
     React.SetStateAction<{ name: string; value: string; property: string }[]>
   >;
 }
+
+const SHARED_PROPS = {
+  buttonProps: { colorPalette: 'gray', flex: 1 },
+  colorPalette: 'primary',
+  flex: { base: 1, sm: 'unset' },
+};
 
 export const Filters = ({ data, filters, setFilters }: TableFiltersProps) => {
   // Data types: ResourceCatalog, Repository
@@ -69,7 +76,8 @@ export const Filters = ({ data, filters, setFilters }: TableFiltersProps) => {
     <>
       {/* <!-- Types checkboxes --> */}
       {types.length > 0 && (
-        <CheckboxList
+        <CheckboxMenu
+          id='explore-type'
           label='Type'
           description={SCHEMA_DEFINITIONS['type'].abstract['Dataset']}
           options={types.sort((a, b) => a.name.localeCompare(b.name))}
@@ -78,12 +86,14 @@ export const Filters = ({ data, filters, setFilters }: TableFiltersProps) => {
           }
           handleChange={newFilters => handleFilterChange('type', newFilters)}
           showSelectAll
+          {...SHARED_PROPS}
         />
       )}
 
       {/* <!-- Domains checkboxes --> */}
       {domains.length > 0 && (
-        <CheckboxList
+        <CheckboxMenu
+          id='explore-domain'
           label='Research Domain'
           description={SCHEMA_DEFINITIONS['domain'].abstract['Dataset']}
           options={domains.sort((a, b) => a.name.localeCompare(b.name))}
@@ -92,12 +102,14 @@ export const Filters = ({ data, filters, setFilters }: TableFiltersProps) => {
           }
           handleChange={newFilters => handleFilterChange('domain', newFilters)}
           showSelectAll
+          {...SHARED_PROPS}
         />
       )}
 
       {/* <!-- Conditions of Access types checkboxes --> */}
       {conditionsOfAccess.length > 0 && (
-        <CheckboxList
+        <CheckboxMenu
+          id='explore-access'
           label='Access'
           description={
             SCHEMA_DEFINITIONS['conditionsOfAccess'].abstract['Dataset']
@@ -118,6 +130,7 @@ export const Filters = ({ data, filters, setFilters }: TableFiltersProps) => {
             handleFilterChange('conditionsOfAccess', newFilters)
           }
           showSelectAll
+          {...SHARED_PROPS}
         />
       )}
     </>

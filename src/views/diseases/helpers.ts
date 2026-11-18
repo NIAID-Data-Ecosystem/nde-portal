@@ -1,16 +1,17 @@
-import { UrlObject } from 'url';
+import { sendGTMEvent } from '@next/third-parties/google';
 import { Params } from 'src/utils/api';
+import { APIResourceType } from 'src/utils/formatting/formatResourceType';
+import {
+  DiseaseCollectionApiResponse,
+  DiseasePageProps,
+} from 'src/views/diseases/types';
+import { getTabIdFromResourceType } from 'src/views/search/config/tabs';
+import { UrlObject } from 'url';
+
 import {
   queryFilterObject2String,
   queryFilterString2Object,
 } from '../search/components/filters/utils/query-string';
-import {
-  DiseasePageProps,
-  DiseaseCollectionApiResponse,
-} from 'src/views/diseases/types';
-import { sendGTMEvent } from '@next/third-parties/google';
-import { getTabIdFromResourceType } from 'src/views/search/config/tabs';
-import { APIResourceType } from 'src/utils/formatting/formatResourceType';
 
 export const normalizeSearchText = (value: string = '') => {
   return value

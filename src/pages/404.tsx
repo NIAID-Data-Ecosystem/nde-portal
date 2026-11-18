@@ -1,7 +1,7 @@
-import React from 'react';
+import { Button, Flex, Heading, Image, Text } from '@chakra-ui/react';
 import { NextPage } from 'next';
 import NextLink from 'next/link';
-import { Button, Flex, Heading, Image, Text } from '@chakra-ui/react';
+import React from 'react';
 import {
   getPageSeoConfig,
   PageContainer,
@@ -31,11 +31,9 @@ const NotFoundPage: NextPage = () => {
             It&apos;s possible that the page is temporarily unavailable, has
             been moved, renamed, or no longer exists.
           </Text>
-          <NextLink href={{ pathname: '/' }}>
-            <Button mt={4} variant='outline' h='unset'>
-              Back to Home
-            </Button>
-          </NextLink>
+          <Button asChild mt={4}>
+            <NextLink href={{ pathname: '/' }}>Back to Home</NextLink>
+          </Button>
         </Flex>
       </PageContent>
     </PageContainer>

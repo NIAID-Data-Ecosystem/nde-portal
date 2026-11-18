@@ -3,10 +3,11 @@ import {
   AUTH_LOGIN_PENDING_KEY,
   AUTH_PENDING_ATTR,
 } from 'src/utils/auth/welcome-pending';
+
 import {
+  useWelcomeRedirect,
   WELCOME_PATH,
   WELCOME_SHOWN_KEY,
-  useWelcomeRedirect,
 } from './useWelcomeRedirect';
 
 const mockReplace = jest.fn((_path: string) => Promise.resolve(true));

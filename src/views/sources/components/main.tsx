@@ -1,55 +1,43 @@
-import React, { useState } from 'react';
-import { FaMinus, FaPlus, FaUpRightFromSquare } from 'react-icons/fa6';
 import {
   Box,
   Button,
-  Collapse,
+  ButtonGroup,
   Flex,
   HStack,
   Icon,
   SkeletonText,
-  StackDivider,
   Text,
   VStack,
 } from '@chakra-ui/react';
+import NextLink from 'next/link';
+import React, { useState } from 'react';
+import { FaUpRightFromSquare } from 'react-icons/fa6';
 import { BadgeWithTooltip } from 'src/components/badges';
+import { DetailsAccordion } from 'src/components/details-accordion';
+import { InternalLinkButton } from 'src/components/internal-link-button';
+import { Link } from 'src/components/link';
 import { MetadataCompatibilitySourceBadge } from 'src/components/metadata-compatibility-source-badge';
 import {
   StyledCard,
-  StyledCardButton,
   StyledCardDescription,
   StyledCardStack,
 } from 'src/components/table-of-contents/components/card';
 import { SectionHeader } from 'src/components/table-of-contents/layouts/section-header';
 import { SectionSearch } from 'src/components/table-of-contents/layouts/section-search';
-import { TagWithUrl } from 'src/components/tag-with-url';
 import type { SourceDisplayItem } from 'src/pages/sources';
 import { formatDate } from 'src/utils/api/helpers';
-import NextLink from 'next/link';
-import { USE_MERGED_SOURCES_AND_CATALOGS } from 'src/utils/feature-flags';
 
 interface Main {
   data?: SourceDisplayItem[];
-  isLoading: boolean;
+  loading: boolean;
   metadata?: {
     version: string;
     date: string;
   } | null;
 }
 
-const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
-  const [schemaId, setSchemaId] = useState<string[]>([]);
-  const [schemaText, setSchemaText] = useState<string[]>([]);
+const Main: React.FC<Main> = ({ data, loading, metadata }) => {
   const [searchValue, setSearchValue] = useState('');
-
-  function schemaIdFunc(sourceName: string) {
-    if (schemaId.includes(sourceName) || schemaText.includes(sourceName)) {
-      setSchemaText(schemaText.filter(schemaText => schemaText !== sourceName));
-      return setSchemaId(schemaId.filter(schemaId => schemaId !== sourceName));
-    }
-    setSchemaText([...schemaText, sourceName]);
-    return setSchemaId([...schemaId, sourceName]);
-  }
 
   const sources =
     data?.filter((source: { name: string }) =>
@@ -59,51 +47,40 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
   return (
     <Box id='sources-main' mb={10} width='100%' height='100%'>
       <SectionHeader title='Data Sources'>
-        <Button
-          as='a'
-          href='https://github.com/NIAID-Data-Ecosystem/nde-crawlers/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D'
-          target='_blank'
-          colorScheme='secondary'
-          size='sm'
-          variant='outline'
-          rightIcon={<Icon as={FaUpRightFromSquare} boxSize={3} />}
-        >
-          Suggest a new source
+        <Button asChild colorPalette='secondary' size='sm' variant='outline'>
+          <NextLink
+            href='https://github.com/NIAID-Data-Ecosystem/nde-crawlers/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D'
+            target='_blank'
+            rel='noopener noreferrer'
+          >
+            Suggest a new source
+            <Icon as={FaUpRightFromSquare} boxSize={3} />
+          </NextLink>
         </Button>
       </SectionHeader>
-      <Flex justifyContent='space-between' flexWrap='wrap-reverse'>
+      <Flex justifyContent='space-between' flexWrap='wrap-reverse' mb={4}>
         <VStack minW='250px' alignItems='flex-start' m={0.5} flex={1}>
-          <SkeletonText isLoaded={!isLoading} noOfLines={1} skeletonHeight={5}>
-            <Flex alignItems='center'>
-              <Text
-                fontSize='xs'
-                lineHeight='short'
-                fontWeight='semibold'
-                color='text.body'
-              >
-                API Version:
-              </Text>
+          <SkeletonText loading={loading} noOfLines={1} height={5}>
+            <HStack alignItems='center' fontSize='sm' gap={1}>
+              <Text fontWeight='semibold'>API Version:</Text>
               {metadata?.version && (
-                <TagWithUrl
-                  bg='status.info_lt'
+                <Link
                   href={`${process.env.NEXT_PUBLIC_API_URL}/metadata`}
                   isExternal
-                  mx={1}
                 >
                   V.{metadata.version}
-                </TagWithUrl>
+                </Link>
               )}
-            </Flex>
+            </HStack>
           </SkeletonText>
-          <SkeletonText isLoaded={!isLoading} noOfLines={1} skeletonHeight={5}>
+          <SkeletonText loading={loading} noOfLines={1} height={5}>
             {metadata?.date && (
-              <Text fontSize='xs' lineHeight='short' fontWeight='semibold'>
-                Data last harvested:
-                <Text as='span' fontWeight='normal'>
-                  {' '}
-                  {formatDate(metadata?.date)}
+              <HStack fontSize='sm' gap={1}>
+                <Text lineHeight='moderate' fontWeight='semibold'>
+                  Data last harvested:
                 </Text>
-              </Text>
+                <Text>{formatDate(metadata?.date)}</Text>
+              </HStack>
             )}
           </SkeletonText>
         </VStack>
@@ -117,7 +94,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
         />
       </Flex>
       <StyledCardStack>
-        {sources.map((sourceObj: SourceDisplayItem, index: number) => {
+        {sources.map((sourceObj: SourceDisplayItem) => {
           // Metadata compatibility badge. `Source` is flattened, so
           // `parentCollection`/`metadata_completeness` sit at the top level.
           // The parent is matched by `identifier` (the hook's `key` is a
@@ -138,9 +115,12 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
 
           return (
             <StyledCard
-              key={index}
+              // Keyed by source rather than position: each card holds its
+              // mapping accordion's open state, which would otherwise move to
+              // a different source when the search filter shifts the list.
+              key={sourceObj.slug || sourceObj.name}
               id={sourceObj.slug}
-              isLoading={isLoading}
+              loading={loading}
               title={sourceObj.name}
               subtitle={
                 numberOfRecords > 0
@@ -151,7 +131,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
               tags={
                 <>
                   {sourceObj.isNiaidFunded && (
-                    <BadgeWithTooltip colorScheme='blue' variant='subtle'>
+                    <BadgeWithTooltip colorPalette='blue' variant='subtle'>
                       NIAID
                     </BadgeWithTooltip>
                   )}
@@ -159,44 +139,31 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
               }
               renderCTA={() =>
                 sourceObj.searchURL ? (
-                  <Flex
-                    justifyContent={{ base: 'center', md: 'space-between' }}
-                    flexWrap='wrap'
-                    gap={2}
+                  <ButtonGroup
                     w='100%'
+                    justifyContent={{ base: 'center', sm: 'space-between' }}
+                    flexWrap='wrap'
                   >
-                    <Flex
-                      flex={1}
+                    <InternalLinkButton
+                      href={{
+                        pathname: '/resources',
+                        query: {
+                          id: sourceObj.resourceCatalogIdentifier,
+                        },
+                      }}
+                      variant='outline'
                       visibility={
-                        USE_MERGED_SOURCES_AND_CATALOGS &&
                         sourceObj.resourceCatalogIdentifier
                           ? 'visible'
                           : 'hidden'
                       }
                     >
-                      <Button
-                        as={NextLink}
-                        size='sm'
-                        variant='outline'
-                        width={{ base: '100%', md: 'unset' }}
-                        maxWidth='500px'
-                        href={{
-                          pathname: '/resources',
-                          query: {
-                            id: sourceObj.resourceCatalogIdentifier,
-                          },
-                        }}
-                      >
-                        Learn about source
-                      </Button>
-                    </Flex>
-                    <StyledCardButton
-                      maxWidth='500px'
-                      href={sourceObj.searchURL}
-                    >
+                      Learn about source
+                    </InternalLinkButton>
+                    <InternalLinkButton href={sourceObj.searchURL}>
                       See search results
-                    </StyledCardButton>
-                  </Flex>
+                    </InternalLinkButton>
+                  </ButtonGroup>
                 ) : (
                   <></>
                 )
@@ -204,9 +171,9 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
             >
               <>
                 {/* Release dates */}
-                <HStack divider={<StackDivider borderColor='gray.100' />}>
+                <HStack>
                   {sourceObj.latestRelease && (
-                    <Text fontSize='xs' fontWeight='semibold' color='text.body'>
+                    <Text fontSize='sm' fontWeight='semibold' color='text.body'>
                       Latest Release:{' '}
                       <Text as='span' fontWeight='normal'>
                         {sourceObj.latestRelease
@@ -216,7 +183,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                     </Text>
                   )}
                   {sourceObj.lastCurated && (
-                    <Text fontSize='xs' fontWeight='semibold' color='text.body'>
+                    <Text fontSize='sm' fontWeight='semibold' color='text.body'>
                       Last Curated:{' '}
                       <Text as='span' fontWeight='normal'>
                         {sourceObj.lastCurated ? sourceObj.lastCurated : 'N/A'}
@@ -224,7 +191,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                     </Text>
                   )}
                   {sourceObj.firstReleased && (
-                    <Text fontSize='xs' fontWeight='semibold' color='text.body'>
+                    <Text fontSize='sm' fontWeight='semibold' color='text.body'>
                       First Released:{' '}
                       <Text as='span' fontWeight='normal'>
                         {sourceObj.firstReleased
@@ -238,134 +205,97 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                 {/* Description, with the link to the source's website
                 inlined at the end of the text. */}
                 {sourceObj?.description && (
-                  <Box fontSize='sm' lineHeight='short' color='text.body'>
-                    <StyledCardDescription>
-                      {sourceObj.url
-                        ? `${sourceObj.description.trimEnd()} [Visit ${
-                            sourceObj.name
-                          } website](<${sourceObj.url}>)`
-                        : sourceObj.description}
-                    </StyledCardDescription>
-                  </Box>
+                  <StyledCardDescription>
+                    {sourceObj.url
+                      ? `${sourceObj.description.trimEnd()} [Visit ${
+                          sourceObj.name
+                        } website](<${sourceObj.url}>)`
+                      : sourceObj.description}
+                  </StyledCardDescription>
                 )}
 
                 {/* Source Compatibility */}
                 {metadataCompatibilityData && (
-                  <Box my={2}>
-                    <MetadataCompatibilitySourceBadge
-                      data={metadataCompatibilityData}
-                    />
-                  </Box>
+                  <MetadataCompatibilitySourceBadge
+                    data={metadataCompatibilityData}
+                    py={2}
+                  />
                 )}
 
                 {/* Property transformations table */}
                 {sourceObj?.schema && (
-                  <Box w='100%' py={2}>
-                    <Flex
-                      w='100%'
-                      as='button'
-                      flexDirection={{ base: 'column', sm: 'row' }}
-                      alignItems='center'
-                      justifyContent='space-between'
-                      onClick={() => schemaIdFunc(sourceObj.name)}
-                      borderY='1px solid'
-                      borderColor='gray.100'
-                      px={0}
-                      py={2}
-                    >
+                  <DetailsAccordion
+                    variant='ruled'
+                    summary={
                       <Text
+                        fontFamily='heading'
                         fontWeight='semibold'
-                        color='gray.800'
-                        textAlign='left'
-                        lineHeight='short'
+                        fontSize='md'
+                        color='text.heading'
+                        lineHeight='moderate'
                       >
                         Mapping of {sourceObj.name} Properties to NIAID Data
                         Ecosystem Properties
                       </Text>
-                      <Flex alignItems='center'>
-                        <Text mx={2} fontSize='xs' color='gray.800'>
-                          {schemaText.includes(sourceObj.name)
-                            ? 'Hide'
-                            : 'Show'}
-                        </Text>
-                        <Icon
-                          as={
-                            schemaText.includes(sourceObj.name)
-                              ? FaMinus
-                              : FaPlus
-                          }
-                          color='gray.800'
-                          boxSize={3}
-                        />
-                      </Flex>
-                    </Flex>
-                    <Collapse in={schemaId.includes(sourceObj.name)}>
-                      {schemaId.includes(sourceObj.name) && (
-                        <Box
-                          mt={4}
-                          position='relative'
-                          overflowX='auto'
-                          boxShadow='low'
-                          borderRadius='semi'
-                        >
-                          <Box
-                            as='table'
-                            w='100%'
-                            bg='#374151'
-                            color='whiteAlpha.800'
-                            textAlign='left'
-                            fontSize='sm'
-                          >
-                            <Box
-                              as='thead'
-                              textTransform='uppercase'
-                              color='#fff'
-                            >
-                              <tr>
-                                <Box as='th' scope='col' px={6} py={3}>
-                                  {sourceObj.name} Property
-                                </Box>
-                                <Box as='th' scope='col' px={6} py={3}>
-                                  NIAID Data Ecosystem Property
-                                </Box>
-                              </tr>
+                    }
+                  >
+                    <Box
+                      mt={2}
+                      position='relative'
+                      overflowX='auto'
+                      boxShadow='low'
+                      borderRadius='semi'
+                    >
+                      <Box
+                        as='table'
+                        w='100%'
+                        bg='#374151'
+                        color='whiteAlpha.800'
+                        textAlign='left'
+                        fontSize='sm'
+                      >
+                        <Box as='thead' textTransform='uppercase' color='#fff'>
+                          <tr>
+                            <Box as='th' px={6} py={3}>
+                              {sourceObj.name} Property
                             </Box>
+                            <Box as='th' px={6} py={3}>
+                              NIAID Data Ecosystem Property
+                            </Box>
+                          </tr>
+                        </Box>
 
-                            <Box as='tbody' bg='#1F2937' border='gray.100'>
-                              {Object.entries(sourceObj.schema).map(
-                                (item, i) => {
+                        <Box as='tbody' bg='#1F2937' border='gray.100'>
+                          {Object.entries(sourceObj.schema).map((item, i) => {
+                            return (
+                              <Box
+                                as='tr'
+                                key={item[0]}
+                                borderBottom='1px solid'
+                                borderColor='gray.500'
+                              >
+                                {Object.entries(item).map(field => {
                                   return (
                                     <Box
-                                      as='tr'
-                                      key={item[0]}
-                                      borderBottom='1px solid'
-                                      borderColor='gray.700'
+                                      as='td'
+                                      key={`${field[0]}-${field[1]}`}
+                                      px={6}
+                                      py={2}
+                                      fontWeight='medium'
+                                      color='#fff'
+                                      whiteSpace='nowrap'
                                     >
-                                      {Object.entries(item).map(field => {
-                                        return (
-                                          <Box
-                                            as='td'
-                                            key={`${field[0]}-${field[1]}`}
-                                            px={6}
-                                            py={2}
-                                            fontWeight='medium'
-                                            color='#fff'
-                                            whiteSpace='nowrap'
-                                          >
-                                            {field[1]}
-                                          </Box>
-                                        );
-                                      })}
+                                      {field[1]}
                                     </Box>
                                   );
-                                },
-                              )}
-                            </Box>
-                          </Box>
+                                })}
+                              </Box>
+                            );
+                          })}
                         </Box>
-                      )}
-                    </Collapse>
-                  </Box>
+                      </Box>
+                    </Box>
+                  </DetailsAccordion>
                 )}
               </>
             </StyledCard>

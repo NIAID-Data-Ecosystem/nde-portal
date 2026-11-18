@@ -1,7 +1,8 @@
-import { ReactNode } from 'react';
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { UserDataProvider, useUserData } from './index';
+import { ReactNode } from 'react';
+
 import { findSavedQueryIndex } from './helpers';
+import { UserDataProvider, useUserData } from './index';
 import { SavedQuery } from './types';
 
 /**

@@ -33,7 +33,8 @@
  *     Save Settings. Scanned below. (An unauthenticated/failed `/user_info`
  *     redirects to `/login` instead, covered by login.spec.ts.)
  */
-import { test, expect, type Page, type TestInfo } from '@playwright/test';
+import { expect, type Page, test, type TestInfo } from '@playwright/test';
+
 import { runAxeScans } from '../utils/axe';
 
 // --- Per-route configuration -------------------------------------------------

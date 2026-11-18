@@ -1,12 +1,12 @@
+import { Box, Highlight, Icon, List, Text } from '@chakra-ui/react';
 import React from 'react';
-import { Box, Highlight, Icon, ListItem, Text } from '@chakra-ui/react';
-import { useDropdownContext } from 'src/components/input-with-dropdown';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { useDropdownContext } from 'src/components/input-with-dropdown';
 
 export const DropdownListItem = React.memo(
   ({
     children,
-    colorScheme = 'primary',
+    colorPalette = 'primary',
     handleSubmit,
     id,
     index,
@@ -14,7 +14,7 @@ export const DropdownListItem = React.memo(
     highlight,
   }: {
     children: string;
-    colorScheme?: string;
+    colorPalette?: string;
     handleSubmit: () => void;
     id: string;
     index: number;
@@ -23,12 +23,11 @@ export const DropdownListItem = React.memo(
   }) => {
     const { cursor, getListItemProps } = useDropdownContext();
     return (
-      <ListItem
+      <List.Item
         display='flex'
         cursor='pointer'
         px={2}
         mx={2}
-        my={1}
         {...getListItemProps({
           index,
           id: `ontology-browser-search-${id}`,
@@ -49,7 +48,7 @@ export const DropdownListItem = React.memo(
           {ontology && (
             <Text
               fontSize='12px'
-              color={`${colorScheme}.800`}
+              color={`${colorPalette}.800`}
               wordBreak='break-word'
               fontWeight='light'
               textAlign='left'
@@ -58,20 +57,23 @@ export const DropdownListItem = React.memo(
             </Text>
           )}
 
+          {/* No fontSize: v2 passed `size='sm'`, which the Text theme had no
+              sizes for, so the label rendered at the inherited 16px. */}
           <Text
-            size='sm'
-            lineHeight='short'
             color='text.body'
-            wordBreak='break-word'
             fontWeight='normal'
+            lineHeight='moderate'
             textAlign='left'
+            wordBreak='break-word'
           >
+            {/* v2 matched case-insensitively; v3 needs `ignoreCase`. */}
             <Highlight
               query={highlight}
+              ignoreCase
               styles={{
                 fontWeight: 'bold',
                 textDecoration: 'underline',
-                color: `${colorScheme}.600`,
+                color: `${colorPalette}.600`,
                 bg: 'transparent',
               }}
             >
@@ -79,7 +81,7 @@ export const DropdownListItem = React.memo(
             </Highlight>
           </Text>
         </Box>
-      </ListItem>
+      </List.Item>
     );
   },
 );

@@ -7,7 +7,6 @@ export interface Route {
   ui?: {
     showInNavigation: boolean;
     showEmptyState: boolean;
-    isCollapsible: boolean;
   };
 }
 

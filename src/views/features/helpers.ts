@@ -1,6 +1,7 @@
 import axios from 'axios';
-import { FeaturedPageProps, FeaturedQueryParams } from './types';
 import { NewsOrEventsObject } from 'src/pages/updates';
+
+import { FeaturedPageProps, FeaturedQueryParams } from './types';
 
 export const fetchFeaturedContent = async (
   slug: string | string[],

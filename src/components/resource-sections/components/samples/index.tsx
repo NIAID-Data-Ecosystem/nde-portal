@@ -1,10 +1,11 @@
 import { Box, Flex } from '@chakra-ui/react';
+import { TableProps } from 'src/components/table';
 import { SampleAggregate, SampleCollection } from 'src/utils/api/types';
+
+import { SampleCollectionItemsTable } from './components/SampleCollectionsTable';
 import { SampleTable } from './components/SampleTable';
 import { Cell } from './components/SampleTable/Cells';
-import { SampleCollectionItemsTable } from './components/SampleCollectionsTable';
 import { SAMPLE_TABLE_CONFIG } from './config';
-import { TableProps } from 'src/components/table';
 
 interface SamplesDisplayProps {
   sample: SampleAggregate | SampleCollection | null | undefined;

@@ -1,16 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/router';
 import { useMemo, useRef } from 'react';
 import { fetchMetadata } from 'src/hooks/api/helpers';
-import { FilterConfig, FilterTermType, FilterResults } from '../types';
-import { SearchQueryParams } from 'src/views/search/types';
-import { useRouter } from 'next/router';
-import {
-  useAggregation,
-  AggregationQueryParams,
-} from 'src/views/search/hooks/useAggregation';
-import { ALL_FACET_PROPERTIES } from '../config';
-import { mergeFacets } from '../utils/merge-facets';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
+import {
+  AggregationQueryParams,
+  useAggregation,
+} from 'src/views/search/hooks/useAggregation';
+import { SearchQueryParams } from 'src/views/search/types';
+
+import { ALL_FACET_PROPERTIES } from '../config';
+import { FilterConfig, FilterResults, FilterTermType } from '../types';
+import { mergeFacets } from '../utils/merge-facets';
 
 /**
  * Defines the subset of a React Query result that this hook consumes from a
@@ -112,7 +113,7 @@ interface UseFilterQueriesOptions {
 
 export interface UseFilterQueriesResult {
   results: FilterResults | undefined;
-  isLoading: boolean;
+  loading: boolean;
   isUpdating: boolean;
   error: Error | null;
 }
@@ -272,9 +273,8 @@ export const useFilterQueries = ({
     dataCollectionAggregation,
   ]);
 
-  const isLoading = activeQueries.some(query => query.isPending);
-  const isUpdating =
-    !isLoading && activeQueries.some(query => query.isFetching);
+  const loading = activeQueries.some(query => query.isPending);
+  const isUpdating = !loading && activeQueries.some(query => query.isFetching);
   const error = activeQueries.find(query => query.error)?.error || null;
 
   // Keep a ref to the last fully-resolved results so consumers
@@ -399,14 +399,14 @@ export const useFilterQueries = ({
         id: config.id,
         terms: finalTerms,
         data: finalTerms,
-        isLoading: configIsLoading,
+        loading: configIsLoading,
         isUpdating: configIsUpdating,
         error: activeQuery.error,
       };
       return acc;
     }, {} as FilterResults);
 
-    if (!isLoading && !isUpdating) {
+    if (!loading && !isUpdating) {
       settledResultsRef.current = next;
     }
 
@@ -418,14 +418,14 @@ export const useFilterQueries = ({
     computationalToolAggregation,
     sharedDatasetAggregation,
     dataCollectionAggregation,
-    isLoading,
+    loading,
     isUpdating,
     metadataQuery.data,
   ]);
 
   return {
     results,
-    isLoading,
+    loading,
     isUpdating,
     error,
   };

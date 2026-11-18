@@ -1,6 +1,7 @@
-import { useMemo, useEffect } from 'react';
-import { useDateRangeContext } from './useDateRangeContext';
+import { useEffect, useMemo } from 'react';
+
 import { FilterResults, FilterTermType } from '../../../types';
+import { useDateRangeContext } from './useDateRangeContext';
 
 /**
  * Custom hook to process date filter data

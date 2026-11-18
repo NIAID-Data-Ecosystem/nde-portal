@@ -1,4 +1,4 @@
-import { Box, Divider, Flex, Heading } from '@chakra-ui/react';
+import { Box, Flex, Heading, Separator } from '@chakra-ui/react';
 
 interface SectionHeaderProps {
   children?: React.ReactNode;
@@ -25,7 +25,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
 
         {children}
       </Flex>
-      <Divider />
+      <Separator />
     </Box>
   );
 };

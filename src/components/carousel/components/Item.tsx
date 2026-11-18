@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
 import { Flex } from '@chakra-ui/react';
+import React, { useState } from 'react';
+
 import { ItemProps } from '../types';
 const FALLBACK_ITEM_WIDTH = 200; // Fallback width for items
 export const Item = ({

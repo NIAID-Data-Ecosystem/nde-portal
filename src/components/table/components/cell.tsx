@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   BoxProps,
@@ -8,17 +7,31 @@ import {
   Text,
   TextProps,
 } from '@chakra-ui/react';
+import React from 'react';
 import Tooltip from 'src/components/tooltip';
+
+import { TableSize, useTableSize } from '../hooks/useTableSize';
 import { TableSortToggle } from './sort-toggle';
+
+/*
+`Table.Root size` → the font size its cells and headers use. Matches the
+`textStyle` Chakra's table recipe gives the root, so a cell reads the same
+whether it inherits that from a <table> or sits in the virtualized body, which
+renders none.
+*/
+const CELL_FONT_SIZE = {
+  sm: 'sm',
+  md: 'sm',
+  lg: 'md',
+} as const satisfies Record<TableSize, 'sm' | 'md'>;
 
 // Label component - displays text in a specific style.
 export const Label = React.memo(({ children, ...props }: TextProps) => {
   return (
     <Text
-      fontSize='xs'
-      color='gray.800'
+      color='gray.600'
       textTransform='uppercase'
-      lineHeight='short'
+      lineHeight='moderate'
       textAlign='start'
       {...props}
     >
@@ -33,8 +46,7 @@ export const Content = React.memo(({ children, ...props }: BoxProps) => {
     <Box
       className='content'
       my={2}
-      fontSize='xs'
-      lineHeight='short'
+      lineHeight='moderate'
       whiteSpace='pre-wrap'
       wordBreak='break-word'
       fontWeight='normal'
@@ -51,36 +63,45 @@ interface CellProps extends FlexProps {
   label?: string;
   scope?: 'row' | 'col' | 'rowgroup' | 'colgroup';
   children?: React.ReactNode;
+  /**
+   * Overrides the size inherited from the parent Table. Outside a Table, and
+   * with no size given, the font size is inherited from the enclosing element.
+   */
+  size?: TableSize;
 }
 
 // Cell component - defines the structure and style of a table cell.
-export const Cell = React.memo(({ label, children, ...props }: CellProps) => {
-  return (
-    <Flex
-      flex={1}
-      px={4}
-      py={1}
-      minW='280px'
-      fontSize='xs'
-      lineHeight='short'
-      {...props}
-    >
-      {label && <Label>{label}</Label>}
-      {children && <Content>{children}</Content>}
-    </Flex>
-  );
-});
+export const Cell = React.memo(
+  ({ label, children, size, ...props }: CellProps) => {
+    const tableSize = useTableSize(size);
+    return (
+      <Flex
+        flex={1}
+        px={4}
+        py={1}
+        minW='280px'
+        fontSize={tableSize && CELL_FONT_SIZE[tableSize]}
+        lineHeight='moderate'
+        {...props}
+      >
+        {label && <Label>{label}</Label>}
+        {children && <Content>{children}</Content>}
+      </Flex>
+    );
+  },
+);
 
+// Inherits its font size from the enclosing cell.
 export const EmptyCell = React.memo(({ label }: { label?: string }) => {
   return (
-    <Text as='span' fontSize='xs' fontStyle='italic' color='gray.800'>
+    <Text as='span' fontStyle='italic' color='gray.600'>
       {label || 'No data'}
     </Text>
   );
 });
 
 interface ThProps extends CellProps {
-  colorScheme?: ButtonProps['colorScheme'];
+  colorPalette?: ButtonProps['colorPalette'];
   isSelected?: boolean;
   isSortable?: boolean;
   /** Optional descriptive text. */
@@ -95,59 +116,62 @@ interface ThProps extends CellProps {
 export const Th = React.memo(
   ({
     children,
-    colorScheme,
+    colorPalette,
     isSelected,
     label,
     isSortable,
     tooltip,
     tableSortToggleProps,
+    size,
     ...props
   }: ThProps) => {
-    const bg = isSelected ? 'page.alt' : 'transparent';
+    const tableSize = useTableSize(size);
+    const bg = isSelected ? 'bg.alt' : 'transparent';
     const py = isSortable ? 1 : 2;
     return (
       <Flex
-        as='th'
         role='columnheader'
         scope='col'
-        label={label}
         alignItems='center'
         bg={bg}
         borderBottom='1px solid'
-        borderBottomColor={`${colorScheme}.200`}
+        borderBottomColor={`${colorPalette}.200`}
         flex={1}
-        fontSize='xs'
-        fontWeight='bold'
+        fontSize={tableSize && CELL_FONT_SIZE[tableSize]}
         justifyContent='flex-start'
-        lineHeight='short'
+        lineHeight='moderate'
         minW='280px'
         overflow='hidden'
         px={4}
         py={py}
         whiteSpace='pre-wrap'
         {...props}
+        asChild
       >
-        {label && (
-          <Flex alignItems='center' gap={1}>
-            <Tooltip label={tooltip} hasArrow>
-              <Box as='span' display='inline-flex' color='gray.600'>
-                <Label>{label}</Label>
-              </Box>
-            </Tooltip>
-          </Flex>
-        )}
-        {isSortable && tableSortToggleProps && (
-          <Box
-            my={1}
-            fontSize='xs'
-            lineHeight='short'
-            whiteSpace='pre-wrap'
-            wordBreak='break-word'
-            fontWeight='normal'
-          >
-            <TableSortToggle {...tableSortToggleProps} />
-          </Box>
-        )}
+        <th>
+          {label && (
+            <Flex alignItems='center' gap={1}>
+              <Tooltip content={tooltip}>
+                <Box as='span' display='inline-flex'>
+                  <Label color='gray.600' fontWeight='bold'>
+                    {label}
+                  </Label>
+                </Box>
+              </Tooltip>
+            </Flex>
+          )}
+          {isSortable && tableSortToggleProps && (
+            <Box
+              my={1}
+              lineHeight='moderate'
+              whiteSpace='pre-wrap'
+              wordBreak='break-word'
+              fontWeight='normal'
+            >
+              <TableSortToggle {...tableSortToggleProps} />
+            </Box>
+          )}
+        </th>
       </Flex>
     );
   },

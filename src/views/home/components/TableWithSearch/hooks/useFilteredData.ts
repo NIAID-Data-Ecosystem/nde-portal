@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
-import { TableData } from '..';
 import { useDebounceValue } from 'usehooks-ts';
+
+import { TableData } from '..';
 
 export const SEARCH_FIELDS = [
   'name',
