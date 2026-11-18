@@ -10,13 +10,13 @@ interface HeaderProps {
   name?: FormattedResource['name'];
   alternateName?: FormattedResource['alternateName'];
   id?: FormattedResource['id'];
-  authors?: React.ReactNode;
 }
 
-const Header = ({ loading, name, alternateName, id, authors }: HeaderProps) => {
+const Header = ({ loading, name, alternateName, id }: HeaderProps) => {
+  const nameToDisplay = name || 'N/A';
   const { isFavorited, toggleBookmark, isDisabled } = useBookmarkDataset({
     id,
-    name: name || 'N/A',
+    name: nameToDisplay,
   });
 
   const showBookmarkButton = ENABLE_AUTH;
@@ -42,7 +42,7 @@ const Header = ({ loading, name, alternateName, id, authors }: HeaderProps) => {
             lineHeight='moderate'
             wordBreak='break-word'
           >
-            <DisplayHTMLString>{name}</DisplayHTMLString>
+            <DisplayHTMLString>{nameToDisplay}</DisplayHTMLString>
             {alternateName && (
               <Text
                 color='text.body'
