@@ -5,7 +5,7 @@ import { SiteConfig } from 'src/components/page-container/types';
 const CONFIG_FILE_PATH = 'configs/site.config.json';
 
 // Fetch NDE PORTAL repository information from GitHub
-const fetchRepositoryInfo = async () => {
+export const fetchRepositoryInfo = async () => {
   try {
     console.log('Generating footer content...');
 
@@ -19,10 +19,17 @@ const fetchRepositoryInfo = async () => {
     }
 
     const url = `https://api.github.com/repos/${owner}/${repo}/branches/${branch}`;
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    const apiKey = process.env.GH_API_KEY;
+    if (apiKey) {
+      const bearerPrefix = 'Bearer ';
+      headers.Authorization = `${bearerPrefix}${apiKey}`;
+    }
+
     const response = await axios.get(url, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
     });
 
     return response.data;
@@ -89,4 +96,6 @@ const main = async () => {
   }
 };
 
-main();
+if (require.main === module) {
+  main();
+}
