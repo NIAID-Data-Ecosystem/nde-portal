@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import React from 'react';
 import { system } from 'src/theme';
 
@@ -165,7 +165,7 @@ describe('Sections', () => {
   });
 
   describe('isBasedOn section', () => {
-    it('lists only non-Action entries in the based-on table', () => {
+    it('lists only non-Action entries in the based-on table', async () => {
       renderSections(
         {
           '@type': 'DataCollection',
@@ -176,6 +176,8 @@ describe('Sections', () => {
         },
         [makeSection({ title: 'Based On', hash: 'isBasedOn' })],
       );
+      // Let the table's page combobox start its state machine inside `act`.
+      await act(async () => {});
 
       const section = screen.getByTestId('section-isBasedOn');
       expect(within(section).getByText('Source dataset')).toBeInTheDocument();

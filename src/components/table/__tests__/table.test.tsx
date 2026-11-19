@@ -244,18 +244,25 @@ describe('Table Pagination', () => {
     loading: false,
   };
 
-  const renderComponent = (props = {}) => {
+  /*
+  The page combobox's zag machine starts in a microtask after mount and clears
+  its highlighted page on entry, which updates PageCombobox's state. Flushing
+  that inside `act` keeps it from landing after the test as an unwrapped update.
+  */
+  const renderComponent = async (props = {}) => {
     const combinedProps = { ...defaultProps, ...props };
-    return render(<TablePagination {...combinedProps} />);
+    const view = render(<TablePagination {...combinedProps} />);
+    await act(async () => {});
+    return view;
   };
 
-  test('renders without crashing', () => {
-    renderComponent();
+  test('renders without crashing', async () => {
+    await renderComponent();
     expect(screen.getByText(/rows per page:/i)).toBeInTheDocument();
   });
 
-  test('correctly changes page size', () => {
-    renderComponent({ setSize, setFrom });
+  test('correctly changes page size', async () => {
+    await renderComponent({ setSize, setFrom });
 
     fireEvent.change(screen.getByLabelText(/select number of rows per page/i), {
       target: { value: 15 },
@@ -294,9 +301,7 @@ describe('Table Pagination', () => {
 
   test('updates the page when a page is picked from the combobox', async () => {
     const onSetFrom = jest.fn();
-    renderComponent({ setFrom: onSetFrom });
-    // Let the combobox's state machine start before interacting.
-    await act(async () => {});
+    await renderComponent({ setFrom: onSetFrom });
 
     await user.click(screen.getByLabelText('Select page'));
     await user.click(await screen.findByRole('option', { name: /^Page 2/ }));
@@ -307,8 +312,7 @@ describe('Table Pagination', () => {
 
   test('updates the page when a page number is typed into the combobox', async () => {
     const onSetFrom = jest.fn();
-    renderComponent({ setFrom: onSetFrom });
-    await act(async () => {});
+    await renderComponent({ setFrom: onSetFrom });
 
     const input = screen.getByLabelText('Select page');
     await user.clear(input);
@@ -321,8 +325,7 @@ describe('Table Pagination', () => {
 
   test('reverts a page number past the last page instead of navigating', async () => {
     const onSetFrom = jest.fn();
-    renderComponent({ setFrom: onSetFrom });
-    await act(async () => {});
+    await renderComponent({ setFrom: onSetFrom });
 
     const input = screen.getByLabelText('Select page');
     await user.clear(input);
@@ -335,51 +338,51 @@ describe('Table Pagination', () => {
     expect(onSetFrom).not.toHaveBeenCalled();
   });
 
-  test('disables the page combobox when there is only one page', () => {
-    renderComponent({ total: 5, size: 10 });
+  test('disables the page combobox when there is only one page', async () => {
+    await renderComponent({ total: 5, size: 10 });
     expect(screen.getByLabelText('Select page')).toBeDisabled();
   });
 
-  test('enables the page combobox when there is more than one page', () => {
-    renderComponent();
+  test('enables the page combobox when there is more than one page', async () => {
+    await renderComponent();
     expect(screen.getByLabelText('Select page')).toBeEnabled();
   });
 
-  test('disables the rows per page select when all items fit at the smallest size', () => {
-    renderComponent({ total: 5, size: 10 });
+  test('disables the rows per page select when all items fit at the smallest size', async () => {
+    await renderComponent({ total: 5, size: 10 });
     expect(
       screen.getByLabelText(/select number of rows per page/i),
     ).toBeDisabled();
   });
 
-  test('keeps the rows per page select enabled when a smaller size would paginate', () => {
+  test('keeps the rows per page select enabled when a smaller size would paginate', async () => {
     // Fewer items than the current size, but the smallest option (5) still
     // splits them across pages, so it must stay reachable.
-    renderComponent({ total: 7, size: 10 });
+    await renderComponent({ total: 7, size: 10 });
     expect(
       screen.getByLabelText(/select number of rows per page/i),
     ).toBeEnabled();
   });
 
   test('displays correct total pages and current page information', async () => {
-    renderComponent({ total: 45, size: 10 }); // Should result in 5 total pages
+    await renderComponent({ total: 45, size: 10 }); // Should result in 5 total pages
     expect(screen.getByText('Page 1 of 5')).toBeInTheDocument();
   });
 
   test('first and previous page buttons are disabled on the first page', async () => {
-    renderComponent({ from: 0 }); // On the first page
+    await renderComponent({ from: 0 }); // On the first page
     expect(screen.getByLabelText(/first page/i)).toBeDisabled();
     expect(screen.getByLabelText(/previous page/i)).toBeDisabled();
   });
 
   test('next and last page buttons are disabled on the last page', async () => {
-    renderComponent({ from: 9, total: 100, size: 10 }); // On the last page (page 10 of 10)
+    await renderComponent({ from: 9, total: 100, size: 10 }); // On the last page (page 10 of 10)
     expect(screen.getByLabelText(/next page/i)).toBeDisabled();
     expect(screen.getByLabelText(/last page/i)).toBeDisabled();
   });
 
-  test('renders all pageSizeOptions correctly', () => {
-    renderComponent();
+  test('renders all pageSizeOptions correctly', async () => {
+    await renderComponent();
     const pageSizeSelect = screen.getByLabelText(
       /select number of rows per page/i,
     );

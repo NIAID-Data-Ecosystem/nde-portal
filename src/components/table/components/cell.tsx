@@ -113,8 +113,14 @@ interface ThProps extends CellProps {
   };
 }
 
+/*
+`as` picks the element rendered under `asChild`, which otherwise ignores it: a
+virtualized table has no <table>, so its headers must be divs (a <th> inside a
+<div role='row'> is invalid DOM).
+*/
 export const Th = React.memo(
   ({
+    as: Element = 'th',
     children,
     colorPalette,
     isSelected,
@@ -148,7 +154,7 @@ export const Th = React.memo(
         {...props}
         asChild
       >
-        <th>
+        <Element>
           {label && (
             <Flex alignItems='center' gap={1}>
               <Tooltip content={tooltip}>
@@ -171,7 +177,7 @@ export const Th = React.memo(
               <TableSortToggle {...tableSortToggleProps} />
             </Box>
           )}
-        </th>
+        </Element>
       </Flex>
     );
   },

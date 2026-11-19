@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { system } from 'src/theme';
@@ -112,8 +112,10 @@ describe('BasedOnActionProcess', () => {
 });
 
 describe('BasedOnTable', () => {
-  const renderTable = (items: any[]) =>
-    renderWithChakra(
+  // The table's page combobox starts its zag machine in a microtask after
+  // mount, which updates state; flush it inside `act`.
+  const renderTable = async (items: any[]) => {
+    const view = renderWithChakra(
       <BasedOnTable
         id='is-based-on'
         loading={false}
@@ -122,15 +124,18 @@ describe('BasedOnTable', () => {
         items={items}
       />,
     );
+    await act(async () => {});
+    return view;
+  };
 
-  it('renders nothing when there are no items and loading has finished', () => {
-    const { container } = renderTable([]);
+  it('renders nothing when there are no items and loading has finished', async () => {
+    const { container } = await renderTable([]);
 
     expect(container.querySelector('table')).not.toBeInTheDocument();
   });
 
-  it('renders a row per item with its name linked to its url', () => {
-    renderTable([
+  it('renders a row per item with its name linked to its url', async () => {
+    await renderTable([
       {
         '@type': 'Dataset',
         identifier: 'D1',
@@ -145,8 +150,8 @@ describe('BasedOnTable', () => {
     expect(screen.getByText('D1')).toBeInTheDocument();
   });
 
-  it('uses the name as the url when the name is itself a link', () => {
-    renderTable([
+  it('uses the name as the url when the name is itself a link', async () => {
+    await renderTable([
       { '@type': 'SoftwareSourceCode', name: 'https://example.com/repo' },
     ]);
 
@@ -155,8 +160,8 @@ describe('BasedOnTable', () => {
     ).toHaveAttribute('href', 'https://example.com/repo');
   });
 
-  it('falls back to codeRepository when the item has no name', () => {
-    renderTable([
+  it('falls back to codeRepository when the item has no name', async () => {
+    await renderTable([
       {
         '@type': 'SoftwareSourceCode',
         codeRepository: 'https://github.com/org/repo',
