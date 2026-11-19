@@ -75,6 +75,13 @@ interface DataTableDisplayProps {
    * showColumnBorder`. Off by default.
    */
   showColumnBorder?: boolean;
+  /**
+   * The palette for the table's accents (row and header hover, the pressed
+   * header, focus rings, the loading spinner), like Chakra's `Table.Root
+   * colorPalette`. Cell content with no palette of its own inherits it too.
+   * Defaults to `primary`.
+   */
+  colorPalette?: BoxProps['colorPalette'];
   /** Placeholder rows while loading with no data. Defaults to 5. */
   skeletonRows?: number;
 }
@@ -159,6 +166,7 @@ const DataTableView = <TRow,>({
   topScrollbar = false,
   interactive = false,
   showColumnBorder = false,
+  colorPalette,
   skeletonRows = 5,
 }: DataTableDisplayProps & { table: DataTableInstance<TRow> }) => {
   const recipe = useSlotRecipe({ key: 'dataTable' });
@@ -285,6 +293,7 @@ const DataTableView = <TRow,>({
       className='nde-data-table'
       css={styles.root}
       maxHeight={maxHeight}
+      colorPalette={colorPalette}
       data-pinned={pinFirstColumn ? '' : undefined}
       data-interactive={interactive ? '' : undefined}
       data-column-border={showColumnBorder ? '' : undefined}
@@ -345,7 +354,7 @@ const DataTableView = <TRow,>({
         <div className='nde-table-loading' role='status'>
           <Spinner
             size='xs'
-            color='primary.500'
+            color='colorPalette.solid'
             css={{ '--spinner-track-color': 'colors.gray.200' }}
           />
           Loading…
@@ -376,6 +385,7 @@ const UncontrolledDataTable = <TRow,>({
   topScrollbar,
   interactive,
   showColumnBorder,
+  colorPalette,
   skeletonRows,
   ...options
 }: DataTableDisplayProps & UseDataTableOptions<TRow>) => {
@@ -389,6 +399,7 @@ const UncontrolledDataTable = <TRow,>({
       topScrollbar={topScrollbar}
       interactive={interactive}
       showColumnBorder={showColumnBorder}
+      colorPalette={colorPalette}
       skeletonRows={skeletonRows}
     />
   );

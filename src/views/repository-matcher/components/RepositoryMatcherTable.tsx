@@ -76,7 +76,6 @@ export const RepositoryMatcherTable = React.memo(
         <DataTable
           table={table}
           label='Repositories and resource catalogs available for data deposit'
-          interactive
           skeletonRows={10}
           // The page bounds it instead: from `sm` up its results area is
           // capped and the table shrinks into what the toolbar leaves. Below

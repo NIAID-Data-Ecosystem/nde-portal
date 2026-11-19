@@ -192,6 +192,11 @@ The table owns how it behaves; the parent owns how much space it takes.
 - `topScrollbar`: an extra horizontal scrollbar above the table (off by
   default).
 - `interactive`: row hover highlight.
+- `colorPalette`: the palette for the table's accents, like Chakra's
+  `Table.Root colorPalette` (`primary` by default). It drives row and header
+  hover, the pressed header, the table's focus rings and the loading spinner.
+  Stripes, borders and header text stay neutral. Cell content with no palette of
+  its own inherits it; search-link tags keep `primary`, like the result cards'.
 - `showColumnBorder`: a line between columns, like Chakra's
   `Table.Root showColumnBorder` (off by default). Each line matches its row's
   divider colour.

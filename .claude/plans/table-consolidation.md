@@ -598,6 +598,32 @@ its test are deleted (Saved was their last user).
   the known Emotion `:first-child` errors, as on Search (the table renders
   client-side).
 
+**`showColumnBorder` and `colorPalette` props (2026-11-19, owner request: "like
+the native Chakra table").** Both are on `DataTable` and off/default unless
+passed; no current table passes them.
+
+- `showColumnBorder`: a 1px line after every column but the last, in its row
+  line's colour (`gray.100` body, `gray.200` header). Opt-in, so no change to
+  existing tables.
+- `colorPalette` (default `primary`, set on the recipe root; the prop is an
+  unlayered style prop on the same element and wins): drives row/header hover
+  (`.50`), the pressed header (`.100`), the table's focus rings (`focusRing`)
+  and the loading spinner (`solid`). Stripes, borders, the sorted header and
+  header text stay neutral; search-link tags keep `primary` (TagWithUrl parity);
+  the pager keeps its own `gray`. The `table.hover` token is gone.
+- **Intentional change:** the root now carries a palette, so focus rings that
+  inherited one now get `primary.500/50`: the viewport's own ring and the
+  description cells' "Show More" trigger. They were the text colour (`html`'s
+  `colorPalette: 'none'`) or an ancestor's palette (a purple on Search).
+- **Verified** in Chromium on the dev server (Repository Matcher, Home, Saved,
+  Search table view): all 7,829 elements' idle colours identical before/after;
+  row hover, header hover/press and sort/info focus rings identical; cell links,
+  Saved's tooltip buttons and the pager unaffected. Jest test reads the root's
+  palette rule (prop and default, both entry points).
+- **Pre-existing bug, not fixed:** the pressed-header colour never shows with a
+  mouse. Chakra emits the `@media (hover: hover)` hover rule after the `:active`
+  one, at equal specificity, so hover wins while pressed.
+
 ## 7. Architecture (as built)
 
 `src/components/table/data-table/` (see its `README.md`):

@@ -475,6 +475,57 @@ describe('DataTable', () => {
     expect(root(container)).toHaveAttribute('data-column-border');
   });
 
+  /*
+  jsdom resolves no CSS variables, so this reads which palette the root's own
+  rules point Chakra's palette variables at. The prop's rule is unlayered, so
+  it beats the recipe's default in `@layer recipes`. A browser check covers
+  the colours themselves.
+  */
+  it('takes a colorPalette for its accents, primary by default, from data or a table instance', async () => {
+    const rootPalette = (container: HTMLElement) => {
+      const root = container.querySelector('.nde-data-table')!;
+      const declared = [...document.styleSheets]
+        .flatMap(sheet => [...sheet.cssRules].map(rule => rule.cssText))
+        .flatMap(text => {
+          const match = text.match(
+            /\.(css-[\w-]+) \{[^}]*--chakra-colors-color-palette-50: var\(--chakra-colors-([\w-]+)-50\)/,
+          );
+          return match && root.classList.contains(match[1])
+            ? [{ palette: match[2], layered: text.startsWith('@layer') }]
+            : [];
+        });
+      return (declared.find(d => !d.layered) ?? declared[0])?.palette;
+    };
+    const Controlled = () => {
+      const table = useDataTable({ data: FILES, columns: COLUMNS, getRowId });
+      return <DataTable table={table} label='Files' colorPalette='purple' />;
+    };
+
+    const { container, rerender } = await setup(
+      <DataTable
+        label='Files'
+        data={FILES}
+        columns={COLUMNS}
+        getRowId={getRowId}
+      />,
+    );
+    expect(rootPalette(container)).toBe('primary');
+
+    rerender(
+      <DataTable
+        label='Files'
+        data={FILES}
+        columns={COLUMNS}
+        getRowId={getRowId}
+        colorPalette='green'
+      />,
+    );
+    expect(rootPalette(container)).toBe('green');
+
+    rerender(<Controlled />);
+    expect(rootPalette(container)).toBe('purple');
+  });
+
   it('keeps cell DOM nodes across unrelated parent re-renders', async () => {
     let bump: () => void = () => {};
     const Parent = () => {

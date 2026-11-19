@@ -21,6 +21,13 @@ and CSS variables it measures: --nde-table-header-h, --nde-table-pinned-w,
 The visuals follow the tables this replaces: uppercase grey bold headers, a
 `bg.alt` header for the sorted column, `table.stripe` zebra rows, 1rem
 horizontal cell padding.
+
+The root sets a `colorPalette` (`primary` unless the `colorPalette` prop says
+otherwise). Like Chakra's Table, the palette only drives the interactive
+accents: row and header hover, the pressed header, the table's focus rings and
+the loading spinner. The structure (stripes, borders, the sorted header, the
+header text) stays neutral. Content in the cells that has no palette of its own
+inherits it too.
 */
 
 /*
@@ -81,6 +88,9 @@ export const dataTableSlotRecipe = defineSlotRecipe({
   base: {
     root: {
       position: 'relative',
+      // The accents' palette (see the top of this file). The `colorPalette`
+      // prop, a style prop on the same element, overrides it.
+      colorPalette: 'primary',
       // A column, so whatever bounds the root (this default, a `maxHeight`
       // from the parent, or a flex parent shrinking it) bounds the viewport
       // below, which then scrolls with its header stuck at the top.
@@ -126,7 +136,7 @@ export const dataTableSlotRecipe = defineSlotRecipe({
       '& table td': { py: 2.5, bg: 'white' },
       '& table tbody tr:nth-of-type(even) > td': { bg: 'table.stripe' },
       '&[data-interactive] table tbody tr:hover > td': {
-        bg: 'table.hover',
+        bg: 'colorPalette.50/50',
       },
       '& table :is(th, td)[data-align="end"]': { textAlign: 'end' },
       '& table td[data-wrap="anywhere"]': { overflowWrap: 'anywhere' },
@@ -175,7 +185,6 @@ export const dataTableSlotRecipe = defineSlotRecipe({
       are drawn on the cell so they match that area.
       */
       '& .nde-sort-button': {
-        colorPalette: 'primary',
         display: 'inline-flex',
         alignItems: 'center',
         gap: 1.5,
@@ -204,7 +213,7 @@ export const dataTableSlotRecipe = defineSlotRecipe({
       },
       '@media (hover: hover)': {
         '& table th:has(.nde-sort-button:hover:not(:disabled))': {
-          bg: 'table.hover',
+          bg: 'colorPalette.50',
           color: 'gray.700',
         },
         // Hovering a described title highlights its icon at once, like
@@ -215,13 +224,13 @@ export const dataTableSlotRecipe = defineSlotRecipe({
         },
       },
       '& table th:has(.nde-sort-button:active:not(:disabled))': {
-        bg: 'primary.100',
+        bg: 'colorPalette.100',
       },
       // The info icon (InfoLabel's): above the sort hit area, so it never
       // sorts; a 26px target around the 14px icon; InfoLabel's blue on hover
-      // and while the tooltip is open (from either trigger).
+      // and while the tooltip is open (from either trigger). Its focus ring is
+      // the table's, like the sort button's beside it.
       '& .nde-header-info': {
-        colorPalette: 'primary',
         position: 'relative',
         zIndex: 1,
         flexShrink: 0,
