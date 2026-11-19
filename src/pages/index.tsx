@@ -27,10 +27,7 @@ import {
 } from 'src/components/page-container';
 import { useSourcesList } from 'src/hooks/api/useSourcesList';
 import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
-import {
-  formatConditionsOfAccess,
-  transformConditionsOfAccessLabel,
-} from 'src/utils/formatting/formatConditionsOfAccess';
+import { formatConditionsOfAccess } from 'src/utils/formatting/formatConditionsOfAccess';
 import {
   fetchAllFeaturedPages,
   transformFeaturedContentForCarousel,
@@ -78,7 +75,8 @@ const Home: NextPage<{
           _id: item._id || '',
           abstract: item.abstract || '',
           name: item.name,
-          conditionsOfAccess: formatConditionsOfAccess(item.conditionsOfAccess),
+          conditionsOfAccess:
+            formatConditionsOfAccess(item.conditionsOfAccess) || '',
           domain,
           type: item.type,
           url: item.searchURL,
