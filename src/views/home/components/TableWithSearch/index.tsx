@@ -100,6 +100,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
               handleChange={handleSearchChange}
               isResponsive={false}
               alignItems='flex-end'
+              colorPalette='primary'
               onClose={() => setSearchTerm('')}
             />
             {/* <!-- Filters --> */}

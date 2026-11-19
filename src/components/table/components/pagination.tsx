@@ -151,9 +151,8 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
   // src/theme/slot-recipes/table-shell.slot-recipe.ts.
   const recipe = useSlotRecipe({ key: 'tableShell' });
   const styles = recipe();
-  // Outside a Table with no `styleSize`, fall back to `md`, which keeps the
-  // selects at their original `sm`.
-  const selectSize = SELECT_SIZE[useTableSize(styleSize) ?? 'md'];
+
+  const selectSize = SELECT_SIZE[useTableSize(styleSize) ?? 'sm'];
   const numPages =
     totalPages !== undefined ? totalPages : Math.ceil(total / size);
   // When every item fits on one page even at the smallest option, no choice
@@ -174,24 +173,20 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
         bg='bg.alt'
         w='100%'
         justifyContent='space-between'
-        alignItems='center'
+        // On mobile the controls stack, each spanning the full width.
+        alignItems={['stretch', 'center']}
         flexDirection={['column', 'row']}
       >
         {/* Select options for displaying per page rows */}
         <Flex pb={[4, 0]} flex={[1, 'unset']} flexDirection={['column', 'row']}>
           <Text fontSize='sm'>Rows per page: </Text>
-          {/*
-          The width is explicit because the recipe makes the root `width: 100%`
-          while the field keeps `minWidth: 0`. Inside this shrink-to-fit flex
-          row that resolves to min-content, collapsing the select onto the 2rem
-          of padding reserved for its indicator and clipping the value away.
-          */}
+
           <NativeSelect.Root
             disabled={isPageSizeDisabled}
             flexShrink={0}
             mx={[0, 2]}
             size={selectSize}
-            width='5rem'
+            width={['100%', '5rem']}
           >
             <NativeSelect.Field
               value={size}
@@ -219,8 +214,16 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
         <Flex
           flex={[1, 'unset']}
           flexDirection={['column', 'row']}
-          alignItems='center'
+          alignItems={['stretch', 'center']}
         >
+          {/*
+          Stacked on mobile, with the arrows hidden, the combobox is a bare
+          number without this. On desktop it sits between the arrows, which
+          say what it is.
+          */}
+          <Text fontSize='sm' hideFrom='sm'>
+            Page:
+          </Text>
           <ArrowButton
             icon={<FaAnglesLeft />}
             ariaLabel='Go to first page.'
@@ -245,12 +248,13 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
             // Matches the white "rows per page" select beside it on `bg.alt`.
             inputProps={{ bg: 'white' }}
             mx={[0, 4]}
-            my={[2, 0]}
+            // Directly under its label on mobile, matching the select.
+            mb={[2, 0]}
             onPageChange={page => setFrom(page - 1)}
             page={from + 1}
             size={selectSize}
             totalPages={numPages}
-            width='5rem'
+            width={['100%', '5rem']}
           />
           <ArrowButton
             icon={<FaAngleRight />}

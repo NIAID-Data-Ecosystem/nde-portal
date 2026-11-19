@@ -1,155 +1,82 @@
-import { Flex, Stack, Text, VStack } from '@chakra-ui/react';
+import { BoxProps, Flex, Stack, Text, VStack } from '@chakra-ui/react';
 import { useCallback, useMemo, useState } from 'react';
 import { SearchInput } from 'src/components/search-input';
-import { Table } from 'src/components/table';
-import { useTableSearch } from 'src/components/table/data-table/hooks/useTableSearch';
+import {
+  DataTable,
+  SortState,
+  useTableSearch,
+} from 'src/components/table/data-table';
 
 import { formatTableData } from '../table-config';
-import { SavedColumn } from '../types';
+import { SavedColumnDef } from '../types';
 import { SavedEmptyState } from './saved-empty-state';
-
-const TABLE_CONTAINER_PROPS = {
-  overflowX: 'auto' as const,
-  maxHeight: '350px',
-  w: '100%',
-  bg: 'white',
-  overflowY: 'auto' as const,
-};
 
 interface SavedTableSectionProps<TItem> {
   /** Section heading, e.g. "Saved Resources". */
   title: string;
   /** Short blurb rendered under the heading. */
   description: string;
-  /** Rich column definitions driving cells, sort, and search. */
-  columns: SavedColumn<TItem, any>[];
+  /**
+   * The table's columns; search matches every one of them. Keep the array
+   * stable (a module constant): cells memoize on it.
+   */
+  columns: SavedColumnDef<TItem>[];
+  /** The order the rows start in. */
+  initialSort: SortState;
   /** Raw saved items to render. */
   data: TItem[];
-  /** Stable id for each item, used to dedupe rows. */
+  /**
+   * Stable id for each item, used to dedupe rows. Keep it stable too (a
+   * module-level function): the rows are rebuilt whenever it changes.
+   */
   getRowId: (item: TItem, index: number) => string;
   /** Noun shown next to the item count, e.g. { singular: 'item', plural: 'items' }. */
   unit: { singular: string; plural: string };
   searchPlaceholder: string;
   searchAriaLabel: string;
-  tableAriaLabel: string;
-  caption: string;
+  /** The table's accessible name (its visually hidden caption). */
+  label: string;
+  /** The table's maximum height, pager included (see DataTable). */
+  maxHeight?: BoxProps['maxHeight'];
   /** Shown when a search/filter returns no matching rows. */
   emptyState?: React.ReactNode;
   /** Shown when the user has not saved any items yet (no data at all). */
   noItemsState?: React.ReactNode;
-  tableContainerProps?: Omit<
-    React.ComponentProps<typeof Table>['tableContainerProps'],
-    'children'
-  >;
 }
+
+const getTableRowId = (row: { _id: string }) => row._id;
 
 /**
  * A self-contained saved-items table: header with item count, a search input,
- * and a sortable/searchable virtualized table. All search/sort/render wiring is
- * derived from the supplied `columns` config, so the same component drives both
- * saved resources and saved queries.
+ * and a sortable, searchable, paginated table. All search/sort/render wiring
+ * comes from the supplied `columns`, so the same component drives both saved
+ * resources and saved queries.
  */
 export function SavedTableSection<TItem>({
   title,
   description,
   columns,
+  initialSort,
   data,
   getRowId,
   unit,
   searchPlaceholder,
   searchAriaLabel,
-  tableAriaLabel,
-  tableContainerProps = TABLE_CONTAINER_PROPS,
-  caption,
+  label,
   emptyState,
   noItemsState,
 }: SavedTableSectionProps<TItem>) {
-  const tableColumns = useMemo(
-    () =>
-      columns.map(col => ({
-        title: col.label,
-        property: col.id,
-        isSortable: col.columns?.isSortable,
-        props: col.columns?.style,
-      })),
-    [columns],
-  );
-
   /****** Search *****/
   const [searchTerm, setSearchTerm] = useState('');
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value),
     [],
   );
-  // Search iterates ALL columns (incl. hidden), so toggling visibility
-  // doesn't drop matches that live in hidden columns.
   const rows = useMemo(
     () => formatTableData(data, columns, getRowId),
     [data, columns, getRowId],
   );
-  const searchedData = useTableSearch(rows, searchTerm);
-
-  /****** Sort *****/
-  const [sortProperty, setSortProperty] = useState<string>(columns[0].id);
-  const [sortAsc, setSortAsc] = useState(true);
-
-  const handleSort = useCallback((property: string, ascending: boolean) => {
-    setSortProperty(property);
-    setSortAsc(ascending);
-  }, []);
-
-  const sortedData = useMemo(() => {
-    if (!searchedData?.length) return searchedData;
-    const col = columns.find(c => c.id === sortProperty);
-    if (!col) return searchedData;
-    const accessor = col.getSortValue ?? ((v: any) => v);
-    return [...searchedData].sort((a, b) => {
-      let va: any = accessor((a as any)[col.id]);
-      let vb: any = accessor((b as any)[col.id]);
-      va = va ?? (typeof va === 'number' ? 0 : '');
-      vb = vb ?? (typeof vb === 'number' ? 0 : '');
-      const cmp =
-        typeof va === 'number' && typeof vb === 'number'
-          ? va - vb
-          : String(va).localeCompare(String(vb), undefined, {
-              sensitivity: 'base',
-              numeric: true,
-            });
-      return sortAsc ? cmp : -cmp;
-    });
-  }, [searchedData, sortProperty, sortAsc, columns]);
-
-  // Stable references so the table's row-level memoization isn't defeated by
-  // new function/object identities on every page render.
-  const getTableRowProps = useCallback(
-    (_: any, idx: number) => ({
-      bg: idx % 2 === 0 ? 'white' : '#fafbfd',
-      py: 1,
-      // _hover: { bg: 'secondary.50' },
-    }),
-    [],
-  );
-
-  const getCells = useCallback(
-    ({
-      column,
-      data: row,
-      loading: rowLoading,
-    }: {
-      column: { property: string };
-      data: any;
-      loading?: boolean;
-    }) => {
-      const col = columns.find(c => c.id === column.property);
-      if (!col) return null;
-      return col.component({
-        value: row?.[col.id],
-        loading: rowLoading,
-        data: row,
-      });
-    },
-    [columns],
-  );
+  const searchedRows = useTableSearch(rows, searchTerm);
 
   return (
     <Flex direction='column' gap={4} px={{ base: 4, lg: 40 }} py={8}>
@@ -188,38 +115,33 @@ export function SavedTableSection<TItem>({
           />
         </Flex>
       </Stack>
-      <Table
-        ariaLabel={tableAriaLabel}
-        caption={caption}
-        columns={tableColumns}
-        data={sortedData as any}
-        loading={false}
-        hasPagination={true}
-        stickyHeader
-        virtualized
-        tableContainerProps={tableContainerProps}
-        getTableRowProps={getTableRowProps}
-        controlledSortProperty={sortProperty}
-        controlledSortAsc={sortAsc}
-        onControlledSort={handleSort}
-        getCells={getCells}
-        emptyState={
-          // When there's no saved data at all, prompt the user to save
-          // something; otherwise the table is empty because a search/filter
-          // returned no matches.
-          data.length === 0
-            ? noItemsState ?? (
-                <SavedEmptyState title='Nothing saved yet'>
-                  Once you save items, they&apos;ll appear here.
-                </SavedEmptyState>
-              )
-            : emptyState ?? (
-                <SavedEmptyState title='No matches'>
-                  Try broadening your search.
-                </SavedEmptyState>
-              )
-        }
-      />
+      <Flex height='400px' width='100%'>
+        <DataTable
+          label={label}
+          data={searchedRows}
+          columns={columns}
+          getRowId={getTableRowId}
+          sort={{ initial: initialSort }}
+          pagination
+          status={{
+            empty:
+              // When there's no saved data at all, prompt the user to save
+              // something; otherwise the table is empty because a search
+              // returned no matches.
+              data.length === 0
+                ? noItemsState ?? (
+                    <SavedEmptyState title='Nothing saved yet'>
+                      Once you save items, they&apos;ll appear here.
+                    </SavedEmptyState>
+                  )
+                : emptyState ?? (
+                    <SavedEmptyState title='No matches'>
+                      Try broadening your search.
+                    </SavedEmptyState>
+                  ),
+          }}
+        />
+      </Flex>
     </Flex>
   );
 }

@@ -93,6 +93,11 @@ export const dataTableSlotRecipe = defineSlotRecipe({
       // its other children (e.g. a toolbar), so the page's layout decides
       // the height with no measuring.
       minHeight: 0,
+      // The full width of its container, whatever the parent's layout. A
+      // block parent already gives it that, but a flex row (or a column that
+      // centres its children) shrinks it to its content when few columns
+      // show, leaving the table narrower than the toolbar above it.
+      width: '100%',
       maxWidth: '100%',
       minWidth: 0,
       bg: 'white',

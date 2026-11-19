@@ -1,3 +1,4 @@
+import type { ColumnDef } from 'src/components/table/data-table';
 import { SavedDataset, SavedQuery } from 'src/hooks/useUserData/types';
 
 import { SavedResourceAdditionalMetadata } from './hooks/useBatchResourcesData';
@@ -12,41 +13,33 @@ export type SavedItem = SavedDataset | SavedQuery;
 export interface SavedResourceItem
   extends SavedDataset,
     SavedResourceAdditionalMetadata {}
+
 /**
- * A formatted table row. Each column's transformed value is keyed by column
- * id; `_id` dedupes rows and `_search` is the prebuilt search blob.
+ * A table row: the saved item as it came, plus its row id and search text.
+ * The item is kept whole (not spread into the row) so the bookmark buttons can
+ * hand it back to the favorites API without the table's own fields.
  */
-export interface SavedRow {
+export interface SavedRow<TItem> {
+  /** Dedupes and keys the rows. */
   _id: string;
+  /** Lowercased text of every column, matched by the section's search box. */
   _search: string;
-  [key: string]: unknown;
+  item: TItem;
 }
 
-export type SavedColumn<TItem = SavedItem, TValue = unknown> = {
-  id: string;
-  label: string;
-  fields: string[];
-  columns?: {
-    isSortable?: boolean;
-    isDefault?: boolean;
-    style?: React.CSSProperties;
-  };
-
-  transform: (item: TItem) => TValue;
-  component: (props: {
-    value: TValue;
-    loading?: boolean;
-    data: TItem;
-  }) => React.ReactNode;
+/**
+ * A saved table column: a DataTable column over `SavedRow`s, plus what the
+ * section's search box matches for it.
+ */
+export type SavedColumnDef<TItem, TValue = any> = ColumnDef<
+  SavedRow<TItem>,
+  TValue
+> & {
+  /** Required: the table's default, `row[id]`, would miss the wrapped item. */
+  accessor: (row: SavedRow<TItem>) => TValue;
   /**
-   * Reduce the column's display value to a sortable primitive. Omit for
-   * columns whose display value is already a string/number.
+   * The column's text for search: a string, strings, or `null` to leave the
+   * column out. Defaults to `toSearchValue` of the column's value.
    */
-  getSortValue?: (value: TValue) => string | number;
-  /**
-   * Reduce the column's display value to text the search bar can match
-   * against. Return a string, an array of strings, or null to opt the column
-   * out of search. Omit when the display value is already string/string[].
-   */
-  getSearchValue?: (value: TValue) => string | string[] | null;
+  search?: (value: TValue, item: TItem) => string | string[] | null;
 };

@@ -17,7 +17,8 @@ rules stay in `.claude/CLAUDE.md`.
   the move of shared cells into `data-table/`, and the path to deleting the
   legacy table are planned in `.claude/plans/search-tables-datatable.md`.
 - **2026-11-19:** Phase 3 started with **Home** (owner request); see §6 "Home".
-  Saved is still on the legacy virtualized `Table`.
+  **Saved** followed the same day (owner request; §6 "Saved"), uncommitted at
+  time of writing. Its decision-2 perf comparison hasn't been run.
 - **Update this file** when a decision changes, a phase finishes, or an
   intentional behaviour change is made.
 
@@ -537,6 +538,66 @@ unchanged. Props: `ariaLabel` + `caption` (always the same text) are now one
   (dev only). Replayed with the redirect suppressed, both pass. Not yet run
   against a static export.
 
+**Saved (Phase 3, 2026-11-19).** `views/saved` renders `DataTable` (client sort
+and client pagination) instead of the legacy virtualized `Table`. Columns are
+`SavedColumnDef`s in `table-config.tsx`: a `ColumnDef` over `SavedRow`
+(`{ _id, _search, item }`, the saved item kept whole) plus an optional `search`.
+`formatTableData` still dedupes rows and prebuilds `_search`. Unchanged: the
+search box (names only on resources, not IDs, as before), the item count, the
+two empty messages, the snapshot that keeps an un-bookmarked row until refresh,
+the error banner and toast. `repository-matcher/components/TableCells.tsx` and
+its test are deleted (Saved was their last user).
+
+- **Virtualization removed without the decision-2 perf comparison**: it needs a
+  static export build, which can take the owner's dev server down on this box.
+  Pages are 5 rows by default, at most 100.
+- **Height:** the legacy caps (queries 300px, resources 350px) were on the rows,
+  with the pager below, outside them. DataTable's `maxHeight` includes its
+  pager, so the page passes the cap plus the pager's height (82px from `sm`,
+  171px below it, where the pager stacks). Measured: same rows room at 1440, 768
+  and 390. A table with fewer rows now shrinks to them; the virtualized one kept
+  its full height, blank below the rows.
+- **Widths:** the legacy border-box min/max minus 32px, as on Home. The legacy
+  virtualized rows split spare width evenly; native layout follows the content
+  within the bounds. At 1440: resources Name 418 (was 318), Source and Updated
+  On 160 (were 220/200), Type 180 and Saved On 200 (unchanged; Type is fixed at
+  its old desktop width so "Computational Tool" stays on one line); queries
+  Total 124 (100), Name 346 (409), Applied Filters 401 (409), Saved On 247
+  (200). At 768 and 390 the queries columns are identical; the resources table
+  is 980px wide (was 1005).
+- **Kept:** the starting sorts: resources by Name; queries by Total ascending,
+  which still has no sort button (its header gets `aria-sort` and the sorted
+  grey, as the legacy header was highlighted). Names ignore leading quotes when
+  sorting. The 2-line clamps on names, Type and Source; Type semibold; Total
+  semibold and left-aligned. A non-sortable `end` header keeps its title at the
+  start, over right-aligned numbers, so Total overrides `align`; no table had a
+  `number` column before. Filter tags stay Chakra `Tag`s (subtle, secondary, one
+  line, tooltip when clipped): `TagsCell` would turn them grey, and the few tags
+  here don't need its perf trade-off. The pager's 5/10/50/100.
+- **Changed, as on the other migrated tables:** the shared header (full-cell
+  sort button, `aria-sort` and announcement); two-state sort with dates newest
+  first; empty values sort last; missing values show "—" / "No data" (were "not
+  available"; a missing Total showed "0"); rows ~4px taller; the floating
+  scrollbar. Dates are ISO via `formatDate` (decision 12; were
+  `toLocaleDateString`, so a timestamp now shows its own calendar date, not the
+  viewer's local one), sort by timestamp, and the search box matches the ISO
+  text. Total shows in full (was cut off at "12,085,5…").
+- **Accessible names:** `tableAriaLabel` and `caption` became one `label`:
+  "Saved queries" / "Saved resources" (were "Saved queries table" / "Saved
+  resources table", with the caption sentences as descriptions).
+- **Bookmarks:** re-saving posts the saved item itself; the legacy one added the
+  `url` its row transform had built. A toggle leaves other rows' cells mounted
+  (checked in the browser).
+- **Empty state:** `SavedEmptyState` lost its `py={10}`, as on Home.
+- **Verified:** `views/saved/components/saved-table-section.test.tsx` (sorts,
+  formatting, "No data", search across columns, paging, bookmarks, dedupe). In
+  the browser on the dev server with mock data, at 1440, 768 and 390: sort,
+  search, paging, rows per page, bookmark toggles; axe (WCAG A/AA) clean,
+  populated and with no matches, at 1440 and 390.
+  `e2e/accessibility/saved.spec.ts` not run (needs a static export). Dev logs
+  the known Emotion `:first-child` errors, as on Search (the table renders
+  client-side).
+
 ## 7. Architecture (as built)
 
 `src/components/table/data-table/` (see its `README.md`):
@@ -566,9 +627,9 @@ The legacy `src/components/table` (`Table`, `Cell`, `Th`, `Row`,
 | 0     | Performance criteria and baseline; native-layout spike                                                                                                                                                                                                                                                                                                                                                                                     | ✅ done                                                                                                                                                   |
 | 1     | Headless foundations (utils, `useColumnPreferences`, `useDataTable`, `useTableSearch`, controlled popover view)                                                                                                                                                                                                                                                                                                                            | ✅ done                                                                                                                                                   |
 | 2     | `DataTable` and the Repository Matcher pilot; layout spec; a11y error state                                                                                                                                                                                                                                                                                                                                                                | ✅ done, **awaiting owner evaluation**                                                                                                                    |
-| 3     | Saved and Home onto `DataTable`. Saved drops virtualization (decision 2) and switches dates to ISO (decision 12); Home keeps its local search and filters                                                                                                                                                                                                                                                                                  | Home done (2026-11-19, §6 "Home"); Saved not started                                                                                                      |
+| 3     | Saved and Home onto `DataTable`. Saved drops virtualization (decision 2) and switches dates to ISO (decision 12); Home keeps its local search and filters                                                                                                                                                                                                                                                                                  | Home and Saved done (2026-11-19, §6); Saved's perf comparison (decision 2) not run                                                                        |
 | 4     | Search: four tables on `DataTable` server mode. One column file per type with per-column `cell`; Samples reuses the shared row shaping. One `ColumnCustomizer` per tab; delete the 5 search popover files and the storage helpers; migrate legacy keys. Top scrollbar on (decision 7); Conditions of Access badge (decision 10). Add an axe scan of table view and fix the misleading comment at `e2e/accessibility/search.spec.ts` ~L5917 | ✅ done (2026-11-16), except the perf comparison (skipped by the owner for now); axe + layout specs added. See `.claude/plans/search-tables-datatable.md` |
-| 5     | Category 2: Files and Samples onto `DataTable`; cited-by and based-on take the shared header/sort; the funding row drawer stays bespoke. Delete the legacy `Table`, `useTableSort`, `getTruncatedText`, and Saved's use of `repository-matcher/components/TableCells.tsx`                                                                                                                                                                  | not started                                                                                                                                               |
+| 5     | Category 2: Files and Samples onto `DataTable`; cited-by and based-on take the shared header/sort; the funding row drawer stays bespoke. Delete the legacy `Table` (its `virtualized` path has no users since Saved), `useTableSort` and `getTruncatedText`                                                                                                                                                                                | not started                                                                                                                                               |
 
 Dependencies: 3 and 4 can run in parallel after sign-off; 5 comes last.
 

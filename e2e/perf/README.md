@@ -230,3 +230,54 @@ and load is 1266 / 1256 / 1217 ms. Results (local, gitignored) are in
   twice, and 6,064–6,564 ms three times) while the machine was swapping after a
   build. Interleaved, load is identical. 1× sort latency is bimodal for both r4
   (128–174 ms) and the fixed build (130–184 ms); its INP stays 16–32 ms.
+
+## Saved page (`saved.perf.mjs`)
+
+Decision 2 covers the Saved page too. These criteria were written on 2026-11-19,
+before any Saved measurement was taken (the native table itself had already been
+built).
+
+```sh
+npx serve /path/to/legacy-out --listen 3201 --no-clipboard &
+npx serve /path/to/native-out --listen 3202 --no-clipboard &
+node e2e/perf/saved.perf.mjs --builds legacy=http://localhost:3201,native=http://localhost:3202 --throttle 4 --label saved-4x
+```
+
+- **Builds:** the legacy virtualized `Table` and the native `DataTable`, both
+  production static exports (`yarn build:a11y`), measured **interleaved** (one
+  run of each per round, alternating which goes first), so both see the same
+  machine state.
+- **Data:** the saved items are the user's own, so the user-data endpoints are
+  mocked. 120 saved resources: ids, names, types, sources and dates of 120
+  records recorded once from the production API (`/query?q=influenza`, into
+  `.cache/`), replayed as both the saved list and the metadata `/query`. 120
+  saved queries, generated, with 0–3 filters each. That's a heavy user: enough
+  to fill the largest page (100 rows) and leave a second one. Most users have a
+  handful, and see one page of 5.
+- **Browser:** as above (Chromium, 1440×900, `--throttle` 1 and 4, medians).
+
+| Scenario                                 | What happens                                                          |
+| ---------------------------------------- | --------------------------------------------------------------------- |
+| `load`                                   | navigation → both tables' first pages painted, resource metadata in   |
+| `pageSize`                               | resources: rows per page 5 → 100                                      |
+| `scrollY`                                | resources: 30 × 400px wheel steps over the rows (inside the table)    |
+| `sort`                                   | resources: Name, descending                                           |
+| `searchFilter` / `searchClear` / `…Warm` | resources: type a term matching some names / clear it / type it again |
+| `bookmark`                               | resources: un-save the first row (its icon flips; the row stays)      |
+| `nextPage`                               | resources: page 2 at 100 rows per page                                |
+| `qPageSize` / `qScrollY` / `qSort`       | queries: the same three, on the table with the filter tags            |
+
+There's no horizontal scroll scenario: at 1440 neither table overflows.
+
+**Acceptance criteria**, all at both 1× and 4×, against the legacy build:
+
+1. **Initial render:** `load` latency and TBT no more than 10% above legacy.
+2. **Scrolling:** `jankFrames` and `p95Frame` no worse than legacy, on both
+   tables.
+3. **Interactions** (`pageSize`, `sort`, the three searches, `bookmark`,
+   `nextPage`, `qPageSize`, `qSort`): `latency` and `inp` no more than 10% above
+   legacy, and at 1× every `inp` ≤ 200 ms.
+
+As for the Repository Matcher: if a criterion fails, optimize and re-measure.
+Removing the 50 and 100 rows-per-page options would be a behaviour change, to
+take to the owner rather than make as a fix.
