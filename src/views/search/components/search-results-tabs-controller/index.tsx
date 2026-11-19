@@ -271,13 +271,20 @@ export const SearchResultsController = ({
   ]);
 
   // Determine the correct tab based on actual search results.
-  // A layout effect, so a switch lands before the browser paints: the render
-  // that brings the counts in also shows the current tab's results, and when
-  // those are empty they would otherwise flash up just before the switch.
-  // It waits for every count, as the ones on screen until then are the
-  // previous search's.
-  useIsomorphicLayoutEffect(() => {
-    if (tabCountsPending || !facetData?.facets || !router.isReady) return;
+  useEffect(() => {
+    if (!facetData?.facets || !router.isReady) return;
+
+    // Filter changes need no check of their own: the facets are fetched
+    // with the filters, so new filters bring new facets.
+    const lastResults = autoTabResultsRef.current;
+    if (
+      lastResults?.facets === facetData.facets &&
+      lastResults.bioSampleTotal === bioSampleTotal
+    ) {
+      return;
+    }
+    autoTabResultsRef.current = { facets: facetData.facets, bioSampleTotal };
+
     const facetCounts =
       facetData?.facets?.['@type']?.terms?.map(term => ({
         type: term.term,
