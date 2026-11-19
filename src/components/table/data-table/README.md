@@ -192,6 +192,9 @@ The table owns how it behaves; the parent owns how much space it takes.
 - `topScrollbar`: an extra horizontal scrollbar above the table (off by
   default).
 - `interactive`: row hover highlight.
+- `showColumnBorder`: a line between columns, like Chakra's
+  `Table.Root showColumnBorder` (off by default). Each line matches its row's
+  divider colour.
 - Pinning (`allowPinning` on the customizer) applies from `md` up.
 
 ## Pagination

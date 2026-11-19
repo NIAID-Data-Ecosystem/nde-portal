@@ -11,6 +11,7 @@ attributes the component sets on the root:
 
   data-pinned        first column pinned (only from `md` up)
   data-interactive   rows highlight on hover
+  data-column-border lines between columns
   data-overflow-x    content is wider than the viewport
   data-floating      the floating scrollbar is showing (native one off-screen)
 
@@ -131,6 +132,14 @@ export const dataTableSlotRecipe = defineSlotRecipe({
       '& table td[data-wrap="anywhere"]': { overflowWrap: 'anywhere' },
       '& table td[data-wrap="nowrap"]': { whiteSpace: 'nowrap' },
       '& table tbody tr:last-of-type > td': { borderBottomWidth: 0 },
+      // Lines between columns (`showColumnBorder`), like Chakra's Table. Each
+      // takes its cell's border colour, so it matches the row lines: `gray.100`
+      // in the body, `gray.200` in the header. None after the last column,
+      // where the root's border already is; the status cell spans every column,
+      // so it's the last and gets none either.
+      '&[data-column-border] table :is(th, td):not(:last-child)': {
+        borderInlineEndWidth: '1px',
+      },
 
       /* Header */
       '& table th': {
@@ -148,7 +157,8 @@ export const dataTableSlotRecipe = defineSlotRecipe({
         // Every header is centred vertically, so single-line titles line up
         // with one that wraps.
         verticalAlign: 'middle',
-        borderBottomColor: 'gray.200',
+        // All sides, not just the bottom: column borders take it too.
+        borderColor: 'gray.200',
       },
       '& table th[aria-sort]': { bg: 'bg.alt' },
       // Title and info icon at the start, sort arrows pushed to the end.
@@ -241,7 +251,9 @@ export const dataTableSlotRecipe = defineSlotRecipe({
         position: { md: 'sticky' },
         insetInlineStart: { md: 0 },
         borderInlineEndWidth: { md: '1px' },
-        borderInlineEndColor: 'gray.200',
+        // `md` only, like the width: below it, column borders keep this edge
+        // the same colour as the others.
+        borderInlineEndColor: { md: 'gray.200' },
       },
       '&[data-pinned] table td:first-child': { zIndex: { md: 1 } },
       '&[data-pinned] table th:first-child': { zIndex: { md: 3 } },

@@ -70,6 +70,11 @@ interface DataTableDisplayProps {
   topScrollbar?: boolean;
   /** Highlight rows on hover. */
   interactive?: boolean;
+  /**
+   * A vertical line between columns, like Chakra's `Table.Root
+   * showColumnBorder`. Off by default.
+   */
+  showColumnBorder?: boolean;
   /** Placeholder rows while loading with no data. Defaults to 5. */
   skeletonRows?: number;
 }
@@ -153,6 +158,7 @@ const DataTableView = <TRow,>({
   maxHeight,
   topScrollbar = false,
   interactive = false,
+  showColumnBorder = false,
   skeletonRows = 5,
 }: DataTableDisplayProps & { table: DataTableInstance<TRow> }) => {
   const recipe = useSlotRecipe({ key: 'dataTable' });
@@ -281,6 +287,7 @@ const DataTableView = <TRow,>({
       maxHeight={maxHeight}
       data-pinned={pinFirstColumn ? '' : undefined}
       data-interactive={interactive ? '' : undefined}
+      data-column-border={showColumnBorder ? '' : undefined}
     >
       {topScrollbar && (
         <Box
@@ -368,6 +375,7 @@ const UncontrolledDataTable = <TRow,>({
   maxHeight,
   topScrollbar,
   interactive,
+  showColumnBorder,
   skeletonRows,
   ...options
 }: DataTableDisplayProps & UseDataTableOptions<TRow>) => {
@@ -380,6 +388,7 @@ const UncontrolledDataTable = <TRow,>({
       maxHeight={maxHeight}
       topScrollbar={topScrollbar}
       interactive={interactive}
+      showColumnBorder={showColumnBorder}
       skeletonRows={skeletonRows}
     />
   );

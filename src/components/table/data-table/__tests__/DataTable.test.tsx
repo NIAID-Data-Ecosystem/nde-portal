@@ -428,6 +428,53 @@ describe('DataTable', () => {
     expect(screen.queryByText(/rows per page/i)).not.toBeInTheDocument();
   });
 
+  // The lines themselves are CSS keyed on this attribute, which jsdom can't
+  // lay out; a browser check covers how they look.
+  it('marks the table for column borders only with showColumnBorder, from data or a table instance', async () => {
+    const root = (container: HTMLElement) =>
+      container.querySelector('.nde-data-table')!;
+    const Controlled = ({
+      showColumnBorder,
+    }: {
+      showColumnBorder?: boolean;
+    }) => {
+      const table = useDataTable({ data: FILES, columns: COLUMNS, getRowId });
+      return (
+        <DataTable
+          table={table}
+          label='Files'
+          showColumnBorder={showColumnBorder}
+        />
+      );
+    };
+
+    const { container, rerender } = await setup(
+      <DataTable
+        label='Files'
+        data={FILES}
+        columns={COLUMNS}
+        getRowId={getRowId}
+      />,
+    );
+    expect(root(container)).not.toHaveAttribute('data-column-border');
+
+    rerender(
+      <DataTable
+        label='Files'
+        data={FILES}
+        columns={COLUMNS}
+        getRowId={getRowId}
+        showColumnBorder
+      />,
+    );
+    expect(root(container)).toHaveAttribute('data-column-border');
+
+    rerender(<Controlled />);
+    expect(root(container)).not.toHaveAttribute('data-column-border');
+    rerender(<Controlled showColumnBorder />);
+    expect(root(container)).toHaveAttribute('data-column-border');
+  });
+
   it('keeps cell DOM nodes across unrelated parent re-renders', async () => {
     let bump: () => void = () => {};
     const Parent = () => {
