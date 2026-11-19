@@ -106,7 +106,7 @@ describe('TableWithSearch Component', () => {
             name: 'Linked Source',
             abstract: 'Has a link',
             domain: ['IID', 'Generalist'],
-            conditionsOfAccess: 'Open Access',
+            conditionsOfAccess: 'Open',
             type: ['Resource Catalog', 'Dataset Repository'],
             url: '/search?q=linked',
           },
