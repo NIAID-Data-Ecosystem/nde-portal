@@ -70,8 +70,7 @@ const customJestConfig = {
   moduleNameMapper: {
     'react-markdown':
       '<rootDir>/node_modules/react-markdown/react-markdown.min.js',
-    'parse5/lib/parser/index.js':
-      '<rootDir>/node_modules/hast-util-raw/node_modules/parse5/lib/parser/index.js',
+    'parse5/lib/parser/index.js': require.resolve('parse5/lib/parser/index.js'),
   },
   transformIgnorePatterns: ['node_modules/(?!react-markdown/)'],
   globals: {

@@ -1,4 +1,4 @@
-import { MDXComponents } from 'mdx/types';
+import type { MDXComponents } from 'mdx/types';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
