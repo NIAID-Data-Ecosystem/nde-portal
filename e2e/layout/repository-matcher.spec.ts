@@ -59,7 +59,7 @@ const headerWidths = (page: Page) =>
 test.describe('DataTable layout: desktop', () => {
   test.use({ viewport: { width: 1440, height: 900 } });
 
-  test('the table fills the window below the toolbar, with its header stuck', async ({
+  test('the table fills the capped results area below the toolbar, with its header stuck', async ({
     page,
   }) => {
     await gotoPopulated(page);
@@ -69,16 +69,25 @@ test.describe('DataTable layout: desktop', () => {
     );
     const fit = await root(page).evaluate(el => {
       const view = el.querySelector('table')!.parentElement!;
+      const area = el.parentElement!;
       const search = document
         .querySelector('input[placeholder^="Search repositories"]')!
         .getBoundingClientRect();
       return {
-        bottomGap: window.innerHeight - el.getBoundingClientRect().bottom,
+        // From `sm` up the page caps the results area at 800px; the table
+        // takes whatever the toolbar leaves of it.
+        areaHeight: area.getBoundingClientRect().height,
+        bottomGap:
+          area.getBoundingClientRect().bottom -
+          el.getBoundingClientRect().bottom,
+        areaOnScreen: area.getBoundingClientRect().bottom <= window.innerHeight,
         searchOnScreen: search.top >= 0 && search.bottom <= window.innerHeight,
         innerScroll: view.scrollHeight > view.clientHeight + 1,
       };
     });
+    expect(Math.abs(fit.areaHeight - 800)).toBeLessThanOrEqual(1);
     expect(Math.abs(fit.bottomGap)).toBeLessThanOrEqual(1);
+    expect(fit.areaOnScreen).toBe(true);
     expect(fit.searchOnScreen).toBe(true);
     expect(fit.innerScroll).toBe(true);
 
@@ -186,32 +195,40 @@ test.describe('DataTable layout: desktop', () => {
     page,
   }) => {
     await gotoPopulated(page);
-    const dialog = await openCustomizer(page);
-    await dialog.getByText('Pin first column').click();
-    await page.keyboard.press('Escape');
-    await expect(root(page)).toHaveAttribute('data-pinned', '');
+    await expect(root(page)).toHaveAttribute('data-overflow-x', '');
 
     const positions = () =>
       root(page).evaluate(el => {
         const view = el.querySelector('table')!.parentElement!;
         const row = el.querySelector('tbody tr')!;
         const [first, second] = [...row.children] as HTMLElement[];
+        // The shadow is a strip on the cell's `::after`, not a `box-shadow` on
+        // the cell (which notched the column's edge at every row).
+        const strip = getComputedStyle(first, '::after');
         return {
           viewLeft: view.getBoundingClientRect().left,
           first: first.getBoundingClientRect().left,
           second: second.getBoundingClientRect().left,
-          shadow: getComputedStyle(first).boxShadow,
+          shadow: strip.content === 'none' ? 'none' : strip.boxShadow,
         };
       });
 
+    // No pinned column, no shadow.
+    expect((await positions()).shadow).toBe('none');
+
+    const dialog = await openCustomizer(page);
+    await dialog.getByText('Pin first column').click();
+    await page.keyboard.press('Escape');
+    await expect(root(page)).toHaveAttribute('data-pinned', '');
+
+    // The shadow shows whenever columns can scroll under the pinned one, not
+    // only once scrolled: tracking the scroll position restyled every cell.
     const before = await positions();
-    expect(before.shadow).toBe('none');
+    expect(before.shadow).not.toBe('none');
     await viewport(page).evaluate(el => (el.scrollLeft = 400));
-    // The shadow marks that content is scrolled under the pinned column. It
-    // follows the scroll event, so wait for it.
-    await expect.poll(async () => (await positions()).shadow).not.toBe('none');
     const after = await positions();
 
+    expect(after.shadow).toBe(before.shadow);
     expect(Math.abs(after.first - after.viewLeft)).toBeLessThanOrEqual(1);
     expect(before.second - after.second).toBeGreaterThan(300);
   });
@@ -485,7 +502,7 @@ for (const size of [
 test.describe('DataTable layout: small screens', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
-  test('the toolbar stays above the bounded table, so the page can still be swiped', async ({
+  test('the table grows with its rows, so a swipe scrolls the page, not the table', async ({
     page,
   }) => {
     await gotoPopulated(page);
@@ -495,18 +512,17 @@ test.describe('DataTable layout: small screens', () => {
     const state = await root(page).evaluate(el => {
       const view = el.querySelector('table')!.parentElement!;
       return {
-        bottomGap: window.innerHeight - el.getBoundingClientRect().bottom,
-        // Page content above the table, still on screen: somewhere to swipe
-        // the page rather than the table.
-        toolbarAbove: el.getBoundingClientRect().top,
-        innerScroll: view.scrollHeight > view.clientHeight + 1,
+        height: el.getBoundingClientRect().height,
+        innerScroll: view.scrollHeight - view.clientHeight,
       };
     });
-    expect(Math.abs(state.bottomGap)).toBeLessThanOrEqual(1);
-    expect(state.toolbarAbove).toBeGreaterThan(80);
-    expect(state.innerScroll).toBe(true);
-    // Still scrolls sideways.
+    // Natural height below `sm`: no vertical scroll area of its own.
+    expect(state.innerScroll).toBeLessThanOrEqual(1);
+    expect(state.height).toBeGreaterThan(844);
+    // Still scrolls sideways, with the scrollbar floating at the bottom of
+    // the window while the table's own is below the fold.
     await expect(root(page)).toHaveAttribute('data-overflow-x', '');
+    await expect(root(page)).toHaveAttribute('data-floating', '');
   });
 
   test('a saved pin is ignored, and its switch hidden', async ({ page }) => {

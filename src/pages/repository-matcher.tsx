@@ -147,13 +147,14 @@ const RepositoryMatcher: NextPage = () => {
           maxWidth='2000px'
         >
           {/*
-            The results area (search, filters, count, table) is at most one
-            screen tall. The toolbar keeps its natural height and the table
-            takes whatever is left, so with the area scrolled to the top the
-            table fills the rest of the window, wherever the toolbar wraps.
-            Fewer rows shrink it; the dictionary follows below.
+            From `sm` up, the results area (search, filters, count, table) is
+            at most 800px tall. The toolbar keeps its natural height and the
+            table takes whatever is left, wherever the toolbar wraps. Fewer
+            rows shrink it. Below `sm` neither is capped: the table
+            (`maxHeight='none'`) grows with its rows and the page scrolls.
+            The dictionary follows below.
           */}
-          <Flex direction='column' maxHeight={{ base: 'none', sm: '800px' }}>
+          <Flex direction='column' maxHeight={{ base: 'none', md: '1000px' }}>
             {/*
               Margins don't collapse in a flex column, so these are set to
               give the same gaps the block layout's collapsed margins did.
