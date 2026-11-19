@@ -16,6 +16,8 @@ rules stay in `.claude/CLAUDE.md`.
   and Data Collections are still on the legacy `ResultsTable`. Their migration,
   the move of shared cells into `data-table/`, and the path to deleting the
   legacy table are planned in `.claude/plans/search-tables-datatable.md`.
+- **2026-11-19:** Phase 3 started with **Home** (owner request); see §6 "Home".
+  Saved is still on the legacy virtualized `Table`.
 - **Update this file** when a decision changes, a phase finishes, or an
   intentional behaviour change is made.
 
@@ -474,8 +476,8 @@ like the cells to expand to take up the available space").**
 
 - Before: each column's min/max was on a `<div>` inside every cell. With width
   to spare, the browser widened the `<td>`s but the `<div>` stayed at its max,
-  so text wrapped early and left a blank strip. Measured in a mock at 1800px:
-  a Name cell was 516px wide, but its content stopped at 320px.
+  so text wrapped early and left a blank strip. Measured in a mock at 1800px: a
+  Name cell was 516px wide, but its content stopped at 320px.
 - Now: the bounds (`ResolvedColumn.cellStyle`, replacing `contentStyle` and
   `headerStyle`) are inline styles on the `<th>` and `<td>`s, and the wrapper
   `<div>` is gone (one element fewer per cell). Cells are `content-box`, so the
@@ -485,12 +487,55 @@ like the cells to expand to take up the available space").**
   difference is that content fills a cell that is wider than its max.
 - Headers now get the max too. With content filling the cell, the arrows reach
   the cell's end, as round 2 decided.
-- **Safari not verified:** WebKit doesn't launch on this WSL box (missing
-  system libraries). Check on a Mac. If WebKit ignored `max-width` on cells,
-  its columns would be uncapped.
-- Specs: `DataTable.test.tsx` (bounds on the cells, no wrapper); the
-  Repository Matcher layout spec reads the minimum from the `<th>`, and a new
-  test checks the description and header fill a column wider than its max.
+- **Safari not verified:** WebKit doesn't launch on this WSL box (missing system
+  libraries). Check on a Mac. If WebKit ignored `max-width` on cells, its
+  columns would be uncapped.
+- Specs: `DataTable.test.tsx` (bounds on the cells, no wrapper); the Repository
+  Matcher layout spec reads the minimum from the `<th>`, and a new test checks
+  the description and header fill a column wider than its max.
+
+**Home (Phase 3, 2026-11-19).** `views/home/components/TableWithSearch` renders
+`DataTable` (client sort, uncontrolled) instead of the legacy `Table` and
+`RepositoryCells`. Columns are a module constant, `TableWithSearch/columns.tsx`
+(`RESOURCES_TABLE_COLUMNS`), passed by the page. Its search, filter menus,
+filter tags, results count and the "No results found." early return are
+unchanged. Props: `ariaLabel` + `caption` (always the same text) are now one
+`label`; the unused `getCells` and `searchInputProps` are gone.
+
+- **Widths (D5):** min/max sizes, no round-5 overrides. The legacy cells were
+  border-box (`minW`/`maxW` included the 32px padding), so each size is the
+  legacy number minus 32: Name, Type, Research Domain and Access fixed at
+  248/148/193/118, Description `min: 248` (the `longText` max stays). Measured
+  against the legacy table at 390, 768, 1280 and 1440: every column width is
+  identical (280/280–427/180/225/150), as are the table width and sideways
+  scroll.
+- **Kept:** name ascending first, Name links to the source's `/search` URL (Next
+  link), Type and Research Domain alphabetical and comma-joined,
+  Type/Domain/Access semibold text (no Search badge: decision 10 is Search
+  only), the 500px cap with a sticky header (`maxHeight='500px'`), 10 loading
+  rows, no pagination.
+- **Changed, as on the other migrated tables:** the shared header (full-cell
+  sort button, arrows at the end, `aria-sort` + announcement); empty values sort
+  last; missing values show "—" / "No data" (was "-"); rows ~4px taller (shared
+  padding); skeleton rows under the real header; the floating scrollbar.
+- **Description:** still clamped at 3 lines, now with "Show More" (the shared
+  `ExpandableText`, column name for screen readers). Before, text past the clamp
+  couldn't be read.
+- **Header buttons are named after their columns** ("Type", "Research Domain",
+  "Access"), the same names as the filter menu triggers above the table. The
+  legacy carets were each "sort table column ascending/descending". The triggers
+  are menu buttons (`aria-haspopup`, `aria-expanded`), so they're still told
+  apart; tests pick them with `expanded: false`.
+- **Empty state:** the page's message lost its `py={10}`: the status cell
+  already pads it by that much (the legacy table put it in a bare `<td>`).
+- **Tests:** `TableWithSearch.test.tsx` covers the initial sort, cell
+  formatting, "No data" and the filtered-empty state.
+  `e2e/accessibility/home.spec.ts` detects loading with `expectSkeletonsLoading`
+  (the legacy `data-testid="loading"` marker is gone) and picks the filter
+  triggers by `expanded: false` / `aria-haspopup`. Against the dev server, its
+  error-state and keyboard tests lose a race with the mock-auth Welcome redirect
+  (dev only). Replayed with the redirect suppressed, both pass. Not yet run
+  against a static export.
 
 ## 7. Architecture (as built)
 
@@ -521,7 +566,7 @@ The legacy `src/components/table` (`Table`, `Cell`, `Th`, `Row`,
 | 0     | Performance criteria and baseline; native-layout spike                                                                                                                                                                                                                                                                                                                                                                                     | ✅ done                                                                                                                                                   |
 | 1     | Headless foundations (utils, `useColumnPreferences`, `useDataTable`, `useTableSearch`, controlled popover view)                                                                                                                                                                                                                                                                                                                            | ✅ done                                                                                                                                                   |
 | 2     | `DataTable` and the Repository Matcher pilot; layout spec; a11y error state                                                                                                                                                                                                                                                                                                                                                                | ✅ done, **awaiting owner evaluation**                                                                                                                    |
-| 3     | Saved and Home onto `DataTable`. Saved drops virtualization (decision 2) and switches dates to ISO (decision 12); Home keeps its local search and filters                                                                                                                                                                                                                                                                                  | not started                                                                                                                                               |
+| 3     | Saved and Home onto `DataTable`. Saved drops virtualization (decision 2) and switches dates to ISO (decision 12); Home keeps its local search and filters                                                                                                                                                                                                                                                                                  | Home done (2026-11-19, §6 "Home"); Saved not started                                                                                                      |
 | 4     | Search: four tables on `DataTable` server mode. One column file per type with per-column `cell`; Samples reuses the shared row shaping. One `ColumnCustomizer` per tab; delete the 5 search popover files and the storage helpers; migrate legacy keys. Top scrollbar on (decision 7); Conditions of Access badge (decision 10). Add an axe scan of table view and fix the misleading comment at `e2e/accessibility/search.spec.ts` ~L5917 | ✅ done (2026-11-16), except the perf comparison (skipped by the owner for now); axe + layout specs added. See `.claude/plans/search-tables-datatable.md` |
 | 5     | Category 2: Files and Samples onto `DataTable`; cited-by and based-on take the shared header/sort; the funding row drawer stays bespoke. Delete the legacy `Table`, `useTableSort`, `getTruncatedText`, and Saved's use of `repository-matcher/components/TableCells.tsx`                                                                                                                                                                  | not started                                                                                                                                               |
 
