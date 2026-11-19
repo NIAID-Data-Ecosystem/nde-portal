@@ -31,10 +31,6 @@ const esModules = [
   'trough',
   'unified',
   'unist-.+',
-  'unist-util-is',
-  'unist-util-position',
-  'unist-util-visit',
-  'unist-util-visit-parents',
   'vfile',
   'vfile-location',
   'web-namespaces',
@@ -42,11 +38,9 @@ const esModules = [
 ].join('|');
 
 const createJestConfig = nextJest({
-  // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
   dir: './',
 });
 
-// Add any custom config to be passed to Jest
 const customJestConfig = {
   coverageProvider: 'v8',
   setupFilesAfterEnv: ['./jest.setup.js'],
@@ -58,8 +52,6 @@ const customJestConfig = {
   workerIdleMemoryLimit: '512MB',
   moduleDirectories: ['node_modules', '<rootDir>/'],
   testPathIgnorePatterns: [
-    '<rootDir>/.next/',
-    '<rootDir>/node_modules/',
     '<rootDir>/e2e/',
     '<rootDir>/coverage',
     '<rootDir>/dist',
@@ -68,18 +60,16 @@ const customJestConfig = {
     '<rootDir>/src/__tests__/validate-links.test.js',
   ],
   moduleNameMapper: {
-    'react-markdown':
+    '^react-markdown$':
       '<rootDir>/node_modules/react-markdown/react-markdown.min.js',
-    'parse5/lib/parser/index.js': require.resolve('parse5/lib/parser/index.js'),
-  },
-  transformIgnorePatterns: ['node_modules/(?!react-markdown/)'],
-  globals: {
-    window: {},
+    '^parse5/lib/parser/index\\.js$': require.resolve(
+      'parse5/lib/parser/index.js',
+    ),
   },
 };
 
-// createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
-// module.exports = createJestConfig(customJestConfig)
+// Override transformIgnorePatterns after next/jest generates its config so its
+// default node_modules exclusion does not prevent transforming the ESM allowlist.
 module.exports = async () => ({
   ...(await createJestConfig(customJestConfig)()),
   transformIgnorePatterns: [`node_modules/(?!(${esModules})/)`],
