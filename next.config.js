@@ -70,7 +70,7 @@ const nextConfig = {
         rules: config.module.rules.concat([
           {
             test: /\.md$/,
-            loader: 'raw-loader',
+            type: 'asset/source',
           },
         ]),
       }),

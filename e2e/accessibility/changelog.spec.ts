@@ -8,7 +8,7 @@
  *
  * State coverage note — this route is intentionally a SINGLE state, not the
  * four-state matrix, because of how `src/pages/changelog.tsx` is built:
- *   - The page is fully static. It imports `CHANGELOG.md` (via raw-loader) and
+ *   - The page is fully static. It imports `CHANGELOG.md` (via asset/source) and
  *     `package.json` at build time and renders them through ReactMarkdown. There
  *     is no data hook, no API request, and therefore no loading/empty/error
  *     state to drive — nothing here is interceptable with `page.route`, and the
