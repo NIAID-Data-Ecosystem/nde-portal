@@ -17,13 +17,17 @@ import { FaDownload, FaCircleExclamation } from 'react-icons/fa6';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Params, fetchAllSearchResults } from 'src/utils/api';
 import { DownloadArgs, downloadAsCsv, downloadAsJson } from './helpers';
-import { XlsxColumnSpec, downloadAsXlsx } from './xlsx';
+import {
+  XlsxColumnSpec,
+  XlsxTooWideError,
+  downloadXlsxExport,
+  prepareXlsxExport,
+} from './xlsx';
 import { formatAPIResource } from 'src/utils/api/helpers';
 import { FormattedResource } from 'src/utils/api/types';
 import { SHOW_XLSX_CUSTOM_VIEW_DOWNLOAD } from 'src/utils/feature-flags';
 import { Disclaimer } from './components/Disclaimer';
 import { FaXmark } from 'react-icons/fa6';
-import { encodeString } from 'src/utils/querystring-helpers';
 import { sendGTMEvent } from '@next/third-parties/google';
 import { useRouter } from 'next/router';
 
@@ -50,6 +54,15 @@ interface DownloadMetadataProps extends FlexProps {
   customViewExport?: CustomViewExport;
 }
 
+interface DownloadOption {
+  name: string;
+  format: 'json' | 'csv' | 'xlsx';
+  fn: (
+    data: DownloadArgs['dataObject'],
+    exportFileName: DownloadArgs['downloadName'],
+  ) => any;
+}
+
 const trackDownloadEvent = (params: {
   label: string;
   event: string;
@@ -69,55 +82,66 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
   const router = useRouter();
 
   // Options for download format and corresponding formatting functions.
-  const [downloadFormat, setDownloadFormat] = useState<any | null>(null);
-
+  const [downloadFormat, setDownloadFormat] = useState<DownloadOption | null>(
+    null,
+  );
+  // Label for the file-building phase that follows the fetch.
+  const [buildStatus, setBuildStatus] = useState<string | null>(null);
+  // Error raised while building the file (fetch errors come from useQuery).
+  const [buildError, setBuildError] = useState<string | null>(null);
   // Read the table view at download time rather than when the option was
   // clicked, so the file reflects the columns shown when the data arrives.
   const customViewExportRef = useRef(customViewExport);
   customViewExportRef.current = customViewExport;
 
-  const options = [
+  const xlsxOption: DownloadOption = {
+    name: 'XLSX Format (Custom Result View)',
+    format: 'xlsx',
+    fn: async (data, exportFileName) => {
+      const view = customViewExportRef.current;
+      if (!view) return null;
+      const records = Array.isArray(data) ? data : [data];
+      const rows = records
+        .map(record => formatAPIResource(record))
+        .filter((resource): resource is FormattedResource => !!resource)
+        .map(view.toRow);
+      const prepared = prepareXlsxExport({
+        sheetName: view.sheetName,
+        columns: view.columns,
+        rows,
+      });
+      // Downloads a .zip of several files when the rows don't fit in one.
+      return downloadXlsxExport(prepared, exportFileName, {
+        onProgress: (fileNumber, fileCount) =>
+          setBuildStatus(
+            fileCount > 1
+              ? `Building file ${fileNumber} of ${fileCount}…`
+              : 'Building file…',
+          ),
+      });
+    },
+  };
+
+  const options: DownloadOption[] = [
     {
       name: 'JSON Format',
       format: 'json',
-      fn: (
-        data: DownloadArgs['dataObject'],
-        exportFileName: DownloadArgs['downloadName'],
-      ) => downloadAsJson(data, exportFileName),
+      fn: (data, exportFileName) => downloadAsJson(data, exportFileName),
     },
     {
       name: 'CSV Format',
       format: 'csv',
-      fn: (
-        data: DownloadArgs['dataObject'],
-        exportFileName: DownloadArgs['downloadName'],
-      ) => downloadAsCsv(data, exportFileName),
+      fn: (data, exportFileName) => downloadAsCsv(data, exportFileName),
     },
-    ...(SHOW_XLSX_CUSTOM_VIEW_DOWNLOAD && customViewExport
-      ? [
-          {
-            name: 'XLSX Format (Custom Result View)',
-            format: 'xlsx',
-            fn: (
-              data: DownloadArgs['dataObject'],
-              exportFileName: DownloadArgs['downloadName'],
-            ) => {
-              const view = customViewExportRef.current;
-              if (!view) return null;
-              const records = Array.isArray(data) ? data : [data];
-              const rows = records
-                .map(record => formatAPIResource(record))
-                .filter((resource): resource is FormattedResource => !!resource)
-                .map(view.toRow);
-              return downloadAsXlsx(
-                { sheetName: view.sheetName, columns: view.columns, rows },
-                exportFileName,
-              );
-            },
-          },
-        ]
-      : []),
+    ...(SHOW_XLSX_CUSTOM_VIEW_DOWNLOAD && customViewExport ? [xlsxOption] : []),
   ];
+
+  const startDownload = (option: DownloadOption) => {
+    setBuildError(null);
+    setBuildStatus(null);
+    setPercentComplete(0);
+    setDownloadFormat(option);
+  };
 
   // Detect if query has change by using the stringified params as a query key.
   const [queryKey, setQueryKey] = useState(['all-search-results', params]);
@@ -161,6 +185,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
   const clearDownloadState = useCallback(() => {
     setPercentComplete(0);
     setDownloadFormat(null);
+    setBuildStatus(null);
   }, []);
 
   useEffect(() => {
@@ -204,6 +229,15 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
         }
       } catch (error) {
         console.error('Error in data fetching for download:', error);
+        if (error instanceof XlsxTooWideError) {
+          setBuildError(
+            'These results have too many linked values to fit in a spreadsheet. Please download them in CSV or JSON format instead.',
+          );
+        } else if (downloadFormat.format === 'xlsx') {
+          setBuildError(
+            'Something went wrong while building the XLSX file. Please try again, or download fewer results.',
+          );
+        }
         // Don't leave the progress bar running if building the file failed.
         clearDownloadState();
       }
@@ -226,6 +260,18 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
         <Text fontSize='xs' fontStyle='italic' color='status.error'>
           <Icon as={FaCircleExclamation} color='status.error' mr={1}></Icon>
           Something went wrong with the metadata download. Please try again.
+        </Text>
+      </Collapse>
+      <Collapse in={!!buildError}>
+        <Text
+          fontSize='xs'
+          fontStyle='italic'
+          color='status.error'
+          maxW='300px'
+          role='alert'
+        >
+          <Icon as={FaCircleExclamation} color='status.error' mr={1}></Icon>
+          {buildError}
         </Text>
       </Collapse>
 
@@ -251,6 +297,16 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
                 {percentComplete}%
               </Text>
             </Flex>
+            {buildStatus && (
+              <Text
+                fontSize='xs'
+                color='page.placeholder'
+                fontWeight='medium'
+                role='status'
+              >
+                {buildStatus}
+              </Text>
+            )}
           </Flex>
         ) : (
           <></>
@@ -323,8 +379,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
                               value: `downloadFormat: ${option.format}`,
                             });
                             onClose();
-                            setPercentComplete(0);
-                            setDownloadFormat(option);
+                            startDownload(option);
                           }}
                         >
                           <Text fontWeight='semibold'>{option.name}</Text>
@@ -338,7 +393,16 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
           </Box>
         )}
       </Box>
-      <Disclaimer isFetching={isFetching} />
+      {downloadFormat?.format === 'xlsx' ? (
+        // Shown right away, and kept while the files are built after fetching.
+        <Disclaimer
+          isFetching
+          timeDelay={0}
+          message='Note: XLSX downloads may be split into multiple files.'
+        />
+      ) : (
+        <Disclaimer isFetching={isFetching} />
+      )}
     </Flex>
   );
 };

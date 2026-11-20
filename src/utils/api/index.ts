@@ -152,7 +152,9 @@ export const fetchAllSearchResults = async (
       if (!total) {
         total = data.total;
       }
-      allResults = [...allResults, ...data.hits];
+      // Append in place: re-spreading the accumulated array on every page
+      // makes the copying grow quadratically with the number of results.
+      allResults.push(...data.hits);
       // set timeout to avoid rate limiting
       await new Promise(resolve => setTimeout(resolve, 1000));
 
