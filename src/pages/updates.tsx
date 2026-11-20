@@ -427,10 +427,9 @@ const Updates: NextPage<UpdatesProps> = props => {
                       </Text>
                     </Card.Body>
                   </Card.Root>
-                  {/* Socials */}
-                  {NDESOCIALS && NDESOCIALS['socials'] && (
+                  {/* Note: NIAID deleted their twitter and facebook accounts early 2026.*/}
+                  {/* {NDESOCIALS && NDESOCIALS['socials'] && (
                     <Card.Root>
-                      {/* pb also makes up the v2 icon links' taller (lineHeight 2) line box. */}
                       <Card.Body>
                         <Text
                           lineHeight='moderate'
@@ -469,7 +468,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                         </Stack>
                       </Card.Body>
                     </Card.Root>
-                  )}
+                  )} */}
                 </SimpleGrid>
               </Section>
             </Flex>
