@@ -111,5 +111,3 @@ export const BrushHandle = ({
     </Group>
   );
 };
-
-export default BrushHandle;
