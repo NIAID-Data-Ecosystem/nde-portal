@@ -141,7 +141,9 @@ test('no broken links', async ({ page, baseURL }) => {
     path: report,
     contentType: 'application/json',
   });
-  if (broken.length) await notifySlack(page.request, broken, results.length);
+  if (broken.length) {
+    await notifySlack(page.request, broken, results.length, origin);
+  }
 
   expect(broken.map(line), `${broken.length} broken link(s)`).toEqual([]);
 });
@@ -228,20 +230,14 @@ async function notifySlack(
   request: APIRequestContext,
   broken: Result[],
   total: number,
+  site: string,
 ) {
   const webhook = process.env.SLACK_WEBHOOK_URL;
   if (!webhook) return;
-  const {
-    GITHUB_SERVER_URL,
-    GITHUB_REPOSITORY,
-    GITHUB_REF_NAME,
-    GITHUB_RUN_ID,
-  } = process.env;
+  const { GITHUB_SERVER_URL, GITHUB_REPOSITORY, GITHUB_RUN_ID } = process.env;
   const summary =
     `:boom: ${broken.length} broken link${broken.length === 1 ? '' : 's'} ` +
-    `out of ${total}` +
-    (GITHUB_REPOSITORY ? ` in ${GITHUB_REPOSITORY}` : '') +
-    (GITHUB_REF_NAME ? ` (${GITHUB_REF_NAME})` : '') +
+    `out of ${total} on ${site}` +
     (GITHUB_RUN_ID
       ? `. <${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}|View run>`
       : '');

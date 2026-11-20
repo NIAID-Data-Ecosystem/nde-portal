@@ -21,19 +21,9 @@ jobs:
         env:
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
           GITHUB_BRANCH: ${{  github.ref_name }}
-      - name: install additional packages for tests
-        run: yarn add puppeteer@19.11.1 axios
-      - name: start react app
-        run: npx --yes serve ./out &
-        env:
-          GH_API_KEY: ${{ secrets.GH_API_KEY }}
-      - name: Run tests and send Slack notification
+      - name: Run tests
         if: "!contains(github.event.head_commit.message, 'skip test')"
         run: npm test
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_BRANCH: ${{  github.ref_name }}
       - name: sync s3
         uses: jakejarvis/s3-sync-action@master
         with:

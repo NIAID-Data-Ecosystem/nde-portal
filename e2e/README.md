@@ -248,6 +248,11 @@ yarn test:links:report
 - Every result is in `test-results/broken-links-no-broken-links/links.json`.
 - Set `SLACK_WEBHOOK_URL` to post broken links to Slack.
 - GitHub commit links (the changelog has hundreds) aren't checked.
+- In CI, `.github/workflows/link_check.yml` checks production every Monday and
+  posts broken links to Slack. It doesn't run on deploys, so it never blocks
+  one. To run it by hand, open the Actions tab and choose **Run workflow**
+  (`base_url` picks another site, such as staging). The report is saved as the
+  run's `link-check-report` artifact.
 
 ## Troubleshooting
 
