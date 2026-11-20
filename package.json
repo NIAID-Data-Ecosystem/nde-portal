@@ -28,6 +28,8 @@
     "test:a11y:nobuild": "playwright test",
     "test:a11y:ui": "playwright test --ui",
     "test:a11y:report": "playwright show-report",
+    "test:links": "playwright test -c playwright.links.config.ts",
+    "test:links:report": "playwright show-report playwright-report/links",
     "typecheck": "yarn theme:typegen && tsc --noEmit",
     "with-prod-env": "env-cmd -f .env.production"
   },
