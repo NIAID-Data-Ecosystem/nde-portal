@@ -20,7 +20,7 @@ All notable changes to this project will be documented in this file. See [standa
 * shorten welcome page titles ([#586](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/586)) ([0ecb89f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/0ecb89f045ae6491c1bc9069aefefe2fca73afbb))
 * show Welcome page based on onboarding boolean ([#585](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/585)) ([7e73dfb](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/7e73dfba81f8ee940a87397ff0e20a17196f8fc7))
 
-### [7.4.1](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v7.4.0...v7.4.1) (2026-11-04)
+### 7.4.1 (2026-11-04)
 
 ### 🐛 Bugfixes
 
@@ -1785,7 +1785,7 @@ All notable changes to this project will be documented in this file. See [standa
 - typo
   ([d1d57d0](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/d1d57d012a7733683c74ec2a48adcbf15824c2de))
 
-### [1.1.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v0.0.3...v1.1.0) (2023-10-04)
+### 1.1.0 (2023-10-04)
 
 ### 🚀 Features
 
