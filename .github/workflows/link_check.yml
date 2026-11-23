@@ -1,0 +1,78 @@
+name: Broken link check
+
+# Weekly broken-link check against the live production site. Broken links are
+# posted to Slack. It runs apart from the deploys, so a dead third-party link
+# never blocks one. See e2e/README.md#link-check.
+
+on:
+  schedule:
+    # Mondays at 1:00 PM Eastern, adjusting for daylight saving time.
+    - cron: '0 13 * * 1'
+      timezone: 'America/Toronto'
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: Site to check
+        default: https://data.niaid.nih.gov
+
+concurrency:
+  group: link-check
+  cancel-in-progress: false
+
+jobs:
+  link_check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CI: 'true'
+      PLAYWRIGHT_BASE_URL:
+        ${{ inputs.base_url || 'https://data.niaid.nih.gov' }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      # Same browser caching as the a11y workflow.
+      - name: Get Playwright version
+        id: playwright-version
+        run:
+          echo "version=$(node -e
+          "console.log(require('@playwright/test/package.json').version)")" >>
+          "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key:
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
+
+      - name: Install Playwright browser + deps (cache miss)
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Install Playwright OS deps (cache hit)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+
+      - name: Check links
+        run: yarn test:links
+
+      - name: Upload link report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: link-check-report
+          path: |
+            playwright-report/links/
+            test-results/**/links.json
+          retention-days: 30
