@@ -22,6 +22,11 @@ export default defineConfig({
   // One test crawls every page and paces its own requests per host.
   workers: 1,
   timeout: 30 * 60_000,
+  // That test runs past the 5-minute slow-file threshold. Playwright then
+  // suggests running the file in parallel, which doesn't apply here: the
+  // links are deduplicated across pages and already checked several hosts at
+  // a time.
+  reportSlowTests: null,
   reporter: [
     ['list'],
     ['html', { open: 'never', outputFolder: 'playwright-report/links' }],
