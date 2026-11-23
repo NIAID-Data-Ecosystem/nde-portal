@@ -3,7 +3,6 @@ import {
   Card,
   Flex,
   Heading,
-  Icon,
   SimpleGrid,
   SkeletonText,
   Stack,
@@ -13,11 +12,9 @@ import {
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import NDESOCIALS from 'configs/socials.json';
 import type { NextPage } from 'next';
 import { MDXRemoteSerializeResult } from 'next-mdx-remote';
 import React, { useEffect, useState } from 'react';
-import { FaLinkedinIn, FaSquareFacebook, FaTwitter } from 'react-icons/fa6';
 import Empty from 'src/components/empty';
 import { Error } from 'src/components/error';
 import { Link } from 'src/components/link';
@@ -426,10 +423,9 @@ const Updates: NextPage<UpdatesProps> = props => {
                       </Text>
                     </Card.Body>
                   </Card.Root>
-                  {/* Socials */}
-                  {NDESOCIALS && NDESOCIALS['socials'] && (
+                  {/* Note: NIAID deleted their twitter and facebook accounts early 2026.*/}
+                  {/* {NDESOCIALS && NDESOCIALS['socials'] && (
                     <Card.Root>
-                      {/* pb also makes up the v2 icon links' taller (lineHeight 2) line box. */}
                       <Card.Body>
                         <Text
                           lineHeight='moderate'
@@ -468,7 +464,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                         </Stack>
                       </Card.Body>
                     </Card.Root>
-                  )}
+                  )} */}
                 </SimpleGrid>
               </Section>
             </Flex>

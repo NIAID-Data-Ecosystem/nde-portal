@@ -20,18 +20,9 @@ jobs:
         env:
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
           GITHUB_BRANCH: ${{  github.ref_name }}
-      - name: install additional packages for tests
-        run: yarn add puppeteer@23.5.3 axios
-      - name: start react app
-        run: npx --yes serve ./out &
-        env:
-          GH_API_KEY: ${{ secrets.GH_API_KEY }}
       - name: Run tests
         if: "!contains(github.event.head_commit.message, 'skip test')"
         run: npm test
-        env:
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_BRANCH: ${{  github.ref_name }}
       - name: sync s3
         uses: jakejarvis/s3-sync-action@master
         with:
