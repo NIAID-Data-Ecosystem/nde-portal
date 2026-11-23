@@ -5,17 +5,22 @@ import { MAX_CELL_CHARACTERS } from './helpers';
  Builds .xlsx files from a table-shaped description of the data, rather
  than from the raw API records like the JSON and CSV downloads do.
 
- A cell in Excel / OpenXML can only hold one clickable hyperlink, so a column
- whose cells contain several links is expanded into several numbered columns
- (e.g. "Topic Category 1", "Topic Category 2"), one link per cell. Columns
- that only contain plain text keep a single cell per row, joining multiple
- values with "; ".
+ Every column of the portal table becomes exactly one xlsx column.
+
+ A cell in Excel / OpenXML can only hold one clickable hyperlink, so values are
+ never combined in a cell: a record whose cells contain several values (links,
+ plain text or a mix of both) is written over several rows, one value per row.
+ In those "stacked" columns, rows past the cell's last value are left blank.
+ Every other column holds at most one value per record, and repeats it on each
+ of the record's rows, so sorting or filtering the sheet keeps each value next
+ to its record.
 
  Columns with no data in any row are left out of the file.
 
  As the files have to open in both Excel and Google Sheets, each file is kept
  within a size budget (XLSX_LIMITS). An export over budget is split
- into several files that are bundled into a single .zip download.
+ into several files that are bundled into a single .zip download. A record is
+ never split across files.
 */
 
 /** A single value shown in a cell, optionally linked to a url. */
@@ -41,26 +46,14 @@ export interface XlsxSheetSpec<TRow = Record<string, unknown>> {
  * - cellsPerFile: Google Sheets refuses spreadsheets over 10M cells.
  * - rowsPerFile: Excel's hard limit is 1,048,576 rows per sheet.
  * - linksPerFile: Excel keeps at most ~65,530 hyperlinks per worksheet.
- * - maxColumns: Excel's hard limit is 16,384 columns.
  */
 export const XLSX_LIMITS = {
   cellsPerFile: 2_000_000,
   rowsPerFile: 1_000_000,
   linksPerFile: 60_000,
-  maxColumns: 16_000,
 };
 
 export type XlsxLimits = typeof XLSX_LIMITS;
-
-// Thrown when link expansion makes the sheet wider than spreadsheets allow.
-export class XlsxTooWideError extends Error {
-  constructor(public columnCount: number) {
-    super(
-      `The export would need ${columnCount.toLocaleString()} columns, more than a spreadsheet can hold.`,
-    );
-    this.name = 'XlsxTooWideError';
-  }
-}
 
 const XLSX_MIME_TYPE =
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
@@ -94,39 +87,21 @@ const isValidUrl = (url?: string | null): url is string =>
 const cleanEntries = (entries: XlsxCellEntry[]) =>
   entries.filter(entry => entry && (entry.text || isValidUrl(entry.url)));
 
-/**
- * The xlsx-level column layout for one portal column: either a single column,
- * or several numbered columns holding one linked entry each.
- */
-interface ExpandedColumn {
-  headers: string[];
-  // Whether each entry gets its own column (true when the column has links
-  // and at least one row holds more than one entry).
-  isExpanded: boolean;
+/** The xlsx-level layout of one portal column. */
+interface LayoutColumn {
+  header: string;
+  // Whether each entry gets its own row (true when at least one cell of the
+  // column holds more than one entry).
+  isStacked: boolean;
 }
 
-const expandColumn = (
+const toLayoutColumn = (
   header: string,
   cellEntries: XlsxCellEntry[][],
-): ExpandedColumn => {
-  let maxEntries = 0;
-  let hasLinks = false;
-  cellEntries.forEach(entries => {
-    maxEntries = Math.max(maxEntries, entries.length);
-    if (!hasLinks) hasLinks = entries.some(entry => isValidUrl(entry.url));
-  });
-
-  if (hasLinks && maxEntries > 1) {
-    return {
-      headers: Array.from(
-        { length: maxEntries },
-        (_, idx) => `${header} ${idx + 1}`,
-      ),
-      isExpanded: true,
-    };
-  }
-  return { headers: [header], isExpanded: false };
-};
+): LayoutColumn => ({
+  header,
+  isStacked: cellEntries.some(entries => entries.length > 1),
+});
 
 const toCell = (entry?: XlsxCellEntry) => {
   if (!entry) return null;
@@ -140,24 +115,25 @@ const toCell = (entry?: XlsxCellEntry) => {
   };
 };
 
-// Several entries in a single cell: the text is joined, and the cell links to
-// the only url when there is exactly one.
-const toJoinedCell = (entries: XlsxCellEntry[]) => {
-  if (entries.length === 0) return null;
-  if (entries.length === 1) return toCell(entries[0]);
-  return truncate(entries.map(entry => entry.text || entry.url).join('; '));
-};
+// Whether an unstacked cell (at most one entry) is written as a hyperlink.
+const isLinkedSingleCell = (entries: XlsxCellEntry[]) =>
+  entries.length === 1 && isValidUrl(entries[0].url);
 
 /** The column layout and cell entries of an export, computed once. */
 export interface XlsxLayout {
   sheetName: string;
-  columns: ExpandedColumn[];
-  // [column][row] => entries, for the kept columns only.
+  columns: LayoutColumn[];
+  // [column][record] => entries, for the kept columns only.
   entriesByColumn: XlsxCellEntry[][][];
-  // Number of xlsx columns once link columns are expanded.
+  // Number of xlsx columns.
   width: number;
+  // Number of records (portal table rows).
   rowCount: number;
-  // Number of hyperlink cells each row produces.
+  // Number of spreadsheet rows each record takes.
+  recordHeights: number[];
+  // Total number of data rows in the sheet, header excluded.
+  sheetRowCount: number;
+  // Number of hyperlink cells each record produces.
   linkCounts: number[];
 }
 
@@ -166,7 +142,7 @@ export const computeXlsxLayout = <TRow>({
   columns,
   rows,
 }: XlsxSheetSpec<TRow>): XlsxLayout => {
-  // Extract every cell's entries once: [column][row] => entries.
+  // Extract every cell's entries once: [column][record] => entries.
   const allEntriesByColumn = columns.map(column =>
     rows.map(row => cleanEntries(column.getEntries(row) || [])),
   );
@@ -183,30 +159,46 @@ export const computeXlsxLayout = <TRow>({
   const entriesByColumn = keptIdx.map(colIdx => allEntriesByColumn[colIdx]);
 
   const layoutColumns = keptIdx.map((colIdx, keptColIdx) =>
-    expandColumn(columns[colIdx].header, entriesByColumn[keptColIdx]),
+    toLayoutColumn(columns[colIdx].header, entriesByColumn[keptColIdx]),
   );
 
-  // A column only stays unexpanded when its links never share a cell, so
-  // every entry with a valid url becomes exactly one hyperlink cell.
-  const linkCounts = rows.map((_, rowIdx) =>
-    entriesByColumn.reduce(
-      (count, column) =>
-        count + column[rowIdx].filter(entry => isValidUrl(entry.url)).length,
-      0,
+  const recordHeights = rows.map((_, rowIdx) =>
+    layoutColumns.reduce(
+      (height, { isStacked }, colIdx) =>
+        isStacked
+          ? Math.max(height, entriesByColumn[colIdx][rowIdx].length)
+          : height,
+      1,
     ),
+  );
+
+  // Stacked columns write each linked entry once; other columns repeat their
+  // (single) link on each of the record's rows.
+  const linkCounts = rows.map((_, rowIdx) =>
+    layoutColumns.reduce((count, { isStacked }, colIdx) => {
+      const entries = entriesByColumn[colIdx][rowIdx];
+      if (isStacked) {
+        return count + entries.filter(entry => isValidUrl(entry.url)).length;
+      }
+      return isLinkedSingleCell(entries)
+        ? count + recordHeights[rowIdx]
+        : count;
+    }, 0),
   );
 
   return {
     sheetName,
     columns: layoutColumns,
     entriesByColumn,
-    width: layoutColumns.reduce((sum, { headers }) => sum + headers.length, 0),
+    width: layoutColumns.length,
     rowCount: rows.length,
+    recordHeights,
+    sheetRowCount: recordHeights.reduce((sum, height) => sum + height, 0),
     linkCounts,
   };
 };
 
-/** A range of data rows, [start, end), written to one xlsx file. */
+/** A range of records, [start, end), written to one xlsx file. */
 export interface XlsxRowRange {
   start: number;
   end: number;
@@ -226,9 +218,9 @@ export const getMaxRowsPerFile = (
   );
 
 /**
- * Split the rows into consecutive ranges, each within the per-file budget for
- * cells, rows and hyperlinks. A row is never split, so a single row with more
- * links than the budget gets a file of its own.
+ * Split the records into consecutive ranges, each within the per-file budget
+ * for cells, rows and hyperlinks. A record is never split, so a single record
+ * over the budget gets a file of its own.
  */
 export const partitionRows = (
   layout: XlsxLayout,
@@ -239,17 +231,21 @@ export const partitionRows = (
   const maxRows = getMaxRowsPerFile(layout.width, limits);
   const ranges: XlsxRowRange[] = [];
   let start = 0;
+  let sheetRows = 0;
   let links = 0;
 
   for (let rowIdx = 0; rowIdx < layout.rowCount; rowIdx++) {
+    const height = layout.recordHeights[rowIdx];
     const rowLinks = layout.linkCounts[rowIdx];
     const isFull =
-      rowIdx - start >= maxRows || links + rowLinks > limits.linksPerFile;
+      sheetRows + height > maxRows || links + rowLinks > limits.linksPerFile;
     if (isFull && rowIdx > start) {
       ranges.push({ start, end: rowIdx });
       start = rowIdx;
+      sheetRows = 0;
       links = 0;
     }
+    sheetRows += height;
     links += rowLinks;
   }
   ranges.push({ start, end: layout.rowCount });
@@ -257,40 +253,45 @@ export const partitionRows = (
 };
 
 /**
- * Build the xlsx bytes for a range of rows of a layout. hucre is loaded on
+ * Build the xlsx bytes for a range of records of a layout. hucre is loaded on
  * demand so it is only downloaded when a user requests an xlsx file.
  */
 export const buildXlsxPart = async (
   layout: XlsxLayout,
   { start, end }: XlsxRowRange = { start: 0, end: layout.rowCount },
 ): Promise<Uint8Array> => {
-  const { columns, entriesByColumn } = layout;
+  const { columns, entriesByColumn, recordHeights } = layout;
 
-  const headerRow = columns.flatMap(({ headers }) =>
-    headers.map(header => ({ value: header, style: HEADER_STYLE })),
-  );
+  const headerRow = columns.map(({ header }) => ({
+    value: header,
+    style: HEADER_STYLE,
+  }));
 
   const dataRows = [];
   for (let rowIdx = start; rowIdx < end; rowIdx++) {
-    dataRows.push(
-      columns.flatMap(({ headers, isExpanded }, colIdx) => {
-        const entries = entriesByColumn[colIdx][rowIdx];
-        return isExpanded
-          ? headers.map((__, entryIdx) => toCell(entries[entryIdx]))
-          : [toJoinedCell(entries)];
-      }),
+    // Unstacked cells hold at most one entry and repeat on every row of the
+    // record.
+    const singleCells = columns.map(({ isStacked }, colIdx) =>
+      isStacked ? null : toCell(entriesByColumn[colIdx][rowIdx][0]),
     );
+    for (let lineIdx = 0; lineIdx < recordHeights[rowIdx]; lineIdx++) {
+      dataRows.push(
+        columns.map(({ isStacked }, colIdx) =>
+          isStacked
+            ? toCell(entriesByColumn[colIdx][rowIdx][lineIdx])
+            : singleCells[colIdx],
+        ),
+      );
+    }
   }
 
   // Size each column to its header, within sensible bounds.
-  const columnDefs = columns.flatMap(({ headers }) =>
-    headers.map(header => ({
-      width: Math.min(
-        MAX_COLUMN_WIDTH,
-        Math.max(MIN_COLUMN_WIDTH, header.length + 4),
-      ),
-    })),
-  );
+  const columnDefs = columns.map(({ header }) => ({
+    width: Math.min(
+      MAX_COLUMN_WIDTH,
+      Math.max(MIN_COLUMN_WIDTH, header.length + 4),
+    ),
+  }));
 
   const { writeXlsx } = await import('hucre/xlsx');
 
@@ -311,25 +312,21 @@ export const buildXlsxWorkbook = async <TRow>(
   sheet: XlsxSheetSpec<TRow>,
 ): Promise<Uint8Array> => buildXlsxPart(computeXlsxLayout(sheet));
 
-/** The layout of an export and how its rows are split across files. */
+/** The layout of an export and how its records are split across files. */
 export interface XlsxPreparedExport {
   layout: XlsxLayout;
   ranges: XlsxRowRange[];
 }
 
 /**
- * Work out the column layout of an export and how its rows split across files
- * within the per-file budget, without building any file yet. Throws
- * XlsxTooWideError when link expansion makes the sheet too wide.
+ * Work out the column layout of an export and how its records split across
+ * files within the per-file budget, without building any file yet.
  */
 export const prepareXlsxExport = <TRow>(
   sheet: XlsxSheetSpec<TRow>,
   limits: XlsxLimits = XLSX_LIMITS,
 ): XlsxPreparedExport => {
   const layout = computeXlsxLayout(sheet);
-  if (layout.width > limits.maxColumns) {
-    throw new XlsxTooWideError(layout.width);
-  }
   return { layout, ranges: partitionRows(layout, limits) };
 };
 
@@ -363,14 +360,15 @@ const buildReadme = (
   totalRows: number,
 ) =>
   [
-    `This download holds ${totalRows.toLocaleString()} rows split across ${
+    `This download holds ${totalRows.toLocaleString()} results split across ${
       ranges.length
     } spreadsheet files, so that each file opens in both Microsoft Excel and Google Sheets.`,
     'Every file has the same columns and a header row.',
+    'A result with several values in a column takes several rows, one value per row, with its single values repeated on each row.',
     '',
     ...ranges.map(
       ({ start, end }, idx) =>
-        `${getPartFileName(downloadName, idx + 1, ranges.length)}: rows ${(
+        `${getPartFileName(downloadName, idx + 1, ranges.length)}: results ${(
           start + 1
         ).toLocaleString()} to ${end.toLocaleString()}`,
     ),
@@ -401,7 +399,7 @@ const zipFiles = async (files: ZipEntry[]) => {
 
 /**
  * Build the files of a prepared export: a single .xlsx, or a .zip of every
- * part plus a README file when the rows are split across several files.
+ * part plus a README file when the records are split across several files.
  */
 export const downloadXlsxExport = async (
   { layout, ranges }: XlsxPreparedExport,

@@ -17,12 +17,7 @@ import { FaDownload, FaCircleExclamation } from 'react-icons/fa6';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Params, fetchAllSearchResults } from 'src/utils/api';
 import { DownloadArgs, downloadAsCsv, downloadAsJson } from './helpers';
-import {
-  XlsxColumnSpec,
-  XlsxTooWideError,
-  downloadXlsxExport,
-  prepareXlsxExport,
-} from './xlsx';
+import { XlsxColumnSpec, downloadXlsxExport, prepareXlsxExport } from './xlsx';
 import { formatAPIResource } from 'src/utils/api/helpers';
 import { FormattedResource } from 'src/utils/api/types';
 import { SHOW_XLSX_CUSTOM_VIEW_DOWNLOAD } from 'src/utils/feature-flags';
@@ -229,11 +224,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
         }
       } catch (error) {
         console.error('Error in data fetching for download:', error);
-        if (error instanceof XlsxTooWideError) {
-          setBuildError(
-            'These results have too many linked values to fit in a spreadsheet. Please download them in CSV or JSON format instead.',
-          );
-        } else if (downloadFormat.format === 'xlsx') {
+        if (downloadFormat.format === 'xlsx') {
           setBuildError(
             'Something went wrong while building the XLSX file. Please try again, or download fewer results.',
           );
