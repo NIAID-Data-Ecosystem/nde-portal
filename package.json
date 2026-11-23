@@ -119,6 +119,9 @@
   "resolutions": {
     "@babel/core": "^7.29.6",
     "@chakra-ui/cli/zod": "^4.6.6",
+    "**/@jest/reporters/glob": "^14.0.2",
+    "**/jest-config/glob": "^14.0.2",
+    "**/jest-runtime/glob": "^14.0.2",
     "@humanfs/node": "^0.16.8",
     "@xmldom/xmldom": "^0.8.15",
     "basic-ftp": "^5.3.1",
