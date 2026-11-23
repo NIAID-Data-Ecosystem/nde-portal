@@ -5,7 +5,6 @@ import {
   CardBody,
   Flex,
   Heading,
-  Icon,
   SimpleGrid,
   SkeletonText,
   Stack,
@@ -26,8 +25,6 @@ import axios from 'axios';
 import Empty from 'src/components/empty';
 import Navigation from 'src/components/resource-sections/components/navigation';
 import { Section, SectionList } from 'src/views/news/components/Section';
-import NDESOCIALS from 'configs/socials.json';
-import { FaLinkedinIn, FaSquareFacebook, FaTwitter } from 'react-icons/fa6';
 import { fetchNews } from 'src/views/home/components/NewsCarousel';
 import { useQuery } from '@tanstack/react-query';
 import SectionCard from 'src/views/news/components/SectionCard';
@@ -410,7 +407,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                 >
                   {/* Email */}
                   <Card>
-                    <CardBody p={0} px={4} py={1}>
+                    <CardBody p={4}>
                       <Text
                         lineHeight='short'
                         color='gray.800'
@@ -424,7 +421,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                     </CardBody>
                   </Card>
                   {/* Socials */}
-                  {NDESOCIALS && NDESOCIALS['socials'] && (
+                  {/* {NDESOCIALS && NDESOCIALS['socials'] && (
                     <Card>
                       <CardBody px={4} py={1}>
                         <Text
@@ -464,7 +461,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                         </Stack>
                       </CardBody>
                     </Card>
-                  )}
+                  )} */}
                 </SimpleGrid>
               </Section>
             </Flex>
