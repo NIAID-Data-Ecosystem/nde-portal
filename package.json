@@ -118,6 +118,7 @@
   },
   "resolutions": {
     "@babel/core": "^7.29.6",
+    "@chakra-ui/cli/zod": "^4.6.6",
     "@humanfs/node": "^0.16.8",
     "@xmldom/xmldom": "^0.8.15",
     "basic-ftp": "^5.3.1",
