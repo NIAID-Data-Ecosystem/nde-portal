@@ -18,11 +18,12 @@ export const SidebarMobile = ({
         <Menu.Trigger
           bg='blackAlpha.100'
           borderRadius='semi'
-          color='text.placeholder'
+          // Not text.placeholder: phones have no hover to darken it, and it is
+          // 2.2:1 on this background.
+          color='text.body'
           mx={2}
           my={2}
           flex={1}
-          _hover={{ color: 'text.body' }}
           disabled={loading || !sections?.length}
         >
           <Flex px={4} py={2} alignItems='center' justifyContent='center'>

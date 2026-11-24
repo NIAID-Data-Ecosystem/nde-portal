@@ -64,6 +64,7 @@
 import { expect, test } from '@playwright/test';
 
 import { runAxeScans } from '../utils/axe';
+import { openSearchInput } from '../utils/layout';
 
 // --- Per-route configuration -------------------------------------------------
 
@@ -888,8 +889,7 @@ test.describe('a11y: Diseases index — loading', () => {
       page.getByRole('heading', { level: 1, name: /diseases and conditions/i }),
     ).toBeVisible();
     // The disease search box is part of the static index chrome.
-    const search = page.getByRole('textbox', { name: /search for a disease/i });
-    await expect(search).toBeVisible();
+    const search = await openSearchInput(page, /search for a disease/i);
     await expect(search).toBeEditable();
 
     // The StyledCard loaders render Chakra `Skeleton` (`.chakra-skeleton`) while
@@ -954,8 +954,7 @@ test.describe('a11y: Diseases index — populated', () => {
       }),
     ).toBeVisible();
     // The disease search box must be programmatically labelled.
-    const search = page.getByRole('textbox', { name: /search for a disease/i });
-    await expect(search).toBeVisible();
+    const search = await openSearchInput(page, /search for a disease/i);
     await expect(search).toBeEditable();
 
     await runAxeScans(page, testInfo, 'index-populated');

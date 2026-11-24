@@ -85,9 +85,26 @@ against the built `out/`, not live source). When you only edit a spec file,
    `references/patterns.md` for the per-surface recipes and gotchas (the
    `<nextjs-portal>` click-interception workaround, react-select, keyboard
    drag-and-drop). `advanced-search.spec.ts` is the canonical example.
-8. **Run it**: `yarn build:a11y` once, then
-   `yarn test:a11y:nobuild e2e/accessibility/<route-or-feature>.spec.ts`, and
-   check the HTML report. (Rebuild only when you change app source.)
+8. **Tag tests by device.**
+
+   | Tag        | Purpose                                          |
+   | ---------- | ------------------------------------------------ |
+   | Untagged   | Device-independent accessibility tests (default) |
+   | `@desktop` | Desktop-specific interfaces and interactions     |
+   | `@mobile`  | Mobile-specific interfaces and interactions      |
+
+   Use `{ tag: '@desktop' }` or `{ tag: '@mobile' }` on a `test` or
+   `describe`. Keyboard tests aren't desktop-only: tag one only when the
+   interface it tests is device-specific. Untagged tests also run on phones,
+   so they must pass there: for UI the app hides below a breakpoint (desktop
+   sidebars), assert it only `if (await isAtLeast(page, 'lg'))`; get a
+   SearchInput's textbox with `openSearchInput(page, name)`; when text also
+   appears in a hidden copy, match `.filter({ visible: true }).first()`.
+9. **Run it**: `yarn build:a11y` once, then
+   `yarn test:a11y:nobuild e2e/accessibility/<route-or-feature>.spec.ts`, then
+   again with `--project=mobile-chrome` (and `--project=firefox`, plus `webkit`
+   if it's installed). Check the HTML report. Rebuild only when you change app
+   source.
 
 Interaction scans often surface **real** serious violations the resting states
 miss. Don't loosen the scan to go green — fix the app, or `test.fixme` that one
@@ -100,8 +117,9 @@ button/link-name + screenshot, from one traversal), `analyzeA11y` (single scan,
 returns results without asserting — used internally by `runAxeScans`; reach for
 it directly only for a bespoke scan), `blockingViolations`, `formatViolations`,
 `attachA11yReport`, `attachScreenshot`, `waitForAnimationsSettled`,
-`WCAG_AA_TAGS`. Don't hand-roll separate `AxeBuilder` contrast/button-name scans
-anymore — `runAxeScans` derives those sections from the single traversal.
+`WCAG_AA_TAGS`. From `e2e/utils/layout.ts`: `isAtLeast` and `openSearchInput`.
+Don't hand-roll separate `AxeBuilder` contrast/button-name scans anymore —
+`runAxeScans` derives those sections from the single traversal.
 
 ## Detail
 

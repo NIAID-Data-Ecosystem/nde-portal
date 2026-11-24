@@ -346,7 +346,16 @@ test.describe('a11y: Visualization cards — expand modal', () => {
       .dispatchEvent('click');
     await expect(page.getByRole('dialog')).toBeVisible();
 
-    await runAxeScans(page, testInfo, 'expand-modal');
+    // Scan the dialog, not the page behind it. That page is aria-hidden while
+    // the dialog is open (asserted here) and is scanned at rest in the other
+    // states. Its colour contrast can't be measured: on phones, axe reads the
+    // search-options button under the opaque dialog through the backdrop only
+    // and reports 2.9:1.
+    await expect(page.locator('#__next')).toHaveAttribute(
+      'aria-hidden',
+      'true',
+    );
+    await runAxeScans(page, testInfo, 'expand-modal', { exclude: '#__next' });
   });
 });
 

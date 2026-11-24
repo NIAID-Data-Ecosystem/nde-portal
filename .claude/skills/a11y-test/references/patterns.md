@@ -169,6 +169,9 @@ Rules for interaction scans:
   hit the API on their own (often the same `**/query*` glob) — fulfill it with
   deterministic suggestions and wait for one to appear. A select whose options
   come from a static config fires nothing; mock defensively anyway.
+- **Tag by device.** Untagged is the default, for device-independent tests.
+  Tag desktop-specific interfaces and interactions `@desktop` and
+  mobile-specific ones `@mobile`. See "Test tags" in `e2e/README.md`.
 
 Interaction-specific gotchas:
 

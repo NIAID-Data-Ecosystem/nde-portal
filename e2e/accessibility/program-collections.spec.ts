@@ -42,6 +42,7 @@
 import { expect, type Page, test, type TestInfo } from '@playwright/test';
 
 import { runAxeScans } from '../utils/axe';
+import { openSearchInput } from '../utils/layout';
 
 // --- Per-route configuration -------------------------------------------------
 
@@ -156,8 +157,7 @@ async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
   ).toBeVisible();
 
   // Forms: the section search input must be programmatically labelled.
-  const search = page.getByRole('textbox', { name: SEARCH_NAME });
-  await expect(search).toBeVisible();
+  const search = await openSearchInput(page, SEARCH_NAME);
   await expect(search).toBeEditable();
 
   await runAxeScans(page, testInfo, state);
@@ -184,8 +184,12 @@ test.describe('a11y: Program Collections — populated', () => {
         name: /search for resources related to amp network/i,
       }),
     ).toBeVisible();
+    // The sidebar repeats the title, but phones don't show the sidebar.
     await expect(
-      page.getByText(/accelerating medicines partnership/i).first(),
+      page
+        .getByText(/accelerating medicines partnership/i)
+        .filter({ visible: true })
+        .first(),
     ).toBeVisible();
 
     await runSharedChecks(page, testInfo, 'populated');
@@ -237,7 +241,7 @@ test.describe('a11y: Program Collections — search empty', () => {
     // Make sure the mocked list rendered before we filter it.
     await expect(page.getByText('3 results.')).toBeVisible();
 
-    const search = page.getByRole('textbox', { name: SEARCH_NAME });
+    const search = await openSearchInput(page, SEARCH_NAME);
     await search.fill(NO_MATCH_QUERY);
 
     // The SectionSearch count text resolves to "0 results." once nothing matches.

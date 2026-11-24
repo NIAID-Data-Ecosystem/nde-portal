@@ -50,6 +50,7 @@
 import { expect, type Page, test, type TestInfo } from '@playwright/test';
 
 import { runAxeScans } from '../utils/axe';
+import { openSearchInput } from '../utils/layout';
 
 // --- Per-route configuration -------------------------------------------------
 
@@ -158,8 +159,7 @@ async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
   // Forms: the source filter input is the page's primary form control. It is an
   // <input> labelled "Search for a source" via a visually-hidden <label> (see
   // SearchInput), so it must expose that accessible name and be editable.
-  const search = page.getByRole('textbox', { name: /search for a source/i });
-  await expect(search).toBeVisible();
+  const search = await openSearchInput(page, /search for a source/i);
   await expect(search).toBeEditable();
 
   await runAxeScans(page, testInfo, state);
@@ -286,7 +286,10 @@ test.describe('a11y: Sources — schema property table', () => {
     // Wait for the populated card, then expand its schema table. A real click,
     // not dispatchEvent: zag's accordion only acts on a click once its trigger
     // has focus, and a synthetic click event never focuses it.
-    await expect(page.getByText(FIXTURE_SOURCE_NAME).first()).toBeVisible();
+    // The name is also a sidebar heading, which phones don't show.
+    await expect(
+      page.getByText(FIXTURE_SOURCE_NAME).filter({ visible: true }).first(),
+    ).toBeVisible();
     await page
       .getByRole('button', {
         name: new RegExp(

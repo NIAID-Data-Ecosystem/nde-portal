@@ -41,6 +41,60 @@ unaffected by how the HTML was produced.
 Playwright serves `out/` with `serve` and boots the mock Strapi server, per
 `playwright.config.ts`. Outside CI it reuses a server already on the port.
 
+### Browsers
+
+Each browser is a Playwright project:
+
+| Project         | Browser | Device                     |
+| --------------- | ------- | -------------------------- |
+| `chromium`      | Chrome  | desktop, 1280×720          |
+| `firefox`       | Firefox | desktop, 1280×720          |
+| `webkit`        | Safari  | desktop, 1280×720          |
+| `mobile-chrome` | Chrome  | Pixel 7 (touch, 412×839)   |
+| `mobile-safari` | Safari  | iPhone 15 (touch, 393×659) |
+
+Locally, a plain run uses `chromium` only. To run others, name them with
+`PLAYWRIGHT_BROWSERS` (a comma-separated list, or `all`) or with `--project`:
+
+```sh
+PLAYWRIGHT_BROWSERS=firefox,webkit yarn test:a11y:nobuild
+PLAYWRIGHT_BROWSERS=all yarn test:a11y:nobuild
+yarn test:a11y:nobuild --project=mobile-safari e2e/accessibility/home.spec.ts
+```
+
+Write `--project=<name>`, with the `=`. `--project` takes several names, so
+`--project firefox e2e/...` reads the spec path as a second project name.
+
+UI mode (`yarn test:a11y:ui`) and the VS Code extension list every project and
+start with `chromium` selected.
+
+Install the browsers you need once with `npx playwright install firefox webkit`.
+On Linux, WebKit also needs system libraries:
+`sudo npx playwright install-deps webkit`.
+
+CI runs every project, each in its own job against one shared `out/` build. Each
+job uploads its report as `playwright-a11y-report-<project>`.
+
+#### Test tags
+
+| Tag        | Purpose                                          |
+| ---------- | ------------------------------------------------ |
+| Untagged   | Device-independent accessibility tests (default) |
+| `@desktop` | Desktop-specific interfaces and interactions     |
+| `@mobile`  | Mobile-specific interfaces and interactions      |
+
+Untagged tests run in every project. `@desktop` tests run only in `chromium`,
+`firefox` and `webkit`, and `@mobile` tests only in `mobile-chrome` and
+`mobile-safari`.
+
+```ts
+test('desktop sidebar', { tag: '@desktop' }, async ({ page }) => {});
+test.describe('mobile menu', { tag: '@mobile' }, () => {});
+```
+
+Keyboard tests aren't desktop-only. Tag one only when the interface it tests is
+device-specific.
+
 > **Dynamic routes must exist in `out/`.** Because the app is a static export
 > with `fallback: false`, only routes generated at build time exist. A spec that
 > navigates to `/diseases/<slug>` or `/knowledge-center/<slug>` requires that
@@ -156,8 +210,13 @@ scan is left disabled by accident.
 5. Wait for the specific state you intend to scan.
 6. Run axe and fail only on serious or critical violations unless the test has a
    narrower purpose.
-7. Run the spec locally and inspect the HTML report when adding or changing
-   screenshots.
+7. Make the spec pass at phone width too (see [Browsers](#browsers)). For UI the
+   app hides below a breakpoint, assert it only where it's shown, with
+   `isAtLeast` from `e2e/utils/layout`. Get a SearchInput's textbox with
+   `openSearchInput`, which taps the toggle phones show instead. Tag
+   desktop-specific and mobile-specific tests (see [Test tags](#test-tags)).
+8. Run the spec locally, including with `--project=mobile-chrome`, and inspect
+   the HTML report when adding or changing screenshots.
 
 ## Sample Claude/Codex prompt
 
@@ -175,6 +234,7 @@ Please follow the existing e2e/accessibility patterns:
 - reuse e2e/utils/axe helpers
 - attach a screenshot for each state in the HTML report
 - include role/label assertions for key forms, buttons, links, headings, and landmarks
+- tag desktop-specific tests @desktop and mobile-specific tests @mobile (see "Test tags")
 - run the new spec with yarn test:a11y:nobuild <spec path> (after yarn build:a11y)
 
 Do not rely on live network data, and do not loosen axe failures unless there is

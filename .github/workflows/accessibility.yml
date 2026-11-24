@@ -5,13 +5,17 @@ name: Accessibility (a11y) Tests
 # plain files — not `next dev` — so it is fast and deterministic. The scans
 # report every violation but only FAIL the build on `serious` or `critical`
 # impact (enforced in the test specs). See e2e/README.md.
+#
+# The export is built once, then every Playwright project (browser) scans it in
+# its own parallel job. The `accessibility` job at the end reports one combined
+# result.
 
 on:
   pull_request:
     branches:
       - main
       - dev
-      - staging
+      - production
   push:
     branches:
       - main
@@ -22,28 +26,30 @@ concurrency:
   group: a11y-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  CI: 'true'
+  # Static-export env. These are fixed, deterministic values — NOT tied to the
+  # PR's target environment on purpose: the a11y scans must be reproducible and
+  # offline. Specs drive all meaningful states via `page.route` mocks, so
+  # NEXT_PUBLIC_API_URL only seeds the client bundle as a fallback for any
+  # endpoint a spec doesn't intercept (ideally none). GH_API_KEY is unused by
+  # `build:a11y` (it runs `next build` directly, skipping the GitHub-fetching
+  # build:core steps).
+  NEXT_PUBLIC_APP_ENV: staging
+  NEXT_PUBLIC_API_URL: https://api-staging.data.niaid.nih.gov/v1
+  # NOTE: NEXT_PUBLIC_STRAPI_API_URL is set here for completeness but is always
+  # SUPERSEDED — `build:a11y` overrides it to the local mock Strapi at build
+  # time (http://localhost:1337, inlined into the export), and the mock also
+  # serves runtime Strapi calls. This value is never actually reached.
+  NEXT_PUBLIC_STRAPI_API_URL: https://data-staging.niaid.nih.gov/strapi
+  NEXT_PUBLIC_AUTH_PROVIDERS: 'github,orcid'
+  BASE_URL: http://localhost:3000
+  GH_API_KEY: ${{ secrets.GH_API_KEY }}
+
 jobs:
-  accessibility:
+  build:
+    name: Build static export
     runs-on: ubuntu-latest
-    env:
-      CI: 'true'
-      # Static-export env. These are fixed, deterministic values — NOT tied to the
-      # PR's target environment on purpose: the a11y scans must be reproducible and
-      # offline. Specs drive all meaningful states via `page.route` mocks, so
-      # NEXT_PUBLIC_API_URL only seeds the client bundle as a fallback for any
-      # endpoint a spec doesn't intercept (ideally none). GH_API_KEY is unused by
-      # `build:a11y` (it runs `next build` directly, skipping the GitHub-fetching
-      # build:core steps).
-      NEXT_PUBLIC_APP_ENV: staging
-      NEXT_PUBLIC_API_URL: https://api-staging.data.niaid.nih.gov/v1
-      # NOTE: NEXT_PUBLIC_STRAPI_API_URL is set here for completeness but is always
-      # SUPERSEDED — `build:a11y` overrides it to the local mock Strapi at build
-      # time (http://localhost:1337, inlined into the export), and the mock also
-      # serves runtime Strapi calls. This value is never actually reached.
-      NEXT_PUBLIC_STRAPI_API_URL: https://data-staging.niaid.nih.gov/strapi
-      NEXT_PUBLIC_AUTH_PROVIDERS: 'github,orcid'
-      BASE_URL: http://localhost:3000
-      GH_API_KEY: ${{ secrets.GH_API_KEY }}
     steps:
       - uses: actions/checkout@v4
 
@@ -54,33 +60,6 @@ jobs:
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-
-      # Cache the Playwright browser binaries so we don't re-download Chromium
-      # (~130MB) every run. Keyed on the installed Playwright version; on a hit we
-      # only need the OS-level deps (fast), not the browser download.
-      - name: Get Playwright version
-        id: playwright-version
-        run:
-          echo "version=$(node -e
-          "console.log(require('@playwright/test/package.json').version)")" >>
-          "$GITHUB_OUTPUT"
-
-      - name: Cache Playwright browsers
-        id: playwright-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key:
-            playwright-${{ runner.os }}-${{
-            steps.playwright-version.outputs.version }}
-
-      - name: Install Playwright browser + deps (cache miss)
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium
-
-      - name: Install Playwright OS deps (cache hit)
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps chromium
 
       # Cache Next.js's incremental compile cache (`.next/cache`). `next build`
       # keeps its SWC/webpack cache here even with `output: 'export'`, so
@@ -97,19 +76,107 @@ jobs:
           restore-keys: |
             nextjs-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}-
 
-      # Build the static export first (as its own step so a build failure is
-      # distinct from a test failure in the CI log). Starts the mock Strapi
-      # server, runs `next build` → `out/`, then stops the mock.
+      # Starts the mock Strapi server, runs `next build` → `out/`, then stops
+      # the mock.
       - name: Build static export (a11y)
         run: yarn build:a11y
 
+      - name: Upload static export
+        uses: actions/upload-artifact@v4
+        with:
+          name: a11y-static-export
+          path: out/
+          if-no-files-found: error
+          retention-days: 1
+
+  a11y:
+    name: a11y (${{ matrix.project }})
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      # Let every browser finish so one failure doesn't hide another's.
+      fail-fast: false
+      matrix:
+        # `project` is a Playwright project in playwright.config.ts; `browser`
+        # is the engine it needs installed.
+        include:
+          - project: chromium
+            browser: chromium
+          - project: firefox
+            browser: firefox
+          - project: webkit
+            browser: webkit
+          - project: mobile-chrome
+            browser: chromium
+          - project: mobile-safari
+            browser: webkit
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      # Cache the Playwright browser binary so we don't re-download it every
+      # run. Keyed on the installed Playwright version and the browser, since
+      # each job installs only its own; on a hit we only need the OS-level deps
+      # (fast), not the browser download.
+      - name: Get Playwright version
+        id: playwright-version
+        run:
+          echo "version=$(node -e
+          "console.log(require('@playwright/test/package.json').version)")" >>
+          "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key:
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}-${{ matrix.browser }}
+
+      - name: Install Playwright browser + deps (cache miss)
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Install Playwright OS deps (cache hit)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps ${{ matrix.browser }}
+
+      - name: Download static export
+        uses: actions/download-artifact@v4
+        with:
+          name: a11y-static-export
+          path: out
+
       - name: Run accessibility tests
-        run: yarn test:a11y:nobuild
+        run: yarn test:a11y:nobuild --project=${{ matrix.project }}
 
       - name: Upload Playwright report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-a11y-report
+          name: playwright-a11y-report-${{ matrix.project }}
           path: playwright-report/
           retention-days: 14
+
+  # One result for the whole run, under the check name this workflow has always
+  # reported, so a required "accessibility" check keeps working.
+  accessibility:
+    if: ${{ always() }}
+    needs: [build, a11y]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check every browser passed
+        if:
+          ${{ needs.build.result != 'success' || needs.a11y.result != 'success'
+          }}
+        run: |
+          echo "build: ${{ needs.build.result }}, a11y: ${{ needs.a11y.result }}"
+          exit 1

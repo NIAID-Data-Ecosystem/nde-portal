@@ -1,19 +1,18 @@
 /**
- * Accessibility tests at a MOBILE viewport (375×812).
+ * Accessibility tests of the phone layout.
  *
- * Why a dedicated mobile spec: every other spec runs at the `Desktop Chrome`
- * viewport (playwright.config.ts defines only that project), so the responsive
- * surfaces that only exist below the `md` breakpoint are never scanned —
- * chiefly the hamburger navigation menu (the desktop nav is `display:none` on
- * mobile and vice-versa) and the reflowed page/table layouts. axe recomputes
- * color-contrast and evaluates structure against the actually-rendered mobile
- * DOM, so these are genuinely different scans, not duplicates of the desktop
- * ones.
+ * Why a dedicated mobile spec: some responsive surfaces only exist below the
+ * `md` breakpoint — chiefly the hamburger navigation menu (the desktop nav is
+ * `display:none` on mobile and vice-versa) and the reflowed page/table layouts.
+ * axe recomputes color-contrast and evaluates structure against the
+ * actually-rendered mobile DOM, so these are genuinely different scans, not
+ * duplicates of the desktop ones.
  *
- * `test.use({ viewport })` applies the phone viewport to every test in this
- * file. Each block mirrors the mocking of its desktop counterpart
- * (home.spec.ts, search.spec.ts, about.spec.ts) so the mobile DOM is equally
- * deterministic; see those specs for the per-route data-model notes.
+ * Every block is tagged `@mobile`, so only the phone projects (`mobile-chrome`,
+ * `mobile-safari`) run this file, each at its device's own viewport (see
+ * playwright.config.ts). Each block mirrors the mocking of its desktop
+ * counterpart (home.spec.ts, search.spec.ts, about.spec.ts) so the mobile DOM
+ * is equally deterministic; see those specs for the per-route data-model notes.
  *
  * Every violation is attached to the HTML report; the build only FAILS on
  * `serious`/`critical` impact. See e2e/utils/axe.ts.
@@ -22,8 +21,6 @@ import { expect, type Page, test, type TestInfo } from '@playwright/test';
 
 import { runAxeScans } from '../utils/axe';
 import { expectNoSkeletonsLoading } from '../utils/skeleton';
-
-test.use({ viewport: { width: 375, height: 812 } });
 
 // --- Fixtures (mirrors home.spec.ts / about.spec.ts) -------------------------
 
@@ -127,7 +124,7 @@ async function gotoHomePopulated(page: Page) {
 
 // --- Home (populated) --------------------------------------------------------
 
-test.describe('a11y: Mobile — Home populated', () => {
+test.describe('a11y: Mobile — Home populated', { tag: '@mobile' }, () => {
   test('passes axe on the home page at a phone viewport', async ({
     page,
   }, testInfo) => {
@@ -148,7 +145,7 @@ test.describe('a11y: Mobile — Home populated', () => {
 
 // --- Global mobile navigation menu (hamburger) -------------------------------
 
-test.describe('a11y: Mobile — navigation menu open', () => {
+test.describe('a11y: Mobile — navigation menu open', { tag: '@mobile' }, () => {
   test('passes axe with the hamburger nav menu expanded', async ({
     page,
   }, testInfo) => {
@@ -176,7 +173,7 @@ test.describe('a11y: Mobile — navigation menu open', () => {
 
 // --- Search (empty) ----------------------------------------------------------
 
-test.describe('a11y: Mobile — Search', () => {
+test.describe('a11y: Mobile — Search', { tag: '@mobile' }, () => {
   test('passes axe on the search results layout at a phone viewport', async ({
     page,
   }, testInfo) => {
@@ -221,7 +218,7 @@ test.describe('a11y: Mobile — Search', () => {
 
 // --- Content page (About, populated) -----------------------------------------
 
-test.describe('a11y: Mobile — About content', () => {
+test.describe('a11y: Mobile — About content', { tag: '@mobile' }, () => {
   test('passes axe on a content page at a phone viewport', async ({
     page,
   }, testInfo) => {

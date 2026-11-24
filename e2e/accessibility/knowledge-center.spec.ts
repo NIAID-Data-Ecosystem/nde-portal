@@ -60,6 +60,7 @@ import {
   expectEscapeReturnsFocus,
   expectKeyboardOpens,
 } from '../utils/keyboard';
+import { isAtLeast } from '../utils/layout';
 
 // --- Per-route configuration -------------------------------------------------
 
@@ -302,10 +303,18 @@ test.describe('a11y: Knowledge Center doc page — loading', () => {
     }
     await page.goto(DOC_ROUTE, { waitUntil: 'domcontentloaded' });
 
-    // The SidebarDesktop renders Chakra `SkeletonText` (`.chakra-skeleton`)
-    // while `isLoading` — a CSS selector is acceptable here only because
-    // skeletons have no accessible surface to target.
-    await expect(page.locator('.chakra-skeleton').first()).toBeVisible();
+    if (await isAtLeast(page, 'sm')) {
+      // The SidebarDesktop renders Chakra `SkeletonText` (`.chakra-skeleton`)
+      // while `isLoading` — a CSS selector is acceptable here only because
+      // skeletons have no accessible surface to target.
+      await expect(page.locator('.chakra-skeleton').first()).toBeVisible();
+    } else {
+      // Phones get SidebarMobile instead, whose menu button stays disabled
+      // until the sections load.
+      await expect(
+        page.getByRole('button', { name: /documentation menu/i }),
+      ).toBeDisabled();
+    }
 
     await runSharedChecks(page, testInfo, 'doc-loading');
   });
@@ -397,54 +406,58 @@ test.describe('a11y: Knowledge Center — error', () => {
 
 // --- Mobile navigation menu (Chakra Menu) ------------------------------------
 
-test.describe('a11y: Knowledge Center doc page — mobile menu', () => {
-  test('passes axe with the mobile nav menu open', async ({
-    page,
-  }, testInfo) => {
-    // Below `sm` (30em) the page renders SidebarMobile instead of the desktop
-    // sidebar. Set a phone viewport before navigating so the mobile menu mounts.
-    await page.setViewportSize({ width: 375, height: 800 });
-    await page.route(CATEGORIES_GLOB, route =>
-      route.fulfill(fulfillJson(CATEGORIES_FIXTURE)),
-    );
-    await page.route(DOCS_GLOB, route =>
-      route.fulfill(fulfillJson(DOC_FIXTURE)),
-    );
-    await page.goto(DOC_ROUTE, { waitUntil: 'domcontentloaded' });
+// Tagged @mobile: the menu only exists below `sm`, so only the phone projects
+// run these. Their device viewport is narrow enough to mount it.
+test.describe(
+  'a11y: Knowledge Center doc page — mobile menu',
+  { tag: '@mobile' },
+  () => {
+    test('passes axe with the mobile nav menu open', async ({
+      page,
+    }, testInfo) => {
+      // Below `sm` (30em) the page renders SidebarMobile instead of the desktop
+      // sidebar.
+      await page.route(CATEGORIES_GLOB, route =>
+        route.fulfill(fulfillJson(CATEGORIES_FIXTURE)),
+      );
+      await page.route(DOCS_GLOB, route =>
+        route.fulfill(fulfillJson(DOC_FIXTURE)),
+      );
+      await page.goto(DOC_ROUTE, { waitUntil: 'domcontentloaded' });
 
-    // The menu button shows "Documentation Menu" (the FAQ slug isn't in the
-    // category fixture, so `menuTitle` is empty and the fallback label renders).
-    await page.getByRole('button', { name: /documentation menu/i }).click();
-    // The MenuList's doc-link menuitems only exist once the menu is open.
-    await expect(
-      page.getByRole('menuitem', {
-        name: /discovery portal quick start guide/i,
-      }),
-    ).toBeVisible();
+      // The menu button shows "Documentation Menu" (the FAQ slug isn't in the
+      // category fixture, so `menuTitle` is empty and the fallback label renders).
+      await page.getByRole('button', { name: /documentation menu/i }).click();
+      // The MenuList's doc-link menuitems only exist once the menu is open.
+      await expect(
+        page.getByRole('menuitem', {
+          name: /discovery portal quick start guide/i,
+        }),
+      ).toBeVisible();
 
-    await runAxeScans(page, testInfo, 'mobile-menu');
-  });
-
-  test('mobile nav menu is keyboard operable and restores focus', async ({
-    page,
-  }) => {
-    // axe scans the open menu above; this drives the keyboard path (open with
-    // Enter, dismiss with Escape) and asserts focus returns to the menu button
-    // (WCAG 2.1.1 / 2.4.3) — behaviour a static scan can't see.
-    await page.setViewportSize({ width: 375, height: 800 });
-    await page.route(CATEGORIES_GLOB, route =>
-      route.fulfill(fulfillJson(CATEGORIES_FIXTURE)),
-    );
-    await page.route(DOCS_GLOB, route =>
-      route.fulfill(fulfillJson(DOC_FIXTURE)),
-    );
-    await page.goto(DOC_ROUTE, { waitUntil: 'domcontentloaded' });
-
-    const trigger = page.getByRole('button', { name: /documentation menu/i });
-    const surface = page.getByRole('menuitem', {
-      name: /discovery portal quick start guide/i,
+      await runAxeScans(page, testInfo, 'mobile-menu');
     });
-    await expectKeyboardOpens(trigger, surface);
-    await expectEscapeReturnsFocus(page, trigger, surface);
-  });
-});
+
+    test('mobile nav menu is keyboard operable and restores focus', async ({
+      page,
+    }) => {
+      // axe scans the open menu above; this drives the keyboard path (open with
+      // Enter, dismiss with Escape) and asserts focus returns to the menu button
+      // (WCAG 2.1.1 / 2.4.3) — behaviour a static scan can't see.
+      await page.route(CATEGORIES_GLOB, route =>
+        route.fulfill(fulfillJson(CATEGORIES_FIXTURE)),
+      );
+      await page.route(DOCS_GLOB, route =>
+        route.fulfill(fulfillJson(DOC_FIXTURE)),
+      );
+      await page.goto(DOC_ROUTE, { waitUntil: 'domcontentloaded' });
+
+      const trigger = page.getByRole('button', { name: /documentation menu/i });
+      const surface = page.getByRole('menuitem', {
+        name: /discovery portal quick start guide/i,
+      });
+      await expectKeyboardOpens(trigger, surface);
+      await expectEscapeReturnsFocus(page, trigger, surface);
+    });
+  },
+);

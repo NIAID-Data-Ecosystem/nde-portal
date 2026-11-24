@@ -52,6 +52,7 @@
 import { expect, type Page, test, type TestInfo } from '@playwright/test';
 
 import { runAxeScans } from '../utils/axe';
+import { isAtLeast } from '../utils/layout';
 
 // --- Per-route configuration -------------------------------------------------
 
@@ -461,10 +462,12 @@ test.describe('a11y: DataCollection resource — populated', () => {
 
     // Sidebar "On This Page" nav — proves the new section is navigable and that
     // the `ui.showInNavigation` filter added in src/pages/resources.tsx still
-    // lists it.
-    await expect(
-      page.getByRole('link', { name: 'Example of Work', exact: true }),
-    ).toBeVisible();
+    // lists it. The sidebar is hidden below `lg`.
+    if (await isAtLeast(page, 'lg')) {
+      await expect(
+        page.getByRole('link', { name: 'Example of Work', exact: true }),
+      ).toBeVisible();
+    }
 
     await runSharedChecks(page, testInfo, 'populated — DataCollection');
   });

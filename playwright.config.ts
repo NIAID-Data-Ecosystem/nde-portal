@@ -24,6 +24,65 @@ const MOCK_STRAPI_PORT = Number(process.env.MOCK_STRAPI_PORT) || 1337;
 const baseURL = process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${PORT}`;
 const isCI = !!process.env.CI;
 
+/**
+ * Browser projects. A plain `playwright test` (so `yarn test:a11y`) runs
+ * Chromium only. Choose others with PLAYWRIGHT_BROWSERS, a comma-separated list
+ * of project names or `all`:
+ *
+ *   PLAYWRIGHT_BROWSERS=firefox,webkit yarn test:a11y:nobuild
+ *
+ * `--project`, UI mode and the VS Code extension (`test-server`) choose
+ * projects themselves, so they see every project. CI runs each project in its
+ * own job (.github/workflows/accessibility.yml).
+ *
+ * Test tags (see "Test tags" in e2e/README.md):
+ * - untagged: device-independent accessibility tests (default), every project
+ * - `@desktop`: desktop-specific interfaces and interactions, desktop projects
+ * - `@mobile`: mobile-specific interfaces and interactions, phone projects
+ */
+const DESKTOP = { grepInvert: /@mobile\b/ };
+const PHONE = { grepInvert: /@desktop\b/ };
+
+const BROWSER_PROJECTS = [
+  // Keep Chromium first: UI mode and the VS Code extension select the first
+  // project by default.
+  { name: 'chromium', ...DESKTOP, use: { ...devices['Desktop Chrome'] } },
+  { name: 'firefox', ...DESKTOP, use: { ...devices['Desktop Firefox'] } },
+  { name: 'webkit', ...DESKTOP, use: { ...devices['Desktop Safari'] } },
+  { name: 'mobile-chrome', ...PHONE, use: { ...devices['Pixel 7'] } },
+  { name: 'mobile-safari', ...PHONE, use: { ...devices['iPhone 15'] } },
+];
+
+const choosesOwnProjects = process.argv.some(
+  arg =>
+    arg === 'test-server' ||
+    arg.startsWith('--ui') ||
+    arg === '--project' ||
+    arg.startsWith('--project='),
+);
+// Workers reload this file without the CLI args and must see the same
+// projects, so pass the choice on through the environment they inherit.
+if (choosesOwnProjects && !process.env.PLAYWRIGHT_BROWSERS) {
+  process.env.PLAYWRIGHT_BROWSERS = 'all';
+}
+
+function selectProjects(value: string) {
+  const names = value
+    .split(',')
+    .map(name => name.trim())
+    .filter(Boolean);
+  if (names.includes('all')) return BROWSER_PROJECTS;
+  const known = BROWSER_PROJECTS.map(project => project.name);
+  const unknown = names.filter(name => !known.includes(name));
+  if (unknown.length) {
+    throw new Error(
+      `PLAYWRIGHT_BROWSERS: unknown project "${unknown.join('", "')}". ` +
+        `Use ${known.join(', ')} or all.`,
+    );
+  }
+  return BROWSER_PROJECTS.filter(project => names.includes(project.name));
+}
+
 export default defineConfig({
   testDir: './e2e',
   // The broken-link check needs live sites; it has its own config
@@ -52,12 +111,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     navigationTimeout: 20_000,
   },
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
-  ],
+  projects: selectProjects(process.env.PLAYWRIGHT_BROWSERS || 'chromium'),
   // Serve the prebuilt static export (`out/`, produced by `yarn build:a11y`)
   // plus the mock Strapi server. The mock stays up at RUNTIME too: `out/` bakes
   // NEXT_PUBLIC_STRAPI_API_URL=localhost:1337 at build time, so any client-side

@@ -36,6 +36,7 @@
 import { expect, type Page, test, type TestInfo } from '@playwright/test';
 
 import { runAxeScans } from '../utils/axe';
+import { isAtLeast, openSearchInput } from '../utils/layout';
 
 // --- Per-route configuration -------------------------------------------------
 
@@ -114,20 +115,19 @@ async function runSharedChecks(page: Page, testInfo: TestInfo, state: string) {
   ).toBeVisible();
 
   // Landmark: the featured-pages list is a labelled <nav> (Sidebar). It is
-  // hidden below the `md` breakpoint but visible at the Desktop Chrome viewport.
-  await expect(
-    page.getByRole('navigation', {
-      name: /navigation for list of featured pages/i,
-    }),
-  ).toBeVisible();
+  // hidden below the `md` breakpoint, so phones don't have it.
+  if (await isAtLeast(page, 'md')) {
+    await expect(
+      page.getByRole('navigation', {
+        name: /navigation for list of featured pages/i,
+      }),
+    ).toBeVisible();
+  }
 
   // Form: the page's only form control is the featured-page search box, which
   // must be programmatically labelled (SearchInput links a VisuallyHidden label
   // to the input by id) and editable.
-  const search = page.getByRole('textbox', {
-    name: /search for a featured page/i,
-  });
-  await expect(search).toBeVisible();
+  const search = await openSearchInput(page, /search for a featured page/i);
   await expect(search).toBeEditable();
 
   await runAxeScans(page, testInfo, state);
@@ -242,9 +242,7 @@ test.describe('a11y: Features — search filter', () => {
 
     // Filter to nothing and wait for the count to drop to "0 results." so we
     // know the re-render landed before scanning.
-    const search = page.getByRole('textbox', {
-      name: /search for a featured page/i,
-    });
+    const search = await openSearchInput(page, /search for a featured page/i);
     await search.fill('zzz-no-such-feature');
     await expect(page.getByText(/0\s+results\./i)).toBeVisible();
 

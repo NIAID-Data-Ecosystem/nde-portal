@@ -13,6 +13,9 @@
  * Escape to dismiss) and assert the focus outcome, so they complement — not
  * replace — the axe scan each interaction block already runs. Use them inside
  * the interaction-state `test.describe` blocks alongside `runAxeScans`.
+ *
+ * Keyboard tests aren't desktop-only. Tag one only when the interface it tests
+ * is device-specific (see "Test tags" in e2e/README.md).
  */
 import { expect, type Locator, type Page } from '@playwright/test';
 
@@ -30,6 +33,9 @@ export async function expectKeyboardOpens(
   surface: Locator,
   key: 'Enter' | ' ' = 'Enter',
 ) {
+  // Some triggers stay disabled until their data loads, and `focus()` (unlike
+  // `click()`) doesn't wait, so on a slower browser it can focus nothing.
+  await expect(trigger, 'trigger should become enabled').toBeEnabled();
   await trigger.focus();
   await expect(
     trigger,
