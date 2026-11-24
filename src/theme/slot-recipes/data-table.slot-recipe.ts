@@ -1,4 +1,13 @@
-import { defineSlotRecipe } from '@chakra-ui/react';
+import {
+  defaultConfig,
+  defineSlotRecipe,
+  mergeConfigs,
+  type SlotRecipeConfig,
+  type SystemConfig,
+  type SystemStyleObject,
+} from '@chakra-ui/react';
+
+import { tagSlotRecipe } from './tag.slot-recipe';
 
 /*
 Styles for src/components/table/data-table.
@@ -44,6 +53,55 @@ const viewportScrollbarStyles = {
   scrollbarWidth: 'thin',
   scrollbarColor: '{colors.gray.300} {colors.blackAlpha.100}',
 } as const;
+
+/*
+TagsCell's plain tags are plain elements, not Chakra `Tag`s (a table can hold
+thousands; see TagsCell), but their styles come from the tag recipe rather than
+a copy of it, so they follow it when it changes. The recipe is Chakra's with the
+repo's merged over it, as `createSystem` merges them, and a slot's styles are
+resolved for a variant selection the way a `Tag` resolves them: the base, each
+selected variant, then any matching compound variant. `mergeConfigs` is Chakra's
+own deep merge, the one `createSystem` and the recipes use.
+*/
+const mergeStyles = (...styles: (SystemStyleObject | undefined)[]) =>
+  mergeConfigs(
+    ...(styles.filter(Boolean) as SystemConfig[]),
+  ) as SystemStyleObject;
+
+const tagRecipe = mergeConfigs(
+  {
+    theme: {
+      slotRecipes: {
+        tag: defaultConfig.theme?.slotRecipes?.tag as SlotRecipeConfig,
+      },
+    },
+  },
+  { theme: { slotRecipes: { tag: tagSlotRecipe } } },
+).theme?.slotRecipes?.tag as SlotRecipeConfig;
+
+const tagSlotStyles = (
+  slot: 'root' | 'label',
+  selection: Record<string, string>,
+) => {
+  const { base, variants = {}, compoundVariants = [] } = tagRecipe;
+  const compounds = compoundVariants.filter(({ css: _css, ...conditions }) =>
+    Object.entries(conditions).every(([key, value]) =>
+      Array.isArray(value)
+        ? value.includes(selection[key])
+        : value === selection[key],
+    ),
+  );
+  return mergeStyles(
+    base?.[slot],
+    ...Object.entries(selection).map(
+      ([key, value]) => variants[key]?.[value]?.[slot],
+    ),
+    ...compounds.map(({ css }) => css?.[slot]),
+  );
+};
+
+// The legacy Repository Matcher's tags: `<Tag variant='subtle' size='sm'>`.
+const PLAIN_TAG = { variant: 'subtle', size: 'sm' };
 
 /*
 The synced scrollbars (top and floating) keep custom scrollbars: they hold
@@ -340,27 +398,25 @@ export const dataTableSlotRecipe = defineSlotRecipe({
         flexShrink: 0,
       },
 
-      /* Tags (TagsCell): the repo's subtle, small, full-radius Tag look. */
+      /* Tags (TagsCell). */
       '& .nde-tags': {
         display: 'flex',
         flexWrap: 'wrap',
         alignItems: 'center',
         gap: 2,
       },
-      // One element per tag (a table can hold thousands), clamped to a line.
-      // A line clamp rather than `nowrap` + ellipsis: a clamped tag can still
-      // wrap at spaces, so the column's minimum width is its longest word, not
-      // its longest tag.
+      // A plain tag: a `Tag.Root` and its `Tag.Label`, styled by the tag
+      // recipe (see `tagSlotStyles`), with the legacy Repository Matcher's
+      // overrides: full corners and neutral colours. The recipe's label is
+      // clamped to a line, which still lets it wrap at spaces, so a column's
+      // minimum width is its longest word, not its longest tag.
       '& .nde-tag': {
-        lineClamp: 1,
-        maxWidth: '100%',
-        px: 2.5,
+        ...tagSlotStyles('root', PLAIN_TAG),
         borderRadius: 'full',
         bg: 'bg.alt',
         color: 'text.body',
-        fontSize: 'sm',
-        lineHeight: '24px',
       },
+      '& .nde-tag-label': tagSlotStyles('label', PLAIN_TAG),
       // A search link tag (TagsCell's `getSearchHref`): the result cards'
       // searchable TagWithUrl (subtle primary `sm` Tag: its layout, corners,
       // colours and focus ring; a magnifying glass; the text underlined until

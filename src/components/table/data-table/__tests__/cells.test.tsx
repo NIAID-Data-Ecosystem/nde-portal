@@ -130,7 +130,7 @@ describe('TermsCell', () => {
 describe('TagsCell', () => {
   it('shows each value as a tag, or "No data" without any', () => {
     const { rerender } = render(<TagsCell values={['Immunology', '']} />);
-    expect(screen.getByText('Immunology')).toHaveClass('nde-tag');
+    expect(screen.getByText('Immunology').closest('.nde-tag')).not.toBeNull();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
     rerender(<TagsCell values={[]} />);
     expect(screen.getByText('No data')).toBeInTheDocument();

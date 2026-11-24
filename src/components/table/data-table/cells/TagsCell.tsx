@@ -34,10 +34,9 @@ const scrolledRecently = () => {
 const isClipped = (el: Element) =>
   el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth;
 
-// The element that clamps a tag's text: a plain tag clamps itself, a linked
-// one its label.
+// The element that clamps a tag's text: its label.
 const clampedText = (tag: Element) =>
-  tag.querySelector('.nde-tag-link-label') ?? tag;
+  tag.querySelector('.nde-tag-label, .nde-tag-link-label') ?? tag;
 
 /**
  * Short terms as tags, with "Show N More" past `maxVisible`, each clamped to one
@@ -48,8 +47,9 @@ const clampedText = (tag: Element) =>
  *
  * Tags are plain elements styled by the table (the dataTable recipe), not
  * Chakra `Tag`s: a table can hold thousands, and a component per tag costs
- * more than the rest of the cell. A plain tag (`.nde-tag`) has the look of the
- * repo's subtle, small, full-radius `Tag`. With `getSearchHref`, each is a
+ * more than the rest of the cell. A plain tag (`.nde-tag` around a
+ * `.nde-tag-label`, as `Tag.Root` and `Tag.Label`) takes its styles from the
+ * tag recipe: a subtle, small, full-radius `Tag`. With `getSearchHref`, each is a
  * search link (`.nde-tag-link`) with the look of the result cards' searchable
  * `TagWithUrl`: a magnifying glass, the text underlined until hovered, the
  * same corners. Being focusable, a clipped one shows its tooltip on keyboard
@@ -143,7 +143,7 @@ export const TagsCell = ({
           </NextLink>
         ) : (
           <span key={index} className='nde-tag' data-tag-index={index}>
-            {label}
+            <span className='nde-tag-label'>{label}</span>
           </span>
         );
         return index === tooltipIndex ? (

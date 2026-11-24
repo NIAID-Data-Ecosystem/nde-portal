@@ -341,7 +341,7 @@ test.describe('DataTable layout: desktop', () => {
   }) => {
     await gotoPopulated(page);
     const tag = root(page)
-      .locator('.nde-tag', {
+      .locator('.nde-tag-label', {
         hasText: 'Escherichia coli (strain B / BL21-DE3)',
       })
       .first();
