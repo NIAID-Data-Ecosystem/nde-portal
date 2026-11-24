@@ -1,295 +1,71 @@
+import { Box, Heading, Text, TextProps } from '@chakra-ui/react';
+import React, { useId, useMemo, useState } from 'react';
+import { CollapsibleTextTrigger } from 'src/components/collapsible-text';
 import {
-  Box,
-  Flex,
-  FlexProps,
-  Heading,
-  Skeleton,
-  Table,
-  Text,
-  VisuallyHidden,
-  VStack,
-} from '@chakra-ui/react';
-import { uniqueId } from 'lodash';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link } from 'src/components/link';
-import { getMetadataColorPalette } from 'src/components/metadata';
-import {
-  Cell,
-  Content,
-  EmptyCell,
-  Label,
-  Th,
-} from 'src/components/table/components/cell';
-import { TablePagination } from 'src/components/table/components/pagination';
-import { Row, RowWithDrawer } from 'src/components/table/components/row';
-import { TableContainer } from 'src/components/table/components/table-container';
-import { TableWrapper } from 'src/components/table/components/wrapper';
-import { useTableSort } from 'src/components/table/hooks/useTableSort';
+  ColumnDef,
+  DataTable,
+  EmptyValue,
+  LinkCell,
+} from 'src/components/table';
 import { TagWithUrl } from 'src/components/tag-with-url';
-import { Funding as FundingType } from 'src/utils/api/types';
+import { formatDate } from 'src/utils/api/helpers';
+import { Funder, Funding as FundingType } from 'src/utils/api/types';
 
-// Constants for table configuration.
-// [ROW_SIZES]: num of rows per page
-const ROW_SIZES = [5, 10, 50, 100];
+/*
+The resource page's funding table (the shared DataTable; see
+src/components/table/README.md).
 
-// [COLUMNS]: table columns
-const COLUMNS = [
-  { key: 'name', title: 'Funding Name / Identifier' },
-  { key: 'funderName', title: 'Funder' },
-  {
-    key: 'startDate',
-    title: 'Start Date',
-    props: { w: '200px', maxW: '200px', minW: 'unset' },
-  },
-  {
-    key: 'endDate',
-    title: 'End Date',
-    props: { w: '200px', maxW: '200px', minW: 'unset' },
-  },
-];
+Sizes are content widths: the cells' 2 × 16px padding comes on top. Each is the
+legacy table's border-box width minus that padding (280px, and 200px for the
+dates), fixed: the legacy columns overflowed the resource page's content, so
+they sat at those widths.
 
-interface Row extends FundingType {
-  key: string;
-  hasRowDrawer: boolean;
-}
-interface FundingProps {
-  loading: boolean;
-  data: FundingType[];
-}
+The funders' details ("More Information") were a drawer row under each funding
+row. They're now under the funders, in the Funder cell.
+*/
 
 const SHOW_MAX_FUNDER_NAMES = 5;
-// Main Funding component - renders a table with funding data.
-export const Funding: React.FC<FundingProps> = ({
-  data: fundingData,
-  loading,
-}) => {
-  // create custom [properties] for sorting. This is needed because the data is nested.
-  const funding = useMemo(
-    () =>
-      fundingData.map((funding, idx) => {
-        const funderName = Array.isArray(funding?.funder)
-          ? funding?.funder?.map(f => f?.name).join(', ')
-          : funding?.funder?.name;
-        return {
-          ...funding,
-          key: uniqueId(`funding-${funding.identifier || idx}`),
-          name: funding?.name || '',
-          funderName,
-          hasRowDrawer: funding.funder
-            ? Array.isArray(funding.funder)
-              ? funding.funder.some(
-                  funderItem =>
-                    funderItem &&
-                    Object.keys(funderItem).some(
-                      key =>
-                        key !== '@type' &&
-                        key !== 'name' &&
-                        key !== 'identifier',
-                    ),
-                )
-              : Object.keys(funding.funder).some(
-                  key =>
-                    key !== '@type' && key !== 'name' && key !== 'identifier',
-                )
-            : false,
-        };
-      }),
-    [fundingData],
+
+const fixed = (width: number) => ({ min: width, max: width });
+
+interface FundingRow extends FundingType {
+  /** The funders' names, comma-joined: what the Funder column sorts on. */
+  funderName?: string;
+  funders: (Funder | null | undefined)[];
+  /** Whether any funder has details beyond its name and identifier. */
+  hasFunderDetails: boolean;
+}
+
+const toArray = (value?: string | string[] | null) =>
+  value == null ? [] : Array.isArray(value) ? value : [value];
+
+/** The details shown under "More Information". */
+const hasDetails = (funder?: Funder | null) =>
+  Boolean(
+    funder &&
+      (toArray(funder.alternateName).length ||
+        toArray(funder.class).length ||
+        toArray(funder.role).length ||
+        toArray(funder.parentOrganization).length ||
+        funder.employee?.length),
   );
 
-  // sort data based on column sorting
-  const accessor = useCallback((v: any) => {
-    return v;
-  }, []);
-
-  const [{ data, orderBy, sortBy }, updateSort] = useTableSort({
-    data: funding,
-    accessor,
-  });
-  // [size]: num of rows per page
-  const [size, setSize] = useState(ROW_SIZES[0]);
-
-  // [from]: current page number
-  const [from, setFrom] = useState(0);
-
-  // [rows]: all rows to display
-
-  const [rows, setRows] = useState<Row[]>(data);
-
-  useEffect(() => {
-    // update rows to display based on current page number and num of rows per page
-    setRows(data.slice(from * size, from * size + size));
-  }, [data, size, from]);
-
-  if (!loading && funding?.length === 0) {
-    return <Text>No funding data available.</Text>;
-  }
-  return (
-    <Skeleton loading={!!loading} overflow='auto'>
-      <Heading as='h4' fontSize='sm' mx={1} mb={4} fontWeight='semibold'>
-        Grant and Funding Information
-      </Heading>
-      <TableWrapper colorPalette='gray' size='sm'>
-        <TableContainer>
-          <Table.Root
-            role='table'
-            size='sm'
-            aria-label='Grant and funding information'
-            aria-describedby='funding-table-caption'
-            aria-rowcount={rows.length}
-          >
-            {/* Note: keep for accessibility */}
-            <VisuallyHidden id='funding-table-caption' asChild>
-              <caption>Grant and funding information</caption>
-            </VisuallyHidden>
-            <thead>
-              <Table.Row role='row' flex='1' display='flex' w='100%'>
-                {COLUMNS.map(column => {
-                  return (
-                    <Th
-                      key={`table-col-th-${column.key}`}
-                      label={column.title}
-                      isSelected={column.key === orderBy}
-                      borderBottomColor={`${getMetadataColorPalette(
-                        'funding',
-                      )}.200`}
-                      isSortable={true}
-                      tableSortToggleProps={{
-                        isSelected: column.key === orderBy,
-                        sortBy,
-                        handleToggle: (sortByAsc: boolean) => {
-                          updateSort(column.key, sortByAsc);
-                        },
-                      }}
-                      {...column.props}
-                    />
-                  );
-                })}
-              </Table.Row>
-            </thead>
-            <Flex flexDirection='column' asChild>
-              <tbody>
-                {rows.map(funding => {
-                  const funders = Array.isArray(funding?.funder)
-                    ? funding.funder
-                    : [funding.funder];
-                  return (
-                    <React.Fragment key={`table-tr-${funding.key}`}>
-                      <Row
-                        as='tr'
-                        flexDirection='row'
-                        borderTop='1px solid'
-                        borderTopColor='gray.200'
-                        borderBottom='none'
-                      >
-                        {COLUMNS.map(column => {
-                          return (
-                            <Cell
-                              key={`table-td-${funding.key}-${column.key}`}
-                              as='td'
-                              role='cell'
-                              {...column.props}
-                            >
-                              {column.key === 'name' && (
-                                <ContentWithTag
-                                  label='Funding ID |'
-                                  identifier={funding.identifier}
-                                  url={funding.url}
-                                  name={funding.name}
-                                />
-                              )}
-                              {column.key === 'funderName' &&
-                                funders
-                                  .slice(0, SHOW_MAX_FUNDER_NAMES)
-                                  .map((funder, idx) => {
-                                    return (
-                                      <React.Fragment
-                                        key={`table-td-funder-${funding.key}-${funder?.identifier}-${funder?.name}-${idx}`}
-                                      >
-                                        <Box
-                                          as='span'
-                                          display='block'
-                                          mb={
-                                            Array.isArray(funding?.funder)
-                                              ? 2
-                                              : 0
-                                          }
-                                        >
-                                          <ContentWithTag
-                                            label='Funder ID |'
-                                            identifier={funder?.identifier}
-                                            url={funder?.url}
-                                            name={funder?.name}
-                                          />
-                                        </Box>
-                                        {funders.length >
-                                          SHOW_MAX_FUNDER_NAMES &&
-                                        idx === SHOW_MAX_FUNDER_NAMES - 1 ? (
-                                          <Text as='span' mt={8}>
-                                            {`and ${
-                                              funders.length -
-                                              SHOW_MAX_FUNDER_NAMES
-                                            } more... `}
-                                          </Text>
-                                        ) : (
-                                          ''
-                                        )}
-                                      </React.Fragment>
-                                    );
-                                  })}
-
-                              {column.key.toLowerCase().includes('date') &&
-                                (funding[column.key as keyof FundingType] ? (
-                                  <>
-                                    {new Date(
-                                      funding[
-                                        column.key as keyof FundingType
-                                      ] as string,
-                                    ).toLocaleDateString('en-US', {
-                                      year: 'numeric',
-                                      month: 'short',
-                                      day: 'numeric',
-                                    })}
-                                  </>
-                                ) : (
-                                  <EmptyCell />
-                                ))}
-                            </Cell>
-                          );
-                        })}
-                      </Row>
-
-                      {funding?.hasRowDrawer && (
-                        <Row className='row-drawer' border='none'>
-                          <RowWithDrawer as='td' role='cell'>
-                            <FundingDrawerContent
-                              id={funding.key}
-                              funder={funding.funder}
-                            />
-                          </RowWithDrawer>
-                        </Row>
-                      )}
-                    </React.Fragment>
-                  );
-                })}
-              </tbody>
-            </Flex>
-          </Table.Root>
-        </TableContainer>
-        <TablePagination
-          total={funding.length}
-          size={size}
-          setSize={setSize}
-          from={from}
-          setFrom={setFrom}
-          pageSizeOptions={ROW_SIZES}
-          colorPalette='gray'
-        />
-      </TableWrapper>
-    </Skeleton>
-  );
+const toRow = (funding: FundingType): FundingRow => {
+  const funders = Array.isArray(funding?.funder)
+    ? funding.funder
+    : [funding?.funder];
+  return {
+    ...funding,
+    name: funding?.name || '',
+    funderName: Array.isArray(funding?.funder)
+      ? funding?.funder?.map(f => f?.name).join(', ')
+      : funding?.funder?.name ?? undefined,
+    funders,
+    hasFunderDetails: funders.some(hasDetails),
+  };
 };
 
+/** A name (linked when it has a url) and its identifier as a tag. */
 const ContentWithTag = React.memo(
   ({
     url,
@@ -303,7 +79,7 @@ const ContentWithTag = React.memo(
     url?: string | null;
   }) => {
     if (!url && !identifier && !name) {
-      return <EmptyCell />;
+      return <EmptyValue />;
     }
 
     const href = url
@@ -316,9 +92,11 @@ const ContentWithTag = React.memo(
     return (
       <>
         {href && !identifier ? (
-          <Link href={href} isExternal>
-            <Text fontSize='inherit'>{name || 'Funding Information'}</Text>
-          </Link>
+          <LinkCell
+            href={href}
+            label={name || 'Funding Information'}
+            external
+          />
         ) : (
           <Text fontWeight='medium' fontStyle={!name ? 'italic' : 'normal'}>
             {name || 'No name provided'}
@@ -341,144 +119,200 @@ const ContentWithTag = React.memo(
   },
 );
 
-interface FundingDrawerContentProps extends FlexProps {
-  id: string;
-  funder: FundingType['funder'];
-}
-// FundingDrawerContent component - displays detailed information for a funding item.
-const FundingDrawerContent = React.memo(
-  ({ funder }: FundingDrawerContentProps) => {
-    const funders = Array.isArray(funder) ? funder : [funder];
+/****** Funder details ******/
 
-    return (
-      <Flex px={4} flexDirection='column'>
-        {funders.length &&
-          funders.some(
-            funderItem =>
-              funderItem &&
-              Object.keys(funderItem).some(
-                key =>
-                  key !== '@type' && key !== 'name' && key !== 'identifier',
-              ),
-          ) && (
-            <Box as='dl' mt={4}>
-              <Label as='dt' mb={2}>
-                About the Funder{funders.length > 1 ? 's' : ''}
-              </Label>
-              <dd>
-                {funders.map((funder, idx) => {
-                  const alternateNames = funder?.alternateName
-                    ? Array.isArray(funder.alternateName)
-                      ? funder.alternateName
-                      : [funder.alternateName]
-                    : null;
-
-                  return (
-                    <Box
-                      as='dl'
-                      key={`table-drawer-content-funder-${funder?.identifier}-${funder?.name}-${idx}`}
-                    >
-                      <Label as='dt' textTransform='capitalize' px={2}>
-                        Funder
-                      </Label>
-                      <VStack px={4} py={1} gap={1} alignItems='flex-start'>
-                        {funder?.name && (
-                          <dd>
-                            <Content fontWeight='semibold' my={0}>
-                              {funder.name}
-                              {alternateNames && (
-                                <Text color='gray.600' fontWeight='normal'>
-                                  Alternate Name:{' '}
-                                  {alternateNames.join(', ') || '-'}
-                                </Text>
-                              )}
-                            </Content>
-                          </dd>
-                        )}
-
-                        {(funder?.class ||
-                          funder?.role ||
-                          funder?.parentOrganization ||
-                          funder?.employee) && (
-                          <>
-                            {funder?.class && (
-                              <Flex alignItems='baseline'>
-                                <Label
-                                  as='dt'
-                                  textTransform='capitalize'
-                                  fontWeight='medium'
-                                >
-                                  Class:
-                                </Label>
-                                <Content as='dd' my={0} ml={1}>
-                                  {Array.isArray(funder.class)
-                                    ? funder.class.join(', ')
-                                    : funder.class}
-                                </Content>
-                              </Flex>
-                            )}
-                            {funder?.role && (
-                              <Flex alignItems='baseline'>
-                                <Label
-                                  as='dt'
-                                  textTransform='capitalize'
-                                  fontWeight='medium'
-                                >
-                                  Role:
-                                </Label>
-                                <Content as='dd' my={0} ml={1}>
-                                  {Array.isArray(funder.role)
-                                    ? funder.role.join(', ')
-                                    : funder.role}
-                                </Content>
-                              </Flex>
-                            )}
-
-                            {funder?.parentOrganization && (
-                              <Flex alignItems='baseline'>
-                                <Label
-                                  as='dt'
-                                  textTransform='capitalize'
-                                  fontWeight='medium'
-                                >
-                                  Parent Organization:
-                                </Label>
-                                <Content as='dd' my={0} ml={1}>
-                                  {Array.isArray(funder.parentOrganization)
-                                    ? funder.parentOrganization.join(', ')
-                                    : funder.parentOrganization}
-                                </Content>
-                              </Flex>
-                            )}
-
-                            {funder?.employee && (
-                              <Flex alignItems='baseline'>
-                                <Label
-                                  as='dt'
-                                  textTransform='capitalize'
-                                  fontWeight='medium'
-                                >
-                                  Employee:
-                                </Label>
-                                <Content as='dd' my={0} ml={1}>
-                                  {funder.employee.map(employee => {
-                                    return Array.isArray(employee.name)
-                                      ? employee.name.join(', ')
-                                      : employee.name;
-                                  })}
-                                </Content>
-                              </Flex>
-                            )}
-                          </>
-                        )}
-                      </VStack>
-                    </Box>
-                  );
-                })}
-              </dd>
-            </Box>
-          )}
-      </Flex>
-    );
-  },
+// The legacy drawer's label style.
+const Label = (props: TextProps) => (
+  <Text color='gray.600' lineHeight='moderate' {...props} />
 );
+
+// Label and value run on as one line of text, which wraps in the narrow cell
+// (side by side, a long label became a column of its own).
+const DetailRow = ({ label, values }: { label: string; values: string[] }) =>
+  values.length ? (
+    <div>
+      <Label as='dt' display='inline' fontWeight='medium'>
+        {label}:
+      </Label>{' '}
+      <Text as='dd' display='inline'>
+        {values.join(', ')}
+      </Text>
+    </div>
+  ) : null;
+
+const FunderDetailsContent = ({
+  funders,
+}: {
+  funders: FundingRow['funders'];
+}) => (
+  <>
+    <Label textTransform='uppercase' mb={2}>
+      About the Funder{funders.length > 1 ? 's' : ''}
+    </Label>
+    {funders.map((funder, idx) => (
+      <Box
+        as='dl'
+        key={`${funder?.identifier}-${funder?.name}-${idx}`}
+        mb={2}
+        lineHeight='moderate'
+        wordBreak='break-word'
+      >
+        {funder?.name && (
+          <div>
+            <Label as='dt'>Funder</Label>
+            <dd>
+              <Text fontWeight='semibold'>{funder.name}</Text>
+              {funder.alternateName && (
+                <Text color='gray.600'>
+                  Alternate Name:{' '}
+                  {toArray(funder.alternateName).join(', ') || '-'}
+                </Text>
+              )}
+            </dd>
+          </div>
+        )}
+        <DetailRow label='Class' values={toArray(funder?.class)} />
+        <DetailRow label='Role' values={toArray(funder?.role)} />
+        <DetailRow
+          label='Parent Organization'
+          values={toArray(funder?.parentOrganization)}
+        />
+        <DetailRow
+          label='Employee'
+          values={(funder?.employee ?? []).flatMap(employee =>
+            toArray(employee.name),
+          )}
+        />
+      </Box>
+    ))}
+  </>
+);
+
+/**
+ * "More Information" about the funders, under their names. The details only
+ * mount once opened, as the legacy drawer's did.
+ */
+const FunderDetails = ({ funders }: { funders: FundingRow['funders'] }) => {
+  const [open, setOpen] = useState(false);
+  const contentId = useId();
+  return (
+    <Box mt={2}>
+      <CollapsibleTextTrigger
+        isOpen={open}
+        aria-controls={contentId}
+        onClick={() => setOpen(prev => !prev)}
+      >
+        {open ? 'Less Information' : 'More Information'}
+      </CollapsibleTextTrigger>
+      <Box id={contentId} hidden={!open} mt={2}>
+        {open && <FunderDetailsContent funders={funders} />}
+      </Box>
+    </Box>
+  );
+};
+
+/** Up to five funders, then a count of the rest, then their details. */
+const FunderCell = ({ row }: { row: FundingRow }) => {
+  const { funders } = row;
+  return (
+    <>
+      {funders.slice(0, SHOW_MAX_FUNDER_NAMES).map((funder, idx) => (
+        <React.Fragment key={`${funder?.identifier}-${funder?.name}-${idx}`}>
+          <Box as='span' display='block' mb={funders.length > 1 ? 2 : 0}>
+            <ContentWithTag
+              label='Funder ID |'
+              identifier={funder?.identifier}
+              url={funder?.url}
+              name={funder?.name}
+            />
+          </Box>
+          {funders.length > SHOW_MAX_FUNDER_NAMES &&
+            idx === SHOW_MAX_FUNDER_NAMES - 1 && (
+              <Text as='span'>
+                {`and ${funders.length - SHOW_MAX_FUNDER_NAMES} more... `}
+              </Text>
+            )}
+        </React.Fragment>
+      ))}
+      {row.hasFunderDetails && <FunderDetails funders={funders} />}
+    </>
+  );
+};
+
+/****** Columns ******/
+
+const dateColumn = (
+  id: 'startDate' | 'endDate',
+  header: string,
+): ColumnDef<FundingRow> => ({
+  id,
+  header,
+  type: 'date',
+  sort: true,
+  size: fixed(168),
+  accessor: row => formatDate(row[id]),
+});
+
+export const FUNDING_COLUMNS: ColumnDef<FundingRow>[] = [
+  {
+    id: 'name',
+    header: 'Funding Name / Identifier',
+    sort: true,
+    size: fixed(248),
+    cell: ({ row }) =>
+      row.url || row.identifier || row.name ? (
+        <ContentWithTag
+          label='Funding ID |'
+          identifier={row.identifier}
+          url={row.url}
+          name={row.name}
+        />
+      ) : null,
+  },
+  {
+    id: 'funderName',
+    header: 'Funder',
+    sort: true,
+    size: fixed(248),
+    cell: ({ row }) =>
+      row.hasFunderDetails ||
+      row.funders.some(f => f?.url || f?.identifier || f?.name) ? (
+        <FunderCell row={row} />
+      ) : null,
+  },
+  dateColumn('startDate', 'Start Date'),
+  dateColumn('endDate', 'End Date'),
+];
+
+// Their order in the record is stable, and identifiers can repeat or be
+// missing.
+const getFundingRowId = (_: FundingRow, index: number) => String(index);
+
+interface FundingProps {
+  loading: boolean;
+  data: FundingType[];
+}
+
+// Main Funding component - renders a table with funding data.
+export const Funding: React.FC<FundingProps> = ({ data, loading }) => {
+  const rows = useMemo(() => data.map(toRow), [data]);
+
+  if (!loading && rows.length === 0) {
+    return <Text>No funding data available.</Text>;
+  }
+  return (
+    <>
+      <Heading as='h4' fontSize='sm' mx={1} mb={4} fontWeight='semibold'>
+        Grant and Funding Information
+      </Heading>
+      <DataTable
+        label='Grant and funding information'
+        data={rows}
+        columns={FUNDING_COLUMNS}
+        getRowId={getFundingRowId}
+        pagination
+        status={{ loading }}
+      />
+    </>
+  );
+};

@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { withtopicEmphasizedDescription } from 'src/views/diseases/helpers';
 import { DiseasePageProps } from 'src/views/diseases/types';
 import { SelectedFilterType } from 'src/views/search/components/filters/types';
@@ -110,6 +110,7 @@ export const useDiseaseData = ({
   const {
     data: diseases = [],
     isLoading,
+    isPlaceholderData,
     error,
   } = useQuery<DiseasePageProps[], Error>({
     // Query key includes sorted search terms for caching
@@ -118,11 +119,18 @@ export const useDiseaseData = ({
     enabled: enabled && !shouldShowNoDiseases,
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000,
+    // A new search keeps the previous matches (and their count) until its own
+    // arrive, rather than dropping to none.
+    placeholderData: keepPreviousData,
   });
 
   return {
     diseases: shouldShowNoDiseases ? [] : diseases,
-    loading: shouldShowNoDiseases ? false : isLoading,
+    // This search's matches aren't in yet, including while `diseases` still
+    // holds the previous search's.
+    loading: shouldShowNoDiseases ? false : isLoading || isPlaceholderData,
+    // `undefined` until matches first load.
+    count: shouldShowNoDiseases ? 0 : isLoading ? undefined : diseases.length,
     error,
     hasMatchingDiseases: shouldShowNoDiseases ? false : diseases.length > 0,
   };

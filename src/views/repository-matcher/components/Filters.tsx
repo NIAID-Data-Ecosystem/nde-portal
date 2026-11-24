@@ -35,12 +35,12 @@ interface FiltersProps {
 
 // FiltersList only reads `name` and (optionally) `groupBy` off its config; the
 // rest of FilterConfig is search-page plumbing we stub out here.
-const toFilterConfig = (col: RepositoryMatcherColumn<any>): FilterConfig => ({
+const toFilterConfig = (col: RepositoryMatcherColumn): FilterConfig => ({
   id: col.id,
-  name: col.label,
+  name: col.header,
   property: col.id,
   category: 'Dataset',
-  description: col.info?.description ?? '',
+  description: col.description ?? '',
   queryType: 'facet',
   groupBy: col.filter?.groupBy,
 });

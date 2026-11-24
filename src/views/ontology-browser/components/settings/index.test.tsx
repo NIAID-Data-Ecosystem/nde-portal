@@ -29,6 +29,16 @@ describe('OntologyBrowserSettings', () => {
     );
   };
 
+  /*
+  Opening the popover positions it asynchronously (floating-ui resolves after
+  the click), which updates its state; click inside an async `act` so that
+  lands before the assertions rather than after the test.
+  */
+  const openSettings = () =>
+    act(async () => {
+      screen.getByRole('button', { name: /settings/i }).click();
+    });
+
   beforeEach(() => {
     (useLocalStorage as jest.Mock).mockReturnValue([
       {
@@ -52,26 +62,22 @@ describe('OntologyBrowserSettings', () => {
     ).toBeInTheDocument();
   });
 
-  test('renders the description when provided', () => {
+  test('renders the description when provided', async () => {
     const description = 'This is a description';
     renderComponent({ description });
-    act(() => {
-      screen.getByRole('button', { name: /settings/i }).click();
-    });
+    await openSettings();
     expect(screen.getByText(description)).toBeInTheDocument();
   });
 
-  test('does not render the description when not provided', () => {
+  test('does not render the description when not provided', async () => {
     renderComponent();
-    act(() => {
-      screen.getByRole('button', { name: /settings/i }).click();
-    });
+    await openSettings();
     expect(
       screen.queryByText(/this is a description/i),
     ).not.toBeInTheDocument();
   });
 
-  test('does render the header and description when provided and popover opened', () => {
+  test('does render the header and description when provided and popover opened', async () => {
     render(
       <ChakraProvider value={system}>
         <OntologyBrowserSettings
@@ -91,9 +97,7 @@ describe('OntologyBrowserSettings', () => {
         />
       </ChakraProvider>,
     );
-    act(() => {
-      screen.getByRole('button', { name: /settings/i }).click();
-    });
+    await openSettings();
     expect(screen.queryByText(/this is a description/i)).toBeInTheDocument();
 
     // The popover and on the trigger button should both contain the label

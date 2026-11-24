@@ -3,7 +3,17 @@
 This directory contains Playwright tests. The current suite focuses on
 accessibility checks powered by `@axe-core/playwright`, plus a regression check
 for our Content Security Policy (see [CSP check](#csp-check)) and a broken-link
-check (see [Link check](#link-check)).
+check (see [Link check](#link-check)). This directory contains Playwright tests:
+
+- `accessibility/` — axe scans powered by `@axe-core/playwright` (most of the
+  suite, described below).
+- `layout/` — real-browser layout and interaction checks that jsdom can't do
+  (sticky headers, pinned columns, adaptive column widths, scrollbar
+  reachability, touch). They use the same `page.route` mocking and run with the
+  rest of the suite. Assert behaviour (positions relative to each other, within
+  a pixel), not pixel-perfect screenshots.
+- `perf/` — a manual performance harness, not run by `playwright test`; see
+  `perf/README.md`.
 
 ## Running tests
 

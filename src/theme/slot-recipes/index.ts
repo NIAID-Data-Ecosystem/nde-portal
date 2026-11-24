@@ -3,6 +3,7 @@ import { alertSlotRecipe } from './alert.slot-recipe';
 import { breadcrumbSlotRecipe } from './breadcrumb.slot-recipe';
 import { cardSlotRecipe } from './card.slot-recipe';
 import { checkboxSlotRecipe } from './checkbox.slot-recipe';
+import { dataTableSlotRecipe } from './data-table.slot-recipe';
 import { inputLabelSlotRecipes } from './input-label.slot-recipes';
 import { listSlotRecipe } from './list.slot-recipe';
 import { menuSlotRecipe } from './menu.slot-recipe';
@@ -21,6 +22,7 @@ export const slotRecipes = {
   breadcrumb: breadcrumbSlotRecipe,
   card: cardSlotRecipe,
   checkbox: checkboxSlotRecipe,
+  dataTable: dataTableSlotRecipe,
   list: listSlotRecipe,
   menu: menuSlotRecipe,
   popover: popoverSlotRecipe,

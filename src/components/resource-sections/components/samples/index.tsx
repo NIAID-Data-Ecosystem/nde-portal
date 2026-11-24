@@ -1,10 +1,9 @@
 import { Box, Flex } from '@chakra-ui/react';
-import { TableProps } from 'src/components/table';
+import React, { useMemo } from 'react';
 import { SampleAggregate, SampleCollection } from 'src/utils/api/types';
 
 import { SampleCollectionItemsTable } from './components/SampleCollectionsTable';
 import { SampleTable } from './components/SampleTable';
-import { Cell } from './components/SampleTable/Cells';
 import { SAMPLE_TABLE_CONFIG } from './config';
 
 interface SamplesDisplayProps {
@@ -12,32 +11,21 @@ interface SamplesDisplayProps {
   resourceIdentifier?: string;
 }
 
-function renderSampleTable<T extends SampleAggregate>(
-  sample: T,
-  config: {
-    label: string;
-    caption: string;
-    getColumns: (s: T) => any[];
-    getRows: (s: T) => any[];
-    tableProps?: Partial<TableProps<any>>;
-  },
-) {
+// A single Sample: one row of its properties.
+const SampleAggregateTable = ({ sample }: { sample: SampleAggregate }) => {
+  const columns = useMemo(
+    () => SAMPLE_TABLE_CONFIG.getColumns(sample),
+    [sample],
+  );
+  const rows = useMemo(() => SAMPLE_TABLE_CONFIG.getRows(sample), [sample]);
   return (
     <SampleTable
-      label={config.label}
-      caption={config.caption}
-      tableProps={{
-        columns: config.getColumns(sample),
-        data: config.getRows(sample),
-        getCells: props => {
-          const data = props.data?.[props.column.property];
-          return Cell.renderCellData?.({ ...props, data });
-        },
-        ...config.tableProps,
-      }}
+      label={SAMPLE_TABLE_CONFIG.label}
+      columns={columns}
+      rows={rows}
     />
   );
-}
+};
 
 export const SamplesDisplay = ({
   sample,
@@ -49,7 +37,7 @@ export const SamplesDisplay = ({
     <Flex flexDirection='column' gap={8}>
       <Box>
         {sample['@type'] === 'Sample' ? (
-          renderSampleTable(sample as SampleAggregate, SAMPLE_TABLE_CONFIG)
+          <SampleAggregateTable sample={sample as SampleAggregate} />
         ) : (
           // SampleCollection: fetch individual sample records via the API and
           // render them in a table.

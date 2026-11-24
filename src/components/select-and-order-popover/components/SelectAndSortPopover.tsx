@@ -37,43 +37,8 @@ export interface SelectAndSortPopoverCopy {
   clearAll?: string;
 }
 
-export interface SelectAndSortPopoverProps {
-  /** Items to display. Set `groupKey` on items to enable grouped rendering. */
-  items: PopoverItem[];
-
-  /**
-   * localStorage key for persisting selection. Pass `null` to opt out of
-   * persistence.
-   */
-  storageKeyVisible: string | null;
-
-  /**
-   * localStorage key for persisting order. Required only when
-   * `enableOrdering` is true. Pass `null` to opt out of persistence.
-   */
-  storageKeyOrder?: string | null;
-
-  /** IDs selected by default when no persisted value exists. Defaults to all IDs. */
-  defaultVisibleIds?: string[];
-
-  /** IDs that cannot be deselected and (when ordering) stay pinned at top. */
-  requiredIds?: readonly string[];
-
-  /** Enables drag-and-drop and up/down reordering. Default: false. */
-  enableOrdering?: boolean;
-
-  /**
-   * Force grouped or flat rendering. When omitted, grouping is auto-detected
-   * from whether any item carries a `groupKey`.
-   */
-  enableGrouping?: boolean;
-
-  /** Called whenever the visible-IDs set changes. */
-  onVisibleChange?: (visibleIds: string[]) => void;
-
-  /** Called whenever the display order changes. Only fires when ordering is enabled. */
-  onOrderChange?: (orderedIds: string[]) => void;
-
+/** Presentation options shared by the stateful popover and the controlled view. */
+interface SelectAndSortPopoverDisplayProps {
   /** Override any of the default UI strings. */
   copy?: SelectAndSortPopoverCopy;
 
@@ -85,6 +50,12 @@ export interface SelectAndSortPopoverProps {
 
   /** Show the select-all/clear-all toggle. Default: true. */
   showSelectAll?: boolean;
+
+  /**
+   * Force grouped or flat rendering. When omitted, grouping is auto-detected
+   * from whether any item carries a `groupKey`.
+   */
+  enableGrouping?: boolean;
 
   /** Override props on the trigger button (color scheme, size, layout, etc.). */
   triggerProps?: Omit<ButtonProps, 'children'>;
@@ -99,6 +70,32 @@ export interface SelectAndSortPopoverProps {
   maxListHeight?: string;
 }
 
+export interface SelectAndSortPopoverViewProps
+  extends SelectAndSortPopoverDisplayProps {
+  /** Items to display, already in display order. */
+  items: PopoverItem[];
+  selectedIds: string[];
+  /** IDs that cannot be deselected and (when ordering) stay pinned at top. */
+  requiredIds?: string[];
+  /**
+   * IDs restored by "Clear All". Labelled "(shown by default)" but stay
+   * individually checkable and movable.
+   */
+  fallbackIds?: string[];
+  /** Enables drag-and-drop and up/down reordering. */
+  enableOrdering?: boolean;
+  onCheck: (id: string, checked: boolean) => void;
+  onToggleAll: () => void;
+  onMoveUp?: (id: string) => void;
+  onMoveDown?: (id: string) => void;
+  onDragEnd?: (event: {
+    active: { id: string | number };
+    over: { id: string | number } | null;
+  }) => void;
+  /** Extra controls rendered below the list (e.g. pinning, reset). */
+  footer?: React.ReactNode;
+}
+
 const DEFAULT_COPY: Required<SelectAndSortPopoverCopy> = {
   button: 'Customize',
   header: 'Customize',
@@ -110,21 +107,24 @@ const DEFAULT_COPY: Required<SelectAndSortPopoverCopy> = {
 };
 
 /**
- * Generic popover for selecting (and optionally reordering) a set of items.
- * Used to power both the search-filters customization popover and the
- * repository-matcher column customization popover. Wrap with a
- * context-specific component to pre-fill storage keys, copy, and defaults.
+ * The popover shell, fully controlled: it renders the given selection and
+ * order and reports changes, but owns no state beyond its search box. Used by
+ * `SelectAndSortPopover` (which persists its own state) and by the shared
+ * table's `ColumnCustomizer` (whose state lives in `useColumnPreferences`).
  */
-export const SelectAndSortPopover = ({
+export const SelectAndSortPopoverView = ({
   items,
-  storageKeyVisible,
-  storageKeyOrder,
-  defaultVisibleIds,
+  selectedIds,
   requiredIds = [],
+  fallbackIds = [],
   enableOrdering = false,
   enableGrouping,
-  onVisibleChange,
-  onOrderChange,
+  onCheck,
+  onToggleAll,
+  onMoveUp,
+  onMoveDown,
+  onDragEnd,
+  footer,
   copy: copyOverrides,
   showCount = true,
   showSearch = true,
@@ -133,52 +133,11 @@ export const SelectAndSortPopover = ({
   popoverProps,
   popoverContentProps,
   maxListHeight,
-}: SelectAndSortPopoverProps) => {
+}: SelectAndSortPopoverViewProps) => {
   const copy = { ...DEFAULT_COPY, ...copyOverrides };
-
-  const allIds = useMemo(() => items.map(i => i.id), [items]);
 
   // Auto-detect grouping unless explicitly overridden.
   const useGrouping = enableGrouping ?? items.some(i => Boolean(i.groupKey));
-
-  const {
-    selectedIds,
-    order,
-    isReady,
-    toggle,
-    toggleAll,
-    moveUp,
-    moveDown,
-    handleDragEnd,
-  } = useSelectableList({
-    items,
-    requiredIds: requiredIds as string[],
-    enableOrdering,
-    storageKeyVisible,
-    storageKeyOrder,
-    defaultVisibleIds,
-  });
-
-  // Notify parent when visibility changes.
-  useEffect(() => {
-    if (!isReady) return;
-    onVisibleChange?.(selectedIds);
-  }, [selectedIds, isReady, onVisibleChange]);
-
-  // Notify parent when order changes (ordering mode only).
-  useEffect(() => {
-    if (!isReady || !order) return;
-    onOrderChange?.(order);
-  }, [order, isReady, onOrderChange]);
-
-  // When ordering is enabled, render items in their current order so search
-  // filtering preserves that order.
-  const orderedItems = useMemo<PopoverItem[]>(() => {
-    if (!order) return items;
-    return order
-      .map(id => items.find(i => i.id === id))
-      .filter((i): i is PopoverItem => Boolean(i));
-  }, [order, items]);
 
   const {
     searchTerm,
@@ -186,11 +145,15 @@ export const SelectAndSortPopover = ({
     isSearching,
     filteredItems,
     filteredGroups,
-  } = usePopoverSearch({ items: orderedItems });
+  } = usePopoverSearch({ items });
 
   const selectedCount = selectedIds.length;
-  const totalCount = allIds.length;
+  const totalCount = items.length;
   const allSelected = selectedCount === totalCount;
+  const orderedIds = useMemo(
+    () => (enableOrdering ? items.map(i => i.id) : undefined),
+    [enableOrdering, items],
+  );
 
   return (
     <Popover.Root
@@ -271,7 +234,7 @@ export const SelectAndSortPopover = ({
                 <PopoverSelectAll
                   allSelected={allSelected}
                   totalCount={totalCount}
-                  onToggle={toggleAll}
+                  onToggle={onToggleAll}
                   selectAllLabel={copy.selectAll}
                   clearAllLabel={copy.clearAll}
                 />
@@ -291,21 +254,135 @@ export const SelectAndSortPopover = ({
                 items={filteredItems}
                 groups={useGrouping ? filteredGroups : undefined}
                 selectedIds={selectedIds}
-                requiredIds={requiredIds as string[]}
+                requiredIds={requiredIds}
+                fallbackIds={fallbackIds}
                 enableOrdering={enableOrdering}
                 isSearching={isSearching}
-                orderedIds={order}
-                onCheck={toggle}
-                onMoveUp={moveUp}
-                onMoveDown={moveDown}
-                onDragEnd={handleDragEnd}
+                orderedIds={orderedIds}
+                onCheck={onCheck}
+                onMoveUp={onMoveUp}
+                onMoveDown={onMoveDown}
+                onDragEnd={onDragEnd}
                 emptyMessage={copy.noItemsFound}
                 maxHeight={maxListHeight}
               />
             </Popover.Body>
+            {footer && (
+              <>
+                <Separator />
+                <Popover.Footer py={2} px={3}>
+                  {footer}
+                </Popover.Footer>
+              </>
+            )}
           </Popover.Content>
         </Popover.Positioner>
       </Portal>
     </Popover.Root>
+  );
+};
+
+export interface SelectAndSortPopoverProps
+  extends SelectAndSortPopoverDisplayProps {
+  /** Items to display. Set `groupKey` on items to enable grouped rendering. */
+  items: PopoverItem[];
+
+  /**
+   * localStorage key for persisting selection. Pass `null` to opt out of
+   * persistence.
+   */
+  storageKeyVisible: string | null;
+
+  /**
+   * localStorage key for persisting order. Required only when
+   * `enableOrdering` is true. Pass `null` to opt out of persistence.
+   */
+  storageKeyOrder?: string | null;
+
+  /** IDs selected by default when no persisted value exists. Defaults to all IDs. */
+  defaultVisibleIds?: string[];
+
+  /** IDs that cannot be deselected and (when ordering) stay pinned at top. */
+  requiredIds?: readonly string[];
+
+  /** Enables drag-and-drop and up/down reordering. Default: false. */
+  enableOrdering?: boolean;
+
+  /** Called whenever the visible-IDs set changes. */
+  onVisibleChange?: (visibleIds: string[]) => void;
+
+  /** Called whenever the display order changes. Only fires when ordering is enabled. */
+  onOrderChange?: (orderedIds: string[]) => void;
+}
+
+/**
+ * Generic popover for selecting (and optionally reordering) a set of items,
+ * persisting its own state to localStorage. Used by the search-filters
+ * customization popover. Wrap with a context-specific component to pre-fill
+ * storage keys, copy, and defaults.
+ */
+export const SelectAndSortPopover = ({
+  items,
+  storageKeyVisible,
+  storageKeyOrder,
+  defaultVisibleIds,
+  requiredIds = [],
+  enableOrdering = false,
+  onVisibleChange,
+  onOrderChange,
+  ...displayProps
+}: SelectAndSortPopoverProps) => {
+  const {
+    selectedIds,
+    order,
+    isReady,
+    toggle,
+    toggleAll,
+    moveUp,
+    moveDown,
+    handleDragEnd,
+  } = useSelectableList({
+    items,
+    requiredIds: requiredIds as string[],
+    enableOrdering,
+    storageKeyVisible,
+    storageKeyOrder,
+    defaultVisibleIds,
+  });
+
+  // Notify parent when visibility changes.
+  useEffect(() => {
+    if (!isReady) return;
+    onVisibleChange?.(selectedIds);
+  }, [selectedIds, isReady, onVisibleChange]);
+
+  // Notify parent when order changes (ordering mode only).
+  useEffect(() => {
+    if (!isReady || !order) return;
+    onOrderChange?.(order);
+  }, [order, isReady, onOrderChange]);
+
+  // When ordering is enabled, render items in their current order so search
+  // filtering preserves that order.
+  const orderedItems = useMemo<PopoverItem[]>(() => {
+    if (!order) return items;
+    return order
+      .map(id => items.find(i => i.id === id))
+      .filter((i): i is PopoverItem => Boolean(i));
+  }, [order, items]);
+
+  return (
+    <SelectAndSortPopoverView
+      {...displayProps}
+      items={orderedItems}
+      selectedIds={selectedIds}
+      requiredIds={requiredIds as string[]}
+      enableOrdering={enableOrdering}
+      onCheck={toggle}
+      onToggleAll={toggleAll}
+      onMoveUp={moveUp}
+      onMoveDown={moveDown}
+      onDragEnd={handleDragEnd}
+    />
   );
 };

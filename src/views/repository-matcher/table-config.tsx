@@ -1,9 +1,11 @@
-import { Circle, HStack, Tag, Text, VStack } from '@chakra-ui/react';
+import { Circle, Tag } from '@chakra-ui/react';
 import React from 'react';
 import {
   getMetadataDescription,
   getMetadataName,
 } from 'src/components/metadata';
+import { ExpandableText, LinkCell } from 'src/components/table';
+import { formatDate } from 'src/utils/api/helpers';
 import { AccessTypes, DefinedTerm } from 'src/utils/api/types';
 import { USE_MERGED_SOURCES_AND_CATALOGS } from 'src/utils/feature-flags';
 import {
@@ -13,53 +15,78 @@ import {
 } from 'src/utils/formatting/formatConditionsOfAccess';
 
 import {
-  TagCell,
-  TagCellList,
-  TextCell,
-  TextCellWithLink,
-} from './components/TableCells';
-import {
   NameValue,
   RepositoryMatcherColumn,
   RepositoryMatcherItem,
 } from './types';
 import { itemTypes } from './utils';
 
-const tagCellStyles = {
-  bg: 'bg.alt',
-  color: 'text.body',
-};
-export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
+/*
+Column definitions for the repository matcher table (the shared DataTable; see
+src/components/table). Most columns only set a `type`: the tag
+columns get the shared tag list (12 shown, then "Show N More") and the text
+columns the shared text, link and "No data" handling. Only cells with their
+own look (name link, access badge, temporal coverage, license, type) set
+`cell`.
+
+Commented-out columns further down still use the pre-DataTable column shape
+(`label`, `columns`, `component`) and need converting before re-enabling.
+*/
+
+const SEMIBOLD: React.CSSProperties = { fontWeight: 600 };
+
+const toArray = <T,>(value: T | T[] | null | undefined): T[] =>
+  Array.isArray(value) ? value : value ? [value] : [];
+
+const termNames = (value: DefinedTerm[]) =>
+  value?.map(v => v.name).filter((name): name is string => !!name) ?? [];
+
+/** The shape shared by the DefinedTerm tag columns (health condition, species…). */
+const definedTermTagColumn = ({
+  field,
+  filterDescription,
+  ...column
+}: Pick<RepositoryMatcherColumn<DefinedTerm[]>, 'id' | 'header' | 'size'> & {
+  field: keyof RepositoryMatcherItem;
+  description?: string;
+  filterDescription?: string;
+}): RepositoryMatcherColumn<DefinedTerm[]> => ({
+  ...column,
+  type: 'tags',
+  fields: [field],
+  transform: item =>
+    toArray(item[field] as DefinedTerm | DefinedTerm[] | undefined),
+  getSearchValue: termNames,
+  filter: { getFilterValues: termNames },
+  info: { filterDescription },
+});
+
+export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn[] = [
   {
     id: 'name',
-    label: getMetadataName('name') || '',
+    header: getMetadataName('name') || '',
     fields: ['name', '_id', 'identifier', 'url', '@type', 'collectionType'],
-    columns: { isSortable: true, isDefault: true },
-    required: true,
+    hideable: false,
+    size: { min: 200, max: 320 },
+    sort: { value: (value: NameValue) => value?.label },
     transform: (item): NameValue => ({
       label: item.name || item._id || '',
       url: item?.url || '',
       _id: item._id || '',
     }),
-    getSortValue: (value: NameValue) => value.label.toLowerCase(),
     getSearchValue: (value: NameValue) => value.label,
-    component: ({
-      value,
-      loading,
-    }: {
-      value: NameValue;
-      loading?: boolean;
-    }) => (
-      <TextCellWithLink
-        label={value?.label || ''}
-        // Use the `url` field for the link if the `USE_MERGED_SOURCES_AND_CATALOGS` feature flag is disabled. If the feature flag is enabled, use the `_id` field to generate a link to the source's anchor on the `/sources` page.
-        url={
+    // Links to the source's anchor on the `/sources` page when
+    // USE_MERGED_SOURCES_AND_CATALOGS is on, otherwise to the record's `url`.
+    // Always client-side, as before.
+    cell: ({ value }: { value: NameValue }) => (
+      <LinkCell
+        href={
           USE_MERGED_SOURCES_AND_CATALOGS
             ? `/sources#${value?._id || ''}`
             : value?.url || ''
         }
-        loading={loading}
-        isExternal={false}
+        label={value?.label}
+        external={false}
       />
     ),
     info: {
@@ -68,31 +95,23 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   },
   {
     id: 'description',
-    label: getMetadataName('description') || '',
+    header: getMetadataName('description') || '',
     fields: ['description'],
-    columns: {
-      isSortable: true,
-      isDefault: true,
-      style: { maxWidth: 'unset', minWidth: '450px' },
-    },
+    type: 'longText',
+    size: { min: 320, max: 560 },
+    sort: true,
     transform: (item): RepositoryMatcherItem['description'] =>
       item.description || '',
-    component: ({
-      value,
-      loading,
-    }: {
-      value: RepositoryMatcherItem['description'];
-      loading?: boolean;
-    }) => {
-      return (
-        <TextCell
-          value={value || ''}
-          loading={loading}
-          lineClamp={8}
-          expandable
+    // Eight lines before "Show More", as before (the shared default is four).
+    cell: ({ value, column }) =>
+      value ? (
+        <ExpandableText
+          text={value}
+          noOfLines={8}
+          lineHeight='shorter'
+          toggleContext={column.header}
         />
-      );
-    },
+      ) : null,
   },
   // {
   //   id: 'abstract',
@@ -110,44 +129,17 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   // },
   {
     id: 'researchDomain',
-    label: getMetadataName('genre') || '',
+    header: getMetadataName('genre') || '',
+    description: 'Categorical information about the content of a resource.',
     fields: ['genre'],
-    columns: {
-      isSortable: true,
-      isDefault: true,
-      style: { maxWidth: '225px', minWidth: '225px' },
-    },
-    transform: item => {
-      if (!item.genre) return [];
-      return Array.isArray(item.genre) ? item.genre : [item.genre];
-    },
-    component: ({ value, loading }: { value: string[]; loading?: boolean }) => {
-      const items = loading ? Array.from({ length: 3 }, () => '') : value ?? [];
-
-      if (!loading && items.length === 0) {
-        return <TextCell value={''} loading={loading} lineClamp={1} />;
-      }
-      return (
-        <HStack flexWrap='wrap'>
-          {items.map((v, i) => (
-            <TagCell
-              key={i}
-              value={v}
-              lineClamp={1}
-              loading={loading}
-              {...tagCellStyles}
-            />
-          ))}
-        </HStack>
-      );
-    },
+    type: 'tags',
+    sort: true,
+    transform: item => toArray(item.genre as string | string[] | undefined),
     filter: {
       getFilterValues: (value: string[]) => value ?? [],
     },
     info: {
-      description: 'Categorical information about the content of a resource.',
       filterDescription: getMetadataDescription('genre') || '',
-      tooltip: getMetadataDescription('genre') || '',
       terms: [
         {
           label: 'Generalist',
@@ -164,18 +156,18 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
   },
   {
     id: 'coa',
-    label: 'Access',
+    header: 'Access',
+    description:
+      'Access-level definitions options include open (freely available), controlled (may include restrictions such as on use), or registered (requires registration to access).',
     fields: ['conditionsOfAccess'],
-    columns: {
-      isSortable: true,
-      isDefault: true,
-      style: { maxWidth: '200px', minWidth: '200px' },
-    },
+    size: { min: 170 },
+    sort: true,
     transform: (item): string =>
       transformConditionsOfAccessLabel(
         formatConditionsOfAccess(item.conditionsOfAccess),
       ) || '',
-    component: ({ value }: { value: string; loading?: boolean }) => {
+    cell: ({ value }: { value: string }) => {
+      if (!value) return null;
       const colorPalette = getColorPalette(value as AccessTypes);
       return (
         <Tag.Root
@@ -188,7 +180,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
           boxShadow='none'
         >
           <Circle size='8px' bg={`${colorPalette}.500`} />
-          <Tag.Label>{value || '-'}</Tag.Label>
+          <Tag.Label>{value}</Tag.Label>
         </Tag.Root>
       );
     },
@@ -196,10 +188,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       getFilterValues: (value: string) => (value ? [value] : []),
     },
     info: {
-      description:
-        'Access-level definitions options include open (freely available), controlled (may include restrictions such as on use), or registered (requires registration to access).',
       filterDescription: getMetadataDescription('conditionsOfAccess') || '',
-      tooltip: getMetadataDescription('conditionsOfAccess') || '',
       terms: [
         {
           label: 'Controlled Access',
@@ -222,283 +211,56 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       ],
     },
   },
-  {
+  definedTermTagColumn({
     id: 'healthCondition',
-    label: getMetadataName('healthCondition') || '',
-    fields: ['healthCondition'],
-    columns: { isSortable: false, isDefault: true },
-    transform: item => {
-      if (!item.healthCondition) return [];
-      return Array.isArray(item.healthCondition)
-        ? item.healthCondition
-        : [item.healthCondition];
-    },
-    getSearchValue: (value: DefinedTerm[]) => {
-      return (
-        value?.map(v => v.name).filter((name): name is string => !!name) ?? []
-      );
-    },
-    component: ({
-      value,
-      loading,
-    }: {
-      value: DefinedTerm[];
-      loading?: boolean;
-    }) => <TagCellList value={value} loading={loading} {...tagCellStyles} />,
-    filter: {
-      getFilterValues: (value: DefinedTerm[]) =>
-        value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
-    },
-    info: {
-      description: getMetadataDescription('healthCondition') || '',
-      filterDescription: getMetadataDescription('healthCondition') || '',
-      tooltip: getMetadataDescription('healthCondition') || '',
-    },
-  },
-  {
+    header: getMetadataName('healthCondition') || '',
+    field: 'healthCondition',
+    description: getMetadataDescription('healthCondition') || '',
+    filterDescription: getMetadataDescription('healthCondition') || '',
+  }),
+  definedTermTagColumn({
     id: 'infectiousAgent',
-    label: getMetadataName('infectiousAgent') || '',
-    fields: ['infectiousAgent'],
-    columns: { isSortable: false, isDefault: true },
-    transform: item => {
-      if (!item.infectiousAgent) return [];
-      return Array.isArray(item.infectiousAgent)
-        ? item.infectiousAgent
-        : [item.infectiousAgent];
-    },
-    getSearchValue: (value: DefinedTerm[]) => {
-      return (
-        value?.map(v => v.name).filter((name): name is string => !!name) ?? []
-      );
-    },
-    component: ({
-      value,
-      loading,
-    }: {
-      value: DefinedTerm[];
-      loading?: boolean;
-    }) => <TagCellList value={value} loading={loading} {...tagCellStyles} />,
-    filter: {
-      getFilterValues: (value: DefinedTerm[]) =>
-        value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
-    },
-    info: {
-      description: getMetadataDescription('infectiousAgent') || '',
-      filterDescription: getMetadataDescription('infectiousAgent') || '',
-      tooltip: getMetadataDescription('infectiousAgent') || '',
-    },
-  },
-  // {
-  //   id: 'dataAccepted',
-  //   label: 'Accepting Data?',
-  //   fields: ['creativeWorkStatus'],
-  //   columns: {
-  //     isSortable: true,
-  //     isDefault: true,
-  //     style: { maxWidth: '180px', minWidth: '180px' },
-  //   },
-  //   transform: item => item.creativeWorkStatus,
-  //   component: ({
-  //     value,
-  //   }: {
-  //     value: CreativeWorkStatusDatasetType | null;
-  //     loading?: boolean;
-  //   }) => {
-  //     const isNotAccepting = [
-  //       'retired',
-  //       'maintenance',
-  //       'not accepting data',
-  //     ].includes(value?.toLowerCase() || '');
-  //     const color = isNotAccepting || !value ? 'gray.600' : 'primary.500';
+    header: getMetadataName('infectiousAgent') || '',
+    field: 'infectiousAgent',
+    description: getMetadataDescription('infectiousAgent') || '',
+    filterDescription: getMetadataDescription('infectiousAgent') || '',
+  }),
 
-  //     return (
-  //       <HStack gap={1} color={color} opacity={isNotAccepting ? 0.8 : 1}>
-  //         {isNotAccepting ? (
-  //           <Icon ><FaXmark /></Icon>
-  //         ) : value ? (
-  //           <Icon ><FaCheck /></Icon>
-  //         ) : null}
-  //         <TextCell
-  //           value={value || ''}
-  //           color={'inherit'}
-  //           fontWeight={!value ? 'normal' : 'medium'}
-  //         />
-  //       </HStack>
-  //     );
-  //   },
-  //   filter: {
-  //     name: 'Accepting Data?',
-  //     description: getMetadataDescription('creativeWorkStatus') || '',
-  //     getFilterValues: (value: string) => (value ? [value] : []),
-  //   },
-  // },
-  // {
-  //   id: 'collectionSize',
-  //   label: getMetadataName('collectionSize') || '',
-  //   fields: ['collectionSize'],
-  //   columns: {
-  //     isSortable: false,
-  //     isDefault: true,
-  //     style: { maxWidth: '160px', minWidth: '160px' },
-  //   },
-  //   transform: item => item.collectionSize,
-  //   getSearchValue: (value: RepositoryMatcherItem['collectionSize']) => {
-  //     return value?.map(v => `${v.minValue} ${v.unitText || ''}`) || [];
-  //   },
-  //   component: ({
-  //     value,
-  //   }: {
-  //     value: RepositoryMatcherItem['collectionSize'];
-  //     loading?: boolean;
-  //   }) => {
-  //     return (
-  //       <VStack>
-  //         {value?.map((v, i) => (
-  //           <TextCell
-  //             key={i}
-  //             value={v.minValue ? `${v.minValue} ${v.unitText || ''}` : ''}
-  //             textAlign='end'
-  //             lineClamp={undefined}
-  //           >
-  //             <Text as='span' fontWeight='semibold' fontSize='inherit'>
-  //               {v.minValue?.toLocaleString() || '-'}
-  //             </Text>
-  //             <br />
-  //             <Text as='span' fontSize='inherit'>
-  //               {v.unitText}
-  //             </Text>
-  //           </TextCell>
-  //         ))}
-  //       </VStack>
-  //     );
-  //   },
-  // },
-  {
+  definedTermTagColumn({
     id: 'species',
-    label: 'Host Species',
-    fields: ['species'],
-    columns: { isSortable: false, isDefault: true },
-    transform: item => {
-      if (!item.species) return [];
-      return Array.isArray(item.species) ? item.species : [item.species];
-    },
-    getSearchValue: (value: DefinedTerm[]) => {
-      return (
-        value?.map(v => v.name).filter((name): name is string => !!name) ?? []
-      );
-    },
-    component: ({
-      value,
-      loading,
-    }: {
-      value: DefinedTerm[];
-      loading?: boolean;
-    }) => <TagCellList value={value} loading={loading} {...tagCellStyles} />,
-    filter: {
-      getFilterValues: (value: DefinedTerm[]) =>
-        value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
-    },
-    info: {
-      description: getMetadataDescription('species') || '',
-      filterDescription: getMetadataDescription('species') || '',
-      tooltip: getMetadataDescription('species') || '',
-    },
-  },
-  {
+    header: 'Host Species',
+    field: 'species',
+    description: getMetadataDescription('species') || '',
+    filterDescription: getMetadataDescription('species') || '',
+  }),
+  definedTermTagColumn({
     id: 'meas-technique',
-    label: getMetadataName('measurementTechnique') || '',
-    fields: ['measurementTechnique'],
-    columns: { isSortable: false, isDefault: true },
-    transform: item => {
-      if (!item.measurementTechnique) return [];
-      return Array.isArray(item.measurementTechnique)
-        ? item.measurementTechnique
-        : [item.measurementTechnique];
-    },
-    getSearchValue: (value: DefinedTerm[]) => {
-      return (
-        value?.map(v => v.name).filter((name): name is string => !!name) ?? []
-      );
-    },
-    component: ({
-      value,
-      loading,
-    }: {
-      value: DefinedTerm[];
-      loading?: boolean;
-    }) => <TagCellList value={value} loading={loading} {...tagCellStyles} />,
-    filter: {
-      getFilterValues: (value: DefinedTerm[]) =>
-        value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
-    },
-    info: {
-      description: getMetadataDescription('measurementTechnique') || '',
-      filterDescription: getMetadataDescription('measurementTechnique') || '',
-      tooltip: getMetadataDescription('measurementTechnique') || '',
-    },
-  },
-  {
+    header: getMetadataName('measurementTechnique') || '',
+    field: 'measurementTechnique',
+    size: { min: 300 },
+    description: getMetadataDescription('measurementTechnique') || '',
+    filterDescription: getMetadataDescription('measurementTechnique') || '',
+  }),
+  definedTermTagColumn({
     id: 'topic',
-    label: getMetadataName('topicCategory') || '',
-    fields: ['topicCategory'],
-    columns: { isSortable: false, isDefault: true },
-    transform: item => {
-      if (!item.topicCategory) return [];
-      return Array.isArray(item.topicCategory)
-        ? item.topicCategory
-        : [item.topicCategory];
-    },
-    getSearchValue: (value: DefinedTerm[]) => {
-      return (
-        value?.map(v => v.name).filter((name): name is string => !!name) ?? []
-      );
-    },
-    component: ({
-      value,
-      loading,
-    }: {
-      value: DefinedTerm[];
-      loading?: boolean;
-    }) => {
-      if (!loading && (!value || !value.some(v => v.name))) {
-        return <TextCell value={''} loading={loading} lineClamp={1} />;
-      }
-      return <TagCellList value={value} loading={loading} {...tagCellStyles} />;
-    },
-    filter: {
-      getFilterValues: (value: DefinedTerm[]) =>
-        value?.map(v => v.name).filter((name): name is string => !!name) ?? [],
-    },
-    info: {
-      description: getMetadataDescription('topicCategory') || '',
-      filterDescription: getMetadataDescription('topicCategory') || '',
-      tooltip: getMetadataDescription('topicCategory') || '',
-    },
-  },
-  // {
-  //   id: 'dateModified',
-  //   label: getMetadataName('dateModified') || '',
-  //   fields: ['dateModified'],
-  //   columns: { isSortable: true, isDefault: true },
-  //   transform: item => {
-  //     if (!item.dateModified) return '';
-  //     return new Date(item.dateModified).toLocaleDateString();
-  //   },
-  //   component: ({
-  //     value,
-  //     loading,
-  //   }: {
-  //     value: string;
-  //     loading?: boolean;
-  //   }) => {
-  //     return <TextCell value={value} loading={loading} lineClamp={1} />;
-  //   },
-  // },
+    header: getMetadataName('topicCategory') || '',
+    field: 'topicCategory',
+    description: getMetadataDescription('topicCategory') || '',
+    filterDescription: getMetadataDescription('topicCategory') || '',
+  }),
   {
     id: 'temporalCoverage',
-    label: getMetadataName('temporalCoverage') || '',
+    header: getMetadataName('temporalCoverage') || '',
+    description: getMetadataDescription('temporalCoverage') || '',
     fields: ['temporalCoverage'],
-    columns: { isSortable: true, isDefault: true },
+    size: { min: 200 },
+    // Sorts on the first coverage's start date (or its name for named
+    // periods), newest first.
+    sort: {
+      value: (value?: RepositoryMatcherItem['temporalCoverage']) =>
+        value?.[0]?.startDate || value?.[0]?.name,
+      descFirst: true,
+    },
     transform: item => {
       return item.temporalCoverage;
     },
@@ -510,110 +272,63 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
         }) ?? []
       );
     },
-    component: ({
+    // Each coverage as "start / to / end" (ISO dates), or its name for a
+    // named period. Plain elements: this renders on every row.
+    cell: ({
       value,
-      loading,
     }: {
       value?: RepositoryMatcherItem['temporalCoverage'];
-      loading?: boolean;
     }) => {
-      if (loading) {
-        return <TextCell value={''} loading={true} lineClamp={1} />;
-      }
-      // Format temporal coverage as "startDate - endDate" or just "startDate" if endDate is missing or just endDate if startDate is missing. If multiple temporal coverages are present, separate them with commas.
-      if (!value || value.length === 0) {
-        return <TextCell value={''} loading={loading} lineClamp={1} />;
-      }
-      const formatted = value.map(tc => {
-        if (!tc.startDate && !tc.endDate && tc.name) {
-          return (
-            <Text key={tc.name} as='span' fontSize='sm'>
-              {tc.name}
-            </Text>
-          );
-        }
-        const start = tc.startDate
-          ? new Date(tc.startDate).toLocaleDateString()
-          : '-';
-        const end = tc.endDate
-          ? new Date(tc.endDate).toLocaleDateString()
-          : '-';
-        return (
-          <VStack
-            key={`${tc.startDate}-${tc.endDate}`}
-            alignItems='flex-start'
-            fontSize='sm'
-          >
-            <Text as='span' fontSize='inherit'>
-              {start}
-            </Text>
-            <Text as='span' fontSize='inherit'>
-              to
-            </Text>
-            <Text as='span' fontSize='inherit'>
-              {end}
-            </Text>
-          </VStack>
-        );
-      });
-
-      return formatted;
-    },
-    info: {
-      description: getMetadataDescription('temporalCoverage') || '',
-      tooltip: getMetadataDescription('temporalCoverage') || '',
+      if (!value || value.length === 0) return null;
+      return value.map((tc, index) =>
+        !tc.startDate && !tc.endDate && tc.name ? (
+          <div key={index}>{tc.name}</div>
+        ) : (
+          <div key={index}>
+            {formatDate(tc.startDate) || '-'}
+            <br />
+            to
+            <br />
+            {formatDate(tc.endDate) || '-'}
+          </div>
+        ),
+      );
     },
   },
   {
     id: 'license',
-    label: getMetadataName('license') || '',
+    header: getMetadataName('license') || '',
+    description: getMetadataDescription('license') || '',
     fields: ['license'],
-    columns: { isSortable: true, isDefault: true },
+    // `link` for its wrapping: a bare URL may break anywhere instead of
+    // stretching the column to its full length.
+    type: 'link',
+    size: { max: 200 },
+    sort: true,
     transform: item => item.license || '',
-    component: ({ value, loading }: { value: string; loading?: boolean }) => {
-      if (value && (value.startsWith('http') || value.startsWith('www'))) {
-        return (
-          <TextCellWithLink
-            label={value}
-            url={value}
-            loading={loading}
-            isExternal
-          />
-        );
-      }
-      return <TextCell value={value} loading={loading} lineClamp={1} />;
-    },
-    info: {
-      description: getMetadataDescription('license') || '',
-      tooltip: getMetadataDescription('license') || '',
-    },
+    cell: ({ value }: { value: string }) =>
+      value && (value.startsWith('http') || value.startsWith('www')) ? (
+        <LinkCell href={value} label={value} />
+      ) : (
+        value || null
+      ),
   },
   {
     id: 'type',
-    label: getMetadataName('type') || '',
+    header: getMetadataName('type') || '',
+    description:
+      'Type is a Portal-specific classification that indicates how repository content is organized and displayed within the Portal.',
     fields: ['@type', 'collectionType', 'type'],
-    columns: {
-      isSortable: true,
-      isDefault: true,
-      style: { maxWidth: '180px', minWidth: '180px' },
-    },
+    size: { min: 160, max: 220 },
+    sort: { value: (value: string[]) => value?.[0] },
     transform: (item): string[] => itemTypes(item),
-    getSortValue: (value: string[]) => (value[0] || '').toLowerCase(),
-    component: ({ value, loading }: { value: string[]; loading?: boolean }) => (
-      <TextCell
-        value={value && value.length ? value.join(', ') : ''}
-        loading={loading}
-        fontWeight='semibold'
-      />
-    ),
+    cell: ({ value }: { value: string[] }) =>
+      value?.length ? <span style={SEMIBOLD}>{value.join(', ')}</span> : null,
     filter: {
       getFilterValues: (value: string[]) => value ?? [],
     },
     info: {
-      description:
-        'Type is a Portal-specific classification that indicates how repository content is organized and displayed within the Portal.',
       filterDescription: getMetadataDescription('type') || '',
-      tooltip: getMetadataDescription('type') || '',
       terms: [
         {
           label: 'Dataset Repository',
@@ -643,83 +358,7 @@ export const REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] = [
       ],
     },
   },
-  // {
-  //   id: 'usageInfo',
-  //   label: getMetadataName('usageInfo') || '',
-  //   fields: ['usageInfo'],
-  //   columns: { isSortable: true, isDefault: true },
-  //   transform: item => item.usageInfo || '',
-  //   getSearchValue: (value: RepositoryMatcherItem['usageInfo']) => {
-  //     if (typeof value === 'string') {
-  //       return value;
-  //     }
-  //     if (Array.isArray(value)) {
-  //       return value
-  //         .map(v => (typeof v === 'string' ? v : v.name || v.url || ''))
-  //         .filter(v => v);
-  //     }
-  //     if (value && typeof value === 'object') {
-  //       return value.name || value.url || '';
-  //     }
-  //     return null;
-  //   },
-  //   component: ({
-  //     value,
-  //     loading,
-  //   }: {
-  //     value: Repository['usageInfo'] | FormattedResource['usageInfo'];
-  //     loading?: boolean;
-  //   }) => {
-  //     if (typeof value === 'string') {
-  //       if (value.startsWith('http') || value.startsWith('www')) {
-  //         return (
-  //           <TextCellWithLink
-  //             label={value}
-  //             url={value}
-  //             loading={loading}
-  //             isExternal
-  //           />
-  //         );
-  //       }
-  //       return <TextCell value={value} loading={loading} lineClamp={1} />;
-  //     }
-
-  //     const usageDetails = Array.isArray(value) ? value : value ? [value] : [];
-
-  //     if (!loading && usageDetails.length === 0) {
-  //       return <TextCell value={''} loading={loading} lineClamp={1} />;
-  //     } else if (usageDetails.length > 0) {
-  //       return (
-  //         <VStack alignItems='flex-start'>
-  //           {usageDetails.map((u, i) => (
-  //             <Box key={i}>
-  //               {u.url ? (
-  //                 <TextCellWithLink
-  //                   label={u.name || u.url}
-  //                   url={u.url}
-  //                   loading={loading}
-  //                   isExternal
-  //                 />
-  //               ) : (
-  //                 <TextCell value={u.name || ''} loading={loading} />
-  //               )}
-  //               <br />
-  //               {u?.description && (
-  //                 <TextCell
-  //                   value={u.description}
-  //                   loading={loading}
-  //                   lineClamp={3}
-  //                 />
-  //               )}
-  //             </Box>
-  //           ))}
-  //         </VStack>
-  //       );
-  //     }
-  //     return <TextCell value={''} loading={loading} lineClamp={1} />;
-  //   },
-  // },
 ];
 
-export const FILTERABLE_REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn<any>[] =
+export const FILTERABLE_REPOSITORY_MATCHER_COLUMNS: RepositoryMatcherColumn[] =
   REPOSITORY_MATCHER_COLUMNS.filter(c => Boolean(c.filter));

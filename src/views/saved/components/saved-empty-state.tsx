@@ -9,11 +9,12 @@ interface SavedEmptyStateProps {
 
 /**
  * Centered heading + description used for the empty states of the saved-items
- * tables (no matches, nothing saved yet, etc.).
+ * tables (no matches, nothing saved yet, etc.). No padding of its own: the
+ * table's status cell already pads it.
  */
 export function SavedEmptyState({ title, children }: SavedEmptyStateProps) {
   return (
-    <Flex direction='column' align='center' py={10}>
+    <Flex direction='column' align='center'>
       <Text fontWeight='bold'>{title}</Text>
       <Text
         color='gray.500'

@@ -5,14 +5,15 @@ import {
   Heading,
   Icon,
 } from '@chakra-ui/react';
+import { useState } from 'react';
 import { FaMinus, FaPlus } from 'react-icons/fa6';
 
 export const AccordionContent = ({
   title,
   children,
   ...rest
-}: AccordionItemProps & {
-  title: string;
+}: Omit<AccordionItemProps, 'title'> & {
+  title: React.ReactNode;
   children: React.ReactNode;
 }) => {
   return (
@@ -42,20 +43,42 @@ export const AccordionContent = ({
   );
 };
 
+const NO_SECTIONS: string[] = [];
+
+/*
+ The sections in `defaultValue` start open. Unlike Accordion's own
+ `defaultValue`, a new value re-opens the sections to match it, replacing the
+ user's own toggles, the way a new search does. The sections stay mounted
+ through that, so their results aren't reset. While `holdDefaultValue` is set
+ (e.g. the counts it's built from are still loading), a new value waits.
+*/
 export const AccordionWrapper = ({
   children,
-  defaultValue,
+  defaultValue = NO_SECTIONS,
+  holdDefaultValue = false,
+  onValueChange,
   ...props
-}: Accordion.RootProps) => {
+}: Accordion.RootProps & { holdDefaultValue?: boolean }) => {
+  // Compared by content: callers build `defaultValue` afresh on each render.
+  const defaultKey = defaultValue.join('|');
+  const [open, setOpen] = useState({ key: defaultKey, value: defaultValue });
+  if (!holdDefaultValue && open.key !== defaultKey) {
+    setOpen({ key: defaultKey, value: defaultValue });
+  }
+
   return (
     <Accordion.Root
-      defaultValue={defaultValue ?? []}
       collapsible
       multiple
       variant='enclosed'
       size='lg'
       lazyMount
       {...props}
+      value={open.value}
+      onValueChange={details => {
+        setOpen(prev => ({ ...prev, value: details.value }));
+        onValueChange?.(details);
+      }}
     >
       {children}
     </Accordion.Root>

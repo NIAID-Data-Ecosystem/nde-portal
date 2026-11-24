@@ -1,4 +1,6 @@
 import { Skeleton } from '@chakra-ui/react';
+import React, { useMemo } from 'react';
+import { SortState } from 'src/components/table';
 import { SampleCollection } from 'src/utils/api/types';
 
 import { SAMPLE_COLLECTION_TABLE_CONFIG } from '../../config';
@@ -8,7 +10,17 @@ import {
 } from '../../helpers';
 import { useSampleCollectionItems } from '../../hooks/useSampleCollectionItems';
 import { SampleTable } from '../SampleTable';
-import { Cell } from '../SampleTable/Cells';
+
+// Both tables start sorted by Sample ID, A to Z, as the legacy table started on
+// its first column.
+const FETCHED_INITIAL_SORT: SortState = {
+  columnId: '_identifierSort',
+  direction: 'asc',
+};
+const FALLBACK_INITIAL_SORT: SortState = {
+  columnId: 'identifier',
+  direction: 'asc',
+};
 
 interface SampleCollectionItemsTableProps {
   /** The identifier of the parent Dataset/SampleCollection used for the API query. */
@@ -25,6 +37,35 @@ export const SampleCollectionItemsTable = ({
     true,
   );
 
+  // The fetched samples, one row each.
+  const fetched = useMemo(
+    () =>
+      samples?.length
+        ? {
+            columns: getSampleCollectionItemsColumns(samples),
+            rows: getSampleCollectionItemsRows(samples),
+          }
+        : null,
+    [samples],
+  );
+
+  // Without fetched samples: the collection's own item list, each row with
+  // the collection's aggregate properties.
+  const fallback = useMemo(
+    () =>
+      fallbackSampleCollection?.itemListElement?.length
+        ? {
+            columns: SAMPLE_COLLECTION_TABLE_CONFIG.getColumns(
+              fallbackSampleCollection,
+            ),
+            rows: SAMPLE_COLLECTION_TABLE_CONFIG.getRows(
+              fallbackSampleCollection,
+            ),
+          }
+        : null,
+    [fallbackSampleCollection],
+  );
+
   // While loading show a skeleton that matches the page style.
   if (isLoading) {
     return (
@@ -37,57 +78,30 @@ export const SampleCollectionItemsTable = ({
     );
   }
 
-  if (!samples || samples.length === 0) {
-    if (fallbackSampleCollection?.itemListElement?.length) {
-      return (
-        <SampleTable
-          label={SAMPLE_COLLECTION_TABLE_CONFIG.label}
-          caption={SAMPLE_COLLECTION_TABLE_CONFIG.caption}
-          tableProps={{
-            columns: SAMPLE_COLLECTION_TABLE_CONFIG.getColumns(
-              fallbackSampleCollection,
-            ),
-            data: SAMPLE_COLLECTION_TABLE_CONFIG.getRows(
-              fallbackSampleCollection,
-            ),
-            getCells: props => {
-              const data = props.data?.[props.column.property];
-              return Cell.renderCellData?.({ ...props, data });
-            },
-            ...SAMPLE_COLLECTION_TABLE_CONFIG.tableProps,
-          }}
-        />
-      );
-    }
-
-    return null;
+  if (fetched) {
+    const count = fetched.rows.length;
+    return (
+      <SampleTable
+        label={`${count} sample${count !== 1 ? 's' : ''} in this collection`}
+        columns={fetched.columns}
+        rows={fetched.rows}
+        initialSort={FETCHED_INITIAL_SORT}
+        pagination
+      />
+    );
   }
 
-  const columns = getSampleCollectionItemsColumns(samples);
-  const rows = getSampleCollectionItemsRows(samples);
+  if (fallback) {
+    return (
+      <SampleTable
+        label={SAMPLE_COLLECTION_TABLE_CONFIG.label}
+        columns={fallback.columns}
+        rows={fallback.rows}
+        initialSort={FALLBACK_INITIAL_SORT}
+        pagination
+      />
+    );
+  }
 
-  return (
-    <SampleTable
-      label='Sample Collection Items Table'
-      caption={`${samples.length} sample${
-        samples.length !== 1 ? 's' : ''
-      } in this collection`}
-      tableProps={{
-        columns,
-        data: rows,
-        getCells: props => {
-          // The Sample ID column sorts by '_identifierSort' (a plain string)
-          // but must render using 'identifier' (the { identifier, url }
-          // object) so that the link cell displays correctly.
-          const property =
-            props.column.property === '_identifierSort'
-              ? 'identifier'
-              : props.column.property;
-          const data = props.data?.[property];
-          return Cell.renderCellData?.({ ...props, data });
-        },
-        hasPagination: true,
-      }}
-    />
-  );
+  return null;
 };

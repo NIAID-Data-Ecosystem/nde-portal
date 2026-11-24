@@ -451,11 +451,9 @@ describe('helpers', () => {
     });
 
     it('always includes Sample ID as the first column', () => {
-      // The Sample ID column uses '_identifierSort' (a plain string field on
-      // each row) as its property so that useTableSort compares strings rather
-      // than the { identifier, url } object used for rendering. The
-      // SampleCollectionItemsTable getCells callback remaps '_identifierSort'
-      // back to 'identifier' when reading the row for display.
+      // The Sample ID column sorts on '_identifierSort' (a plain string field
+      // on each row) and shows the { identifier, url } object in
+      // 'identifier', as a link.
       const samples = [{ identifier: 'S1' }] as any[];
 
       const cols = getSampleCollectionItemsColumns(samples);
@@ -463,6 +461,7 @@ describe('helpers', () => {
       expect(cols[0]).toEqual({
         title: 'Sample ID',
         property: '_identifierSort',
+        valueProperty: 'identifier',
         isSortable: true,
       });
     });

@@ -63,6 +63,12 @@ export interface SearchableItemsProps
 const getItemQuery = (item: SearchableItem): ParsedUrlQueryInput =>
   item.query ?? { q: `${item.field}:"${item.value}"` };
 
+/** An item's /search link, as its tag uses it. Shared with the Search tables. */
+export const getSearchableItemHref = (item: SearchableItem) => ({
+  pathname: '/search',
+  query: getItemQuery(item),
+});
+
 /* An item's identity: two items whose links match are the same tag, both for
 deduplication and as a React key. Params are sorted so their order in the
 query object doesn't matter. */
@@ -146,7 +152,7 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
             size={size}
             colorPalette={colorPalette}
             color={tagColor}
-            href={{ pathname: '/search', query: getItemQuery(item) }}
+            href={getSearchableItemHref(item)}
             leftIcon={<FaMagnifyingGlass />}
           >
             {item.name}

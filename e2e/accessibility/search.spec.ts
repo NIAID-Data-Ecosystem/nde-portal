@@ -21,11 +21,13 @@
  */
 import { expect, type Page, test, type TestInfo } from '@playwright/test';
 
+import { SEARCH_TABLE_TABS } from '../fixtures/search-tables';
 import { runAxeScans, waitForSearchFiltersSettled } from '../utils/axe';
 import {
   expectEscapeReturnsFocus,
   expectKeyboardOpens,
 } from '../utils/keyboard';
+import { gotoSearchTable, openColumnCustomizer } from '../utils/search-tables';
 import {
   expectNoSkeletonsLoading,
   expectSkeletonsLoading,
@@ -5914,10 +5916,8 @@ test.describe('a11y: Search — error', () => {
 // page chrome). We deliberately DON'T re-scan "more of the same" surfaces: the
 // predictive-search dropdown (same InputWithDropdown already scanned in
 // advanced-search.spec.ts) or sibling result tabs (re-render the same card
-// list). The Customize Columns popover only appears on the Samples tab and on
-// the tabs currently in table view (feature-gated) — covered by the
-// repository-matcher spec's table popover, the same SelectAndSortPopover
-// component.
+// list). The tables (table view, and the Samples tab) and their Customize
+// Columns popover are scanned in the table-view section at the end.
 
 /** Put the page into the populated, results-rendered state used by the
  * interaction scans below (mirrors the populated describe block). */
@@ -6364,5 +6364,53 @@ test.describe('a11y: Search — resource catalog (retired)', () => {
     await expect(page.getByText('Retired').first()).toBeVisible();
 
     await runSharedChecks(page, testInfo, 'resource-catalog-retired');
+  });
+});
+
+// --- Table view ---------------------------------------------------------------
+//
+// The Datasets, Computational Tools and Data Collections tabs can show a table
+// instead of cards (the view mode persists per tab); the Samples tab is always
+// a table. Each table has its own cells (access badges, link lists, term lists
+// with "Show N More", "No data" placeholders), so each is scanned populated,
+// from the fixtures in e2e/fixtures/search-tables.ts.
+
+for (const tab of SEARCH_TABLE_TABS) {
+  test.describe(`a11y: Search — ${tab.label} table`, () => {
+    test('passes axe with the table populated', async ({ page }, testInfo) => {
+      const table = await gotoSearchTable(page, tab);
+      // A missing value shows a placeholder with an accessible "No data".
+      await expect(table.getByText('No data').first()).toBeAttached();
+      await runSharedChecks(page, testInfo, `table-${tab.id}`);
+    });
+  });
+}
+
+// --- Customize Columns popover (shared by every Search table) -----------------
+
+test.describe('a11y: Search — customize columns popover', () => {
+  const DATASETS = SEARCH_TABLE_TABS[0];
+
+  test('passes axe with the popover open', async ({ page }, testInfo) => {
+    await gotoSearchTable(page, DATASETS);
+    const dialog = await openColumnCustomizer(page);
+    // Its reorder handles and the pin switch exist only while it's open.
+    await expect(
+      dialog.getByRole('button', { name: /^reorder /i }).first(),
+    ).toBeVisible();
+    await expect(dialog.getByText('Pin first column')).toBeVisible();
+
+    await runAxeScans(page, testInfo, 'customize-columns-popover');
+  });
+
+  test('is keyboard operable and restores focus on close', async ({ page }) => {
+    await gotoSearchTable(page, DATASETS);
+    const trigger = page.getByRole('button', { name: /customize columns/i });
+    const surface = page
+      .getByRole('dialog', { name: 'Customize Columns' })
+      .getByRole('checkbox')
+      .first();
+    await expectKeyboardOpens(trigger, surface);
+    await expectEscapeReturnsFocus(page, trigger, surface);
   });
 });
