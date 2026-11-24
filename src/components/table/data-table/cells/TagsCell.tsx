@@ -47,13 +47,15 @@ const clampedText = (tag: Element) =>
  *
  * Tags are plain elements styled by the table (the dataTable recipe), not
  * Chakra `Tag`s: a table can hold thousands, and a component per tag costs
- * more than the rest of the cell. A plain tag (`.nde-tag` around a
- * `.nde-tag-label`, as `Tag.Root` and `Tag.Label`) takes its styles from the
- * tag recipe: a subtle, small, full-radius `Tag`. With `getSearchHref`, each is a
- * search link (`.nde-tag-link`) with the look of the result cards' searchable
- * `TagWithUrl`: a magnifying glass, the text underlined until hovered, the
- * same corners. Being focusable, a clipped one shows its tooltip on keyboard
- * focus too. A tap or click just follows the link.
+ * more than the rest of the cell. They keep a `Tag`'s parts, though, and take
+ * their styles from the tag recipe. A plain tag (`.nde-tag` around a
+ * `.nde-tag-label`, as `Tag.Root` and `Tag.Label`) is a subtle, small,
+ * full-radius `Tag`. With `getSearchHref`, each is a search link
+ * (`.nde-tag-link`, with a `.nde-tag-link-start` and a `.nde-tag-link-label`)
+ * with the look of the result cards' searchable `TagWithUrl`: a magnifying
+ * glass, the text underlined until hovered, the same corners. Being focusable,
+ * a clipped one shows its tooltip on keyboard focus too. A tap or click just
+ * follows the link.
  */
 export const TagsCell = ({
   values,
@@ -134,7 +136,9 @@ export const TagsCell = ({
             // announced again as its description.
             aria-describedby={index === tooltipIndex ? '' : undefined}
           >
-            <FaMagnifyingGlass aria-hidden className='nde-tag-link-icon' />
+            <span className='nde-tag-link-start'>
+              <FaMagnifyingGlass aria-hidden />
+            </span>
             {/* The underline is on the text, not the label, as in
             TagWithUrl: the ellipsis isn't underlined. */}
             <span className='nde-tag-link-label'>

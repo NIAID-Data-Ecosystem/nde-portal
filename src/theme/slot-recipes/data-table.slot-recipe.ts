@@ -55,7 +55,7 @@ const viewportScrollbarStyles = {
 } as const;
 
 /*
-TagsCell's plain tags are plain elements, not Chakra `Tag`s (a table can hold
+TagsCell's tags are plain elements, not Chakra `Tag`s (a table can hold
 thousands; see TagsCell), but their styles come from the tag recipe rather than
 a copy of it, so they follow it when it changes. The recipe is Chakra's with the
 repo's merged over it, as `createSystem` merges them, and a slot's styles are
@@ -80,7 +80,7 @@ const tagRecipe = mergeConfigs(
 ).theme?.slotRecipes?.tag as SlotRecipeConfig;
 
 const tagSlotStyles = (
-  slot: 'root' | 'label',
+  slot: 'root' | 'startElement' | 'label',
   selection: Record<string, string>,
 ) => {
   const { base, variants = {}, compoundVariants = [] } = tagRecipe;
@@ -100,8 +100,9 @@ const tagSlotStyles = (
   );
 };
 
-// The legacy Repository Matcher's tags: `<Tag variant='subtle' size='sm'>`.
-const PLAIN_TAG = { variant: 'subtle', size: 'sm' };
+// Both kinds of table tag are `<Tag variant='subtle' size='sm'>`s: the legacy
+// Repository Matcher's tags and `TagWithUrl`.
+const TAG_VARIANTS = { variant: 'subtle', size: 'sm' };
 
 /*
 The synced scrollbars (top and floating) keep custom scrollbars: they hold
@@ -411,39 +412,25 @@ export const dataTableSlotRecipe = defineSlotRecipe({
       // clamped to a line, which still lets it wrap at spaces, so a column's
       // minimum width is its longest word, not its longest tag.
       '& .nde-tag': {
-        ...tagSlotStyles('root', PLAIN_TAG),
+        ...tagSlotStyles('root', TAG_VARIANTS),
         borderRadius: 'full',
         bg: 'bg.alt',
         color: 'text.body',
       },
-      '& .nde-tag-label': tagSlotStyles('label', PLAIN_TAG),
+      '& .nde-tag-label': tagSlotStyles('label', TAG_VARIANTS),
       // A search link tag (TagsCell's `getSearchHref`): the result cards'
-      // searchable TagWithUrl (subtle primary `sm` Tag: its layout, corners,
-      // colours and focus ring; a magnifying glass; the text underlined until
-      // hovered), as plain elements, with the tag recipe's one-line label.
+      // searchable `TagWithUrl`, built the same way: the tag recipe's root,
+      // start element (the magnifying glass) and label, then what TagWithUrl
+      // adds itself: the primary palette, `lineHeight='shorter'` and the value
+      // underlined until the tag is hovered. The label keeps the recipe's
+      // one-line clamp, where TagWithUrl's is inline.
       '& .nde-tag-link': {
+        ...tagSlotStyles('root', TAG_VARIANTS),
         colorPalette: 'primary',
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 1.5,
-        maxWidth: '100%',
-        minHeight: 6,
-        px: 2.5,
-        borderRadius: 'l2',
-        bg: 'colorPalette.subtle',
-        color: 'colorPalette.fg',
         lineHeight: 'shorter',
-        verticalAlign: 'top',
-        userSelect: 'none',
-        textUnderlineOffset: '0.15rem',
-        focusVisibleRing: 'outside',
       },
-      '& .nde-tag-link-icon': {
-        flexShrink: 0,
-        boxSize: 3,
-        marginInlineStart: '-2px',
-      },
-      '& .nde-tag-link-label': { lineClamp: 1, textStyle: 'sm' },
+      '& .nde-tag-link-start': tagSlotStyles('startElement', TAG_VARIANTS),
+      '& .nde-tag-link-label': tagSlotStyles('label', TAG_VARIANTS),
       '& .nde-tag-link-label > span': { textDecoration: 'underline' },
       '& .nde-tag-link:hover .nde-tag-link-label > span': {
         textDecorationColor: 'transparent',
