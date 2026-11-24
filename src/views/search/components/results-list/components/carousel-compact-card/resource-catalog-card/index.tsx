@@ -42,7 +42,7 @@ export const ResourceCatalogCard = ({
   } = data || {};
 
   // ResourceCatalogs with a sourceOrganization are displayed as
-  // "Program Resource" or "Program Info and Resource" with cyan banner
+  // "Program Collection" (resource or info-and-resource variant) with cyan banner
   // styling instead of the default ResourceCatalog treatment.
   const programVariant = getProgramResourceVariant(data ?? undefined);
 

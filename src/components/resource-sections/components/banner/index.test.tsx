@@ -77,7 +77,7 @@ describe('ResourceBanner', () => {
     expect(screen.getByText('NIAID')).toBeInTheDocument();
   });
 
-  it('labels a resource catalog with a source organization as a program resource', () => {
+  it('labels a resource catalog with a source organization as a program collection', () => {
     render(
       <ResourceBanner
         data={makeResource({
@@ -87,6 +87,6 @@ describe('ResourceBanner', () => {
       />,
     );
 
-    expect(screen.getByText('Program Resource')).toBeInTheDocument();
+    expect(screen.getByText('Program Collection')).toBeInTheDocument();
   });
 });

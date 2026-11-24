@@ -26,7 +26,7 @@ describe('TypeBanner', () => {
       />,
     );
 
-    expect(screen.getByText('Program Info and Resource')).toBeInTheDocument();
+    expect(screen.getByText('Program Collection')).toBeInTheDocument();
     expect(screen.queryByText('Resource Catalog')).not.toBeInTheDocument();
   });
 
