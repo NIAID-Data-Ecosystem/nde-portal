@@ -528,18 +528,18 @@ _Done (2026-11-16, uncommitted):_
   card's tags build (`getSearchableItemHref`, now exported from
   `searchable-items`). Names are deduplicated and sorted as on the card
   (`toTopicCategoryNames`) and shown as the API gives them, without the `terms`
-  capitalization. `TagsCell` takes an optional `getSearchHref` for this.
-  Owner decisions: one line with an ellipsis and a tooltip, like the
-  Repository Matcher; not rounded; and, after a cost estimate, **styled plain
-  elements rather than tag components** (2026-11-16). Each tag is a `NextLink`
+  capitalization. `TagsCell` takes an optional `getSearchHref` for this. Owner
+  decisions: one line with an ellipsis and a tooltip, like the Repository
+  Matcher; not rounded; and, after a cost estimate, **styled plain elements
+  rather than tag components** (2026-11-16). Each tag is a `NextLink`
   (`prefetch={false}`) > icon + label > text, styled in the dataTable recipe
   (`.nde-tag-link*`) to look exactly like the cards' `TagWithUrl` (checked:
   pixel-identical to the `TagWithUrl` version, same computed styles). The
   tooltip is TagsCell's lazy one, also opened by keyboard focus (focus is
   restored after the tag remounts; touch and click just navigate). While it's
-  mounted, the link's `aria-describedby` is emptied, because the tooltip
-  repeats the link's own name. The plain `.nde-tag` spans (Repository Matcher)
-  stay as they are. Column id unchanged, so saved preferences still apply.
+  mounted, the link's `aria-describedby` is emptied, because the tooltip repeats
+  the link's own name. The plain `.nde-tag` spans (Repository Matcher) stay as
+  they are. Column id unchanged, so saved preferences still apply.
 
 ### Later: the rest of the app (main plan Phases 3 and 5)
 
@@ -555,7 +555,9 @@ remains, and what each needs:
 | cited-by, based-on     | `DataTable` (shared header/sort); `getTruncatedText` → `ExpandableText`                                                                                    | —                                                                                   |
 | funding                | Row drawer stays bespoke (main plan Phase 5): move the legacy `Row`/`RowWithDrawer`/`Cell` pieces it uses into `funding/`, or rebuild the drawer row there | Owner call on which                                                                 |
 
-**End state:**
+**End state** (done 2026-11-19 except D4 and the lint rule; see main plan §6
+"Resource page"; funding went onto `DataTable` with its details in the Funder
+cell, owner's call):
 
 - Move `TablePagination` into `data-table/components/`, replacing its
   `TableSize` context read with its `styleSize` prop, and keep it out of

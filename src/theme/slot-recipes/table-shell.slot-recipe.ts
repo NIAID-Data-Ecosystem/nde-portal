@@ -1,12 +1,14 @@
 import { defineSlotRecipe } from '@chakra-ui/react';
 
 /*
-The `wrapper` and `pagination` styles that src/components/table renders around
-its table. They lived on the v2 `Table` style config as ad-hoc parts, read
-explicitly via `useMultiStyleConfig('Table', ...)`.
+The pagination bar the shared DataTable renders below its rows
+(src/components/table/data-table/components/TablePagination.tsx). It lived on
+the v2 `Table` style config as an ad-hoc part, read explicitly via
+`useMultiStyleConfig('Table', ...)`, beside a `wrapper` part that went with the
+legacy table.
 
-They get their own recipe rather than being appended to ./table.slot-recipe.ts
-because neither is part of Chakra's table anatomy. Chakra v3 merges config
+It gets its own recipe rather than being appended to ./table.slot-recipe.ts
+because it isn't part of Chakra's table anatomy. Chakra v3 merges config
 arrays index-wise, so extra entries spliced onto `slots` would silently
 overwrite real anatomy slots if the upstream order ever changed.
 
@@ -18,17 +20,8 @@ against. v2's fallback was `props.colorPalette ? \`${colorPalette}.200\` :
 */
 export const tableShellSlotRecipe = defineSlotRecipe({
   className: 'nde-table-shell',
-  slots: ['wrapper', 'pagination'],
+  slots: ['pagination'],
   base: {
-    wrapper: {
-      border: '.0625rem solid',
-      borderColor: 'colorPalette.200',
-      borderRadius: 'semi',
-      overflow: 'auto',
-      whiteSpace: 'nowrap',
-      maxWidth: '100%',
-      minW: '250px',
-    },
     pagination: {
       display: 'flex',
       w: '100%',

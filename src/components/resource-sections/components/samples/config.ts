@@ -1,7 +1,7 @@
 import { SampleAggregate, SampleCollection } from 'src/utils/api/types';
 import { formatSampleLabelFromProperty } from 'src/utils/formatting/formatSample';
 
-import { getAvailableSamplePropertyColumns } from './helpers';
+import { getAvailableSamplePropertyColumns, SampleColumn } from './helpers';
 
 export type SamplePropertyConfig = {
   key: string;
@@ -87,8 +87,7 @@ export const SAMPLE_COLLECTION_COLUMNS: SamplePropertyConfig[] = [
 ];
 
 export const SAMPLE_TABLE_CONFIG = {
-  label: 'Sample Table',
-  caption: 'Sample properties.',
+  label: 'Sample properties',
   getColumns: (sample: SampleAggregate) => {
     return sample ? getAvailableSamplePropertyColumns(sample) : [];
   },
@@ -99,9 +98,8 @@ export const SAMPLE_TABLE_CONFIG = {
 };
 
 export const SAMPLE_COLLECTION_TABLE_CONFIG = {
-  label: 'Sample Collection Table',
-  caption: formatSampleLabelFromProperty('itemListElement'),
-  getColumns: (sampleCollection: SampleCollection) => {
+  label: formatSampleLabelFromProperty('itemListElement'),
+  getColumns: (sampleCollection: SampleCollection): SampleColumn[] => {
     const aggregatePropertiesForDisplay = sampleCollection.aggregateElement
       ? getAvailableSamplePropertyColumns(sampleCollection.aggregateElement)
       : [];
@@ -121,5 +119,4 @@ export const SAMPLE_COLLECTION_TABLE_CONFIG = {
       ...sampleCollection.aggregateElement,
     }));
   },
-  tableProps: { hasPagination: true },
 };

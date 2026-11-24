@@ -9,6 +9,7 @@ import {
   Stack,
   StackProps,
   StackSeparator,
+  TableRootProps,
   Text,
   useSlotRecipe,
 } from '@chakra-ui/react';
@@ -21,7 +22,8 @@ import {
 } from 'react-icons/fa6';
 import { PageCombobox } from 'src/components/page-combobox';
 
-import { TableSize, useTableSize } from '../hooks/useTableSize';
+/** The table recipe's size scale, without the `ConditionalValue` wrapper. */
+type TableSize = NonNullable<Extract<TableRootProps['size'], string>>;
 
 // Based on NIAID's Table Styles
 // https://designsystem.niaid.nih.gov/components/atoms
@@ -78,8 +80,8 @@ export interface TablePaginationProps extends StackProps {
   loading?: boolean;
 
   /**
-   * Overrides the size inherited from the parent Table, which sets the size of
-   * the select menus. (`size` is taken by the number of rows per page.)
+   * The size of the select menus and buttons, following the table recipe's
+   * scale (`sm` by default). (`size` is taken by the number of rows per page.)
    */
   styleSize?: TableSize;
 }
@@ -144,7 +146,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
   colorPalette = 'gray',
   loading,
   numPages: totalPages,
-  styleSize,
+  styleSize = 'sm',
   ...props
 }) => {
   // `pagination` is not part of Chakra's table anatomy — see
@@ -152,7 +154,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
   const recipe = useSlotRecipe({ key: 'tableShell' });
   const styles = recipe();
 
-  const selectSize = SELECT_SIZE[useTableSize(styleSize) ?? 'sm'];
+  const selectSize = SELECT_SIZE[styleSize];
   const numPages =
     totalPages !== undefined ? totalPages : Math.ceil(total / size);
   // When every item fits on one page even at the smallest option, no choice

@@ -319,10 +319,8 @@ const Sections = ({
             {/* Show Based On information */}
             {section.hash === 'isBasedOn' && isBasedOn && (
               <BasedOnTable
-                id='software-information-is-based-on'
                 title={section.title}
                 subtitle={schema['isBasedOn']['description']?.[type]}
-                caption='Table showing resources that this resource is based on.'
                 loading={loading}
                 items={isBasedOn}
               />

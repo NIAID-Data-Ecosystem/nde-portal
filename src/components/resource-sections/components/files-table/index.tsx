@@ -1,11 +1,142 @@
 import { Box, Flex, Icon, Text } from '@chakra-ui/react';
 import React from 'react';
-import { Link } from 'src/components/link';
-import { Table } from 'src/components/table';
-import { EmptyCell } from 'src/components/table/components/cell';
-import { getFileIcon } from 'src/components/table/helpers';
+import {
+  ColumnDef,
+  DataTable,
+  ExpandableText,
+  LinkCell,
+  SortState,
+} from 'src/components/table/data-table';
+import { formatDate } from 'src/utils/api/helpers';
 import { Distribution, FormattedResource } from 'src/utils/api/types';
 import { formatNumber } from 'src/utils/helpers';
+
+import { getFileIcon } from './helpers';
+
+/*
+The resource page's "File Downloads" table (the shared DataTable; see
+src/components/table/data-table/README.md).
+
+Sizes are content widths: the cells' 2 × 16px padding comes on top. Each is the
+legacy table's border-box minimum minus that padding (280, 180 and 200px), and
+fixed: together the columns are wider than the resource page's content, so the
+legacy columns always sat at their minimums. A page with width to spare shares
+it out between them, as the legacy columns did.
+*/
+
+const fixed = (width: number) => ({ min: width, max: width });
+
+const lineClamp = (lines: number): React.CSSProperties => ({
+  display: '-webkit-box',
+  WebkitBoxOrient: 'vertical',
+  WebkitLineClamp: lines,
+  overflow: 'hidden',
+});
+// The legacy cells' clamps.
+const CLAMP_2 = lineClamp(2);
+const CLAMP_3 = lineClamp(3);
+
+/** Each format with its icon, then the file's size. */
+const FileFormatCell = ({ file }: { file: Distribution }) => {
+  const formats = (
+    Array.isArray(file.encodingFormat)
+      ? file.encodingFormat
+      : [file.encodingFormat]
+  ).filter((format): format is string => Boolean(format));
+
+  return (
+    <Box>
+      {formats.map(format => {
+        const { icon, color } = getFileIcon(format);
+        return (
+          <Text key={format} mb={1}>
+            {format}
+            {icon && <Icon as={icon} color={color || undefined} ml={2} />}
+          </Text>
+        );
+      })}
+      {file.contentSize != null && (
+        <Text mb={1}>
+          <strong>size: </strong> {formatNumber(file.contentSize)}
+        </Text>
+      )}
+    </Box>
+  );
+};
+
+/** A date column, shown and sorted as YYYY-MM-DD. */
+const dateColumn = (
+  id: 'dateCreated' | 'dateModified' | 'datePublished',
+  header: string,
+): ColumnDef<Distribution> => ({
+  id,
+  header,
+  type: 'date',
+  sort: true,
+  size: fixed(168),
+  accessor: row => formatDate(row[id]),
+});
+
+export const FILE_COLUMNS: ColumnDef<Distribution>[] = [
+  {
+    id: 'name',
+    header: 'Name',
+    sort: true,
+    size: fixed(248),
+    cell: ({ value }) => (value ? <span style={CLAMP_3}>{value}</span> : null),
+  },
+  {
+    id: 'contentUrl',
+    header: 'Download',
+    type: 'link',
+    sort: true,
+    size: fixed(248),
+    cell: ({ value }) =>
+      value ? (
+        <span style={CLAMP_2}>
+          <LinkCell href={value} external />
+        </span>
+      ) : null,
+  },
+  {
+    id: 'description',
+    header: 'Description',
+    type: 'longText',
+    sort: true,
+    size: fixed(248),
+    // Three lines before "Show More", the legacy clamp (the shared default is
+    // four).
+    cell: ({ value, column }) =>
+      value ? (
+        <ExpandableText
+          text={value}
+          noOfLines={3}
+          toggleContext={column.header}
+        />
+      ) : null,
+  },
+  {
+    id: 'encodingFormat',
+    header: 'File Format',
+    sort: true,
+    size: fixed(148),
+    // The size shows under the formats, so a file with no format shows "No
+    // data" here, as before, even when its size is known.
+    cell: ({ value, row }) =>
+      (Array.isArray(value) ? value.some(Boolean) : value) ? (
+        <FileFormatCell file={row} />
+      ) : null,
+  },
+  dateColumn('dateCreated', 'Date Created'),
+  dateColumn('dateModified', 'Date Modified'),
+  dateColumn('datePublished', 'Date Published'),
+];
+
+const INITIAL_SORT: SortState = { columnId: 'name', direction: 'asc' };
+
+// Files often have no unique field (several can share a URL or have none),
+// and their order in `distribution` is stable.
+const getFileRowId = (_: Distribution, index: number) => String(index);
 
 interface FilesTableProps {
   loading: boolean;
@@ -13,146 +144,24 @@ interface FilesTableProps {
 }
 
 const FilesTable: React.FC<FilesTableProps> = ({ loading, distribution }) => {
-  return (
-    <>
-      {!loading && !distribution?.length ? (
-        <Flex justifyContent='center'>
-          <Text py={2}>No results found.</Text>
-        </Flex>
-      ) : (
-        <Table
-          ariaLabel='List of downloadable files.'
-          caption='List of downloadable files.'
-          data={distribution || []}
-          tableContainerProps={{ overflowY: 'auto' }}
-          getCells={props => <DistributionCells {...props} />}
-          loading={loading}
-          hasPagination
-          size='sm'
-          columns={[
-            {
-              title: 'Name',
-              property: 'name',
-              isSortable: true,
-            },
-            {
-              title: 'Download',
-              property: 'contentUrl',
-              isSortable: true,
-            },
-            {
-              title: 'Description',
-              property: 'description',
-              isSortable: true,
-            },
-            {
-              title: 'File Format',
-              property: 'encodingFormat',
-              isSortable: true,
-              props: { w: '180px', minW: '180px' },
-            },
-            {
-              title: 'Date Created',
-              property: 'dateCreated',
-              isSortable: true,
-              props: { w: '200px', minW: '200px' },
-            },
-            {
-              title: 'Date Modified',
-              property: 'dateModified',
-              isSortable: true,
-              props: { w: '200px', minW: '200px' },
-            },
-            {
-              title: 'Date Published',
-              property: 'datePublished',
-              isSortable: true,
-              props: { w: '200px', minW: '200px' },
-            },
-          ]}
-        />
-      )}
-    </>
-  );
-};
-
-interface Column {
-  title: string;
-  property: string;
-  isSortable?: boolean;
-  props?: any;
-}
-export const DistributionCells = ({
-  column,
-  data,
-}: {
-  column: Column;
-  data: Distribution;
-}) => {
-  if (!data?.[column.property as keyof Distribution]) {
-    return <EmptyCell />;
+  if (!loading && !distribution?.length) {
+    return (
+      <Flex justifyContent='center'>
+        <Text py={2}>No results found.</Text>
+      </Flex>
+    );
   }
 
-  const encodingFormats = (
-    Array.isArray(data?.encodingFormat)
-      ? data?.encodingFormat
-      : [data?.encodingFormat]
-  ).map(format => {
-    if (format == null) {
-      return { name: '' };
-    }
-
-    return {
-      name: format,
-      icon: getFileIcon(format),
-    };
-  });
   return (
-    <>
-      <Flex
-        alignItems={['flex-start', 'center']}
-        flexDirection={['column', 'row']}
-        justifyContent='flex-start'
-        {...column.props}
-      >
-        {column.property === 'contentUrl' && (
-          <Link href={data?.[column.property] || ''} isExternal lineClamp={2}>
-            {data?.[column.property]}
-          </Link>
-        )}
-        {(column.property === 'name' ||
-          column.property === 'description' ||
-          column.property === 'dateCreated' ||
-          column.property === 'dateModified' ||
-          column.property === 'datePublished') && (
-          <Text lineClamp={3}>{data[column.property]}</Text>
-        )}
-        {column.property === 'encodingFormat' && (
-          <Box>
-            {column.property === 'encodingFormat' &&
-              encodingFormats.map(format => {
-                return (
-                  <Text key={format.name} mb={1}>
-                    {format.name}
-                    {format?.icon && format?.icon?.icon && (
-                      <Icon
-                        as={format.icon.icon}
-                        color={format.icon.color || undefined}
-                        ml={2}
-                      />
-                    )}
-                  </Text>
-                );
-              })}
-            {data?.['contentSize'] && (
-              <Text mb={1}>
-                <strong>size: </strong> {formatNumber(data['contentSize'])}
-              </Text>
-            )}
-          </Box>
-        )}
-      </Flex>
-    </>
+    <DataTable
+      label='List of downloadable files'
+      data={distribution || []}
+      columns={FILE_COLUMNS}
+      getRowId={getFileRowId}
+      sort={{ initial: INITIAL_SORT }}
+      pagination
+      status={{ loading }}
+    />
   );
 };
 

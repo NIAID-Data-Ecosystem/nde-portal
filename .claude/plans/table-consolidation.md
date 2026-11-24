@@ -17,8 +17,12 @@ rules stay in `.claude/CLAUDE.md`.
   the move of shared cells into `data-table/`, and the path to deleting the
   legacy table are planned in `.claude/plans/search-tables-datatable.md`.
 - **2026-11-19:** Phase 3 started with **Home** (owner request); see §6 "Home".
-  **Saved** followed the same day (owner request; §6 "Saved"), uncommitted at
-  time of writing. Its decision-2 perf comparison hasn't been run.
+  **Saved** followed the same day (owner request; §6 "Saved"). Its decision-2
+  perf comparison hasn't been run.
+- **2026-11-19:** **Phase 5** done (owner request): every resource-page table is
+  on `DataTable`, and the legacy `src/components/table` is deleted; see §6
+  "Resource page". Uncommitted at time of writing. D4 (moving `data-table/` up
+  to `src/components/table/`) is still to do.
 - **Update this file** when a decision changes, a phase finishes, or an
   intentional behaviour change is made.
 
@@ -624,6 +628,90 @@ passed; no current table passes them.
   mouse. Chakra emits the `@media (hover: hover)` hover rule after the `:active`
   one, at equal specificity, so hover wins while pressed.
 
+**Resource page (Phase 5, 2026-11-19).** Files, Samples (one Sample's
+properties; a collection's own item list; its fetched samples), Cited By, Based
+On and Funding render `DataTable`: client sort, and client pagination except the
+one-row Sample table. Owner decisions (2026-11-19): Funding's "More Information"
+drawer moves into the Funder cell (no detail rows in `DataTable`); Based On's
+description, a full-width line under each row, becomes a Description column.
+
+- **Widths:** each column is the legacy border-box width minus 32px, fixed (min
+  = max): the legacy tables overflowed the resource page's content (816px at
+  1440), so their flex columns always sat at their minimums. Measured at 1440
+  and 390: every column width is identical for Files (1,620px wide), Funding
+  (960), Cited By (1,040) and the Samples tables (840, 1,120, or one column
+  filling the width). Based On is new: Name ≥ 248, Type 140, Date Published the
+  `date` default (≥ 100), Description ≥ 200, so its four columns fit 816px
+  without sideways scrolling, as the legacy three (416/200/200) did.
+- **Height:** Files, Cited By, Based On and Funding were uncapped; they now take
+  the bounded default (`100dvh`), so with 50 or 100 rows per page the header
+  sticks. At the default 5 rows nothing changes. Samples keep their 400px cap:
+  it was on the legacy rows with the pager below, so a paginated sample table
+  passes 482px (the pager's 82px from `sm`; below `sm` the stacked pager takes
+  more and the rows get less room). Measured rows area: 402px at 1440.
+- **Kept:** the starting sorts (Files by Name; the collection tables by Sample
+  ID; Cited By, Based On and Funding in source order). The legacy clamps (file
+  name 3 lines, download URL 2, Cited By title and journal 3). `TagWithUrl` for
+  ID/PMID/DOI and the orange Funding/Funder ID tags. "No name provided" and "[No
+  title provided]" when a row has IDs but no name. File-format icons and size.
+  At most 5 funders, then "and N more...". Each table's empty message ("No
+  results found.", "No data available.", "No funding data available."; Based On
+  renders nothing). The collection table's loading skeletons.
+  `BasedOnActionProcess` is untouched.
+- **Changed, as on the other migrated tables:** the shared header (full-cell
+  sort button, `aria-sort` + announcement; headers lost Funding's orange
+  underline); two-state sort with dates newest first; empty values sort last;
+  missing values show "—" / "No data" (were italic "No data", or blank in the
+  Samples tables); a name cell shows it only when it has nothing at all (no
+  name, URL or ID). Rows ~12px taller; skeleton rows while loading; the floating
+  scrollbar. Dates are ISO via `formatDate` (decision 12): Files showed the raw
+  strings; Cited By, Based On and Funding showed `toLocaleDateString`, which
+  moved a calendar date back a day west of UTC (`2007-05-01` showed as "Apr 30,
+  2007"). Files' Description keeps its 3-line clamp and gains "Show More" (as on
+  Home).
+- **Samples:** lists show "Show N More" past 5 (the legacy adapter showed every
+  value). The collection's own item list now really sorts by Sample ID: the
+  legacy sort compared its `{ identifier, url }` objects as `"[object Object]"`,
+  so it kept source order under a "sorted" header (rows now start at
+  SAMN55848691, were SAMN55848714). The one-row Sample table no longer marks its
+  first column as sorted. Sample ID's sort-on-`_identifierSort`,
+  show-`identifier` remap is now explicit in the column descriptor
+  (`SampleColumn.valueProperty`) instead of a `getCells` special case. The
+  legacy `SampleTable/Cells.tsx` adapter is gone.
+- **Funding:** the details sit under the funders, behind the shared
+  `CollapsibleTextTrigger` ("More Information" / "Less Information" with a
+  chevron, was a full-width accordion row with +/−), mounted only once opened as
+  before. Shown only when a funder has something the panel shows (alternate
+  name, class, role, parent organization, employee); the legacy row offered it
+  for any other key (e.g. a `url`), and then showed only the name. Label and
+  value run on as one line in the narrow cell. Valid `dl` markup (was `dd`s and
+  `div`s straight inside `dl`); several employees are comma-joined (they ran
+  together).
+- **Based On:** Description column (4 lines + "Show More", was 144 characters +
+  "read more"). A type's "Show ontology information." tooltip only exists when
+  it links somewhere (an empty one used to open). Pager grey like the rest (was
+  `primary`). The unused `id`, `caption` and `columns` props are gone.
+- **Files:** a known size of 0 now shows ("size: 0"; the legacy check hid it).
+- **Accessible names** (one `label` each, was `aria-label` + caption): "List of
+  downloadable files", "Sample properties", "Sample Collection List", "N samples
+  in this collection", "Cited by information", Based On's section title, "Grant
+  and funding information".
+- **Shared code:** `TablePagination` moved to `data-table/components/` (its size
+  is the `styleSize` prop, default `sm`, instead of the legacy `TableSize`
+  context; the same output). The `tableShell` recipe lost its `wrapper` slot.
+  `getFileIcon` moved to `files-table/helpers.ts`. Deleted: `Table`, `Column`,
+  `Cell`, `Th`, `Row`, `RowWithDrawer`, `TableContainer`, `TableWrapper`, the
+  sort toggle, `useTableSort`, `useTableSize`, `getTruncatedText` and their
+  tests.
+- **Verified:** Jest (new behaviour tests for every table, replacing mock-based
+  ones). On the dev server with recorded staging records (a composite with 96
+  files, 16 grants, 7 based-on, 13 cited-by and 30 fetched samples; a collection
+  with 95 listed items; a single Sample), at 1440 and 390: widths as above,
+  sorting, paging (focus stays on the pager), the funder toggle, axe (WCAG A/AA)
+  clean on every table section with funder details open. Not run:
+  `e2e/accessibility/resources.spec.ts` (needs a static export) and a perf
+  comparison (paginated, 5 rows by default).
+
 ## 7. Architecture (as built)
 
 `src/components/table/data-table/` (see its `README.md`):
@@ -643,8 +731,11 @@ passed; no current table passes them.
   `longText`, `number`, `date`, `identifier`, `link`, `list`, `tags`).
 - `useTableSearch`, moved from the Repository Matcher.
 
-The legacy `src/components/table` (`Table`, `Cell`, `Th`, `Row`,
-`TablePagination`, `useTableSort`) remains until Phase 5.
+The legacy `src/components/table` (`Table`, `Cell`, `Th`, `Row`, `useTableSort`,
+…) was deleted in Phase 5; `TablePagination` moved into
+`data-table/components/`. D4 (moving `data-table/` up to
+`src/components/table/`) is still to do: renaming that barrel under a running
+`next dev` breaks it until a restart (`index.tsx` → `index.ts`).
 
 ## 8. Phases
 
@@ -655,7 +746,7 @@ The legacy `src/components/table` (`Table`, `Cell`, `Th`, `Row`,
 | 2     | `DataTable` and the Repository Matcher pilot; layout spec; a11y error state                                                                                                                                                                                                                                                                                                                                                                | ✅ done, **awaiting owner evaluation**                                                                                                                    |
 | 3     | Saved and Home onto `DataTable`. Saved drops virtualization (decision 2) and switches dates to ISO (decision 12); Home keeps its local search and filters                                                                                                                                                                                                                                                                                  | Home and Saved done (2026-11-19, §6); Saved's perf comparison (decision 2) not run                                                                        |
 | 4     | Search: four tables on `DataTable` server mode. One column file per type with per-column `cell`; Samples reuses the shared row shaping. One `ColumnCustomizer` per tab; delete the 5 search popover files and the storage helpers; migrate legacy keys. Top scrollbar on (decision 7); Conditions of Access badge (decision 10). Add an axe scan of table view and fix the misleading comment at `e2e/accessibility/search.spec.ts` ~L5917 | ✅ done (2026-11-16), except the perf comparison (skipped by the owner for now); axe + layout specs added. See `.claude/plans/search-tables-datatable.md` |
-| 5     | Category 2: Files and Samples onto `DataTable`; cited-by and based-on take the shared header/sort; the funding row drawer stays bespoke. Delete the legacy `Table` (its `virtualized` path has no users since Saved), `useTableSort` and `getTruncatedText`                                                                                                                                                                                | not started                                                                                                                                               |
+| 5     | Category 2: Files and Samples onto `DataTable`; cited-by and based-on take the shared header/sort; the funding row drawer stays bespoke. Delete the legacy `Table` (its `virtualized` path has no users since Saved), `useTableSort` and `getTruncatedText`                                                                                                                                                                                | ✅ done (2026-11-19, §6 "Resource page"); funding details in the Funder cell, Based On's description a column (owner); D4 rename pending                  |
 
 Dependencies: 3 and 4 can run in parallel after sign-off; 5 comes last.
 

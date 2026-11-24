@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 
 import { ChakraProvider } from '@chakra-ui/react';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { system } from 'src/theme';
@@ -116,13 +116,7 @@ describe('BasedOnTable', () => {
   // mount, which updates state; flush it inside `act`.
   const renderTable = async (items: any[]) => {
     const view = renderWithChakra(
-      <BasedOnTable
-        id='is-based-on'
-        loading={false}
-        caption='Table showing resources that this resource is based on.'
-        title='Based on'
-        items={items}
-      />,
+      <BasedOnTable loading={false} title='Based on' items={items} />,
     );
     await act(async () => {});
     return view;
@@ -171,5 +165,85 @@ describe('BasedOnTable', () => {
     expect(
       screen.getByRole('link', { name: /https:\/\/github.com\/org\/repo/ }),
     ).toBeInTheDocument();
+  });
+
+  /** Body rows' cell text, in order. */
+  const getBodyRows = () =>
+    within(screen.getByRole('table', { name: 'Based on' }))
+      .getAllByRole('row')
+      .slice(1)
+      .map(row =>
+        within(row)
+          .getAllByRole('cell')
+          .map(cell => cell.textContent),
+      );
+
+  it('shows the type, the date as YYYY-MM-DD and the description in their own columns', async () => {
+    await renderTable([
+      {
+        '@type': 'ScholarlyArticle',
+        name: 'An article',
+        pmid: '123',
+        datePublished: '2014-12-03',
+        description: 'What the article is about.',
+      },
+      // No name: the ID stands in, linking to the url.
+      {
+        '@type': 'ComputationalTool',
+        identifier: 'fasta',
+        url: 'https://example.com/fasta',
+      },
+    ]);
+
+    expect(
+      within(screen.getByRole('table', { name: 'Based on' }))
+        .getAllByRole('columnheader')
+        .map(header => header.textContent),
+    ).toEqual(['Name', 'Type', 'Date Published', 'Description']);
+    expect(getBodyRows()).toEqual([
+      [
+        'An articlePMID |123',
+        'ScholarlyArticle',
+        '2014-12-03',
+        'What the article is about.',
+      ],
+      [
+        'No name providedID |fasta',
+        'ComputationalTool',
+        '—No data',
+        '—No data',
+      ],
+    ]);
+    expect(screen.getByRole('link', { name: /fasta/ })).toHaveAttribute(
+      'href',
+      'https://example.com/fasta',
+    );
+  });
+
+  it('links additional types to their ontology entries', async () => {
+    await renderTable([
+      {
+        '@type': 'Dataset',
+        name: 'A dataset',
+        additionalType: {
+          name: 'Genome',
+          url: 'http://purl.obolibrary.org/obo/NCIT_C16629',
+        },
+      },
+    ]);
+
+    expect(screen.getByRole('link', { name: /Genome/ })).toHaveAttribute(
+      'href',
+      'http://purl.obolibrary.org/obo/NCIT_C16629',
+    );
+    // The `@type` has no url, so it's text.
+    expect(
+      screen.queryByRole('link', { name: /^Dataset/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows "No data" in the name cell only when there is nothing to show', async () => {
+    await renderTable([{ '@type': 'Dataset' }]);
+    expect(getBodyRows()[0][0]).toBe('—No data');
   });
 });

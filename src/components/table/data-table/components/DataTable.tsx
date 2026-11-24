@@ -32,9 +32,7 @@ import { HeaderCell } from './HeaderCell';
 // page combobox are ~60 kB (18 kB gzipped) that every other table, the
 // Repository Matcher's included, would otherwise ship for nothing.
 const TablePagination = dynamic(() =>
-  import('src/components/table/components/pagination').then(
-    mod => mod.TablePagination,
-  ),
+  import('./TablePagination').then(mod => mod.TablePagination),
 );
 
 export interface DataTableStatus {

@@ -1,12 +1,10 @@
 # DataTable
 
 The shared table for interactive, data-driven tables (search results, repository
-matcher, saved items, …). It renders native table markup with Chakra's table
-conventions, and keeps data fetching out of the table: you pass rows in, and it
-tells you when the user asks for a different sort.
-
-The legacy `src/components/table` (`Table`, `Cell`, `Th`, …) is still used by
-the tables that haven't migrated yet.
+matcher, saved items, the resource page's tables, …). It renders native table
+markup with Chakra's table conventions, and keeps data fetching out of the
+table: you pass rows in, and it tells you when the user asks for a different
+sort.
 
 ```ts
 import {
@@ -104,8 +102,9 @@ without pulling in the table itself, from `data-table/cells`).
 "No data".
 
 **Building blocks** (`ExpandableText`, `ExpandableList`, `renderTerm`) render
-nothing for empty input instead, because the legacy tables, which show blank
-there, use them too. Check the value before using one in a `cell`.
+nothing for empty input instead, so the caller decides what an empty value
+shows (they also appear outside cells, e.g. one term in a list). Check the value
+before using one in a `cell`.
 
 ## Examples
 
@@ -207,7 +206,8 @@ The table owns how it behaves; the parent owns how much space it takes.
 `pagination` (on `DataTable` or `useDataTable`) pages the rows in the browser.
 The table shows the current page with the shared pager below it, inside its
 border: rows per page, first/previous/next/last, a page picker and the totals
-(`src/components/table/components/pagination.tsx`). This works the same whether
+(`components/TablePagination.tsx`, kept out of this folder's `index.ts` so the
+lazy load still splits it out). This works the same whether
 you pass `pagination` to `DataTable` directly or pass a `table` from
 `useDataTable`.
 

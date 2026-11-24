@@ -5,7 +5,6 @@ Cells for the DataTable. Two kinds:
   have nothing to show, so a column's `cell` can return one directly.
 - Building blocks (`ExpandableText`, `ExpandableList`, `renderTerm`) render
   nothing for empty input, so the caller decides what an empty cell shows.
-  The legacy tables use them too, and show blank.
 
 Free of module-level side effects, so importing this file (rather than the
 data-table barrel) doesn't pull the table itself into a page's bundle.

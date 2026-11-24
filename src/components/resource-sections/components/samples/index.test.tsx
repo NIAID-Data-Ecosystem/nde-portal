@@ -1,21 +1,9 @@
-import '@testing-library/jest-dom';
-
-import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen } from '@testing-library/react';
 import React from 'react';
-import { system } from 'src/theme';
+import { act, render, screen, within } from 'src/__tests__/utils/render';
 
 import { SamplesDisplay } from '.';
-import { SAMPLE_TABLE_CONFIG } from './config';
 
-const mockSampleTable = jest.fn((props: any) => {
-  return <div data-testid='sample-table'>{props.label}</div>;
-});
-
-jest.mock('./components/SampleTable', () => ({
-  SampleTable: (props: any) => mockSampleTable(props),
-}));
-
+// The collection table fetches its samples; it has its own tests.
 jest.mock('./components/SampleCollectionsTable', () => ({
   SampleCollectionItemsTable: ({
     parentIdentifier,
@@ -28,138 +16,82 @@ jest.mock('./components/SampleCollectionsTable', () => ({
   ),
 }));
 
-const mockRenderCellData = jest.fn((arg: any) => 'CELL_RENDERED');
-jest.mock('./components/SampleTable/Cells', () => ({
-  Cell: {
-    renderCellData: (arg: any) => mockRenderCellData(arg),
-  },
-}));
-
-// Mock configs
-const sampleColumns = [{ property: 'p1' }];
-const sampleRows = [{ p1: 'sample-val', other: 123 }];
-
-jest.mock('./config', () => ({
-  SAMPLE_TABLE_CONFIG: {
-    label: 'Sample Table Label',
-    caption: 'Sample Table Caption',
-    getColumns: jest.fn(() => [{ property: 'p1' }]),
-    getRows: jest.fn(() => [{ p1: 'sample-val', other: 123 }]),
-    tableProps: { hasPagination: true }, // example passthrough
-  },
-  SAMPLE_COLLECTION_TABLE_CONFIG: {
-    label: 'Collection Table Label',
-    caption: 'Collection Table Caption',
-    getColumns: jest.fn(() => [{ property: 'c1' }]),
-    getRows: jest.fn(() => [{ c1: 'coll-val' }]),
-  },
-}));
-
-const renderWithChakra = (ui: React.ReactElement) =>
-  render(<ChakraProvider value={system}>{ui}</ChakraProvider>);
+const renderDisplay = async (
+  props: React.ComponentProps<typeof SamplesDisplay>,
+) => {
+  const result = render(<SamplesDisplay {...props} />);
+  await act(async () => {});
+  return result;
+};
 
 describe('SamplesDisplay', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
+  it.each([null, undefined])(
+    'renders nothing when sample is %s',
+    async value => {
+      const { container } = await renderDisplay({ sample: value });
+      expect(container).toBeEmptyDOMElement();
+    },
+  );
+
+  it('renders nothing when sample type is missing', async () => {
+    const { container } = await renderDisplay({
+      sample: { '@type': null } as any,
+    });
+    expect(container).toBeEmptyDOMElement();
   });
 
-  it.each([null, undefined])('renders null when sample is empty', value => {
-    renderWithChakra(<SamplesDisplay sample={value as any} />);
-    expect(screen.queryByTestId('sample-table')).not.toBeInTheDocument();
-    expect(mockSampleTable).not.toHaveBeenCalled();
-  });
+  it("shows a Sample's properties in a one-row table, a column per property with a value", async () => {
+    await renderDisplay({
+      sample: {
+        '@type': 'Sample',
+        cellType: [
+          { name: 'natural killer cell', url: 'https://example.com/nk' },
+        ],
+        sex: 'female',
+        species: [],
+      } as any,
+    });
 
-  it('renders null when sample type is missing', () => {
-    const sample = { '@type': null } as any;
-
-    renderWithChakra(<SamplesDisplay sample={sample} />);
-    expect(screen.queryByTestId('sample-table')).not.toBeInTheDocument();
-  });
-
-  it('uses SAMPLE_TABLE_CONFIG when @type is Sample', () => {
-    const sample = { '@type': 'Sample' } as any;
-
-    renderWithChakra(<SamplesDisplay sample={sample} />);
-
-    // correct label rendered.
-    expect(screen.getByTestId('sample-table')).toHaveTextContent(
-      'Sample Table Label',
-    );
-
-    // called config fns with sample
-    expect((SAMPLE_TABLE_CONFIG as any).getColumns).toHaveBeenCalledWith(
-      sample,
-    );
-    expect((SAMPLE_TABLE_CONFIG as any).getRows).toHaveBeenCalledWith(sample);
-
-    // SampleTable received expected props
-    const passedProps = mockSampleTable.mock.calls[0][0];
-    expect(passedProps.caption).toBe('Sample Table Caption');
-    expect(passedProps.tableProps.columns).toEqual(sampleColumns);
-    expect(passedProps.tableProps.data).toEqual(sampleRows);
-    expect(passedProps.tableProps.hasPagination).toBe(true);
-  });
-
-  it('renders SampleCollectionItemsTable when @type is SampleCollection', () => {
-    const collection = {
-      '@type': 'SampleCollection',
-      identifier: 'collection-123',
-    } as any;
-
-    renderWithChakra(<SamplesDisplay sample={collection} />);
-
+    const table = screen.getByRole('table', { name: 'Sample properties' });
     expect(
-      screen.getByTestId('sample-collection-items-table'),
-    ).toBeInTheDocument();
-    expect(screen.queryByTestId('sample-table')).not.toBeInTheDocument();
-    expect(mockSampleTable).not.toHaveBeenCalled();
+      within(table)
+        .getAllByRole('columnheader')
+        .map(header => header.textContent),
+    ).toEqual(['Cell Type', 'Sex']);
+    const rows = within(table).getAllByRole('row').slice(1);
+    expect(rows.map(row => row.textContent)).toEqual([
+      'Natural killer cellFemale',
+    ]);
+    expect(
+      within(table).getByRole('link', { name: /Natural killer cell/ }),
+    ).toHaveAttribute('href', 'https://example.com/nk');
+    expect(
+      screen.queryByTestId('sample-collection-items-table'),
+    ).not.toBeInTheDocument();
   });
 
-  it('passes identifier from sample to SampleCollectionItemsTable', () => {
-    const collection = {
-      '@type': 'SampleCollection',
-      identifier: 'my-collection-id',
-    } as any;
-
-    renderWithChakra(<SamplesDisplay sample={collection} />);
+  it('renders SampleCollectionItemsTable when @type is SampleCollection', async () => {
+    await renderDisplay({
+      sample: {
+        '@type': 'SampleCollection',
+        identifier: 'my-collection-id',
+      } as any,
+    });
 
     expect(
       screen.getByTestId('sample-collection-items-table'),
     ).toHaveTextContent('Collection items for: my-collection-id');
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
 
-  it('falls back to resourceIdentifier when sample has no identifier', () => {
-    const collection = { '@type': 'SampleCollection' } as any;
-
-    renderWithChakra(
-      <SamplesDisplay sample={collection} resourceIdentifier='fallback-id' />,
-    );
+  it('falls back to resourceIdentifier when sample has no identifier', async () => {
+    await renderDisplay({
+      sample: { '@type': 'SampleCollection' } as any,
+      resourceIdentifier: 'fallback-id',
+    });
 
     expect(
       screen.getByTestId('sample-collection-items-table'),
     ).toHaveTextContent('Collection items for: fallback-id');
-  });
-
-  it('getCells picks data by column.property and calls Cell.renderCellData with mapped data', () => {
-    const sample = { '@type': 'Sample' } as any;
-
-    renderWithChakra(<SamplesDisplay sample={sample} />);
-
-    const passedProps = mockSampleTable.mock.calls[0][0];
-
-    // calls the getCells function the component created.
-    const result = passedProps.tableProps.getCells({
-      column: { property: 'p1' },
-      data: { p1: 'VALUE_FROM_ROW', ignored: 'x' },
-    });
-
-    expect(result).toBe('CELL_RENDERED');
-
-    expect(mockRenderCellData).toHaveBeenCalledWith(
-      expect.objectContaining({
-        column: { property: 'p1' },
-        data: 'VALUE_FROM_ROW',
-      }),
-    );
   });
 });

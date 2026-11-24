@@ -10,6 +10,7 @@ import {
   FaFileZipper,
 } from 'react-icons/fa6';
 
+/** The icon (and its colour) for a file format, e.g. a PDF or a CSV. */
 export const getFileIcon = (value: string) => {
   if (!value) {
     return { icon: null, color: null };
@@ -73,27 +74,4 @@ export const getFileIcon = (value: string) => {
     color = 'gray.600';
   }
   return { icon, color };
-};
-
-export const getTruncatedText = (
-  description?: string | null,
-  showFullDescription?: boolean,
-  MAX_CHARS = 144,
-) => {
-  if (!description) {
-    return { text: '', hasMore: false };
-  }
-
-  // truncate description if it's longer than 144 chars
-  const text =
-    description.length < MAX_CHARS
-      ? description
-      : description.substring(
-          0,
-          showFullDescription ? description.length : MAX_CHARS,
-        );
-  return {
-    text,
-    hasMore: showFullDescription ? false : description.length > MAX_CHARS,
-  };
 };

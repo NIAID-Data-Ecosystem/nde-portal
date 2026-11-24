@@ -47,7 +47,7 @@ const quantityText = ({
  *
  * A building block: returns `null` when there's nothing to show, so the caller
  * decides what an empty cell shows. Plain elements that inherit the cell's
- * font and colour, so it renders the same in DataTable and the legacy tables.
+ * font and colour.
  */
 export const renderTerm = (
   term: TermValue,

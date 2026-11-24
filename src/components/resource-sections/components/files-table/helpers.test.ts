@@ -1,6 +1,6 @@
-import { getFileIcon, getTruncatedText } from 'src/components/table/helpers';
-describe('Table Helpers', () => {
-  /*** getFileIcon ***/
+import { getFileIcon } from './helpers';
+
+describe('getFileIcon', () => {
   test('returns null icon and color for empty value', () => {
     const result = getFileIcon('');
     expect(result).toEqual({ icon: null, color: null });
@@ -79,33 +79,5 @@ describe('Table Helpers', () => {
     expect(txt.icon).toBeDefined();
     expect(pdf.color).toMatch(/red/);
     expect(txt.color).toMatch(/gray/);
-  });
-
-  /*** getTruncatedText ***/
-  test('returns empty string and hasMore false for null description', () => {
-    const result = getTruncatedText(null);
-    expect(result).toEqual({ text: '', hasMore: false });
-  });
-
-  test('returns same text and hasMore false if text is within max chars limit', () => {
-    const text = 'Short description';
-    const result = getTruncatedText(text);
-    expect(result).toEqual({ text, hasMore: false });
-  });
-
-  test('returns truncated text and hasMore true if text exceeds max chars limit', () => {
-    const longText =
-      'This is a very long description that should be truncated because it exceeds the maximum character limit set for the description text.';
-    const result = getTruncatedText(longText, false, 100);
-    expect(result.text.length).toBe(100);
-    expect(result.hasMore).toBe(true);
-  });
-
-  test('returns full text and hasMore true if showFullDescription is true, even if text exceeds max chars', () => {
-    const longText =
-      'This is a very long description that should not be truncated because showFullDescription is true, showing the entire text regardless of its length.';
-    const result = getTruncatedText(longText, true);
-    expect(result.text).toBe(longText);
-    expect(result.hasMore).toBe(false);
   });
 });
