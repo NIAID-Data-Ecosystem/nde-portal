@@ -457,7 +457,7 @@ test.describe(
         name: /discovery portal quick start guide/i,
       });
       await expectKeyboardOpens(trigger, surface);
-      await expectEscapeReturnsFocus(page, trigger, surface);
+      await expectEscapeReturnsFocus(page, trigger);
     });
   },
 );

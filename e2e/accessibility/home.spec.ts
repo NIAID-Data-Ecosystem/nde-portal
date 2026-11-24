@@ -415,7 +415,7 @@ test.describe('a11y: Home — filter popover', () => {
       });
       const surface = page.getByRole('checkbox', { name: /IID/i }).first();
       await expectKeyboardOpens(trigger, surface);
-      await expectEscapeReturnsFocus(page, trigger, surface);
+      await expectEscapeReturnsFocus(page, trigger);
     },
   );
 });

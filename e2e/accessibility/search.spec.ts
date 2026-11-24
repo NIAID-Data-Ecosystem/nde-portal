@@ -5816,24 +5816,22 @@ test.describe('a11y: Search — empty', () => {
  * waits for the body content before scanning.
  */
 async function revealAllCards(page: Page) {
-  await page.evaluate(
-    () =>
-      new Promise<void>(resolve => {
-        let y = 0;
-        const step = () => {
-          window.scrollBy(0, Math.round(window.innerHeight * 0.8));
-          y += Math.round(window.innerHeight * 0.8);
-          if (y < document.body.scrollHeight) {
-            setTimeout(step, 120);
-          } else {
-            window.scrollTo(0, 0);
-            // Give the observers a tick to settle at the top before resolving.
-            setTimeout(resolve, 120);
-          }
-        };
-        step();
-      }),
-  );
+  await page.evaluate(async () => {
+    // Wait two frames at each scroll position. A card's once-only
+    // IntersectionObserver only sees positions the browser renders, and a busy
+    // WebKit can render none during a fixed timeout, leaving cards unrevealed.
+    const twoFrames = () =>
+      new Promise(resolve =>
+        requestAnimationFrame(() => requestAnimationFrame(resolve)),
+      );
+    const step = Math.round(window.innerHeight * 0.8);
+    for (let y = 0; y < document.body.scrollHeight; y += step) {
+      window.scrollTo(0, y);
+      await twoFrames();
+    }
+    window.scrollTo(0, 0);
+    await twoFrames();
+  });
 }
 
 test.describe('a11y: Search — populated', () => {
@@ -5948,6 +5946,12 @@ async function gotoPopulated(page: Page) {
   await expect(
     page.getByRole('link', { name: new RegExp(DATASET_NAME, 'i') }).first(),
   ).toBeVisible();
+  // The page then applies its default date filter, which adds the "Filtered by"
+  // tags above the results and moves them down. Wait for that, so a click
+  // lands on the control it aims at.
+  await expect(
+    page.getByRole('heading', { level: 2, name: /filtered by/i }),
+  ).toBeVisible();
 }
 
 // --- Search bar "Type" options menu (CheckboxMenu popover) --------------------
@@ -5982,7 +5986,7 @@ test.describe('a11y: Search — type options menu', () => {
         name: /dataset repository/i,
       });
       await expectKeyboardOpens(trigger, surface);
-      await expectEscapeReturnsFocus(page, trigger, surface);
+      await expectEscapeReturnsFocus(page, trigger);
     },
   );
 });

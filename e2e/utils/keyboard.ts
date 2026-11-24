@@ -22,7 +22,8 @@ import { expect, type Locator, type Page } from '@playwright/test';
 /**
  * Assert a trigger can be operated by keyboard to reveal a surface: focus the
  * trigger, confirm it takes focus (so it's in the tab order), activate it with
- * `key`, and confirm the surface becomes visible.
+ * `key`, and confirm the surface becomes visible and takes focus. For menus and
+ * popovers, not comboboxes, whose focus stays in the input.
  *
  * Chakra buttons open menus/popovers on both Enter and Space; `Enter` is the
  * default here. Pass the exact trigger and the surface's own accessible proof
@@ -47,6 +48,26 @@ export async function expectKeyboardOpens(
     surface,
     'activating the trigger by keyboard should reveal its surface',
   ).toBeVisible();
+  // Wait until the menu or popover has focus and handles Escape. WebKit shows
+  // it a few hundred ms before either, and an Escape sent earlier is lost.
+  // zag, behind Chakra's overlays, starts handling Escape an animation frame
+  // after opening and marks the layer with `--layer-index` when it does.
+  await expect
+    .poll(
+      () =>
+        surface.evaluate(el => {
+          const layer = el.closest<HTMLElement>(
+            '[role="dialog"], [role="menu"]',
+          );
+          return (
+            !!layer &&
+            layer.contains(document.activeElement) &&
+            layer.style.getPropertyValue('--layer-index') !== ''
+          );
+        }),
+      { message: 'the opened surface should take focus and handle keys' },
+    )
+    .toBe(true);
 }
 
 /**
@@ -54,14 +75,19 @@ export async function expectKeyboardOpens(
  * WCAG 2.4.3 (Focus Order) / 2.1.2 (No Keyboard Trap). Losing focus to
  * `<body>` on close is the classic dismissible-overlay failure that strands
  * keyboard and screen-reader users.
+ *
+ * The close is checked through the trigger's `aria-expanded`, which is what
+ * assistive tech reports, not through the surface. zag keeps a closed surface
+ * mounted until its exit animation ends, and on a busy machine (WebKit with
+ * several workers) it can miss that end, leaving the surface in the DOM at
+ * opacity 0, which Playwright doesn't count as hidden.
  */
-export async function expectEscapeReturnsFocus(
-  page: Page,
-  trigger: Locator,
-  surface: Locator,
-) {
+export async function expectEscapeReturnsFocus(page: Page, trigger: Locator) {
   await page.keyboard.press('Escape');
-  await expect(surface, 'Escape should dismiss the open surface').toBeHidden();
+  await expect(
+    trigger,
+    'Escape should dismiss the open surface',
+  ).toHaveAttribute('aria-expanded', 'false');
   await expect(
     trigger,
     'focus should return to the trigger after the surface closes',

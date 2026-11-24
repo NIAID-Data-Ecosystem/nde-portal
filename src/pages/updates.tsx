@@ -61,6 +61,14 @@ export interface NewsOrEventsObject {
   eventDate?: string;
 }
 
+// `eventDate` is a calendar date (YYYY-MM-DD). Read it as local midnight:
+// `new Date('YYYY-MM-DD')` is UTC midnight, the previous evening in US time
+// zones, and Safari can't parse other spellings such as 'YYYY MM DD'.
+const toLocalDate = (date: string) => {
+  const [year, month, day] = date.slice(0, 10).split('-').map(Number);
+  return new Date(year, month - 1, day);
+};
+
 export interface UpdatesProps {
   data: {
     news: {
@@ -147,15 +155,11 @@ const Updates: NextPage<UpdatesProps> = props => {
   ]);
 
   const upcomingEvents = response?.events?.filter(
-    event =>
-      event.eventDate &&
-      new Date(Date.parse(event.eventDate.replace(/-/g, ' '))) >= new Date(),
+    event => event.eventDate && toLocalDate(event.eventDate) >= new Date(),
   );
 
   const pastEvents = response?.events?.filter(
-    event =>
-      event.eventDate &&
-      new Date(Date.parse(event.eventDate.replace(/-/g, ' '))) < new Date(),
+    event => event.eventDate && toLocalDate(event.eventDate) < new Date(),
   );
 
   // add scroll padding to account for sticky nav
