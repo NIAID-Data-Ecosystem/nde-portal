@@ -7,7 +7,7 @@ Cells for the DataTable. Two kinds:
   nothing for empty input, so the caller decides what an empty cell shows.
 
 Free of module-level side effects, so importing this file (rather than the
-data-table barrel) doesn't pull the table itself into a page's bundle.
+table barrel) doesn't pull the table itself into a page's bundle.
 */
 export { AccessBadgeCell } from './AccessBadgeCell';
 export { DEFAULT_RENDERERS } from './defaults';

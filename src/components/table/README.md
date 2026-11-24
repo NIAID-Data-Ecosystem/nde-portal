@@ -12,7 +12,7 @@ import {
   DataTable,
   useColumnPreferences,
   useDataTable,
-} from 'src/components/table/data-table';
+} from 'src/components/table';
 ```
 
 ## Pieces
@@ -84,7 +84,7 @@ don't call hooks in it directly.
 ## Cells
 
 Shared cells for custom `cell`s live in `cells/` and are exported from here (or,
-without pulling in the table itself, from `data-table/cells`).
+without pulling in the table itself, from `src/components/table/cells`).
 
 | Cell               | Shows                                                                      |
 | ------------------ | -------------------------------------------------------------------------- |
