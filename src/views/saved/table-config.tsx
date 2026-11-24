@@ -1,5 +1,12 @@
-import { FormatNumber, HStack, Tag, Text, VStack } from '@chakra-ui/react';
-import React, { useRef, useState } from 'react';
+import {
+  FormatNumber,
+  HStack,
+  Span,
+  Tag,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
+import { useRef, useState } from 'react';
 import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
 import { getMetadataName } from 'src/components/metadata';
 import { LinkCell } from 'src/components/table/data-table/cells';
@@ -37,21 +44,6 @@ layout), where the legacy virtualized rows shared the width out evenly.
 */
 
 /****** Cell helpers ******/
-
-const SEMIBOLD: React.CSSProperties = { fontWeight: 600 };
-// The legacy cells' two-line clamps.
-const CLAMP_2: React.CSSProperties = {
-  display: '-webkit-box',
-  WebkitBoxOrient: 'vertical',
-  WebkitLineClamp: 2,
-  overflow: 'hidden',
-};
-const SEMIBOLD_CLAMP_2: React.CSSProperties = { ...SEMIBOLD, ...CLAMP_2 };
-// Lines the query name up with the middle of the bookmark button.
-const QUERY_NAME_STYLE: React.CSSProperties = {
-  ...CLAMP_2,
-  paddingTop: '0.25rem',
-};
 
 /** Leading quotes don't count when sorting names (`"Asthma"` sorts under A). */
 const normalizeNameSortValue = (value?: string) =>
@@ -117,13 +109,13 @@ const SavedResourceNameCell = ({ item }: { item: SavedResourceItem }) => {
         }
       />
       <VStack alignItems='flex-start' gap={1} pt={1}>
-        <span style={CLAMP_2}>
+        <Span lineClamp={2}>
           <LinkCell
             href={`/resources?id=${item.dataset_id}`}
             label={item.name}
             external={false}
           />
-        </span>
+        </Span>
         <Text fontSize='xs' color='gray.500'>
           ID: {item.dataset_id}
         </Text>
@@ -164,13 +156,14 @@ const SavedQueryNameCell = ({ item }: { item: SavedQuery }) => {
           isFavorited ? removeSavedQuery(item) : addSavedQuery(item)
         }
       />
-      <span style={QUERY_NAME_STYLE}>
+      {/* The padding lines the name up with the middle of the button. */}
+      <Span lineClamp={2} pt={1}>
         <LinkCell
           href={getSavedQueryUrl(item)}
           label={item.name || item.query}
           external={false}
         />
-      </span>
+      </Span>
     </HStack>
   );
 };
@@ -195,7 +188,11 @@ export const SAVED_RESOURCE_COLUMNS: SavedColumnDef<SavedResourceItem>[] = [
     // The 180px it had on desktop, where "Computational Tool" fits on a line.
     size: { min: 148, max: 148 },
     cell: ({ value }) =>
-      value ? <span style={SEMIBOLD_CLAMP_2}>{value}</span> : null,
+      value ? (
+        <Span fontWeight='semibold' lineClamp={2}>
+          {value}
+        </Span>
+      ) : null,
   },
   {
     id: 'source',
@@ -204,7 +201,7 @@ export const SAVED_RESOURCE_COLUMNS: SavedColumnDef<SavedResourceItem>[] = [
     sort: true,
     size: { min: 128, max: 188 },
     cell: ({ value }) =>
-      value.length ? <span style={CLAMP_2}>{value.join(', ')}</span> : null,
+      value.length ? <Span lineClamp={2}>{value.join(', ')}</Span> : null,
   },
   {
     id: 'dateModified',
@@ -250,9 +247,9 @@ export const SAVED_QUERY_COLUMNS: SavedColumnDef<SavedQuery>[] = [
     size: { min: 68, max: 68 },
     cell: ({ value }) =>
       value == null ? null : (
-        <span style={SEMIBOLD}>
+        <Span fontWeight='semibold'>
           <FormatNumber value={value} />
-        </span>
+        </Span>
       ),
   },
   {

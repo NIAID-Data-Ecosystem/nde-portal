@@ -1,4 +1,4 @@
-import { Stack, Text } from '@chakra-ui/react';
+import { Span, Stack, Text } from '@chakra-ui/react';
 import React from 'react';
 import {
   ColumnDef,
@@ -23,21 +23,13 @@ they sat at those widths.
 
 const fixed = (width: number) => ({ min: width, max: width });
 
-// The legacy cells' three-line clamp.
-const CLAMP_3: React.CSSProperties = {
-  display: '-webkit-box',
-  WebkitBoxOrient: 'vertical',
-  WebkitLineClamp: 3,
-  overflow: 'hidden',
-};
-
 /** The title (linked when it has a url) and the work's ID, PMID and DOI. */
 const NameCell = ({ item }: { item: CitedByType }) => (
   <>
     {item.url ? (
-      <span style={CLAMP_3}>
+      <Span lineClamp={3}>
         <LinkCell href={item.url} label={item.name || item.url} external />
-      </span>
+      </Span>
     ) : (
       <Text fontWeight='medium' lineClamp={3} mb={2}>
         {item.name || '[No title provided]'}
@@ -76,7 +68,7 @@ export const CITED_BY_COLUMNS: ColumnDef<CitedByType>[] = [
     header: 'Journal',
     sort: true,
     size: fixed(248),
-    cell: ({ value }) => (value ? <span style={CLAMP_3}>{value}</span> : null),
+    cell: ({ value }) => (value ? <Span lineClamp={3}>{value}</Span> : null),
   },
   {
     id: 'datePublished',

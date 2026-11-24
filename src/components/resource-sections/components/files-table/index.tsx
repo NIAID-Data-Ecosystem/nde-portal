@@ -1,4 +1,4 @@
-import { Box, Flex, Icon, Text } from '@chakra-ui/react';
+import { Box, Flex, Icon, Span, Text } from '@chakra-ui/react';
 import React from 'react';
 import {
   ColumnDef,
@@ -25,16 +25,6 @@ it out between them, as the legacy columns did.
 */
 
 const fixed = (width: number) => ({ min: width, max: width });
-
-const lineClamp = (lines: number): React.CSSProperties => ({
-  display: '-webkit-box',
-  WebkitBoxOrient: 'vertical',
-  WebkitLineClamp: lines,
-  overflow: 'hidden',
-});
-// The legacy cells' clamps.
-const CLAMP_2 = lineClamp(2);
-const CLAMP_3 = lineClamp(3);
 
 /** Each format with its icon, then the file's size. */
 const FileFormatCell = ({ file }: { file: Distribution }) => {
@@ -83,7 +73,7 @@ export const FILE_COLUMNS: ColumnDef<Distribution>[] = [
     header: 'Name',
     sort: true,
     size: fixed(248),
-    cell: ({ value }) => (value ? <span style={CLAMP_3}>{value}</span> : null),
+    cell: ({ value }) => (value ? <Span lineClamp={3}>{value}</Span> : null),
   },
   {
     id: 'contentUrl',
@@ -93,9 +83,9 @@ export const FILE_COLUMNS: ColumnDef<Distribution>[] = [
     size: fixed(248),
     cell: ({ value }) =>
       value ? (
-        <span style={CLAMP_2}>
+        <Span lineClamp={2}>
           <LinkCell href={value} external />
-        </span>
+        </Span>
       ) : null,
   },
   {
