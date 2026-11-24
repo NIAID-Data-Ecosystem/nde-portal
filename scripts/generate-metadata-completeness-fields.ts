@@ -17,9 +17,14 @@ const fetchMetadataCompletenessFields = async () => {
     const branch = 'main';
     const path = 'biothings-hub/files/nde-hub/scores.py';
     const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`;
+    // Authenticate when a token is available: unauthenticated requests share a
+    // 60 req/hr per-IP limit, which CI runners routinely exhaust (403).
     const response = await axios.get(url, {
       headers: {
         'Content-Type': 'application/json',
+        ...(process.env.GH_API_KEY && {
+          Authorization: `Bearer ${process.env.GH_API_KEY}`,
+        }),
       },
     });
     const base64Content = response.data.content;

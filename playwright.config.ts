@@ -26,6 +26,9 @@ const isCI = !!process.env.CI;
 
 export default defineConfig({
   testDir: './e2e',
+  // The broken-link check needs live sites; it has its own config
+  // (playwright.links.config.ts, `yarn test:links`).
+  testIgnore: '**/e2e/links/**',
   // Fail the build on CI if a `test.only` was committed by accident.
   forbidOnly: isCI,
   retries: isCI ? 1 : 0,

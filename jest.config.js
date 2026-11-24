@@ -2,26 +2,19 @@ const nextJest = require('next/jest');
 
 const esModules = [
   'bail',
-  'character-entities',
   'ccount',
   'comma-separated-tokens',
   'd3-array',
   'decode-named-character-reference',
   'escape-string-regexp',
-  'hast-util-from-parse5',
-  'hast-util-parse-selector',
-  'hast-util-raw',
-  'hast-util-to-parse5',
-  'hast-util-whitespace',
-  'html-void-elements',
+  'hast-util-.+',
   'hastscript',
+  'html-void-elements',
   'internmap',
   'is-plain-obj',
   'markdown-table',
   'mdast-util-.+',
-  'micromark',
-  'micromark-.+',
-  'parse-entities',
+  'micromark(-.+)?',
   'property-information',
   'react-markdown',
   'rehype-raw',
@@ -31,12 +24,7 @@ const esModules = [
   'trough',
   'unified',
   'unist-.+',
-  'unist-util-is',
-  'unist-util-position',
-  'unist-util-visit',
-  'unist-util-visit-parents',
-  'vfile',
-  'vfile-location',
+  'vfile(-.+)?',
   'web-namespaces',
   'zwitch',
 ].join('|');
@@ -46,42 +34,30 @@ const createJestConfig = nextJest({
   dir: './',
 });
 
-// Add any custom config to be passed to Jest
+/** @type {import('jest').Config} */
 const customJestConfig = {
   coverageProvider: 'v8',
-  setupFilesAfterEnv: ['./jest.setup.js'],
-  testEnvironment: 'jest-environment-jsdom',
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  testEnvironment: 'jsdom',
   // One worker per core grows to ~6 GB of jsdom workers, which pushes a dev box
   // into swap; stalled workers then time out even trivial tests. Half the cores,
   // with workers recycled once bloated, peaks under ~3 GB for ~20% more time.
   maxWorkers: '50%',
   workerIdleMemoryLimit: '512MB',
   moduleDirectories: ['node_modules', '<rootDir>/'],
+  testMatch: ['**/?(*.)+(spec|test).?([mc])[jt]s?(x)'],
   testPathIgnorePatterns: [
     '<rootDir>/.next/',
     '<rootDir>/node_modules/',
     '<rootDir>/e2e/',
-    '<rootDir>/coverage',
-    '<rootDir>/dist',
-    '<rootDir>/src/__tests__/mocks/',
-    '<rootDir>/src/__tests__/utils/',
-    '<rootDir>/src/__tests__/validate-links.test.js',
+    '<rootDir>/coverage/',
+    '<rootDir>/dist/',
   ],
-  moduleNameMapper: {
-    'react-markdown':
-      '<rootDir>/node_modules/react-markdown/react-markdown.min.js',
-    'parse5/lib/parser/index.js':
-      '<rootDir>/node_modules/hast-util-raw/node_modules/parse5/lib/parser/index.js',
-  },
-  transformIgnorePatterns: ['node_modules/(?!react-markdown/)'],
-  globals: {
-    window: {},
-  },
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
 // module.exports = createJestConfig(customJestConfig)
 module.exports = async () => ({
   ...(await createJestConfig(customJestConfig)()),
-  transformIgnorePatterns: [`node_modules/(?!(${esModules})/)`],
+  transformIgnorePatterns: [`/node_modules/(?!(${esModules})/)`],
 });

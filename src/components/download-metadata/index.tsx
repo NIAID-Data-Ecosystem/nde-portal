@@ -13,21 +13,45 @@ import {
 import { sendGTMEvent } from '@next/third-parties/google';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { FaCircleExclamation, FaDownload } from 'react-icons/fa6';
 import { FaXmark } from 'react-icons/fa6';
 import { fetchAllSearchResults, Params } from 'src/utils/api';
+import { formatAPIResource } from 'src/utils/api/helpers';
+import { FormattedResource } from 'src/utils/api/types';
+import { SHOW_XLSX_CUSTOM_VIEW_DOWNLOAD } from 'src/utils/feature-flags';
 
 import { Disclaimer } from './components/Disclaimer';
 import { DownloadArgs, downloadAsCsv, downloadAsJson } from './helpers';
+import { downloadXlsxExport, prepareXlsxExport, XlsxColumnSpec } from './xlsx';
 
 /*
- [COMPONENT INFO]: Download data button that gives JSON or CSV download options.
+ [COMPONENT INFO]: Download data button that gives JSON or CSV download options,
+ plus an XLSX option mirroring a customized table view when `customViewExport`
+ is provided.
 
  The format list is a `Menu`: it owns its own open state, so the button gets
  `aria-haspopup`/`aria-expanded`, the items are real `menuitem`s reachable by
  keyboard, and Escape / outside-click / focus-return are handled for us.
 */
+
+/**
+ * Describes the table view to export as XLSX: the visible columns, in order,
+ * and how to turn a formatted API record into the row those columns read.
+ */
+export interface CustomViewExport {
+  sheetName: string;
+  columns: XlsxColumnSpec[];
+  toRow: (resource: FormattedResource) => Record<string, unknown>;
+}
+
+type DownloadDetails = { href?: string; download?: string } | null;
 
 export interface DownloadOption {
   name: string;
@@ -36,7 +60,7 @@ export interface DownloadOption {
   fn: (
     data: DownloadArgs['dataObject'],
     exportFileName: DownloadArgs['downloadName'],
-  ) => { href?: string; download?: string } | null;
+  ) => DownloadDetails | Promise<DownloadDetails>;
 }
 
 /*
@@ -62,6 +86,8 @@ interface DownloadMetadataProps extends FlexProps {
   options?: DownloadOption[];
   /** Width of the download progress bar row. */
   progressWidth?: FlexProps['w'];
+  /** Table view to export; adds the XLSX option to the menu when set. */
+  customViewExport?: CustomViewExport;
 }
 
 const trackDownloadEvent = (params: {
@@ -78,6 +104,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
   options = DOWNLOAD_OPTIONS,
   maxW = '300px',
   progressWidth = '200px',
+  customViewExport,
   ...props
 }) => {
   const router = useRouter();
@@ -86,10 +113,64 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
   const [downloadFormat, setDownloadFormat] = useState<DownloadOption | null>(
     null,
   );
+  // Label for the file-building phase that follows the fetch.
+  const [buildStatus, setBuildStatus] = useState<string | null>(null);
+  // Error raised while building the file (fetch errors come from useQuery).
+  const [buildError, setBuildError] = useState<string | null>(null);
+  // Read the table view at download time rather than when the option was
+  // clicked, so the file reflects the columns shown when the data arrives.
+  const customViewExportRef = useRef(customViewExport);
+  customViewExportRef.current = customViewExport;
+
+  // Memoized (it reads the view through the ref) so `downloadFormat` keeps a
+  // stable identity across renders, like the hoisted `DOWNLOAD_OPTIONS`.
+  const xlsxOption = useMemo<DownloadOption>(
+    () => ({
+      name: 'XLSX Format (Custom Result View)',
+      format: 'xlsx',
+      fn: async (data, exportFileName) => {
+        const view = customViewExportRef.current;
+        if (!view) return null;
+        const records = Array.isArray(data) ? data : [data];
+        const rows = records
+          .map(record => formatAPIResource(record))
+          .filter((resource): resource is FormattedResource => !!resource)
+          .map(view.toRow);
+        const prepared = prepareXlsxExport({
+          sheetName: view.sheetName,
+          columns: view.columns,
+          rows,
+        });
+        // Downloads a .zip of several files when the rows don't fit in one.
+        return downloadXlsxExport(prepared, exportFileName, {
+          onProgress: (fileNumber, fileCount) =>
+            setBuildStatus(
+              fileCount > 1
+                ? `Building file ${fileNumber} of ${fileCount}…`
+                : 'Building file…',
+            ),
+        });
+      },
+    }),
+    [],
+  );
+
+  const showXlsxOption = SHOW_XLSX_CUSTOM_VIEW_DOWNLOAD && !!customViewExport;
+  const menuOptions = useMemo(
+    () => (showXlsxOption ? [...options, xlsxOption] : options),
+    [options, showXlsxOption, xlsxOption],
+  );
 
   // Drives the trigger, the cancel button, the progress bar and the menu
   // highlight, so it is resolved once here instead of at each call site.
   const colorPalette = buttonProps?.colorPalette ?? DEFAULT_COLOR_PALETTE;
+
+  const startDownload = (option: DownloadOption) => {
+    setBuildError(null);
+    setBuildStatus(null);
+    setPercentComplete(0);
+    setDownloadFormat(option);
+  };
 
   // Detect if query has change by using the stringified params as a query key.
   const [queryKey, setQueryKey] = useState(['all-search-results', params]);
@@ -133,6 +214,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
   const clearDownloadState = useCallback(() => {
     setPercentComplete(0);
     setDownloadFormat(null);
+    setBuildStatus(null);
   }, []);
 
   // `percentComplete` is a number, so this must be coerced to a boolean before
@@ -140,8 +222,8 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
   const showProgress = !!downloadFormat || percentComplete > 0;
 
   const optionsByFormat = useMemo(
-    () => new Map(options.map(option => [option.format, option])),
-    [options],
+    () => new Map(menuOptions.map(option => [option.format, option])),
+    [menuOptions],
   );
 
   useEffect(() => {
@@ -176,7 +258,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
         const response = await fetchDownloadData();
         const results = response.data?.results;
         if (results) {
-          const details = downloadFormat.fn(results, exportFileName);
+          const details = await downloadFormat.fn(results, exportFileName);
           if (details?.href && details?.download) {
             initiateDownload({
               href: details.href,
@@ -189,6 +271,13 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
         }
       } catch (error) {
         console.error('Error in data fetching for download:', error);
+        if (downloadFormat.format === 'xlsx') {
+          setBuildError(
+            'Something went wrong while building the XLSX file. Please try again, or download fewer results.',
+          );
+        }
+        // Don't leave the progress bar running if building the file failed.
+        clearDownloadState();
       }
     };
 
@@ -213,29 +302,55 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
           </Text>
         </Collapsible.Content>
       </Collapsible.Root>
+      <Collapsible.Root open={!!buildError}>
+        <Collapsible.Content>
+          <Text
+            fontSize='xs'
+            fontStyle='italic'
+            color='error'
+            maxW={maxW}
+            role='alert'
+          >
+            <Icon as={FaCircleExclamation} color='error' mr={1} />
+            {buildError}
+          </Text>
+        </Collapsible.Content>
+      </Collapsible.Root>
       <Box maxW={maxW}>
         {showProgress && (
-          <Flex w={progressWidth} alignItems='center'>
-            <Progress.Root
-              w='100%'
-              striped
-              value={percentComplete}
-              colorPalette={colorPalette}
-              animated
-            >
-              <Progress.Track>
-                <Progress.Range />
-              </Progress.Track>
-            </Progress.Root>
-            <Text
-              fontSize='xs'
-              color='text.placeholder'
-              textAlign='end'
-              fontWeight='medium'
-              ml={1}
-            >
-              {percentComplete}%
-            </Text>
+          <Flex flexDirection='column'>
+            <Flex w={progressWidth} alignItems='center'>
+              <Progress.Root
+                w='100%'
+                striped
+                value={percentComplete}
+                colorPalette={colorPalette}
+                animated
+              >
+                <Progress.Track>
+                  <Progress.Range />
+                </Progress.Track>
+              </Progress.Root>
+              <Text
+                fontSize='xs'
+                color='text.placeholder'
+                textAlign='end'
+                fontWeight='medium'
+                ml={1}
+              >
+                {percentComplete}%
+              </Text>
+            </Flex>
+            {buildStatus && (
+              <Text
+                fontSize='xs'
+                color='text.placeholder'
+                fontWeight='medium'
+                role='status'
+              >
+                {buildStatus}
+              </Text>
+            )}
           </Flex>
         )}
 
@@ -266,8 +381,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
                 event: 'download_metadata_click',
                 value: `downloadFormat: ${option.format}`,
               });
-              setPercentComplete(0);
-              setDownloadFormat(option);
+              startDownload(option);
             }}
           >
             <Menu.Trigger asChild>
@@ -284,7 +398,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
             </Menu.Trigger>
             <Menu.Positioner>
               <Menu.Content colorPalette={colorPalette}>
-                {options.map((option, idx) => (
+                {menuOptions.map((option, idx) => (
                   <React.Fragment key={option.format}>
                     {idx > 0 && <Menu.Separator />}
                     <Menu.Item
@@ -301,7 +415,16 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
           </Menu.Root>
         )}
       </Box>
-      <Disclaimer isFetching={isFetching} />
+      {downloadFormat?.format === 'xlsx' ? (
+        // Shown right away, and kept while the files are built after fetching.
+        <Disclaimer
+          isFetching
+          timeDelay={0}
+          message='Note: XLSX downloads may be split into multiple files.'
+        />
+      ) : (
+        <Disclaimer isFetching={isFetching} />
+      )}
     </Flex>
   );
 };

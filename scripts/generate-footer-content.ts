@@ -19,15 +19,24 @@ const fetchRepositoryInfo = async () => {
     }
 
     const url = `https://api.github.com/repos/${owner}/${repo}/branches/${branch}`;
+    // Authenticate when a token is available: unauthenticated requests share a
+    // 60 req/hr per-IP limit, which CI runners routinely exhaust (403).
     const response = await axios.get(url, {
       headers: {
         'Content-Type': 'application/json',
+        ...(process.env.GH_API_KEY && {
+          Authorization: `Bearer ${process.env.GH_API_KEY}`,
+        }),
       },
     });
 
     return response.data;
   } catch (err: any) {
-    console.error('Error fetching repository info:', err.message);
+    console.error(
+      'Error fetching repository info:',
+      err.message,
+      err.response?.data?.message ?? '',
+    );
     throw err;
   }
 };
