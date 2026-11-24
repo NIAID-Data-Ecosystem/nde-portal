@@ -4,17 +4,19 @@ import { SHOW_PROGRAM_RESOURCE_UI } from 'src/utils/feature-flags';
 
 import { ProgramVariant } from './types';
 
+// Every program variant is displayed as "Program Collection". The variants are
+// kept distinct because they still drive which card is shown and how.
 export const PROGRAM_VARIANT_LABELS: Record<ProgramVariant, string> = {
-  resource: 'Program Resource',
-  'info-and-resource': 'Program Info and Resource',
-  info: 'Program Info',
+  resource: 'Program Collection',
+  'info-and-resource': 'Program Collection',
+  info: 'Program Collection',
 };
 
 export const PROGRAM_COLLECTIONS_SAMEAS_STUB =
   'https://data.niaid.nih.gov/program-collections#';
 
 // Determines whether a record's sourceOrganization should be treated as
-// "present" for the Program Resource banner override (i.e. not null/undefined
+// "present" for the program banner override (i.e., not null/undefined
 // and, if an array, non-empty).
 export const hasSourceOrganization = (
   sourceOrganization?: SourceOrganization[] | SourceOrganization | null,

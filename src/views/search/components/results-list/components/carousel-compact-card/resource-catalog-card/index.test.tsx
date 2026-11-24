@@ -71,7 +71,7 @@ describe('ResourceCatalogCard', () => {
       expect(screen.getByText('Resource Catalog')).toBeInTheDocument();
     });
 
-    it('labels catalogs with a sourceOrganization as Program Resource', () => {
+    it('labels catalogs with a sourceOrganization (resource variant) as Program Collection', () => {
       renderWithChakra(
         <ResourceCatalogCard
           data={makeData({
@@ -81,10 +81,10 @@ describe('ResourceCatalogCard', () => {
         />,
       );
 
-      expect(screen.getByText('Program Resource')).toBeInTheDocument();
+      expect(screen.getByText('Program Collection')).toBeInTheDocument();
     });
 
-    it('labels catalogs linked to a program collection as Program Info and Resource', () => {
+    it('labels catalogs linked to a program collection (info-and-resource variant) as Program Collection', () => {
       renderWithChakra(
         <ResourceCatalogCard
           data={makeData({
@@ -94,7 +94,7 @@ describe('ResourceCatalogCard', () => {
         />,
       );
 
-      expect(screen.getByText('Program Info and Resource')).toBeInTheDocument();
+      expect(screen.getByText('Program Collection')).toBeInTheDocument();
     });
   });
 });

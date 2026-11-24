@@ -59,8 +59,8 @@ export const SHOW_RETIRED_RESOURCE_CATALOG_UI = true;
 
 // Show the program treatments for ResourceCatalog resources in
 // non-production environments for testing/review: a cyan type banner
-// on cards and resource pages labeled "Program Info and Resource"
-// or "Program Resource". To enable in production, set this flag to `true`.
+// on cards and resource pages labeled "Program Collection".
+// To enable in production, set this flag to `true`.
 export const SHOW_PROGRAM_RESOURCE_UI = !isProd;
 
 // Show the mutual-exclusivity behavior for the "Any <filter>" (_exists_) and
