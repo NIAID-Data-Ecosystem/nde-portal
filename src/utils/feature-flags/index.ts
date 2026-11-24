@@ -106,6 +106,13 @@ export const SHOW_DATA_COLLECTIONS_VIEW_MODES = true;
 // for testing/review. To enable in production, set this flag to `true`.
 export const SHOW_WELCOME_PAGE = true;
 
+// Show the "XLSX Format (Custom Result View)" option in the search results
+// Download Metadata menu for the Samples tab and the table view of the
+// Datasets, Computational Tools and Data Collections tabs, in non-production
+// environments for testing/review. To enable in production, set this flag
+// to `true`.
+export const SHOW_XLSX_CUSTOM_VIEW_DOWNLOAD = !isProd;
+
 // Make the "Dataset", "Sample" and "Software" Content Type values also match
 // records of @type Dataset, Sample and ComputationalTool respectively, in the
 // Content Type UI pills, the Content Type filter query, and the Content Type

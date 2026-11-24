@@ -2,6 +2,7 @@ import { List, VStack } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Alert } from 'src/components/alert';
+import { CustomViewExport } from 'src/components/download-metadata';
 import {
   resolveStoredOrderedIds,
   resolveStoredVisibleIds,
@@ -31,6 +32,8 @@ import Card from './components/card';
 import {
   ALL_COMPUTATIONAL_TOOL_COLUMNS,
   ComputationalToolResultsTable,
+  getExportEntries as getComputationalToolExportEntries,
+  toRow as computationalToolToRow,
 } from './components/computational-tool-results-table';
 import {
   CUSTOM_COLUMN_ORDER_STORAGE_KEY as CT_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
@@ -41,6 +44,8 @@ import {
 import {
   ALL_DATA_COLLECTION_COLUMNS,
   DataCollectionResultsTable,
+  getExportEntries as getDataCollectionExportEntries,
+  toRow as dataCollectionToRow,
 } from './components/data-collection-results-table';
 import {
   CUSTOM_COLUMN_ORDER_STORAGE_KEY as DC_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
@@ -51,6 +56,8 @@ import {
 import {
   ALL_DATASET_COLUMNS,
   DatasetResultsTable,
+  getExportEntries as getDatasetExportEntries,
+  toRow as datasetToRow,
 } from './components/dataset-results-table';
 import {
   CUSTOM_COLUMN_ORDER_STORAGE_KEY as DATASET_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
@@ -62,12 +69,19 @@ import { EmptyState } from './components/empty';
 import { ErrorMessage } from './components/error';
 import { MAX_RESULTS, Pagination } from './components/pagination';
 import {
+  COMPUTATIONAL_TOOL_FALLBACK_COLUMN_IDS,
   COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS,
+  DATA_COLLECTION_REQUIRED_COLUMN_IDS,
+  DATASET_FALLBACK_COLUMN_IDS,
   DATASET_REQUIRED_COLUMN_IDS,
+  SAMPLE_REQUIRED_COLUMN_IDS,
 } from './components/results-table/constants';
+import { buildExportColumns } from './components/results-table/export';
 import {
   ALL_SAMPLE_COLUMNS,
+  getExportEntries as getSampleExportEntries,
   SampleResultsTable,
+  toRow as sampleToRow,
 } from './components/sample-results-table';
 import {
   CUSTOM_COLUMN_ORDER_STORAGE_KEY as SAMPLE_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
@@ -318,6 +332,78 @@ export const SearchResults = ({
     isComputationalToolTable ? getInitialCTColumnOrder() : ALL_CT_COLUMN_IDS,
   );
 
+  // The table view currently shown, described for the XLSX "Custom Result
+  // View" download: its visible columns in the user's order, and the same row
+  // shaping the table applies.
+  const customViewExport = useMemo<CustomViewExport | undefined>(() => {
+    if (isSamplesTab) {
+      return {
+        sheetName: 'Samples',
+        toRow: sampleToRow,
+        columns: buildExportColumns({
+          columns: ALL_SAMPLE_COLUMNS,
+          visibleColumnIds,
+          columnOrder,
+          requiredColumnIds: SAMPLE_REQUIRED_COLUMN_IDS,
+          getExportEntries: getSampleExportEntries,
+        }),
+      };
+    }
+    if (isDataCollectionTable) {
+      return {
+        sheetName: 'Data Collections',
+        toRow: dataCollectionToRow,
+        columns: buildExportColumns({
+          columns: ALL_DATA_COLLECTION_COLUMNS,
+          visibleColumnIds: dcVisibleColumnIds,
+          columnOrder: dcColumnOrder,
+          requiredColumnIds: DATA_COLLECTION_REQUIRED_COLUMN_IDS,
+          getExportEntries: getDataCollectionExportEntries,
+        }),
+      };
+    }
+    if (isDatasetTable) {
+      return {
+        sheetName: 'Datasets',
+        toRow: datasetToRow,
+        columns: buildExportColumns({
+          columns: ALL_DATASET_COLUMNS,
+          visibleColumnIds: datasetVisibleColumnIds,
+          columnOrder: datasetColumnOrder,
+          requiredColumnIds: DATASET_FALLBACK_COLUMN_IDS,
+          getExportEntries: getDatasetExportEntries,
+        }),
+      };
+    }
+    if (isComputationalToolTable) {
+      return {
+        sheetName: 'Computational Tools',
+        toRow: computationalToolToRow,
+        columns: buildExportColumns({
+          columns: ALL_COMPUTATIONAL_TOOL_COLUMNS,
+          visibleColumnIds: ctVisibleColumnIds,
+          columnOrder: ctColumnOrder,
+          requiredColumnIds: COMPUTATIONAL_TOOL_FALLBACK_COLUMN_IDS,
+          getExportEntries: getComputationalToolExportEntries,
+        }),
+      };
+    }
+    return undefined;
+  }, [
+    isSamplesTab,
+    isDataCollectionTable,
+    isDatasetTable,
+    isComputationalToolTable,
+    visibleColumnIds,
+    columnOrder,
+    dcVisibleColumnIds,
+    dcColumnOrder,
+    datasetVisibleColumnIds,
+    datasetColumnOrder,
+    ctVisibleColumnIds,
+    ctColumnOrder,
+  ]);
+
   // Drops results that aren't one of this section's types. Most queries are
   // already scoped to them, but when the selected `@type` filter excludes
   // every one of them, the section queries the selected types instead (see
@@ -446,6 +532,7 @@ export const SearchResults = ({
         <SearchResultsToolbar
           id={id}
           params={params}
+          customViewExport={customViewExport}
           viewModeControl={
             showViewMode ? (
               <ViewModeRadio

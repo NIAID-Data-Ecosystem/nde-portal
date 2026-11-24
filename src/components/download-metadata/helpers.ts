@@ -23,7 +23,7 @@ export const getColumnHeaders = (data: DownloadArgs['dataObject']) => {
 };
 
 // Excel cells max character length info: https://support.socrata.com/hc/en-us/articles/115005306167-Limitations-of-Excel-and-CSV-Downloads#:~:text=Cell%20Character%20Limits&text=csv%20files%20have%20a%20limit,this%20Microsoft%20support%20article%20here.
-const MAX_CELL_CHARACTERS = 32700;
+export const MAX_CELL_CHARACTERS = 32700;
 
 export const downloadAsCsv = (
   dataObject: DownloadArgs['dataObject'],

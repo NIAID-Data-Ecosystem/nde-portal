@@ -8,11 +8,13 @@ import React, { useEffect, useState } from 'react';
 interface DisclaimerProps extends FlexProps {
   isFetching: boolean;
   timeDelay?: number;
+  message?: string;
 }
 
 export const Disclaimer: React.FC<DisclaimerProps> = ({
   isFetching,
   timeDelay = 5000,
+  message = 'Note: Large sets of metadata may take a long time to download.',
 }) => {
   // Disclaimer for downloading large sets of metadata.
   const [showDisclaimer, setShowDisclaimer] = useState(false);
@@ -36,7 +38,7 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({
     <Collapsible.Root open={isFetching && showDisclaimer}>
       <Collapsible.Content>
         <Text fontSize='xs' fontStyle='italic'>
-          Note: Large sets of metadata may take a long time to download.
+          {message}
         </Text>
       </Collapsible.Content>
     </Collapsible.Root>

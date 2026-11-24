@@ -14,12 +14,21 @@ import {
   getContentTypeTerms,
 } from '../../utils/content-type';
 import { ResultsTable } from '../results-table';
-import { renderCellData } from '../results-table/components/Cells';
+import {
+  renderCellData,
+  valueToEntries,
+} from '../results-table/components/Cells';
 import {
   LinkOrTextCell,
   ResourceNameCell,
 } from '../results-table/components/SharedCells';
 import { DATA_COLLECTION_REQUIRED_COLUMN_IDS } from '../results-table/constants';
+import {
+  ExportEntriesGetter,
+  linkEntries,
+  nameEntries,
+  textEntries,
+} from '../results-table/export';
 import { BaseColumn } from '../results-table/types';
 import { withWidth } from '../results-table/utils';
 
@@ -147,6 +156,44 @@ export const toRow = (resource: FormattedResource): Record<string, unknown> => {
   };
 };
 
+// Content Type entries: the merged terms built in toRow, labelled and sorted
+// alphabetically, each linked to the term's ontology entry when it has one.
+const getContentTypeEntries = (value: unknown) =>
+  ((value as ContentTypeTerm[] | undefined) ?? [])
+    .map(term => ({
+      label: getContentTypeLabel(term),
+      url: term.url ?? null,
+    }))
+    .filter(entry => entry.label)
+    .sort((a, b) => a.label.localeCompare(b.label));
+
+// isBasedOn: the names of the entries whose @type is "Action".
+const getBasedOnActionNames = (value: unknown): string[] => {
+  if (!value) return [];
+  const entries = Array.isArray(value) ? value : [value];
+  return entries
+    .filter(
+      (entry: { '@type'?: string; name?: string }) =>
+        entry?.['@type'] === 'Action' && entry?.name,
+    )
+    .map((entry: { name: string }) => entry.name);
+};
+
+// collectionSize: "<minValue>+ <unitText lowercase>" per entry. The API may
+// return a single object or an array; both are handled.
+const formatCollectionSizes = (value: unknown): string[] => {
+  if (!value) return [];
+  const entries = Array.isArray(value) ? value : [value];
+  return entries
+    .map((entry: { minValue?: number; unitText?: string }) => {
+      const numericPart = entry.minValue != null ? `${entry.minValue}+` : null;
+      const unitPart = entry.unitText ? entry.unitText.toLowerCase() : null;
+      if (!numericPart && !unitPart) return null;
+      return [numericPart, unitPart].filter(Boolean).join(' ');
+    })
+    .filter((s): s is string => s !== null);
+};
+
 // Builds the cell renderer for this table.
 export const createGetCells =
   (referrerPath?: string) =>
@@ -189,13 +236,7 @@ export const createGetCells =
     // toRow, sorted alphabetically and stacked one per line. Each links out to
     // the term's ontology entry when it has one.
     if (column.property === 'contentType') {
-      const entries = ((value as ContentTypeTerm[] | undefined) ?? [])
-        .map(term => ({
-          label: getContentTypeLabel(term),
-          url: term.url ?? null,
-        }))
-        .filter(entry => entry.label)
-        .sort((a, b) => a.label.localeCompare(b.label));
+      const entries = getContentTypeEntries(value);
 
       if (entries.length === 0) return null;
 
@@ -230,14 +271,7 @@ export const createGetCells =
     // isBasedOn: render the name of each entry whose @type is "Action" as
     // plain text. Multiple matching entries are stacked vertically.
     if (column.property === 'isBasedOn') {
-      if (!value) return null;
-      const entries = Array.isArray(value) ? value : [value];
-      const actionNames = entries
-        .filter(
-          (entry: { '@type'?: string; name?: string }) =>
-            entry?.['@type'] === 'Action' && entry?.name,
-        )
-        .map((entry: { name: string }) => entry.name);
+      const actionNames = getBasedOnActionNames(value);
 
       if (actionNames.length === 0) return null;
 
@@ -256,17 +290,7 @@ export const createGetCells =
     // The API may return a single object or an array; both are handled.
     // Multiple entries are stacked vertically.
     if (column.property === 'collectionSize') {
-      if (!value) return null;
-      const entries = Array.isArray(value) ? value : [value];
-      const formatted = entries
-        .map((entry: { minValue?: number; unitText?: string }) => {
-          const numericPart =
-            entry.minValue != null ? `${entry.minValue}+` : null;
-          const unitPart = entry.unitText ? entry.unitText.toLowerCase() : null;
-          if (!numericPart && !unitPart) return null;
-          return [numericPart, unitPart].filter(Boolean).join(' ');
-        })
-        .filter((s): s is string => s !== null);
+      const formatted = formatCollectionSizes(value);
 
       if (formatted.length === 0) return null;
       if (formatted.length === 1) {
@@ -287,6 +311,36 @@ export const createGetCells =
     // DefinedTerm / QuantitativeValue fields.
     return renderCellData({ column, data: value as any, loading });
   };
+
+/**
+ * Plain-data counterpart of `createGetCells` for the XLSX "Custom Result View"
+ * download: the text and link(s) each cell shows. Keep in sync with the cell
+ * renderer above.
+ */
+export const getExportEntries: ExportEntriesGetter = (property, row) => {
+  const value = row?.[property];
+
+  switch (property) {
+    case 'name':
+      return nameEntries(row);
+    case 'includedInDataCatalog': {
+      const cat = value as { name: string; url: string | null } | null;
+      return cat ? linkEntries([{ label: cat.name, url: cat.url }]) : [];
+    }
+    case 'contentType':
+      return linkEntries(getContentTypeEntries(value));
+    case 'conditionsOfAccess':
+    case 'date':
+    case 'description':
+      return textEntries(value);
+    case 'isBasedOn':
+      return getBasedOnActionNames(value).flatMap(textEntries);
+    case 'collectionSize':
+      return formatCollectionSizes(value).flatMap(textEntries);
+    default:
+      return valueToEntries(value as any);
+  }
+};
 
 interface DataCollectionResultsTableProps {
   results: FormattedResource[];
