@@ -72,8 +72,34 @@ Install the browsers you need once with `npx playwright install firefox webkit`.
 On Linux, WebKit also needs system libraries:
 `sudo npx playwright install-deps webkit`.
 
-CI runs every project, each in its own job against one shared `out/` build. Each
-job uploads its report as `playwright-a11y-report-<project>`.
+#### In CI
+
+`.github/workflows/accessibility.yml` builds `out/` once and runs each project
+in its own parallel job against that build. Which projects run depends on the
+event:
+
+| Event                   | Projects                    |
+| ----------------------- | --------------------------- |
+| PR into `dev` or `main` | `chromium`, `mobile-chrome` |
+| PR into `production`    | all five                    |
+| Push to `main`          | all five                    |
+| Manual run              | all five                    |
+
+PR runs pair one desktop and one phone project, so every test, tagged or not,
+still runs on every PR. A failure that only happens in Firefox or Safari shows
+up once the change is pushed to `main` or opened as a PR into `production`. To
+catch it sooner, run those projects locally, or start the workflow on your
+branch from the Actions tab with **Run workflow**.
+
+Each job uploads its report as `playwright-a11y-report-<project>`. The
+`accessibility` check passes only when the build and every project that ran
+pass, so it's the only check branch protection needs.
+
+Jobs have time limits, so a stalled build or browser fails the run instead of
+using CI minutes for hours. The build gets 15 minutes. Each project's test step
+gets 20 minutes, inside a 30-minute job, and a timed-out project still uploads
+its report. If the suite grows past these limits, raise the `timeout-minutes`
+values in the workflow.
 
 #### Test tags
 

@@ -6,8 +6,10 @@ name: Accessibility (a11y) Tests
 # report every violation but only FAIL the build on `serious` or `critical`
 # impact (enforced in the test specs). See e2e/README.md.
 #
-# The export is built once, then every Playwright project (browser) scans it in
-# its own parallel job. The `accessibility` job at the end reports one combined
+# The export is built once, then each Playwright project (browser) scans it in
+# its own parallel job. PRs into `dev` or `main` run `chromium` and
+# `mobile-chrome`. PRs into `production`, pushes to `main` and manual runs run
+# all five projects. The `accessibility` job at the end reports one combined
 # result.
 
 on:
@@ -50,7 +52,37 @@ jobs:
   build:
     name: Build static export
     runs-on: ubuntu-latest
+    # Usually ~3 min; a cold Next.js cache roughly doubles the build. Stops a
+    # stalled install or build from running to GitHub's 6-hour default.
+    timeout-minutes: 15
+    outputs:
+      matrix: ${{ steps.matrix.outputs.include }}
     steps:
+      # Chooses the Playwright projects for the `a11y` matrix. `project` is a
+      # project in playwright.config.ts; `browser` is the engine it needs
+      # installed. PRs into `dev` or `main` get one desktop and one phone
+      # project. Everything else gets all five.
+      - name: Choose browser projects
+        id: matrix
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          all='[
+            {"project": "chromium", "browser": "chromium"},
+            {"project": "firefox", "browser": "firefox"},
+            {"project": "webkit", "browser": "webkit"},
+            {"project": "mobile-chrome", "browser": "chromium"},
+            {"project": "mobile-safari", "browser": "webkit"}
+          ]'
+          filter='.'
+          if [[ $EVENT == pull_request && ($BASE_REF == dev || $BASE_REF == main) ]]; then
+            filter='map(select(.project == "chromium" or .project == "mobile-chrome"))'
+          fi
+          include=$(jq -c "$filter" <<< "$all")
+          echo "$include"
+          echo "include=$include" >> "$GITHUB_OUTPUT"
+
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
@@ -93,23 +125,16 @@ jobs:
     name: a11y (${{ matrix.project }})
     needs: build
     runs-on: ubuntu-latest
+    # Covers setup (incl. a browser download on a cache miss), the test step's
+    # own 20-min limit and the report upload.
+    timeout-minutes: 30
     strategy:
       # Let every browser finish so one failure doesn't hide another's.
       fail-fast: false
       matrix:
-        # `project` is a Playwright project in playwright.config.ts; `browser`
-        # is the engine it needs installed.
-        include:
-          - project: chromium
-            browser: chromium
-          - project: firefox
-            browser: firefox
-          - project: webkit
-            browser: webkit
-          - project: mobile-chrome
-            browser: chromium
-          - project: mobile-safari
-            browser: webkit
+        # `{ project, browser }` pairs chosen by the build job's "Choose
+        # browser projects" step.
+        include: ${{ fromJSON(needs.build.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
 
@@ -155,7 +180,12 @@ jobs:
           name: a11y-static-export
           path: out
 
+      # Chromium takes ~3.5 min; other engines are slower. Playwright's 60s
+      # per-test timeout catches a hung test, and this catches a hung run (a
+      # browser or worker that never exits). A step timeout fails the step
+      # rather than cancelling the job, so the report below still uploads.
       - name: Run accessibility tests
+        timeout-minutes: 20
         run: yarn test:a11y:nobuild --project=${{ matrix.project }}
 
       - name: Upload Playwright report
@@ -172,6 +202,7 @@ jobs:
     if: ${{ always() }}
     needs: [build, a11y]
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Check every browser passed
         if:

@@ -33,7 +33,8 @@ const isCI = !!process.env.CI;
  *
  * `--project`, UI mode and the VS Code extension (`test-server`) choose
  * projects themselves, so they see every project. CI runs each project in its
- * own job (.github/workflows/accessibility.yml).
+ * own job and picks which projects run from the event
+ * (.github/workflows/accessibility.yml, "In CI" in e2e/README.md).
  *
  * Test tags (see "Test tags" in e2e/README.md):
  * - untagged: device-independent accessibility tests (default), every project
