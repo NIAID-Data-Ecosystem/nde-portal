@@ -25,16 +25,16 @@ export const SearchResultsHeading = ({ children, ...props }: TextProps) => {
   );
 };
 
-const AIBanner: React.FC<FlexProps & { colorScheme?: string }> = ({
-  colorScheme = 'primary',
+const AIBanner: React.FC<FlexProps & { colorPalette?: string }> = ({
+  colorPalette = 'primary',
   children,
   ...rest
 }) => {
   return (
     <Flex
-      bg={`${colorScheme}.100`}
+      bg={`${colorPalette}.100`}
       borderRadius='semi'
-      color={`${colorScheme}.600`}
+      color={`${colorPalette}.600`}
       flex={1}
       fontWeight='medium'
       lineHeight='shorter'
@@ -66,10 +66,10 @@ export const SearchResultsHeader = ({
       filters: selectedFilters,
     }) !== -1;
   return (
-    <VStack alignItems='flex-start' spacing={1} fontSize='sm' flex={1}>
+    <VStack alignItems='flex-start' gap={1} fontSize='sm' flex={1}>
       {showAIBanner && (
         <AIBanner>
-          <Text lineHeight='short'>
+          <Text lineHeight='moderate'>
             AI-assisted search is active. Results are limited to the top 1,000
             most relevant matches. Applying any filter or changing tabs triggers
             a new search, so result counts may change.{' '}
@@ -88,15 +88,21 @@ export const SearchResultsHeader = ({
       <Stack
         // Use row layout for "All Results" and column layout for other queries
         flexDirection={querystring === '__all__' ? 'row' : 'column'}
-        spacing={1}
+        alignItems={querystring === '__all__' ? 'center' : 'flex-start'}
+        gap={1}
       >
-        <SearchResultsHeading as='h1' fontSize='inherit' whiteSpace='nowrap'>
+        <SearchResultsHeading
+          as='h1'
+          fontSize='inherit'
+          whiteSpace='nowrap'
+          textAlign='start'
+        >
           {querystring === '__all__'
             ? 'Showing all results'
             : 'Showing results for: '}
         </SearchResultsHeading>
         {/* Query string */}
-        <HStack spacing={1} width='100%' alignItems='flex-start'>
+        <HStack gap={1} width='100%' alignItems='center'>
           {querystring !== '__all__' && (
             <Text color='text.heading' fontSize='inherit' fontWeight='medium'>
               {querystring.replaceAll('\\', '')}
@@ -105,6 +111,7 @@ export const SearchResultsHeader = ({
 
           {ENABLE_AUTH && (
             <BookmarkIconButton
+              size='xs'
               aria-label={
                 isFavorited
                   ? 'Remove search from saved searches'

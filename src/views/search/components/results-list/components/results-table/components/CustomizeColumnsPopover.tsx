@@ -1,25 +1,23 @@
-import React, { useEffect, useMemo } from 'react';
 import {
   Button,
+  CloseButton,
+  Flex,
   Icon,
   Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverHeader,
-  PopoverTrigger,
+  Portal,
+  Separator,
   Text,
 } from '@chakra-ui/react';
+import React, { useEffect, useMemo } from 'react';
 import { FaSliders } from 'react-icons/fa6';
-import {
-  useSelectableList,
-  usePopoverSearch,
-  PopoverSearchInput,
-  PopoverSelectAll,
-  PopoverSelectableList,
-} from 'src/components/select-and-order-popover';
 import type { PopoverItem } from 'src/components/select-and-order-popover';
+import {
+  PopoverSearchInput,
+  PopoverSelectableList,
+  PopoverSelectAll,
+  usePopoverSearch,
+  useSelectableList,
+} from 'src/components/select-and-order-popover';
 
 export interface ColumnConfig {
   id: string;
@@ -159,60 +157,82 @@ export const CustomizeColumnsPopover = ({
   const allSelected = selectedCount === totalCount;
 
   return (
-    <Popover placement='bottom-end' isLazy>
-      <PopoverTrigger>
-        <Button
-          colorScheme='primary'
-          variant='outline'
-          size='sm'
-          leftIcon={<Icon as={FaSliders} boxSize={3.5} />}
-        >
+    <Popover.Root
+      lazyMount
+      positioning={{
+        placement: 'bottom-end',
+      }}
+    >
+      <Popover.Trigger asChild>
+        <Button colorPalette='primary' variant='outline' size='sm'>
+          <Icon as={FaSliders} boxSize={3.5} />
           {copy.button} ({selectedCount}/{totalCount})
         </Button>
-      </PopoverTrigger>
+      </Popover.Trigger>
+      {/*
+        Portalled so the panel escapes the accordion's `overflow: hidden`,
+        which otherwise clips it to a few rows and offsets it from the trigger.
+      */}
+      <Portal>
+        <Popover.Positioner>
+          {/*
+            Named explicitly: zag only looks for Popover.Title when the machine
+            starts, and under `lazyMount` the title isn't mounted yet, so it
+            never sets `aria-labelledby`.
+          */}
+          <Popover.Content minW='280px' maxW='320px' aria-label={copy.header}>
+            <Popover.Arrow>
+              <Popover.ArrowTip />
+            </Popover.Arrow>
+            <Popover.Header>
+              <Flex>
+                <Flex flexDirection='column' flex={1}>
+                  <Popover.Title fontWeight='semibold'>
+                    {copy.header}
+                  </Popover.Title>
+                  <Text fontSize='sm' fontWeight='normal'>
+                    {copy.description}
+                  </Text>
+                </Flex>
+                <Popover.CloseTrigger asChild>
+                  <CloseButton size='xs' />
+                </Popover.CloseTrigger>
+              </Flex>
+              <PopoverSelectAll
+                allSelected={allSelected}
+                totalCount={totalCount}
+                onToggle={toggleAll}
+                selectAllLabel={copy.selectAll}
+                clearAllLabel={copy.clearAll}
+              />
+            </Popover.Header>
+            <Separator />
+            <Popover.Body overflowY='auto'>
+              <PopoverSearchInput
+                value={searchTerm}
+                onChange={setSearchTerm}
+                placeholder={copy.searchPlaceholder}
+              />
 
-      <PopoverContent minW='280px' maxW='320px'>
-        <PopoverArrow />
-        <PopoverCloseButton />
-
-        <PopoverHeader fontWeight='semibold'>
-          <Text>{copy.header}</Text>
-          <Text fontSize='sm' fontWeight='normal'>
-            {copy.description}
-          </Text>
-          <PopoverSelectAll
-            allSelected={allSelected}
-            totalCount={totalCount}
-            onToggle={toggleAll}
-            selectAllLabel={copy.selectAll}
-            clearAllLabel={copy.clearAll}
-          />
-        </PopoverHeader>
-
-        <PopoverBody p={0} py={1}>
-          <PopoverSearchInput
-            value={searchTerm}
-            onChange={setSearchTerm}
-            placeholder={copy.searchPlaceholder}
-          />
-
-          <PopoverSelectableList
-            items={filteredItems}
-            selectedIds={selectedIds}
-            requiredIds={requiredIds as string[]}
-            fallbackIds={resolvedFallbackIds}
-            enableOrdering
-            isSearching={isSearching}
-            orderedIds={order}
-            onCheck={toggle}
-            onMoveUp={moveUp}
-            onMoveDown={moveDown}
-            onDragEnd={handleDragEnd}
-            emptyMessage={copy.noColumnsFound}
-            maxHeight='20rem'
-          />
-        </PopoverBody>
-      </PopoverContent>
-    </Popover>
+              <PopoverSelectableList
+                items={filteredItems}
+                selectedIds={selectedIds}
+                requiredIds={requiredIds as string[]}
+                fallbackIds={resolvedFallbackIds}
+                enableOrdering
+                isSearching={isSearching}
+                orderedIds={order}
+                onCheck={toggle}
+                onMoveUp={moveUp}
+                onMoveDown={moveDown}
+                onDragEnd={handleDragEnd}
+                emptyMessage={copy.noColumnsFound}
+                maxHeight='20rem'
+              />
+            </Popover.Body>
+          </Popover.Content>
+        </Popover.Positioner>
+      </Portal>
+    </Popover.Root>
   );
 };

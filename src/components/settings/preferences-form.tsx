@@ -4,6 +4,7 @@
  * request. Shared by the Settings and Welcome pages.
  */
 
+import { Button, chakra, HStack, Icon, Text } from '@chakra-ui/react';
 import {
   FormEvent,
   ReactNode,
@@ -13,13 +14,14 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Button, chakra, HStack, Icon, Text } from '@chakra-ui/react';
+import { FaCircleCheck } from 'react-icons/fa6';
 import { useUserData } from 'src/hooks/useUserData';
 import {
   SavePreferencesOptions,
   UserPreferences,
   UserPreferencesKeys,
 } from 'src/hooks/useUserData/types';
+
 import { SettingsSection } from './settings-section';
 import {
   EMAIL_TOGGLE_KEYS,
@@ -27,10 +29,9 @@ import {
   SettingAlert,
   SettingToggle,
   TOGGLE_TO_PREF,
-  TOGGLES_COPY,
   ToggleKey,
+  TOGGLES_COPY,
 } from './toggles';
-import { FaCircleCheck } from 'react-icons/fa6';
 
 export const PREFERENCES_FORM_COPY = {
   saveButton: 'Save Settings',
@@ -210,10 +211,10 @@ export function PreferencesForm({
       <HStack gap={4} flexWrap='wrap'>
         <Button
           type='submit'
-          colorScheme='primary'
+          colorPalette='primary'
           // Don't let a save send defaults before the real values have loaded.
-          isDisabled={!hasLoadedProfile || (!allowUnchangedSave && !hasChanges)}
-          isLoading={status === 'saving'}
+          disabled={!hasLoadedProfile || (!allowUnchangedSave && !hasChanges)}
+          loading={status === 'saving'}
           loadingText={PREFERENCES_FORM_COPY.saving}
         >
           {saveLabel}

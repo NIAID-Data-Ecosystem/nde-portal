@@ -1,6 +1,6 @@
+import { uniqueId } from 'lodash';
 import { Citation } from 'src/utils/api/types';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
-import { uniqueId } from 'lodash';
 
 export const extractJournalDetails = (citation: Citation) => {
   const name = citation.journalName || citation.journalNameAbbrev || '';

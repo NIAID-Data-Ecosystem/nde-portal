@@ -1,4 +1,5 @@
 import { CreativeWorkStatusDatasetType } from 'src/hooks/api/types';
+
 import {
   APIResourceType,
   CollectionType,
@@ -487,6 +488,13 @@ export interface UsageInfo {
   url?: string | null;
   description?: string | null;
 }
+
+export interface VariableMeasured {
+  description?: string;
+  identifier?: string;
+  name: string;
+  url?: string;
+}
 // Formatting standardized resource fields
 export interface FormattedResource {
   [key: string]: any;
@@ -518,7 +526,7 @@ export interface FormattedResource {
   about: About | About[] | null;
   abstract: string | null;
   aggregateRating: AggregateRating | null;
-  alternateName: string | null;
+  alternateName: string[] | string | null;
   applicationCategory: string[] | null;
   applicationSubCategory: ApplicationSubCategory[] | null;
   applicationSuite: string[] | null;
@@ -595,14 +603,130 @@ export interface FormattedResource {
   topicCategory: TopicCategory[] | null;
   url: string | null; // link to dataset in the source repo.
   usageInfo?: UsageInfo | UsageInfo[];
-  variableMeasured:
-    | string[]
-    | {
-        description?: string;
-        identifier?: string;
-        name: string;
-        url?: string;
-      }[]
-    | null;
+  variableMeasured: string[] | VariableMeasured[] | null;
   version: number | null;
+}
+
+// Raw shapes returned by the /query endpoint, before formatting.
+
+// The API may send a single item where FormattedResource holds a list.
+export type OneOrMany<T> = T | T[];
+
+export interface APIAuthor {
+  identifier?: string; // orcid id
+  '@type'?: string;
+  affiliation?: { name: string; sameAs?: string };
+  email?: string;
+  name?: string;
+  familyName?: string;
+  givenName?: string;
+  role?: string;
+  title?: string;
+  url?: string;
+}
+
+export interface APICitation {
+  abstract?: string | null;
+  author?: Author[] | null;
+  citation?: string | null;
+  datePublished?: string | null;
+  description?: string | null;
+  doi?: string | null;
+  identifier?: string | null;
+  issueNumber?: string | null;
+  journalName?: string | null;
+  journalNameAbbrev?: string | null;
+  name?: string | null;
+  pagination?: string | null;
+  pmcid?: string | null;
+  pmid?: string | null;
+  url?: string | null;
+  volumeNumber?: string | null;
+}
+
+export interface APIDistribution {
+  '@id'?: string | null;
+  '@type'?: string;
+  encodingFormat?: string | null;
+  contentSize?: number | null;
+  contentUrl?: string | null;
+  dateCreated?: string | null;
+  dateModified?: string | null;
+  datePublished?: string | null;
+  description?: string | null;
+  name?: string | null;
+}
+
+// A single hit from /query. Lists the fields formatAPIResource reshapes; any
+// other field is passed through to FormattedResource as-is.
+export interface APIResource {
+  [key: string]: unknown;
+  _id: string;
+  '@id'?: string | null;
+  '@type': APIResourceType;
+  aggregateRating?: AggregateRating | null;
+  applicationCategory?: OneOrMany<string> | null;
+  applicationSubCategory?: OneOrMany<ApplicationSubCategory> | null;
+  applicationSuite?: OneOrMany<string> | null;
+  author?: OneOrMany<APIAuthor> | null;
+  availableOnDevice?: string[] | null;
+  citation?: OneOrMany<APICitation> | null;
+  citedBy?: OneOrMany<CitedBy> | null;
+  codeRepository?: OneOrMany<string> | null;
+  collectionSize?: OneOrMany<CollectionSize> | null;
+  condition?: string | null;
+  conditionsOfAccess?: string | null;
+  date?: string | null;
+  dateCreated?: string | null;
+  dateModified?: string | null;
+  datePublished?: string | null;
+  description?: OneOrMany<string> | null;
+  discussionUrl?: OneOrMany<string> | null;
+  disease?: string | null;
+  // A bare string is the distribution's content URL.
+  distribution?: OneOrMany<APIDistribution> | string | null;
+  doi?: string | null;
+  downloadUrl?: OneOrMany<{ name: string }> | null;
+  funding?: OneOrMany<Funding> | null;
+  genre?: Domain | string[] | null;
+  hasPart?: OneOrMany<HasPart> | null;
+  healthCondition?: OneOrMany<PropertyWithPubtator> | null;
+  includedInDataCatalog?: OneOrMany<IncludedInDataCatalog> | null;
+  infectiousAgent?: OneOrMany<InfectiousAgent> | null;
+  inLanguage?:
+    | string
+    | { alternateName?: string | null; name?: string | null }
+    | null;
+  input?: OneOrMany<InputProperties> | null;
+  interactionStatistics?: InteractionStatistics | null;
+  isAccessibleForFree?: boolean | null;
+  isBasedOn?: OneOrMany<IsBasedOn> | null;
+  isBasisFor?: OneOrMany<IsBasisFor> | null;
+  isPartOf?: OneOrMany<IsPartOf> | null;
+  isRelatedTo?: OneOrMany<IsRelatedTo> | null;
+  keywords?: OneOrMany<string> | null;
+  license?: string | null;
+  mainEntityOfPage?: string | null;
+  measurementTechnique?: OneOrMany<MeasurementTechnique> | null;
+  name?: string | null;
+  nctid?: string | null;
+  output?: OneOrMany<OutputProperties> | null;
+  processorRequirements?: OneOrMany<string> | null;
+  programmingLanguage?: OneOrMany<string> | null;
+  publisher?: Publisher | null;
+  sameAs?: string | null;
+  sdPublisher?: OneOrMany<SdPublisher> | null;
+  softwareAddOn?: OneOrMany<{ identifier: string }> | null;
+  softwareHelp?: OneOrMany<{ name?: string; url: string }> | null;
+  softwareRequirements?: OneOrMany<string> | null;
+  softwareVersion?: OneOrMany<string> | null;
+  sourceOrganization?: OneOrMany<SourceOrganization> | null;
+  spatialCoverage?: OneOrMany<SpatialCoverage> | null;
+  species?: OneOrMany<Species> | null;
+  temporalCoverage?: OneOrMany<TemporalCoverage> | null;
+  topicCategory?: OneOrMany<TopicCategory> | null;
+  url?: string | null;
+  usageInfo?: OneOrMany<UsageInfo> | null;
+  variableMeasured?: OneOrMany<string> | OneOrMany<VariableMeasured> | null;
+  version?: number | null;
 }

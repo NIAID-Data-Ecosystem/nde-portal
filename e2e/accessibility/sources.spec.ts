@@ -47,7 +47,8 @@
  *     is what made the empty state a race: the count flipped from 0 to 45 as
  *     soon as that response landed. Every state mocks it.
  */
-import { test, expect, type Page, type TestInfo } from '@playwright/test';
+import { expect, type Page, test, type TestInfo } from '@playwright/test';
+
 import { runAxeScans } from '../utils/axe';
 
 // --- Per-route configuration -------------------------------------------------
@@ -282,10 +283,9 @@ test.describe('a11y: Sources — schema property table', () => {
   }, testInfo) => {
     await mockSourceEndpoints(page, POPULATED_FIXTURE);
     await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
-    // Wait for the populated card, then expand its schema table. dispatchEvent
-    // fires the toggle's React onClick directly, bypassing the Next.js dev
-    // overlay (`<nextjs-portal>`) that can intercept real clicks while the route
-    // is still compiling.
+    // Wait for the populated card, then expand its schema table. A real click,
+    // not dispatchEvent: zag's accordion only acts on a click once its trigger
+    // has focus, and a synthetic click event never focuses it.
     await expect(page.getByText(FIXTURE_SOURCE_NAME).first()).toBeVisible();
     await page
       .getByRole('button', {
@@ -294,7 +294,7 @@ test.describe('a11y: Sources — schema property table', () => {
           'i',
         ),
       })
-      .dispatchEvent('click');
+      .click();
 
     // Wait for the expanded table's header cell so we scan the open surface.
     await expect(

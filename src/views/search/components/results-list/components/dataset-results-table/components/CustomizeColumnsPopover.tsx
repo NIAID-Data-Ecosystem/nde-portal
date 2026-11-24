@@ -1,11 +1,12 @@
 import React from 'react';
+
 import {
-  CustomizeColumnsPopover as GenericCustomizeColumnsPopover,
   ColumnConfig,
+  CustomizeColumnsPopover as GenericCustomizeColumnsPopover,
 } from '../../results-table/components/CustomizeColumnsPopover';
 import {
-  DATASET_REQUIRED_COLUMN_IDS,
   DATASET_FALLBACK_COLUMN_IDS,
+  DATASET_REQUIRED_COLUMN_IDS,
 } from '../../results-table/constants';
 
 export const CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY =

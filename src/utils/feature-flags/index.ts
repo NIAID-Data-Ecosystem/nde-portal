@@ -104,7 +104,7 @@ export const SHOW_DATA_COLLECTIONS_VIEW_MODES = true;
 // session) to signed-in users whose profile has `onboarding_complete: false`,
 // until they save their settings there. Enabled in non-production environments
 // for testing/review. To enable in production, set this flag to `true`.
-export const SHOW_WELCOME_PAGE = !isProd;
+export const SHOW_WELCOME_PAGE = true;
 
 // Show the "XLSX Format (Custom Result View)" option in the search results
 // Download Metadata menu for the Samples tab and the table view of the

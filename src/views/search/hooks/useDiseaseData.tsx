@@ -122,7 +122,7 @@ export const useDiseaseData = ({
 
   return {
     diseases: shouldShowNoDiseases ? [] : diseases,
-    isLoading: shouldShowNoDiseases ? false : isLoading,
+    loading: shouldShowNoDiseases ? false : isLoading,
     error,
     hasMatchingDiseases: shouldShowNoDiseases ? false : diseases.length > 0,
   };

@@ -1,12 +1,13 @@
-import { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 import { useAuth } from 'src/hooks/useAuth';
-import { ENABLE_AUTH, SHOW_WELCOME_PAGE } from 'src/utils/feature-flags';
 import {
   clearWelcomePending,
   isWelcomePending,
   showWelcomePending,
 } from 'src/utils/auth/welcome-pending';
+import { ENABLE_AUTH, SHOW_WELCOME_PAGE } from 'src/utils/feature-flags';
+
 import { useUserData } from './index';
 
 export const WELCOME_PATH = '/welcome';
@@ -28,7 +29,7 @@ const AUTH_RETURN_TO_KEY = 'auth_return_to';
  */
 export function useWelcomeRedirect() {
   const router = useRouter();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const { onboardingComplete, hasLoadedProfile } = useUserData();
 
   useEffect(() => {
@@ -39,7 +40,7 @@ export function useWelcomeRedirect() {
     }
     // Keep the page hidden while the decision is pending.
     if (isWelcomePending()) showWelcomePending();
-    if (isLoading) return;
+    if (loading) return;
 
     // Login cancelled or failed.
     if (!isAuthenticated) {
@@ -68,13 +69,7 @@ export function useWelcomeRedirect() {
     sessionStorage.setItem(AUTH_RETURN_TO_KEY, router.asPath);
     // Only reveal once /welcome has rendered, so the old page never shows.
     Promise.resolve(router.replace(WELCOME_PATH)).finally(clearWelcomePending);
-  }, [
-    hasLoadedProfile,
-    isAuthenticated,
-    isLoading,
-    onboardingComplete,
-    router,
-  ]);
+  }, [hasLoadedProfile, isAuthenticated, loading, onboardingComplete, router]);
 }
 
 // Renderless wrapper so the hook can be mounted inside the providers in `_app`.

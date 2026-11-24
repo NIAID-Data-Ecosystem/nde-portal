@@ -22,7 +22,8 @@
  * state, which is what we scan below. This route does NOT render the site-wide
  * search bar (no `includeSearchBar`), so there is no search control to assert.
  */
-import { test, expect, type Page, type TestInfo } from '@playwright/test';
+import { expect, type Page, test, type TestInfo } from '@playwright/test';
+
 import { runAxeScans } from '../utils/axe';
 
 // --- Per-route configuration -------------------------------------------------

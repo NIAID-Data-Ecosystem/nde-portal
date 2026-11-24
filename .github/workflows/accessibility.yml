@@ -60,14 +60,19 @@ jobs:
       # only need the OS-level deps (fast), not the browser download.
       - name: Get Playwright version
         id: playwright-version
-        run: echo "version=$(node -e "console.log(require('@playwright/test/package.json').version)")" >> "$GITHUB_OUTPUT"
+        run:
+          echo "version=$(node -e
+          "console.log(require('@playwright/test/package.json').version)")" >>
+          "$GITHUB_OUTPUT"
 
       - name: Cache Playwright browsers
         id: playwright-cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+          key:
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
 
       - name: Install Playwright browser + deps (cache miss)
         if: steps.playwright-cache.outputs.cache-hit != 'true'
@@ -86,7 +91,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/.next/cache
-          key: nextjs-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('src/**/*.{js,jsx,ts,tsx}') }}
+          key:
+            nextjs-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}-${{
+            hashFiles('src/**/*.{js,jsx,ts,tsx}') }}
           restore-keys: |
             nextjs-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}-
 

@@ -1,17 +1,18 @@
 import { isEqual, isPlainObject, omit, uniqWith } from 'lodash';
-import { SelectedFilterType, SelectedFilterValueType } from '../types';
-import { formatResourceTypeForAPI } from 'src/utils/formatting/formatResourceType';
 import {
   SHOW_CONTENT_TYPE_RESOURCE_TYPE_MATCHING,
   SHOW_FILTER_ANY_NO_EXCLUSIVITY,
 } from 'src/utils/feature-flags';
-import { APPLY_DEFAULT_DATE_FILTER_KEY } from 'src/views/search/config/defaultQuery';
+import { formatResourceTypeForAPI } from 'src/utils/formatting/formatResourceType';
 import {
   CONTENT_TYPE_ABOUT_FIELD,
   CONTENT_TYPE_RESOURCE_TYPE_FIELD,
   getContentTypeResourceTypes,
   MERGED_FILTER_FIELDS,
 } from 'src/views/search/config/content-type';
+import { APPLY_DEFAULT_DATE_FILTER_KEY } from 'src/views/search/config/defaultQuery';
+
+import { SelectedFilterType, SelectedFilterValueType } from '../types';
 
 // Regex to split filter values by quoted/bare OR and TO separators.
 // Matches: " OR ", OR, " TO ", TO (used in both date ranges and multi-value filters)

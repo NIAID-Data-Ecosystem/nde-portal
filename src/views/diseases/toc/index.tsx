@@ -1,14 +1,12 @@
-import { useMemo, useState } from 'react';
 import { Flex, Image, Stack } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
-import { DiseasePageProps } from 'src/views/diseases/types';
+import { useMemo, useState } from 'react';
+import { InternalLinkButton } from 'src/components/internal-link-button';
 import { PageContent } from 'src/components/page-container';
-import { fetchAllDiseasePages } from 'src/views/diseases/helpers';
 import {
   StyledCard,
-  StyleCardLabel,
-  StyledCardButton,
   StyledCardDescription,
+  StyledCardLabel,
   StyledCardStack,
 } from 'src/components/table-of-contents/components/card';
 import { SectionHeader } from 'src/components/table-of-contents/layouts/section-header';
@@ -17,6 +15,9 @@ import {
   Sidebar,
   SidebarItem,
 } from 'src/components/table-of-contents/layouts/sidebar';
+import { fetchAllDiseasePages } from 'src/views/diseases/helpers';
+import { DiseasePageProps } from 'src/views/diseases/types';
+
 import { normalizeSearchText } from '../helpers';
 
 export const TableOfContents = () => {
@@ -59,6 +60,7 @@ export const TableOfContents = () => {
       <PageContent
         id='diseases-index-page'
         bg='#fff'
+        width='100%'
         maxW={{ base: 'unset', lg: '1200px' }}
         justifyContent='center'
         margin='0 auto'
@@ -118,7 +120,7 @@ export const TableOfContents = () => {
           <StyledCardStack>
             {isLoading
               ? Array.from({ length: 3 }, (_, index) => (
-                  <StyledCard key={`loading-${index}`} isLoading={true} />
+                  <StyledCard key={`loading-${index}`} loading={true} />
                 ))
               : diseasePages.map(page => {
                   const label = page?.title;
@@ -127,11 +129,11 @@ export const TableOfContents = () => {
                     <StyledCard
                       key={page.id}
                       id={page.slug}
-                      isLoading={isLoading}
+                      loading={isLoading}
                     >
                       {/* Description */}
                       <Stack
-                        spacing={{ base: 4, lg: 6, xl: 10 }}
+                        gap={{ base: 4, lg: 6, xl: 10 }}
                         flexDirection='row'
                         alignItems='unset'
                         flexWrap='wrap-reverse'
@@ -143,7 +145,7 @@ export const TableOfContents = () => {
                           flex={1}
                         >
                           {/* Name */}
-                          <StyleCardLabel>{label}</StyleCardLabel>
+                          <StyledCardLabel>{label}</StyledCardLabel>
 
                           {/* Description */}
                           {page.topicEmphasizedDescription && (
@@ -163,7 +165,7 @@ export const TableOfContents = () => {
                             alignItems='flex-start'
                           >
                             <Image
-                              borderRadius='base'
+                              borderRadius='sm'
                               width='100%'
                               height='auto'
                               src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${page.image.url}`}
@@ -179,14 +181,14 @@ export const TableOfContents = () => {
                           justifyContent={{ base: 'center', md: 'flex-end' }}
                           width='100%'
                         >
-                          <StyledCardButton
+                          <InternalLinkButton
                             href={{
                               pathname: `/diseases/${page.slug}`,
                             }}
                           >
                             Learn about {label} resources in the NIAID Data
                             Ecosystem
-                          </StyledCardButton>
+                          </InternalLinkButton>
                         </Flex>
                       )}
                     </StyledCard>

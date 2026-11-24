@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { SelectAndSortPopover } from 'src/components/select-and-order-popover';
+
 import { FilterConfig } from '../../types';
 
 const CUSTOM_VISIBLE_FILTERS_STORAGE_KEY = 'search-visible-filters';
@@ -42,7 +43,7 @@ export const CustomizeFiltersPopover = ({
         searchPlaceholder: 'Search filters',
         noItemsFound: 'No filters found',
       }}
-      triggerProps={{ colorScheme: 'gray', flex: 1 }}
+      triggerProps={{ colorPalette: 'gray', flex: 1 }}
     />
   );
 };

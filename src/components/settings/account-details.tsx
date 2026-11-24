@@ -3,12 +3,13 @@
  * (or that it has none) and how the user signs in.
  */
 
-import { ReactNode } from 'react';
 import { chakra, HStack, Skeleton } from '@chakra-ui/react';
+import { ReactNode } from 'react';
 import { ProviderIcon } from 'src/components/auth/provider-icon';
 import { useAuth } from 'src/hooks/useAuth';
 import { useSignInMethod } from 'src/hooks/useSignInMethod';
 import { useUserData } from 'src/hooks/useUserData';
+
 import { SettingsSection } from './settings-section';
 
 export const ACCOUNT_DETAILS_COPY = {
@@ -42,7 +43,7 @@ function AccountDetail({
       {...(showBorder && { borderBottom: '1px', borderColor: 'gray.200' })}
     >
       <chakra.dt fontWeight='medium'>{label}</chakra.dt>
-      <chakra.dd fontSize='sm' color='gray.800' mt={1} overflowWrap='anywhere'>
+      <chakra.dd fontSize='sm' mt={1} overflowWrap='anywhere'>
         {isLoading ? (
           // Inline, so it sits in a line of text and the row keeps the height
           // it will have once the value loads.

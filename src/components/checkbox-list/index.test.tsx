@@ -1,7 +1,10 @@
-import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { CheckboxList, CheckboxListProps } from './index';
+
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import { act, render, screen } from 'src/__tests__/utils/render';
+
+import { CheckboxMenu, CheckboxMenuProps } from './index';
 
 interface TestOption {
   name: string;
@@ -15,9 +18,10 @@ const options: TestOption[] = [
 ];
 
 const renderComponent = (
-  props: Partial<CheckboxListProps<TestOption>> = {},
+  props: Partial<CheckboxMenuProps<TestOption>> = {},
 ) => {
-  const defaultProps: CheckboxListProps<TestOption> = {
+  const defaultProps: CheckboxMenuProps<TestOption> = {
+    id: 'test-label',
     label: 'Test Label',
     options,
     handleChange: jest.fn(),
@@ -25,64 +29,76 @@ const renderComponent = (
     ...props,
   };
 
-  return render(<CheckboxList {...defaultProps} />);
+  return render(<CheckboxMenu {...defaultProps} />);
 };
 
-describe('CheckboxList', () => {
+// The menu content only mounts once opened. zag drops a click dispatched before
+// its machine has started, hence the tick before opening.
+const openMenu = async () => {
+  await act(async () => {});
+  await userEvent.click(screen.getByRole('button', { name: 'Test Label' }));
+};
+
+describe('CheckboxMenu', () => {
   test('renders the label', () => {
     renderComponent();
     const button = screen.getByRole('button', { name: 'Test Label' });
     expect(button).toBeInTheDocument();
   });
 
-  test('renders the options', () => {
-    const { getByText } = renderComponent();
-    options.forEach(option => {
-      expect(getByText(option.name)).toBeInTheDocument();
-    });
+  test('renders the options', async () => {
+    renderComponent();
+    await openMenu();
+    for (const option of options) {
+      expect(await screen.findByText(option.name)).toBeInTheDocument();
+    }
   });
 
-  test('calls handleChange when an option is selected', () => {
+  test('calls handleChange when an option is selected', async () => {
     const handleChange = jest.fn();
-    const { getByLabelText } = renderComponent({ handleChange });
+    renderComponent({ handleChange });
+    await openMenu();
 
-    fireEvent.click(getByLabelText('Option 1'));
+    await userEvent.click(await screen.findByLabelText('Option 1'));
     expect(handleChange).toHaveBeenCalledWith([
       { name: 'Option 1', value: 'option1' },
     ]);
   });
 
-  test('calls handleChange when an option is deselected', () => {
+  test('calls handleChange when an option is deselected', async () => {
     const handleChange = jest.fn();
-    const { getByLabelText } = renderComponent({
+    renderComponent({
       handleChange,
       selectedOptions: [{ name: 'Option 1', value: 'option1' }],
     });
+    await openMenu();
 
-    fireEvent.click(getByLabelText('Option 1'));
+    await userEvent.click(await screen.findByLabelText('Option 1'));
     expect(handleChange).toHaveBeenCalledWith([]);
   });
 
-  test('selects all options when "Select all" is clicked', () => {
+  test('selects all options when "Select all" is clicked', async () => {
     const handleChange = jest.fn();
-    const { getByText } = renderComponent({
+    renderComponent({
       handleChange,
       showSelectAll: true,
     });
+    await openMenu();
 
-    fireEvent.click(getByText('Select all'));
+    await userEvent.click(await screen.findByText('Select all'));
     expect(handleChange).toHaveBeenCalledWith(options);
   });
 
-  test('clears all options when "Clear all" is clicked', () => {
+  test('clears all options when "Clear all" is clicked', async () => {
     const handleChange = jest.fn();
-    const { getByText } = renderComponent({
+    renderComponent({
       handleChange,
       showSelectAll: true,
       selectedOptions: options,
     });
+    await openMenu();
 
-    fireEvent.click(getByText('Clear all'));
+    await userEvent.click(await screen.findByText('Clear all'));
     expect(handleChange).toHaveBeenCalledWith([]);
   });
 });

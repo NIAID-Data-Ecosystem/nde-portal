@@ -1,6 +1,7 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
 import { FaCircleUser } from 'react-icons/fa6';
+import { fireEvent, render, screen } from 'src/__tests__/utils/render';
+
 import { NavDropdownItem } from '../nav-dropdown-item';
 
 describe('NavDropdownItem', () => {

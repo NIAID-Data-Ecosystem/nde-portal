@@ -1,4 +1,5 @@
 import CONFIG from 'configs/site.config.json';
+
 import { SiteConfig } from './types';
 
 /**

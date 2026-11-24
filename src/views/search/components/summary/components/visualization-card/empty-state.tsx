@@ -1,4 +1,4 @@
-import { Text, Flex } from '@chakra-ui/react';
+import { Flex, Text } from '@chakra-ui/react';
 
 interface EmptyStateProps {
   height?: string;
@@ -9,7 +9,7 @@ export const EmptyState = ({
 }: EmptyStateProps) => {
   return (
     <Flex h={height} align='center' justify='center' w='100%'>
-      <Text color='gray.700' fontStyle='italic' textAlign='center'>
+      <Text color='gray.500' fontStyle='italic' textAlign='center'>
         No data available for the selected aggregation.
       </Text>
     </Flex>

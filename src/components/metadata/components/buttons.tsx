@@ -4,20 +4,26 @@ import {
   ButtonGroupProps,
   Icon,
   IconButtonProps,
-  Text,
   VisuallyHidden,
 } from '@chakra-ui/react';
-import Tooltip from 'src/components/tooltip';
+import NextLink from 'next/link';
 import { FaMagnifyingGlass, FaSitemap } from 'react-icons/fa6';
-import { useRouter } from 'next/router';
-import { Link } from 'src/components/link';
+import Tooltip from 'src/components/tooltip';
 
+/*
+`attached` styling comes from the `data-first` / `data-last` / `style` props that
+ButtonGroup clones onto each of its direct children, and its CSS only matches
+direct DOM children. So each button below must:
+  - forward its rest props to the `Button`, and
+  - keep `Tooltip` on the outside — `Tooltip.Trigger asChild` merges into the
+    `Button`, which merges into the anchor, so the group still sees one `<a>`.
+*/
 export const MetadataButtonGroup = ({
   children,
   ...props
 }: ButtonGroupProps) => {
   return (
-    <ButtonGroup size='xs' isAttached variant='outline' {...props}>
+    <ButtonGroup size='2xs' attached variant='outline' {...props}>
       {children}
     </ButtonGroup>
   );
@@ -33,57 +39,33 @@ export const OntologyButton = ({
   value,
   inDefinedTermSet,
   label,
+  ...props
 }: OntologyButtonProps) => {
   if (!value) {
     return <></>;
   }
 
   return (
-    <Tooltip label={ariaLabel || 'See ontology information.'}>
-      {label || inDefinedTermSet ? (
-        <Button
-          as={Link}
-          href={value}
-          target='_blank'
-          variant='outline'
-          colorScheme='gray'
-          leftIcon={<Icon as={FaSitemap} />}
-          fontSize='12px'
-          fontWeight='medium'
-          color='gray.800'
-          sx={{
-            '.child-node': {
-              borderBottom: 'none',
-              display: 'inline-flex',
-              alignItems: 'center',
-            },
-            '.child-node p': { borderBottom: 'none' },
-          }}
-          _visited={{
-            '.child-node p, .child-node svg': {
-              borderBottom: 'none',
-              color: 'inherit',
-            },
-          }}
-        >
-          <Text pt={0.25}>{label || inDefinedTermSet} </Text>
-        </Button>
-      ) : (
-        <Button
-          as='a'
-          href={value}
-          target='_blank'
-          variant='outline'
-          colorScheme='gray'
-          fontSize='12px'
-          px={0}
-        >
-          <VisuallyHidden>
-            {ariaLabel || 'View the ontology for this value.'}
-          </VisuallyHidden>
-          <Icon as={FaSitemap} />
-        </Button>
-      )}
+    <Tooltip content={ariaLabel || 'See ontology information.'}>
+      <Button
+        variant='outline'
+        colorPalette='gray'
+        fontWeight='medium'
+        color='gray.600'
+        {...props}
+        asChild
+      >
+        <a href={value} target='_blank' rel='noopener noreferrer'>
+          {label || inDefinedTermSet ? (
+            label || inDefinedTermSet
+          ) : (
+            <VisuallyHidden>
+              {ariaLabel || 'View the ontology for this value.'}
+            </VisuallyHidden>
+          )}
+          <FaSitemap />
+        </a>
+      </Button>
     </Tooltip>
   );
 };
@@ -98,80 +80,27 @@ export const SearchButton = ({
   value,
   ...props
 }: SearchButtonProps) => {
-  const router = useRouter();
   if (!value) {
     return <></>;
   }
 
   return (
-    <Tooltip label={ariaLabel || `Search the NDE for this property value`}>
-      <Button
-        as='a'
-        cursor='pointer'
-        onClick={() => {
-          router.push({
+    <Tooltip content={ariaLabel || `Search the NDE for this property value`}>
+      <Button colorPalette='gray' variant='outline' px={0} {...props} asChild>
+        <NextLink
+          href={{
             pathname: `/search`,
             query: {
               q: `${property}:"${value}"`,
             },
-          });
-        }}
-        colorScheme='gray'
-        variant='outline'
-        px={0}
-        {...props}
-      >
-        <VisuallyHidden>
-          {ariaLabel || `Search the NDE for this property value`}
-        </VisuallyHidden>
-        <Icon as={FaMagnifyingGlass} fontSize='12px' />
+          }}
+        >
+          <VisuallyHidden>
+            {ariaLabel || `Search the NDE for this property value`}
+          </VisuallyHidden>
+          <Icon as={FaMagnifyingGlass} fontSize='xs' />
+        </NextLink>
       </Button>
     </Tooltip>
   );
 };
-
-// FilterByButton is used to filter the current results by a specific property and value
-// export const FilterByButton = ({
-//   property,
-//   value,
-//   children,
-// }: {
-//   property: string;
-//   value: SelectedFilterValueType;
-//   children: React.ReactNode;
-// }) => {
-//   const router = useRouter();
-//   const { filters } = router.query;
-//   const selectedFilters = queryFilterString2Object(filters) || [];
-//   return (
-//     <Flex
-//       alignItems='center'
-//       _hover={{
-//         cursor: 'pointer',
-//         textDecoration: 'underline',
-//         svg: { opacity: 1 },
-//       }}
-//       onClick={() => {
-//         if (value) {
-//           if (selectedFilters[property]) {
-//             if (!selectedFilters[property].includes(value)) {
-//               selectedFilters[property].push(value);
-//             }
-//           } else {
-//             selectedFilters[property] = [value];
-//           }
-//         }
-//         updateRoute(
-//           {
-//             from: 1,
-//             filters: queryFilterObject2String(selectedFilters),
-//           },
-//           router,
-//         );
-//       }}
-//     >
-//       {children}
-//       <Icon as={FaFilter} boxSize={3} mx={1} color='gray.600' opacity={0} />
-//     </Flex>
-//   );
-// };

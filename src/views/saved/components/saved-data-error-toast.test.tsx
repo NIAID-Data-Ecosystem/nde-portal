@@ -1,16 +1,12 @@
 import { render } from '@testing-library/react';
-import { SavedDataErrorToast } from './saved-data-error-toast';
+import { StrictMode } from 'react';
+import { toaster } from 'src/components/toaster';
 import { useUserData } from 'src/hooks/useUserData';
 
-// The component only uses `useToast` from Chakra and renders null, so a minimal
-// module mock keeps the test light.
-const mockToast = Object.assign(jest.fn(), {
-  isActive: jest.fn(() => false),
-});
-jest.mock('@chakra-ui/react', () => ({
-  useToast: () => mockToast,
-}));
+import { SavedDataErrorToast } from './saved-data-error-toast';
 
+// The real toaster is a plain store (no provider or DOM needed), so the tests
+// assert on what it actually holds rather than on how it was called.
 jest.mock('src/hooks/useUserData', () => ({
   useUserData: jest.fn(),
 }));
@@ -20,7 +16,7 @@ const mockUseUserData = useUserData as jest.Mock;
 describe('SavedDataErrorToast', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockToast.isActive.mockReturnValue(false);
+    toaster.remove();
   });
 
   it('fires an error toast and clears the error when one is present', () => {
@@ -30,31 +26,34 @@ describe('SavedDataErrorToast', () => {
 
     render(<SavedDataErrorToast />);
 
-    expect(mockToast).toHaveBeenCalledTimes(1);
-    expect(mockToast).toHaveBeenCalledWith(
+    const toasts = toaster.getVisibleToasts();
+    expect(toasts).toHaveLength(1);
+    expect(toasts[0]).toEqual(
       expect.objectContaining({
         id: message,
         title: message,
-        status: 'error',
-        isClosable: true,
+        type: 'error',
+        closable: true,
       }),
     );
     expect(clearError).toHaveBeenCalledTimes(1);
   });
 
-  it('does not toast a duplicate that is already active', () => {
-    mockToast.isActive.mockReturnValue(true);
+  it('does not stack a duplicate of a toast that is already showing', () => {
     const clearError = jest.fn();
-    mockUseUserData.mockReturnValue({
-      error: 'Something failed. Please try again.',
-      clearError,
-    });
+    const message = 'Something failed. Please try again.';
+    mockUseUserData.mockReturnValue({ error: message, clearError });
 
-    render(<SavedDataErrorToast />);
+    // StrictMode double-invokes the effect, toasting the same error twice.
+    render(
+      <StrictMode>
+        <SavedDataErrorToast />
+      </StrictMode>,
+    );
 
-    expect(mockToast).not.toHaveBeenCalled();
+    expect(toaster.getVisibleToasts()).toHaveLength(1);
     // Still consumes the error so it doesn't linger.
-    expect(clearError).toHaveBeenCalledTimes(1);
+    expect(clearError).toHaveBeenCalled();
   });
 
   it('does nothing when there is no error', () => {
@@ -63,7 +62,7 @@ describe('SavedDataErrorToast', () => {
 
     render(<SavedDataErrorToast />);
 
-    expect(mockToast).not.toHaveBeenCalled();
+    expect(toaster.getVisibleToasts()).toHaveLength(0);
     expect(clearError).not.toHaveBeenCalled();
   });
 });

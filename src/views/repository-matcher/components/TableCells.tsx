@@ -1,68 +1,66 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
-import NextLink from 'next/link';
 import {
   Box,
-  Button,
   HStack,
+  Skeleton,
   SkeletonText,
   Tag,
-  TagLabel,
-  TagProps,
   Text,
   TextProps,
 } from '@chakra-ui/react';
+import NextLink from 'next/link';
+import React, { useId, useLayoutEffect, useRef, useState } from 'react';
+import { CollapsibleTextTrigger } from 'src/components/collapsible-text';
+import { ExpandableText } from 'src/components/expandable-cells';
 import { Link } from 'src/components/link';
-import { DefinedTerm } from 'src/utils/api/types';
 import Tooltip from 'src/components/tooltip';
-import { Skeleton } from 'src/components/skeleton';
+import { DefinedTerm } from 'src/utils/api/types';
 
-const DEFAULT_MAX_VISIBLE_TAGS = 10;
+const DEFAULT_MAX_VISIBLE_TAGS = 12;
 
 export const TagCellList = ({
   value,
-  isLoading,
+  loading,
   maxVisible = DEFAULT_MAX_VISIBLE_TAGS,
   ...tagProps
 }: {
   value?: DefinedTerm[];
-  isLoading?: boolean;
+  loading?: boolean;
   maxVisible?: number;
 }) => {
   const [expanded, setExpanded] = useState(false);
-  const items: (DefinedTerm | null)[] = isLoading
+  const contentId = useId();
+  const items: (DefinedTerm | null)[] = loading
     ? Array.from({ length: 3 }, () => null)
     : value ?? [];
 
-  if (!isLoading && items.length === 0) {
-    return <TextCell value={''} isLoading={isLoading} noOfLines={1} />;
+  if (!loading && items.length === 0) {
+    return <TextCell value={''} loading={loading} lineClamp={1} />;
   }
 
-  const hiddenCount = isLoading ? 0 : Math.max(0, items.length - maxVisible);
+  const hiddenCount = loading ? 0 : Math.max(0, items.length - maxVisible);
   const shouldTruncate = hiddenCount > 0;
   const visibleItems =
     shouldTruncate && !expanded ? items.slice(0, maxVisible) : items;
 
   return (
-    <HStack flexWrap='wrap'>
+    <HStack id={contentId} flexWrap='wrap'>
       {visibleItems.map((v, i) => (
         <TagCell
           key={i}
           value={v?.name || ''}
-          noOfLines={1}
-          isLoading={isLoading}
+          lineClamp={1}
+          loading={loading}
           {...tagProps}
         />
       ))}
       {shouldTruncate && (
-        <Button
-          variant='link'
-          size='xs'
-          colorScheme='primary'
-          fontWeight='medium'
+        <CollapsibleTextTrigger
+          isOpen={expanded}
+          aria-controls={contentId}
           onClick={() => setExpanded(prev => !prev)}
         >
-          {expanded ? 'Show less' : `Show ${hiddenCount} more`}
-        </Button>
+          {expanded ? 'Show Less' : `Show ${hiddenCount} More`}
+        </CollapsibleTextTrigger>
       )}
     </HStack>
   );
@@ -70,14 +68,14 @@ export const TagCellList = ({
 
 export const TagCell = ({
   value,
-  noOfLines = 2,
-  isLoading,
+  lineClamp = 2,
+  loading,
   ...props
 }: {
   value: string;
-  noOfLines?: number;
-  isLoading?: boolean;
-} & TagProps) => {
+  lineClamp?: number;
+  loading?: boolean;
+} & Tag.RootProps) => {
   const [isTruncated, setIsTruncated] = useState(false);
   const labelRef = useRef<HTMLSpanElement>(null);
 
@@ -85,7 +83,7 @@ export const TagCell = ({
 
   // Only show the tooltip when the label is actually clamped/overflowing.
   useLayoutEffect(() => {
-    if (isLoading) {
+    if (loading) {
       return;
     }
     const el = labelRef.current;
@@ -94,87 +92,57 @@ export const TagCell = ({
         el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth,
       );
     }
-  }, [isLoading, label, noOfLines]);
+  }, [loading, label, lineClamp]);
 
-  if (isLoading) {
-    return <Skeleton isLoaded={false} width='80px' height='20px' />;
+  if (loading) {
+    return <Skeleton loading width='80px' height='20px' />;
   }
   return (
-    <Tooltip label={label} isDisabled={!value || !isTruncated} hasArrow>
-      <Box>
-        <Tag
-          variant='subtle'
-          noOfLines={noOfLines}
-          borderRadius='full'
-          {...props}
-        >
-          <TagLabel ref={labelRef}>{label}</TagLabel>
-        </Tag>
-      </Box>
+    <Tooltip content={label} disabled={!value || !isTruncated}>
+      <Tag.Root variant='subtle' size='sm' rounded='full' {...props}>
+        <Tag.Label ref={labelRef} lineClamp={lineClamp}>
+          {label}
+        </Tag.Label>
+      </Tag.Root>
     </Tooltip>
   );
 };
 
 export const TextCell = ({
   value,
-  isLoading,
-  noOfLines,
+  loading,
+  lineClamp,
   expandable = false,
   children,
   ...props
-}: TextProps & {
+}: Omit<TextProps, 'lineClamp'> & {
   value: string;
-  isLoading?: boolean;
-  // When true, the text is clamped to `noOfLines` and a "Show more"/"Show
-  // less" toggle is rendered (only if the content is actually truncated).
+  loading?: boolean;
+  lineClamp?: number;
+  // When true, the text is clamped to `lineClamp` with the search tables'
+  // "Show More"/"Show Less" toggle (only if the content is actually truncated).
   expandable?: boolean;
 }) => {
-  const [expanded, setExpanded] = useState(false);
-  const [isTruncated, setIsTruncated] = useState(false);
-  const textRef = useRef<HTMLParagraphElement>(null);
-
-  // Detect whether the clamped text overflows so the toggle is only shown
-  // when there's hidden content to reveal.
-  useLayoutEffect(() => {
-    if (!expandable || isLoading) {
-      return;
-    }
-    const el = textRef.current;
-    if (el) {
-      setIsTruncated(el.scrollHeight > el.clientHeight);
-    }
-  }, [expandable, isLoading, value, children, noOfLines]);
-
-  const clampLines = expandable && expanded ? undefined : noOfLines;
-
   return (
-    <SkeletonText
-      isLoaded={!isLoading}
-      noOfLines={noOfLines}
-      spacing='2'
-      w='100%'
-    >
-      <Text
-        ref={textRef}
-        noOfLines={clampLines}
-        fontStyle={value ? 'normal' : 'italic'}
-        lineHeight='shorter'
-        fontSize='xs'
-        {...props}
-      >
-        {children || value || 'not available'}
-      </Text>
-      {expandable && (isTruncated || expanded) && (
-        <Button
-          variant='link'
-          size='xs'
-          colorScheme='primary'
-          fontWeight='medium'
-          mt='1'
-          onClick={() => setExpanded(prev => !prev)}
+    <SkeletonText loading={!!loading} noOfLines={lineClamp} gap='2' w='100%'>
+      {expandable && value && !children ? (
+        <ExpandableText
+          text={value}
+          noOfLines={lineClamp}
+          loading={loading}
+          lineHeight='shorter'
+          {...props}
+        />
+      ) : (
+        <Text
+          lineClamp={lineClamp}
+          fontStyle={value ? 'normal' : 'italic'}
+          lineHeight='shorter'
+          fontSize='sm'
+          {...props}
         >
-          {expanded ? 'Show less' : 'Show more'}
-        </Button>
+          {children || value || 'not available'}
+        </Text>
       )}
     </SkeletonText>
   );
@@ -183,25 +151,27 @@ export const TextCell = ({
 export const TextCellWithLink = ({
   label,
   url,
-  isLoading,
+  loading,
   isExternal,
 }: {
   label: string;
   url?: string;
-  isLoading?: boolean;
+  loading?: boolean;
   isExternal?: boolean;
 }) => {
   return (
-    <SkeletonText isLoaded={!isLoading} noOfLines={2} fontSize='xs' w='100%'>
-      {url ? (
-        <NextLink href={url} prefetch={false} passHref>
-          <Link as='div' isExternal={isExternal}>
-            {label}
+    <SkeletonText loading={!!loading} noOfLines={2} fontSize='sm' w='100%'>
+      <Box lineClamp={2}>
+        {url ? (
+          <Link asChild isExternal={isExternal}>
+            <NextLink href={url} prefetch={false}>
+              {label}
+            </NextLink>
           </Link>
-        </NextLink>
-      ) : (
-        <Text fontSize='inherit'>{label || '-'}</Text>
-      )}
+        ) : (
+          <Text fontSize='inherit'>{label || '-'}</Text>
+        )}
+      </Box>
     </SkeletonText>
   );
 };

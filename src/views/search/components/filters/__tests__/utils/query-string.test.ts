@@ -2,16 +2,16 @@ jest.mock('src/utils/formatting/formatResourceType', () => ({
   formatResourceTypeForAPI: jest.fn((value: string) => `api-${value}`),
 }));
 
+import { SelectedFilterType } from '../../types';
 import {
-  OR_FILTER_KEY,
   getFacetSelection,
-  updateFacetSelection,
+  getSelectedFilterDisplay,
+  normalizeFilterValues,
+  OR_FILTER_KEY,
   queryFilterObject2String,
   queryFilterString2Object,
-  normalizeFilterValues,
-  getSelectedFilterDisplay,
+  updateFacetSelection,
 } from '../../utils/query-string';
-import { SelectedFilterType } from '../../types';
 
 describe('filters/utils/query-string', () => {
   it('builds query strings for standard values, date ranges, @type, and exists objects', () => {

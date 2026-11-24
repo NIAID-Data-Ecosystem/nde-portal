@@ -1,8 +1,9 @@
+import { SHOW_PROGRAM_RESOURCE_UI } from 'src/utils/feature-flags';
 import {
   APIResourceType,
   formatAPIResourceTypeForDisplay,
 } from 'src/utils/formatting/formatResourceType';
-import { SHOW_PROGRAM_RESOURCE_UI } from 'src/utils/feature-flags';
+
 import { TabType } from '../types';
 
 // Tab labels

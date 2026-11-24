@@ -1,9 +1,6 @@
 import {
   Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  AccordionProps,
+  AccordionItemProps,
   Box,
   Heading,
   Icon,
@@ -13,54 +10,54 @@ import { FaMinus, FaPlus } from 'react-icons/fa6';
 export const AccordionContent = ({
   title,
   children,
-}: {
+  ...rest
+}: AccordionItemProps & {
   title: string;
   children: React.ReactNode;
 }) => {
   return (
-    <AccordionItem bg='page.alt'>
-      {({ isExpanded }) => (
-        <>
-          <h2>
-            <AccordionButton>
-              <Heading
-                as='span'
-                flex='1'
-                textAlign='left'
-                size='sm'
-                fontWeight='semibold'
-              >
-                {title}
-              </Heading>
-              <Icon as={isExpanded ? FaMinus : FaPlus} fontSize='xs' />
-            </AccordionButton>
-          </h2>
-          <AccordionPanel bg='#fff' px={0}>
-            <Box px={2}>{children}</Box>
-          </AccordionPanel>
-        </>
-      )}
-    </AccordionItem>
+    <Accordion.Item bg='white' {...rest}>
+      <Accordion.ItemContext>
+        {({ expanded }) => (
+          <>
+            <h2>
+              <Accordion.ItemTrigger cursor='pointer'>
+                <Heading fontSize='sm' fontWeight='semibold' flex='1' gap={1}>
+                  {title}
+                </Heading>
+                <Icon
+                  as={expanded ? FaMinus : FaPlus}
+                  fontSize='xs'
+                  aria-label={expanded ? 'Collapse' : 'Expand'}
+                />
+              </Accordion.ItemTrigger>
+            </h2>
+            <Accordion.ItemContent>
+              <Accordion.ItemBody>{children}</Accordion.ItemBody>
+            </Accordion.ItemContent>
+          </>
+        )}
+      </Accordion.ItemContext>
+    </Accordion.Item>
   );
 };
 
 export const AccordionWrapper = ({
   children,
-  defaultIndex,
+  defaultValue,
   ...props
-}: AccordionProps) => {
+}: Accordion.RootProps) => {
   return (
-    <Accordion
-      defaultIndex={defaultIndex ?? [0]}
-      allowMultiple
-      boxShadow='sm'
-      border='1px solid'
-      borderColor='gray.100'
-      borderRadius='semi'
-      overflow='hidden'
+    <Accordion.Root
+      defaultValue={defaultValue ?? []}
+      collapsible
+      multiple
+      variant='enclosed'
+      size='lg'
+      lazyMount
       {...props}
     >
       {children}
-    </Accordion>
+    </Accordion.Root>
   );
 };

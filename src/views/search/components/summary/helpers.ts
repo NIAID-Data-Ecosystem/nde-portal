@@ -1,9 +1,10 @@
-import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
-import { ChartDatum, ChartType } from './types';
-import { PieChart } from 'src/components/visualizations/pie';
 import { BarChart } from 'src/components/visualizations/bar';
-import { DateFilter } from '../filters/components/date-filter';
 import { DateHistogram } from 'src/components/visualizations/histogram';
+import { PieChart } from 'src/components/visualizations/pie';
+import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
+
+import { DateFilter } from '../filters/components/date-filter';
+import { ChartDatum, ChartType } from './types';
 
 // Helper functions for processing aggregate data for chart visualizations.
 export const normalizeAggregateData = (

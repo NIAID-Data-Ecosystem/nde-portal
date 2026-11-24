@@ -1,22 +1,14 @@
-import React from 'react';
-import {
-  Box,
-  Flex,
-  Icon,
-  Stack,
-  Text,
-  UnorderedList,
-  ListItem,
-} from '@chakra-ui/react';
-import { FaBitbucket, FaGithub } from 'react-icons/fa6';
-import { FormattedResource } from 'src/utils/api/types';
-import { HeadingWithTooltip } from './heading-with-tooltip';
-import { Link } from 'src/components/link';
+import { Box, Flex, Icon, List, Stack, Text } from '@chakra-ui/react';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import React from 'react';
+import { FaBitbucket, FaGithub } from 'react-icons/fa6';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import { InfoLabel } from 'src/components/info-label';
+import { Link } from 'src/components/link';
+import { FormattedResource } from 'src/utils/api/types';
 
 interface AssociatedDocumentation {
-  isLoading: boolean;
+  loading: boolean;
   type?: FormattedResource['@type'];
   mainEntityOfPage?: FormattedResource['mainEntityOfPage'];
   codeRepository?: FormattedResource['codeRepository'];
@@ -25,26 +17,29 @@ interface AssociatedDocumentation {
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
 export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
-  isLoading,
+  loading,
   codeRepository,
   mainEntityOfPage,
   type,
 }) => {
-  if (!isLoading && !(mainEntityOfPage || codeRepository || type)) {
+  if (!loading && !(mainEntityOfPage || codeRepository || type)) {
     return <></>;
   }
-
+  const isGithubRepo = (repo: string) => repo.includes('git');
+  const isBitbucketRepo = (repo: string) => repo.includes('bitbucket');
   return (
     <>
       {/* mainEntityOfPage refers to a website for the resource. */}
       {mainEntityOfPage && (
-        <Stack spacing={1}>
-          <HeadingWithTooltip
+        <Stack gap={1}>
+          <InfoLabel
             label='Associated Website'
-            tooltipLabel={`${
-              schema?.['mainEntityOfPage']?.description?.[type || 'Dataset'] ??
-              ''
-            }`}
+            tooltipProps={{
+              content:
+                schema?.['mainEntityOfPage']?.description?.[
+                  type || 'Dataset'
+                ] ?? '',
+            }}
           />
           {mainEntityOfPage &&
             (Array.isArray(mainEntityOfPage) ? (
@@ -55,25 +50,18 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
                     href={href}
                     isExternal
                     wordBreak='break-word'
-                    fontSize='xs'
                   >
                     {href}
                   </Link>
                 );
               })
             ) : (
-              <Link
-                href={mainEntityOfPage}
-                isExternal
-                wordBreak='break-word'
-                fontSize='xs'
-              >
+              <Link href={mainEntityOfPage} isExternal wordBreak='break-word'>
                 {mainEntityOfPage}
               </Link>
             ))}
         </Stack>
       )}
-
       {/* Links to the source code of the tool  */}
       {codeRepository && (
         <Flex
@@ -84,36 +72,47 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
           maxW='350px'
           flex={1}
         >
-          <HeadingWithTooltip
+          <InfoLabel
             label='Code Repository'
-            tooltipLabel={`${
-              schema?.['coreRepository']?.description?.[type || 'Dataset'] ?? ''
-            }`}
+            tooltipProps={{
+              content:
+                schema?.['codeRepository']?.description?.[type || 'Dataset'] ??
+                '',
+            }}
           />
-          <UnorderedList alignItems='center' ml={0}>
+          <List.Root as='ul' alignItems='center' pl={0}>
             {(Array.isArray(codeRepository)
               ? codeRepository
               : [codeRepository]
             ).map((repo, idx) => {
               return (
-                <ListItem key={idx} alignItems='start' display='flex' pb={2}>
-                  <Box mx={1} mt={1}>
-                    {repo.includes('git') && <Icon as={FaGithub} boxSize={4} />}
-                    {repo.includes('bitbucket') && (
-                      <Icon as={FaBitbucket} boxSize={4} />
-                    )}
-                  </Box>
+                <List.Item
+                  key={idx}
+                  alignItems='start'
+                  display='flex'
+                  pb={2}
+                  listStyle='none'
+                  gap={1}
+                >
+                  {(isGithubRepo(repo) || isBitbucketRepo(repo)) && (
+                    <Icon
+                      as={isGithubRepo(repo) ? FaGithub : FaBitbucket}
+                      boxSize={4}
+                      mt={1}
+                    />
+                  )}
+
                   {repo.includes('http') ? (
-                    <Link href={repo} isExternal wordBreak='break-word' ml={1}>
-                      {repo.includes('git') ? 'View code on Github' : repo}
+                    <Link href={repo} isExternal wordBreak='break-word'>
+                      {isGithubRepo(repo) ? 'View code on Github' : repo}
                     </Link>
                   ) : (
                     <Text>{repo}</Text>
                   )}
-                </ListItem>
+                </List.Item>
               );
             })}
-          </UnorderedList>
+          </List.Root>
         </Flex>
       )}
     </>

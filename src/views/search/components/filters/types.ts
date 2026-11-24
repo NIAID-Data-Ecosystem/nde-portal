@@ -115,7 +115,7 @@ export interface FilterQueryResult {
   terms: FilterTermType[];
   /** Alias for terms - used by DateFilter */
   data: FilterTermType[];
-  isLoading: boolean;
+  loading: boolean;
   isUpdating: boolean;
   error: Error | null;
 }

@@ -1,15 +1,12 @@
 import { Flex, Text, TextProps } from '@chakra-ui/react';
-import { formatTerm, formatUnitText, formatNumericValue } from '../../helpers';
 import { Link } from 'src/components/link';
-import { DefinedTerm, QuantitativeValue } from 'src/utils/api/types';
 import { Column } from 'src/components/table';
+import { DefinedTerm, QuantitativeValue } from 'src/utils/api/types';
+
+import { formatNumericValue, formatTerm, formatUnitText } from '../../helpers';
 
 const TextCell = ({ children, ...rest }: TextProps) => {
-  return (
-    <Text fontSize='sm' {...rest}>
-      {children}
-    </Text>
-  );
+  return <Text {...rest}>{children}</Text>;
 };
 
 const DefinedTermCell = ({ identifier, name, url }: DefinedTerm) => {
@@ -85,7 +82,7 @@ export const renderValue = (val: CellValue, key?: React.Key) => {
 const renderCellData = (props: {
   column: Column;
   data: CellValue | CellValue[];
-  isLoading?: boolean;
+  loading?: boolean;
 }) => {
   const cellValue = props.data;
 

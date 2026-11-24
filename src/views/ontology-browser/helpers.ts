@@ -1,6 +1,6 @@
-import axios from 'axios';
 import { stratify } from '@visx/hierarchy';
 import { HierarchyNode } from '@visx/hierarchy/lib/types';
+import axios from 'axios';
 
 export type OntologyOption = {
   name: string;

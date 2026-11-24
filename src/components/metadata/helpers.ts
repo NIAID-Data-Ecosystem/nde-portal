@@ -1,17 +1,18 @@
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { uniqueId } from 'lodash';
+import {
+  SchemaDefinition,
+  SchemaDefinitions,
+} from 'scripts/generate-schema-definitions/types';
 import {
   FormattedResource,
   SampleAggregate,
   SampleCollection,
 } from 'src/utils/api/types';
-import { formatLicense } from 'src/utils/helpers';
-import { OntologyButtonProps, SearchButtonProps } from './components/buttons';
-import { uniqueId } from 'lodash';
 import { APIResourceType } from 'src/utils/formatting/formatResourceType';
-import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
-import {
-  SchemaDefinition,
-  SchemaDefinitions,
-} from 'scripts/generate-schema-definitions/types';
+import { formatLicense } from 'src/utils/helpers';
+
+import { OntologyButtonProps, SearchButtonProps } from './components/buttons';
 
 // Sort [SORT_ORDER] based on: https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/214
 export const SORT_ORDER = [
@@ -58,8 +59,8 @@ export const sortMetadataArray = (
   };
 
   // Separate the disabled and non-disabled items
-  const enabledItems = arr.filter(item => !item.isDisabled).sort(customSort);
-  const disabledItems = arr.filter(item => item.isDisabled).sort(customSort);
+  const enabledItems = arr.filter(item => !item.disabled).sort(customSort);
+  const disabledItems = arr.filter(item => item.disabled).sort(customSort);
 
   // Concatenate the sorted enabled items with the sorted disabled items
   return [...enabledItems, ...disabledItems];
@@ -86,8 +87,7 @@ export interface MetadataContentProps {
   label: string;
   property: string;
   glyph?: string;
-  isDisabled: boolean;
-  name?: string;
+  disabled: boolean;
   img?: { src: string; alt: string };
   url?: string;
   items?: MetadataItem[];
@@ -263,7 +263,7 @@ const createAvailableOnDeviceContent = (
     id: `${property}-${id}`,
     label: 'Available on Device',
     property,
-    isDisabled: !availableOnDevice,
+    disabled: !availableOnDevice,
     items:
       showItems && availableOnDevice
         ? availableOnDevice.map((requirement, idx) => {
@@ -292,7 +292,7 @@ const createFeatureListContent = (
     id: `${property}-${id}`,
     label: 'Feature List',
     property,
-    isDisabled: !featureList || featureList.every(item => !item.name),
+    disabled: !featureList || featureList.every(item => !item.name),
     items:
       showItems && featureList
         ? featureList.map((feature, idx) => {
@@ -357,7 +357,7 @@ const createFundingContent = (
     label: 'Funding',
     glyph: property,
     property,
-    isDisabled: !fundingDetails || fundingDetails.length === 0,
+    disabled: !fundingDetails || fundingDetails.length === 0,
     items:
       (showItems &&
         fundingDetails?.map((funding, idx) => {
@@ -410,7 +410,7 @@ const createHealthConditionContent = (
     label: 'Health Condition',
     property,
     glyph: property,
-    isDisabled: !healthCondition || healthCondition.every(item => !item.name),
+    disabled: !healthCondition || healthCondition.every(item => !item.name),
     items:
       showItems && healthCondition
         ? healthCondition.map((healthCondition, idx) => {
@@ -458,7 +458,7 @@ const createInputContent = (
     id: `${property}-${id}`,
     label: 'Input',
     property,
-    isDisabled: !input || input.every(item => !item.name),
+    disabled: !input || input.every(item => !item.name),
     items:
       showItems && input
         ? input.map((input, idx) => {
@@ -506,9 +506,16 @@ const createLicenseContent = (
     label: 'License',
     property,
     glyph: property,
-    isDisabled: !license,
-    name: license?.title,
-    url: license?.url,
+    disabled: !license,
+    items: license
+      ? [
+          {
+            key: uniqueId(`${property}-${id}-0`),
+            name: license.title,
+            url: license?.url,
+          },
+        ]
+      : [],
     img:
       showItems && license?.img && license?.type
         ? { src: license?.img, alt: license?.type }
@@ -528,7 +535,7 @@ const createMeasurementTechniqueContent = (
     label: 'Measurement Technique',
     property,
     glyph: property,
-    isDisabled:
+    disabled:
       !measurementTechnique || measurementTechnique.every(item => !item.name),
     items:
       showItems && measurementTechnique
@@ -578,7 +585,7 @@ const createInfectiousAgentContent = (
     label: 'Pathogen',
     property,
     glyph: property,
-    isDisabled: !infectiousAgent || infectiousAgent.every(item => !item.name),
+    disabled: !infectiousAgent || infectiousAgent.every(item => !item.name),
     items:
       showItems && infectiousAgent
         ? infectiousAgent.map((pathogen, idx) => {
@@ -634,7 +641,7 @@ const createOutputContent = (
     id: `${property}-${id}`,
     label: 'Output',
     property,
-    isDisabled: !output || output.every(item => !item.name),
+    disabled: !output || output.every(item => !item.name),
     items:
       showItems && output
         ? output.map((output, idx) => {
@@ -713,7 +720,7 @@ const createSampleContent = (
     label: 'Sample',
     property,
     glyph: property,
-    isDisabled: !sample,
+    disabled: !sample,
     url: resourceUrl,
     items:
       showItems && displayName
@@ -738,7 +745,7 @@ const createSoftwareHelpContent = (
     id: `${property}-${id}`,
     label: 'Software Help',
     property,
-    isDisabled: !softwareHelp,
+    disabled: !softwareHelp,
     items:
       showItems && softwareHelp
         ? softwareHelp
@@ -769,7 +776,7 @@ const createSoftwareRequirementsContent = (
     id: `${property}-${id}`,
     label: 'Software Requirements',
     property,
-    isDisabled: !softwareRequirements,
+    disabled: !softwareRequirements,
     items:
       showItems && softwareRequirements
         ? softwareRequirements.map((requirement, idx) => {
@@ -798,7 +805,7 @@ const createSoftwareVersionContent = (
     id: `${property}-${id}`,
     label: 'Software Version',
     property,
-    isDisabled: !softwareVersion,
+    disabled: !softwareVersion,
     items:
       showItems && softwareVersion
         ? softwareVersion.map((version, idx) => {
@@ -823,7 +830,7 @@ const createSpeciesContent = (
     label: 'Species',
     property,
     glyph: property,
-    isDisabled: !species || species.every(item => !item.name),
+    disabled: !species || species.every(item => !item.name),
     items:
       showItems && species
         ? species.map((species, idx) => {
@@ -885,7 +892,7 @@ const createTopicCategoryContent = (
     id: `${property}-${id}`,
     label: 'Topic Category',
     property,
-    isDisabled:
+    disabled:
       !filteredTopicCategories.length ||
       filteredTopicCategories.every(item => !item.name),
     items:
@@ -931,7 +938,7 @@ const createUsageInfoContent = (
     label: 'Usage Info',
     property,
     glyph: property,
-    isDisabled: !usageInfo,
+    disabled: !usageInfo,
     items: Array.isArray(usageInfo)
       ? usageInfo?.map((usage, idx) => ({
           key: uniqueId(`${property}-${id}-${idx}`),
@@ -960,7 +967,7 @@ const createVariableMeasuredContent = (
     label: 'Variable Measured',
     property,
     glyph: property,
-    isDisabled: !variableMeasured,
+    disabled: !variableMeasured,
     items:
       showItems && variableMeasured
         ? (variableMeasured
@@ -1028,3 +1035,28 @@ export const getMetadataDescription = (
     }
   }
 };
+
+// Chakra color palette for each metadata property. Keys are lowercase so the
+// lookup is case-insensitive.
+const METADATA_COLOR_PALETTES = new Map<string, string>([
+  ['availableondevice', 'blue'],
+  ['license', 'blue'],
+  ['usageinfo', 'blue'],
+  ['featurelist', 'cyan'],
+  ['variablemeasured', 'cyan'],
+  ['sample', 'purple'],
+  ['measurementtechnique', 'purple'],
+  ['softwarehelp', 'purple'],
+  ['infectiousagent', 'pink'],
+  ['output', 'pink'],
+  ['softwareversion', 'red'],
+  ['healthcondition', 'red'],
+  ['funding', 'orange'],
+  ['softwarerequirements', 'orange'],
+  ['input', 'green'],
+  ['species', 'green'],
+  ['topiccategory', 'teal'],
+]);
+
+export const getMetadataColorPalette = (property?: string) =>
+  (property && METADATA_COLOR_PALETTES.get(property.toLowerCase())) || 'gray';

@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { fetchSearchResults } from 'src/utils/api';
-import { fetchChildrenFromBioThingsAPI } from './api-helpers';
+
 import { OntologyChildrenRequestParams } from '../types';
+import { fetchChildrenFromBioThingsAPI } from './api-helpers';
 
 jest.mock('axios');
 jest.mock('src/utils/api', () => ({ fetchSearchResults: jest.fn() }));

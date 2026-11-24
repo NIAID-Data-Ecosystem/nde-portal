@@ -1,6 +1,7 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React from 'react';
+import { render, screen } from 'src/__tests__/utils/render';
+
 import { DateFilter } from '../../../components/date-filter';
 
 const useAggregation = jest.fn();
@@ -106,7 +107,7 @@ describe('filters/components/date-filter/index', () => {
 
     renderWithQueryClient(
       <DateFilter
-        colorScheme='secondary'
+        colorPalette='secondary'
         queryParams={{ q: 'abc', extra_filter: '(date:("2020"))' } as any}
         selectedDates={['2021-01-01', '2021-12-31']}
         handleSelectedFilter={jest.fn()}
@@ -118,12 +119,12 @@ describe('filters/components/date-filter/index', () => {
               id: 'date',
               terms: [{ term: '2021-01-01', label: '2021', count: 2 }],
               data: [{ term: '2021-01-01', label: '2021', count: 2 }],
-              isLoading: false,
+              loading: false,
               isUpdating: false,
               error: null,
             },
           },
-          isLoading: false,
+          loading: false,
           isUpdating: false,
           error: null,
         }}
@@ -158,7 +159,7 @@ describe('filters/components/date-filter/index', () => {
 
     renderWithQueryClient(
       <DateFilter
-        colorScheme='secondary'
+        colorPalette='secondary'
         queryParams={{ q: 'abc', extra_filter: '' } as any}
         selectedDates={[]}
         handleSelectedFilter={jest.fn()}
@@ -166,7 +167,7 @@ describe('filters/components/date-filter/index', () => {
         enabled
         updatedAggregateQueryData={{
           results: undefined,
-          isLoading: false,
+          loading: false,
           isUpdating: false,
           error: new Error('boom'),
         }}

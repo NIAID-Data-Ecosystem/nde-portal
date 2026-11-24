@@ -1,35 +1,36 @@
-import React, { useMemo } from 'react';
 import { Text } from '@chakra-ui/react';
+import React, { useMemo } from 'react';
+import {
+  ExpandableList,
+  ExpandableText,
+} from 'src/components/expandable-cells';
 import { Link } from 'src/components/link';
 import { Column } from 'src/components/table';
 import { FormattedResource, IncludedInDataCatalog } from 'src/utils/api/types';
+
+import {
+  ContentTypeTerm,
+  getContentTypeLabel,
+  getContentTypeTerms,
+} from '../../utils/content-type';
 import { ResultsTable } from '../results-table';
-import { BaseColumn } from '../results-table/types';
-import { withWidth } from '../results-table/utils';
 import {
   renderCellData,
   valueToEntries,
 } from '../results-table/components/Cells';
-import {
-  ExpandableList,
-  ExpandableText,
-} from '../results-table/components/ExpandableCells';
 import {
   LinkOrTextCell,
   ResourceNameCell,
 } from '../results-table/components/SharedCells';
 import { DATA_COLLECTION_REQUIRED_COLUMN_IDS } from '../results-table/constants';
 import {
-  ContentTypeTerm,
-  getContentTypeLabel,
-  getContentTypeTerms,
-} from '../../utils/content-type';
-import {
   ExportEntriesGetter,
   linkEntries,
   nameEntries,
   textEntries,
 } from '../results-table/export';
+import { BaseColumn } from '../results-table/types';
+import { withWidth } from '../results-table/utils';
 
 export interface DataCollectionColumn extends BaseColumn {}
 
@@ -199,11 +200,11 @@ export const createGetCells =
   ({
     column,
     data,
-    isLoading,
+    loading,
   }: {
     column: Column;
     data: Record<string, unknown>;
-    isLoading?: boolean;
+    loading?: boolean;
   }) => {
     const value = data?.[column.property];
 
@@ -256,13 +257,13 @@ export const createGetCells =
       return value ? <Text fontSize='sm'>{String(value)}</Text> : null;
     }
 
-    // Description: clamped to a few lines with a "Show more" / "Show less" toggle.
+    // Description: clamped to a few lines with a "Show More" / "Show Less" toggle.
     if (column.property === 'description') {
       return (
         <ExpandableText
           text={(value as string) || ''}
           noOfLines={4}
-          isLoading={isLoading}
+          loading={loading}
         />
       );
     }
@@ -308,7 +309,7 @@ export const createGetCells =
 
     // healthCondition, infectiousAgent, species, topicCategory, and any other
     // DefinedTerm / QuantitativeValue fields.
-    return renderCellData({ column, data: value as any, isLoading });
+    return renderCellData({ column, data: value as any, loading });
   };
 
 /**
@@ -343,7 +344,7 @@ export const getExportEntries: ExportEntriesGetter = (property, row) => {
 
 interface DataCollectionResultsTableProps {
   results: FormattedResource[];
-  isLoading: boolean;
+  loading: boolean;
   /**
    * IDs of columns that should be visible.
    * When undefined, all columns are shown.
@@ -377,7 +378,7 @@ interface DataCollectionResultsTableProps {
 
 export const DataCollectionResultsTable = ({
   results,
-  isLoading,
+  loading,
   visibleColumnIds,
   columnOrder,
   currentSort,
@@ -390,7 +391,7 @@ export const DataCollectionResultsTable = ({
     <ResultsTable
       columns={ALL_DATA_COLLECTION_COLUMNS}
       results={results}
-      isLoading={isLoading}
+      loading={loading}
       toRow={toRow}
       getCells={getCells}
       ariaLabel='Data collection search results'

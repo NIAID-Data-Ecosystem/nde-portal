@@ -16,10 +16,10 @@ export function SavedEmptyState({ title, children }: SavedEmptyStateProps) {
     <Flex direction='column' align='center' py={10}>
       <Text fontWeight='bold'>{title}</Text>
       <Text
-        color='gray.700'
+        color='gray.500'
         maxWidth='300px'
         textAlign='center'
-        lineHeight='short'
+        lineHeight='moderate'
         whiteSpace='normal'
       >
         {children}

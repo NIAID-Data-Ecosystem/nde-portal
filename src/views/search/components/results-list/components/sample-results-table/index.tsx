@@ -1,5 +1,9 @@
-import React from 'react';
 import { Text } from '@chakra-ui/react';
+import React from 'react';
+import {
+  ExpandableList,
+  ExpandableText,
+} from 'src/components/expandable-cells';
 import { Link } from 'src/components/link';
 import { Column } from 'src/components/table';
 import {
@@ -8,23 +12,20 @@ import {
   Funding,
   IncludedInDataCatalog,
 } from 'src/utils/api/types';
+
 import { ResultsTable } from '../results-table';
-import { BaseColumn } from '../results-table/types';
-import { withWidth } from '../results-table/utils';
 import {
   renderCellData,
   valueToEntries,
 } from '../results-table/components/Cells';
-import {
-  ExpandableList,
-  ExpandableText,
-} from '../results-table/components/ExpandableCells';
 import { SAMPLE_REQUIRED_COLUMN_IDS } from '../results-table/constants';
 import {
   ExportEntriesGetter,
   linkEntries,
   textEntries,
 } from '../results-table/export';
+import { BaseColumn } from '../results-table/types';
+import { withWidth } from '../results-table/utils';
 
 export interface SampleColumn extends BaseColumn {}
 
@@ -379,11 +380,11 @@ export const toRow = (resource: FormattedResource): Record<string, unknown> => {
 export const getCells = ({
   column,
   data,
-  isLoading,
+  loading,
 }: {
   column: Column;
   data: Record<string, unknown>;
-  isLoading?: boolean;
+  loading?: boolean;
 }) => {
   const value = data?.[column.property];
 
@@ -466,13 +467,13 @@ export const getCells = ({
     );
   }
 
-  // Description: clamped to a few lines with a "Show more" / "Show less" toggle.
+  // Description: clamped to a few lines with a "Show More" / "Show Less" toggle.
   if (column.property === 'description') {
     return (
       <ExpandableText
         text={(value as string) || ''}
         noOfLines={4}
-        isLoading={isLoading}
+        loading={loading}
       />
     );
   }
@@ -483,7 +484,7 @@ export const getCells = ({
   }
 
   // All other fields: delegate to the shared cell renderer
-  return renderCellData({ column, data: value as any, isLoading });
+  return renderCellData({ column, data: value as any, loading });
 };
 
 /**
@@ -533,7 +534,7 @@ export const getExportEntries: ExportEntriesGetter = (property, row) => {
 
 interface SampleResultsTableProps {
   results: FormattedResource[];
-  isLoading: boolean;
+  loading: boolean;
   /**
    * IDs of columns that should be visible.
    * When undefined, all columns are shown.
@@ -562,7 +563,7 @@ interface SampleResultsTableProps {
 
 export const SampleResultsTable = ({
   results,
-  isLoading,
+  loading,
   visibleColumnIds,
   columnOrder,
   currentSort,
@@ -571,7 +572,7 @@ export const SampleResultsTable = ({
   <ResultsTable
     columns={ALL_SAMPLE_COLUMNS}
     results={results}
-    isLoading={isLoading}
+    loading={loading}
     toRow={toRow}
     getCells={getCells}
     ariaLabel='Sample search results'

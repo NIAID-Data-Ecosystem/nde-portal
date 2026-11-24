@@ -1,6 +1,7 @@
-import React from 'react';
-import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { renderHook, waitFor } from '@testing-library/react';
+import React from 'react';
+
 import { fetchMetadata } from './helpers';
 import { useResourceCatalogs } from './useResourceCatalogs';
 import {
@@ -238,6 +239,7 @@ describe('getResourceCatalogIdentifier', () => {
       } else {
         process.env.NEXT_PUBLIC_BASE_URL = baseUrl;
       }
+
       return (require('./useSourcesList') as typeof import('./useSourcesList'))
         .getResourceCatalogIdentifier;
     };
@@ -476,7 +478,7 @@ describe('useSourcesList', () => {
         immport: {
           sourceInfo: {
             identifier: 'immport',
-            name: 'ImmPort',
+            name: 'Immunology Database and Analysis Portal (ImmPort)',
             collectionType: 'Dataset Repository',
           },
           stats: { immport: 1234 },

@@ -1,8 +1,10 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
 import { ChakraProvider } from '@chakra-ui/react';
+import { render, screen } from '@testing-library/react';
+import React from 'react';
+import { system } from 'src/theme';
+
+import { formatNumericValue, formatTerm, formatUnitText } from '../../helpers';
 import { Cell, renderValue } from './Cells';
-import { formatTerm, formatUnitText, formatNumericValue } from '../../helpers';
 
 // Mock formatting helpers
 jest.mock('../../helpers', () => ({
@@ -21,7 +23,7 @@ jest.mock('src/components/link', () => ({
 }));
 
 const renderWithChakra = (ui: React.ReactElement) =>
-  render(<ChakraProvider>{ui}</ChakraProvider>);
+  render(<ChakraProvider value={system}>{ui}</ChakraProvider>);
 
 describe('Cells', () => {
   beforeEach(() => {
@@ -35,7 +37,11 @@ describe('Cells', () => {
       expect(screen.queryByRole('link')).not.toBeInTheDocument();
       expect(screen.queryByText(/TERM\(/)).not.toBeInTheDocument();
 
-      rerender(<ChakraProvider>{renderValue(undefined)}</ChakraProvider>);
+      rerender(
+        <ChakraProvider value={system}>
+          {renderValue(undefined)}
+        </ChakraProvider>,
+      );
 
       expect(screen.queryByRole('link')).not.toBeInTheDocument();
       expect(screen.queryByText(/TERM\(/)).not.toBeInTheDocument();

@@ -1,5 +1,6 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from 'src/__tests__/utils/render';
+
 import { FiltersContainer } from '../../components/container';
 
 jest.mock('@chakra-ui/react', () => {
@@ -43,15 +44,25 @@ describe('filters/components/container', () => {
   it('renders error state', () => {
     useBreakpointValue.mockReturnValue('desktop');
     render(<FiltersContainer {...props} error={new Error('x')} />);
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      /something went wrong, unable to load filters/i,
+    );
     expect(
-      screen.getByText(/something went wrong, unable to load filters/i),
+      screen.getByRole('button', { name: /reloading the page/i }),
     ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: /read (more|less)/i }),
+    ).not.toBeInTheDocument();
   });
 
-  it('renders mobile drawer trigger and opens content', () => {
+  it('renders mobile drawer trigger and opens content', async () => {
     useBreakpointValue.mockReturnValue('mobile');
     render(<FiltersContainer {...props} />);
     fireEvent.click(screen.getByRole('button', { name: /search filters/i }));
-    expect(screen.getByText('Done')).toBeInTheDocument();
+    // v3's Drawer mounts its portalled content through zag's presence machine,
+    // so the footer is not in the DOM synchronously after the click.
+    expect(await screen.findByText('Done')).toBeInTheDocument();
+    // One labelled close button, not a CloseButton nested in the trigger.
+    expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
   });
 });

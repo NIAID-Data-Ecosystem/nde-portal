@@ -1,11 +1,12 @@
-import React from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen } from '@testing-library/react';
+import React from 'react';
 import { TooltipWrapper } from 'src/components/visualizations/tooltip/index';
+import { system } from 'src/theme';
 
 describe('TooltipWrapper', () => {
   const renderWithChakra = (ui: React.ReactElement) => {
-    return render(<ChakraProvider>{ui}</ChakraProvider>);
+    return render(<ChakraProvider value={system}>{ui}</ChakraProvider>);
   };
 
   it('renders children correctly', () => {

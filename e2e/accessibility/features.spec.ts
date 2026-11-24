@@ -33,7 +33,8 @@
  * be redundant. We therefore cover EMPTY, POPULATED, ERROR, plus the search
  * filter interaction state, rather than a standalone loading state.
  */
-import { test, expect, type Page, type TestInfo } from '@playwright/test';
+import { expect, type Page, test, type TestInfo } from '@playwright/test';
+
 import { runAxeScans } from '../utils/axe';
 
 // --- Per-route configuration -------------------------------------------------

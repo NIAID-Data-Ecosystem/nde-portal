@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState } from 'react';
-import { TabType } from '../types';
+import React, { createContext, useCallback, useContext, useState } from 'react';
+
 import { tabs } from '../config/tabs';
+import { TabType } from '../types';
 
 interface SearchContextValue {
   tabs: TabType[];
@@ -30,12 +31,14 @@ export const SearchTabsProvider: React.FC<{
     initialIndex !== -1 ? initialIndex : 0,
   );
   const selectedTab = tabs[selectedIndex];
-  const setSelectedTab = (tab: TabType['id']) => {
+  // Memoised so consumers can safely list it in effect dependency arrays;
+  // an inline definition would change identity on every render.
+  const setSelectedTab = useCallback((tab: TabType['id']) => {
     const index = tabs.findIndex(t => t.id === tab);
     if (index !== -1) {
       setSelectedIndex(index);
     }
-  };
+  }, []);
   const [filters, setFilters] = useState<Record<string, string[]>>({});
 
   return (

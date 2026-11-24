@@ -1,21 +1,22 @@
-import { FilterConfig, ChartConfig, FilterCategory } from './types';
 import { getMetadataDescription } from 'src/components/metadata';
 import {
-  SHOW_SAMPLES_TAB,
-  SHOW_DATA_COLLECTIONS_TAB,
   SHOW_CONTENT_TYPE_RESOURCE_TYPE_MATCHING,
+  SHOW_DATA_COLLECTIONS_TAB,
+  SHOW_SAMPLES_TAB,
 } from 'src/utils/feature-flags';
 import {
   formatConditionsOfAccess,
   transformConditionsOfAccessLabel,
 } from 'src/utils/formatting/formatConditionsOfAccess';
+import { formatTermLabel } from 'src/utils/formatting/formatTermLabel';
 import {
   CONTENT_TYPE_ABOUT_FIELD,
   CONTENT_TYPE_TOOLTIP,
   getFacetProperties,
   getRequestedFacetProperties,
 } from 'src/views/search/config/content-type';
-import { formatTermLabel } from 'src/utils/formatting/formatTermLabel';
+
+import { ChartConfig, FilterCategory, FilterConfig } from './types';
 
 /**
  * Default chart configuration for bar and pie visualizations

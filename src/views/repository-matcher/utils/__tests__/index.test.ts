@@ -1,5 +1,6 @@
-import { itemTypes } from '..';
 import { RepositoryMatcherItem } from 'src/views/repository-matcher/types';
+
+import { itemTypes } from '..';
 
 const makeItem = (overrides: Partial<RepositoryMatcherItem>) =>
   overrides as RepositoryMatcherItem;

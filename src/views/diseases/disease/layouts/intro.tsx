@@ -6,12 +6,13 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { DiseasePageProps } from 'src/views/diseases/types';
-import { SectionTitle } from './section';
-import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
+import { DiseasePageProps } from 'src/views/diseases/types';
+
+import { SectionTitle } from './section';
 
 interface IntroSectionProps {
   title?: DiseasePageProps['title'];
@@ -19,31 +20,31 @@ interface IntroSectionProps {
   topicEmphasizedDescription?: DiseasePageProps['topicEmphasizedDescription'];
   links?: DiseasePageProps['contacts'];
   image?: DiseasePageProps['image'];
-  isLoading?: boolean;
+  loading?: boolean;
 }
 export const IntroSection: React.FC<IntroSectionProps> = ({
   title,
   subtitle,
   topicEmphasizedDescription,
   image,
-  isLoading,
+  loading,
 }) => {
   const MDXComponents = useMDXComponents();
 
   return (
     <Stack
       flexDirection={{ base: 'column', sm: 'row' }}
-      spacing={{ base: 6, lg: 16 }}
+      gap={{ base: 6, lg: 16 }}
       flexWrap='wrap'
     >
       <VStack
-        spacing={4}
+        gap={4}
         alignItems='flex-start'
         flex={3}
         minWidth={{ base: '100%', sm: '450px' }}
       >
         {/* Title */}
-        <SectionTitle as='h1' isLoading={isLoading}>
+        <SectionTitle as='h1' loading={loading}>
           {title}
         </SectionTitle>
 
@@ -51,25 +52,30 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
         <Box
           w={20}
           h={1}
-          bgGradient='linear(to-r, secondary.500, primary.400)'
+          bgGradient='to-r'
+          gradientFrom='secondary.500'
+          gradientTo='primary.400'
         />
 
         {/* Subtitle */}
-        {(subtitle || isLoading) && (
-          <SkeletonText isLoaded={!isLoading} noOfLines={2} skeletonHeight={5}>
-            <Text color='gray.700' lineHeight='short'>
+        {(subtitle || loading) && (
+          <SkeletonText
+            loading={!!loading}
+            noOfLines={2}
+            height={loading ? 5 : undefined}
+          >
+            <Text color='gray.500' lineHeight='moderate'>
               {subtitle}
             </Text>
           </SkeletonText>
         )}
 
         {/* Description */}
-        {(topicEmphasizedDescription || isLoading) && (
+        {(topicEmphasizedDescription || loading) && (
           <SkeletonText
-            isLoaded={!isLoading}
+            loading={!!loading}
             noOfLines={5}
-            skeletonHeight={4}
-            maxWidth={{ base: 'unset', xl: 800 }}
+            rootProps={{ maxWidth: { base: 'unset', xl: 800 } }}
           >
             {topicEmphasizedDescription && (
               <ReactMarkdown
@@ -82,7 +88,6 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
           </SkeletonText>
         )}
       </VStack>
-
       {/* Image */}
       {image?.url && (
         <Box
@@ -92,7 +97,7 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
           flex={1}
         >
           <Image
-            borderRadius='base'
+            borderRadius='sm'
             width='100%'
             height='auto'
             src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${image.url}`}
@@ -110,7 +115,7 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
                     as='figcaption'
                     fontSize='xs'
                     opacity={0.8}
-                    lineHeight='short'
+                    lineHeight='moderate'
                     fontStyle='italic'
                     mt={1}
                     {...props}

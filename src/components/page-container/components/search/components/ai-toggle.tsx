@@ -1,40 +1,26 @@
 import {
-  Flex,
-  FormControl,
-  FormLabel,
+  Field,
   HStack,
   Icon,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverArrow,
-  PopoverBody,
   Switch,
-  SwitchProps,
   Tag,
-  TagLabel,
-  TagProps,
   Text,
-  TooltipProps,
-  useDisclosure,
-  PopoverProps,
+  TooltipRootProps,
 } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 import { FaRegCircleQuestion } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
-import { useLocalStorage } from 'usehooks-ts';
-import { useRouter } from 'next/router';
-import { useEffect, useRef } from 'react';
+import Tooltip from 'src/components/tooltip';
 import { useUserData } from 'src/hooks/useUserData';
-
-const HOVER_OPEN_DELAY = 200; // ms before showing
-const HOVER_CLOSE_DELAY = 120; // ms before hiding
+import { useLocalStorage } from 'usehooks-ts';
 
 // Knowledge center link for AI-assisted search documentation.
 export const AI_ASSISTED_SEARCH_KC_LINK =
   '/knowledge-center/ai-assisted-search';
 
 const DEFAULT_AI_TOOLTIP_CONTENT = (
-  <Text fontSize='xs' fontWeight='normal' lineHeight='short'>
+  <>
     AI-assisted search uses AI to interpret your query and suggest more relevant
     results. Turn off to see results matched only to your exact keywords. This
     tool does not act as a chatbot.{' '}
@@ -42,173 +28,22 @@ const DEFAULT_AI_TOOLTIP_CONTENT = (
       Read more here
     </Link>
     .
-  </Text>
+  </>
 );
 
-interface AIToggleTooltipProps
-  extends Omit<PopoverProps, 'children' | 'content'> {
-  children: React.ReactNode;
-  content?: React.ReactNode | null;
-}
-
-// [NOTE]: This can be replaced with Chakra's v3 Tooltip which has the interactive prop to handle clickable content within the tooltip.
-const AIToggleTooltip: React.FC<AIToggleTooltipProps> = ({
-  children,
-  content,
-  ...tooltipProps
-}) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const openTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  const clearTimers = () => {
-    if (openTimeoutRef.current) {
-      clearTimeout(openTimeoutRef.current);
-      openTimeoutRef.current = null;
-    }
-    if (closeTimeoutRef.current) {
-      clearTimeout(closeTimeoutRef.current);
-      closeTimeoutRef.current = null;
-    }
-  };
-
-  const handleOpen = () => {
-    clearTimers();
-    openTimeoutRef.current = setTimeout(() => {
-      onOpen();
-    }, HOVER_OPEN_DELAY);
-  };
-
-  const handleClose = () => {
-    clearTimers();
-    closeTimeoutRef.current = setTimeout(() => {
-      onClose();
-    }, HOVER_CLOSE_DELAY);
-  };
-
-  // Keyboard: keep the popover open while focus moves between the trigger and
-  // the popover content (e.g. tabbing to the "Read more" link). Only schedule a
-  // close once focus lands outside the content. When focus moves back to the
-  // trigger, the trigger's onFocus re-opens (its clearTimers cancels this close).
-  const handleBlur = (e: React.FocusEvent) => {
-    const next = e.relatedTarget as Node | null;
-    if (next && contentRef.current?.contains(next)) return;
-    handleClose();
-  };
-
-  return (
-    <Popover
-      isOpen={isOpen}
-      onOpen={onOpen}
-      onClose={onClose}
-      closeOnBlur
-      // This is a hover/focus tooltip, not a dialog: don't let Chakra move focus
-      // into the popover on open or yank it back to the trigger on close. Those
-      // focus moves fight the onFocus/onBlur handlers below and create an
-      // open → blur → close → focus → open loop.
-      autoFocus={false}
-      returnFocusOnClose={false}
-      {...tooltipProps}
-    >
-      <PopoverTrigger>
-        {/*
-          PopoverTrigger injects aria-expanded / aria-haspopup="dialog" onto its
-          child, so the child needs a role that supports those states. role=
-          "button" + tabIndex makes the ARIA valid and the help tooltip keyboard-
-          focusable; focus/blur mirror the hover handlers so keyboard users can
-          open it too. (A native <button> can't be used here — the child renders
-          a <label>, which is invalid inside a button.)
-        */}
-        <Flex
-          alignItems='center'
-          cursor='help'
-          role='button'
-          tabIndex={0}
-          aria-label='More information about AI-assisted search'
-          onMouseEnter={handleOpen}
-          onMouseLeave={handleClose}
-          onFocus={handleOpen}
-          onBlur={handleBlur}
-        >
-          {children}
-        </Flex>
-      </PopoverTrigger>
-
-      <PopoverContent
-        ref={contentRef}
-        maxW='sm'
-        _focus={{ boxShadow: 'md' }}
-        onMouseEnter={handleOpen}
-        onMouseLeave={handleClose}
-        onBlur={handleBlur}
-      >
-        <PopoverArrow />
-        <PopoverBody>{content}</PopoverBody>
-      </PopoverContent>
-    </Popover>
-  );
-};
-
-interface AIToggleLabelProps {
-  id: string;
-  label: string;
-  colorScheme?: string;
-  enableAiSearch: boolean;
-  tagProps?: TagProps;
-}
-
-export const AIToggleLabel = ({
-  id,
-  label,
-  colorScheme,
-  enableAiSearch,
-  tagProps,
-}: AIToggleLabelProps) => {
-  return (
-    <Flex alignItems='center' gap={2}>
-      <FormLabel
-        htmlFor={id}
-        mb='0'
-        me='0'
-        display='flex'
-        fontSize='inherit'
-        fontWeight='inherit'
-        gap={1}
-      >
-        {label}
-        <Icon as={FaRegCircleQuestion} boxSize={4} color='page.placeholder' />
-      </FormLabel>
-      {enableAiSearch && (
-        <Tag
-          variant='subtle'
-          borderRadius='full'
-          color={`${colorScheme}.500`}
-          colorScheme={colorScheme}
-          fontWeight='inherit'
-          {...tagProps}
-        >
-          <TagLabel>Active</TagLabel>
-        </Tag>
-      )}
-    </Flex>
-  );
-};
-
-interface AIToggleProps extends SwitchProps {
+interface AIToggleProps extends Switch.RootProps {
   label?: string;
-  tagProps?: TagProps;
-  tooltipProps?: TooltipProps;
+  tagProps?: Tag.RootProps;
+  popoverProps?: TooltipRootProps;
   tooltipContent?: React.ReactNode;
 }
 
 export const AIToggle: React.FC<AIToggleProps> = ({
   id = 'ai-search',
   label = 'AI-assisted search',
-  colorScheme = 'primary',
+  colorPalette = 'primary',
   tagProps,
-  tooltipProps,
+  popoverProps,
   tooltipContent = DEFAULT_AI_TOOLTIP_CONTENT,
   ...rest
 }) => {
@@ -284,38 +119,44 @@ export const AIToggle: React.FC<AIToggleProps> = ({
   };
 
   return (
-    <FormControl
-      as={HStack}
-      fontSize='sm'
-      fontWeight='semibold'
-      width='unset'
-      flex={1}
-      minWidth='300px'
-    >
-      <Switch
+    <HStack gap={1} alignItems='center'>
+      <Switch.Root
         id={id}
-        colorScheme={colorScheme}
-        isChecked={enableAiSearch}
-        onChange={e => handleToggle(e.target.checked)}
+        checked={enableAiSearch}
+        onCheckedChange={e => handleToggle(e.checked)}
+        colorPalette={colorPalette}
         {...rest}
-      />
-      <AIToggleTooltip
-        content={tooltipContent}
-        hasArrow
-        gutter={4}
-        pointerEvents='all'
-        closeDelay={600}
-        closeOnClick={false}
-        {...tooltipProps}
       >
-        <AIToggleLabel
-          id={id}
-          label={label}
-          colorScheme={colorScheme}
-          enableAiSearch={enableAiSearch}
-          tagProps={tagProps}
-        />
-      </AIToggleTooltip>
-    </FormControl>
+        <Switch.HiddenInput />
+        <Switch.Control>
+          <Switch.Thumb />
+        </Switch.Control>
+        <Tooltip content={tooltipContent} interactive>
+          <Switch.Label>
+            <HStack gap={1} cursor='help' alignItems='flex-start' my={1}>
+              <Text>AI-assisted search</Text>
+              <Icon
+                as={FaRegCircleQuestion}
+                color='text.placeholder'
+                lineHeight='1em'
+                display='inline-block'
+              />
+            </HStack>
+          </Switch.Label>
+        </Tooltip>
+      </Switch.Root>
+      {enableAiSearch && (
+        <Tag.Root
+          variant='subtle'
+          borderRadius='full'
+          color={`${colorPalette}.500`}
+          colorPalette={colorPalette}
+          fontWeight='inherit'
+          {...tagProps}
+        >
+          <Tag.Label>Active</Tag.Label>
+        </Tag.Root>
+      )}
+    </HStack>
   );
 };

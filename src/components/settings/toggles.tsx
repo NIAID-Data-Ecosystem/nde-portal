@@ -3,8 +3,16 @@
  * to API preference fields.
  */
 
+import {
+  Box,
+  Heading,
+  HStack,
+  Link,
+  Switch,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import { ReactNode } from 'react';
-import { Box, HStack, Link, Switch, Text, VStack } from '@chakra-ui/react';
 import { UserAccount, UserPreferencesKeys } from 'src/hooks/useUserData/types';
 
 export const TOGGLES_COPY = {
@@ -165,20 +173,25 @@ export function SettingToggle({
       {...(showBorder && { borderBottom: '1px', borderColor: 'gray.200' })}
     >
       <VStack alignItems='start' gap={1} flex={1}>
-        <Text fontWeight='medium'>{label}</Text>
+        <Heading as='h3' fontSize='md' fontWeight='medium'>
+          {label}
+        </Heading>
 
-        <Text fontSize='sm' color='gray.800'>
-          {description}
-        </Text>
+        <Text fontSize='sm'>{description}</Text>
       </VStack>
-      <Switch
-        colorScheme='primary'
-        aria-label={label}
-        aria-describedby={describedBy}
-        isChecked={isChecked}
-        isDisabled={isDisabled}
-        onChange={e => onChange(e.target.checked)}
-      />
+      <Switch.Root
+        colorPalette='primary'
+        checked={isChecked}
+        onCheckedChange={e => onChange(e.checked)}
+        disabled={isDisabled}
+      >
+        {/* On the input, not Switch.Root: the root renders the wrapping
+            <label>, so ARIA there doesn't reach the control. */}
+        <Switch.HiddenInput aria-label={label} aria-describedby={describedBy} />
+        <Switch.Control>
+          <Switch.Thumb />
+        </Switch.Control>
+      </Switch.Root>
     </HStack>
   );
 }

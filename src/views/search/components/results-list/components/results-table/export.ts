@@ -1,6 +1,7 @@
 import { XlsxCellEntry } from 'src/components/download-metadata/xlsx';
 import { FormattedResource } from 'src/utils/api/types';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
+
 import { BaseColumn } from './types';
 import { resolveVisibleColumns } from './utils';
 

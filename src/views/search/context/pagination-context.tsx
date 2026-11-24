@@ -1,12 +1,13 @@
+import { useRouter } from 'next/router';
 import {
   createContext,
+  ReactNode,
   useCallback,
   useContext,
-  useState,
   useEffect,
-  ReactNode,
+  useState,
 } from 'react';
-import { useRouter } from 'next/router';
+
 import { defaultQuery, getDefaultSizeForTab } from '../config/defaultQuery';
 import { DEFAULT_TAB_ID, useSearchTabsContext } from './search-tabs-context';
 

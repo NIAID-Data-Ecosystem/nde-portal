@@ -1,26 +1,24 @@
-import React, { useEffect, useMemo } from 'react';
 import {
   Button,
   ButtonProps,
+  CloseButton,
+  Flex,
   Icon,
   Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
   PopoverContentProps,
-  PopoverHeader,
-  PopoverProps,
-  PopoverTrigger,
+  Portal,
+  Separator,
   Text,
 } from '@chakra-ui/react';
+import React, { useEffect, useMemo } from 'react';
 import { FaSliders } from 'react-icons/fa6';
-import { useSelectableList } from '../hooks/useSelectableList';
+
 import { usePopoverSearch } from '../hooks/usePopoverSearch';
-import { PopoverSearchInput } from './PopoverSearchInput';
-import { PopoverSelectAll } from './PopoverSelectAll';
-import { PopoverSelectableList } from './PopoverSelectableList';
+import { useSelectableList } from '../hooks/useSelectableList';
 import type { PopoverItem } from '../types';
+import { PopoverSearchInput } from './PopoverSearchInput';
+import { PopoverSelectableList } from './PopoverSelectableList';
+import { PopoverSelectAll } from './PopoverSelectAll';
 
 export interface SelectAndSortPopoverCopy {
   /** Trigger button label. Default: 'Customize'. */
@@ -92,7 +90,7 @@ export interface SelectAndSortPopoverProps {
   triggerProps?: Omit<ButtonProps, 'children'>;
 
   /** Forwarded to Chakra's `Popover`. */
-  popoverProps?: Omit<PopoverProps, 'children'>;
+  popoverProps?: Omit<Popover.RootProps, 'children'>;
 
   /** Forwarded to Chakra's `PopoverContent` (sizing, etc.). */
   popoverContentProps?: PopoverContentProps;
@@ -195,15 +193,32 @@ export const SelectAndSortPopover = ({
   const allSelected = selectedCount === totalCount;
 
   return (
-    <Popover placement='bottom-end' isLazy {...popoverProps}>
-      <PopoverTrigger>
+    <Popover.Root
+      lazyMount
+      {...popoverProps}
+      positioning={{
+        placement: 'bottom-end',
+      }}
+    >
+      <Popover.Trigger asChild>
+        {/*
+          The visible label is hidden below `sm`, which would otherwise leave an
+          icon-only button with no accessible name on mobile. The count is
+          folded in so the label still conveys everything the visible content
+          does. Declared before triggerProps so a caller can override it.
+        */}
         <Button
-          colorScheme='primary'
+          colorPalette='primary'
           variant='outline'
           size='sm'
-          leftIcon={<Icon as={FaSliders} boxSize={3.5} />}
+          aria-label={
+            showCount
+              ? `${copy.button} (${selectedCount}/${totalCount})`
+              : copy.button
+          }
           {...triggerProps}
         >
+          <Icon as={FaSliders} boxSize={3.5} />
           <Text
             as='span'
             color='inherit'
@@ -213,54 +228,84 @@ export const SelectAndSortPopover = ({
           </Text>
           {showCount ? ` (${selectedCount}/${totalCount})` : ''}
         </Button>
-      </PopoverTrigger>
+      </Popover.Trigger>
+      {/*
+        Portalled so the panel escapes any `overflow: hidden` ancestor (e.g. the
+        search filters accordion), which otherwise clips and offsets it.
+      */}
+      <Portal>
+        <Popover.Positioner>
+          {/*
+            Named explicitly: zag only looks for Popover.Title when the machine
+            starts, and under `lazyMount` the title isn't mounted yet, so it
+            never sets `aria-labelledby`.
+          */}
+          <Popover.Content
+            minW='280px'
+            maxW='320px'
+            aria-label={copy.header}
+            {...popoverContentProps}
+          >
+            <Popover.Arrow />
 
-      <PopoverContent minW='280px' maxW='320px' {...popoverContentProps}>
-        <PopoverArrow />
-        <PopoverCloseButton />
+            {/*
+              v3's popover recipe caps Content at `--available-height` but
+              leaves it `overflow: visible`, so an unconstrained Body spills
+              its last rows outside the panel. Make the Body the scroll box.
+            */}
+            <Popover.Header>
+              <Flex>
+                <Flex flexDirection='column' flex={1}>
+                  <Popover.Title fontWeight='semibold'>
+                    {copy.header}
+                  </Popover.Title>
+                  <Text fontSize='sm' fontWeight='normal'>
+                    {copy.description}
+                  </Text>
+                </Flex>
+                <Popover.CloseTrigger asChild>
+                  <CloseButton size='xs' />
+                </Popover.CloseTrigger>
+              </Flex>
+              {showSelectAll && (
+                <PopoverSelectAll
+                  allSelected={allSelected}
+                  totalCount={totalCount}
+                  onToggle={toggleAll}
+                  selectAllLabel={copy.selectAll}
+                  clearAllLabel={copy.clearAll}
+                />
+              )}
+            </Popover.Header>
+            <Separator />
+            <Popover.Body overflowY='auto'>
+              {showSearch && (
+                <PopoverSearchInput
+                  value={searchTerm}
+                  onChange={setSearchTerm}
+                  placeholder={copy.searchPlaceholder}
+                />
+              )}
 
-        <PopoverHeader fontWeight='semibold'>
-          <Text>{copy.header}</Text>
-          <Text fontSize='sm' fontWeight='normal'>
-            {copy.description}
-          </Text>
-          {showSelectAll && (
-            <PopoverSelectAll
-              allSelected={allSelected}
-              totalCount={totalCount}
-              onToggle={toggleAll}
-              selectAllLabel={copy.selectAll}
-              clearAllLabel={copy.clearAll}
-            />
-          )}
-        </PopoverHeader>
-
-        <PopoverBody p={0} py={1}>
-          {showSearch && (
-            <PopoverSearchInput
-              value={searchTerm}
-              onChange={setSearchTerm}
-              placeholder={copy.searchPlaceholder}
-            />
-          )}
-
-          <PopoverSelectableList
-            items={filteredItems}
-            groups={useGrouping ? filteredGroups : undefined}
-            selectedIds={selectedIds}
-            requiredIds={requiredIds as string[]}
-            enableOrdering={enableOrdering}
-            isSearching={isSearching}
-            orderedIds={order}
-            onCheck={toggle}
-            onMoveUp={moveUp}
-            onMoveDown={moveDown}
-            onDragEnd={handleDragEnd}
-            emptyMessage={copy.noItemsFound}
-            maxHeight={maxListHeight}
-          />
-        </PopoverBody>
-      </PopoverContent>
-    </Popover>
+              <PopoverSelectableList
+                items={filteredItems}
+                groups={useGrouping ? filteredGroups : undefined}
+                selectedIds={selectedIds}
+                requiredIds={requiredIds as string[]}
+                enableOrdering={enableOrdering}
+                isSearching={isSearching}
+                orderedIds={order}
+                onCheck={toggle}
+                onMoveUp={moveUp}
+                onMoveDown={moveDown}
+                onDragEnd={handleDragEnd}
+                emptyMessage={copy.noItemsFound}
+                maxHeight={maxListHeight}
+              />
+            </Popover.Body>
+          </Popover.Content>
+        </Popover.Positioner>
+      </Portal>
+    </Popover.Root>
   );
 };

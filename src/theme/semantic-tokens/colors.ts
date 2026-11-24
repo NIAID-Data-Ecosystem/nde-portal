@@ -1,0 +1,153 @@
+import { defineSemanticTokens } from '@chakra-ui/react';
+
+/*
+Chakra v3 drives every palette-aware component through the `colorPalette` prop,
+which resolves the semantic roles below into `--chakra-colors-color-palette-*`
+custom properties. Two jobs here:
+
+  1. The eight standard roles (contrast/fg/subtle/muted/emphasized/solid/
+     focusRing/border). Chakra ships these for its own palettes but not for
+     ours, so `colorPalette='primary'` would otherwise render colourless in any
+     untouched built-in (Select, Menu, Alert, Checkbox...).
+
+  2. Custom roles (`outline*`, `ghost*`, `badgeSolidBg`) that let a *static*
+     recipe reproduce the v2 theme's per-`colorPalette` branching. v2 styled
+     these with functions of the props bag, which v3 recipes do not receive; by
+     moving the per-palette differences into tokens, one static recipe covers
+     every palette. See ../recipes/button.recipe.ts and badge.recipe.ts.
+*/
+
+/** The eight roles Chakra expects, derived from a 50-900 scale. */
+const standard = (name: string) => ({
+  contrast: { value: '{colors.white}' },
+  fg: { value: `{colors.${name}.700}` },
+  subtle: { value: `{colors.${name}.100}` },
+  muted: { value: `{colors.${name}.200}` },
+  emphasized: { value: `{colors.${name}.300}` },
+  solid: { value: `{colors.${name}.500}` },
+  focusRing: { value: `{colors.${name}.500/50}` },
+  border: { value: `{colors.${name}.200}` },
+});
+
+/*
+The v2 Button `colorMap` shape shared by primary and secondary:
+  outline -> text/border .500, hover background .600
+  ghost   -> text .700, hover background .50
+*/
+const buttonRoles = (name: string) => ({
+  /* v3's `outline` variant takes its text colour from `fg`, which is `.700` for
+     every palette here and in Chakra's own light-mode defaults. Held as its own
+     role because gray needs a darker value (below) and a static recipe cannot
+     branch on `colorPalette`. */
+  outlineFg: { value: `{colors.${name}.600}` },
+  outlineBorder: { value: `{colors.${name}.400}` },
+  outlineHoverBg: { value: `{colors.${name}.600}` },
+  ghostFg: { value: `{colors.${name}.700}` },
+  ghostHoverBg: { value: `{colors.${name}.50}` },
+  /* v2 Badge `solid` fell through to Chakra's default of `.500` for every
+     palette except niaid and gray, both overridden below. */
+  badgeSolidBg: { value: `{colors.${name}.500}` },
+  /* v2's `styleInputBorder()` focus colour — `.200` for every palette it
+     handled except niaid, overridden below. */
+  inputFocusBorder: { value: `{colors.${name}.200}` },
+});
+
+const palette = (name: string) => ({
+  ...standard(name),
+  ...buttonRoles(name),
+});
+
+export const semanticColors = defineSemanticTokens.colors({
+  primary: palette('primary'),
+  secondary: palette('secondary'),
+  niaid: {
+    ...palette('niaid'),
+    // v2 Badge `solid` + colorPalette='niaid' was a literal black.
+    badgeSolidBg: { value: '{colors.black}' },
+    // v2 `styleInputBorder()` singled niaid out for the link colour.
+    inputFocusBorder: { value: '{colors.link}' },
+  },
+  accent: palette('accent'),
+
+  /*
+  gray is the one palette whose v2 Button `outline` entry broke the shared
+  pattern: text .900 (not .700), border .200 (not .500), hover .800 (not .600).
+  v2's .700 (#6D6D6D) was too light to read as a button label.
+  It also needs re-declaring so `colorPalette='gray'` lands on the NIAID greys
+  rather than Chakra's, since every default semantic token (bg.subtle,
+  fg.muted, border) references {colors.gray.*}.
+  The v2 steps are shifted onto their closest v3 stock grey (.900 -> .700,
+  .800 -> .600, .700 -> .500); v3's same-numbered greys are much darker (see
+  ../tokens/colors.ts).
+  */
+  gray: {
+    ...palette('gray'),
+    outlineFg: { value: '{colors.gray.700}' },
+    outlineBorder: { value: '{colors.gray.200}' },
+    outlineHoverBg: { value: '{colors.gray.600}' },
+    badgeSolidBg: { value: '{colors.gray.500}' },
+  },
+
+  /*
+  Chakra already defines the eight standard roles for its own palettes, so
+  these only add the custom roles — needed because `getMetadataColorPalette()`
+  and `getColorPalette()` hand these names straight to `colorPalette`.
+  */
+  red: buttonRoles('red'),
+  orange: buttonRoles('orange'),
+  yellow: {
+    ...buttonRoles('yellow'),
+    // Chakra's own light-mode `yellow.fg` is `.800`, not `.700`.
+    outlineFg: { value: '{colors.yellow.800}' },
+  },
+  green: buttonRoles('green'),
+  teal: buttonRoles('teal'),
+  blue: buttonRoles('blue'),
+  cyan: buttonRoles('cyan'),
+  purple: buttonRoles('purple'),
+  pink: buttonRoles('pink'),
+
+  /*
+  NIAID Digital Policies page background colors.
+  */
+  bg: {
+    DEFAULT: { value: '#FDFDFD' },
+    alt: { value: '#F5F6FA' },
+  },
+  /*
+  NIAID Digital Policies link colours.
+  */
+  link: {
+    DEFAULT: { value: '#246CD3' },
+    visited: { value: '#6F57B5' },
+  },
+
+  /*
+  NIAID Digital Policies text and heading colors. 
+  */
+  text: {
+    body: { value: '#404B56' },
+    heading: { value: '#2F2F2F' },
+    placeholder: { value: '#9AA6B5' },
+  },
+
+  /*
+  NIAID Digital Policies status colours.
+  */
+  error: {
+    DEFAULT: { value: '#D23342' },
+    subtle: { value: '#FBF2F3' },
+  },
+  success: {
+    DEFAULT: { value: '#17805F' },
+    subtle: { value: '#F2F5F4' },
+  },
+  warning: {
+    DEFAULT: { value: '#FFC10A' },
+    subtle: { value: '#FFF9F2' },
+  },
+  info: {
+    DEFAULT: { value: '#4865E3' },
+    subtle: { value: '#F3F4FC' },
+  },
+});

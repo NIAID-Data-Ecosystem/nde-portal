@@ -2,7 +2,8 @@
 
 This directory contains Playwright tests. The current suite focuses on
 accessibility checks powered by `@axe-core/playwright`, plus a regression check
-for our Content Security Policy (see [CSP check](#csp-check)).
+for our Content Security Policy (see [CSP check](#csp-check)) and a broken-link
+check (see [Link check](#link-check)).
 
 ## Running tests
 
@@ -62,7 +63,8 @@ deterministic:
 Each state should wait for visible UI that proves the page is in the intended
 state before running axe. Prefer user-facing locators such as roles, labels, and
 text. Use implementation selectors only for state markers that have no
-accessible surface, such as skeleton loading elements.
+accessible surface, such as skeleton loading elements (use the helpers in
+`e2e/utils/skeleton.ts`; Chakra v3 skeletons carry no loading class).
 
 For shared checks, put common axe and structural assertions in a helper function
 inside the spec. Keep state setup in separate `test.describe` blocks so the HTML
@@ -219,6 +221,38 @@ yarn test:a11y:nobuild e2e/csp/csp.spec.ts
 - Deployed site (uses its real header, including report-only):
   `PLAYWRIGHT_BASE_URL=https://data-staging.niaid.nih.gov npx playwright test e2e/csp/csp.spec.ts --workers=1`.
   Add `--grep-invert GTM` where no GTM container is configured (dev).
+
+## Link check
+
+`e2e/links/broken-links.spec.ts` loads the main routes and every knowledge
+center, features and diseases page they link to, then requests each unique link
+once. It has its own config (`playwright.links.config.ts`) and isn't part of
+`yarn test:a11y`, because it needs real CMS content and live third-party sites.
+
+```sh
+# Deployed site (most realistic; about 6 minutes):
+PLAYWRIGHT_BASE_URL=https://data-staging.niaid.nih.gov yarn test:links
+
+# A server already on :3000 (e.g. `yarn dev`), or else `out/` is served:
+yarn test:links
+yarn test:links:report
+```
+
+- Don't serve an `out/` built by `yarn build:a11y`: its pages hold mock Strapi
+  content, so real CMS pages 404. Use `yarn build` or `yarn build:staging`.
+- **Broken** links fail the test: internal links that return 400 or above, and
+  external links that return 404/410 or whose host doesn't resolve.
+- **Unverified** links are listed but don't fail: other 4xx/5xx, timeouts and
+  TLS errors. These are usually bot protection, not dead links. For example,
+  `www.niaid.nih.gov` answers 405 even to a real browser. Check them by hand.
+- Every result is in `test-results/broken-links-no-broken-links/links.json`.
+- Set `SLACK_WEBHOOK_URL` to post broken links to Slack.
+- GitHub commit links (the changelog has hundreds) aren't checked.
+- In CI, `.github/workflows/link_check.yml` checks production every Monday and
+  posts broken links to Slack. It doesn't run on deploys, so it never blocks
+  one. To run it by hand, open the Actions tab and choose **Run workflow**
+  (`base_url` picks another site, such as staging). The report is saved as the
+  run's `link-check-report` artifact.
 
 ## Troubleshooting
 

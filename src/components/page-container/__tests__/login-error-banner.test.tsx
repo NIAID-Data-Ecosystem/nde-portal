@@ -1,8 +1,9 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useRouter } from 'next/router';
+import React from 'react';
+import { render, screen } from 'src/__tests__/utils/render';
 import { LOGIN_ERROR_MESSAGES } from 'src/utils/auth/helpers';
+
 import { LoginErrorBanner } from '../components/login-error-banner';
 
 jest.mock('next/router', () => ({

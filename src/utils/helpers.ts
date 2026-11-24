@@ -5,16 +5,16 @@ export const getFundedByNIAID = (name: string) => {
     return false;
   }
   const FUNDED_REPOS = [
-    'accessclinicaldata@NIAID',
-    'BEI Resources',
-    'ClinEpiDB',
-    'ImmPort',
+    'accessclinicaldata@NIAID (ACD@NIAID)',
+    'Biological and Emerging Infections Research Resources (BEIResources)',
+    'Clinical Epidemiology Database (ClinEpiDB)',
+    'Immunology Database and Analysis Portal (ImmPort)',
     'ImmuneSpace',
     'MicrobiomeDB',
-    'Protein Data Bank',
-    'SAGE ARK Portal',
+    'Protein Data Bank (PDB)',
+    'SAGE Arthritis and Autoimmune and Related Diseases Knowledge Portal (SAGE ARK Portal)',
     'VDJServer',
-    'VEuPathDB',
+    'Eukaryotic Pathogen, Vector and Host Informatics Resource (VEuPathDB)',
   ];
   return FUNDED_REPOS.includes(name);
 };
@@ -37,13 +37,25 @@ export const formatNumber = (number: number, separator: string = ',') => {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, separator);
 };
 
+// Check if a string is an absolute http(s) url.
+const isUrl = (value: string) => {
+  try {
+    const { protocol } = new URL(value.trim());
+    return protocol === 'http:' || protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
+
 // Retrieve img and name for license url.
 export const formatLicense = (license: string) => {
+  const licenseIsUrl = isUrl(license);
   const formattedLicense = {
-    title: 'View license information',
+    // Non-url licenses (e.g. "MIT") have no link to view, so show the license itself.
+    title: licenseIsUrl ? 'View license information' : license,
     img: '',
     type: license,
-    url: license,
+    url: licenseIsUrl ? license.trim() : '',
   };
 
   // Get image for license

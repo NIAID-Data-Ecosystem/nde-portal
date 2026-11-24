@@ -1,6 +1,7 @@
+import { Heading, Highlight, List, Text } from '@chakra-ui/react';
 import React, { useMemo } from 'react';
-import { Heading, Highlight, ListItem, Text } from '@chakra-ui/react';
 import { useDropdownContext } from 'src/components/input-with-dropdown';
+
 import type { SearchResultItemProps } from '../../types';
 
 export const SearchResultItem = React.memo(
@@ -8,18 +9,17 @@ export const SearchResultItem = React.memo(
     index,
     result,
     searchTerm,
-    colorScheme,
+    colorPalette,
     onClick,
   }: SearchResultItemProps) => {
     const { cursor, getListItemProps } = useDropdownContext();
     const isSelected = useMemo(() => cursor === index, [index, cursor]);
 
     return (
-      <ListItem
+      <List.Item
         px={2}
         mx={2}
-        my={1}
-        borderRadius='base'
+        borderRadius='sm'
         cursor='pointer'
         {...getListItemProps({
           index,
@@ -31,7 +31,7 @@ export const SearchResultItem = React.memo(
         <Heading
           as='h4'
           size='sm'
-          lineHeight='short'
+          lineHeight='moderate'
           color='text.body'
           wordBreak='break-word'
           textAlign='left'
@@ -39,10 +39,12 @@ export const SearchResultItem = React.memo(
           {result.name && (
             <Highlight
               query={searchTerm.split(' ')}
+              // v2's Highlight matched case-insensitively; v3's opts in.
+              ignoreCase
               styles={{
                 fontWeight: 'bold',
                 textDecoration: 'underline',
-                color: `${colorScheme}.400`,
+                color: `${colorPalette}.400`,
                 bg: 'transparent',
               }}
             >
@@ -54,10 +56,11 @@ export const SearchResultItem = React.memo(
           <Text color='gray.600' fontSize='sm'>
             <Highlight
               query={searchTerm.split(' ')}
+              ignoreCase
               styles={{
                 fontWeight: 'bold',
                 textDecoration: 'underline',
-                color: `${colorScheme}.400`,
+                color: `${colorPalette}.400`,
                 bg: 'transparent',
               }}
             >
@@ -65,7 +68,7 @@ export const SearchResultItem = React.memo(
             </Highlight>
           </Text>
         )}
-      </ListItem>
+      </List.Item>
     );
   },
 );

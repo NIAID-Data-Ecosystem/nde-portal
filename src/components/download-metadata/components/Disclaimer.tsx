@@ -1,4 +1,4 @@
-import { Collapse, FlexProps, Text } from '@chakra-ui/react';
+import { Collapsible, FlexProps, Text } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 
 /*
@@ -35,10 +35,12 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({
   }, [isFetching, timeDelay]);
 
   return (
-    <Collapse in={isFetching && showDisclaimer}>
-      <Text fontSize='xs' fontStyle='italic'>
-        {message}
-      </Text>
-    </Collapse>
+    <Collapsible.Root open={isFetching && showDisclaimer}>
+      <Collapsible.Content>
+        <Text fontSize='xs' fontStyle='italic'>
+          {message}
+        </Text>
+      </Collapsible.Content>
+    </Collapsible.Root>
   );
 };

@@ -2,13 +2,14 @@ import {
   getValueByPath,
   hasNonEmptyValue,
 } from 'src/components/resource-sections/helpers';
+import { Column } from 'src/components/table';
 import {
   AdditionalProperty,
   SampleAggregate,
   SampleCollection,
 } from 'src/utils/api/types';
 import { formatSampleLabelFromProperty } from 'src/utils/formatting/formatSample';
-import { Column } from 'src/components/table';
+
 import { SAMPLE_AGGREGATE_COLUMNS } from './config';
 /**
  * Format unit text:

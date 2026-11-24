@@ -1,8 +1,9 @@
-import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
+import React from 'react';
 import { renderWithClient } from 'src/__tests__/mocks/utils';
-import { CustomizeColumnsPopover } from '../CustomizeColumnsPopover';
 import { REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
+
+import { CustomizeColumnsPopover } from '../CustomizeColumnsPopover';
 
 describe('CustomizeColumnsPopover', () => {
   afterEach(() => {

@@ -2,34 +2,43 @@ import {
   Box,
   Button,
   ButtonProps,
-  Collapse,
+  Collapsible,
   Flex,
   FlexProps,
   Icon,
-  ListItem,
+  Menu,
   Progress,
   Text,
-  UnorderedList,
-  useDisclosure,
 } from '@chakra-ui/react';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { FaDownload, FaCircleExclamation } from 'react-icons/fa6';
+import { sendGTMEvent } from '@next/third-parties/google';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Params, fetchAllSearchResults } from 'src/utils/api';
-import { DownloadArgs, downloadAsCsv, downloadAsJson } from './helpers';
-import { XlsxColumnSpec, downloadXlsxExport, prepareXlsxExport } from './xlsx';
+import { useRouter } from 'next/router';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { FaCircleExclamation, FaDownload } from 'react-icons/fa6';
+import { FaXmark } from 'react-icons/fa6';
+import { fetchAllSearchResults, Params } from 'src/utils/api';
 import { formatAPIResource } from 'src/utils/api/helpers';
 import { FormattedResource } from 'src/utils/api/types';
 import { SHOW_XLSX_CUSTOM_VIEW_DOWNLOAD } from 'src/utils/feature-flags';
+
 import { Disclaimer } from './components/Disclaimer';
-import { FaXmark } from 'react-icons/fa6';
-import { sendGTMEvent } from '@next/third-parties/google';
-import { useRouter } from 'next/router';
+import { DownloadArgs, downloadAsCsv, downloadAsJson } from './helpers';
+import { downloadXlsxExport, prepareXlsxExport, XlsxColumnSpec } from './xlsx';
 
 /*
  [COMPONENT INFO]: Download data button that gives JSON or CSV download options,
  plus an XLSX option mirroring a customized table view when `customViewExport`
  is provided.
+
+ The format list is a `Menu`: it owns its own open state, so the button gets
+ `aria-haspopup`/`aria-expanded`, the items are real `menuitem`s reachable by
+ keyboard, and Escape / outside-click / focus-return are handled for us.
 */
 
 /**
@@ -42,20 +51,43 @@ export interface CustomViewExport {
   toRow: (resource: FormattedResource) => Record<string, unknown>;
 }
 
+type DownloadDetails = { href?: string; download?: string } | null;
+
+export interface DownloadOption {
+  name: string;
+  format: string;
+  /** Builds the object URL + filename. Empty/null when there is no data. */
+  fn: (
+    data: DownloadArgs['dataObject'],
+    exportFileName: DownloadArgs['downloadName'],
+  ) => DownloadDetails | Promise<DownloadDetails>;
+}
+
+/*
+ Hoisted out of the render body: the array is referenced (via `downloadFormat`)
+ from the download effect, so a fresh identity every render meant a fresh
+ `downloadFormat` object too.
+*/
+export const DOWNLOAD_OPTIONS: DownloadOption[] = [
+  { name: 'JSON Format', format: 'json', fn: downloadAsJson },
+  { name: 'CSV Format', format: 'csv', fn: downloadAsCsv },
+];
+
+/** How long the completed progress bar stays up before the UI resets. */
+const DOWNLOAD_RESET_DELAY_MS = 2000;
+
+const DEFAULT_COLOR_PALETTE = 'primary';
+
 interface DownloadMetadataProps extends FlexProps {
   exportFileName: string;
   params: Params;
   buttonProps?: ButtonProps;
+  /** Download formats offered in the menu. */
+  options?: DownloadOption[];
+  /** Width of the download progress bar row. */
+  progressWidth?: FlexProps['w'];
+  /** Table view to export; adds the XLSX option to the menu when set. */
   customViewExport?: CustomViewExport;
-}
-
-interface DownloadOption {
-  name: string;
-  format: 'json' | 'csv' | 'xlsx';
-  fn: (
-    data: DownloadArgs['dataObject'],
-    exportFileName: DownloadArgs['downloadName'],
-  ) => any;
 }
 
 const trackDownloadEvent = (params: {
@@ -69,11 +101,12 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
   exportFileName,
   children,
   buttonProps,
+  options = DOWNLOAD_OPTIONS,
+  maxW = '300px',
+  progressWidth = '200px',
   customViewExport,
   ...props
 }) => {
-  // Toggle open/close a download format list.
-  const { isOpen, onToggle, onClose } = useDisclosure();
   const router = useRouter();
 
   // Options for download format and corresponding formatting functions.
@@ -89,47 +122,48 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
   const customViewExportRef = useRef(customViewExport);
   customViewExportRef.current = customViewExport;
 
-  const xlsxOption: DownloadOption = {
-    name: 'XLSX Format (Custom Result View)',
-    format: 'xlsx',
-    fn: async (data, exportFileName) => {
-      const view = customViewExportRef.current;
-      if (!view) return null;
-      const records = Array.isArray(data) ? data : [data];
-      const rows = records
-        .map(record => formatAPIResource(record))
-        .filter((resource): resource is FormattedResource => !!resource)
-        .map(view.toRow);
-      const prepared = prepareXlsxExport({
-        sheetName: view.sheetName,
-        columns: view.columns,
-        rows,
-      });
-      // Downloads a .zip of several files when the rows don't fit in one.
-      return downloadXlsxExport(prepared, exportFileName, {
-        onProgress: (fileNumber, fileCount) =>
-          setBuildStatus(
-            fileCount > 1
-              ? `Building file ${fileNumber} of ${fileCount}…`
-              : 'Building file…',
-          ),
-      });
-    },
-  };
+  // Memoized (it reads the view through the ref) so `downloadFormat` keeps a
+  // stable identity across renders, like the hoisted `DOWNLOAD_OPTIONS`.
+  const xlsxOption = useMemo<DownloadOption>(
+    () => ({
+      name: 'XLSX Format (Custom Result View)',
+      format: 'xlsx',
+      fn: async (data, exportFileName) => {
+        const view = customViewExportRef.current;
+        if (!view) return null;
+        const records = Array.isArray(data) ? data : [data];
+        const rows = records
+          .map(record => formatAPIResource(record))
+          .filter((resource): resource is FormattedResource => !!resource)
+          .map(view.toRow);
+        const prepared = prepareXlsxExport({
+          sheetName: view.sheetName,
+          columns: view.columns,
+          rows,
+        });
+        // Downloads a .zip of several files when the rows don't fit in one.
+        return downloadXlsxExport(prepared, exportFileName, {
+          onProgress: (fileNumber, fileCount) =>
+            setBuildStatus(
+              fileCount > 1
+                ? `Building file ${fileNumber} of ${fileCount}…`
+                : 'Building file…',
+            ),
+        });
+      },
+    }),
+    [],
+  );
 
-  const options: DownloadOption[] = [
-    {
-      name: 'JSON Format',
-      format: 'json',
-      fn: (data, exportFileName) => downloadAsJson(data, exportFileName),
-    },
-    {
-      name: 'CSV Format',
-      format: 'csv',
-      fn: (data, exportFileName) => downloadAsCsv(data, exportFileName),
-    },
-    ...(SHOW_XLSX_CUSTOM_VIEW_DOWNLOAD && customViewExport ? [xlsxOption] : []),
-  ];
+  const showXlsxOption = SHOW_XLSX_CUSTOM_VIEW_DOWNLOAD && !!customViewExport;
+  const menuOptions = useMemo(
+    () => (showXlsxOption ? [...options, xlsxOption] : options),
+    [options, showXlsxOption, xlsxOption],
+  );
+
+  // Drives the trigger, the cancel button, the progress bar and the menu
+  // highlight, so it is resolved once here instead of at each call site.
+  const colorPalette = buttonProps?.colorPalette ?? DEFAULT_COLOR_PALETTE;
 
   const startDownload = (option: DownloadOption) => {
     setBuildError(null);
@@ -183,6 +217,15 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
     setBuildStatus(null);
   }, []);
 
+  // `percentComplete` is a number, so this must be coerced to a boolean before
+  // it gates JSX — `0 && <x/>` renders a literal "0".
+  const showProgress = !!downloadFormat || percentComplete > 0;
+
+  const optionsByFormat = useMemo(
+    () => new Map(menuOptions.map(option => [option.format, option])),
+    [menuOptions],
+  );
+
   useEffect(() => {
     let downloadTimeoutId: NodeJS.Timeout;
 
@@ -201,7 +244,10 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
       downloadLink.click();
       document.body.removeChild(downloadLink);
 
-      downloadTimeoutId = setTimeout(clearDownloadState, 2000);
+      downloadTimeoutId = setTimeout(
+        clearDownloadState,
+        DOWNLOAD_RESET_DELAY_MS,
+      );
     };
 
     // Function to retrieve data and process it for downloading.
@@ -212,13 +258,14 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
         const response = await fetchDownloadData();
         const results = response.data?.results;
         if (results) {
-          const downloadDetails = await downloadFormat.fn(
-            results,
-            exportFileName,
-          );
-          if (downloadDetails?.href && downloadDetails?.download) {
-            initiateDownload(downloadDetails);
+          const details = await downloadFormat.fn(results, exportFileName);
+          if (details?.href && details?.download) {
+            initiateDownload({
+              href: details.href,
+              download: details.download,
+            });
           } else {
+            // Nothing to write out — reset rather than stall on the progress bar.
             clearDownloadState();
           }
         }
@@ -247,40 +294,46 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
   return (
     <Flex alignItems='flex-end' flexDirection='column' {...props}>
       {/* Error */}
-      <Collapse in={!!error}>
-        <Text fontSize='xs' fontStyle='italic' color='status.error'>
-          <Icon as={FaCircleExclamation} color='status.error' mr={1}></Icon>
-          Something went wrong with the metadata download. Please try again.
-        </Text>
-      </Collapse>
-      <Collapse in={!!buildError}>
-        <Text
-          fontSize='xs'
-          fontStyle='italic'
-          color='status.error'
-          maxW='300px'
-          role='alert'
-        >
-          <Icon as={FaCircleExclamation} color='status.error' mr={1}></Icon>
-          {buildError}
-        </Text>
-      </Collapse>
-
-      <Box maxW='300px'>
-        {downloadFormat || percentComplete ? (
+      <Collapsible.Root open={!!error}>
+        <Collapsible.Content>
+          <Text fontSize='xs' fontStyle='italic' color='error'>
+            <Icon as={FaCircleExclamation} color='error' mr={1} />
+            Something went wrong with the metadata download. Please try again.
+          </Text>
+        </Collapsible.Content>
+      </Collapsible.Root>
+      <Collapsible.Root open={!!buildError}>
+        <Collapsible.Content>
+          <Text
+            fontSize='xs'
+            fontStyle='italic'
+            color='error'
+            maxW={maxW}
+            role='alert'
+          >
+            <Icon as={FaCircleExclamation} color='error' mr={1} />
+            {buildError}
+          </Text>
+        </Collapsible.Content>
+      </Collapsible.Root>
+      <Box maxW={maxW}>
+        {showProgress && (
           <Flex flexDirection='column'>
-            <Flex w='200px' alignItems='center'>
-              <Progress
+            <Flex w={progressWidth} alignItems='center'>
+              <Progress.Root
                 w='100%'
-                hasStripe
+                striped
                 value={percentComplete}
-                colorScheme='primary'
-                isIndeterminate={percentComplete === 0}
-                isAnimated
-              />
+                colorPalette={colorPalette}
+                animated
+              >
+                <Progress.Track>
+                  <Progress.Range />
+                </Progress.Track>
+              </Progress.Root>
               <Text
                 fontSize='xs'
-                color='page.placeholder'
+                color='text.placeholder'
                 textAlign='end'
                 fontWeight='medium'
                 ml={1}
@@ -291,7 +344,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
             {buildStatus && (
               <Text
                 fontSize='xs'
-                color='page.placeholder'
+                color='text.placeholder'
                 fontWeight='medium'
                 role='status'
               >
@@ -299,89 +352,67 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
               </Text>
             )}
           </Flex>
-        ) : (
-          <></>
         )}
 
         {isFetching ? (
           // cancel query
           <Button
-            leftIcon={<FaXmark />}
-            colorScheme='primary'
+            colorPalette={colorPalette}
             onClick={() => {
               queryClient.cancelQueries({ queryKey });
               clearDownloadState();
             }}
             variant='solid'
             size='xs'
-            fontSize='12px'
             {...buttonProps}
           >
+            <FaXmark />
             cancel
           </Button>
         ) : (
-          <Box position='relative'>
-            <Button
-              leftIcon={<FaDownload />}
-              colorScheme='primary'
-              onClick={onToggle}
-              variant='solid'
-              size='sm'
-              isLoading={isFetching}
-              loadingText='Downloading'
-              w='100%'
-              {...buttonProps}
-            >
-              {children}
-            </Button>
-            <Box
-              zIndex='dropdown'
-              position='absolute'
-              w='100%'
-              boxShadow='base'
-              borderRadius='semi'
-              bg='white'
-            >
-              <Collapse in={isOpen} animateOpacity>
-                <UnorderedList ml={0}>
-                  {options.map((option, idx) => {
-                    return (
-                      <ListItem
-                        key={option.name}
-                        borderBottom={
-                          idx < options.length - 1 ? '1px solid' : 'none'
-                        }
-                        borderColor='page.alt'
-                      >
-                        <Box
-                          as='a'
-                          w='100%'
-                          display='block'
-                          px={4}
-                          py={2}
-                          cursor='pointer'
-                          _hover={{
-                            bg: `${buttonProps?.colorScheme || 'primary'}.50`,
-                          }}
-                          onClick={async () => {
-                            trackDownloadEvent({
-                              label: `Download Metadata: From ${router.pathname}`,
-                              event: 'download_metadata_click',
-                              value: `downloadFormat: ${option.format}`,
-                            });
-                            onClose();
-                            startDownload(option);
-                          }}
-                        >
-                          <Text fontWeight='semibold'>{option.name}</Text>
-                        </Box>
-                      </ListItem>
-                    );
-                  })}
-                </UnorderedList>
-              </Collapse>
-            </Box>
-          </Box>
+          <Menu.Root
+            positioning={{ sameWidth: true }}
+            onSelect={({ value }) => {
+              const option = optionsByFormat.get(value);
+              if (!option) return;
+
+              trackDownloadEvent({
+                label: `Download Metadata: From ${router.pathname}`,
+                event: 'download_metadata_click',
+                value: `downloadFormat: ${option.format}`,
+              });
+              startDownload(option);
+            }}
+          >
+            <Menu.Trigger asChild>
+              <Button
+                colorPalette={colorPalette}
+                variant='solid'
+                size='sm'
+                w='100%'
+                {...buttonProps}
+              >
+                <FaDownload />
+                {children}
+              </Button>
+            </Menu.Trigger>
+            <Menu.Positioner>
+              <Menu.Content colorPalette={colorPalette}>
+                {menuOptions.map((option, idx) => (
+                  <React.Fragment key={option.format}>
+                    {idx > 0 && <Menu.Separator />}
+                    <Menu.Item
+                      value={option.format}
+                      fontWeight='semibold'
+                      _highlighted={{ bg: 'colorPalette.50' }}
+                    >
+                      {option.name}
+                    </Menu.Item>
+                  </React.Fragment>
+                ))}
+              </Menu.Content>
+            </Menu.Positioner>
+          </Menu.Root>
         )}
       </Box>
       {downloadFormat?.format === 'xlsx' ? (

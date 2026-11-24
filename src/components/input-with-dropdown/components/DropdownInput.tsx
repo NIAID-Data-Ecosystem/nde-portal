@@ -1,37 +1,56 @@
-import React, { useRef, useCallback, useEffect } from 'react';
 import {
   ButtonProps,
   CloseButton,
   Flex,
+  Group,
+  HStack,
   Icon,
-  Input,
-  InputGroup,
-  InputLeftElement,
+  IconProps,
   InputProps,
-  InputRightElement,
   Spinner,
+  SpinnerProps,
   Textarea,
+  useFieldContext,
   VisuallyHidden,
 } from '@chakra-ui/react';
-import { theme } from 'src/theme';
+import React from 'react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
-import { useDropdownContext } from '..';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
+import {
+  DEFAULT_INPUT_SIZE,
+  INPUT_HEIGHTS,
+} from 'src/theme/recipes/input.recipe';
+
+import { useDropdownContext } from '..';
 
 /*
 [Component Information]: [DropdownInput] is a regular input field with a list of suggestions based on the user typing.
 */
 
+/*
+`--input-height` is declared by the `input` recipe's size variants only; the
+`textarea` recipe never sets it. Since InputGroup derives the start/end element
+padding from it (`ps: calc(var(--input-height) - startOffset)`), it has to be
+declared on the group so the Textarea inherits it. Same approach Chakra's own
+combobox/tags-input recipes take. The scale itself lives with the recipe that
+publishes the var, so there is only one place to change an input's height.
+*/
+const isInputSize = (size: unknown): size is keyof typeof INPUT_HEIGHTS =>
+  typeof size === 'string' && size in INPUT_HEIGHTS;
+
+// `size` is a ConditionalValue, so responsive objects fall back to the default.
+const getInputHeight = (size: DropdownInputProps['size']) =>
+  INPUT_HEIGHTS[isInputSize(size) ? size : DEFAULT_INPUT_SIZE];
+
 export interface DropdownInputProps {
   id: string;
   ariaLabel: string; // input label for accessibility
-  colorScheme?: InputProps['colorScheme'];
+  colorPalette?: InputProps['colorPalette'];
   size?: InputProps['size'];
   type: InputProps['type'];
   placeholder?: string;
-  isDisabled?: boolean;
-  isInvalid?: boolean;
-  isLoading?: boolean;
+  disabled?: boolean;
+  loading?: boolean;
   getInputValue: (arg: number) => string;
   renderSubmitButton?: (props: ButtonProps) => ReactElement;
   onChange?: (value: string) => void;
@@ -43,21 +62,23 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   id,
   ariaLabel,
   placeholder,
-  isLoading,
-  size = 'sm',
+  loading,
+  size = DEFAULT_INPUT_SIZE,
   type,
-  isDisabled,
-  isInvalid,
+  disabled,
   renderSubmitButton,
   getInputValue,
   onChange,
   onClose,
   onSubmit,
 }) => {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  // Invalid state comes from the enclosing <Field.Root invalid> when there is
+  // one; undefined otherwise.
+  const field = useFieldContext();
+  const invalid = field?.invalid;
 
   const {
-    colorScheme,
+    colorPalette,
     cursor,
     inputValue,
     setInputValue,
@@ -65,78 +86,50 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
     setIsOpen,
   } = useDropdownContext();
 
-  const inputRightRef = useRef<HTMLDivElement>(null);
-  const [rightElWidth, setRightElWidth] = React.useState(0);
-
-  useEffect(() => {
-    const inputRightEl = inputRightRef.current;
-    if (!inputRightEl) return;
-
-    if (typeof ResizeObserver === 'undefined') {
-      setRightElWidth(inputRightEl.clientWidth);
-      return;
-    }
-
-    const observer = new ResizeObserver(() => {
-      setRightElWidth(inputRightEl!.clientWidth);
-    });
-
-    observer.observe(inputRightEl);
-    return () => observer.disconnect();
-  }, []);
-
-  // Auto-resize logic: reset to 3rem, then expand to scrollHeight
-  const autoResize = useCallback(() => {
-    const el = textareaRef.current;
-    if (!el) return;
-
-    // reset height to shrink if text is deleted
-    el.style.height = 'auto';
-
-    // compute line height
-    const lineHeight = parseFloat(
-      window.getComputedStyle(el).lineHeight || '20',
-    );
-    const maxHeight = lineHeight * 4; // cap at 4 rows
-
-    // adjust height up to max
-    el.style.height = `${Math.min(el.scrollHeight, maxHeight)}px`;
-
-    // show scroll if exceeding max
-    el.style.overflowY = el.scrollHeight > maxHeight ? 'auto' : 'hidden';
-  }, []);
-
-  // reset height to base size (used when clearing input)
-  const resetHeight = useCallback(() => {
-    const el = textareaRef.current;
-    if (el) el.style.height = '3rem';
-  }, []);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsOpen(false);
     onSubmit(inputValue, cursor);
   };
 
-  // Ensure correct height on initial render and whenever value changes externally
-  useEffect(() => {
-    const textareaEl = textareaRef.current;
-    if (!textareaEl) return;
-
-    if (typeof ResizeObserver === 'undefined') {
-      autoResize();
-      return;
-    }
-
-    const observer = new ResizeObserver(() => {
-      autoResize();
-    });
-
-    observer.observe(textareaEl);
-    autoResize();
-
-    return () => observer.disconnect();
-  }, [autoResize]);
+  // Render the start element (spinner or search icon) based on loading state
+  const startElement = loading ? (
+    <Spinner
+      color={`${colorPalette}.500`}
+      css={{ '--spinner-track-color': 'colors.gray.200' }}
+      size={size as SpinnerProps['size']}
+    />
+  ) : (
+    <Icon
+      as={FaMagnifyingGlass}
+      color='gray.300'
+      pl={1}
+      size={size as IconProps['size']}
+    />
+  );
+  // Render the end element (close button and/or submit button) if either is provided
+  const endElement = (renderSubmitButton || onClose) && (
+    <>
+      {onClose && inputValue.length > 0 && (
+        <CloseButton
+          onClick={() => {
+            onClose();
+            setInputValue('');
+          }}
+          size={size}
+          aria-label='Clear search input'
+        />
+      )}
+      {renderSubmitButton &&
+        renderSubmitButton({
+          type: 'submit',
+          w: '100%',
+          h: '100%',
+          // set padding top and bottom for safari, do not remove.
+          py: 0,
+        })}
+    </>
+  );
 
   return (
     <Flex as='form' flex={1} onSubmit={handleSubmit}>
@@ -144,48 +137,45 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
       <VisuallyHidden>
         <label htmlFor={id}>{ariaLabel}</label>
       </VisuallyHidden>
-
-      {/* Search input */}
-      {/* Loading spinner/Search icon */}
-      <InputGroup
-        size={size}
-        zIndex='dropdown'
-        alignItems='flex-start'
-        border='1px solid'
-        borderColor='gray.200'
-        borderRadius='md'
+      <Group
+        w='100%'
+        gap={1}
         bg='white'
+        alignItems='center'
+        border='1px solid'
+        borderColor={invalid ? 'error' : 'gray.200'}
+        borderRadius='md'
+        css={{ '--input-height': getInputHeight(size) }}
+        px={1}
+        zIndex='popover'
       >
-        <InputLeftElement
-          pointerEvents='none'
-          my={1}
-          // eslint-disable-next-line react/no-children-prop
-          children={
-            isLoading ? (
-              <Spinner
-                color={`${colorScheme}.500`}
-                emptyColor='gray.200'
-                label='loading'
-                size='sm'
-              />
-            ) : (
-              <Icon as={FaMagnifyingGlass} color='gray.300' />
-            )
-          }
-        />
-
+        <Flex alignItems='center' height='100%'>
+          {startElement}
+        </Flex>
         <Textarea
-          ref={textareaRef}
-          variant='unstyled'
           resize='none'
-          overflow='hidden'
+          autoresize
+          maxLength={2048}
+          rows={1}
+          border='none'
+          outline='none'
+          boxShadow='none'
+          /*
+          `autoresize` grows the field to its scrollHeight, and a textarea's
+          placeholder counts towards scrollHeight. Left to wrap, a placeholder
+          that is too long for a narrow (mobile) field measures as two rows and
+          renders the input taller there than on desktop, so clip it to one
+          line instead.
+          */
           _placeholder={{
             whiteSpace: 'nowrap',
-            overflow: 'hidden',
             textOverflow: 'ellipsis',
+            overflow: 'hidden',
           }}
-          // optional, make growth feel smoother
-          onInput={autoResize}
+          // Cap growth at 4 rows; `autoresize` respects max-height and switches
+          // to a scrollbar past it. Includes the field's 1rem of vertical
+          // padding, since the textarea is border-box.
+          maxH='calc(4lh + 1rem)'
           {...getInputProps({
             id,
             placeholder: placeholder || 'Search',
@@ -193,9 +183,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
             type,
             flex: 1,
             size,
-            mr: renderSubmitButton ? { base: 24, sm: rightElWidth } : 4,
-            isDisabled,
-            isInvalid,
+            disabled,
             onKeyDown: (
               e: React.KeyboardEvent<HTMLTextAreaElement>,
               index: number,
@@ -209,51 +197,23 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
               }
             },
             onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+              /*
+              `autoresize` patches the textarea's `value` setter and dispatches
+              an `input` event after every programmatic change, which React
+              reports as onChange. Arrowing through suggestions (and the cursor
+              reset to the searched term) sets the value that way, so without
+              this guard each highlighted label was sent back as a new search
+              term. Only forward changes that differ from what we last set.
+              */
+              if (e.currentTarget.value === inputValue) return;
               onChange ? onChange(e.currentTarget.value) : void 0;
             },
           })}
-          rows={1}
-          maxLength={2048}
-          minH='3rem'
-          pl='2.5rem'
-          py={3}
         />
-
-        {/* Optional submit button. */}
-        {(renderSubmitButton || onClose) && (
-          <InputRightElement
-            ref={inputRightRef}
-            p={1}
-            w='unset'
-            h='100%'
-            zIndex={theme.zIndices['dropdown']}
-            alignItems='flex-start'
-          >
-            {onClose && inputValue.length > 0 && (
-              <CloseButton
-                onClick={() => {
-                  onClose();
-                  setInputValue('');
-                  resetHeight(); // reset height when input is cleared
-                }}
-                mr={2}
-                size='md'
-                colorScheme='primary'
-                aria-label='Clear search input'
-                my={1}
-              />
-            )}
-            {renderSubmitButton &&
-              renderSubmitButton({
-                type: 'submit',
-                w: '100%',
-                h: '100%',
-                // set padding top and bottom for safari, do not remove.
-                py: 0,
-              })}
-          </InputRightElement>
-        )}
-      </InputGroup>
+        <HStack height={'var(--input-height)'} my={0.5} alignSelf='flex-end'>
+          {endElement}
+        </HStack>
+      </Group>
     </Flex>
   );
 };
