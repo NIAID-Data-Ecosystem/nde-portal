@@ -23,10 +23,10 @@ const makeData = (overrides: Record<string, unknown> = {}) =>
   } as any);
 
 describe('ProgramInfoCard', () => {
-  it('renders the Program Info banner label', () => {
+  it('renders the Program Collection banner label', () => {
     renderWithChakra(<ProgramInfoCard data={makeData()} />);
 
-    expect(screen.getByText('Program Info')).toBeInTheDocument();
+    expect(screen.getByText('Program Collection')).toBeInTheDocument();
   });
 
   it('links the title to the anchored program collections entry', () => {
