@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { renderWithClient } from 'src/__tests__/mocks/utils';
-import { resolveColumn } from 'src/components/table/data-table/utils/columns';
+import { resolveColumn } from 'src/components/table/utils/columns';
 
 import {
   FILTERABLE_REPOSITORY_MATCHER_COLUMNS,

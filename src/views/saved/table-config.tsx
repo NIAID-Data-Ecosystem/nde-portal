@@ -9,9 +9,9 @@ import {
 import { useRef, useState } from 'react';
 import { BookmarkIconButton } from 'src/components/bookmark-buttons/icon-button';
 import { getMetadataName } from 'src/components/metadata';
-import { LinkCell } from 'src/components/table/data-table/cells';
-import type { SortState } from 'src/components/table/data-table/types';
-import { toSearchValue } from 'src/components/table/data-table/utils/values';
+import { LinkCell } from 'src/components/table/cells';
+import type { SortState } from 'src/components/table/types';
+import { toSearchValue } from 'src/components/table/utils/values';
 import Tooltip from 'src/components/tooltip';
 import { useUserData } from 'src/hooks/useUserData';
 import { findSavedQueryIndex } from 'src/hooks/useUserData/helpers';
@@ -33,7 +33,7 @@ import { SavedColumnDef, SavedResourceItem, SavedRow } from './types';
 
 /*
 Columns for the Saved page's two tables (the shared DataTable; see
-src/components/table/data-table/README.md).
+src/components/table/README.md).
 
 Sizes are content widths: the cells' 2 × 16px padding comes on top. They're
 the legacy table's border-box widths minus that padding, so the columns keep

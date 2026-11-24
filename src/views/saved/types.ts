@@ -1,4 +1,4 @@
-import type { ColumnDef } from 'src/components/table/data-table';
+import type { ColumnDef } from 'src/components/table';
 import { SavedDataset, SavedQuery } from 'src/hooks/useUserData/types';
 
 import { SavedResourceAdditionalMetadata } from './hooks/useBatchResourcesData';

@@ -11,7 +11,7 @@ import { NextPage } from 'next';
 import React, { useCallback, useMemo, useState } from 'react';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { SearchInput } from 'src/components/search-input';
-import { useTableSearch } from 'src/components/table/data-table';
+import { useTableSearch } from 'src/components/table';
 import { DataDictionary } from 'src/views/repository-matcher/components/DataDictionary';
 import { Filters } from 'src/views/repository-matcher/components/Filters';
 import { RepositoryMatcherTable } from 'src/views/repository-matcher/components/RepositoryMatcherTable';

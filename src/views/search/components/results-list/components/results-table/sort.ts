@@ -1,4 +1,4 @@
-import type { SortState } from 'src/components/table/data-table';
+import type { SortState } from 'src/components/table';
 
 import type { SearchColumnDef } from './columns';
 

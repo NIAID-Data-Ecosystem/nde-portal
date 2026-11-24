@@ -1,4 +1,4 @@
-import type { ColumnDef } from 'src/components/table/data-table';
+import type { ColumnDef } from 'src/components/table';
 import { Source } from 'src/hooks/api/useSourcesList';
 import { FormattedResource } from 'src/utils/api/types';
 

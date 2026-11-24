@@ -1,5 +1,5 @@
 import React from 'react';
-import { LinkCell, LinkListCell } from 'src/components/table/data-table';
+import { LinkCell, LinkListCell } from 'src/components/table';
 
 import { resourceColumns, searchColumn, SearchColumnDef } from '../columns';
 import { createSearchTable } from '../create-search-table';

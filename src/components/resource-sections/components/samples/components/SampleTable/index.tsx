@@ -7,13 +7,13 @@ import {
   TermsCell,
   TermValue,
   toText,
-} from 'src/components/table/data-table';
+} from 'src/components/table';
 
 import type { SampleColumn } from '../../helpers';
 
 /*
 The resource page's sample tables (the shared DataTable; see
-src/components/table/data-table/README.md). Which columns show is decided by
+src/components/table/README.md). Which columns show is decided by
 the data (`../../helpers`, `../../config`); this turns those descriptors into
 DataTable columns.
 

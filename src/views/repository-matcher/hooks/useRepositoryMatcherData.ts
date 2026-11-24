@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { toSearchValue } from 'src/components/table/data-table/utils/values';
+import { toSearchValue } from 'src/components/table/utils/values';
 import { useSourcesList } from 'src/hooks/api/useSourcesList';
 import { REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
 

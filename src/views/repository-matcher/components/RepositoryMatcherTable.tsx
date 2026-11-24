@@ -6,7 +6,7 @@ import {
   SortState,
   useColumnPreferences,
   useDataTable,
-} from 'src/components/table/data-table';
+} from 'src/components/table';
 
 import { REPOSITORY_MATCHER_COLUMNS } from '../table-config';
 import { RepositoryMatcherRow } from '../types';

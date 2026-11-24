@@ -4,14 +4,14 @@ import {
   ColumnDef,
   ExpandableText,
   LinkCell,
-} from 'src/components/table/data-table';
+} from 'src/components/table';
 
 import type { TableData } from '.';
 import { formatDomainName, formatTypeName } from './helpers';
 
 /*
 Columns for the Home page's "Explore All Included Resources" table (the shared
-DataTable; see src/components/table/data-table/README.md).
+DataTable; see src/components/table/README.md).
 
 Sizes are content widths: the cells' 2 × 16px padding comes on top. They're
 the legacy table's border-box min/max widths minus that padding, so the columns

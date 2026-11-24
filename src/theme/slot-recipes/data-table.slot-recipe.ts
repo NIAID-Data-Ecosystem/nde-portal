@@ -10,7 +10,7 @@ import {
 import { tagSlotRecipe } from './tag.slot-recipe';
 
 /*
-Styles for src/components/table/data-table.
+Styles for src/components/table.
 
 The table renders plain <table>/<th>/<td> elements and styles them all from
 this recipe's `root` slot with descendant selectors, rather than giving every

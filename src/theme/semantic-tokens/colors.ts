@@ -115,7 +115,7 @@ export const semanticColors = defineSemanticTokens.colors({
     alt: { value: '#F5F6FA' },
   },
   /*
-  Data table row colours (src/components/table/data-table). The stripe is the
+  Data table row colours (src/components/table). The stripe is the
   `#FAFBFD` the search, repository matcher and saved tables each hard-coded.
   Hover comes from the table's `colorPalette` (`.50`) instead.
   */

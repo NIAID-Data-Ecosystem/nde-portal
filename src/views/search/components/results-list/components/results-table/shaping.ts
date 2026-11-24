@@ -13,7 +13,7 @@ import { formatLicense } from 'src/utils/helpers';
 
 /*
 Row shaping for the Search tables: turns a FormattedResource's fields into the
-plain shapes the shared cells take (src/components/table/data-table/cells).
+plain shapes the shared cells take (src/components/table/cells).
 Used by the column accessors in ./columns.tsx and ./tables/*.
 */
 

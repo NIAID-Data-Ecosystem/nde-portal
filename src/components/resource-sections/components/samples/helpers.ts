@@ -17,7 +17,7 @@ export {
   formatNumericValue,
   formatTerm,
   formatUnitText,
-} from 'src/components/table/data-table/utils/terms';
+} from 'src/components/table/utils/terms';
 
 /**
  * Format a propertyID string into a human-readable column title.

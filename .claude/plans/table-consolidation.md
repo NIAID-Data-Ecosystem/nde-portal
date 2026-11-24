@@ -21,8 +21,12 @@ rules stay in `.claude/CLAUDE.md`.
   perf comparison hasn't been run.
 - **2026-11-19:** **Phase 5** done (owner request): every resource-page table is
   on `DataTable`, and the legacy `src/components/table` is deleted; see §6
-  "Resource page". Uncommitted at time of writing. D4 (moving `data-table/` up
-  to `src/components/table/`) is still to do.
+  "Resource page". Uncommitted at time of writing.
+- **2026-11-24:** **D4** done: `data-table/` moved up to `src/components/table/`
+  (the owner moved the files; imports, doc comments and README updated). The
+  `DataTable` component, the `dataTable` slot recipe
+  (`data-table.slot-recipe.ts`) and the `.nde-data-table` class keep their
+  names, since they name the component, not the folder.
 - **Update this file** when a decision changes, a phase finishes, or an
   intentional behaviour change is made.
 
@@ -714,7 +718,7 @@ description, a full-width line under each row, becomes a Description column.
 
 ## 7. Architecture (as built)
 
-`src/components/table/data-table/` (see its `README.md`):
+`src/components/table/` (see its `README.md`):
 
 - `DataTable`: presentation over native `<table>`, styled by the `dataTable`
   slot recipe in `src/theme/slot-recipes/data-table.slot-recipe.ts`. Takes
@@ -733,9 +737,9 @@ description, a full-width line under each row, becomes a Description column.
 
 The legacy `src/components/table` (`Table`, `Cell`, `Th`, `Row`, `useTableSort`,
 …) was deleted in Phase 5; `TablePagination` moved into
-`data-table/components/`. D4 (moving `data-table/` up to
-`src/components/table/`) is still to do: renaming that barrel under a running
-`next dev` breaks it until a restart (`index.tsx` → `index.ts`).
+`data-table/components/`. D4 (2026-11-24) then moved `data-table/` up to
+`src/components/table/`, so the barrel is now `src/components/table/index.ts`
+(the running `next dev` resolved it without a restart).
 
 ## 8. Phases
 
@@ -746,7 +750,7 @@ The legacy `src/components/table` (`Table`, `Cell`, `Th`, `Row`, `useTableSort`,
 | 2     | `DataTable` and the Repository Matcher pilot; layout spec; a11y error state                                                                                                                                                                                                                                                                                                                                                                | ✅ done, **awaiting owner evaluation**                                                                                                                    |
 | 3     | Saved and Home onto `DataTable`. Saved drops virtualization (decision 2) and switches dates to ISO (decision 12); Home keeps its local search and filters                                                                                                                                                                                                                                                                                  | Home and Saved done (2026-11-19, §6); Saved's perf comparison (decision 2) not run                                                                        |
 | 4     | Search: four tables on `DataTable` server mode. One column file per type with per-column `cell`; Samples reuses the shared row shaping. One `ColumnCustomizer` per tab; delete the 5 search popover files and the storage helpers; migrate legacy keys. Top scrollbar on (decision 7); Conditions of Access badge (decision 10). Add an axe scan of table view and fix the misleading comment at `e2e/accessibility/search.spec.ts` ~L5917 | ✅ done (2026-11-16), except the perf comparison (skipped by the owner for now); axe + layout specs added. See `.claude/plans/search-tables-datatable.md` |
-| 5     | Category 2: Files and Samples onto `DataTable`; cited-by and based-on take the shared header/sort; the funding row drawer stays bespoke. Delete the legacy `Table` (its `virtualized` path has no users since Saved), `useTableSort` and `getTruncatedText`                                                                                                                                                                                | ✅ done (2026-11-19, §6 "Resource page"); funding details in the Funder cell, Based On's description a column (owner); D4 rename pending                  |
+| 5     | Category 2: Files and Samples onto `DataTable`; cited-by and based-on take the shared header/sort; the funding row drawer stays bespoke. Delete the legacy `Table` (its `virtualized` path has no users since Saved), `useTableSort` and `getTruncatedText`                                                                                                                                                                                | ✅ done (2026-11-19, §6 "Resource page"); funding details in the Funder cell, Based On's description a column (owner); D4 rename done 2026-11-24          |
 
 Dependencies: 3 and 4 can run in parallel after sign-off; 5 comes last.
 

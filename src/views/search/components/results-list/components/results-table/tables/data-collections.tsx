@@ -1,5 +1,5 @@
 import React from 'react';
-import { LinkListCell } from 'src/components/table/data-table';
+import { LinkListCell } from 'src/components/table';
 
 import {
   getContentTypeLabel,

@@ -1,11 +1,7 @@
 import { BoxProps, Flex, Stack, Text, VStack } from '@chakra-ui/react';
 import { useCallback, useMemo, useState } from 'react';
 import { SearchInput } from 'src/components/search-input';
-import {
-  DataTable,
-  SortState,
-  useTableSearch,
-} from 'src/components/table/data-table';
+import { DataTable, SortState, useTableSearch } from 'src/components/table';
 
 import { formatTableData } from '../table-config';
 import { SavedColumnDef } from '../types';

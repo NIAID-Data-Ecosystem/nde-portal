@@ -11,11 +11,7 @@ import {
 import { castArray } from 'lodash';
 import React, { useMemo } from 'react';
 import { FaMinus, FaPlus } from 'react-icons/fa6';
-import {
-  ColumnDef,
-  DataTable,
-  LinkCell,
-} from 'src/components/table/data-table';
+import { ColumnDef, DataTable, LinkCell } from 'src/components/table';
 import { TagWithUrl } from 'src/components/tag-with-url';
 import Tooltip from 'src/components/tooltip';
 import { formatDate } from 'src/utils/api/helpers';
@@ -25,7 +21,7 @@ import { ContentHeader, ContentHeaderProps } from '../section';
 
 /*
 The resource page's "Based On" table (the shared DataTable; see
-src/components/table/data-table/README.md).
+src/components/table/README.md).
 
 Sizes are content widths: the cells' 2 × 16px padding comes on top. Name keeps
 the legacy table's 280px border-box minimum (248px of content). Description,

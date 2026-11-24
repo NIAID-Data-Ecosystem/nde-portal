@@ -6,14 +6,14 @@ import {
   DataTable,
   EmptyValue,
   LinkCell,
-} from 'src/components/table/data-table';
+} from 'src/components/table';
 import { TagWithUrl } from 'src/components/tag-with-url';
 import { formatDate } from 'src/utils/api/helpers';
 import { Funder, Funding as FundingType } from 'src/utils/api/types';
 
 /*
 The resource page's funding table (the shared DataTable; see
-src/components/table/data-table/README.md).
+src/components/table/README.md).
 
 Sizes are content widths: the cells' 2 × 16px padding comes on top. Each is the
 legacy table's border-box width minus that padding (280px, and 200px for the

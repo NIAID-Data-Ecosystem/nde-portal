@@ -6,7 +6,7 @@ import {
   ExpandableText,
   LinkCell,
   SortState,
-} from 'src/components/table/data-table';
+} from 'src/components/table';
 import { formatDate } from 'src/utils/api/helpers';
 import { Distribution, FormattedResource } from 'src/utils/api/types';
 import { formatNumber } from 'src/utils/helpers';
@@ -15,7 +15,7 @@ import { getFileIcon } from './helpers';
 
 /*
 The resource page's "File Downloads" table (the shared DataTable; see
-src/components/table/data-table/README.md).
+src/components/table/README.md).
 
 Sizes are content widths: the cells' 2 × 16px padding comes on top. Each is the
 legacy table's border-box minimum minus that padding (280, 180 and 200px), and

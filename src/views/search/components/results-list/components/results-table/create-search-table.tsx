@@ -7,7 +7,7 @@ import {
   SortState,
   useColumnPreferences,
   useDataTable,
-} from 'src/components/table/data-table';
+} from 'src/components/table';
 import { FormattedResource } from 'src/utils/api/types';
 
 import type { SearchColumnDef } from './columns';

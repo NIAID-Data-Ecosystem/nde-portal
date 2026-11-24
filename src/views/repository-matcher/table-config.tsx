@@ -4,7 +4,7 @@ import {
   getMetadataDescription,
   getMetadataName,
 } from 'src/components/metadata';
-import { ExpandableText, LinkCell } from 'src/components/table/data-table';
+import { ExpandableText, LinkCell } from 'src/components/table';
 import { formatDate } from 'src/utils/api/helpers';
 import { AccessTypes, DefinedTerm } from 'src/utils/api/types';
 import { USE_MERGED_SOURCES_AND_CATALOGS } from 'src/utils/feature-flags';
@@ -23,7 +23,7 @@ import { itemTypes } from './utils';
 
 /*
 Column definitions for the repository matcher table (the shared DataTable; see
-src/components/table/data-table). Most columns only set a `type`: the tag
+src/components/table). Most columns only set a `type`: the tag
 columns get the shared tag list (12 shown, then "Show N More") and the text
 columns the shared text, link and "No data" handling. Only cells with their
 own look (name link, access badge, temporal coverage, license, type) set

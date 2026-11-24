@@ -1,10 +1,6 @@
 import { Span, Stack, Text } from '@chakra-ui/react';
 import React from 'react';
-import {
-  ColumnDef,
-  DataTable,
-  LinkCell,
-} from 'src/components/table/data-table';
+import { ColumnDef, DataTable, LinkCell } from 'src/components/table';
 import { TagWithUrl } from 'src/components/tag-with-url';
 import { formatDate } from 'src/utils/api/helpers';
 import { CitedBy as CitedByType } from 'src/utils/api/types';
@@ -13,7 +9,7 @@ import { ContentHeader, ContentHeaderProps } from '../section';
 
 /*
 The resource page's "Cited By" table (the shared DataTable; see
-src/components/table/data-table/README.md).
+src/components/table/README.md).
 
 Sizes are content widths: the cells' 2 × 16px padding comes on top. Each is the
 legacy table's border-box width minus that padding (280px, and 200px for the

@@ -1,11 +1,7 @@
 import { Box, Flex, Stack, Tag, Text } from '@chakra-ui/react';
 import React, { useCallback, useState } from 'react';
 import { SearchInput } from 'src/components/search-input';
-import {
-  ColumnDef,
-  DataTable,
-  SortState,
-} from 'src/components/table/data-table';
+import { ColumnDef, DataTable, SortState } from 'src/components/table';
 
 import { Filters } from './filters/';
 import useFilteredData from './hooks/useFilteredData';

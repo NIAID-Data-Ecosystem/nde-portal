@@ -2,7 +2,7 @@ import { defineSlotRecipe } from '@chakra-ui/react';
 
 /*
 The pagination bar the shared DataTable renders below its rows
-(src/components/table/data-table/components/TablePagination.tsx). It lived on
+(src/components/table/components/TablePagination.tsx). It lived on
 the v2 `Table` style config as an ad-hoc part, read explicitly via
 `useMultiStyleConfig('Table', ...)`, beside a `wrapper` part that went with the
 legacy table.

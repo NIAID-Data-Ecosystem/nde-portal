@@ -11,7 +11,7 @@ import {
   TermsCell,
   TermValue,
   toText,
-} from 'src/components/table/data-table';
+} from 'src/components/table';
 import { FormattedResource } from 'src/utils/api/types';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 

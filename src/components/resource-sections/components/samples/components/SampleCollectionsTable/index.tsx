@@ -1,6 +1,6 @@
 import { Skeleton } from '@chakra-ui/react';
 import React, { useMemo } from 'react';
-import { SortState } from 'src/components/table/data-table';
+import { SortState } from 'src/components/table';
 import { SampleCollection } from 'src/utils/api/types';
 
 import { SAMPLE_COLLECTION_TABLE_CONFIG } from '../../config';
