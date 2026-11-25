@@ -62,6 +62,8 @@ test.describe('DataTable layout: desktop', () => {
   test('the table fills the capped results area below the toolbar, with its header stuck', async ({
     page,
   }) => {
+    // Taller than the 1000px cap, so the whole capped area can be on screen.
+    await page.setViewportSize({ width: 1440, height: 1100 });
     await gotoPopulated(page);
     // Scroll the results area (toolbar + table) to the top of the window.
     await root(page).evaluate(el =>
@@ -74,7 +76,7 @@ test.describe('DataTable layout: desktop', () => {
         .querySelector('input[placeholder^="Search repositories"]')!
         .getBoundingClientRect();
       return {
-        // From `sm` up the page caps the results area at 800px; the table
+        // From `md` up the page caps the results area at 1000px; the table
         // takes whatever the toolbar leaves of it.
         areaHeight: area.getBoundingClientRect().height,
         bottomGap:
@@ -85,7 +87,7 @@ test.describe('DataTable layout: desktop', () => {
         innerScroll: view.scrollHeight > view.clientHeight + 1,
       };
     });
-    expect(Math.abs(fit.areaHeight - 800)).toBeLessThanOrEqual(1);
+    expect(Math.abs(fit.areaHeight - 1000)).toBeLessThanOrEqual(1);
     expect(Math.abs(fit.bottomGap)).toBeLessThanOrEqual(1);
     expect(fit.areaOnScreen).toBe(true);
     expect(fit.searchOnScreen).toBe(true);
@@ -516,7 +518,7 @@ test.describe('DataTable layout: small screens', () => {
         innerScroll: view.scrollHeight - view.clientHeight,
       };
     });
-    // Natural height below `sm`: no vertical scroll area of its own.
+    // Natural height below `md`: no vertical scroll area of its own.
     expect(state.innerScroll).toBeLessThanOrEqual(1);
     expect(state.height).toBeGreaterThan(844);
     // Still scrolls sideways, with the scrollbar floating at the bottom of
@@ -676,20 +678,6 @@ test.describe('DataTable headers', () => {
 
     await label.click();
     await expect(access).toHaveAttribute('aria-sort', 'ascending');
-  });
-
-  test('rows highlight on hover', async ({ page }) => {
-    await gotoPopulated(page);
-    const cell = root(page).locator('tbody tr').nth(1).locator('td').nth(1);
-    await cell.scrollIntoViewIfNeeded();
-    const resting = await cell.evaluate(
-      el => getComputedStyle(el).backgroundColor,
-    );
-    await page.waitForTimeout(300);
-    await cell.hover();
-    await expect
-      .poll(() => cell.evaluate(el => getComputedStyle(el).backgroundColor))
-      .not.toBe(resting);
   });
 
   test('truncated tags show their full name on hover', async ({ page }) => {

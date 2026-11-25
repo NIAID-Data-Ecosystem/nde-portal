@@ -77,9 +77,9 @@ export const RepositoryMatcherTable = React.memo(
           table={table}
           label='Repositories and resource catalogs available for data deposit'
           skeletonRows={10}
-          // The page bounds it instead: from `sm` up its results area is
+          // The page bounds it instead: from `md` up its results area is
           // capped and the table shrinks into what the toolbar leaves. Below
-          // `sm` nothing caps it, so it grows with its rows (natural height).
+          // `md` nothing caps it, so it grows with its rows (natural height).
           maxHeight='none'
           status={{
             loading,

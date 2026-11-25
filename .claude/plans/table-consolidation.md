@@ -37,6 +37,14 @@ rules stay in `.claude/CLAUDE.md`.
   ISO, and the Computational Tools / Data Collections Topic Category (tags
   linking to portal searches) exports names without the term URLs. `dev`'s
   edits to the deleted legacy table files are superseded by this port.
+- **2026-11-25:** the owner confirmed two Repository Matcher changes they made
+  on 2026-11-19, and the layout spec now follows them. The results-area cap
+  moved from `sm: '800px'` to `md: '1000px'` (`91b1dcf9`); below `md` the table
+  has natural height. At a 900px-tall window the capped area is taller than the
+  window, so the cap test runs at 1440×1100. Row hover is off (`interactive`
+  removed in `67556778`; no table passes it now), so the "rows highlight on
+  hover" spec was deleted. The `interactive` prop and its recipe rule remain,
+  with no browser test.
 - **Update this file** when a decision changes, a phase finishes, or an
   intentional behaviour change is made.
 

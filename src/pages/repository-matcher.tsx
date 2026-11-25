@@ -147,10 +147,10 @@ const RepositoryMatcher: NextPage = () => {
           maxWidth='2000px'
         >
           {/*
-            From `sm` up, the results area (search, filters, count, table) is
-            at most 800px tall. The toolbar keeps its natural height and the
+            From `md` up, the results area (search, filters, count, table) is
+            at most 1000px tall. The toolbar keeps its natural height and the
             table takes whatever is left, wherever the toolbar wraps. Fewer
-            rows shrink it. Below `sm` neither is capped: the table
+            rows shrink it. Below `md` neither is capped: the table
             (`maxHeight='none'`) grows with its rows and the page scrolls.
             The dictionary follows below.
           */}
