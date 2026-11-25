@@ -2,7 +2,6 @@ import {
   getValueByPath,
   hasNonEmptyValue,
 } from 'src/components/resource-sections/helpers';
-import { Column } from 'src/components/table';
 import {
   AdditionalProperty,
   SampleAggregate,
@@ -11,63 +10,14 @@ import {
 import { formatSampleLabelFromProperty } from 'src/utils/formatting/formatSample';
 
 import { SAMPLE_AGGREGATE_COLUMNS } from './config';
-/**
- * Format unit text:
- * - Lowercase all characters.
- * - Replace underscores (e.g., "CELL_COUNT") with spaces.
- */
-export const formatUnitText = (unit: string | undefined) => {
-  if (!unit) return '';
-  const unit_str = unit.toLowerCase().replace(/_/g, ' ');
-  return unit_str.charAt(unit_str.length - 1) === 's'
-    ? unit_str
-    : `${unit_str}s`;
-};
 
-/**
- * Format a numeric "value" field.
- * Supports:
- * - Exact number.
- * - Min / Max (range).
- * - Only min (>=)
- * - Only max (<=)
- */
-export const formatNumericValue = ({
-  value,
-  minValue,
-  maxValue,
-}: {
-  value?: number;
-  minValue?: number;
-  maxValue?: number;
-}) => {
-  if (value != null) {
-    return value.toLocaleString();
-  }
-
-  if (minValue != null && maxValue != null) {
-    // If min == max, show single number
-    if (minValue === maxValue) {
-      return minValue.toLocaleString();
-    }
-    return `${minValue.toLocaleString()} - ${maxValue.toLocaleString()}`;
-  }
-
-  if (minValue != null) {
-    return `>= ${minValue.toLocaleString()}`;
-  }
-
-  if (maxValue != null) {
-    return `<= ${maxValue.toLocaleString()}`;
-  }
-
-  return '';
-};
-
-export const formatTerm = (term: string) => {
-  if (!term || typeof term !== 'string') return '';
-  return term.charAt(0).toUpperCase() + term.slice(1);
-};
+// The term formatters live with the shared table cells; re-exported for this
+// folder's existing imports.
+export {
+  formatNumericValue,
+  formatTerm,
+  formatUnitText,
+} from 'src/components/table/utils/terms';
 
 /**
  * Format a propertyID string into a human-readable column title.
@@ -115,7 +65,21 @@ const getAdditionalPropertyValue = (
   normalizeAdditionalProperty(sample).find(p => p.propertyID === propertyId)
     ?.value;
 
-interface SamplePropertyColumns extends Column {
+/** A column of a sample table, before it becomes a DataTable column. */
+export interface SampleColumn {
+  title: string;
+  /** The row field the column sorts on; also its id. */
+  property: string;
+  /**
+   * The row field the column shows, when it isn't `property`: Sample ID shows
+   * the linked `identifier` ({ identifier, url }) but sorts on the plain
+   * `_identifierSort`.
+   */
+  valueProperty?: string;
+  isSortable?: boolean;
+}
+
+interface SamplePropertyColumns extends SampleColumn {
   values: any;
   includedProperties: string[];
   key: string;
@@ -288,7 +252,7 @@ const collectAdditionalPropertyIds = (samples: SampleAggregate[]): string[] => [
  */
 export const getSampleCollectionItemsColumns = (
   samples: SampleAggregate[],
-): Array<{ title: string; property: string; isSortable?: boolean }> => {
+): SampleColumn[] => {
   const nonUniformColumns: Array<{ title: string; property: string }> = [];
   const uniformColumns: Array<{ title: string; property: string }> = [];
 
@@ -351,14 +315,17 @@ export const getSampleCollectionItemsColumns = (
       .sort((a, b) => a.title.localeCompare(b.title));
 
   // Assemble final columns: Sample ID, non-uniform, uniform,
-  // additionalProperty. property points at '_identifierSort'
-  // (a plain string field added to each row) so that useTableSort
-  // can compare strings instead of the { identifier, url }
-  // object that is used for rendering. The SampleCollectionItemsTable
-  // getCells callback remaps '_identifierSort' back to 'identifier'
-  // when reading the row.
+  // additionalProperty. Sample ID sorts on '_identifierSort' (a plain string
+  // field added to each row) and shows the { identifier, url } object, as a
+  // link. Its id stays '_identifierSort', so it can't collide with a property
+  // column keyed 'identifier'.
   return [
-    { title: 'Sample ID', property: '_identifierSort', isSortable: true },
+    {
+      title: 'Sample ID',
+      property: '_identifierSort',
+      valueProperty: 'identifier',
+      isSortable: true,
+    },
     ...nonUniformColumns.map(col => ({ ...col, isSortable: false })),
     ...uniformColumns.map(col => ({ ...col, isSortable: false })),
     ...additionalPropertyColumns.map(col => ({ ...col, isSortable: false })),
@@ -367,16 +334,15 @@ export const getSampleCollectionItemsColumns = (
 
 /**
  * Build the rows array for the fetched SampleCollection items table.
- * The `identifier` field is shaped as `{ identifier, url }` so the existing
- * DefinedTermCell renderer can display it as an external link.
+ * The `identifier` field is shaped as `{ identifier, url }` so the shared term
+ * cell can display it as an external link.
  *
  * Each `additionalProperty` entry is flattened into the row under the
- * namespaced key `additionalProperty__<propertyID>` so the column renderer
- * can pick it up via `props.data?.[props.column.property]`.
+ * namespaced key `additionalProperty__<propertyID>`, the property of its
+ * column.
  *
- * `_identifierSort` is a plain string copy of the identifier used exclusively
- * for sorting (avoids comparing { identifier, url } objects as
- * "[object Object]").
+ * `_identifierSort` is a plain string copy of the identifier, which the Sample
+ * ID column sorts on.
  */
 export const getSampleCollectionItemsRows = (
   samples: SampleAggregate[],

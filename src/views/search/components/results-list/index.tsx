@@ -1,12 +1,7 @@
 import { List, VStack } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Alert } from 'src/components/alert';
-import { CustomViewExport } from 'src/components/download-metadata';
-import {
-  resolveStoredOrderedIds,
-  resolveStoredVisibleIds,
-} from 'src/components/select-and-order-popover';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import {
   SHOW_DATA_COLLECTIONS_VIEW_MODES,
@@ -29,212 +24,37 @@ import { useViewMode } from '../../hooks/useViewMode';
 import { SearchViewMode, TabType } from '../../types';
 import { updateRoute } from '../../utils/update-route';
 import Card from './components/card';
-import {
-  ALL_COMPUTATIONAL_TOOL_COLUMNS,
-  ComputationalToolResultsTable,
-  getExportEntries as getComputationalToolExportEntries,
-  toRow as computationalToolToRow,
-} from './components/computational-tool-results-table';
-import {
-  CUSTOM_COLUMN_ORDER_STORAGE_KEY as CT_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
-  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as CT_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-  CustomizeColumnsPopover as ComputationalToolCustomizeColumnsPopover,
-  DEFAULT_VISIBLE_COLUMN_IDS as CT_DEFAULT_VISIBLE_COLUMN_IDS,
-} from './components/computational-tool-results-table/components/CustomizeColumnsPopover';
-import {
-  ALL_DATA_COLLECTION_COLUMNS,
-  DataCollectionResultsTable,
-  getExportEntries as getDataCollectionExportEntries,
-  toRow as dataCollectionToRow,
-} from './components/data-collection-results-table';
-import {
-  CUSTOM_COLUMN_ORDER_STORAGE_KEY as DC_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
-  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as DC_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-  CustomizeColumnsPopover as DataCollectionCustomizeColumnsPopover,
-  DEFAULT_VISIBLE_COLUMN_IDS as DC_DEFAULT_VISIBLE_COLUMN_IDS,
-} from './components/data-collection-results-table/components/CustomizeColumnsPopover';
-import {
-  ALL_DATASET_COLUMNS,
-  DatasetResultsTable,
-  getExportEntries as getDatasetExportEntries,
-  toRow as datasetToRow,
-} from './components/dataset-results-table';
-import {
-  CUSTOM_COLUMN_ORDER_STORAGE_KEY as DATASET_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
-  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as DATASET_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-  CustomizeColumnsPopover as DatasetCustomizeColumnsPopover,
-  DEFAULT_VISIBLE_COLUMN_IDS as DATASET_DEFAULT_VISIBLE_COLUMN_IDS,
-} from './components/dataset-results-table/components/CustomizeColumnsPopover';
 import { EmptyState } from './components/empty';
 import { ErrorMessage } from './components/error';
 import { MAX_RESULTS, Pagination } from './components/pagination';
-import {
-  COMPUTATIONAL_TOOL_FALLBACK_COLUMN_IDS,
-  COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS,
-  DATA_COLLECTION_REQUIRED_COLUMN_IDS,
-  DATASET_FALLBACK_COLUMN_IDS,
-  DATASET_REQUIRED_COLUMN_IDS,
-  SAMPLE_REQUIRED_COLUMN_IDS,
-} from './components/results-table/constants';
-import { buildExportColumns } from './components/results-table/export';
-import {
-  ALL_SAMPLE_COLUMNS,
-  getExportEntries as getSampleExportEntries,
-  SampleResultsTable,
-  toRow as sampleToRow,
-} from './components/sample-results-table';
-import {
-  CUSTOM_COLUMN_ORDER_STORAGE_KEY as SAMPLE_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
-  CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY as SAMPLE_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-  CustomizeColumnsPopover as SampleCustomizeColumnsPopover,
-  DEFAULT_VISIBLE_COLUMN_IDS as SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS,
-} from './components/sample-results-table/components/CustomizeColumnsPopover';
+import { SEARCH_TABLES } from './components/results-table/tables';
 import { SearchResultsToolbar } from './components/toolbar';
 import { ViewModeRadio } from './components/toolbar/components/view-mode-radio';
 import { getSectionFilters } from './utils/resource-type-filter';
 
-const readFromStorage = (key: string, fallback: string[]): string[] => {
-  if (typeof window === 'undefined') return fallback;
-  try {
-    const stored = window.localStorage.getItem(key);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch {
-    // ignore
-  }
-  return fallback;
-};
-
-// Read the persisted visible column IDs from localStorage.
-// Falls back to the default subset when no stored value exists.
-const getInitialVisibleColumnIds = (): string[] => {
-  const stored = readFromStorage(
-    SAMPLE_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-    SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS,
-  );
-  const allIds = ALL_SAMPLE_COLUMNS.map(c => c.id);
-  const valid = stored.filter((id: string) => allIds.includes(id));
-  return valid.length > 0 ? valid : SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS;
-};
-
-// Read the persisted column order from localStorage.
-// Falls back to the master column order when no stored value exists.
-const getInitialColumnOrder = (): string[] => {
-  const allIds = ALL_SAMPLE_COLUMNS.map(c => c.id);
-  const stored = readFromStorage(
-    SAMPLE_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
-    allIds,
-  );
-  const valid = stored.filter((id: string) => allIds.includes(id));
-  if (valid.length > 0) {
-    const missing = allIds.filter(id => !valid.includes(id));
-    return [...valid, ...missing];
-  }
-  return allIds;
-};
-
-const getInitialDataCollectionVisibleColumnIds = (): string[] => {
-  const stored = readFromStorage(
-    DC_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-    DC_DEFAULT_VISIBLE_COLUMN_IDS,
-  );
-  const allIds = ALL_DATA_COLLECTION_COLUMNS.map(c => c.id);
-  const valid = stored.filter((id: string) => allIds.includes(id));
-  return valid.length > 0 ? valid : DC_DEFAULT_VISIBLE_COLUMN_IDS;
-};
-
-const getInitialDataCollectionColumnOrder = (): string[] => {
-  const allIds = ALL_DATA_COLLECTION_COLUMNS.map(c => c.id);
-  const stored = readFromStorage(DC_CUSTOM_COLUMN_ORDER_STORAGE_KEY, allIds);
-  const valid = stored.filter((id: string) => allIds.includes(id));
-  if (valid.length > 0) {
-    const missing = allIds.filter(id => !valid.includes(id));
-    return [...valid, ...missing];
-  }
-  return allIds;
-};
-
-// The Dataset table resolves its persisted state through the popover's own
-// exported resolvers, which apply the required-column rules (always visible,
-// pinned first) that the hand-rolled helpers above do not.
-const ALL_DATASET_COLUMN_IDS = ALL_DATASET_COLUMNS.map(c => c.id);
-const DATASET_REQUIRED_IDS = DATASET_REQUIRED_COLUMN_IDS as unknown as string[];
-
-const getInitialDatasetVisibleColumnIds = (): string[] =>
-  resolveStoredVisibleIds({
-    storageKey: DATASET_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-    allIds: ALL_DATASET_COLUMN_IDS,
-    defaultVisibleIds: DATASET_DEFAULT_VISIBLE_COLUMN_IDS,
-    requiredIds: DATASET_REQUIRED_IDS,
-  });
-
-const getInitialDatasetColumnOrder = (): string[] =>
-  resolveStoredOrderedIds({
-    storageKey: DATASET_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
-    allIds: ALL_DATASET_COLUMN_IDS,
-    requiredIds: DATASET_REQUIRED_IDS,
-  });
-
-const ALL_CT_COLUMN_IDS = ALL_COMPUTATIONAL_TOOL_COLUMNS.map(c => c.id);
-const CT_REQUIRED_IDS =
-  COMPUTATIONAL_TOOL_REQUIRED_COLUMN_IDS as unknown as string[];
-
-const getInitialCTVisibleColumnIds = (): string[] =>
-  resolveStoredVisibleIds({
-    storageKey: CT_CUSTOM_VISIBLE_COLUMNS_STORAGE_KEY,
-    allIds: ALL_CT_COLUMN_IDS,
-    defaultVisibleIds: CT_DEFAULT_VISIBLE_COLUMN_IDS,
-    requiredIds: CT_REQUIRED_IDS,
-  });
-
-const getInitialCTColumnOrder = (): string[] =>
-  resolveStoredOrderedIds({
-    storageKey: CT_CUSTOM_COLUMN_ORDER_STORAGE_KEY,
-    allIds: ALL_CT_COLUMN_IDS,
-    requiredIds: CT_REQUIRED_IDS,
-  });
-
-// Build the ColumnConfig list expected by each CustomizeColumnsPopover.
-const SAMPLE_COLUMN_CONFIGS = ALL_SAMPLE_COLUMNS.map(col => ({
-  id: col.id,
-  title: col.title,
-}));
-
-const DATASET_COLUMN_CONFIGS = ALL_DATASET_COLUMNS.map(col => ({
-  id: col.id,
-  title: col.title,
-}));
-
-const COMPUTATIONAL_TOOL_COLUMN_CONFIGS = ALL_COMPUTATIONAL_TOOL_COLUMNS.map(
-  col => ({
-    id: col.id,
-    title: col.title,
-  }),
-);
-
-const DATA_COLLECTION_COLUMN_CONFIGS = ALL_DATA_COLLECTION_COLUMNS.map(col => ({
-  id: col.id,
-  title: col.title,
-}));
-
 /*
 [COMPONENT INFO]:
  Search results pages displays the list of records returned by a search.
- Contains pagination and search results cards. When the active tab is the
- Samples tab ('s') or the DataCollection tab ('dc'), results are rendered
- as a table instead of cards.
+ Contains pagination and search results cards. The Samples tab always shows
+ a table; the other tabs show a table instead of cards in their table view
+ (see SEARCH_TABLES).
 */
 
 export const SearchResults = ({
   id,
   tabs,
   types,
+  tabCountsPending = false,
 }: {
   id: TabType['id'];
   tabs: TabType[];
   types: string[];
+  /**
+   * The result counts that pick the active tab are still loading for this
+   * search. They can move the page to another tab, so until they arrive an
+   * empty page here shows as loading, not as "No results found".
+   */
+  tabCountsPending?: boolean;
 }) => {
   const router = useRouter();
 
@@ -278,6 +98,13 @@ export const SearchResults = ({
     (!SHOW_SEARCH_VIEW_MODES ||
       !SHOW_DATA_COLLECTIONS_VIEW_MODES ||
       viewMode === 'table');
+  // The tab's table (see SEARCH_TABLES), when it shows one rather than cards.
+  const showsTable =
+    isSamplesTab ||
+    isDatasetTable ||
+    isComputationalToolTable ||
+    isDataCollectionTable;
+  const searchTable = showsTable ? SEARCH_TABLES[id] : undefined;
 
   // Each tab type uses a minimal, tab-specific field list rather than the
   // shared RESULT_FIELDS base (which carries many fields that other tabs never
@@ -292,117 +119,12 @@ export const SearchResults = ({
     ? DATA_COLLECTION_FIELDS
     : RESULT_FIELDS;
 
-  // Only initialize column state for the tab type that this instance actually
-  // renders. Avoid paying the localStorage read cost for the other table
-  // type on every mount.
-  const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(() =>
-    isSamplesTab
-      ? getInitialVisibleColumnIds()
-      : SAMPLE_DEFAULT_VISIBLE_COLUMN_IDS,
-  );
-  const [columnOrder, setColumnOrder] = useState<string[]>(() =>
-    isSamplesTab ? getInitialColumnOrder() : ALL_SAMPLE_COLUMNS.map(c => c.id),
-  );
-  const [dcVisibleColumnIds, setDcVisibleColumnIds] = useState<string[]>(() =>
-    isDataCollectionTable
-      ? getInitialDataCollectionVisibleColumnIds()
-      : DC_DEFAULT_VISIBLE_COLUMN_IDS,
-  );
-  const [dcColumnOrder, setDcColumnOrder] = useState<string[]>(() =>
-    isDataCollectionTable
-      ? getInitialDataCollectionColumnOrder()
-      : ALL_DATA_COLLECTION_COLUMNS.map(c => c.id),
-  );
-  const [datasetVisibleColumnIds, setDatasetVisibleColumnIds] = useState<
-    string[]
-  >(() =>
-    isDatasetTable
-      ? getInitialDatasetVisibleColumnIds()
-      : DATASET_DEFAULT_VISIBLE_COLUMN_IDS,
-  );
-  const [datasetColumnOrder, setDatasetColumnOrder] = useState<string[]>(() =>
-    isDatasetTable ? getInitialDatasetColumnOrder() : ALL_DATASET_COLUMN_IDS,
-  );
-  const [ctVisibleColumnIds, setCtVisibleColumnIds] = useState<string[]>(() =>
-    isComputationalToolTable
-      ? getInitialCTVisibleColumnIds()
-      : CT_DEFAULT_VISIBLE_COLUMN_IDS,
-  );
-  const [ctColumnOrder, setCtColumnOrder] = useState<string[]>(() =>
-    isComputationalToolTable ? getInitialCTColumnOrder() : ALL_CT_COLUMN_IDS,
-  );
-
-  // The table view currently shown, described for the XLSX "Custom Result
-  // View" download: its visible columns in the user's order, and the same row
-  // shaping the table applies.
-  const customViewExport = useMemo<CustomViewExport | undefined>(() => {
-    if (isSamplesTab) {
-      return {
-        sheetName: 'Samples',
-        toRow: sampleToRow,
-        columns: buildExportColumns({
-          columns: ALL_SAMPLE_COLUMNS,
-          visibleColumnIds,
-          columnOrder,
-          requiredColumnIds: SAMPLE_REQUIRED_COLUMN_IDS,
-          getExportEntries: getSampleExportEntries,
-        }),
-      };
-    }
-    if (isDataCollectionTable) {
-      return {
-        sheetName: 'Data Collections',
-        toRow: dataCollectionToRow,
-        columns: buildExportColumns({
-          columns: ALL_DATA_COLLECTION_COLUMNS,
-          visibleColumnIds: dcVisibleColumnIds,
-          columnOrder: dcColumnOrder,
-          requiredColumnIds: DATA_COLLECTION_REQUIRED_COLUMN_IDS,
-          getExportEntries: getDataCollectionExportEntries,
-        }),
-      };
-    }
-    if (isDatasetTable) {
-      return {
-        sheetName: 'Datasets',
-        toRow: datasetToRow,
-        columns: buildExportColumns({
-          columns: ALL_DATASET_COLUMNS,
-          visibleColumnIds: datasetVisibleColumnIds,
-          columnOrder: datasetColumnOrder,
-          requiredColumnIds: DATASET_FALLBACK_COLUMN_IDS,
-          getExportEntries: getDatasetExportEntries,
-        }),
-      };
-    }
-    if (isComputationalToolTable) {
-      return {
-        sheetName: 'Computational Tools',
-        toRow: computationalToolToRow,
-        columns: buildExportColumns({
-          columns: ALL_COMPUTATIONAL_TOOL_COLUMNS,
-          visibleColumnIds: ctVisibleColumnIds,
-          columnOrder: ctColumnOrder,
-          requiredColumnIds: COMPUTATIONAL_TOOL_FALLBACK_COLUMN_IDS,
-          getExportEntries: getComputationalToolExportEntries,
-        }),
-      };
-    }
-    return undefined;
-  }, [
-    isSamplesTab,
-    isDataCollectionTable,
-    isDatasetTable,
-    isComputationalToolTable,
-    visibleColumnIds,
-    columnOrder,
-    dcVisibleColumnIds,
-    dcColumnOrder,
-    datasetVisibleColumnIds,
-    datasetColumnOrder,
-    ctVisibleColumnIds,
-    ctColumnOrder,
-  ]);
+  // The table view shown, described for the XLSX "Custom Result View"
+  // download: its visible columns in the user's order, as the table shows
+  // them. Card views have none. Every tab has a table, so the hook runs in
+  // both views and the hook order never changes.
+  const tableExport = SEARCH_TABLES[id].useCustomViewExport();
+  const customViewExport = searchTable ? tableExport : undefined;
 
   // Drops results that aren't one of this section's types. Most queries are
   // already scoped to them, but when the selected `@type` filter excludes
@@ -447,8 +169,17 @@ export const SearchResults = ({
     },
   );
 
-  const { data, isLoading, isRefetching, isFetching, error, isFetched } =
-    response;
+  const { data, isRefetching, isFetching, error, isFetched } = response;
+
+  // A filter can leave this section empty while another tab has results
+  // (e.g. a source with only Data Collections, picked on the Datasets tab).
+  // The page then switches to that tab once the tab counts arrive (see the
+  // tabs controller), but this section's results often arrive first. Showing
+  // the empty state in that gap flashes "No results found" for a filter that
+  // does have results, so keep loading until the counts are in.
+  const isLoading =
+    response.isLoading ||
+    (tabCountsPending && !error && !data?.results?.length);
 
   const { markResultsFetching, markResultsFetched } =
     useSearchResultsFetchedContext();
@@ -528,7 +259,7 @@ export const SearchResults = ({
   return (
     <>
       <VStack borderRadius='semi' px={4} py={2}>
-        {/* Toolbar controls: Sort, size, download metadata, and optional extra actions. Whenever a table is being rendered (Samples, and Datasets/Computational Tools/Data Collections in table view) the "Customize Columns" button is injected via the extraActions prop so it appears to the left of Download Metadata. */}
+        {/* Toolbar controls: Sort, size, download metadata, and optional extra actions. Whenever a table is shown, its "Customize Columns" button is injected via the extraActions prop so it appears to the left of Download Metadata. */}
         <SearchResultsToolbar
           id={id}
           params={params}
@@ -546,31 +277,7 @@ export const SearchResults = ({
             ) : undefined
           }
           extraActions={
-            isSamplesTab ? (
-              <SampleCustomizeColumnsPopover
-                columnsList={SAMPLE_COLUMN_CONFIGS}
-                onVisibleColumnsChange={setVisibleColumnIds}
-                onColumnOrderChange={setColumnOrder}
-              />
-            ) : isDataCollectionTable ? (
-              <DataCollectionCustomizeColumnsPopover
-                columnsList={DATA_COLLECTION_COLUMN_CONFIGS}
-                onVisibleColumnsChange={setDcVisibleColumnIds}
-                onColumnOrderChange={setDcColumnOrder}
-              />
-            ) : isDatasetTable ? (
-              <DatasetCustomizeColumnsPopover
-                columnsList={DATASET_COLUMN_CONFIGS}
-                onVisibleColumnsChange={setDatasetVisibleColumnIds}
-                onColumnOrderChange={setDatasetColumnOrder}
-              />
-            ) : isComputationalToolTable ? (
-              <ComputationalToolCustomizeColumnsPopover
-                columnsList={COMPUTATIONAL_TOOL_COLUMN_CONFIGS}
-                onVisibleColumnsChange={setCtVisibleColumnIds}
-                onColumnOrderChange={setCtColumnOrder}
-              />
-            ) : undefined
+            searchTable ? <searchTable.ColumnCustomizer /> : undefined
           }
         />
 
@@ -594,48 +301,15 @@ export const SearchResults = ({
           </Alert>
         )}
 
-        {/* Samples tab */}
-        {isSamplesTab ? (
-          <SampleResultsTable
+        {searchTable ? (
+          <searchTable.Table
             results={data?.results || []}
-            loading={!router.isReady || isLoading}
-            visibleColumnIds={visibleColumnIds}
-            columnOrder={columnOrder}
+            // Any fetch, not just the first: a refetch of cached results
+            // keeps them up with a small loading indicator over the rows.
+            // `isLoading` adds an empty page held for the tab counts.
+            loading={!router.isReady || isFetching || isLoading}
             currentSort={sort}
             onSortChange={handleSortChange}
-          />
-        ) : isDataCollectionTable ? (
-          /* DataCollection tab in table view */
-          <DataCollectionResultsTable
-            results={data?.results || []}
-            loading={!router.isReady || isLoading}
-            visibleColumnIds={dcVisibleColumnIds}
-            columnOrder={dcColumnOrder}
-            currentSort={sort}
-            onSortChange={handleSortChange}
-            referrerPath={router.asPath}
-          />
-        ) : isDatasetTable ? (
-          /* Datasets tab in table view */
-          <DatasetResultsTable
-            results={data?.results || []}
-            loading={!router.isReady || isLoading}
-            visibleColumnIds={datasetVisibleColumnIds}
-            columnOrder={datasetColumnOrder}
-            currentSort={sort}
-            onSortChange={handleSortChange}
-            referrerPath={router.asPath}
-          />
-        ) : isComputationalToolTable ? (
-          /* Computational Tools tab in table view */
-          <ComputationalToolResultsTable
-            results={data?.results || []}
-            loading={!router.isReady || isLoading}
-            visibleColumnIds={ctVisibleColumnIds}
-            columnOrder={ctColumnOrder}
-            currentSort={sort}
-            onSortChange={handleSortChange}
-            referrerPath={router.asPath}
           />
         ) : (
           /* Dataset / ComputationalTool / DataCollection tabs in card view: render result cards */
@@ -654,7 +328,12 @@ export const SearchResults = ({
                   .fill(null)
                   .map((_, idx) => {
                     return (
-                      <List.Item key={data?.results?.[idx]._id || idx} w='100%'>
+                      // No result at `idx` while loading, including an empty
+                      // page held for the tab counts.
+                      <List.Item
+                        key={data?.results?.[idx]?._id || idx}
+                        w='100%'
+                      >
                         <Card
                           loading={!router.isReady || isLoading}
                           data={data?.results[idx]}

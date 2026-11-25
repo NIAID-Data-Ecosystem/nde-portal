@@ -27,10 +27,7 @@ import {
 } from 'src/components/page-container';
 import { useSourcesList } from 'src/hooks/api/useSourcesList';
 import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
-import {
-  formatConditionsOfAccess,
-  transformConditionsOfAccessLabel,
-} from 'src/utils/formatting/formatConditionsOfAccess';
+import { formatConditionsOfAccess } from 'src/utils/formatting/formatConditionsOfAccess';
 import {
   fetchAllFeaturedPages,
   transformFeaturedContentForCarousel,
@@ -42,6 +39,7 @@ import {
   NewsCarousel,
 } from 'src/views/home/components/NewsCarousel';
 import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
+import { RESOURCES_TABLE_COLUMNS } from 'src/views/home/components/TableWithSearch/columns';
 import { formatDomainName } from 'src/views/home/components/TableWithSearch/helpers';
 import { TOPIC_CARDS } from 'src/views/home/config/topic-cards';
 import { useReadLocalStorage } from 'usehooks-ts';
@@ -77,9 +75,8 @@ const Home: NextPage<{
           _id: item._id || '',
           abstract: item.abstract || '',
           name: item.name,
-          conditionsOfAccess: transformConditionsOfAccessLabel(
-            formatConditionsOfAccess(item.conditionsOfAccess),
-          ),
+          conditionsOfAccess:
+            formatConditionsOfAccess(item.conditionsOfAccess) || '',
           domain,
           type: item.type,
           url: item.searchURL,
@@ -236,42 +233,12 @@ const Home: NextPage<{
                 <Separator my={4} />
 
                 <TableWithSearch
-                  ariaLabel='List of repositories and resource catalogs'
-                  caption='List of repositories and resource catalogs'
+                  label='List of repositories and resource catalogs'
                   data={tableData}
                   loading={repositoriesIsLoading}
-                  columns={[
-                    {
-                      title: 'name',
-                      property: 'name',
-                      isSortable: true,
-                      props: { maxW: '280px', minW: '280px' },
-                    },
-                    {
-                      title: 'description',
-                      property: 'abstract',
-                    },
-                    {
-                      title: 'Type',
-                      property: 'type',
-                      isSortable: true,
-                      props: { maxW: '180px', minW: '180px' },
-                    },
-                    {
-                      title: 'Research Domain',
-                      property: 'domain',
-                      isSortable: true,
-                      props: { maxW: '225px', minW: '225px' },
-                    },
-                    {
-                      title: 'access',
-                      property: 'conditionsOfAccess',
-                      isSortable: true,
-                      props: { maxW: '150px', minW: '150px' },
-                    },
-                  ]}
+                  columns={RESOURCES_TABLE_COLUMNS}
                   emptyState={
-                    <Flex direction='column' align='center' py={10}>
+                    <Flex direction='column' align='center'>
                       <Text fontWeight='bold'>No items match</Text>
                       <Text color='gray.600'>
                         Try clearing some filters or broadening your search.

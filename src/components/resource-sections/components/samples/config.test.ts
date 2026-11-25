@@ -56,7 +56,7 @@ describe('samples config', () => {
       { identifier: { identifier: 'S2', url: '' }, a: 1, b: 2 },
     ]);
 
-    expect(SAMPLE_COLLECTION_TABLE_CONFIG.caption).toBe(
+    expect(SAMPLE_COLLECTION_TABLE_CONFIG.label).toBe(
       'CAPTION(itemListElement)',
     );
   });

@@ -1,7 +1,7 @@
 import { FormattedResource } from 'src/utils/api/types';
 import { formatTermLabel } from 'src/utils/formatting/formatTermLabel';
 
-import { toArray } from '../components/results-table/utils';
+import { toArray } from '../components/results-table/shaping';
 
 /*
  * Reads Content Type values from both `about` and `exampleOfWork.about`.

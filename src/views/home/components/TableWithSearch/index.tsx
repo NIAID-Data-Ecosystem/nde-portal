@@ -1,12 +1,9 @@
-import { Box, Flex, SkeletonText, Stack, Tag, Text } from '@chakra-ui/react';
-import NextLink from 'next/link';
+import { Box, Flex, Stack, Tag, Text } from '@chakra-ui/react';
 import React, { useCallback, useState } from 'react';
-import { Link } from 'src/components/link';
-import { SearchInput, SearchInputProps } from 'src/components/search-input';
-import { Table } from 'src/components/table';
+import { SearchInput } from 'src/components/search-input';
+import { ColumnDef, DataTable, SortState } from 'src/components/table';
 
 import { Filters } from './filters/';
-import { formatDomainName, formatTypeName } from './helpers';
 import useFilteredData from './hooks/useFilteredData';
 
 export interface TableData {
@@ -21,27 +18,25 @@ export interface TableData {
 [];
 
 interface TableWithSearchProps {
-  ariaLabel: string;
-  caption: string;
-  columns: Column[];
+  /** The table's accessible name (its visually hidden caption). */
+  label: string;
+  /** Keep the array stable (a module constant): cells memoize on it. */
+  columns: ColumnDef<TableData>[];
   data?: TableData[];
   loading?: boolean;
-  getCells?: (props: {
-    column: Column;
-    data: any;
-    loading?: boolean;
-  }) => React.ReactNode;
-  searchInputProps?: Partial<SearchInputProps>;
+  /** Shown in the table when search and filters leave no rows. */
   emptyState?: React.ReactNode;
 }
+
+const INITIAL_SORT: SortState = { columnId: 'name', direction: 'asc' };
+const getRowId = (row: TableData, index: number) => row._id || `row-${index}`;
 
 export const TableWithSearch: React.FC<TableWithSearchProps> = ({
   data = [],
   loading,
   columns,
-  searchInputProps,
   emptyState,
-  ...props
+  label,
 }) => {
   /****** Handle Filters ******/
   const [filters, setFilters] = useState<
@@ -101,6 +96,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
               handleChange={handleSearchChange}
               isResponsive={false}
               alignItems='flex-end'
+              colorPalette='primary'
               onClose={() => setSearchTerm('')}
             />
             {/* <!-- Filters --> */}
@@ -162,107 +158,18 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
           </Stack>
 
           {/* <!-- Table --> */}
-          <Table
-            emptyState={emptyState}
-            stickyHeader
-            data={loading ? Array(10).fill({}) : filteredData}
-            tableHeadProps={{ bg: 'bg.alt' }}
-            getTableRowProps={(_, idx: number) => ({
-              bg: idx % 2 ? 'bg.alt' : 'white',
-            })}
-            tableContainerProps={{ overflowY: 'auto', maxHeight: '500px' }}
-            getCells={props => <RepositoryCells {...props} loading={loading} />}
+          <DataTable
+            label={label}
+            data={filteredData}
             columns={columns}
-            {...props}
+            getRowId={getRowId}
+            sort={{ initial: INITIAL_SORT }}
+            maxHeight='500px'
+            skeletonRows={10}
+            status={{ loading, empty: emptyState }}
           />
         </Flex>
       )}
     </>
-  );
-};
-
-interface Column {
-  title: string;
-  property: string;
-  isSortable?: boolean;
-  props?: any;
-  fields?: (keyof TableData)[];
-}
-export const RepositoryCells = ({
-  column,
-  data,
-  loading,
-}: {
-  column: Column;
-  data: TableData;
-  loading?: boolean;
-}) => {
-  return (
-    <Flex id={`cell-${data._id}-${column.property}`} py={1}>
-      {/* Repository/Resource Catalog name */}
-      {column.property === 'name' && (
-        <SkeletonText
-          data-testid={loading ? 'loading' : 'loaded'}
-          loading={!Boolean(!loading && data._id)}
-          noOfLines={2}
-          w='100%'
-          fontSize='sm'
-        >
-          {data?.url ? (
-            <Link asChild>
-              <NextLink href={data.url} prefetch={false}>
-                {data[column.property]}
-              </NextLink>
-            </Link>
-          ) : (
-            <Text>{data[column.property]}</Text>
-          )}
-        </SkeletonText>
-      )}
-      {/* Repository/Resource Catalog brief description */}
-      {column.property === 'abstract' && (
-        <SkeletonText
-          data-testid={loading ? 'loading' : 'loaded'}
-          loading={!Boolean(!loading && data._id)}
-          gap='2'
-          w='100%'
-          fontSize='sm'
-        >
-          <Text lineClamp={3}>{data[column.property]}</Text>
-        </SkeletonText>
-      )}
-      {/* Repository / Resource Catalog type, domain and conditions of access */}
-      {(column.property === 'type' ||
-        column.property === 'domain' ||
-        column.property === 'conditionsOfAccess') && (
-        <SkeletonText
-          fontWeight='semibold'
-          data-testid={loading ? 'loading' : 'loaded'}
-          loading={!Boolean(!loading && data._id)}
-          w='100%'
-          h='100%'
-          fontSize='sm'
-          noOfLines={2}
-        >
-          {column.property === 'type' &&
-            (data.type && data.type.length > 0
-              ? data.type
-                  .map(type => formatTypeName(type))
-                  .sort((a, b) => a.localeCompare(b))
-                  .join(', ')
-              : '-')}
-          {column.property === 'domain' &&
-            (data.domain
-              ? formatDomainName(data.domain)
-                  .sort((a, b) => a.localeCompare(b))
-                  .join(', ')
-              : '-')}
-          {column.property === 'conditionsOfAccess' &&
-            (data['conditionsOfAccess']
-              ? `${data['conditionsOfAccess']}`
-              : '-')}
-        </SkeletonText>
-      )}
-    </Flex>
   );
 };

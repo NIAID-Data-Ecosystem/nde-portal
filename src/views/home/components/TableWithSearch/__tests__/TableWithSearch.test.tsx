@@ -4,6 +4,7 @@ import { renderWithClient } from 'src/__tests__/mocks/utils';
 import { render, screen, waitFor, within } from 'src/__tests__/utils/render';
 
 import { TableData, TableWithSearch } from '..';
+import { RESOURCES_TABLE_COLUMNS } from '../columns';
 
 const mockData = [
   {
@@ -39,44 +40,22 @@ const mockData = [
     type: ['Dataset Repository'],
   },
 ] as TableData[];
-const mockColumns = [
-  {
-    title: 'name',
-    property: 'name',
-    isSortable: true,
-    props: { maxW: '280px', minW: '280px' },
-  },
-  {
-    title: 'description',
-    property: 'abstract',
-  },
-  {
-    title: 'Type',
-    property: 'type',
-    isSortable: true,
-    props: { maxW: '180px', minW: '180px' },
-  },
-  {
-    title: 'Research Domain',
-    property: 'domain',
-    isSortable: true,
-    props: { maxW: '225px', minW: '225px' },
-  },
-  {
-    title: 'access',
-    property: 'conditionsOfAccess',
-    isSortable: true,
-    props: { maxW: '150px', minW: '150px' },
-  },
-];
+const mockColumns = RESOURCES_TABLE_COLUMNS;
 
 describe('TableWithSearch Component', () => {
-  const ariaLabel = 'Table of repositories and resource catalogs';
-  const defaultProps = {
-    ariaLabel,
-    caption: 'List of repositories and resource catalogs',
-    loading: false,
-  };
+  const label = 'List of repositories and resource catalogs';
+  const defaultProps = { label, loading: false };
+
+  /** Body rows' cell text, in order. */
+  const getBodyRows = () =>
+    within(screen.getByRole('table', { name: label }))
+      .getAllByRole('row')
+      .slice(1)
+      .map(row =>
+        within(row)
+          .getAllByRole('cell')
+          .map(cell => cell.textContent),
+      );
 
   it('renders without crashing', () => {
     // render with client used for chakra ui skeleton components
@@ -87,9 +66,7 @@ describe('TableWithSearch Component', () => {
         {...defaultProps}
       />,
     );
-    const table = screen.getByRole('table', {
-      name: ariaLabel,
-    });
+    const table = screen.getByRole('table', { name: label });
     expect(table).toBeInTheDocument();
   });
 
@@ -98,6 +75,97 @@ describe('TableWithSearch Component', () => {
       <TableWithSearch data={[]} columns={mockColumns} {...defaultProps} />,
     );
     expect(screen.getByText('No results found.')).toBeInTheDocument();
+  });
+
+  it('starts sorted by name, ascending', () => {
+    renderWithClient(
+      <TableWithSearch
+        data={mockData}
+        columns={mockColumns}
+        {...defaultProps}
+      />,
+    );
+    expect(getBodyRows().map(cells => cells[0])).toEqual([
+      'Sample Article',
+      'Source 1',
+      'Source 2',
+      'Source 3',
+    ]);
+    expect(screen.getByRole('columnheader', { name: 'Name' })).toHaveAttribute(
+      'aria-sort',
+      'ascending',
+    );
+  });
+
+  it('links names to their url and lists types and domains alphabetically', () => {
+    renderWithClient(
+      <TableWithSearch
+        data={[
+          {
+            _id: 'source_05',
+            name: 'Linked Source',
+            abstract: 'Has a link',
+            domain: ['IID', 'Generalist'],
+            conditionsOfAccess: 'Open',
+            type: ['Resource Catalog', 'Dataset Repository'],
+            url: '/search?q=linked',
+          },
+        ]}
+        columns={mockColumns}
+        {...defaultProps}
+      />,
+    );
+    expect(screen.getByRole('link', { name: 'Linked Source' })).toHaveAttribute(
+      'href',
+      '/search?q=linked',
+    );
+    expect(getBodyRows()[0]).toEqual([
+      'Linked Source',
+      'Has a link',
+      'Dataset Repository, Resource Catalog',
+      'Generalist, IID',
+      'Open Access',
+    ]);
+  });
+
+  it('shows "No data" for missing values', () => {
+    renderWithClient(
+      <TableWithSearch
+        data={[
+          {
+            _id: 'source_06',
+            name: 'Sparse Source',
+            domain: '',
+            conditionsOfAccess: '',
+            type: [],
+          },
+        ]}
+        columns={mockColumns}
+        {...defaultProps}
+      />,
+    );
+    expect(getBodyRows()[0]).toEqual([
+      'Sparse Source',
+      '—No data',
+      '—No data',
+      '—No data',
+      '—No data',
+    ]);
+  });
+
+  it('shows the empty state when the search matches nothing', async () => {
+    const user = userEvent.setup();
+    renderWithClient(
+      <TableWithSearch
+        data={mockData}
+        columns={mockColumns}
+        emptyState={<p>No items match</p>}
+        {...defaultProps}
+      />,
+    );
+    await user.type(screen.getByLabelText('Search table'), 'zzz-no-match');
+    expect(await screen.findByText('No items match')).toBeInTheDocument();
+    expect(screen.getByText('0 results')).toBeInTheDocument();
   });
 
   it('updates search term and filters data', async () => {
@@ -126,7 +194,10 @@ describe('TableWithSearch Component', () => {
       />,
     );
     // Find the filter and simulate a click
-    const typeButton = screen.getByRole('button', { name: /type/i });
+    const typeButton = screen.getByRole('button', {
+      name: /type/i,
+      expanded: false,
+    });
     await user.click(typeButton);
     const checkboxInput = await screen.findByRole('checkbox', {
       name: 'Resource Catalog',
@@ -156,7 +227,9 @@ describe('TableWithSearch Component', () => {
       />,
     );
 
-    await user.click(screen.getByRole('button', { name: /type/i }));
+    await user.click(
+      screen.getByRole('button', { name: /type/i, expanded: false }),
+    );
 
     // Scope inside the filter menu, which is a `menu` (not a dialog) in v3.
     const menu = await screen.findByRole('menu');

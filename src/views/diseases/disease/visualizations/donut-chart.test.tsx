@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 
 import React from 'react';
-import { fireEvent, render, screen } from 'src/__tests__/utils/render';
+import { act, fireEvent, render, screen } from 'src/__tests__/utils/render';
 
 import { DonutChart, DonutChartProps } from './donut-chart';
 
@@ -83,15 +83,24 @@ describe('DonutChart', () => {
     });
   });
 
-  it('toggles logarithmic scaling when the checkbox is clicked', () => {
+  it('toggles logarithmic scaling when the checkbox is clicked', async () => {
     render(<DonutChart {...defaultProps} />);
     const checkbox = screen.getByRole('checkbox', { name: /apply log scale/i });
     expect(checkbox).toBeChecked();
 
-    fireEvent.click(checkbox);
+    /*
+    zag reports the change in a microtask, so click inside an async `act`.
+    Otherwise the state update lands after the test, and the assertions only
+    see the native input's own toggle, not the controlled `checked` value.
+    */
+    await act(async () => {
+      fireEvent.click(checkbox);
+    });
     expect(checkbox).not.toBeChecked();
 
-    fireEvent.click(checkbox);
+    await act(async () => {
+      fireEvent.click(checkbox);
+    });
     expect(checkbox).toBeChecked();
   });
 

@@ -96,6 +96,8 @@ export const PopoverListItem = ({
         >
           <Flex
             {...(dragDisabled ? {} : { ...attributes, ...listeners })}
+            // dnd-kit makes the handle a button; it needs a name of its own.
+            aria-label={dragDisabled ? undefined : `Reorder ${item.title}`}
             cursor={dragDisabled ? 'not-allowed' : 'grab'}
             color={dragDisabled ? 'gray.300' : 'gray.400'}
             _hover={{ color: dragDisabled ? 'gray.300' : 'gray.600' }}
@@ -149,6 +151,9 @@ export const PopoverListItem = ({
           alignItems='center'
           opacity={0}
           _hover={{ opacity: isRequired ? 0 : 1 }}
+          // Keyboard users tab onto these buttons, so they must show on focus
+          // too, not only on pointer hover.
+          _focusWithin={{ opacity: isRequired ? 0 : 1 }}
           transition='opacity 0.15s'
         >
           <IconButton

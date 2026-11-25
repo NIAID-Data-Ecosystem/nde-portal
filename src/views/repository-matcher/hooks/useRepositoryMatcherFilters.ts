@@ -2,19 +2,18 @@ import { useMemo } from 'react';
 import { FILTERABLE_REPOSITORY_MATCHER_COLUMNS } from 'src/views/repository-matcher/table-config';
 import { FilterTermType } from 'src/views/search/components/filters/types';
 
-import { RepositoryMatcherColumn } from '../types';
-import { RepositoryMatcherRow } from './useRepositoryMatcherData';
+import { RepositoryMatcherColumn, RepositoryMatcherRow } from '../types';
 
 export type SelectedRepositoryMatcherFilters = Record<string, string[]>;
 
 const getRowValues = (
   row: RepositoryMatcherRow,
-  col: RepositoryMatcherColumn<any>,
+  col: RepositoryMatcherColumn,
 ): string[] => col.filter?.getFilterValues(row[col.id]) ?? [];
 
 const rowPassesColumn = (
   row: RepositoryMatcherRow,
-  col: RepositoryMatcherColumn<any>,
+  col: RepositoryMatcherColumn,
   selected: string[],
 ): boolean => {
   if (!selected?.length) return true;

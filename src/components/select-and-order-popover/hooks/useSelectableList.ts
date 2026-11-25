@@ -124,13 +124,8 @@ const ensureRequired = (
   ...ids,
 ];
 
-/**
- * Synchronously resolve the visible-IDs set the popover would hydrate to.
- * Exposed so consumers can lazy-initialize their own state from the same
- * storage key on the client's first render — avoiding a re-render once the
- * popover finishes hydrating from localStorage.
- */
-export const resolveStoredVisibleIds = ({
+/** Resolve the visible-IDs set the popover hydrates to from storage. */
+const resolveStoredVisibleIds = ({
   storageKey,
   allIds,
   defaultVisibleIds,
@@ -155,11 +150,8 @@ export const resolveStoredVisibleIds = ({
   return ensureRequired(resolved, requiredIds, allIds);
 };
 
-/**
- * Synchronously resolve the column-order list the popover would hydrate to.
- * Counterpart to [[resolveStoredVisibleIds]] for ordering.
- */
-export const resolveStoredOrderedIds = ({
+/** Counterpart to `resolveStoredVisibleIds` for the order. */
+const resolveStoredOrderedIds = ({
   storageKey,
   allIds,
   requiredIds = [],

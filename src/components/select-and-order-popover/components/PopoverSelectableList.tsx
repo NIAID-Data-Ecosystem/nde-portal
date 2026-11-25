@@ -3,6 +3,7 @@ import {
   closestCenter,
   DndContext,
   KeyboardSensor,
+  type Modifier,
   PointerSensor,
   useSensor,
   useSensors,
@@ -57,6 +58,39 @@ interface PopoverSelectableListProps {
   /** Max height of the scrollable list area. Defaults to '20rem'. */
   maxHeight?: string;
 }
+
+/**
+ * Keeps the dragged row on the vertical axis and inside the list's visible
+ * area.
+ *
+ * dnd-kit moves the row with a transform, and a transformed row past the
+ * scroller's edge enlarges the scroller's overflow. Auto-scroll then scrolls
+ * into that new overflow, and dnd-kit adds the scrolled distance to the row's
+ * transform to keep it under the pointer. That pushes the row further out and
+ * grows the overflow again, so the list scrolls forever, on both axes
+ * (`overflowY: auto` makes `overflowX` auto too). Clamping the row to the
+ * scroller stops the loop. Auto-scroll still runs while the pointer is near an
+ * edge, so rows outside the visible area can still be reached.
+ */
+export const restrictToList: Modifier = ({
+  transform,
+  draggingNodeRect,
+  scrollableAncestorRects,
+}) => {
+  // The nearest scrollable ancestor: this list, or whatever scrolls it.
+  const bounds = scrollableAncestorRects[0];
+  if (!draggingNodeRect || !bounds) return { ...transform, x: 0 };
+
+  const minY = bounds.top - draggingNodeRect.top;
+  const maxY = bounds.bottom - draggingNodeRect.bottom;
+  return {
+    ...transform,
+    x: 0,
+    y: Math.min(Math.max(transform.y, minY), maxY),
+  };
+};
+
+const DND_MODIFIERS = [restrictToList];
 
 interface RenderItemsProps {
   items: PopoverItem[];
@@ -200,6 +234,7 @@ export const PopoverSelectableList = ({
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
+        modifiers={DND_MODIFIERS}
         onDragEnd={onDragEnd ?? (() => {})}
       >
         <SortableContext items={dndIds} strategy={verticalListSortingStrategy}>

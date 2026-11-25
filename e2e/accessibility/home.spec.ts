@@ -35,6 +35,7 @@ import {
   expectEscapeReturnsFocus,
   expectKeyboardOpens,
 } from '../utils/keyboard';
+import { expectSkeletonsLoading } from '../utils/skeleton';
 
 // --- Per-route configuration -------------------------------------------------
 
@@ -223,10 +224,10 @@ test.describe('a11y: Home — loading', () => {
 
     await page.goto(ROUTE, { waitUntil: 'domcontentloaded' });
 
-    // Proof of the loading state: the table renders skeleton cells tagged
-    // data-testid="loading" (src/views/home/components/TableWithSearch). There
-    // is no accessible surface for a skeleton, so a testid marker is correct.
-    await expect(page.getByTestId('loading').first()).toBeVisible();
+    // Proof of the loading state: the table renders skeleton rows. Skeletons
+    // have no accessible surface, so e2e/utils/skeleton.ts detects them by
+    // their styles instead.
+    await expectSkeletonsLoading(page);
 
     await runSharedChecks(page, testInfo, 'loading');
   });
@@ -367,11 +368,17 @@ test.describe('a11y: Home — filter popover', () => {
 
     // Wait for the populated table, then open the "Research Domain" filter
     // (label is unique to the table, so it can't collide with the search bar).
+    // `expanded: false` picks the filter's menu trigger, not the column's sort
+    // button of the same name.
     await expect(
       page.getByRole('link', { name: 'Fixture Resource Catalog' }),
     ).toBeVisible();
     await page
-      .getByRole('button', { name: 'Research Domain', exact: true })
+      .getByRole('button', {
+        name: 'Research Domain',
+        exact: true,
+        expanded: false,
+      })
       .click();
     // The popover's checkbox group only exists once open; the fixtures' genre
     // ('IID') is one of the options.
@@ -408,9 +415,10 @@ test.describe('a11y: Home — filter popover', () => {
       page.getByRole('link', { name: 'Fixture Resource Catalog' }),
     ).toBeVisible();
 
-    const trigger = page.getByRole('button', {
-      name: 'Research Domain',
-      exact: true,
+    // The filter's menu trigger (it has `aria-expanded`), not the column's
+    // sort button of the same name.
+    const trigger = page.locator('[aria-haspopup="menu"]', {
+      hasText: 'Research Domain',
     });
     const surface = page.getByRole('checkbox', { name: /IID/i }).first();
     await expectKeyboardOpens(trigger, surface);

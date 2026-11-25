@@ -16,7 +16,9 @@ import { SavedTableSection } from 'src/views/saved/components/saved-table-sectio
 import { useBatchResourcesData } from 'src/views/saved/hooks/useBatchResourcesData';
 import {
   SAVED_QUERY_COLUMNS,
+  SAVED_QUERY_INITIAL_SORT,
   SAVED_RESOURCE_COLUMNS,
+  SAVED_RESOURCE_INITIAL_SORT,
 } from 'src/views/saved/table-config';
 import { SavedResourceItem } from 'src/views/saved/types';
 
@@ -116,13 +118,13 @@ const SavedPage = () => {
         title='Saved Queries'
         description='A saved collection of frequently used queries.'
         columns={SAVED_QUERY_COLUMNS}
+        initialSort={SAVED_QUERY_INITIAL_SORT}
         data={displayQueries}
         getRowId={getSavedQueryRowId}
         unit={{ singular: 'item', plural: 'items' }}
         searchPlaceholder='Search saved queries'
         searchAriaLabel='Search saved queries'
-        tableAriaLabel='Saved queries table'
-        caption='Saved queries are searches that you have saved.'
+        label='Saved queries'
         noItemsState={
           <SavedEmptyState title='Nothing saved yet'>
             To save a search, run a search and select{' '}
@@ -132,32 +134,18 @@ const SavedPage = () => {
             .
           </SavedEmptyState>
         }
-        tableContainerProps={{
-          overflowX: 'auto' as const,
-          maxHeight: '300px',
-          w: '100%',
-          bg: 'white',
-          overflowY: 'auto' as const,
-        }}
       />
       <SavedTableSection
         title='Saved Resources'
         description='A saved collection of datasets, computational tools, and other records.'
         columns={SAVED_RESOURCE_COLUMNS}
+        initialSort={SAVED_RESOURCE_INITIAL_SORT}
         data={enrichedDatasets}
         getRowId={getSavedResourceRowId}
         unit={{ singular: 'item', plural: 'items' }}
         searchPlaceholder='Search saved resources'
         searchAriaLabel='Search saved resources'
-        tableAriaLabel='Saved resources table'
-        caption='Saved resources include datasets, computational tools, and other records that you have saved.'
-        tableContainerProps={{
-          overflowX: 'auto' as const,
-          maxHeight: '350px',
-          w: '100%',
-          bg: 'white',
-          overflowY: 'auto' as const,
-        }}
+        label='Saved resources'
         noItemsState={
           <SavedEmptyState title='Nothing saved yet'>
             To save a resource, select{' '}

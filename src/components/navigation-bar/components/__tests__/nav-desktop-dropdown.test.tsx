@@ -1,6 +1,6 @@
 import { Popover } from '@chakra-ui/react';
 import React from 'react';
-import { fireEvent, render, screen } from 'src/__tests__/utils/render';
+import { act, fireEvent, render, screen } from 'src/__tests__/utils/render';
 
 import {
   NavDropdown,
@@ -20,6 +20,10 @@ jest.mock('../nav-dropdown-item', () => ({
 const OpenPopover = ({ children }: { children: React.ReactNode }) => (
   <Popover.Root open>{children}</Popover.Root>
 );
+
+// An open popover positions itself asynchronously after mount, which updates
+// its state; flush that inside `act`.
+const flushPositioning = () => act(async () => {});
 
 describe('nav desktop dropdown', () => {
   beforeEach(() => {
@@ -41,7 +45,7 @@ describe('nav desktop dropdown', () => {
     expect(trigger).toHaveAttribute('aria-expanded', 'true');
   });
 
-  it('renders explicit NavDropdown container', () => {
+  it('renders explicit NavDropdown container', async () => {
     render(
       <OpenPopover>
         <NavDropdown>
@@ -49,16 +53,18 @@ describe('nav desktop dropdown', () => {
         </NavDropdown>
       </OpenPopover>,
     );
+    await flushPositioning();
 
     expect(screen.getByText('inner')).toBeInTheDocument();
   });
 
-  it('returns null when routes are empty and renders items otherwise', () => {
-    const { container, rerender } = render(
-      <OpenPopover>
-        <NavDropdownMenu routes={[]} />
-      </OpenPopover>,
-    );
+  it('returns null when routes are empty and renders items otherwise', async () => {
+    /*
+    No Popover.Root here: an empty menu must return before rendering any
+    Popover part (which would throw without one), and an open popover with no
+    content makes zag's dismissable warn that it has no node to watch.
+    */
+    const { container, rerender } = render(<NavDropdownMenu routes={[]} />);
     expect(container).toBeEmptyDOMElement();
 
     const routes = [
@@ -70,18 +76,20 @@ describe('nav desktop dropdown', () => {
         <NavDropdownMenu routes={routes} />
       </OpenPopover>,
     );
+    await flushPositioning();
 
     expect(screen.getByText('item:A')).toBeInTheDocument();
     expect(screen.getByText('item:B')).toBeInTheDocument();
     expect(mockNavDropdownItem).toHaveBeenCalledTimes(2);
   });
 
-  it('supports route entries without href (label fallback key path)', () => {
+  it('supports route entries without href (label fallback key path)', async () => {
     render(
       <OpenPopover>
         <NavDropdownMenu routes={[{ label: 'NoHref' }] as any} />
       </OpenPopover>,
     );
+    await flushPositioning();
     expect(screen.getByText('item:NoHref')).toBeInTheDocument();
   });
 });

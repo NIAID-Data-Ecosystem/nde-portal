@@ -30,11 +30,11 @@ export const DataDictionary: React.FC<DataDictionaryProps> = ({
           Definitions of fields and values used in the Repository Matcher
         </Text>
       </VStack>
-      {columns
-        .sort((a, b) => a.label.localeCompare(b.label))
-        .map(({ id, label, info }) => {
-          if (!info) return null;
-          const { description, terms } = info;
+      {[...columns]
+        .sort((a, b) => a.header.localeCompare(b.header))
+        .map(({ id, header, description, info }) => {
+          const terms = info?.terms;
+          if (!description && !terms) return null;
           // Restrict the listed terms to those present in the data when we
           // have a value set for this column; otherwise list all terms.
           const presentTerms = presentTermsByColumnId?.[id];
@@ -42,7 +42,7 @@ export const DataDictionary: React.FC<DataDictionaryProps> = ({
             ? terms?.filter(term => presentTerms.has(term.label || ''))
             : terms;
           return (
-            <Box key={label} lineHeight='tall' width='100%'>
+            <Box key={id} lineHeight='tall' width='100%'>
               <Box
                 bg='niaid.50'
                 borderTop='1px solid'
@@ -52,13 +52,13 @@ export const DataDictionary: React.FC<DataDictionaryProps> = ({
                 px={4}
                 width='100%'
               >
-                {label && (
+                {header && (
                   <Text
                     fontWeight='semibold'
                     color='text.heading'
                     fontSize='md'
                   >
-                    {label}
+                    {header}
                   </Text>
                 )}
                 {description && <Text color='gray.600'>{description}</Text>}
